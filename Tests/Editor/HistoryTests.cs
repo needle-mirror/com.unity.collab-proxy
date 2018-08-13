@@ -49,23 +49,6 @@ namespace UnityEditor.Collaboration.Tests
         }
 
         [Test]
-        public void CollabHistoryPresenter_OnUpdatePage__DateCalculatedCorrectly()
-        {
-            _service.result = new RevisionsResult()
-            {
-                Revisions = new List<Revision>()
-                {
-                    new Revision(timeStamp: 1506978483),
-                }
-            };
-
-            _presenter.OnUpdatePage(0);
-            var item = _window.items.First();
-
-            Assert.AreEqual(new DateTime(2017, 10, 02, 14, 08, 03), item.timeStamp);
-        }
-
-        [Test]
         public void CollabHistoryPresenter_OnUpdatePage__RevisionNumberingIsInOrder()
         {
             _service.result = new RevisionsResult()
