@@ -6,7 +6,7 @@ using UnityEngine.Experimental.UIElements.StyleEnums;
 
 namespace UnityEditor.Collaboration
 {
-    internal class StatusView : VisualContainer
+    internal class StatusView : VisualElement
     {
         Image m_Image;
         Label m_Message;

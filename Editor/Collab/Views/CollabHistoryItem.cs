@@ -9,7 +9,7 @@ using UnityEngine.Experimental.UIElements.StyleEnums;
 
 namespace UnityEditor.Collaboration
 {
-    internal class CollabHistoryItem : VisualContainer
+    internal class CollabHistoryItem : VisualElement
     {
         public static RevisionAction s_OnRestore;
         public static RevisionAction s_OnGoBack;
@@ -22,7 +22,7 @@ namespace UnityEditor.Collaboration
         private readonly DateTime m_TimeStamp;
         private readonly Button m_Button;
         private readonly HistoryProgressSpinner m_ProgressSpinner;
-        private VisualContainer m_ActionsTray;
+        private VisualElement m_ActionsTray;
         private VisualElement m_Details;
         private Label m_Description;
         private Label m_TimeAgo;
@@ -49,7 +49,7 @@ namespace UnityEditor.Collaboration
             m_RevisionId = data.id;
             m_TimeStamp = data.timeStamp;
             name = "HistoryItem";
-            m_ActionsTray = new VisualContainer {name = "HistoryItemActionsTray"};
+            m_ActionsTray = new VisualElement {name = "HistoryItemActionsTray"};
             m_ProgressSpinner = new HistoryProgressSpinner();
             m_Details = new VisualElement {name = "HistoryDetail"};
             var author = new Label(data.authorName) {name = "Author"};

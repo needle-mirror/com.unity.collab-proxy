@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.Collaboration;
 using UnityEditor.Connect;
 using UnityEditor.Web;
@@ -22,18 +24,59 @@ namespace UnityEditor
             Offline
         }
 
+        private class CollabToolbarContent
+        {
+            readonly string m_iconName;
+            readonly string m_toolTip;
+            readonly CollabToolbarState m_state;
+            
+            static Dictionary<CollabToolbarContent, GUIContent> m_CollabIcons;
+
+            public CollabToolbarState RegisteredForState
+            {
+                get { return m_state; }
+            }
+
+            public GUIContent GuiContent
+            {
+                get
+                {
+                    if (m_CollabIcons == null)
+                    {
+                        m_CollabIcons = new Dictionary<CollabToolbarContent, GUIContent>();
+                    }
+            
+                    if (!m_CollabIcons.ContainsKey(this))
+                    {
+                        m_CollabIcons.Add(this, EditorGUIUtility.TrTextContentWithIcon("Collab", m_toolTip, m_iconName));
+                    }
+            
+                    return m_CollabIcons[this];
+                }
+            }
+
+            public CollabToolbarContent(CollabToolbarState state, string iconName, string toolTip)
+            {
+                m_state = state;
+                m_iconName = iconName;
+                m_toolTip = toolTip;
+            }
+        }
+
+        CollabToolbarContent[] m_toolbarContents;
         CollabToolbarState m_CollabToolbarState = CollabToolbarState.UpToDate;
-        static GUIContent[] s_CollabIcons;
         const float kCollabButtonWidth = 78.0f;
         ButtonWithAnimatedIconRotation m_CollabButton;
         string m_DynamicTooltip;
         static bool m_ShowCollabTooltip = false;
 
-        GUIContent currentCollabContent
+        private GUIContent currentCollabContent
         {
             get
             {
-                GUIContent content = new GUIContent(s_CollabIcons[(int)m_CollabToolbarState]);
+                CollabToolbarContent toolbarContent =
+                    m_toolbarContents.FirstOrDefault(c => c.RegisteredForState.Equals(m_CollabToolbarState));
+                GUIContent content = new GUIContent(toolbarContent == null? m_toolbarContents.First().GuiContent : toolbarContent.GuiContent);
                 if (!m_ShowCollabTooltip)
                 {
                     content.tooltip = null;
@@ -52,45 +95,32 @@ namespace UnityEditor
             }
         }
         
-        void InitializeToolIcons()
-        {
-            // Must match enum CollabToolbarState
-            s_CollabIcons = new GUIContent[]
-            {
-                EditorGUIUtility.TrTextContentWithIcon("Collab", " You need to enable collab.", "CollabNew"),
-                EditorGUIUtility.TrTextContentWithIcon("Collab", " You are up to date.", "Collab"),
-                EditorGUIUtility.TrTextContentWithIcon("Collab", " Please fix your conflicts prior to publishing.", "CollabConflict"),
-                EditorGUIUtility.TrTextContentWithIcon("Collab", " Last operation failed. Please retry later.", "CollabError"),
-                EditorGUIUtility.TrTextContentWithIcon("Collab", " Please update, there are server changes.", "CollabPull"),
-                EditorGUIUtility.TrTextContentWithIcon("Collab", " You have files to publish.", "CollabPush"),
-                EditorGUIUtility.TrTextContentWithIcon("Collab", " Operation in progress.", "CollabProgress"),
-                EditorGUIUtility.TrTextContentWithIcon("Collab", " Collab is disabled.", "CollabNew"),
-                EditorGUIUtility.TrTextContentWithIcon("Collab", " Please check your network connection.", "CollabNew")
-            };
-        }
-
         public CollabToolbarButton()
         {
-            InitializeToolIcons();
+            m_toolbarContents = new[]
+            {
+                new CollabToolbarContent(CollabToolbarState.NeedToEnableCollab, "CollabNew", " You need to enable collab."),
+                new CollabToolbarContent(CollabToolbarState.UpToDate, "Collab", " You are up to date."),
+                new CollabToolbarContent(CollabToolbarState.Conflict, "CollabConflict", " Please fix your conflicts prior to publishing."),
+                new CollabToolbarContent(CollabToolbarState.OperationError, "CollabError", " Last operation failed. Please retry later."),
+                new CollabToolbarContent(CollabToolbarState.ServerHasChanges, "CollabPull", " Please update, there are server changes."),
+                new CollabToolbarContent(CollabToolbarState.FilesToPush, "CollabPush", " You have files to publish."),
+                new CollabToolbarContent(CollabToolbarState.InProgress, "CollabProgress", " Operation in progress."),
+                new CollabToolbarContent(CollabToolbarState.Disabled, "CollabNew", " Collab is disabled."),
+                new CollabToolbarContent(CollabToolbarState.Offline, "CollabNew", " Please check your network connection.")
+            };
+            
             Collab.instance.StateChanged += OnCollabStateChanged;
             UnityConnect.instance.StateChanged += OnUnityConnectStateChanged;
             UnityConnect.instance.UserStateChanged += OnUnityConnectUserStateChanged;
-
-            if (m_CollabButton == null)
-            {
-                const int repaintsPerSecond = 20;
-                const float animSpeed = 500f;
-                const bool mouseDownButton = true;
-                m_CollabButton = new ButtonWithAnimatedIconRotation(() => (float)EditorApplication.timeSinceStartup * animSpeed, Toolbar.RepaintToolbar, repaintsPerSecond, mouseDownButton);
-            }
         }
 
-        private void OnUnityConnectUserStateChanged(UserInfo state)
+        void OnUnityConnectUserStateChanged(UserInfo state)
         {
             UpdateCollabToolbarState();
         }
 
-        private void OnUnityConnectStateChanged(ConnectInfo state)
+        void OnUnityConnectStateChanged(ConnectInfo state)
         {
             UpdateCollabToolbarState();
         }
@@ -137,7 +167,7 @@ namespace UnityEditor
                 bool animate = m_CollabToolbarState == CollabToolbarState.InProgress;
 
                 EditorGUIUtility.SetIconSize(new Vector2(12, 12));
-                if (m_CollabButton.OnGUI(rect, currentCollabContent, animate, collabButtonStyle))
+                if (GetCollabButton().OnGUI(rect, currentCollabContent, animate, collabButtonStyle))
                 {
                     showPopup = true;
                 }
@@ -239,6 +269,19 @@ namespace UnityEditor
         void ReserveBottom(float height, ref Rect pos)
         {
             pos.y += height;
+        }
+
+        ButtonWithAnimatedIconRotation GetCollabButton()
+        {
+            if (m_CollabButton == null)
+            {
+                const int repaintsPerSecond = 20;
+                const float animSpeed = 500f;
+                const bool mouseDownButton = true;
+                m_CollabButton = new ButtonWithAnimatedIconRotation(() => (float)EditorApplication.timeSinceStartup * animSpeed, Toolbar.RepaintToolbar, repaintsPerSecond, mouseDownButton);
+            }
+
+            return m_CollabButton;
         }
 
         public void Dispose()

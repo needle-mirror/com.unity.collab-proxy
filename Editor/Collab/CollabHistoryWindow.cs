@@ -191,7 +191,7 @@ namespace UnityEditor
                     var item = new CollabHistoryItem(data);
                     m_HistoryItems.Add(item);
 
-                    var container = new VisualContainer();
+                    var container = new VisualElement();
                     container.style.flexDirection = FlexDirection.Row;
                     if (data.current)
                     {
