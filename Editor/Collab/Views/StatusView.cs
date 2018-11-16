@@ -1,8 +1,13 @@
 using System;
 using UnityEditor;
 using UnityEngine;
+
+#if UNITY_2019_1_OR_NEWER
+using UnityEngine.UIElements;
+#else
 using UnityEngine.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements.StyleEnums;
+#endif
 
 namespace UnityEditor.Collaboration
 {
@@ -61,7 +66,7 @@ namespace UnityEditor.Collaboration
 
             this.StretchToParentSize();
 
-            m_Image = new Image() { name = "StatusIcon", visible = false, style = { height = 0 }};
+            m_Image = new Image() { name = "StatusIcon", visible = false, style = { height = 0f }};
             m_Message = new Label() { name = "StatusMessage", visible = false};
             m_Button = new Button(InternalCallaback) { name = "StatusButton", visible = false};
 

@@ -4,8 +4,13 @@ using System.Security.Cryptography;
 using UnityEditor.Connect;
 using UnityEditor.Web;
 using UnityEngine;
+
+#if UNITY_2019_1_OR_NEWER
+using UnityEngine.UIElements;
+#else
 using UnityEngine.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements.StyleEnums;
+#endif
 
 namespace UnityEditor.Collaboration
 {

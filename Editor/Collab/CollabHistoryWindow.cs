@@ -2,9 +2,16 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditor.Collaboration;
+
+#if UNITY_2019_1_OR_NEWER
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
+#else
 using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements.StyleEnums;
+#endif
+
 using UnityEngine;
 using UnityEditor.Connect;
 
@@ -12,6 +19,13 @@ namespace UnityEditor
 {
     internal class CollabHistoryWindow : EditorWindow, ICollabHistoryWindow
     {
+#if UNITY_2019_1_OR_NEWER
+                private const string ResourcesPath = "Packages/com.unity.collab-proxy/Editor/Resources/Styles/";
+#else
+                private const string ResourcesPath = "StyleSheets/";
+#endif
+
+
         const string kWindowTitle = "Collab History";
         const string kServiceUrl = "developer.cloud.unity3d.com";
 
@@ -76,17 +90,31 @@ namespace UnityEditor
             }
         }
 
+        private void AddStyleSheetPath(VisualElement root, string path)
+        {
+#if UNITY_2019_1_OR_NEWER
+            root.styleSheets.Add(EditorGUIUtility.Load(path) as StyleSheet);
+#else
+            root.AddStyleSheetPath(path);
+#endif
+        }
+
+
         public void SetupGUI()
         {
+#if UNITY_2019_1_OR_NEWER
+            var root = this.rootVisualElement;
+#else
             var root = this.GetRootVisualContainer();
-            root.AddStyleSheetPath("StyleSheets/CollabHistoryCommon.uss");
+#endif
+            AddStyleSheetPath(root, ResourcesPath + "CollabHistoryCommon.uss");
             if (EditorGUIUtility.isProSkin)
             {
-                root.AddStyleSheetPath("StyleSheets/CollabHistoryDark.uss");
+                AddStyleSheetPath(root, ResourcesPath + "CollabHistoryDark.uss");
             }
             else
             {
-                root.AddStyleSheetPath("StyleSheets/CollabHistoryLight.uss");
+                AddStyleSheetPath(root, ResourcesPath + "CollabHistoryLight.uss");
             }
 
             m_Container = new VisualElement();
