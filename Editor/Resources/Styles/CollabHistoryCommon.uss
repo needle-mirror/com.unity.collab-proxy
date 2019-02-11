@@ -1,5 +1,5 @@
 .unity-button {
-    min-height:unset;
+    min-height:0;
     -unity-text-align:middle-center;
     margin-left:4px;
     margin-top:3px;
@@ -9,10 +9,10 @@
     border-top-width:4px;
     border-right-width:6px;
     border-bottom-width:4px;
-    padding-left:6 px;
-    padding-top:2 px;
-    padding-right:6 px;
-    padding-bottom:3 px;
+    padding-left:6px;
+    padding-top:2px;
+    padding-right:6px;
+    padding-bottom:3px;
 }
 
 .unity-label {
@@ -21,9 +21,9 @@
     margin-top:2px;
     margin-right:4px;
     margin-bottom:2px;
-    padding-left:2 px;
-    padding-top:1 px;
-    min-height: unset;
+    padding-left:2px;
+    padding-top:1px;
+    min-height: 0;
 }
 
 #HistoryContainer {
@@ -142,7 +142,7 @@ PagerElement > .unity-label {
   padding-top: 0;
   padding-left: 0;
   padding-right: 0;
-  padding-bottom: 2;
+  padding-bottom: 2px;
 }
 
 #HistoryItem #ActionButton {
@@ -208,7 +208,7 @@ CollabHistoryDropDownItem {
     right: 0;
     top: 0;
     width: 24px;
-    height: 24;
+    height: 24px;
     color: #000;
     font-size: 18px;
     -unity-font-style: bold;
@@ -247,10 +247,10 @@ BuildStatusButton.unity-button {
     align-self: flex-end;
     align-items: center;
     margin-right: 10px;
-    padding-left:unset;
-    padding-top:unset;
-    padding-right:unset;
-    padding-bottom:unset;
+    padding-left:0;
+    padding-top:0;
+    padding-right:0;
+    padding-bottom:0;
 }
 
 BuildStatusButton.unity-button .unity-label {
