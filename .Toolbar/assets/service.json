@@ -1,0 +1,26 @@
+{
+	"hasSamples": false,
+	"icon": "assets/image/default-project-icon.png",
+	"hideEnableSwitch": false,
+	"title": "Collaboration Toolbar",
+	"description": "Collaboration Toolbar.",
+	"longDescription": "Quickly and easily access your project from anywhere. Sync and share with the entire team.",
+	"longDescriptionHTML": "",
+	"dashboardLink": {
+		"andy": "https://andy-core.cloud.unity3d.com/orgs/%%ORGID%%/projects/%%UPID%%",
+		"development": "https://dev-core.cloud.unity3d.com/orgs/%%ORGID%%/projects/%%UPID%%",
+		"staging": "https://staging-core.cloud.unity3d.com/orgs/%%ORGID%%/projects/%%UPID%%",
+		"production": "https://core.cloud.unity3d.com/orgs/%%ORGID%%/projects/%%UPID%%"
+	},
+	"helpLink": "http://docs.unity3d.com/Manual/index.html",
+	"docLinks": [],
+	"contextHelpLinks": [
+		{
+				"id": "unity-collaborate-upgrade-considerations",
+				"title": "Unity Editor Upgrade Considerations",
+				"url": "http://docs.unity3d.com/Documentation/Manual/UnityCollaborateUpgradeConsiderations.html"
+		}
+	],
+	"serviceFlag": "collab",
+	"unityObject": "unity/project/cloud/collab"
+}

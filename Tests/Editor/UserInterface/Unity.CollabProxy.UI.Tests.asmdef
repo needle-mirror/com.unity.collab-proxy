@@ -1,0 +1,12 @@
+﻿{
+	"name": "Unity.CollabProxy.UI.Tests",
+	"references": [
+			"Unity.CollabProxy.UI"
+	],
+	"optionalUnityReferences": [
+			"TestAssemblies"
+	],
+	"includePlatforms": [
+			"Editor"
+	]
+}

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html ng-app="ngUnity" ng-controller="AppCtrl">
+<head>
+	<title ng-bind="pageTitle"></title>
+
+	<meta http-equiv="EXPIRES" content="0">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- compiled CSS -->
+	<link rel="stylesheet" type="text/css" href="vendor/animate.css/animate.css"/>
+	
+	<link rel="stylesheet" type="text/css" href="vendor/prism/themes/prism-twilight.css"/>
+	
+	<link rel="stylesheet" type="text/css" href="vendor/ladda-bootstrap/dist/ladda-themeless.css"/>
+	
+	<link rel="stylesheet" type="text/css" href="vendor/angular-loading-bar/build/loading-bar.css"/>
+	
+	<link rel="stylesheet" type="text/css" href="vendor/angular-material/angular-material.min.css"/>
+	
+
+	<link class="main-theme" rel="stylesheet" type="text/css" data-path="assets/unityeditor-collab-toolbar-editor-">
+
+	<script src="assets/initstyle.js"></script>
+	<script type="text/javascript" src="assets/initerrors.js"></script>
+
+	<script>
+		var GA_UA_KEY = "UA-16068464-29" || 'UA-16068464-29';
+	</script>
+	<!-- compiled JavaScript -->
+	<script type="text/javascript" src="vendor/jquery/dist/jquery.js"></script>
+	
+	<script type="text/javascript" src="vendor/bootstrap/dist/js/bootstrap.js"></script>
+	
+	<script type="text/javascript" src="vendor/angular/angular.js"></script>
+	
+	<script type="text/javascript" src="vendor/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+	
+	<script type="text/javascript" src="vendor/angular-ui-router/release/angular-ui-router.js"></script>
+	
+	<script type="text/javascript" src="vendor/angular-resource/angular-resource.js"></script>
+	
+	<script type="text/javascript" src="vendor/angular-animate/angular-animate.js"></script>
+	
+	<script type="text/javascript" src="vendor/prism/prism.js"></script>
+	
+	<script type="text/javascript" src="vendor/prism/components/prism-clike.js"></script>
+	
+	<script type="text/javascript" src="vendor/prism/components/prism-csharp.js"></script>
+	
+	<script type="text/javascript" src="vendor/prism/components/prism-java.js"></script>
+	
+	<script type="text/javascript" src="vendor/prism/components/prism-c.js"></script>
+	
+	<script type="text/javascript" src="vendor/prism/components/prism-objectivec.js"></script>
+	
+	<script type="text/javascript" src="vendor/lodash/lodash.js"></script>
+	
+	<script type="text/javascript" src="vendor/spin.js/spin.js"></script>
+	
+	<script type="text/javascript" src="vendor/ladda-bootstrap/dist/ladda.js"></script>
+	
+	<script type="text/javascript" src="vendor/angular-spinner/angular-spinner.js"></script>
+	
+	<script type="text/javascript" src="vendor/angular-loading-bar/build/loading-bar.js"></script>
+	
+	<script type="text/javascript" src="vendor/angular-cookies/angular-cookies.js"></script>
+	
+	<script type="text/javascript" src="vendor/ngstorage/ngStorage.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/alert/alertDirective.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/alert/alertService.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/button/button.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/checkbox/checkbox.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/constants.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/history.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/credentials/credentials_android.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/credentials/credentials_base.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/credentials/credentials_ios.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/credentials/validate_bundleid_android.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/credentials/validate_bundleid_ios.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/project/basic.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/scm/scmDirective.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/scm/scmService.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/scm/scm_base.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/scm/step01.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/scm/step02.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/target/advanced.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/target/assetbundles.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/target/basic.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/target/platform_select.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/target/scm/svn.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/target/target_edit.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/target/tests.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/target/unityversion.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/target/validate_subdirectory.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/util/file_model.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/util/setup_constants.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/cloudbuild/setup/util/utils.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/progress/progress.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/switch/switch.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/components/wizard-progress/wizard-progress.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/core/core.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/main.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/services/cloudbuild.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/services/cloudbuildstatus.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/services/config.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/services/messagelog.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/services/notifications.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/services/pubnub.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/services/routes.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/services/socket.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-components/src/shared/mocks/mockCloudBuildService.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/cloudbuild/cloudbuild.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/cloudbuild/cloudbuildui.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/cloudcollab/cloudcollab.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/cloudcollab/errors.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/cloudcore/cloudcore.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/cloudcore/errors.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/cloudcredentials/cloudcredentials.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/cloudcredentials/errorhandler.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/cloudcredentials/headerauth.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/common/components/icons.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/common/index.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/directives.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/editorcollab/editorcollab.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/editorcollab/editorcollabREST.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/editorcollab/editorcollabnative.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/errors/http.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/errors/messagegroup.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/errors/ui.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/filters.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/general/general.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/google-analytics.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/services/clipboardService.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/services/cloudPanelService.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/services/config.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/services/connectService.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/services/projectService.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/services/projectUnityVersion.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/services/unity.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/services/unityService.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/status/status.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/tooltips/tooltips.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/utClasses.js"></script>
+	
+	<script type="text/javascript" src="vendor/unityeditor-cloud-pack/libs/utils.js"></script>
+	
+	<script type="text/javascript" src="vendor/angulartics/dist/angulartics.min.js"></script>
+	
+	<script type="text/javascript" src="vendor/angulartics/dist/angulartics-ga.min.js"></script>
+	
+	<script type="text/javascript" src="vendor/airbrake-js-client/dist/client.js"></script>
+	
+	<script type="text/javascript" src="vendor/moment/min/moment.min.js"></script>
+	
+	<script type="text/javascript" src="vendor/angular-timeago/dist/angular-timeago.js"></script>
+	
+	<script type="text/javascript" src="vendor/pubnub/dist/web/pubnub.js"></script>
+	
+	<script type="text/javascript" src="vendor/angular-sanitize/angular-sanitize.min.js"></script>
+	
+	<script type="text/javascript" src="vendor/angular-aria/angular-aria.min.js"></script>
+	
+	<script type="text/javascript" src="vendor/angular-material/angular-material.js"></script>
+	
+	<script type="text/javascript" src="vendor/angular-svg-round-progressbar/build/roundProgress.min.js"></script>
+	
+	<script type="text/javascript" src="src/app/app.js"></script>
+	
+	<script type="text/javascript" src="src/app/state.js"></script>
+	
+	<script type="text/javascript" src="src/app/toolbar/common/directives.js"></script>
+	
+	<script type="text/javascript" src="src/app/toolbar/loggedout/loggedout.js"></script>
+	
+	<script type="text/javascript" src="src/app/toolbar/nointernet/nointernet.js"></script>
+	
+	<script type="text/javascript" src="src/app/toolbar/nolocalhost/nolocalhost.js"></script>
+	
+	<script type="text/javascript" src="src/app/toolbar/noproject/noproject.js"></script>
+	
+	<script type="text/javascript" src="src/app/toolbar/noseat/noseat.js"></script>
+	
+	<script type="text/javascript" src="src/app/toolbar/project/conflicts/conflicts.js"></script>
+	
+	<script type="text/javascript" src="src/app/toolbar/project/progress/progress.js"></script>
+	
+	<script type="text/javascript" src="src/app/toolbar/project/publish/publish.js"></script>
+	
+	<script type="text/javascript" src="src/app/toolbar/project/publish/publishitem.js"></script>
+	
+	<script type="text/javascript" src="src/app/toolbar/project/update/update.js"></script>
+	
+	<script type="text/javascript" src="src/app/toolbar/project/uptodate/uptodate.js"></script>
+	
+	<script type="text/javascript" src="src/app/toolbar/refreshproject/refreshproject.js"></script>
+	
+	<script type="text/javascript" src="src/app/toolbar/root/root.js"></script>
+	
+	<script type="text/javascript" src="templates-common.js"></script>
+	
+	<script type="text/javascript" src="templates-app.js"></script>
+	
+
+</head>
+<body>
+<div class="application">
+
+	<ut-alert class="ut-absolute-top"></ut-alert>
+
+	<div ui-view="root"></div>
+
+</div>
+</body>
+</html>
