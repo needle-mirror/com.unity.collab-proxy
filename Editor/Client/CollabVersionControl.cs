@@ -48,8 +48,6 @@ namespace CollabProxy.Client
             {
                 OnUpdateHeadListener = OnUpdateHead
             };
-
-            CollabAssetPostprocessor.AssetsPostprocessed += () => { OnFileSystemChanged(); };
         }
 
         /// <summary>
@@ -361,22 +359,6 @@ namespace CollabProxy.Client
             Collab.instance.SetError(k_CollabGenericError);
             UnityEngine.Debug.LogError(exception.InnermostExceptionMessage);
             Console.WriteLine(exception.InnermostExceptionStackTrace);
-        }
-
-        class CollabAssetPostprocessor : UnityEditor.AssetPostprocessor
-        {
-            public delegate void AssetProcessorEventHandler();
-            public static event AssetProcessorEventHandler AssetsPostprocessed;
-
-            static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets,
-                string[] movedAssets, string[] movedFromAssetPaths)
-            {
-                AssetProcessorEventHandler handler = AssetsPostprocessed;
-                if (handler != null)
-                {
-                    handler();
-                }
-            }
         }
     }
 }

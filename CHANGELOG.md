@@ -4,6 +4,18 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.0.0-preview.8] - 2019-4-8
+Performance fixes to reduce CPU load.
+
+## [2.0.0-preview.7] - 2019-3-25
+Update CHANGELOG.md
+
+## [2.0.0-preview.6] - 2019-3-23
+Removed dependency on third-party moq.dll
+Bug fixes to serialization when using legacy scripting runtime.
+Bug fixes to remove migration dialog that should be forced.
+Performance improvements to reduce polling frequency and unnecessary file hashes.
+
 ## [2.0.0] - 2019-1-22
 Bump major semantic version to reflect move from Unity.CollabProxy.Editor.
 
