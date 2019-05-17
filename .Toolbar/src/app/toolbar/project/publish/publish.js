@@ -64,7 +64,7 @@ angular.module('ngPanel.toolbar.publish', [
  	DynamicChanges.prototype.fetchPage_ = function(pageNumber) {
 		// Set the page to null so we know it is already being fetched.
 		this.loadedPages[pageNumber] = null;
-		// For we use the localChnages, in the future we could fetch using $http
+		// For we use the localChanges, in the future we could fetch using $http
 		this.loadedPages[pageNumber] = [];
 		var pageOffset = pageNumber * this.PAGE_SIZE;
 		for (var i = pageOffset; i < pageOffset + this.PAGE_SIZE; i++) {
@@ -169,8 +169,13 @@ angular.module('ngPanel.toolbar.publish', [
 		editorcollab.clearErrorUI();
 		unityProjectService.SaveCurrentModifiedScenesIfUserWantsTo().success(function(continueToPublish) {
 			if (continueToPublish) {
-				editorcollab.Publish($scope.$storage.comment || '', useSelectedAssetsAndConfirm, useSelectedAssetsAndConfirm);
-				$scope.$storage.comment = '';
+				// Update collab hashes to avoid any hash mismatch
+				editorcollab.startUpdateCachedChanges();
+        editorcollab.onUpdateCachedChangesFinished(function (changesAvailable) {
+            if (!changesAvailable) return;
+            editorcollab.Publish($scope.$storage.comment || '', useSelectedAssetsAndConfirm, useSelectedAssetsAndConfirm);
+            $scope.$storage.comment = '';
+        });
 			}
 		});
 	};

@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace CollabProxy.Models
 {
-    internal static class Serialization
+    static class Serialization
     {
         public static string SerializeResponse(ResponseWrapper response)
         {

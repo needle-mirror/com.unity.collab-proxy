@@ -24,13 +24,13 @@ namespace CollabProxy.Tests
         [Test]
         public void Response_AfterSerialized_CanDeserialize()
         {
-            var responseException = new ResponseException()
+            var responseException = new ResponseException
             {
                 Message = "message",
                 Source = "source",
                 StackTrace = "stacktrace"
             };
-            var response = new ResponseWrapper()
+            var response = new ResponseWrapper
             {
                 ResponseException = responseException
             };
@@ -44,13 +44,13 @@ namespace CollabProxy.Tests
         [Test]
         public void ResponseOfBool_AfterSerialized_CanDeserialize()
         {
-            var responseException = new ResponseException()
+            var responseException = new ResponseException
             {
                 Message = "message",
                 Source = "source",
                 StackTrace = "stacktrace"
             };
-            var response = new ResponseWrapper<bool>()
+            var response = new ResponseWrapper<bool>
             {
                 ResponseObject = true,
                 ResponseException = responseException
@@ -66,13 +66,13 @@ namespace CollabProxy.Tests
         [Test]
         public void ResponseOfT_AfterSerialized_CanDeserialize()
         {
-            var responseException = new ResponseException()
+            var responseException = new ResponseException
             {
                 Message = "message",
                 Source = "source",
                 StackTrace = "stacktrace"
             };
-            var response = new ResponseWrapper<Object>()
+            var response = new ResponseWrapper<Object>
             {
                 ResponseException = responseException,
                 ResponseObject = true
@@ -103,9 +103,9 @@ namespace CollabProxy.Tests
         {
             var changeList = new List<ChangeWrapper>
             {
-                new ChangeWrapper() { Hash = "hash", Path = "path", Status = ChangeType.Moved }
+                new ChangeWrapper { Hash = "hash", Path = "path", Status = ChangeType.Moved }
             };
-            var responseWrapper = new ResponseWrapper<ChangeWrapper[]>()
+            var responseWrapper = new ResponseWrapper<ChangeWrapper[]>
             {
                 ResponseObject = changeList.ToArray()
             };

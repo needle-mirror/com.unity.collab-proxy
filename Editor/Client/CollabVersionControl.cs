@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using CollabProxy.Models;
 using UnityEditor;
 using UnityEditor.Collaboration;
 using UnityEditor.Connect;
+using UnityEngine;
 
 namespace CollabProxy.Client
 {
@@ -14,28 +13,33 @@ namespace CollabProxy.Client
     /// This class implements IVersionControl and registers itself as a provider of version control operations with
     /// Collab. This allows it to be used as the backend for Collab's core and user interface, through the exposed
     /// methods.
-    /// </summary>IsJobRunning
+    /// </summary>
     internal class CollabVersionControl : IVersionControl
     {
         const string k_CloneUrl = "{0}/api/projects/{1}/git";
         const string k_NoTip = "none";
         const int k_CollabGenericError = 1;
-        const string k_GetWorkingDirectoryCallbackName = "GetWorkingDirectoryChangesCallback";
 
-        protected IGitProxy Git { get; set; }
+        IGitProxy Git { get; set; }
         CollabProxyClient m_CollabProxyClient;
-        private CollabProxyClient CollabProxyClient
+
+        CollabProxyClient CollabProxyClient
         {
             get { return m_CollabProxyClient; }
         }
 
-        string m_LastKnownHead = k_NoTip;
         bool m_IsProjectBound;
-        Mutex m_SetChangesToPublishMutex = new Mutex();
+        bool m_GitRepoExists;
+
+        public static bool IsGettingChanges;
+        public static bool IsHeadUpdating;
+        public static event Action GetChangesFinished;
+        public static event Action GetChangesStarted;
+        public static event Action<bool> UpdateCachedChangesFinished;
 
         public virtual bool IsJobRunning
         {
-            get { return Git.IsRunningAsyncOperations(); }
+            get { return IsHeadUpdating; }
         }
 
         /// <summary>
@@ -44,24 +48,42 @@ namespace CollabProxy.Client
         public CollabVersionControl()
         {
             m_CollabProxyClient = new CollabProxyClient();
-            Git = new GitProxy(m_CollabProxyClient)
-            {
-                OnUpdateHeadListener = OnUpdateHead
-            };
+            Git = new GitProxy(m_CollabProxyClient);
+            RegisterServerCallbacks();
         }
 
         /// <summary>
         /// Create a new instance of CollabVersionControl, consisting of a CollabProxyClient and GitProxy
         /// </summary>
-        public CollabVersionControl(CollabProxyClient collabProxyClient, IGitProxy gitProxy)
+        protected CollabVersionControl(CollabProxyClient collabProxyClient, IGitProxy gitProxy)
         {
             if (gitProxy == null)
             {
-                throw new ArgumentNullException("gitProxy is required");
+                throw new ArgumentNullException("gitProxy", "gitProxy is required");
             }
 
             m_CollabProxyClient = collabProxyClient;
             Git = gitProxy;
+            RegisterServerCallbacks();
+        }
+
+        /// <summary>
+        /// De-register listeners to the proxy server on destruction.
+        /// </summary>
+        ~CollabVersionControl()
+        {
+            CollabProxyClient.DeregisterListeners();
+        }
+
+        /// <summary>
+        /// Callbacks from the various async calls to the proxy server.
+        /// </summary>
+        protected virtual void RegisterServerCallbacks()
+        {
+            CollabProxyClient.RegisterListener<bool>(AsyncMessageType.CurrentHeadUpdated.ToString(), OnUpdateHead, OnUpdateHeadException);
+            CollabProxyClient.RegisterListener<List<ChangeWrapper>>(AsyncMessageType.GetChanges.ToString(), OnGetChanges, OnGetChangesException);
+            CollabProxyClient.RegisterListener<List<ChangeWrapper>>(AsyncMessageType.UpdateCachedChanges.ToString(), OnUpdateCachedChanges, OnUpdateCachedChangesException);
+            CollabProxyClient.RegisterListener<List<ChangeWrapper>>(AsyncMessageType.UpdateFileStatus.ToString(), OnUpdateFileStatus, OnUpdateFileStatusException);
         }
 
         /// <summary>
@@ -108,6 +130,12 @@ namespace CollabProxy.Client
 
                 UpdateHeadRevision();
                 RegisterListeners();
+                m_GitRepoExists = true;
+
+                if (!repositoryFound)
+                {
+                    StartGetChanges();
+                }
             }
             catch (CollabProxyException initializationException)
             {
@@ -115,8 +143,6 @@ namespace CollabProxy.Client
                 return false;
             }
 
-            // Fire off initial set changes to publish
-            OnFileSystemChanged();
             return true;
         }
 
@@ -137,7 +163,6 @@ namespace CollabProxy.Client
         /// </summary>
         public void OnDisableVersionControl()
         {
-            m_LastKnownHead = k_NoTip;
             DeregisterListeners();
         }
 
@@ -178,23 +203,84 @@ namespace CollabProxy.Client
         }
 
         /// <summary>
-        /// Callback for when the Git repository is successfully updated
+        /// Callback for when the head of the Git repository is successfully updated
         /// </summary>
-        void OnUpdateHead()
+        void OnUpdateHead(bool changeMade)
         {
-            // ensure we update the view with the new state (if it exists)
+            IsHeadUpdating = false;
+            // ensure we update the view with the new state
             Collab.instance.SendCollabInfoNotification();
-            OnFileSystemChanged();
+            if (changeMade)
+            {
+                StartGetChanges();
+            }
         }
 
-        void GetWorkingDirectoryChangesCallback(IList<ChangeWrapper> changes)
+        static void OnUpdateHeadException(Exception e)
         {
+            IsHeadUpdating = false;
+            // ensure we update the view with the new state
+            Collab.instance.SendCollabInfoNotification();
+            LogExceptionDetails(e);
+        }
+
+        static void OnGetChanges(List<ChangeWrapper> changes)
+        {
+            SetChangesToPublish(changes);
+            // Notify new changes and call event on main thread.
+            IsGettingChanges = false;
+            if (GetChangesFinished != null)
+                EditorApplication.delayCall += () => GetChangesFinished();
+        }
+
+        static void OnGetChangesException(Exception e)
+        {
+            // Notify new changes and call event on main thread.
+            IsGettingChanges = false;
+            if (GetChangesFinished != null)
+                EditorApplication.delayCall += () => GetChangesFinished();
+            LogExceptionDetails(e);
+        }
+
+        static void OnUpdateCachedChanges(List<ChangeWrapper> changes)
+        {
+            var numberOfChanges = SetChangesToPublish(changes);
+            // Notify new changes and call event on main thread.
+            IsGettingChanges = false;
+            if (UpdateCachedChangesFinished != null)
+                EditorApplication.delayCall += () => UpdateCachedChangesFinished(numberOfChanges > 0);
+        }
+
+        static void OnUpdateCachedChangesException(Exception e)
+        {
+            // Notify new changes and call event on main thread.
+            IsGettingChanges = false;
+            if (UpdateCachedChangesFinished != null)
+                EditorApplication.delayCall += () => UpdateCachedChangesFinished(false);
+            LogExceptionDetails(e);
+        }
+
+        static void OnUpdateFileStatus(ICollection<ChangeWrapper> changes)
+        {
+            SetChangesToPublish(changes);
+        }
+
+        static void OnUpdateFileStatusException(Exception e)
+        {
+            LogExceptionDetails(e);
+        }
+
+        static int SetChangesToPublish(ICollection<ChangeWrapper> changes)
+        {
+            var length = 0;
             ChangeItem[] changeItems;
             if (changes != null)
             {
-                IEnumerable<ChangeItem> collabChanges = changes.Where(change => !string.IsNullOrEmpty(change.Path))
-                                                               .Select(ChangeWrapperToCollabChangeItem);
-                changeItems = collabChanges.ToArray();
+                // Convert change wrapper to change items
+                changeItems = changes.Where(change => !string.IsNullOrEmpty(change.Path))
+                    .Select(ChangeWrapperToCollabChangeItem)
+                    .ToArray();
+                length = changeItems.Length;
             }
             else
             {
@@ -202,26 +288,7 @@ namespace CollabProxy.Client
             }
 
             Collab.instance.SetChangesToPublish(changeItems);
-        }
-
-        /// <summary>
-        /// Listens to the TCP connection for file system changes, then sets the new changelist in Collab
-        /// </summary>
-        protected virtual void OnFileSystemChanged()
-        {
-            m_SetChangesToPublishMutex.WaitOne();
-            try
-            {
-                Git.GetWorkingDirectoryChangesAsync(k_GetWorkingDirectoryCallbackName);
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-            finally
-            {
-                m_SetChangesToPublishMutex.ReleaseMutex();
-            }
+            return length;
         }
 
         protected virtual string GetProjectId()
@@ -243,6 +310,11 @@ namespace CollabProxy.Client
         {
             // shouldn't call this !
             throw new NotImplementedException();
+        }
+
+        public void StartUpdateFileStatus(string path)
+        {
+            Git.UpdateFileStatusAsync(path);
         }
 
         public void MergeDownloadedFiles(bool isFullDownload)
@@ -278,33 +350,42 @@ namespace CollabProxy.Client
 
         void UpdateHeadRevision(string tip)
         {
-            if (tip != m_LastKnownHead)
+            if (tip != k_NoTip)
             {
-                try
-                {
-                    m_LastKnownHead = tip;
-                    Git.SetCurrentHead(tip, CloudProjectSettings.accessToken);
-                }
-                catch (CollabProxyException e)
-                {
-                    LogExceptionDetails(e);
-                }
+                IsHeadUpdating = true;
+                Git.SetCurrentHeadAsync(tip, CloudProjectSettings.accessToken);
             }
+        }
+
+        internal void StartGetChanges()
+        {
+            // Don't get changes on a non-existent repo
+            if (!m_GitRepoExists) return;
+
+            IsGettingChanges = true;
+            if (GetChangesStarted != null)
+                EditorApplication.delayCall += () => GetChangesStarted();
+            Git.GetWorkingDirectoryChangesAsync();
+        }
+
+        internal void StartUpdateCachedChanges()
+        {
+            IsGettingChanges = true;
+            if (GetChangesStarted != null)
+                EditorApplication.delayCall += () => GetChangesStarted();
+            Git.UpdateCachedChangesAsync();
         }
 
         protected virtual void RegisterListeners()
         {
             Collab.instance.StateChanged += OnCollabStateChanged;
             UnityConnect.instance.ProjectStateChanged += OnProjectStateChanged;
-            CollabProxyClient.RegisterListener(AsyncMessageType.FileSystemChanged.ToString(), OnFileSystemChanged);
-            CollabProxyClient.RegisterListener<ChangeWrapper[]>(k_GetWorkingDirectoryCallbackName, GetWorkingDirectoryChangesCallback);
         }
 
         protected virtual void DeregisterListeners()
         {
             Collab.instance.StateChanged -= OnCollabStateChanged;
             UnityConnect.instance.ProjectStateChanged -= OnProjectStateChanged;
-            CollabProxyClient.DeregisterListeners();
         }
 
         /// <summary>
@@ -343,22 +424,31 @@ namespace CollabProxy.Client
 
             return new ChangeItem
             {
-                Path = Path.DirectorySeparatorChar.Equals('\\') ? changeWrapper.Path.Replace('\\', '/') : changeWrapper.Path,
+                Path = changeWrapper.Path,
                 State = state,
                 Hash = changeWrapper.Hash
             };
         }
 
         /// <summary>
-        /// Given a CollabProxyException, logs the most relevant message for the user into Unity's console,
+        /// Given a Exception, logs the most relevant message for the user into Unity's console,
         /// and outputs the full stacktrace into the logfile, as well as setting Collab's Error message
+        /// if it's a CollabProxyException.
         /// </summary>
         /// <param name="exception">The collab proxy exception that was received</param>
-        void LogExceptionDetails(CollabProxyException exception)
+        static void LogExceptionDetails(Exception exception)
         {
-            Collab.instance.SetError(k_CollabGenericError);
-            UnityEngine.Debug.LogError(exception.InnermostExceptionMessage);
-            Console.WriteLine(exception.InnermostExceptionStackTrace);
+            if (exception.GetType() == typeof(CollabProxyException))
+            {
+                CollabProxyException ce = (CollabProxyException) exception;
+                EditorApplication.delayCall += () => Collab.instance.SetError(k_CollabGenericError);
+                Debug.LogError("CollabProxyException: " + ce.InnermostExceptionMessage);
+                Console.WriteLine(ce.InnermostExceptionStackTrace);
+            }
+            else
+            {
+                Debug.LogException(exception);
+            }
         }
     }
 }

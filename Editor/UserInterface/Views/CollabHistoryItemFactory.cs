@@ -76,11 +76,11 @@ namespace UnityEditor.Collaboration
                         var path = change.path.Substring(0, change.path.Length - 5);
                         // Actions taken on meta files are secondary to any actions taken on the main file
                         if (!paths.ContainsKey(path))
-                            paths[path] = new ChangeData() {path = path, action = change.action};
+                            paths[path] = new ChangeData {path = path, action = change.action};
                     }
                     else
                     {
-                        paths[change.path] = new ChangeData() {path = change.path, action = change.action};
+                        paths[change.path] = new ChangeData {path = change.path, action = change.action};
                     }
                 }
 
@@ -104,7 +104,7 @@ namespace UnityEditor.Collaboration
 
                     changes = paths.Values.Take(k_MaxChangesPerRevision).ToList(),
                     changesTotal = paths.Values.Count,
-                    changesTruncated = paths.Values.Count > k_MaxChangesPerRevision,
+                    changesTruncated = paths.Values.Count > k_MaxChangesPerRevision
                 };
 
                 yield return item;

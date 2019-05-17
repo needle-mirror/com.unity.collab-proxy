@@ -1,7 +1,10 @@
 ﻿namespace CollabProxy.Models
 {
-    internal enum AsyncMessageType
+    enum AsyncMessageType
     {
-        FileSystemChanged
+        UpdateCachedChanges,
+        GetChanges,
+        UpdateFileStatus,
+        CurrentHeadUpdated
     }
 }

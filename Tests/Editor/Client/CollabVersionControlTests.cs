@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using CollabProxy.Client;
 using CollabProxy.Models;
@@ -6,46 +8,43 @@ using NUnit.Framework;
 
 namespace CollabProxy.Tests
 {
-    
     internal class TestableCollabVersionControl : CollabVersionControl
     {
         public string ProjectId { get; set; }
         public string BaseUrl { get; set; }
-        public bool OnFileSystemChangedCalled { get; set; }
 
         public TestableCollabVersionControl(IGitProxy gitProxy) : base(null, gitProxy)
         {
         }
 
-        protected override void OnFileSystemChanged()
+        protected override void RegisterServerCallbacks()
         {
-            OnFileSystemChangedCalled = true;
         }
 
         protected override string GetProjectId()
         {
             return ProjectId;
         }
-        
+
         protected override string GetAccessToken()
         {
             return "foobar";
         }
-        
+
         protected override string GetCollabTip()
         {
             return "foobar";
         }
-        
+
         protected override string GetBaseUrl()
         {
             return BaseUrl;
         }
-        
+
         protected override void RegisterListeners()
         {
         }
-                
+
         protected override void DeregisterListeners()
         {
         }
@@ -84,10 +83,18 @@ namespace CollabProxy.Tests
         {
             SetRemoteOriginCount++;
         }
-        public void SetCurrentHead(string revisionId, string accessToken)
+        public void SetCurrentHeadAsync(string revisionId, string accessToken)
         {
         }
-        public void GetWorkingDirectoryChangesAsync(string callBackName)
+        public void GetWorkingDirectoryChangesAsync()
+        {
+        }
+
+        public void UpdateCachedChangesAsync()
+        {
+        }
+
+        public void UpdateFileStatusAsync(string path)
         {
         }
     }
@@ -96,7 +103,7 @@ namespace CollabProxy.Tests
     internal class CollabVersionControlTests
     {
         string originalPath;
-        
+
         [SetUp]
         public void SetCurrentDirectory()
         {
@@ -106,7 +113,7 @@ namespace CollabProxy.Tests
             Directory.CreateDirectory(tempDir);
             Directory.SetCurrentDirectory(tempDir);
         }
-        
+
         [Test]
         public void OnEnableVersionControl_WithRepoNoProjectId_InitializesRepository()
         {
@@ -125,7 +132,7 @@ namespace CollabProxy.Tests
             collabVersionControl.OnEnableVersionControl();
             Assert.That(gitProxy.InitializeRepositoryCount == 1);
         }
-        
+
         [Test]
         public void OnEnableVersionControl_WithNoRepoWithProjectId_SetsRemoteOrigin()
         {
@@ -133,11 +140,11 @@ namespace CollabProxy.Tests
             gitProxy.RepositoryExistsReturn = false;
             TestableCollabVersionControl collabVersionControl = new TestableCollabVersionControl(gitProxy);
             collabVersionControl.ProjectId = "anything";
-            collabVersionControl.BaseUrl = "http://bestsiteever.com";
+            collabVersionControl.BaseUrl = "https://bestsiteever.com";
             collabVersionControl.OnEnableVersionControl();
             Assert.That(gitProxy.SetRemoteOriginCount == 1);
         }
-        
+
         [Test]
         public void OnEnableVersionControl_WithRepoNoProjectId_DoesNotSetRemoteOrigin()
         {
@@ -147,7 +154,7 @@ namespace CollabProxy.Tests
             collabVersionControl.OnEnableVersionControl();
             Assert.That(gitProxy.SetRemoteOriginCount == 0);
         }
-        
+
         [Test]
         public void OnEnableVersionControl_WithNoRepoWithProjectId_SetsCurrentHead()
         {
@@ -155,23 +162,11 @@ namespace CollabProxy.Tests
             gitProxy.RepositoryExistsReturn = false;
             TestableCollabVersionControl collabVersionControl = new TestableCollabVersionControl(gitProxy);
             collabVersionControl.ProjectId = "anything";
-            collabVersionControl.BaseUrl = "http://bestsiteever.com";
+            collabVersionControl.BaseUrl = "https://bestsiteever.com";
             collabVersionControl.OnEnableVersionControl();
             Assert.That(gitProxy.SetRemoteOriginCount == 1);
         }
-        
-        [Test]
-        public void OnEnableVersionControl_WithNoRepoWithProjectId_CallsOnFileSystemChanged()
-        {
-            TestableGitProxy gitProxy = new TestableGitProxy();
-            gitProxy.RepositoryExistsReturn = false;
-            TestableCollabVersionControl collabVersionControl = new TestableCollabVersionControl(gitProxy);
-            collabVersionControl.ProjectId = "anything";
-            collabVersionControl.BaseUrl = "http://bestsiteever.com";
-            collabVersionControl.OnEnableVersionControl();
-            Assert.AreEqual(true, collabVersionControl.OnFileSystemChangedCalled);
-        }
-        
+
         [TearDown]
         public void UnsetCurrentDirectory()
         {

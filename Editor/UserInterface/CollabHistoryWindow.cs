@@ -23,15 +23,15 @@ namespace UnityEditor
         private const string ResourcesPath = "Packages/com.unity.collab-proxy/Editor/Resources/Styles/";
 #else
         private const string ResourcesPath = "StyleSheets/";
-#endif        
-        
+#endif
+
         const string kWindowTitle = "Collab History";
         const string kServiceUrl = "developer.cloud.unity3d.com";
 
         [MenuItem("Window/Asset Management/Collab History", false, 1)]
         public static void ShowHistoryWindow()
         {
-            EditorWindow.GetWindow<CollabHistoryWindow>(kWindowTitle);
+            GetWindow<CollabHistoryWindow>(kWindowTitle);
         }
 
         [MenuItem("Window/Asset Management/Collab History", true)]
@@ -119,53 +119,53 @@ namespace UnityEditor
             m_Container.StretchToParentSize();
             root.Add(m_Container);
 
-            m_Pager = new PagedListView()
+            m_Pager = new PagedListView
             {
                 name = "PagedElement",
                 pageSize = m_ItemsPerPage
             };
 
-            var errorView = new StatusView()
+            var errorView = new StatusView
             {
                 message = "An Error Occurred",
-                icon = EditorGUIUtility.LoadIconRequired("Collab.Warning") as Texture,
+                icon = EditorGUIUtility.LoadIconRequired("Collab.Warning")
             };
 
-            var noInternetView = new StatusView()
+            var noInternetView = new StatusView
             {
                 message = "No Internet Connection",
-                icon = EditorGUIUtility.LoadIconRequired("Collab.NoInternet") as Texture,
+                icon = EditorGUIUtility.LoadIconRequired("Collab.NoInternet")
             };
 
-            var maintenanceView = new StatusView()
+            var maintenanceView = new StatusView
             {
-                message = "Maintenance",
+                message = "Maintenance"
             };
 
-            var loginView = new StatusView()
+            var loginView = new StatusView
             {
                 message = "Sign in to access Collaborate",
                 buttonText = "Sign in...",
-                callback = SignInClick,
+                callback = SignInClick
             };
 
-            var noSeatView = new StatusView()
+            var noSeatView = new StatusView
             {
                 message = "Ask your project owner for access to Unity Teams",
                 buttonText = "Learn More",
-                callback = NoSeatClick,
+                callback = NoSeatClick
             };
 
-            var waitingView = new StatusView()
+            var waitingView = new StatusView
             {
-                message = "Updating...",
+                message = "Updating..."
             };
 
-            m_HistoryView = new ScrollView() { name = "HistoryContainer", showHorizontal = false};
+            m_HistoryView = new ScrollView { name = "HistoryContainer", showHorizontal = false};
             m_HistoryView.contentContainer.StretchToParentWidth();
             m_HistoryView.Add(m_Pager);
 
-            m_Views = new Dictionary<HistoryState, VisualElement>()
+            m_Views = new Dictionary<HistoryState, VisualElement>
             {
                 {HistoryState.Error,       errorView},
                 {HistoryState.Offline,     noInternetView},

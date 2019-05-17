@@ -16,7 +16,7 @@ namespace UnityEditor.Collaboration
         private readonly string iconPrefix = "Icons/Collab.Build";
         private readonly string iconSuffix = ".png";
         Label labelElement = new Label();
-        Image iconElement = new Image() {name = "BuildIcon"};
+        Image iconElement = new Image {name = "BuildIcon"};
 
         public BuildStatusButton(Action clickEvent) : base(clickEvent)
         {

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using CollabProxy;
+using CollabProxy.Client;
 using UnityEditor.Collaboration;
 using UnityEditor.Connect;
 using UnityEditor.Web;
@@ -31,6 +33,7 @@ namespace UnityEditor
         ButtonWithAnimatedIconRotation m_CollabButton;
         string m_DynamicTooltip;
         static bool m_ShowCollabTooltip = false;
+        bool m_IsGettingChanges;
 
         GUIContent currentCollabContent
         {
@@ -111,6 +114,27 @@ namespace UnityEditor
             Collab.instance.StateChanged += OnCollabStateChanged;
             UnityConnect.instance.StateChanged += OnUnityConnectStateChanged;
             UnityConnect.instance.UserStateChanged += OnUnityConnectUserStateChanged;
+            CollabVersionControl.GetChangesStarted += OnGetChangesStart;
+            CollabVersionControl.GetChangesFinished += OnGetChangesFinish;
+            CollabVersionControl.UpdateCachedChangesFinished += OnUpdateCachedChangesFinish;
+        }
+
+        void OnGetChangesStart()
+        {
+            m_IsGettingChanges = true;
+            UpdateCollabToolbarState();
+        }
+
+        void OnGetChangesFinish()
+        {
+            m_IsGettingChanges = false;
+            UpdateCollabToolbarState();
+        }
+
+        void OnUpdateCachedChangesFinish(bool ignore)
+        {
+            m_IsGettingChanges = false;
+            UpdateCollabToolbarState();
         }
 
         void OnUnityConnectUserStateChanged(UserInfo state)
@@ -143,8 +167,6 @@ namespace UnityEditor
             ReserveBottom(5, ref rect);
             // calculate screen rect before saving assets since it might open the AssetSaveDialog window
             var screenRect = GUIToScreenRect(rect);
-            // save all the assets
-            AssetDatabase.SaveAssets();
             if (Collab.ShowToolbarAtPosition != null && Collab.ShowToolbarAtPosition(screenRect))
             {
                 GUIUtility.ExitGUI();
@@ -157,7 +179,7 @@ namespace UnityEditor
             GUIStyle collabButtonStyle = "OffsetDropDown";
             bool showPopup = Toolbar.requestShowCollabToolbar;
             Toolbar.requestShowCollabToolbar = false;
-            if(showPopup)
+            if (showPopup)
             {
                 Toolbar.isLastShowRequestPartial = true;
             }
@@ -207,9 +229,9 @@ namespace UnityEditor
                 CollabInfo currentInfo = collab.collabInfo;
                 UnityErrorInfo errInfo;
                 bool error = false;
-                if (collab.GetError((UnityConnect.UnityErrorFilter.ByContext | UnityConnect.UnityErrorFilter.ByChild), out errInfo))
+                if (collab.GetError(UnityConnect.UnityErrorFilter.ByContext | UnityConnect.UnityErrorFilter.ByChild, out errInfo))
                 {
-                    error = (errInfo.priority <= (int)UnityConnect.UnityErrorPriority.Error);
+                    error = errInfo.priority <= (int)UnityConnect.UnityErrorPriority.Error;
                     m_DynamicTooltip = errInfo.shortMsg;
                 }
 
@@ -222,6 +244,10 @@ namespace UnityEditor
                     currentCollabState = CollabToolbarState.OperationError;
                 }
                 else if (currentInfo.inProgress)
+                {
+                    currentCollabState = CollabToolbarState.InProgress;
+                }
+                else if (m_IsGettingChanges)
                 {
                     currentCollabState = CollabToolbarState.InProgress;
                 }
@@ -251,17 +277,11 @@ namespace UnityEditor
             {
                 currentCollabState = CollabToolbarState.Offline;
             }
-
-            if (Collab.IsToolbarVisible != null)
-            {
-                if (currentCollabState != m_CollabToolbarState ||
-                    Collab.IsToolbarVisible() == m_ShowCollabTooltip)
-                {
-                    m_CollabToolbarState = currentCollabState;
-                    m_ShowCollabTooltip = !Collab.IsToolbarVisible();
-                    Toolbar.RepaintToolbar();
-                }
-            }
+            if (Collab.IsToolbarVisible == null || currentCollabState == m_CollabToolbarState &&
+                Collab.IsToolbarVisible() != m_ShowCollabTooltip) return;
+            m_CollabToolbarState = currentCollabState;
+            m_ShowCollabTooltip = !Collab.IsToolbarVisible();
+            Toolbar.RepaintToolbar();
         }
 
         void ReserveRight(float width, ref Rect pos)
@@ -276,13 +296,11 @@ namespace UnityEditor
 
         ButtonWithAnimatedIconRotation GetCollabButton()
         {
-            if (m_CollabButton == null)
-            {
-                const int repaintsPerSecond = 20;
-                const float animSpeed = 500f;
-                const bool mouseDownButton = true;
-                m_CollabButton = new ButtonWithAnimatedIconRotation(() => (float)EditorApplication.timeSinceStartup * animSpeed, Toolbar.RepaintToolbar, repaintsPerSecond, mouseDownButton);
-            }
+            if (m_CollabButton != null) return m_CollabButton;
+            const int repaintsPerSecond = 20;
+            const float animSpeed = 500f;
+            const bool mouseDownButton = true;
+            m_CollabButton = new ButtonWithAnimatedIconRotation(() => (float)EditorApplication.timeSinceStartup * animSpeed, Toolbar.RepaintToolbar, repaintsPerSecond, mouseDownButton);
 
             return m_CollabButton;
         }
@@ -292,6 +310,8 @@ namespace UnityEditor
             Collab.instance.StateChanged -= OnCollabStateChanged;
             UnityConnect.instance.StateChanged -= OnUnityConnectStateChanged;
             UnityConnect.instance.UserStateChanged -= OnUnityConnectUserStateChanged;
+            CollabVersionControl.GetChangesStarted -= OnGetChangesStart;
+            CollabVersionControl.GetChangesFinished -= OnGetChangesFinish;
 
             if (m_CollabButton != null)
                 m_CollabButton.Clear();

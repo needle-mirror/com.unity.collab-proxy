@@ -28,8 +28,8 @@ namespace UnityEditor.Collaboration
         {
             m_Data = dataSource;
 
-            this.style.flexDirection = FlexDirection.Row;
-            this.style.alignSelf = Align.Center;
+            style.flexDirection = FlexDirection.Row;
+            style.alignSelf = Align.Center;
 
             Add(m_DownButton = new Button(OnPageDownClicked) {text = "\u25c5 Newer"});
             m_DownButton.AddToClassList("PagerDown");
@@ -75,7 +75,7 @@ namespace UnityEditor.Collaboration
     internal enum PagerLocation
     {
         Top,
-        Bottom,
+        Bottom
     }
 
     internal class PagedListView : VisualElement, IPagerData
@@ -121,9 +121,9 @@ namespace UnityEditor.Collaboration
         {
             m_PagerTop = new PagerElement(this);
 
-            m_ItemContainer = new VisualElement()
+            m_ItemContainer = new VisualElement
             {
-                name = "PagerItems",
+                name = "PagerItems"
             };
             Add(m_ItemContainer);
             m_Items = new List<VisualElement>();

@@ -13,7 +13,7 @@ namespace UnityEditor.Collaboration
 
         public static void SendUserAction(string category, string action)
         {
-            EditorAnalytics.SendCollabUserAction(new CollabUserActionAnalyticsEvent() { category = category, action = action });
+            EditorAnalytics.SendCollabUserAction(new CollabUserActionAnalyticsEvent { category = category, action = action });
         }
 
         public static readonly string historyCategoryString = "History";

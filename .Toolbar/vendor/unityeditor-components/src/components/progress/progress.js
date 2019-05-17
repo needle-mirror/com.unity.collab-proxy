@@ -6,11 +6,11 @@ angular
  * @ngdoc directive
  * @name ut.progress.directive:utProgress
  * @restrict E
- * 
+ *
  * @description
  * `<ut-progress>` is a directive shows a progress indicator with optional text
  *
- * Spinner from: http://loading.io/loader/?use=eyJzaXplIjoxMCwic3BlZWQiOjEsImNiayI6IiNmZmZmZmYiLCJjMSI6IiMwMGIyZmYiLCJjMiI6IjEwIiwiYzMiOiIxMiIsImM0IjoiMzAiLCJjNSI6IjUiLCJjNiI6IjM1IiwidHlwZSI6ImRlZmF1bHQifQ==
+ * Spinner from: https://loading.io/loader/?use=eyJzaXplIjoxMCwic3BlZWQiOjEsImNiayI6IiNmZmZmZmYiLCJjMSI6IiMwMGIyZmYiLCJjMiI6IjEwIiwiYzMiOiIxMiIsImM0IjoiMzAiLCJjNSI6IjUiLCJjNiI6IjM1IiwidHlwZSI6ImRlZmF1bHQifQ==
  *
  * @param {expression} [utProgressLabel] The label for the progress indicator
  */

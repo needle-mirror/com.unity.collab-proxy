@@ -65,7 +65,7 @@ namespace CollabProxy.Tests
             IGitProxy theProxy = new GitProxy(theClient);
             // Make sure nothing happened up to this point
             Assert.IsFalse(methodCalled);
-            theProxy.GetWorkingDirectoryChangesAsync("callbackName");
+            theProxy.GetWorkingDirectoryChangesAsync();
             resetHandle.WaitOne();
             Assert.IsTrue(methodCalled);
         }

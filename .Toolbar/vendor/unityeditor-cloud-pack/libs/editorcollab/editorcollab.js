@@ -32,6 +32,12 @@ angular.module('ngUnity.editorcollab', [
 				service.SeeAll = editorCollabNative.SeeAll;
 				service.ready = editorCollabNative.ready;
 
+				// Package endpoints
+				service.isGettingChanges = editorCollabNative.isGettingChanges;
+				service.startGetChanges = editorCollabNative.startGetChanges;
+				service.startUpdateCachedChanges = editorCollabNative.startUpdateCachedChanges;
+				service.startUpdateFileStatus = editorCollabNative.startUpdateFileStatus;
+
 				// These are now handled by Unity REST API endpoints
 				service.GetChangesToPublish = editorCollabREST.GetChangesToPublish;
 				service.GetChangesToPublishHash = editorCollabREST.GetChangesToPublishHash;

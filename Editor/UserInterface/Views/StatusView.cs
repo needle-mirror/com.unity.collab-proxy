@@ -66,8 +66,8 @@ namespace UnityEditor.Collaboration
 
             this.StretchToParentSize();
 
-            m_Image = new Image() { name = "StatusIcon", visible = false, style = { height = 0 }};
-            m_Message = new Label() { name = "StatusMessage", visible = false};
+            m_Image = new Image { name = "StatusIcon", visible = false, style = { height = 0 }};
+            m_Message = new Label { name = "StatusMessage", visible = false};
             m_Button = new Button(InternalCallaback) { name = "StatusButton", visible = false};
 
             Add(m_Image);

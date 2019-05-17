@@ -17,6 +17,8 @@ angular.module('ngUnity', [
   'ngPanel.noseat',
   'ngUnity.projectService',
   'ngPanel.toolbar.progress',
+  'ngPanel.toolbar.preparing',
+  'ngPanel.toolbar.working',
   'ui.router',
   'ut.components',
   'ut.services.notification',
@@ -108,6 +110,10 @@ angular.module('ngUnity', [
 
   $scope.onGoToSettings = function () {
     collabConnect.ShowServicePage();
+  };
+
+  $scope.startGetChanges = function () {
+      editorcollab.tryStartGetChanges();
   };
 
   function clearError() {

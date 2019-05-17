@@ -3,14 +3,15 @@ using System.Collections.Generic;
 
 namespace CollabProxy.Models
 {
-    internal interface IGitProxy
+    interface IGitProxy
     {
-        bool IsRunningAsyncOperations();
         bool RepositoryExists();
         void InitializeRepository();
         void RemoveRepository();
         void SetRemoteOrigin(string cloneUrl);
-        void SetCurrentHead(string revisionId, string accessToken);
-        void GetWorkingDirectoryChangesAsync(string callBackName);
+        void SetCurrentHeadAsync(string revisionId, string accessToken);
+        void GetWorkingDirectoryChangesAsync();
+        void UpdateCachedChangesAsync();
+        void UpdateFileStatusAsync(string path);
     }
 }

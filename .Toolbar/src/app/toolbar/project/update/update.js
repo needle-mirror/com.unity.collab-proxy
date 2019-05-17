@@ -23,7 +23,7 @@ angular.module('ngPanel.toolbar.update', [
     }
   });
 }])
-.controller('UpdateCtrl', ["$scope", "$state", "editorcollab", "notifications", "collabRevisions", "unityProjectService", "utAlert", function UpdateCtrl ($scope, $state, editorcollab, notifications, collabRevisions, unityProjectService, utAlert) {
+.controller('UpdateCtrl', ["$rootScope", "$scope", "$state", "editorcollab", "notifications", "collabRevisions", "unityProjectService", "utAlert", function UpdateCtrl ($rootScope, $scope, $state, editorcollab, notifications, collabRevisions, unityProjectService, utAlert) {
   $scope.revisions = collabRevisions;
 
   $.fn.textWidth = function () {
@@ -40,12 +40,15 @@ angular.module('ngPanel.toolbar.update', [
   };
 
   $scope.onUpdate = function () {
-    editorcollab.clearErrorUI();
+      editorcollab.clearErrorUI();
       unityProjectService.SaveCurrentModifiedScenesIfUserWantsTo().success(function(continueToPublish) {
-			if (continueToPublish) {
-        editorcollab.Update($scope.revisions[0].id, true);
-			}
-		});
+          if (continueToPublish) {
+              editorcollab.startGetChanges();
+              editorcollab.onGetChangesFinish(function () {
+                  editorcollab.Update($scope.revisions[0].id, true);
+              });
+          }
+      });
   };
 
   $scope.scrollElement = function (event) {

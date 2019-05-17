@@ -519,7 +519,7 @@ return {
 }).directive('utFocusOn', function () {
 	/**
 	 *
-	 * Allows setting focus on an element using broadcast.		From: http://stackoverflow.com/questions/14833326/how-to-set-focus-on-input-field
+	 * Allows setting focus on an element using broadcast.		From: https://stackoverflow.com/questions/14833326/how-to-set-focus-on-input-field
 	 * Doesn't work well with objects that have just been shown since broadcast won't affect them
 	 */
 	return function (scope, elem, attr) {
@@ -557,7 +557,7 @@ return {
 	};
 }).directive('utSetFocus',["$timeout", function($timeout) {
 	/**
-	 * Sets focus when element in shown. Useful for hidden inputs				From on: http://stackoverflow.com/questions/24415168/setting-focus-on-an-input-field-after-ng-show
+	 * Sets focus when element in shown. Useful for hidden inputs				From on: https://stackoverflow.com/questions/24415168/setting-focus-on-an-input-field-after-ng-show
 	 */
 	return {
 		restrict : 'A',

@@ -88,9 +88,9 @@ angular.module('ngUnity.projectService', [
 		service.GetEnvironment().
 			success(function (env) {
 				if (env == "staging")
-					service.dashboardUrl= "http://staging-core.cloud.unity3d.com/landing";
+					service.dashboardUrl= "https://staging-core.cloud.unity3d.com/landing";
 				else
-					service.dashboardUrl= "http://cloud.unity3d.com";
+					service.dashboardUrl= "https://unity3d.com/services/";
 			});
 
 		function tickInfo() {

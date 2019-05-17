@@ -116,7 +116,7 @@ namespace UnityEditor.Collaboration
 
             Add(m_Details);
 
-            this.schedule.Execute(UpdateTimeAgo).Every(1000 * 20);
+            schedule.Execute(UpdateTimeAgo).Every(1000 * 20);
         }
 
         public static void SetUpCallbacks(RevisionAction Restore, RevisionAction GoBack, RevisionAction Update)

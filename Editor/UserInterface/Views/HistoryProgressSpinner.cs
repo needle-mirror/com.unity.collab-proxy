@@ -29,7 +29,7 @@ namespace UnityEditor.Collaboration
                 {
                     if (m_Animation == null)
                     {
-                        m_Animation = this.schedule.Execute(AnimateProgress).Every(33);
+                        m_Animation = schedule.Execute(AnimateProgress).Every(33);
                     }
                     else
                     {

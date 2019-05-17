@@ -44,11 +44,11 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__PropagatesRevisionResult()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
-                    new Revision(authorName: "authorName", comment: "comment", revisionID: "revisionID"),
+                    new Revision(authorName: "authorName", comment: "comment", revisionID: "revisionID")
                 }
             };
 
@@ -63,18 +63,18 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__DateCalculatedCorrectly()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
-                    new Revision(timeStamp: 1506978483),
+                    new Revision(timeStamp: 1506978483)
                 }
             };
 
             _presenter.OnUpdatePage(0);
             var item = _window.items.First();
 
-            System.DateTime dtDateTime = new DateTime(1970,1,1,0,0,0,0,System.DateTimeKind.Utc);
+            DateTime dtDateTime = new DateTime(1970,1,1,0,0,0,0,DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddSeconds(1506978483).ToLocalTime();
             Assert.AreEqual(dtDateTime, item.timeStamp);
         }
@@ -82,15 +82,15 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__RevisionNumberingIsInOrder()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
                 RevisionsInRepo = 4,
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
                     new Revision(revisionID: "0"),
                     new Revision(revisionID: "1"),
                     new Revision(revisionID: "2"),
-                    new Revision(revisionID: "3"),
+                    new Revision(revisionID: "3")
                 }
             };
 
@@ -106,16 +106,16 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__RevisionNumberingChangesForMorePages()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
                 RevisionsInRepo = 12,
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
                     new Revision(revisionID: "0"),
                     new Revision(revisionID: "1"),
                     new Revision(revisionID: "2"),
                     new Revision(revisionID: "3"),
-                    new Revision(revisionID: "4"),
+                    new Revision(revisionID: "4")
                 }
             };
 
@@ -132,12 +132,12 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__ObtainedIsCalculated()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
                     new Revision(isObtained: false),
-                    new Revision(isObtained: true),
+                    new Revision(isObtained: true)
                 }
             };
 
@@ -151,13 +151,13 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__CurrentIsCalculated()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
                     new Revision(revisionID: "1"),
                     new Revision(revisionID: "2"),
-                    new Revision(revisionID: "3"),
+                    new Revision(revisionID: "3")
                 }
             };
             _service.tipRevision = "2";
@@ -173,13 +173,13 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__InProgressIsCalculated()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
                     new Revision(revisionID: "1"),
                     new Revision(revisionID: "2"),
-                    new Revision(revisionID: "3"),
+                    new Revision(revisionID: "3")
                 }
             };
             _window.inProgressRevision = "2";
@@ -195,11 +195,11 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__EnabledIsCalculated()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
-                    new Revision(revisionID: "0"),
+                    new Revision(revisionID: "0")
                 }
             };
             _window.revisionActionsEnabled = true;
@@ -213,11 +213,11 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__DisabledIsCalculated()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
-                    new Revision(revisionID: "0"),
+                    new Revision(revisionID: "0")
                 }
             };
             _window.revisionActionsEnabled = false;
@@ -231,11 +231,11 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__BuildStateHasNoneWhenNotTip()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
-                    new Revision(revisionID: "1"),
+                    new Revision(revisionID: "1")
                 }
             };
             _service.tipRevision = "0";
@@ -250,11 +250,11 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__BuildStateTipHasNoneWhenEnabled()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
-                    new Revision(revisionID: "0"),
+                    new Revision(revisionID: "0")
                 }
             };
             _service.tipRevision = "0";
@@ -269,11 +269,11 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__BuildStateHasConfigureWhenTip()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
-                    new Revision(revisionID: "0"),
+                    new Revision(revisionID: "0")
                 }
             };
             _service.tipRevision = "0";
@@ -288,11 +288,11 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__BuildStateHasConfigureWhenZeroBuildStatus()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
-                    new Revision(revisionID: "0"),
+                    new Revision(revisionID: "0")
                 }
             };
             _service.tipRevision = "0";
@@ -307,11 +307,11 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__BuildStateHasNoneWhenZeroBuildStatuses()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
-                    new Revision(revisionID: "0"),
+                    new Revision(revisionID: "0")
                 }
             };
             _service.tipRevision = "0";
@@ -326,18 +326,18 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__BuildStateHasSuccessWhenCompleteAndSucceeded()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
                     new Revision
                     (
                         revisionID: "0",
                         buildStatuses: new CloudBuildStatus[1]
                     {
-                        new CloudBuildStatus(complete: true, success: true),
+                        new CloudBuildStatus(complete: true, success: true)
                     }
-                    ),
+                    )
                 }
             };
             _service.tipRevision = "0";
@@ -352,18 +352,18 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__BuildStateHasInProgress()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
                     new Revision
                     (
                         revisionID: "0",
                         buildStatuses: new CloudBuildStatus[1]
                     {
-                        new CloudBuildStatus(complete: false),
+                        new CloudBuildStatus(complete: false)
                     }
-                    ),
+                    )
                 }
             };
             _service.tipRevision = "0";
@@ -378,18 +378,18 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__BuildStateHasFailure()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
                     new Revision
                     (
                         revisionID: "0",
                         buildStatuses: new CloudBuildStatus[1]
                     {
-                        new CloudBuildStatus(complete: true, success: false),
+                        new CloudBuildStatus(complete: true, success: false)
                     }
-                    ),
+                    )
                 }
             };
             _service.tipRevision = "0";
@@ -404,9 +404,9 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__BuildStateHasFailureWhenAnyBuildsFail()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
                     new Revision
                     (
@@ -415,9 +415,9 @@ namespace UnityEditor.Collaboration.Tests
                     {
                         new CloudBuildStatus(complete: true, success: false),
                         new CloudBuildStatus(complete: true, success: false),
-                        new CloudBuildStatus(complete: true, success: true),
+                        new CloudBuildStatus(complete: true, success: true)
                     }
-                    ),
+                    )
                 }
             };
             _service.tipRevision = "0";
@@ -432,11 +432,11 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__ChangesPropagateThrough()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
-                    new Revision(revisionID: "0", entries: GenerateChangeActions(3)),
+                    new Revision(revisionID: "0", entries: GenerateChangeActions(3))
                 }
             };
 
@@ -452,11 +452,11 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__ChangesTotalIsCalculated()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
-                    new Revision(revisionID: "0", entries: GenerateChangeActions(3)),
+                    new Revision(revisionID: "0", entries: GenerateChangeActions(3))
                 }
             };
 
@@ -471,11 +471,11 @@ namespace UnityEditor.Collaboration.Tests
         {
             for (var i = 0; i < 20; i++)
             {
-                _service.result = new RevisionsResult()
+                _service.result = new RevisionsResult
                 {
-                    Revisions = new List<Revision>()
+                    Revisions = new List<Revision>
                     {
-                        new Revision(revisionID: "0", entries: GenerateChangeActions(i)),
+                        new Revision(revisionID: "0", entries: GenerateChangeActions(i))
                     }
                 };
 
@@ -489,11 +489,11 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__OnlyKeeps10ChangeActions()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
-                    new Revision(authorName: "Test", author: "test", entries: GenerateChangeActions(12)),
+                    new Revision(authorName: "Test", author: "test", entries: GenerateChangeActions(12))
                 }
             };
 
@@ -508,9 +508,9 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__DeduplicatesMetaFiles()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
                     new Revision
                     (
@@ -520,9 +520,9 @@ namespace UnityEditor.Collaboration.Tests
                         entries: new ChangeAction[2]
                     {
                         new ChangeAction(path: "Path1", action: "Action1"),
-                        new ChangeAction(path: "Path1.meta", action: "Action1"),
+                        new ChangeAction(path: "Path1.meta", action: "Action1")
                     }
-                    ),
+                    )
                 }
             };
 
@@ -537,9 +537,9 @@ namespace UnityEditor.Collaboration.Tests
         [Test]
         public void CollabHistoryPresenter_OnUpdatePage__FolderMetaFilesAreCounted()
         {
-            _service.result = new RevisionsResult()
+            _service.result = new RevisionsResult
             {
-                Revisions = new List<Revision>()
+                Revisions = new List<Revision>
                 {
                     new Revision
                     (
@@ -547,9 +547,9 @@ namespace UnityEditor.Collaboration.Tests
                         author: "test",
                         entries: new ChangeAction[1]
                     {
-                        new ChangeAction(path: "Folder1.meta", action: "Action1"),
+                        new ChangeAction(path: "Folder1.meta", action: "Action1")
                     }
-                    ),
+                    )
                 }
             };
 

@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using CollabProxy.Client;
+using UnityEditor;
 using UnityEditor.Collaboration;
 
 namespace CollabProxy.UI
@@ -7,7 +8,7 @@ namespace CollabProxy.UI
     internal static class Bootstrap
     {
         private const float kCollabToolbarButtonWidth = 78.0f;
-        
+
         static Bootstrap()
         {
             Collab.ShowHistoryWindow = CollabHistoryWindow.ShowHistoryWindow;
@@ -18,6 +19,11 @@ namespace CollabProxy.UI
             {
                 Width = kCollabToolbarButtonWidth
             });
+
+            // Register get changes callbacks
+            CollabVersionControl.GetChangesFinished += CollabToolbarWindow.OnGetChangesFinish;
+            CollabVersionControl.GetChangesStarted += CollabToolbarWindow.OnGetChangesStart;
+            CollabVersionControl.UpdateCachedChangesFinished += CollabToolbarWindow.OnUpdateCachedChangesFinish;
         }
     }
 }

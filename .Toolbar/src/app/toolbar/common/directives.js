@@ -63,13 +63,18 @@ angular.module('ngPanel.common', [
 				$scope.resolved = false;
 			}
 
-			function postConflictHandler(promise, errorFunc) {
+			function postConflictHandler(promise, paths, errorFunc) {
 				errorFunc = errorFunc || userError;
 
 				$scope.resolved = true;
 				$scope.closeMessage();
 
 				return promise.success(function (result) {
+					if (typeof(paths) !== 'undefined') {
+						paths.forEach(function (item) {
+							editorcollab.startUpdateFileStatus(item);
+						});
+					}
 					$scope.onUpdate();
 					$scope.resolved = false;
 				}).error(errorFunc);
@@ -96,7 +101,7 @@ angular.module('ngPanel.common', [
 				paths.push($scope.item.path);
 				paths = _.union(paths, _.map($scope.item.children, "path"));
 				paths = _.uniq(paths);
-				return postConflictHandler(editorcollab.SetConflictsResolvedMine(paths));
+				return postConflictHandler(editorcollab.SetConflictsResolvedMine(paths), paths);
 			};
 
 			$scope.theirs = function () {
@@ -112,7 +117,7 @@ angular.module('ngPanel.common', [
 				paths.push($scope.item.path);
 				paths = _.union(paths, _.map($scope.item.children, "path"));
 				paths = _.uniq(paths);
-				return postConflictHandler(editorcollab.SetConflictsResolvedTheirs(paths));
+				return postConflictHandler(editorcollab.SetConflictsResolvedTheirs(paths), paths);
 			};
 
 			$scope.showDiff = function () {

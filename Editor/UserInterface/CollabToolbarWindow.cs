@@ -1,8 +1,7 @@
+using System;
 using System.IO;
 using UnityEngine;
-using UnityEditor.Collaboration;
 using UnityEditor.Web;
-using UnityEditor.Connect;
 
 namespace UnityEditor
 {
@@ -55,7 +54,7 @@ namespace UnityEditor
             //Create a new window if it does not exist
             if (s_CollabToolbarWindow == null)
             {
-                s_CollabToolbarWindow = GetWindow<CollabToolbarWindow>(false, kWindowName) as CollabToolbarWindow;
+                s_CollabToolbarWindow = GetWindow<CollabToolbarWindow>(false, kWindowName);
             }
 
             return s_CollabToolbarWindow;
@@ -76,7 +75,7 @@ namespace UnityEditor
         {
             buttonRect.x -= kWindowWidth / 2;
             // We could not use realtimeSinceStartUp since it is set to 0 when entering/exitting playmode, we assume an increasing time when comparing time.
-            long nowMilliSeconds = System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond;
+            long nowMilliSeconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             bool justClosed = nowMilliSeconds < s_LastClosedTime + 50;
             if (!justClosed)
             {
@@ -86,7 +85,7 @@ namespace UnityEditor
                     Event.current.Use();
                 }
                 if (s_CollabToolbarWindow == null)
-                    s_CollabToolbarWindow = CreateInstance<CollabToolbarWindow>() as CollabToolbarWindow;
+                    s_CollabToolbarWindow = CreateInstance<CollabToolbarWindow>();
                 var windowSize = new Vector2(kWindowWidth, kWindowHeight);
                 s_CollabToolbarWindow.initialOpenUrl =
                     "file:///" + Path.GetFullPath(k_ToolbarPath.Replace("/", Path.DirectorySeparatorChar.ToString()));
@@ -96,6 +95,28 @@ namespace UnityEditor
                 return true;
             }
             return false;
+        }
+
+        public static void OnGetChangesStart()
+        {
+            var webView = WebViewStatic.GetWebView();
+            if (webView != null)
+                webView.ExecuteJavascript("entryPoint('OnGetChangesStart');");
+        }
+
+        public static void OnGetChangesFinish()
+        {
+            var webView = WebViewStatic.GetWebView();
+            if (webView != null)
+                webView.ExecuteJavascript("entryPoint('OnGetChangesFinish');");
+        }
+
+        public static void OnUpdateCachedChangesFinish(bool changesAvailable)
+        {
+            var param = changesAvailable ? "true" : "false";
+            var webView = WebViewStatic.GetWebView();
+            if (webView != null)
+                webView.ExecuteJavascript("entryPoint('OnUpdateCachedChangesFinished', " + param + ");");
         }
 
         // Receives HTML title
@@ -120,7 +141,7 @@ namespace UnityEditor
 
         internal new void OnDisable()
         {
-            s_LastClosedTime = System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond;
+            s_LastClosedTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             if (s_CollabToolbarWindow)
             {
                 s_ToolbarIsVisible = false;

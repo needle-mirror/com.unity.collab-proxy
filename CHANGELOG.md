@@ -1,8 +1,37 @@
 # Changelog
 All notable changes to this package will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [2.0.0-preview.15] - 2019-5-17
+- Block user from triggering scan while publishing
+- Bug fixes for first-time user experience
+- Bug fixes to ensure server errors/responses are provided to the editor/user
+- Bug fixes to ensure server logs correctly
+
+## [2.0.0-preview.14] - 2019-5-10
+- Bug fixes to reduce proxy server polling
+- Bug fixes to rotate proxy server logs
+
+## [2.0.0-preview.13] - 2019-5-10
+- Bug fixes to update status of subsets of files
+
+## [2.0.0-preview.12] - 2019-4-30
+- Bug fixes to stop collab getting stuck in looking for changes.
+- Bug fixes to stop "Unknown operation error" on collab init.
+- Bug fices to stop error on publishing when a file has been deleted.
+
+## [2.0.0-preview.11] - 2019-4-24
+- Remove automatic get changes when domain reload occurs.
+
+## [2.0.0-preview.10] - 2019-4-23
+- Update to LibGit2Sharp 0.26.0.
+- Ensure default .collabignore rules are used.
+- Move to https.
+
+## [2.0.0-preview.9] - 2019-4-19
+Remove automatic identification of changes
 
 ## [2.0.0-preview.8] - 2019-4-8
 Performance fixes to reduce CPU load.
@@ -11,10 +40,10 @@ Performance fixes to reduce CPU load.
 Update CHANGELOG.md
 
 ## [2.0.0-preview.6] - 2019-3-23
-Removed dependency on third-party moq.dll
-Bug fixes to serialization when using legacy scripting runtime.
-Bug fixes to remove migration dialog that should be forced.
-Performance improvements to reduce polling frequency and unnecessary file hashes.
+- Removed dependency on third-party moq.dll
+- Bug fixes to serialization when using legacy scripting runtime.
+- Bug fixes to remove migration dialog that should be forced.
+- Performance improvements to reduce polling frequency and unnecessary file hashes.
 
 ## [2.0.0] - 2019-1-22
 Bump major semantic version to reflect move from Unity.CollabProxy.Editor.

@@ -12,13 +12,13 @@
 		"staging": "https://staging-core.cloud.unity3d.com/orgs/%%ORGID%%/projects/%%UPID%%",
 		"production": "https://core.cloud.unity3d.com/orgs/%%ORGID%%/projects/%%UPID%%"
 	},
-	"helpLink": "http://docs.unity3d.com/Manual/index.html",
+	"helpLink": "https://docs.unity3d.com/Manual/index.html",
 	"docLinks": [],
 	"contextHelpLinks": [
 		{
-				"id": "unity-collaborate-upgrade-considerations",
-				"title": "Unity Editor Upgrade Considerations",
-				"url": "http://docs.unity3d.com/Documentation/Manual/UnityCollaborateUpgradeConsiderations.html"
+			"id": "unity-collaborate-upgrade-considerations",
+			"title": "Unity Editor Upgrade Considerations",
+			"url": "https://docs.unity3d.com/Manual/UnityCollaborateUpgradeConsiderations.html"
 		}
 	],
 	"serviceFlag": "collab",

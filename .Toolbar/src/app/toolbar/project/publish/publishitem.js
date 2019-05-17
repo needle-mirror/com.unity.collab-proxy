@@ -37,7 +37,7 @@ angular.module('ngPanel.toolbar.publish')
 			//$analytics.eventTrack('PublishError', {category: 'Publish', label: 'Error: ' +msg.code});
 		}
 	}
-	
+
 	var errorCodes = {
 		NoError: 0,
 		FileAreadyExists: 36
@@ -86,7 +86,9 @@ angular.module('ngPanel.toolbar.publish')
 
 		if (!change.isRevertable) {
 			// Revert status message
-			message = _.map(_.filter(messages, {state: change.revertableState}), 'message')[0];
+			var rs = change.revertableState;
+			var filterValue = {state: (rs.hasOwnProperty('value__') ? rs.value__ : rs) };
+			message = _.map(_.filter(messages, filterValue), 'message')[0];
 		} else {
 			// Revert Confirm message
 			if (change.localStatus == "deleted" && (change.revertableState & revertableStates.Revertable_File)) {
@@ -129,9 +131,8 @@ angular.module('ngPanel.toolbar.publish')
 
 	$scope.revertFile = function (localChange) {
 		removeRevertItem();
-		localChange.reverting = true;
-
 		editorcollab.RevertFile(localChange.path, localChange.forceOverwrite).then(function () {
+      localChange.reverting = true;
 			// Do nothing. fix case 803434
 		}, function (err) {
 			localChange.reverting = false;

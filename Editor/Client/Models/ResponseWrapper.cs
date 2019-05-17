@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace CollabProxy.Models
 {
     [DataContract(Namespace = "", Name = "ResponseException")]
-    internal class ResponseException
+    class ResponseException
     {
         public ResponseException(Exception e)
         {
@@ -28,14 +28,14 @@ namespace CollabProxy.Models
     }
 
     [DataContract(Namespace = "", Name = "ResponseWrapper")]
-    internal class ResponseWrapper
+    class ResponseWrapper
     {
         [DataMember(Name = "ResponseException")]
         public ResponseException ResponseException { get; set; }
     }
 
     [DataContract(Namespace = "", Name = "ResponseWrapperOfT")]
-    internal class ResponseWrapper<T>
+    class ResponseWrapper<T>
     {
         [DataMember(Name = "ResponseException")]
         public ResponseException ResponseException { get; set; }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using CollabProxy.Client;
 using CollabProxy.Models;
@@ -12,13 +13,7 @@ namespace CollabProxy
     /// </summary>
     internal class GitProxy : IGitProxy
     {
-        const string k_SetCurrentHeadMessage = "SETCURRENTHEAD";
         readonly CollabProxyClient m_TcpClient;
-
-        public Action OnUpdateHeadListener
-        {
-            set { m_TcpClient.RegisterListener(k_SetCurrentHeadMessage, value); }
-        }
 
         public GitProxy(CollabProxyClient tcpClient)
         {
@@ -28,11 +23,6 @@ namespace CollabProxy
             }
 
             m_TcpClient = tcpClient;
-        }
-
-        public bool IsRunningAsyncOperations()
-        {
-            return m_TcpClient.CallSynchronous<bool>(MethodBase.GetCurrentMethod().Name);
         }
 
         public bool RepositoryExists()
@@ -55,14 +45,24 @@ namespace CollabProxy
             m_TcpClient.CallSynchronous(MethodBase.GetCurrentMethod().Name, cloneUrl);
         }
 
-        public void SetCurrentHead(string revisionId, string accessToken)
+        public void SetCurrentHeadAsync(string revisionId, string accessToken)
         {
             m_TcpClient.CallAsynchronous(MethodBase.GetCurrentMethod().Name, revisionId, accessToken);
         }
 
-        public void GetWorkingDirectoryChangesAsync(string callBackName)
+        public void GetWorkingDirectoryChangesAsync()
         {
-            m_TcpClient.CallAsynchronous(MethodBase.GetCurrentMethod().Name, callBackName);
+            m_TcpClient.CallAsynchronous(MethodBase.GetCurrentMethod().Name);
+        }
+
+        public void UpdateCachedChangesAsync()
+        {
+            m_TcpClient.CallAsynchronous(MethodBase.GetCurrentMethod().Name);
+        }
+
+        public void UpdateFileStatusAsync(string path)
+        {
+            m_TcpClient.CallAsynchronous(MethodBase.GetCurrentMethod().Name, path);
         }
     }
 }

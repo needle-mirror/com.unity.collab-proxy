@@ -13,13 +13,13 @@ namespace CollabProxy.Client
     /// <summary>
     /// This class is used to communicate with the server which runs as an external process
     /// </summary>
-    internal class CollabProxyClient
+    class CollabProxyClient
     {
         const int k_TimeoutMillis = 5000;
         const string k_MonoPath = "MONO_PATH";
         const string k_PortFilePath = "Library/.collabproxyport";
         const string k_ServerExePath = "Packages/com.unity.collab-proxy/.Server/Unity.CollabProxy.Server.exe";
-        internal const string k_ServerErrorMsg = "Proxy server encountered an error";
+        const string k_ServerErrorMsg = "Proxy server encountered an error";
 
         protected TCPConnection TcpConnection { get; private set; }
 
@@ -74,7 +74,7 @@ namespace CollabProxy.Client
         /// <summary>
         /// Called before the assembly reloads -- responsible for shutting down network comms safely
         /// </summary>
-        void OnBeforeAssemblyReload()
+        static void OnBeforeAssemblyReload()
         {
             NetworkComms.Shutdown();
         }
@@ -104,15 +104,27 @@ namespace CollabProxy.Client
         }
 
         /// <summary>
-        /// Make a synchronous call to the server using the given method name as event name, expects a return
-        /// message with a return value of the given type, or an exception, if one has occurred
+        /// Make a synchronous call to the server using the given method name as event names, as well as the given
+        /// parameters (if any), blocks on a return message, used for passing exceptions - no data response expected
         /// </summary>
         /// <param name="methodName">The method to execute on the server</param>
-        public T CallSynchronous<T>(string methodName)
+        /// <param name="objectsToSend">Objects that will be sent in this call (can be null)</param>
+        /// <returns>Object of provided type T.</returns>
+        public T CallSynchronous<T>(string methodName, params object[] objectsToSend)
         {
             if (!TcpConnection.ConnectionAlive())
                 ReconnectToServer();
-            string xml = TcpConnection.SendReceiveObject<string>(methodName.ToLower(), methodName.ToUpper(), k_TimeoutMillis);
+            string xml;
+            if (objectsToSend == null || objectsToSend.Length.Equals(0))
+            {
+                xml = TcpConnection.SendReceiveObject<string>(methodName.ToLower(), methodName.ToUpper(), k_TimeoutMillis);
+            }
+            else
+            {
+                xml = TcpConnection.SendReceiveObject<string, string>(methodName.ToLower(),
+                    methodName.ToUpper(), k_TimeoutMillis, Serialization.Serialize(objectsToSend));
+            }
+
             return HandleResponse<T>(xml);
         }
 
@@ -121,7 +133,7 @@ namespace CollabProxy.Client
         /// </summary>
         /// <param name="xml">serialized response string</param>
         /// <returns></returns>
-        private void HandleResponse(string xml)
+        static void HandleResponse(string xml)
         {
             ResponseWrapper result = Serialization.DeserializeResponse(xml);
 
@@ -142,7 +154,7 @@ namespace CollabProxy.Client
         /// </summary>
         /// <param name="xml">serialized response string</param>
         /// <returns></returns>
-        private T HandleResponse<T>(string xml)
+        static T HandleResponse<T>(string xml)
         {
             if (string.IsNullOrEmpty(xml))
             {
@@ -151,7 +163,7 @@ namespace CollabProxy.Client
 
             try
             {
-                var result = (ResponseWrapper<T>)Serialization.DeserializeResponse<T>(xml);
+                var result = Serialization.DeserializeResponse<T>(xml);
 
                 if (result == null)
                 {
@@ -163,7 +175,7 @@ namespace CollabProxy.Client
                     throw new CollabProxyException(k_ServerErrorMsg, result.ResponseException);
                 }
 
-                return (T)result.ResponseObject;
+                return result.ResponseObject;
             }
             catch (System.Runtime.Serialization.SerializationException)
             {
@@ -178,7 +190,7 @@ namespace CollabProxy.Client
         /// </summary>
         /// <param name="methodName">The method to execute on the server</param>
         /// <param name="objectsToSend">Objects that will be sent in this call (can be null)</param>
-        public void CallAsynchronous(string methodName, params Object[] objectsToSend)
+        public void CallAsynchronous(string methodName, params object[] objectsToSend)
         {
             if (!TcpConnection.ConnectionAlive())
                 ReconnectToServer();
@@ -193,58 +205,88 @@ namespace CollabProxy.Client
         }
 
         /// <summary>
-        /// Register a listener for messages of a given type that are sent from the server to the client
+        /// Register a listener for messages of a given type that are sent from the server to the client.
         /// </summary>
         /// <param name="message">The name of the message to listen to.</param>
-        /// <param name="handler">The action to execute when the message is received</param>
-        public void RegisterListener(string message, Action handler)
+        /// <param name="handler">The action to execute when the message is received.</param>
+        /// <param name="exceptionHandler">The action to execute when the message is an exception.</param>
+        public void RegisterListener(string message, Action handler, Action<Exception> exceptionHandler)
         {
             if (handler == null)
             {
-                throw new ArgumentNullException("Registering a listener requires valid handler");
+                throw new ArgumentNullException("handler", "Registering a listener requires valid handler");
             }
 
-            if (String.IsNullOrEmpty(message))
+            if (string.IsNullOrEmpty(message))
             {
-                throw new ArgumentNullException("Registering a listener requires valid message");
+                throw new ArgumentNullException("message", "Registering a listener requires valid message");
             }
 
-            if (TcpConnection.IncomingPacketHandlerExists(message))
+            var method = message.ToUpper();
+
+            if (TcpConnection.IncomingPacketHandlerExists(method))
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("Cannot register a second packet handler with the same name {0}", message);
                 throw new InvalidOperationException(sb.ToString());
             }
 
-            TcpConnection.AppendIncomingPacketHandler<string>(message, (packetHeader, connection, incoming) =>
+            TcpConnection.AppendIncomingPacketHandler<string>(method, (packetHeader, connection, incoming) =>
             {
-                handler();
+                try
+                {
+                    HandleResponse(incoming);
+                    handler();
+                }
+                catch (Exception e)
+                {
+                    exceptionHandler(e);
+                    // This is needed, otherwise the connection to the proxy server drops.
+                    throw;
+                }
             }, NetworkComms.DefaultSendReceiveOptions);
         }
 
-        public void RegisterListener<T>(string message, Action<T> handler)
+        /// <summary>
+        /// Register a listener for messages of a given type that are sent from the server to the client.
+        /// </summary>
+        /// <param name="message">The name of the message to listen to.</param>
+        /// <param name="handler">The action to execute when the message is received.</param>
+        /// <param name="exceptionHandler">The action to execute when the message is an exception.</param>
+        public void RegisterListener<T>(string message, Action<T> handler, Action<Exception> exceptionHandler)
         {
             if (handler == null)
             {
-                throw new ArgumentNullException("Registering a listener requires valid handler");
+                throw new ArgumentNullException("handler", "Registering a listener requires valid handler");
             }
 
-            if (String.IsNullOrEmpty(message))
+            if (string.IsNullOrEmpty(message))
             {
-                throw new ArgumentNullException("Registering a listener requires valid message");
+                throw new ArgumentNullException("message", "Registering a listener requires valid message");
             }
 
-            if (TcpConnection.IncomingPacketHandlerExists(message))
+            var method = message.ToUpper();
+
+            if (TcpConnection.IncomingPacketHandlerExists(method))
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("Cannot register a second packet handler with the same name {0}", message);
                 throw new InvalidOperationException(sb.ToString());
             }
 
-            TcpConnection.AppendIncomingPacketHandler<string>(message, (packetHeader, connection, incoming) =>
+            TcpConnection.AppendIncomingPacketHandler<string>(method, (packetHeader, connection, incoming) =>
             {
-                var payload = HandleResponse<T>(incoming);
-                handler(payload);
+                try
+                {
+                    var payload = HandleResponse<T>(incoming);
+                    handler(payload);
+                }
+                catch (Exception e)
+                {
+                    exceptionHandler(e);
+                    // This is needed, otherwise the connection to the proxy server drops.
+                    throw;
+                }
             }, NetworkComms.DefaultSendReceiveOptions);
         }
 
@@ -261,7 +303,7 @@ namespace CollabProxy.Client
         /// Check whether the port file exists and contains a valid port, return True if it does, False otherwise
         /// </summary>
         /// <returns>Whether a port number has been cached</returns>
-        bool IsCachedServerAvailable()
+        static bool IsCachedServerAvailable()
         {
             return GetCachedPort() != 0;
         }
@@ -272,7 +314,7 @@ namespace CollabProxy.Client
         protected virtual void SpawnServer()
         {
             int serverPort;
-            Process serverProcess = UnityEditor.MonoProcessUtility.PrepareMonoProcessBleedingEdge(Directory.GetCurrentDirectory());
+            Process serverProcess = MonoProcessUtility.PrepareMonoProcessBleedingEdge(Directory.GetCurrentDirectory());
             serverProcess.StartInfo.Arguments = string.Format("\"{0}\" {1}", GetServerExePath(), Process.GetCurrentProcess().Id);
             serverProcess.StartInfo.EnvironmentVariables[k_MonoPath] = null;
             serverProcess.Start();
@@ -288,13 +330,13 @@ namespace CollabProxy.Client
         /// </summary>
         /// <param name="serverPort">The server port to cache</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when input does not contain valid port</exception>
-        protected void WritePortToFile(int serverPort)
+        protected static void WritePortToFile(int serverPort)
         {
             if (serverPort == 0)
             {
                 throw new ArgumentException("Expected server to return a valid port");
             }
-            using(FileStream fileStream = File.Open(GetPortFilePath(), FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            using (FileStream fileStream = File.Open(GetPortFilePath(), FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
                 using (StreamWriter sw = new StreamWriter(fileStream))
                 {
@@ -307,7 +349,7 @@ namespace CollabProxy.Client
         /// Establishes a connection to the server using the cached port number
         /// </summary>
         /// <returns>TCPConnection object for client-server communication</returns>
-        TCPConnection ConnectUsingCache()
+        static TCPConnection ConnectUsingCache()
         {
             int serverPort = GetCachedPort();
             ConnectionInfo connInfo = new ConnectionInfo(IPAddress.Loopback.ToString(), serverPort);
@@ -318,7 +360,7 @@ namespace CollabProxy.Client
         /// Get the cached port number, if one is found, or 0 otherwise
         /// </summary>
         /// <returns>The cached port number, default 0</returns>
-        int GetCachedPort()
+        static int GetCachedPort()
         {
             int serverPort = 0;
             string portFile = GetPortFilePath();
@@ -347,7 +389,7 @@ namespace CollabProxy.Client
         /// Get the path to the Git proxy server executable
         /// </summary>
         /// <returns>Full path to the Git proxy server executable</returns>
-        public static string GetServerExePath()
+        static string GetServerExePath()
         {
             // GetFullPath will get us the actual location of the package, even if it isn't in the project dir
             return Path.GetFullPath(k_ServerExePath.Replace("/", Path.DirectorySeparatorChar.ToString()));

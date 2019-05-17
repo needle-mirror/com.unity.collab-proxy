@@ -3,17 +3,19 @@ using System.Runtime.Serialization;
 
 namespace CollabProxy.Models
 {
-    internal enum ChangeType
+    enum ChangeType
     {
         Added,
         Modified,
         Moved,
         Renamed,
-        Deleted
+        Deleted,
+        Unmodified,
+        Gone
     }
 
     [DataContract(Namespace = "", Name = "ChangeWrapper")]
-    internal class ChangeWrapper
+    class ChangeWrapper
     {
         [DataMember(Name = "Path")]
         public string Path { get; set; }
