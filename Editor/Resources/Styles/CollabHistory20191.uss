@@ -1,0 +1,49 @@
+.unity-button {
+    min-height: 0;
+    -unity-text-align: middle-center;
+    margin: 3px 4px;
+    padding: 2px 6px 3px;
+}
+
+.unity-label {
+    overflow: hidden;
+    margin: 2px 4px;
+    padding-left: 2px;
+    padding-top: 1px;
+    min-height: 0;
+}
+
+#RevisionIndicator {
+    border-width: 2px;
+}
+
+.currentRevision #HistoryDetail {
+    border-top-width: 2px;
+}
+
+#HistoryItem #RevisionDescription {
+    white-space: normal;
+}
+
+#HistoryItem #ActionButton {
+    border-width: 4px 6px;
+}
+
+CollabHistoryDropDown {
+    border-top-width: 1px;
+}
+
+CollabHistoryDropDownItem {
+    border-top-width: 1px;
+    overflow: hidden;
+}
+
+#StatusView > #StatusMessage {
+    white-space: normal;
+}
+
+BuildStatusButton.unity-button {
+    border-width: 4px 6px;
+    padding: 0;
+    margin-right: 0;
+}

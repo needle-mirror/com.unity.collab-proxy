@@ -28,7 +28,6 @@ namespace UnityEditor.Collaboration
         private readonly DateTime m_TimeStamp;
         private readonly Button m_Button;
         private readonly HistoryProgressSpinner m_ProgressSpinner;
-        private VisualElement m_ActionsTray;
         private VisualElement m_Details;
         private Label m_Description;
         private Label m_TimeAgo;
@@ -55,21 +54,15 @@ namespace UnityEditor.Collaboration
             m_RevisionId = data.id;
             m_TimeStamp = data.timeStamp;
             name = "HistoryItem";
-            m_ActionsTray = new VisualElement {name = "HistoryItemActionsTray"};
             m_ProgressSpinner = new HistoryProgressSpinner();
             m_Details = new VisualElement {name = "HistoryDetail"};
             var author = new Label(data.authorName) {name = "Author"};
             m_TimeAgo = new Label(TimeAgo.GetString(m_TimeStamp));
             m_FullDescription = data.comment;
             var shouldTruncate = ShouldTruncateDescription(m_FullDescription);
-            if (shouldTruncate)
-            {
-                m_Description = new Label(GetTruncatedDescription(m_FullDescription));
-            }
-            else
-            {
-                m_Description = new Label(m_FullDescription);
-            }
+            m_Description = shouldTruncate
+                ? new Label(GetTruncatedDescription(m_FullDescription))
+                : new Label(m_FullDescription);
             m_Description.name = "RevisionDescription";
             var dropdown = new CollabHistoryDropDown(data.changes, data.changesTotal, data.changesTruncated, data.id);
             if (data.current)
@@ -87,9 +80,6 @@ namespace UnityEditor.Collaboration
             m_Button.SetEnabled(data.enabled);
             m_ProgressSpinner.ProgressEnabled = data.inProgress;
 
-            m_ActionsTray.Add(m_ProgressSpinner);
-            m_ActionsTray.Add(m_Button);
-
             m_Details.Add(author);
             m_Details.Add(m_TimeAgo);
             m_Details.Add(m_Description);
@@ -102,16 +92,26 @@ namespace UnityEditor.Collaboration
 
             if (data.buildState != BuildState.None)
             {
-                BuildStatusButton buildButton;
-                if (data.buildState == BuildState.Configure)
-                    buildButton = new BuildStatusButton(ShowServicePage);
-                else
-                    buildButton = new BuildStatusButton(ShowBuildForCommit, data.buildState, data.buildFailures);
+                var buildButton = data.buildState == BuildState.Configure
+                    ? new BuildStatusButton(ShowServicePage)
+                    : new BuildStatusButton(ShowBuildForCommit, data.buildState, data.buildFailures);
 
-                m_Details.Add(buildButton);
+                var topContainer = new VisualElement { name = "HistoryItemActionsTop" };
+                topContainer.Add(m_ProgressSpinner);
+                topContainer.Add(buildButton);
+                var bottomContainer = new VisualElement { name = "HistoryItemActionsBottom" };
+                bottomContainer.Add(m_Button);
+                m_Details.Add(topContainer);
+                m_Details.Add(bottomContainer);
+            }
+            else
+            {
+                var container = new VisualElement { name = "HistoryItemActionsTop" };
+                container.Add(m_ProgressSpinner);
+                container.Add(m_Button);
+                m_Details.Add(container);
             }
 
-            m_Details.Add(m_ActionsTray);
             m_Details.Add(dropdown);
 
             Add(m_Details);

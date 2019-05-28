@@ -4,6 +4,12 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0-preview.17] - 2019-5-28
+- Fixes missing .meta files
+
+## [2.0.0-preview.16] - 2019-5-28
+- Fixes display issues on the refreshed editor theme in 2019.3
+
 ## [2.0.0-preview.15] - 2019-5-17
 - Block user from triggering scan while publishing
 - Bug fixes for first-time user experience

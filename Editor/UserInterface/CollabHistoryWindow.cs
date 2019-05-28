@@ -19,11 +19,7 @@ namespace UnityEditor
 {
     internal class CollabHistoryWindow : EditorWindow, ICollabHistoryWindow
     {
-#if UNITY_2019_1_OR_NEWER
         private const string ResourcesPath = "Packages/com.unity.collab-proxy/Editor/Resources/Styles/";
-#else
-        private const string ResourcesPath = "StyleSheets/";
-#endif
 
         const string kWindowTitle = "Collab History";
         const string kServiceUrl = "developer.cloud.unity3d.com";
@@ -114,6 +110,18 @@ namespace UnityEditor
             {
                 AddStyleSheetPath(root, ResourcesPath + "CollabHistoryLight.uss");
             }
+
+#if UNITY_2019_3_OR_NEWER
+            AddStyleSheetPath(root, ResourcesPath + "CollabHistory20193.uss");
+#elif UNITY_2019_1_OR_NEWER
+            AddStyleSheetPath(root, ResourcesPath + "CollabHistory20191.uss");
+#else
+            AddStyleSheetPath(root, ResourcesPath + "CollabHistory20183.uss");
+            if (EditorGUIUtility.isProSkin)
+                AddStyleSheetPath(root, ResourcesPath + "CollabHistoryDark20183.uss");
+            else
+                AddStyleSheetPath(root, ResourcesPath + "CollabHistoryLight20183.uss");
+#endif
 
             m_Container = new VisualElement();
             m_Container.StretchToParentSize();

@@ -1,0 +1,29 @@
+BuildStatusButton {
+    color: #111;
+    background-image: resource("Builtin Skins/LightSkin/Images/btn.png");
+}
+
+BuildStatusButton:hover {
+    color: #000;
+}
+
+BuildStatusButton:hover:active {
+    background-image: resource("Builtin Skins/LightSkin/Images/btn act.png");
+}
+
+BuildStatusButton:checked {
+    color: #F0F0F0;
+    background-image: resource("Builtin Skins/LightSkin/Images/btn on.png");
+}
+
+BuildStatusButton:hover:checked {
+    color: #000;
+}
+
+BuildStatusButton:hover:active:checked {
+    background-image: resource("Builtin Skins/LightSkin/Images/btn onact.png");
+}
+
+BuildStatusButton:focus:checked {
+    background-image: resource("Builtin Skins/LightSkin/Images/btn on focus.png");
+}
