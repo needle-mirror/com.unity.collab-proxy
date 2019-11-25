@@ -1,7 +1,17 @@
 {
     "name": "Unity.CollabProxy.Editor",
+    "references": [
+        "Unity.Settings.Editor"
+    ],
     "includePlatforms": [
         "Editor"
     ],
-    "excludePlatforms": []
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

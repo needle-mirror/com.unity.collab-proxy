@@ -1,13 +1,23 @@
 {
     "name": "Unity.CollabProxy.EditorTests",
     "references": [
-        "Unity.CollabProxy.Editor"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+        "Unity.CollabProxy.Editor",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
     ],
     "includePlatforms": [
         "Editor"
     ],
-    "excludePlatforms": []
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
