@@ -1,5 +1,5 @@
-# Unity Source Control Common
-This directory contains common classes and logic for CollabClient and Manager.
+# Unity Collaborate Common Code
+This directory contains common classes and logic for the package.
 
 ## Overview
 This is the structure of the directory:
@@ -9,7 +9,7 @@ This is the structure of the directory:
   └── ScriptableObjectSingleton.cs
 ```
 
-`LocationAttribute.cs` attribute used to specify where to cache the ScriptableObjectSingleton. 
+`LocationAttribute.cs` attribute used to specify where to cache the ScriptableObjectSingleton.
 
-`ScriptableObjectSingleton.cs` public version of the ScriptableSingleton class in Unity and modified from the 
+`ScriptableObjectSingleton.cs` public version of the ScriptableSingleton class in Unity and modified from the
 GitHubForUnity implementation of it.

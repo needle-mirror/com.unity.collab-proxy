@@ -1,4 +1,8 @@
 /* AlertBox Styles */
+.alert-box {
+    flex: var(--fixed-size);
+}
+   
 .alert-box__content {
     padding: var(--standard-padding);
 }

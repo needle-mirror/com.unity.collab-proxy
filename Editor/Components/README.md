@@ -1,5 +1,5 @@
 # Resources
-This directory contains the UiElements-based user interface components.
+This directory contains the UIElements-based user interface components.
 
 ## Overview
 Each component is defined as its own class and file in this directory.
@@ -15,4 +15,4 @@ Adding UXML parameters used to be covered in the official docs. Until it is retu
 any UiElements class such as TextElement.
 
 To use the component in UXML (with editor inspections) the xml schema needs to be updated within the Unity Editor.
-Instructions on how to do that is container in `../Resources/`.
+Instructions on how to do that is contained in `../Assets/`.

@@ -2,7 +2,7 @@ using UnityEngine.UIElements;
 
 namespace Unity.Cloud.Collaborate.Components
 {
-    public abstract class PageComponent : VisualElement
+    internal abstract class PageComponent : VisualElement
     {
         /// <summary>
         /// Current active status for this page.

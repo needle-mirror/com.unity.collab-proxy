@@ -19,7 +19,7 @@ namespace Unity.Cloud.Collaborate.Assets
         public const string noticeNoChangesToDisplay = "No changes to display.";
         public const string noticeNoResultsForQuery = "No results found for this query.";
         public const string publishButton = "Publish";
-        public const string publishSummaryPlaceholder = "Summary ( Required )";
+        public const string publishSummaryPlaceholder = "Summary";
         public const string menuDiscardToggledChanges = "Discard toggled changes";
         public const string cancel = "Cancel";
         public const string discardChanges = "Discard changes";
