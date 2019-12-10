@@ -4,7 +4,6 @@ using NUnit.Framework;
 using Unity.Cloud.Collaborate.Models.Structures;
 using Unity.Cloud.Collaborate.Presenters;
 using Unity.Cloud.Collaborate.Tests.Models;
-using Unity.Cloud.Collaborate.Tests.Views;
 
 namespace Unity.Cloud.Collaborate.Tests.Presenters
 {

@@ -1,10 +1,5 @@
->>>
-
 # About Unity Collaborate
 
->>>
+Collaborate is a simple way for teams to save, share, and sync their Unity project.
 
-*Use the Unity Collaborate package to streamline team project's collaboration:
-
-see [ Unity's Collaborate](https://docs.unity3d.com/Manual/UnityCollaborate.html) 
->>>
+Please refer to the online documentation [here.](https://docs.unity3d.com/Manual/UnityCollaborate.html)

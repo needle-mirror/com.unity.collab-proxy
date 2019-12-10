@@ -3,7 +3,7 @@ using Unity.Cloud.Collaborate.Models.Structures;
 using Unity.Cloud.Collaborate.Presenters;
 using Unity.Cloud.Collaborate.Views;
 
-namespace Unity.Cloud.Collaborate.Tests.Views
+namespace Unity.Cloud.Collaborate.Tests.Presenters
 {
     internal class TestChangesView : IChangesView
     {
