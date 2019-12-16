@@ -37,6 +37,13 @@ namespace Unity.Cloud.Collaborate.Models
         event Action<bool> RemoteRevisionsAvailabilityChange;
 
         /// <summary>
+        /// Signal when the state of the back button is updated. For example: clearing it or showing a new one.
+        /// The string included is the new label for the back navigation button. If that value is null, clear the back
+        /// navigation.
+        /// </summary>
+        event Action<string> BackButtonStateUpdated;
+
+        /// <summary>
         /// Returns true if there are remote revisions available.
         /// </summary>
         bool RemoteRevisionsAvailable { get; }
@@ -57,6 +64,11 @@ namespace Unity.Cloud.Collaborate.Models
         /// </summary>
         [CanBeNull]
         IErrorInfo ErrorInfo { get; }
+
+        /// <summary>
+        /// Current tab index being displayed.
+        /// </summary>
+        int CurrentTabIndex { get; set; }
 
         /// <summary>
         /// Returns a history model.
@@ -86,5 +98,26 @@ namespace Unity.Cloud.Collaborate.Models
         /// Request cancel current job.
         /// </summary>
         void RequestCancelJob();
+
+        /// <summary>
+        /// Returns the current back navigation. Null if none exists presently.
+        /// </summary>
+        /// <returns>Current back navigation id, text, and action.</returns>
+        (string id, string text, Action backAction)? GetBackNavigation();
+
+        /// <summary>
+        /// Register back navigation to be made available to the user to navigate backwards in the UI.
+        /// </summary>
+        /// <param name="id">Id for the back event.</param>
+        /// <param name="text">Text for the back label.</param>
+        /// <param name="backAction">Action to perform to go back.</param>
+        void RegisterBackNavigation(string id, string text, Action backAction);
+
+        /// <summary>
+        /// Unregister back navigation if the given id matches the currently displayed back navigation.
+        /// </summary>
+        /// <param name="id">Id for the back event.</param>
+        /// <returns>True if id matched.</returns>
+        bool UnregisterBackNavigation(string id);
     }
 }

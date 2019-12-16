@@ -1,21 +1,28 @@
+using JetBrains.Annotations;
+using NUnit.Framework;
 using Unity.Cloud.Collaborate.Assets;
 using Unity.Cloud.Collaborate.Components;
 using Unity.Cloud.Collaborate.Models;
 using Unity.Cloud.Collaborate.Models.Structures;
 using Unity.Cloud.Collaborate.Views;
+using UnityEngine;
 
 namespace Unity.Cloud.Collaborate.Presenters
 {
     internal class MainPresenter : IMainPresenter
     {
+        [NotNull]
         readonly IMainView m_View;
+        [NotNull]
         readonly IMainModel m_Model;
+
+        bool m_IsStarted;
 
         const string k_ErrorOccuredId = "error_occured";
         const string k_ConflictsDetectedId = "conflicts_detected";
         const string k_RevisionsAvailableId = "revisions_available";
 
-        public MainPresenter(IMainView view, IMainModel model)
+        public MainPresenter([NotNull] IMainView view, [NotNull] IMainModel model)
         {
             m_View = view;
             m_Model = model;
@@ -24,6 +31,9 @@ namespace Unity.Cloud.Collaborate.Presenters
         /// <inheritdoc />
         public void Start()
         {
+            Assert.IsFalse(m_IsStarted, "The presenter has already been started.");
+            m_IsStarted = true;
+
             // Setup listeners.
             m_Model.ConflictStatusChange += OnConflictStatusChange;
             m_Model.OperationStatusChange += OnOperationStatusChange;
@@ -31,10 +41,8 @@ namespace Unity.Cloud.Collaborate.Presenters
             m_Model.ErrorOccurred += OnErrorOccurred;
             m_Model.ErrorCleared += OnErrorCleared;
             m_Model.RemoteRevisionsAvailabilityChange += OnRemoteRevisionsAvailabilityChange;
-
-            // Get initial values.
-            OnConflictStatusChange(m_Model.Conflicted);
-            OnRemoteRevisionsAvailabilityChange(m_Model.RemoteRevisionsAvailable);
+            m_Model.BackButtonStateUpdated += OnBackButtonStateUpdated;
+            m_Model.StateChanged += OnStateChanged;
 
             // Update progress info.
             var progressInfo = m_Model.ProgressInfo;
@@ -42,10 +50,6 @@ namespace Unity.Cloud.Collaborate.Presenters
             {
                 OnOperationStatusChange(true);
                 OnOperationProgressChange(m_Model.ProgressInfo);
-            }
-            else
-            {
-                OnOperationStatusChange(false);
             }
 
             // Update error info.
@@ -58,29 +62,60 @@ namespace Unity.Cloud.Collaborate.Presenters
             {
                 OnErrorCleared();
             }
+
+            // Get initial values.
+            OnConflictStatusChange(m_Model.Conflicted);
+            OnRemoteRevisionsAvailabilityChange(m_Model.RemoteRevisionsAvailable);
+
+            PopulateInitialData();
         }
 
         /// <inheritdoc />
         public void Stop()
         {
+            Assert.IsTrue(m_IsStarted, "The presenter has already been stopped.");
+            m_IsStarted = false;
+
             m_Model.ConflictStatusChange -= OnConflictStatusChange;
             m_Model.OperationStatusChange -= OnOperationStatusChange;
             m_Model.OperationProgressChange -= OnOperationProgressChange;
             m_Model.ErrorOccurred -= OnErrorOccurred;
             m_Model.ErrorCleared -= OnErrorCleared;
             m_Model.RemoteRevisionsAvailabilityChange -= OnRemoteRevisionsAvailabilityChange;
+            m_Model.BackButtonStateUpdated -= OnBackButtonStateUpdated;
+            m_Model.StateChanged -= OnStateChanged;
+        }
+
+        /// <summary>
+        /// Refresh state from the model.
+        /// </summary>
+        void OnStateChanged()
+        {
+            PopulateInitialData();
+        }
+
+        /// <summary>
+        /// Populate the view with the initial data from the model.
+        /// </summary>
+        void PopulateInitialData()
+        {
+            // Set tab.
+            m_View.SetTab(m_Model.CurrentTabIndex);
+
+            // Update back navigation
+            OnBackButtonStateUpdated(m_Model.GetBackNavigation()?.text);
         }
 
         /// <inheritdoc />
         public IHistoryPresenter AssignHistoryPresenter(IHistoryView view)
         {
-            var presenter = new HistoryPresenter(view, m_Model.ConstructHistoryModel());
+            var presenter = new HistoryPresenter(view, m_Model.ConstructHistoryModel(), m_Model);
             view.Presenter = presenter;
             return presenter;
         }
 
         /// <inheritdoc />
-        public IChangesPresenter AssignHistoryPresenter(IChangesView view)
+        public IChangesPresenter AssignChangesPresenter(IChangesView view)
         {
             var presenter = new ChangesPresenter(view, m_Model.ConstructChangesModel(), m_Model);
             view.Presenter = presenter;
@@ -91,6 +126,22 @@ namespace Unity.Cloud.Collaborate.Presenters
         public void RequestCancelJob()
         {
             m_Model.RequestCancelJob();
+        }
+
+        /// <inheritdoc />
+        public void UpdateTabIndex(int index)
+        {
+            m_Model.CurrentTabIndex = index;
+        }
+
+        /// <inheritdoc />
+        public void NavigateBack()
+        {
+            // Grab back action from the model, clear it, then invoke it.
+            var nav = m_Model.GetBackNavigation();
+            if (nav == null) return;
+            m_Model.UnregisterBackNavigation(nav.Value.id);
+            nav.Value.backAction.Invoke();
         }
 
         /// <summary>
@@ -169,6 +220,22 @@ namespace Unity.Cloud.Collaborate.Presenters
             else
             {
                 m_View.RemoveAlert(k_RevisionsAvailableId);
+            }
+        }
+
+        /// <summary>
+        /// Clear or show back navigation button.
+        /// </summary>
+        /// <param name="title">Text to display next to the back navigation. Null means no back navigation.</param>
+        void OnBackButtonStateUpdated([CanBeNull] string title)
+        {
+            if (title == null)
+            {
+                m_View.ClearBackNavigation();
+            }
+            else
+            {
+                m_View.DisplayBackNavigation(title);
             }
         }
     }

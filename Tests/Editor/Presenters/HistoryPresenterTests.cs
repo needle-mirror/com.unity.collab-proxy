@@ -11,6 +11,7 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
     {
         TestHistoryView m_View;
         TestHistoryModel m_HistoryModel;
+        TestMainModel m_MainModel;
         HistoryPresenter m_Presenter;
 
         [SetUp]
@@ -18,12 +19,14 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
         {
             m_View = new TestHistoryView();
             m_HistoryModel = new TestHistoryModel();
-            m_Presenter = new HistoryPresenter(m_View, m_HistoryModel);
+            m_MainModel = new TestMainModel();
+            m_Presenter = new HistoryPresenter(m_View, m_HistoryModel, m_MainModel);
         }
 
         [TearDown]
         public void TearDown()
         {
+            m_Presenter.Stop();
             m_View = null;
             m_HistoryModel = null;
             m_Presenter = null;
@@ -80,8 +83,7 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
             // Clear box testing here
             m_HistoryModel.TriggerUpdatedEntryListEvent();
             Assert.AreEqual(2, m_HistoryModel.RequestedEntryCountCount);
-            Assert.AreEqual(1, m_HistoryModel.RequestedPageOfRevisionsCount);
-            Assert.AreEqual(1, m_HistoryModel.RequestedSingleRevisionCount);
+            Assert.AreEqual(2, m_HistoryModel.RequestedSingleRevisionCount);
         }
 
         [Test]

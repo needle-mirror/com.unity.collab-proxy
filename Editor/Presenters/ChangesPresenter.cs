@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using NUnit.Framework;
 using Unity.Cloud.Collaborate.Assets;
 using Unity.Cloud.Collaborate.Components.Menus;
@@ -13,11 +14,16 @@ namespace Unity.Cloud.Collaborate.Presenters
 {
     internal class ChangesPresenter : IChangesPresenter
     {
+        [NotNull]
         readonly IChangesView m_View;
+        [NotNull]
         readonly IChangesModel m_Model;
+        [NotNull]
         readonly IMainModel m_MainModel;
 
-        public ChangesPresenter(IChangesView view, IChangesModel model, IMainModel mainModel)
+        bool m_IsStarted;
+
+        public ChangesPresenter([NotNull] IChangesView view, [NotNull] IChangesModel model, [NotNull] IMainModel mainModel)
         {
             m_View = view;
             m_Model = model;
@@ -27,26 +33,50 @@ namespace Unity.Cloud.Collaborate.Presenters
         /// <inheritdoc />
         public void Start()
         {
+            Assert.IsFalse(m_IsStarted, "The presenter has already been started.");
+            m_IsStarted = true;
+
             m_Model.UpdatedChangeList += OnUpdatedChangeList;
             m_Model.OnUpdatedSelectedChanges += OnUpdatedPartiallySelectedChanges;
             m_Model.BusyStatusUpdated += OnBusyStatusUpdated;
+            m_Model.StateChanged += OnStateChanged;
             m_MainModel.RemoteRevisionsAvailabilityChange += OnRemoteRevisionsAvailabilityChange;
             m_MainModel.ConflictStatusChange += OnConflictStatusChange;
 
-            m_View.SetRevisionSummary(m_Model.SavedRevisionSummary);
-            m_View.SetSearchQuery(m_Model.SavedSearchQuery);
-            m_View.SetBusyStatus(m_Model.Busy);
-            m_Model.RequestInitialData();
+            PopulateInitialData();
         }
 
         /// <inheritdoc />
         public void Stop()
         {
+            Assert.IsTrue(m_IsStarted, "The presenter has already been stopped.");
+            m_IsStarted = false;
+
             m_Model.UpdatedChangeList -= OnUpdatedChangeList;
             m_Model.OnUpdatedSelectedChanges -= OnUpdatedPartiallySelectedChanges;
             m_Model.BusyStatusUpdated -= OnBusyStatusUpdated;
+            m_Model.StateChanged -= OnStateChanged;
             m_MainModel.RemoteRevisionsAvailabilityChange -= OnRemoteRevisionsAvailabilityChange;
             m_MainModel.ConflictStatusChange -= OnConflictStatusChange;
+        }
+
+        /// <summary>
+        /// Refresh state from the model.
+        /// </summary>
+        void OnStateChanged()
+        {
+            PopulateInitialData();
+        }
+
+        /// <summary>
+        /// Populate the view with the initial data from the model.
+        /// </summary>
+        void PopulateInitialData()
+        {
+            m_View.SetRevisionSummary(m_Model.SavedRevisionSummary);
+            m_View.SetSearchQuery(m_Model.SavedSearchQuery);
+            m_View.SetBusyStatus(m_Model.Busy);
+            m_Model.RequestInitialData();
         }
 
         /// <summary>

@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 
 namespace Unity.Cloud.Collaborate.Tests
 {
-    internal static class UITestHelpers
+    internal static class UiTestHelpers
     {
         #region Events​
         // In order for tests to run without an EditorWindow but still be able to send

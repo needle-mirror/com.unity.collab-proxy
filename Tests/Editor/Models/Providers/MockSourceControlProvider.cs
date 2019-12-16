@@ -235,5 +235,15 @@ namespace Unity.Cloud.Collaborate.Models.Providers
         {
             throw new NotImplementedException();
         }
+
+        public void ShowLoginPage()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ShowNoSeatPage()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

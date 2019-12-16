@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using NUnit.Framework;
 using Unity.Cloud.Collaborate.Models.Api;
 using Unity.Cloud.Collaborate.Models.Structures;
@@ -10,8 +11,10 @@ namespace Unity.Cloud.Collaborate.Models
 {
     internal class HistoryModel : IHistoryModel
     {
+        [NotNull]
         readonly ISourceControlProvider m_Provider;
 
+        [NotNull]
         readonly HashSet<string> m_Requests;
         const string k_RequestPage = "request-page";
         const string k_RequestEntry = "request-entry";
@@ -32,28 +35,47 @@ namespace Unity.Cloud.Collaborate.Models
         /// <inheritdoc />
         public event Action<int?> EntryCountUpdated;
 
-        public HistoryModel(ISourceControlProvider provider)
+        /// <inheritdoc />
+        public event Action StateChanged;
+
+        public HistoryModel([NotNull] ISourceControlProvider provider)
         {
             m_Provider = provider;
             m_Requests = new HashSet<string>();
-
-            // Set initial values
-            PageNumber = WindowCache.Instance.HistoryPageNumber;
             SelectedRevisionId = string.Empty;
-            SavedRevisionId = WindowCache.Instance.SelectedHistoryRevision;
+            SavedRevisionId = string.Empty;
+        }
 
+        /// <inheritdoc />
+        public void OnStart()
+        {
             // Setup events
             m_Provider.UpdatedHistoryEntries += OnUpdatedHistoryEntries;
-            WindowCache.Instance.BeforeSerialize += OnStop;
         }
 
         /// <inheritdoc />
         public void OnStop()
         {
-            WindowCache.Instance.BeforeSerialize -= OnStop;
+            // Clean up.
             m_Provider.UpdatedHistoryEntries -= OnUpdatedHistoryEntries;
-            WindowCache.Instance.HistoryPageNumber = PageNumber;
-            WindowCache.Instance.SelectedHistoryRevision = SelectedRevisionId;
+        }
+
+        /// <inheritdoc />
+        public void RestoreState(IWindowCache cache)
+        {
+            // Populate data.
+            PageNumber = cache.HistoryPageNumber;
+            SavedRevisionId = cache.SelectedHistoryRevision;
+
+            StateChanged?.Invoke();
+        }
+
+        /// <inheritdoc />
+        public void SaveState(IWindowCache cache)
+        {
+            // Update cache.
+            cache.HistoryPageNumber = PageNumber;
+            cache.SelectedHistoryRevision = SelectedRevisionId;
         }
 
         /// <summary>
@@ -156,7 +178,7 @@ namespace Unity.Cloud.Collaborate.Models
         /// </summary>
         /// <param name="requestId">Id of the request to add.</param>
         /// <returns>False if the request already exists.</returns>
-        bool AddRequest(string requestId)
+        bool AddRequest([NotNull] string requestId)
         {
             if (m_Requests.Contains(requestId)) return false;
             m_Requests.Add(requestId);
@@ -170,7 +192,7 @@ namespace Unity.Cloud.Collaborate.Models
         /// Remove a finished request.
         /// </summary>
         /// <param name="requestId">Id of the request to remove.</param>
-        void RemoveRequest(string requestId)
+        void RemoveRequest([NotNull] string requestId)
         {
             Assert.IsTrue(m_Requests.Contains(requestId), $"Expects request to have first been made for it to have been finished: {requestId}");
             m_Requests.Remove(requestId);

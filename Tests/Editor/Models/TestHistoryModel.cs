@@ -4,20 +4,18 @@ using JetBrains.Annotations;
 using NUnit.Framework;
 using Unity.Cloud.Collaborate.Models;
 using Unity.Cloud.Collaborate.Models.Structures;
+using Unity.Cloud.Collaborate.UserInterface;
 
 namespace Unity.Cloud.Collaborate.Tests.Models
 {
     internal class TestHistoryModel : IHistoryModel
     {
-        public void OnStop()
-        {
-        }
-
         public event Action HistoryListUpdated = delegate { };
         public event Action<IReadOnlyList<IHistoryEntry>> HistoryListReceived = delegate { };
         public event Action<IHistoryEntry> SelectedRevisionReceived = delegate { };
         public event Action<bool> BusyStatusUpdated = delegate { };
         public event Action<int?> EntryCountUpdated = delegate { };
+        public event Action StateChanged = delegate { };
 
         public int RequestedPageOfRevisionsCount;
         public int RequestedPageSize;
@@ -104,6 +102,26 @@ namespace Unity.Cloud.Collaborate.Tests.Models
             RequestedRevertCount++;
             RequestedRevertRevisionId = revisionId;
             RequestedRevertFileCount = files.Count;
+        }
+
+        public void OnStart()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnStop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RestoreState(IWindowCache cache)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SaveState(IWindowCache cache)
+        {
+            throw new NotImplementedException();
         }
     }
 }

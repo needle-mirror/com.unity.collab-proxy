@@ -216,5 +216,15 @@ namespace Unity.Cloud.Collaborate.Models.Api
         /// Show the service page.
         /// </summary>
         void ShowServicePage();
+
+        /// <summary>
+        /// Show login page.
+        /// </summary>
+        void ShowLoginPage();
+
+        /// <summary>
+        /// Show no seat page.
+        /// </summary>
+        void ShowNoSeatPage();
     }
 }

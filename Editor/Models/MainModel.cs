@@ -1,4 +1,6 @@
 using System;
+using JetBrains.Annotations;
+using NUnit.Framework;
 using Unity.Cloud.Collaborate.Models.Api;
 using Unity.Cloud.Collaborate.Models.Structures;
 using Unity.Cloud.Collaborate.UserInterface;
@@ -7,6 +9,7 @@ namespace Unity.Cloud.Collaborate.Models
 {
     internal class MainModel : IMainModel
     {
+        [NotNull]
         readonly ISourceControlProvider m_Provider;
 
         /// <inheritdoc />
@@ -27,10 +30,29 @@ namespace Unity.Cloud.Collaborate.Models
         /// <inheritdoc />
         public event Action<bool> RemoteRevisionsAvailabilityChange;
 
-        public MainModel(ISourceControlProvider provider)
+        /// <inheritdoc />
+        public event Action<string> BackButtonStateUpdated;
+
+        /// <inheritdoc />
+        public event Action StateChanged;
+
+        [NotNull]
+        readonly IHistoryModel m_HistoryModel;
+        [NotNull]
+        readonly IChangesModel m_ChangesModel;
+
+        (string id, string text, Action backEvent)? m_BackNavigation;
+
+        public MainModel([NotNull] ISourceControlProvider provider)
         {
             m_Provider = provider;
+            m_HistoryModel = new HistoryModel(m_Provider);
+            m_ChangesModel = new ChangesModel(m_Provider);
+        }
 
+        /// <inheritdoc />
+        public void OnStart()
+        {
             // Setup events
             m_Provider.UpdatedOperationStatus += OnUpdatedOperationStatus;
             m_Provider.UpdatedOperationProgress += OnUpdatedOperationProgress;
@@ -38,19 +60,49 @@ namespace Unity.Cloud.Collaborate.Models
             m_Provider.ErrorCleared += OnErrorCleared;
             m_Provider.UpdatedConflictState += OnUpdatedConflictState;
             m_Provider.UpdatedRemoteRevisionsAvailability += OnUpdatedRemoteRevisionsAvailability;
-            WindowCache.Instance.BeforeSerialize += OnStop;
+
+            // Propagate event to "child" models.
+            m_HistoryModel.OnStart();
+            m_ChangesModel.OnStart();
         }
 
         /// <inheritdoc />
         public void OnStop()
         {
-            WindowCache.Instance.BeforeSerialize -= OnStop;
+            // Clean up.
             m_Provider.UpdatedOperationStatus -= OnUpdatedOperationStatus;
             m_Provider.UpdatedOperationProgress -= OnUpdatedOperationProgress;
             m_Provider.ErrorOccurred -= OnErrorOccurred;
             m_Provider.ErrorCleared -= OnErrorCleared;
             m_Provider.UpdatedConflictState -= OnUpdatedConflictState;
             m_Provider.UpdatedRemoteRevisionsAvailability -= OnUpdatedRemoteRevisionsAvailability;
+
+            // Propagate event to "child" models.
+            m_HistoryModel.OnStop();
+            m_ChangesModel.OnStop();
+        }
+
+        /// <inheritdoc />
+        public void RestoreState(IWindowCache cache)
+        {
+            // Read in cached data.
+            CurrentTabIndex = cache.TabIndex;
+            StateChanged?.Invoke();
+
+            // Propagate restore call to "child" models.
+            m_HistoryModel.RestoreState(cache);
+            m_ChangesModel.RestoreState(cache);
+        }
+
+        /// <inheritdoc />
+        public void SaveState(IWindowCache cache)
+        {
+            // Cache data.
+            cache.TabIndex = CurrentTabIndex;
+
+            // Propagate save call to "child" models.
+            m_HistoryModel.SaveState(cache);
+            m_ChangesModel.SaveState(cache);
         }
 
         /// <inheritdoc />
@@ -66,15 +118,18 @@ namespace Unity.Cloud.Collaborate.Models
         public IErrorInfo ErrorInfo => m_Provider.GetErrorState();
 
         /// <inheritdoc />
+        public int CurrentTabIndex { get; set; }
+
+        /// <inheritdoc />
         public IHistoryModel ConstructHistoryModel()
         {
-            return new HistoryModel(m_Provider);
+            return m_HistoryModel;
         }
 
         /// <inheritdoc />
         public IChangesModel ConstructChangesModel()
         {
-            return new ChangesModel(m_Provider);
+            return m_ChangesModel;
         }
 
         /// <inheritdoc />
@@ -93,6 +148,30 @@ namespace Unity.Cloud.Collaborate.Models
         public void RequestCancelJob()
         {
             m_Provider.RequestCancelJob();
+        }
+
+        /// <inheritdoc />
+        public (string id, string text, Action backAction)? GetBackNavigation()
+        {
+            return m_BackNavigation;
+        }
+
+        /// <inheritdoc />
+        public void RegisterBackNavigation(string id, string text, Action backAction)
+        {
+            Assert.IsNull(m_BackNavigation, "There should only be one back navigation registered at a time.");
+            m_BackNavigation = (id, text, backAction);
+            BackButtonStateUpdated?.Invoke(text);
+        }
+
+        /// <inheritdoc />
+        public bool UnregisterBackNavigation(string id)
+        {
+            if (m_BackNavigation?.id != id) return false;
+
+            m_BackNavigation = null;
+            BackButtonStateUpdated?.Invoke(null);
+            return true;
         }
 
         /// <summary>

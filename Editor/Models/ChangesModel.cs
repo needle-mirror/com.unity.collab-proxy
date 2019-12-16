@@ -24,6 +24,9 @@ namespace Unity.Cloud.Collaborate.Models
         /// <inheritdoc />
         public event Action<bool> BusyStatusUpdated;
 
+        /// <inheritdoc />
+        public event Action StateChanged;
+
         internal Dictionary<string, IChangeEntryData> entryData;
 
         internal Dictionary<string, bool> toggledEntries;
@@ -61,19 +64,58 @@ namespace Unity.Cloud.Collaborate.Models
         {
             m_Provider = provider;
             m_Requests = new HashSet<string>();
-            m_Provider.UpdatedChangeList += OnUpdatedChangeList;
-            m_Provider.UpdatedSelectedChangeList += OnUpdatedSelectedChangesList;
-
             m_AllItem = new ChangeEntryData { Entry = new ChangeEntry(string.Empty), All = true };
-
-            SavedRevisionSummary = WindowCache.Instance.RevisionSummary;
-            SavedSearchQuery = WindowCache.Instance.ChangesSearchValue;
-            toggledEntries = WindowCache.Instance.SimpleSelectedItems ?? new Dictionary<string, bool>();
-
             entryData = new Dictionary<string, IChangeEntryData>();
             m_Conflicted = new List<IChangeEntryData>();
+            toggledEntries = new Dictionary<string, bool>();
+            SavedSearchQuery = string.Empty;
+            SavedRevisionSummary = string.Empty;
+        }
 
-            WindowCache.Instance.BeforeSerialize += OnStop;
+        /// <inheritdoc />
+        public void OnStart()
+        {
+            // Setup events.
+            m_Provider.UpdatedChangeList += OnUpdatedChangeList;
+            m_Provider.UpdatedSelectedChangeList += OnUpdatedSelectedChangesList;
+        }
+
+        /// <inheritdoc />
+        public void OnStop()
+        {
+            // Clean up.
+            m_Provider.UpdatedChangeList -= OnUpdatedChangeList;
+            m_Provider.UpdatedSelectedChangeList -= OnUpdatedSelectedChangesList;
+        }
+
+        /// <inheritdoc />
+        public void RestoreState(IWindowCache cache)
+        {
+            // Populate data from cache.
+            SavedRevisionSummary = cache.RevisionSummary;
+            SavedSearchQuery = cache.ChangesSearchValue;
+            toggledEntries = cache.SimpleSelectedItems ?? new Dictionary<string, bool>();
+
+            StateChanged?.Invoke();
+        }
+
+        /// <inheritdoc />
+        public void SaveState(IWindowCache cache)
+        {
+            // Save data.
+            cache.RevisionSummary = SavedRevisionSummary;
+            cache.ChangesSearchValue = SavedSearchQuery;
+            cache.SimpleSelectedItems = new SelectedItemsDictionary(toggledEntries);
+        }
+
+        /// <summary>
+        /// Event handler for when the source control provider receives an updated history list.
+        /// </summary>
+        void OnUpdatedChangeList()
+        {
+            // Only one request at a time.
+            if (!AddRequest(k_RequestNewList)) return;
+            m_Provider.RequestChangeList(OnReceivedChangeList);
         }
 
         void OnUpdatedSelectedChangesList(IReadOnlyList<string> list)
@@ -85,27 +127,6 @@ namespace Unity.Cloud.Collaborate.Models
             }
 
             OnUpdatedSelectedChanges?.Invoke();
-        }
-
-        /// <inheritdoc />
-        public void OnStop()
-        {
-            WindowCache.Instance.BeforeSerialize -= OnStop;
-            m_Provider.UpdatedChangeList -= OnUpdatedChangeList;
-            m_Provider.UpdatedSelectedChangeList -= OnUpdatedSelectedChangesList;
-            WindowCache.Instance.RevisionSummary = SavedRevisionSummary;
-            WindowCache.Instance.ChangesSearchValue = SavedSearchQuery;
-            WindowCache.Instance.SimpleSelectedItems = new SelectedItemsDictionary(toggledEntries);
-        }
-
-        /// <summary>
-        /// Event handler for when the source control provider receives an updated history list.
-        /// </summary>
-        void OnUpdatedChangeList()
-        {
-            // Only one request at a time.
-            if (!AddRequest(k_RequestNewList)) return;
-            m_Provider.RequestChangeList(OnReceivedChangeList);
         }
 
         /// <summary>

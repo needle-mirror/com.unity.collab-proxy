@@ -35,6 +35,8 @@ namespace Unity.Cloud.Collaborate.Views
         readonly SearchBar m_SearchBar;
         readonly VisualElement m_EntryGroupsContainer;
 
+        bool m_Active;
+
         [CanBeNull]
         ConflictedChangeListAdapter m_ConflictedChangeListAdapter;
         [CanBeNull]
@@ -105,12 +107,18 @@ namespace Unity.Cloud.Collaborate.Views
         /// <inheritdoc />
         protected override void SetActive()
         {
+            Assert.IsFalse(m_Active, "The view is already active.");
+            m_Active = true;
+
             m_Presenter?.Start();
         }
 
         /// <inheritdoc />
         protected override void SetInactive()
         {
+            Assert.IsTrue(m_Active, "The view is already inactive.");
+            m_Active = false;
+
             m_Presenter?.Stop();
         }
 

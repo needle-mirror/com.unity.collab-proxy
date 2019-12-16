@@ -25,6 +25,8 @@ namespace Unity.Cloud.Collaborate.Models.Providers
 {
     internal class Collab : ISourceControlProvider
     {
+        const string k_KServiceUrl = "developer.cloud.unity3d.com";
+
         readonly RevisionsService m_RevisionsService;
 
         /// <inheritdoc />
@@ -66,6 +68,7 @@ namespace Unity.Cloud.Collaborate.Models.Providers
         [CanBeNull]
         IHistoryEntry m_HistoryEntryCache;
         int? m_HistoryEntryCountCache;
+        string m_TipCache;
 
         [CanBeNull]
         IErrorInfo m_ErrorInfo;
@@ -85,11 +88,12 @@ namespace Unity.Cloud.Collaborate.Models.Providers
             var info = instance.collabInfo;
             m_ConflictCachedState = info.conflict;
             m_RemoteRevisionsAvailableState = info.update;
+            m_TipCache = info.tip;
             m_ProgressInfo = info.inProgress ? ProgressInfoFromCollab(instance.GetJobProgress(0)) : null;
             m_ErrorInfo = instance.GetError(UnityConnect.UnityErrorFilter.ByContext | UnityConnect.UnityErrorFilter.ByChild, out var errInfo)
                 ? ErrorInfoFromUnity(errInfo)
                 : null;
-            m_ProjectStatus = GetNewProjectStatus(info);
+            m_ProjectStatus = GetNewProjectStatus(info, UnityConnect.instance.connectInfo, UnityConnect.instance.projectInfo);
 
             SetupEvents();
         }
@@ -143,7 +147,8 @@ namespace Unity.Cloud.Collaborate.Models.Providers
         }
 
         /// <summary>
-        /// Event handler for when the current revision has changed.
+        /// Event handler for when a revision has been created or updated. It's not called 100% of the time when a user
+        /// publishes a new revision.
         /// </summary>
         /// <param name="info">New collab info.</param>
         /// <param name="rev">New revision id.</param>
@@ -154,8 +159,7 @@ namespace Unity.Cloud.Collaborate.Models.Providers
             m_HistoryEntriesCache = null;
             m_HistoryEntryCache = null;
             m_HistoryEntryCountCache = null;
-
-            // TODO: verify this is needed. Do I need to check the action string?
+            // Send update event.
             UpdatedHistoryEntries?.Invoke();
 
             OnCollabInfoChanged(info);
@@ -177,8 +181,22 @@ namespace Unity.Cloud.Collaborate.Models.Providers
                 UpdatedRemoteRevisionsAvailability?.Invoke(info.update);
             }
 
+            // Update history list if the tip has changed.
+            if (m_TipCache != info.tip)
+            {
+                m_TipCache = info.tip;
+
+                // Invalidate the cache.
+                m_HistoryEntriesCache = null;
+                m_HistoryEntryCache = null;
+                m_HistoryEntryCountCache = null;
+
+                // Send update event.
+                UpdatedHistoryEntries?.Invoke();
+            }
+
             // Update project state
-            UpdateProjectStatus(info);
+            UpdateProjectStatus(info, UnityConnect.instance.connectInfo, UnityConnect.instance.projectInfo);
 
             // Update progress state.
             if (info.inProgress)
@@ -207,7 +225,11 @@ namespace Unity.Cloud.Collaborate.Models.Providers
 
         void OnJobsCompleted(CollabInfo info)
         {
-            Debug.Assert(!info.inProgress);
+            // NOTE: The first start of collab sends a completion event with no prior progress info.
+            // To handle this, skip sending completion event if there has been no start event.
+            if (m_ProgressInfo == null) return;
+
+            Assert.IsFalse(info.inProgress);
             m_ProgressInfo = null;
             UpdatedOperationStatus?.Invoke(false);
         }
@@ -251,10 +273,10 @@ namespace Unity.Cloud.Collaborate.Models.Providers
         /// <summary>
         /// Event handler for receiving unity connect project state changes.
         /// </summary>
-        /// <param name="state">New state.</param>
-        void OnUnityConnectProjectStateChanged(ProjectInfo state)
+        /// <param name="projectInfo">New project info.</param>
+        void OnUnityConnectProjectStateChanged(ProjectInfo projectInfo)
         {
-            UpdateProjectStatus(instance.collabInfo);
+            UpdateProjectStatus(instance.collabInfo, UnityConnect.instance.connectInfo, projectInfo);
         }
 
         /// <summary>
@@ -269,18 +291,18 @@ namespace Unity.Cloud.Collaborate.Models.Providers
         /// <summary>
         /// Event handler for receiving collab state changes.
         /// </summary>
-        /// <param name="state"></param>
-        void OnUnityConnectStateChanged(ConnectInfo state)
+        /// <param name="connectInfo">UnityConnect connect info.</param>
+        void OnUnityConnectStateChanged(ConnectInfo connectInfo)
         {
-            UpdateProjectStatus(instance.collabInfo);
+            UpdateProjectStatus(instance.collabInfo, connectInfo, UnityConnect.instance.projectInfo);
         }
 
         /// <summary>
         /// Update cached ready value and send event if it has changed.
         /// </summary>
-        void UpdateProjectStatus(CollabInfo info)
+        void UpdateProjectStatus(CollabInfo collabInfo, ConnectInfo connectInfo, ProjectInfo projectInfo)
         {
-            var currentStatus = GetNewProjectStatus(info);
+            var currentStatus = GetNewProjectStatus(collabInfo, connectInfo, projectInfo);
             if (m_ProjectStatus == currentStatus) return;
             m_ProjectStatus = currentStatus;
             UpdatedProjectStatus?.Invoke(m_ProjectStatus);
@@ -290,21 +312,44 @@ namespace Unity.Cloud.Collaborate.Models.Providers
         /// Returns the current project status.
         /// </summary>
         /// <returns>Current status of this project.</returns>
-        static ProjectStatus GetNewProjectStatus(CollabInfo info)
+        static ProjectStatus GetNewProjectStatus(CollabInfo collabInfo, ConnectInfo connectInfo, ProjectInfo projectInfo)
         {
-            if (!info.ready)
-            {
-                return ProjectStatus.Loading;
-            }
-
-            if (!UnityConnect.instance.projectInfo.projectBound)
+            // No UPID.
+            if (!projectInfo.projectBound)
             {
                 return ProjectStatus.Unbound;
             }
 
+            if (!connectInfo.online)
+            {
+                return ProjectStatus.Offline;
+            }
+
+            if (connectInfo.maintenance || collabInfo.maintenance)
+            {
+                return ProjectStatus.Maintenance;
+            }
+
+            if (!connectInfo.loggedIn)
+            {
+                return ProjectStatus.LoggedOut;
+            }
+
+            if (!collabInfo.seat)
+            {
+                return ProjectStatus.NoSeat;
+            }
+
+            // UPID exists, but collab off.
             if (!instance.IsCollabEnabledForCurrentProject())
             {
                 return ProjectStatus.Bound;
+            }
+
+            // Waiting for collab to connect and be ready.
+            if (!instance.IsConnected() || !collabInfo.ready)
+            {
+                return ProjectStatus.Loading;
             }
 
             return ProjectStatus.Ready;
@@ -446,7 +491,7 @@ namespace Unity.Cloud.Collaborate.Models.Providers
         /// <inheritdoc />
         public void RequestHistoryEntry(string revisionId, Action<IHistoryEntry> callback)
         {
-            // Return cached entry is possible.
+            // Return cached entry if possible.
             if (m_HistoryEntryCache?.RevisionId == revisionId)
             {
                 callback(m_HistoryEntryCache);
@@ -469,7 +514,10 @@ namespace Unity.Cloud.Collaborate.Models.Providers
             void OnFetchRevisionCallback(Revision? revision)
             {
                 m_RevisionsService.FetchSingleRevisionCallback -= OnFetchRevisionCallback;
-                callback(revision == null ? null : RevisionToHistoryEntry(revision.Value));
+                // Failing to find the revision can result in a null revision or an empty revisionID.
+                callback(string.IsNullOrEmpty(revision?.revisionID)
+                    ? null
+                    : RevisionToHistoryEntry(revision.GetValueOrDefault()));
             }
         }
 
@@ -614,6 +662,30 @@ namespace Unity.Cloud.Collaborate.Models.Providers
         }
 
         /// <inheritdoc />
+        public void ShowLoginPage()
+        {
+            UnityConnect.instance.ShowLogin();
+        }
+
+        /// <inheritdoc />
+        public void ShowNoSeatPage()
+        {
+            var unityConnect = UnityConnect.instance;
+            var env = unityConnect.GetEnvironment();
+            // Map environment to url - prod is special
+            if (env == "production")
+                env = "";
+            else
+                env += "-";
+
+            var url = "https://" + env + k_KServiceUrl
+                + "/orgs/" + unityConnect.GetOrganizationId()
+                + "/projects/" + unityConnect.GetProjectName()
+                + "/unity-teams/";
+            Application.OpenURL(url);
+        }
+
+        /// <inheritdoc />
         public async void RequestTurnOnService()
         {
             try
@@ -706,9 +778,9 @@ namespace Unity.Cloud.Collaborate.Models.Providers
         {
             var time = DateTimeOffset.FromUnixTimeSeconds((long)revision.timeStamp);
             var entries = revision.entries.Select(ChangeActionToChangeEntry).ToList();
-            var status = HistoryEntryStatus.Behind;
+            var status = HistoryEntryStatus.Ahead;
             if (revision.isObtained)
-                status = HistoryEntryStatus.Ahead;
+                status = HistoryEntryStatus.Behind;
             if (revision.revisionID == m_RevisionsService.tipRevision)
                 status = HistoryEntryStatus.Current;
             return new HistoryEntry(revision.revisionID, status, revision.author, revision.comment, time, entries);

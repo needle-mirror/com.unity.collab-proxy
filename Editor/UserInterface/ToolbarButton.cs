@@ -26,7 +26,6 @@ namespace Unity.Cloud.Collaborate.UserInterface
         ToolbarButtonState m_CurrentState;
         string m_ErrorMessage;
         readonly Dictionary<ToolbarButtonState, GUIContent> m_IconCache = new Dictionary<ToolbarButtonState, GUIContent>();
-        readonly Dictionary<ToolbarButtonState, GUIContent> m_IconOverlayCache = new Dictionary<ToolbarButtonState, GUIContent>();
         ButtonWithAnimatedIconRotation m_CollabButton;
 
         public ToolbarButton()

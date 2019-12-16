@@ -6,15 +6,78 @@ using UnityEngine.Serialization;
 
 namespace Unity.Cloud.Collaborate.UserInterface
 {
-    [Location("Cache/Window.yml", LocationAttribute.Location.LibraryFolder)]
-    internal class WindowCache : ScriptableObjectSingleton<WindowCache>
+    internal interface IWindowCache
     {
-        public event Action BeforeSerialize;
+        void Clear();
+
+        SelectedItemsDictionary SimpleSelectedItems { get; set; }
+
+        string RevisionSummary { get; set; }
+
+        string ChangesSearchValue { get; set; }
+
+        string SelectedHistoryRevision { get; set; }
+
+        int HistoryPageNumber { get; set; }
+
+        int TabIndex { get; set; }
+    }
+
+    [Location("Cache/Window.yml", LocationAttribute.Location.LibraryFolder)]
+    internal class WindowCache : ScriptableObjectSingleton<WindowCache>, IWindowCache
+    {
+        public event Action<IWindowCache> BeforeSerialize;
 
         public void Serialize()
         {
-            BeforeSerialize?.Invoke();
+            BeforeSerialize?.Invoke(this);
             Save();
+        }
+
+        public void Clear()
+        {
+            SimpleSelectedItems = default;
+            RevisionSummary = default;
+            ChangesSearchValue = default;
+            SelectedHistoryRevision = default;
+            HistoryPageNumber = default;
+            TabIndex = default;
+        }
+
+        SelectedItemsDictionary IWindowCache.SimpleSelectedItems
+        {
+            get => SimpleSelectedItems;
+            set => SimpleSelectedItems = value;
+        }
+
+        string IWindowCache.RevisionSummary
+        {
+            get => RevisionSummary;
+            set => RevisionSummary = value;
+        }
+
+        string IWindowCache.ChangesSearchValue
+        {
+            get => ChangesSearchValue;
+            set => ChangesSearchValue = value;
+        }
+
+        string IWindowCache.SelectedHistoryRevision
+        {
+            get => SelectedHistoryRevision;
+            set => SelectedHistoryRevision = value;
+        }
+
+        int IWindowCache.HistoryPageNumber
+        {
+            get => HistoryPageNumber;
+            set => HistoryPageNumber = value;
+        }
+
+        int IWindowCache.TabIndex
+        {
+            get => TabIndex;
+            set => TabIndex = value;
         }
 
         [SerializeField]

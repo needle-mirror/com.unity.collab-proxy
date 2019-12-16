@@ -16,6 +16,7 @@ namespace Unity.Cloud.Collaborate.Views
         IMainPresenter m_Presenter;
 
         public const string UssClassName = "main-page-view";
+        public const string TopBarUssClassName = UssClassName + "__top-bar";
         public const string AlertBoxUssClassName = UssClassName + "__alert-box";
         public const string TabViewUssClassName = UssClassName + "__tab-view";
         public const string ContainerUssClassName = UssClassName + "__container";
@@ -28,7 +29,10 @@ namespace Unity.Cloud.Collaborate.Views
         readonly HistoryTabPageView m_HistoryView;
         readonly ChangesTabPageView m_ChangesView;
         readonly VisualElement m_Container;
+        readonly TopBar m_TopBar;
         ProgressView m_ProgressView;
+
+        DisplayMode m_DisplayMode;
 
         public MainPageView()
         {
@@ -36,6 +40,7 @@ namespace Unity.Cloud.Collaborate.Views
             AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(k_LayoutPath).CloneTree(this);
             styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>(k_StylePath));
 
+            m_TopBar = this.Q<TopBar>(className: TopBarUssClassName);
             m_AlertBox = this.Q<AlertBox>(className: AlertBoxUssClassName);
             m_TabView = this.Q<TabView>(className: TabViewUssClassName);
             m_Container = this.Q<VisualElement>(className: ContainerUssClassName);
@@ -44,7 +49,9 @@ namespace Unity.Cloud.Collaborate.Views
             m_HistoryView = new HistoryTabPageView();
             m_TabView.AddTab(StringAssets.changes, m_ChangesView);
             m_TabView.AddTab(StringAssets.history, m_HistoryView);
-            m_TabView.Init();
+
+            // Set the current display mode.
+            m_DisplayMode = DisplayMode.TabView;
         }
 
         /// <inheritdoc />
@@ -54,7 +61,9 @@ namespace Unity.Cloud.Collaborate.Views
             {
                 m_Presenter = value;
                 m_Presenter.AssignHistoryPresenter(m_HistoryView);
-                m_Presenter.AssignHistoryPresenter(m_ChangesView);
+                m_Presenter.AssignChangesPresenter(m_ChangesView);
+                m_TabView.TabSwitched += OnTabSwitched;
+                m_TopBar.BackButtonClicked += OnBackButtonClicked;
                 // If page active before presenter has been added, call start once we have it.
                 if (Active)
                 {
@@ -63,15 +72,26 @@ namespace Unity.Cloud.Collaborate.Views
             }
         }
 
+
         /// <inheritdoc />
         protected override void SetActive()
         {
+            // Set TabView active if it's currently being displayed.
+            if (m_DisplayMode == DisplayMode.TabView)
+            {
+                m_TabView.SetActive();
+            }
             m_Presenter?.Start();
         }
 
         /// <inheritdoc />
         protected override void SetInactive()
         {
+            // Set TabView inactive if it's current being displayed.
+            if (m_DisplayMode == DisplayMode.TabView)
+            {
+                m_TabView.SetInactive();
+            }
             m_Presenter?.Stop();
         }
 
@@ -87,25 +107,25 @@ namespace Unity.Cloud.Collaborate.Views
             m_AlertBox.DequeueAlert(id);
         }
 
+        /// <inheritdoc />
+        public void SetTab(int index)
+        {
+            m_TabView.SwitchTab(index);
+        }
+
+        /// <inheritdoc />
         public void AddOperationProgress()
         {
-            if (m_ProgressView == null)
-            {
-                m_ProgressView = new ProgressView();
-                m_ProgressView.SetCancelCallback(m_Presenter.RequestCancelJob);
-                m_Container.Add(m_ProgressView);
-            }
-            m_ProgressView.RemoveFromClassList(UiConstants.ussHidden);
-            m_TabView.AddToClassList(UiConstants.ussHidden);
+            SetDisplay(DisplayMode.ProgressView);
         }
 
+        /// <inheritdoc />
         public void RemoveOperationProgress()
         {
-            m_ProgressView?.AddToClassList(UiConstants.ussHidden);
-
-            m_TabView.RemoveFromClassList(UiConstants.ussHidden);
+            SetDisplay(DisplayMode.TabView);
         }
 
+        /// <inheritdoc />
         public void SetOperationProgress(string title, string details, int percentage, int completed, int total, bool isPercentage, bool canCancel)
         {
             Assert.IsNotNull(m_ProgressView);
@@ -116,7 +136,62 @@ namespace Unity.Cloud.Collaborate.Views
             m_ProgressView.SetCancelButtonActive(canCancel);
         }
 
+        /// <inheritdoc />
+        public void ClearBackNavigation()
+        {
+            m_TopBar.HideBackNavigation();
+        }
+
+        /// <inheritdoc />
+        public void DisplayBackNavigation(string text)
+        {
+            m_TopBar.DisplayBackNavigation(text);
+        }
+
+        void SetDisplay(DisplayMode mode)
+        {
+            Assert.AreNotEqual(m_DisplayMode, mode, "Cannot switch to the current display mode.");
+            m_DisplayMode = mode;
+
+            // Switch into tab or progress view.
+            if (m_DisplayMode == DisplayMode.TabView)
+            {
+                m_ProgressView?.AddToClassList(UiConstants.ussHidden);
+
+                m_TabView.RemoveFromClassList(UiConstants.ussHidden);
+                m_TabView.SetActive();
+            }
+            else
+            {
+                if (m_ProgressView == null)
+                {
+                    m_ProgressView = new ProgressView();
+                    m_ProgressView.SetCancelCallback(m_Presenter.RequestCancelJob);
+                    m_Container.Add(m_ProgressView);
+                }
+                m_ProgressView.RemoveFromClassList(UiConstants.ussHidden);
+                m_TabView.AddToClassList(UiConstants.ussHidden);
+                m_TabView.SetInactive();
+            }
+        }
+
+        void OnTabSwitched(int index)
+        {
+            m_Presenter.UpdateTabIndex(index);
+        }
+
+        void OnBackButtonClicked()
+        {
+            m_Presenter.NavigateBack();
+        }
+
         [UsedImplicitly]
         public new class UxmlFactory : UxmlFactory<MainPageView> { }
+
+        enum DisplayMode
+        {
+            TabView,
+            ProgressView
+        }
     }
 }

@@ -4,6 +4,16 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.3.4] - 2019-12-16
+### Changed
+- Window state is no longer restored after the window is closed and opened.
+### Fixed
+- History tab failing to load on startup if it is left open in the previous session.
+- Progress bar percentage not matching the bar.
+- History list correctly updates after a new revision is published.
+- UI instabilities when restoring or going back to a revision with a different package manifest.
+- Improve handling of changes to the project id.
+
 ## [1.3.3] - 2019-12-10
 ### Changed
 - Disable UI test cases that can be unstable.

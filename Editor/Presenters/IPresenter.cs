@@ -1,6 +1,6 @@
 namespace Unity.Cloud.Collaborate.Presenters
 {
-    interface IPresenter
+    internal interface IPresenter
     {
         /// <summary>
         /// Called when the view is ready to receive data. For example when it comes into view.

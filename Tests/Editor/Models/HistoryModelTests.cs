@@ -20,6 +20,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
         {
             m_Provider = new TestSourceControlProvider();
             m_Model = new HistoryModel(m_Provider);
+            m_Model.OnStart();
 
             m_BusyStatusUpdatedCount = 0;
             m_EntryCountUpdatedCount = 0;

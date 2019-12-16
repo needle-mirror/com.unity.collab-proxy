@@ -120,11 +120,11 @@ namespace Unity.Cloud.Collaborate.Models
         /// Request publish with the given message and list of files.
         /// </summary>
         /// <param name="message">Message for the revision.</param>
-        /// <param name="files">Files to publish.</param>
-        void RequestPublish([NotNull] string message, [NotNull] IReadOnlyList<IChangeEntry> changes = null);
+        /// <param name="changes">Changes to publish.</param>
+        void RequestPublish([NotNull] string message, [NotNull] IReadOnlyList<IChangeEntry> changes);
 
         /// <summary>
-        /// Show the difference between both version of a conlicted file.
+        /// Show the difference between both version of a conflicted file.
         /// </summary>
         /// <param name="path">Path of the file to show.</param>
         void RequestShowConflictedDifferences([NotNull] string path);

@@ -224,5 +224,15 @@ namespace Unity.Cloud.Collaborate.Tests.Models
         {
             throw new NotImplementedException();
         }
+
+        public void ShowLoginPage()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ShowNoSeatPage()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

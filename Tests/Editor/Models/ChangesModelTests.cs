@@ -13,11 +13,16 @@ namespace Unity.Cloud.Collaborate.Tests.Models
         {
             public TestSourceControlProvider Provider => (TestSourceControlProvider)m_Provider;
 
-            public TestableChangesModel([CanBeNull] Dictionary<string, bool> toggledEntries = null) : base (new TestSourceControlProvider())
+            public TestableChangesModel() : base (new TestSourceControlProvider())
             {
-                if (toggledEntries != null)
+
+            }
+
+            public void SetToggled([CanBeNull] Dictionary<string, bool> toggled = null)
+            {
+                if (toggled != null)
                 {
-                    this.toggledEntries = toggledEntries;
+                    toggledEntries = toggled;
                 }
             }
 
@@ -50,6 +55,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
         public void ChangesModel_NullSourceControlEntries_EmptyResultLists()
         {
             var model = new TestableChangesModel();
+            model.OnStart();
             model.UpdateChangeList(new List<IChangeEntry>());
 
             var fullList = model.GetAllEntries();
@@ -66,6 +72,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
         public void ChangesModel_EmptySourceControlEntries_EmptyResultLists()
         {
             var model = new TestableChangesModel();
+            model.OnStart();
             model.UpdateChangeList(new List<IChangeEntry>());
 
             var fullList = model.GetAllEntries();
@@ -82,6 +89,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
         public void ChangesModel_SingleSourceControlEntries_SingleUntoggledResult()
         {
             var model = new TestableChangesModel();
+            model.OnStart();
             var changes = BuildChangesList(1);
             model.UpdateChangeList(changes);
 
@@ -109,6 +117,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
             const int entryCount = 5;
 
             var model = new TestableChangesModel();
+            model.OnStart();
             var changes = BuildChangesList(entryCount);
             model.UpdateChangeList(changes);
 
@@ -165,6 +174,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
             const int entryCount = 5;
 
             var model = new TestableChangesModel();
+            model.OnStart();
             var changes = BuildChangesList(entryCount);
             model.UpdateChangeList(changes);
 
@@ -208,6 +218,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
             const int entryCount = 5;
 
             var model = new TestableChangesModel();
+            model.OnStart();
             var changes = BuildChangesList(entryCount);
             model.UpdateChangeList(changes);
 
@@ -254,6 +265,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
             const int entryCount = 5;
 
             var model = new TestableChangesModel();
+            model.OnStart();
             var changes = BuildChangesList(entryCount);
             model.UpdateChangeList(changes);
 
@@ -310,6 +322,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
             const string conflictedPrefix = "conflicted-path";
 
             var model = new TestableChangesModel();
+            model.OnStart();
             var changes = new List<IChangeEntry>();
             AddEntry(changes, "path1", ChangeEntryStatus.Modified, false);
             AddEntry(changes, "path2", ChangeEntryStatus.Modified, false);
@@ -348,7 +361,9 @@ namespace Unity.Cloud.Collaborate.Tests.Models
             dictionary[changes[toggledIndex2].Path] = true;
             dictionary[changes[untoggledIndex].Path] = false;
 
-            var model = new TestableChangesModel(dictionary);
+            var model = new TestableChangesModel();
+            model.OnStart();
+            model.SetToggled(dictionary);
             model.UpdateChangeList(changes);
 
             var fullList = model.GetAllEntries();
@@ -414,7 +429,9 @@ namespace Unity.Cloud.Collaborate.Tests.Models
                 ["delta5"] = true, ["Foxtrot6"] = true, ["Foxtrot7"] = true, ["golf"] = true
             };
 
-            var model = new TestableChangesModel(dictionary);
+            var model = new TestableChangesModel();
+            model.OnStart();
+            model.SetToggled(dictionary);
             model.UpdateChangeList(changes);
 
             var fullList = model.GetAllEntries();
@@ -467,6 +484,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
         {
             var provider = new TestSourceControlProvider();
             var model = new ChangesModel(provider);
+            model.OnStart();
 
             var callCount = 0;
             bool? callValue = null;
@@ -493,6 +511,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
         {
             var provider = new TestSourceControlProvider();
             var model = new ChangesModel(provider);
+            model.OnStart();
 
             var callCount = 0;
             bool? callValue = null;
@@ -519,6 +538,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
         {
             var provider = new TestSourceControlProvider();
             var model = new ChangesModel(provider);
+            model.OnStart();
 
             const string path = "path";
             model.RequestDiffChanges(path);
@@ -531,6 +551,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
         {
             var provider = new TestSourceControlProvider();
             var model = new ChangesModel(provider);
+            model.OnStart();
 
             const string path = "path";
             model.RequestDiscard(path);
@@ -543,6 +564,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
         {
             var provider = new TestSourceControlProvider();
             var model = new ChangesModel(provider);
+            model.OnStart();
 
             const string message = "message";
             model.RequestPublish(message, new List<IChangeEntry> { new ChangeEntry("path1"), new ChangeEntry("path2")});

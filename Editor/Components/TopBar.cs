@@ -1,6 +1,5 @@
 using System;
 using JetBrains.Annotations;
-using NUnit.Framework;
 using Unity.Cloud.Collaborate.Assets;
 using Unity.Cloud.Collaborate.Components.Menus;
 using Unity.Cloud.Collaborate.UserInterface;
@@ -25,14 +24,14 @@ namespace Unity.Cloud.Collaborate.Components
         static readonly string k_LayoutPath = $"{CollaborateWindow.LayoutPath}/{nameof(TopBar)}.uxml";
         static readonly string k_StylePath = $"{CollaborateWindow.StylePath}/{nameof(TopBar)}.uss";
 
+        public event Action BackButtonClicked;
+
         readonly VisualElement m_Icon;
         readonly TextElement m_BranchInfo;
         readonly IconButton m_OverflowMenu;
         readonly VisualElement m_BackContainer;
         readonly IconButton m_BackButton;
         readonly TextElement m_BackText;
-
-        (string id, string text, Action backEvent)? m_BackNavigation;
 
         [CanBeNull]
         string m_BranchName;
@@ -53,49 +52,30 @@ namespace Unity.Cloud.Collaborate.Components
             m_BackText = this.Q<TextElement>(className: BackTextUssClassName);
 
             m_OverflowMenu.Clicked += ClickableOnClicked;
-            m_BackButton.Clicked += BackButtonOnClicked;
+            m_BackButton.Clicked += () => BackButtonClicked?.Invoke();
 
-            UpdateBackVisibility();
+            HideBackNavigation();
+        }
 
-            GlobalEvents.RegisteredBackNavigation += RegisteredBackNavigation;
-            GlobalEvents.UnregisteredBackNavigation += UnregisteredBackNavigation;
-            GlobalEvents.WindowClosed += OnWindowClosed;
+        /// <summary>
+        /// Hide the current back navigation.
+        /// </summary>
+        public void HideBackNavigation()
+        {
+            m_BackContainer.AddToClassList(UiConstants.ussHidden);
+            m_BackButton.SetEnabled(false);
+            m_BackText.text = string.Empty;
         }
 
         /// <summary>
         /// Register back navigation to be made available to the user to navigate backwards in the UI.
         /// </summary>
-        /// <param name="id">Id for the back event.</param>
         /// <param name="text">Destination of the back navigation</param>
-        /// <param name="backEvent">Action required to navigate backwards.</param>
-        void RegisteredBackNavigation([NotNull] string id, [NotNull] string text, [NotNull] Action backEvent)
+        public void DisplayBackNavigation([NotNull] string text)
         {
-            Assert.Null(m_BackNavigation, "There should only be one back navigation registered at a time.");
-            m_BackNavigation = (id, text, backEvent);
-            UpdateBackVisibility();
-        }
-
-        /// <summary>
-        /// Unregister back navigation if the given id matches the currently displayed back navigation.
-        /// </summary>
-        /// <param name="id">Id for the back event.</param>
-        /// <returns>True if id matched.</returns>
-        bool UnregisteredBackNavigation(string id)
-        {
-            if (m_BackNavigation?.id != id) return false;
-
-            m_BackNavigation = null;
-            UpdateBackVisibility();
-            return true;
-        }
-
-        /// <summary>
-        /// Clear the back button on window close. Fixes issue with double OnEnable from window being closed then
-        /// reopened.
-        /// </summary>
-        void OnWindowClosed()
-        {
-            m_BackNavigation = null;
+            m_BackText.text = text;
+            m_BackButton.SetEnabled(true);
+            m_BackContainer.RemoveFromClassList(UiConstants.ussHidden);
         }
 
         void ClickableOnClicked()
@@ -105,31 +85,6 @@ namespace Unity.Cloud.Collaborate.Components
                 .AddEntry("Invite Teammate", OpenLinksUtility.OpenMembersLink, true)
                 .SetOpenDirection(MenuUtilities.OpenDirection.DownLeft)
                 .Open(x, y);
-        }
-
-        void BackButtonOnClicked()
-        {
-            Assert.NotNull(m_BackNavigation, "There is no available back navigation.");
-            m_BackNavigation?.backEvent();
-            m_BackNavigation = null;
-            UpdateBackVisibility();
-        }
-
-        void UpdateBackVisibility()
-        {
-            // Hide back controls if no back event registered. Otherwise, show back controls.
-            if (m_BackNavigation == null)
-            {
-                m_BackContainer.AddToClassList(UiConstants.ussHidden);
-                m_BackButton.SetEnabled(false);
-                m_BackText.text = string.Empty;
-            }
-            else
-            {
-                m_BackText.text = m_BackNavigation.Value.text;
-                m_BackButton.SetEnabled(true);
-                m_BackContainer.RemoveFromClassList(UiConstants.ussHidden);
-            }
         }
 
         [UsedImplicitly]

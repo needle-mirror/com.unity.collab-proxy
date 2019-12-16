@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.Cloud.Collaborate.Models;
 using Unity.Cloud.Collaborate.Models.Structures;
+using Unity.Cloud.Collaborate.UserInterface;
 
 namespace Unity.Cloud.Collaborate.Tests.Models
 {
@@ -42,7 +43,10 @@ namespace Unity.Cloud.Collaborate.Tests.Models
         public event Action UpdatedChangeList = delegate { };
 
         public event Action<bool> BusyStatusUpdated = delegate { };
+
         public event Action OnUpdatedSelectedChanges = delegate { };
+
+        public event Action StateChanged = delegate { };
 
         public string SavedRevisionSummary { get; set; } = "";
 
@@ -66,10 +70,6 @@ namespace Unity.Cloud.Collaborate.Tests.Models
         public void TriggerBusyStatusUpdated(bool value)
         {
             BusyStatusUpdated(value);
-        }
-
-        public void OnStop()
-        {
         }
 
         public bool UpdateEntryToggle(string path, bool toggled)
@@ -158,6 +158,26 @@ namespace Unity.Cloud.Collaborate.Tests.Models
             public bool All { get; set; }
             public bool ToggleReadOnly { get; set; }
             public bool Conflicted { get; set; }
+        }
+
+        public void OnStart()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnStop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RestoreState(IWindowCache cache)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SaveState(IWindowCache cache)
+        {
+            throw new NotImplementedException();
         }
     }
 }

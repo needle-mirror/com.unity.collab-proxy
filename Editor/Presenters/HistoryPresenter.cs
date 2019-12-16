@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using NUnit.Framework;
 using Unity.Cloud.Collaborate.Assets;
 using Unity.Cloud.Collaborate.Models;
 using Unity.Cloud.Collaborate.Views;
 using Unity.Cloud.Collaborate.Models.Structures;
-using Unity.Cloud.Collaborate.Utilities;
 using UnityEngine;
 
 namespace Unity.Cloud.Collaborate.Presenters
@@ -16,43 +16,83 @@ namespace Unity.Cloud.Collaborate.Presenters
         internal const string historyEntrySelectedId = "history-entry-selected";
 
         int m_MaxPages;
+        bool m_IsStarted;
 
+        [NotNull]
         readonly IHistoryView m_View;
+        [NotNull]
         readonly IHistoryModel m_HistoryModel;
+        [NotNull]
+        readonly IMainModel m_MainModel;
 
-        public HistoryPresenter(IHistoryView view, IHistoryModel historyModel)
+        public HistoryPresenter([NotNull] IHistoryView view, [NotNull] IHistoryModel historyModel, [NotNull] IMainModel mainModel)
         {
             m_View = view;
             m_HistoryModel = historyModel;
+            m_MainModel = mainModel;
+        }
+
+        /// <inheritdoc />
+        public void Start()
+        {
+            Assert.IsFalse(m_IsStarted, "The presenter has already been started.");
+            m_IsStarted = true;
 
             m_HistoryModel.HistoryListUpdated += OnHistoryListUpdated;
             m_HistoryModel.SelectedRevisionReceived += OnSelectedRevisionReceived;
             m_HistoryModel.EntryCountUpdated += OnEntryCountUpdated;
             m_HistoryModel.HistoryListReceived += OnHistoryListReceived;
             m_HistoryModel.BusyStatusUpdated += OnBusyStatusUpdated;
-        }
+            m_HistoryModel.StateChanged += OnStateChanged;
 
-        /// <inheritdoc />
-        public void Start()
-        {
-            m_View.SetBusyStatus(m_HistoryModel.Busy);
-
-            // Request initial data
-            if (string.IsNullOrEmpty(m_HistoryModel.SavedRevisionId))
-            {
-                m_HistoryModel.RequestPageOfRevisions(pageSize);
-            }
-            else
-            {
-                m_HistoryModel.RequestSingleRevision(m_HistoryModel.SavedRevisionId);
-            }
-            m_HistoryModel.RequestEntryNumber();
+            PopulateInitialData();
         }
 
         /// <inheritdoc />
         public void Stop()
         {
-            GlobalEvents.UnregisterBackNavigation(historyEntrySelectedId);
+            Assert.IsTrue(m_IsStarted, "The presenter has already been stopped.");
+            m_IsStarted = false;
+
+            m_HistoryModel.HistoryListUpdated -= OnHistoryListUpdated;
+            m_HistoryModel.SelectedRevisionReceived -= OnSelectedRevisionReceived;
+            m_HistoryModel.EntryCountUpdated -= OnEntryCountUpdated;
+            m_HistoryModel.HistoryListReceived -= OnHistoryListReceived;
+            m_HistoryModel.BusyStatusUpdated -= OnBusyStatusUpdated;
+            m_HistoryModel.StateChanged -= OnStateChanged;
+
+            m_MainModel.UnregisterBackNavigation(historyEntrySelectedId);
+        }
+
+        /// <summary>
+        /// Refresh state from the model.
+        /// </summary>
+        void OnStateChanged()
+        {
+            PopulateInitialData();
+        }
+
+        /// <summary>
+        /// Populate the view with the initial data from the model.
+        /// </summary>
+        void PopulateInitialData()
+        {
+            m_View.SetBusyStatus(m_HistoryModel.Busy);
+
+            if (!string.IsNullOrEmpty(m_HistoryModel.SelectedRevisionId))
+            {
+                m_HistoryModel.RequestSingleRevision(m_HistoryModel.SelectedRevisionId);
+            }
+            else if (!string.IsNullOrEmpty(m_HistoryModel.SavedRevisionId))
+            {
+                m_HistoryModel.RequestSingleRevision(m_HistoryModel.SavedRevisionId);
+            }
+            else
+            {
+                // Request initial data
+                m_HistoryModel.RequestPageOfRevisions(pageSize);
+            }
+            m_HistoryModel.RequestEntryNumber();
         }
 
         /// <summary>
@@ -79,7 +119,7 @@ namespace Unity.Cloud.Collaborate.Presenters
                 return;
             }
 
-            GlobalEvents.UnregisterBackNavigation(historyEntrySelectedId);
+            m_MainModel.UnregisterBackNavigation(historyEntrySelectedId);
             m_View.SetHistoryList(list);
         }
 
@@ -113,7 +153,7 @@ namespace Unity.Cloud.Collaborate.Presenters
                 return;
             }
 
-            GlobalEvents.RegisterBackNavigation(historyEntrySelectedId, StringAssets.allHistory, OnBackEvent);
+            m_MainModel.RegisterBackNavigation(historyEntrySelectedId, StringAssets.allHistory, OnBackEvent);
             m_View.SetSelection(entry);
         }
 

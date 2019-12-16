@@ -24,8 +24,6 @@ namespace Unity.Cloud.Collaborate.Components
         readonly ProgressBar m_ProgressBar;
         readonly Button m_Button;
 
-        readonly ProgressScriptableObject m_ProgressScriptableObject;
-
         public ProgressView()
         {
             AddToClassList(UssClassName);
@@ -35,12 +33,7 @@ namespace Unity.Cloud.Collaborate.Components
             m_Label = this.Q<Label>(className: LabelUssClassName);
             m_Label.text = string.Empty;
 
-            m_ProgressScriptableObject = ScriptableObject.CreateInstance<ProgressScriptableObject>();
-            var progressSerializedObject = new SerializedObject(m_ProgressScriptableObject);
-
             m_ProgressBar = this.Q<ProgressBar>(className: ProgressBarUssClassName);
-            m_ProgressBar.bindingPath = nameof(ProgressScriptableObject.percent);
-            m_ProgressBar.Bind(progressSerializedObject);
 
             m_Button = this.Q<Button>(className: ButtonUssClassName);
             m_Button.text = StringAssets.cancel;
@@ -54,7 +47,7 @@ namespace Unity.Cloud.Collaborate.Components
 
         public void SetPercentComplete(int percent)
         {
-            m_ProgressScriptableObject.percent = percent;
+            m_ProgressBar.value = percent;
         }
 
         public void SetCancelCallback(Action callback)
@@ -65,11 +58,6 @@ namespace Unity.Cloud.Collaborate.Components
         public void SetCancelButtonActive(bool active)
         {
             m_Button.SetEnabled(active);
-        }
-
-        class ProgressScriptableObject : ScriptableObject
-        {
-            public int percent;
         }
 
         [UsedImplicitly]

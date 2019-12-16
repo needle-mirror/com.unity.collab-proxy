@@ -25,6 +25,7 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
         [TearDown]
         public void TearDown()
         {
+            m_Presenter.Stop();
             m_View = null;
             m_Model = null;
             m_MainModel = null;
@@ -34,6 +35,7 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
         [Test]
         public void TestToggledCountValue()
         {
+            m_Presenter.Start();
             m_Model.ToggledEntries = new List<IChangeEntryData>
             {
                 new TestChangesModel.ChangeEntryData { Toggled = true, Entry = new ChangeEntry("path") },
@@ -45,6 +47,7 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
         [Test]
         public void TestTotalCountValue()
         {
+            m_Presenter.Start();
             m_Model.AllEntries = new List<IChangeEntryData>
             {
                 new TestChangesModel.ChangeEntryData { Toggled = true, Entry = new ChangeEntry("path") },
@@ -56,6 +59,7 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
         [Test]
         public void TestConflictedCountValue()
         {
+            m_Presenter.Start();
             m_Model.ConflictedEntries = new List<IChangeEntryData>
             {
                 new TestChangesModel.ChangeEntryData
@@ -75,6 +79,7 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
         [Test]
         public void TestSearchingValue()
         {
+            m_Presenter.Start();
             m_Model.SavedSearchQuery = "test";
             Assert.IsTrue(m_Presenter.Searching);
             m_Model.SavedSearchQuery = "";
@@ -84,6 +89,7 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
         [Test]
         public void TestSettingEntryToggle()
         {
+            m_Presenter.Start();
             const string path = "path";
             const bool value = true;
             m_Presenter.UpdateEntryToggle(path, value);
@@ -95,6 +101,7 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
         [Test]
         public void TestRequestPublish()
         {
+            m_Presenter.Start();
             m_Model.SavedSearchQuery = "";
             m_Model.ToggledEntries = new List<IChangeEntryData>
             {
@@ -109,6 +116,7 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
         [Test]
         public void TestRequestPublishFailWhenSearching()
         {
+            m_Presenter.Start();
             m_Model.SavedSearchQuery = "some query";
             Assert.Catch(() => m_Presenter.RequestPublish());
         }
@@ -116,6 +124,7 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
         [Test]
         public void TestRequestDiscard()
         {
+            m_Presenter.Start();
             const string path = "path";
             m_Presenter.RequestDiscard(path);
             Assert.AreEqual(1, m_Model.RequestDiscardCount);
@@ -127,6 +136,7 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
         [Test]
         public void TestRequestDiffChanges()
         {
+            m_Presenter.Start();
             const string path = "path";
             m_Presenter.RequestDiffChanges(path);
             Assert.AreEqual(1, m_Model.RequestDiffCount);
@@ -136,16 +146,19 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
         [Test]
         public void TestSetSearchQuery()
         {
+            m_Presenter.Start();
+            Assert.AreEqual(1, m_View.SetSearchQueryCount);
             const string query = "path Path   ";
             m_Presenter.SetSearchQuery(query);
             Assert.AreEqual(query.Trim().ToLower(), m_Model.SavedSearchQuery);
-            Assert.AreEqual(1, m_View.SetSearchQueryCount);
+            Assert.AreEqual(2, m_View.SetSearchQueryCount);
             Assert.AreEqual(query, m_View.SetSearchQueryValue);
         }
 
         [Test]
         public void TestHavingSearchQueryDisablesPublish()
         {
+            m_Presenter.Start();
             m_Model.ToggledEntries = new List<IChangeEntryData>
             {
                 new TestChangesModel.ChangeEntryData { Toggled = true, Entry = new ChangeEntry("path") }
@@ -206,10 +219,12 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
         [Test]
         public void TestSetRevisionService()
         {
+            m_Presenter.Start();
+            Assert.AreEqual(1, m_View.SetRevisionSummaryCount);
             const string summary = "summary";
             m_Presenter.SetRevisionSummary(summary);
             Assert.AreEqual(summary, m_Model.SavedRevisionSummary);
-            Assert.AreEqual(1, m_View.SetRevisionSummaryCount);
+            Assert.AreEqual(2, m_View.SetRevisionSummaryCount);
             Assert.AreEqual(summary, m_View.SetRevisionSummaryValue);
         }
 

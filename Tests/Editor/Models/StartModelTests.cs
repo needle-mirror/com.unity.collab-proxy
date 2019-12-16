@@ -12,7 +12,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
 {
     internal class StartModelTests
     {
-        TestCollab m_StartupHelper;
+        TestCollab m_Provider;
         AsyncToCoroutine m_Atc;
 
         [OneTimeSetUp]
@@ -24,13 +24,13 @@ namespace Unity.Cloud.Collaborate.Tests.Models
         [SetUp]
         public void Setup()
         {
-            m_StartupHelper = new TestCollab();
+            m_Provider = new TestCollab();
         }
 
         [TearDown]
         public void TearDown()
         {
-            m_StartupHelper = null;
+            m_Provider = null;
         }
 
         [UnityTest]
@@ -41,14 +41,11 @@ namespace Unity.Cloud.Collaborate.Tests.Models
                 var saveAssetsCallCount = 0;
 
                 //ensure we return true for isProjectBound
-                m_StartupHelper.isProjectBoundTestImpl = () => ProjectStatus.Bound;
-                m_StartupHelper.saveAssetsTestImpl = () =>
-                {
-                    saveAssetsCallCount++;
-                };
+                m_Provider.isProjectBoundTestImpl = () => ProjectStatus.Bound;
+                m_Provider.saveAssetsTestImpl = () => saveAssetsCallCount++;
 
                 saveAssetsCallCount.ShouldBe(0);
-                await m_StartupHelper.TestRequestTurnOnService();
+                await m_Provider.TestRequestTurnOnService();
                 saveAssetsCallCount.ShouldBe(1, $"Expected {nameof(saveAssetsCallCount)} to be 1");
             });
         }
@@ -62,13 +59,10 @@ namespace Unity.Cloud.Collaborate.Tests.Models
                 var putAsyncCallCount = 0;
 
                 //ensure we return true for isProjectBound
-                m_StartupHelper.isProjectBoundTestImpl = () => ProjectStatus.Bound;
-                m_StartupHelper.showCredentialsErrorTestImpl = () =>
-                {
-                    showCredentialsErrorCallCount++;
-                };
+                m_Provider.isProjectBoundTestImpl = () => ProjectStatus.Bound;
+                m_Provider.showCredentialsErrorTestImpl = () => showCredentialsErrorCallCount++;
 
-                m_StartupHelper.putAsyncTestImpl = () =>
+                m_Provider.putAsyncTestImpl = () =>
                 {
                     putAsyncCallCount++;
                     return Task.Run(() => new HttpResponseMessage(HttpStatusCode.Forbidden));
@@ -76,7 +70,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
 
                 putAsyncCallCount.ShouldBe(0);
                 showCredentialsErrorCallCount.ShouldBe(0);
-                await m_StartupHelper.TestRequestTurnOnService();
+                await m_Provider.TestRequestTurnOnService();
 
                 putAsyncCallCount.ShouldBe(1, $"Expected {nameof(putAsyncCallCount)} to be 1");
                 showCredentialsErrorCallCount.ShouldBe(1, $"Expected {nameof(showCredentialsErrorCallCount)} to be 1");
@@ -92,13 +86,13 @@ namespace Unity.Cloud.Collaborate.Tests.Models
                 var putAsyncCallCount = 0;
 
                 //ensure we return true for isProjectBound
-                m_StartupHelper.isProjectBoundTestImpl = () => ProjectStatus.Bound;
-                m_StartupHelper.showGeneralErrorTestImpl = () =>
+                m_Provider.isProjectBoundTestImpl = () => ProjectStatus.Bound;
+                m_Provider.showGeneralErrorTestImpl = () =>
                 {
                     showGeneralErrorCallCount++;
                 };
 
-                m_StartupHelper.putAsyncTestImpl = () =>
+                m_Provider.putAsyncTestImpl = () =>
                 {
                     putAsyncCallCount++;
                     return Task.Run(() => new HttpResponseMessage(HttpStatusCode.NotFound));
@@ -106,7 +100,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
 
                 putAsyncCallCount.ShouldBe(0);
                 showGeneralErrorCallCount.ShouldBe(0);
-                await m_StartupHelper.TestRequestTurnOnService();
+                await m_Provider.TestRequestTurnOnService();
                 putAsyncCallCount.ShouldBe(1, $"Expected {nameof(putAsyncCallCount)} to be 1");
                 showGeneralErrorCallCount.ShouldBe(1, $"Expected {nameof(showGeneralErrorCallCount)} to be 1");
             });
@@ -121,13 +115,10 @@ namespace Unity.Cloud.Collaborate.Tests.Models
                 var turnOnCollabInternalCallCount = 0;
 
                 // Ensure we return true for isProjectBound.
-                m_StartupHelper.isProjectBoundTestImpl = () => ProjectStatus.Bound;
-                m_StartupHelper.turnOnCollabInternalTestImpl = () =>
-                {
-                    turnOnCollabInternalCallCount++;
-                };
+                m_Provider.isProjectBoundTestImpl = () => ProjectStatus.Bound;
+                m_Provider.turnOnCollabInternalTestImpl = () => turnOnCollabInternalCallCount++;
 
-                m_StartupHelper.putAsyncTestImpl = () =>
+                m_Provider.putAsyncTestImpl = () =>
                 {
                     putAsyncCallCount++;
                     return Task.Run(() => new HttpResponseMessage(HttpStatusCode.OK));
@@ -135,7 +126,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
 
                 putAsyncCallCount.ShouldBe(0);
                 turnOnCollabInternalCallCount.ShouldBe(0);
-                await m_StartupHelper.TestRequestTurnOnService();
+                await m_Provider.TestRequestTurnOnService();
                 putAsyncCallCount.ShouldBe(1, $"Expected {nameof(putAsyncCallCount)} to be 1");
                 turnOnCollabInternalCallCount.ShouldBe(1, $"Expected {nameof(turnOnCollabInternalCallCount)} to be 1");
             });
@@ -158,10 +149,7 @@ namespace Unity.Cloud.Collaborate.Tests.Models
                 showCredentialsErrorTestImpl = () => { };
                 showGeneralErrorTestImpl = () => { };
 
-                putAsyncTestImpl = () =>
-                {
-                    return Task.Run(() => new HttpResponseMessage());
-                };
+                putAsyncTestImpl = () => Task.Run(() => new HttpResponseMessage());
             }
 
             public async Task TestRequestTurnOnService()

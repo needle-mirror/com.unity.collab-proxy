@@ -1,20 +1,31 @@
 using System;
+using JetBrains.Annotations;
 using Unity.Cloud.Collaborate.Models.Api;
 using Unity.Cloud.Collaborate.Models.Enums;
+using Unity.Cloud.Collaborate.UserInterface;
 using UnityEngine;
 
 namespace Unity.Cloud.Collaborate.Models
 {
     internal class StartModel : IStartModel
     {
-        ISourceControlProvider m_Provider;
+        [NotNull]
+        readonly ISourceControlProvider m_Provider;
 
         /// <inheritdoc />
         public event Action<ProjectStatus> ProjectStatusChanged;
 
-        public StartModel(ISourceControlProvider provider)
+        /// <inheritdoc />
+        public event Action StateChanged;
+
+        public StartModel([NotNull] ISourceControlProvider provider)
         {
             m_Provider = provider;
+        }
+
+        /// <inheritdoc />
+        public void OnStart()
+        {
             m_Provider.UpdatedProjectStatus += OnUpdatedProjectStatus;
         }
 
@@ -22,6 +33,17 @@ namespace Unity.Cloud.Collaborate.Models
         public void OnStop()
         {
             m_Provider.UpdatedProjectStatus -= OnUpdatedProjectStatus;
+        }
+
+        /// <inheritdoc />
+        public void RestoreState(IWindowCache cache)
+        {
+            StateChanged?.Invoke();
+        }
+
+        /// <inheritdoc />
+        public void SaveState(IWindowCache cache)
+        {
         }
 
         /// <inheritdoc />
@@ -37,6 +59,18 @@ namespace Unity.Cloud.Collaborate.Models
         public void ShowServicePage()
         {
             m_Provider.ShowServicePage();
+        }
+
+        /// <inheritdoc />
+        public void ShowLoginPage()
+        {
+            m_Provider.ShowLoginPage();
+        }
+
+        /// <inheritdoc />
+        public void ShowNoSeatPage()
+        {
+            m_Provider.ShowNoSeatPage();
         }
 
         void OnUpdatedProjectStatus(ProjectStatus status)

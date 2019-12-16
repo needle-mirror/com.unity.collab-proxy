@@ -17,11 +17,22 @@ namespace Unity.Cloud.Collaborate.Presenters
         /// </summary>
         /// <param name="view">View to wire to.</param>
         /// <returns>The created presenter.</returns>
-        IChangesPresenter AssignHistoryPresenter(IChangesView view);
+        IChangesPresenter AssignChangesPresenter(IChangesView view);
 
         /// <summary>
         /// Request cancel current job.
         /// </summary>
         void RequestCancelJob();
+
+        /// <summary>
+        /// Update value of current tab index.
+        /// </summary>
+        /// <param name="index">New tab index.</param>
+        void UpdateTabIndex(int index);
+
+        /// <summary>
+        /// Request a back navigation.
+        /// </summary>
+        void NavigateBack();
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Cloud.Collaborate.Assets;
 using Unity.Cloud.Collaborate.Components;
 using Unity.Cloud.Collaborate.Components.Menus;
@@ -9,7 +10,6 @@ using Unity.Cloud.Collaborate.Models.Providers;
 using Unity.Cloud.Collaborate.Views;
 using Unity.Cloud.Collaborate.Presenters;
 using Unity.Cloud.Collaborate.Settings;
-using Unity.Cloud.Collaborate.Utilities;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -41,6 +41,8 @@ namespace Unity.Cloud.Collaborate.UserInterface
 
         ISourceControlProvider m_Provider;
 
+        List<IModel> m_Models;
+
         [MenuItem("Window/Collaborate")]
         internal static void Init()
         {
@@ -69,13 +71,17 @@ namespace Unity.Cloud.Collaborate.UserInterface
 
         void OnDisable()
         {
+            AssemblyReloadEvents.beforeAssemblyReload -= OnBeforeAssemblyReload;
+            AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
             m_Provider.UpdatedProjectStatus -= OnUpdatedProjectStatus;
-            GlobalEvents.WindowClose();
-            WindowCache.Instance.Serialize();
+            m_Models.ForEach(m => m.OnStop());
         }
 
         void OnEnable()
         {
+            AssemblyReloadEvents.beforeAssemblyReload += OnBeforeAssemblyReload;
+            AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
+
             var root = rootVisualElement;
             root.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>(MainStylePath));
 
@@ -90,11 +96,18 @@ namespace Unity.Cloud.Collaborate.UserInterface
 
             m_ViewContainer = root.Q<VisualElement>(className: ContainerUssClassName);
 
+            // Create models and configure them.
+            var mainModel = new MainModel(m_Provider);
+            var startModel = new StartModel(m_Provider);
+
+            m_Models = new List<IModel> { mainModel, startModel };
+            m_Models.ForEach(m => m.OnStart());
+
             // Get the views and configure them.
             m_MainView = new MainPageView();
-            m_MainView.Presenter = new MainPresenter(m_MainView, new MainModel(m_Provider));
+            m_MainView.Presenter = new MainPresenter(m_MainView, mainModel);
             m_StartView = new StartPageView();
-            m_StartView.Presenter = new StartPresenter(m_StartView, new StartModel(m_Provider));
+            m_StartView.Presenter = new StartPresenter(m_StartView, startModel);
             m_ErrorPageView = new ErrorPageView();
 
             // Add floating dialogue so it can be displayed anywhere in the window.
@@ -103,11 +116,45 @@ namespace Unity.Cloud.Collaborate.UserInterface
             OnUpdatedProjectStatus(m_Provider.GetProjectStatus());
         }
 
-        void OnUpdatedProjectStatus(ProjectStatus status)
+        /// <summary>
+        /// Restore window state after assembly reload.
+        /// </summary>
+        void OnAfterAssemblyReload()
         {
-            UpdateDisplayMode(status == ProjectStatus.Ready ? Display.Main : Display.Add);
+            m_Models.ForEach(m => m.RestoreState(WindowCache.Instance));
         }
 
+        /// <summary>
+        /// Save state before domain reload.
+        /// </summary>
+        void OnBeforeAssemblyReload()
+        {
+            m_Models.ForEach(m => m.SaveState(WindowCache.Instance));
+            WindowCache.Instance.Serialize();
+        }
+
+        /// <summary>
+        /// Respond to changes in the project status.
+        /// </summary>
+        /// <param name="status">New project status.</param>
+        void OnUpdatedProjectStatus(ProjectStatus status)
+        {
+            if (status == ProjectStatus.Ready)
+            {
+                UpdateDisplayMode(Display.Main);
+            }
+            else
+            {
+                WindowCache.Instance.Clear();
+                m_Models.ForEach(m => m.RestoreState(WindowCache.Instance));
+                UpdateDisplayMode(Display.Add);
+            }
+        }
+
+        /// <summary>
+        /// Switch the view displayed in the window.
+        /// </summary>
+        /// <param name="newDisplay">Display to switch the window to.</param>
         void UpdateDisplayMode(Display newDisplay)
         {
             m_ActivePage?.RemoveFromHierarchy();

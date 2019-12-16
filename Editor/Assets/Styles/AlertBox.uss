@@ -1,8 +1,9 @@
 /* AlertBox Styles */
+
 .alert-box {
     flex: var(--fixed-size);
 }
-   
+
 .alert-box__content {
     padding: var(--standard-padding);
 }
@@ -10,7 +11,6 @@
 .alert-box__text {
     margin-top: 1px;
 }
-
 
 .alert-box__button-box {
     align-items: flex-end;
