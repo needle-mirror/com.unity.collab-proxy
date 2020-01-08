@@ -168,6 +168,7 @@ namespace Unity.Cloud.Collaborate.Views
                 // Hide fields used for expanded view
                 comp.changedFilesCount.AddToClassList(UiConstants.ussHidden);
                 comp.changedFiles.AddToClassList(UiConstants.ussHidden);
+                comp.gotoButton.text = string.Empty;
                 comp.gotoButton.AddToClassList(UiConstants.ussHidden);
 
                 // Setup show button

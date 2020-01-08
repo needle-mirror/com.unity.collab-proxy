@@ -43,22 +43,22 @@ namespace Unity.Cloud.Collaborate.Components.ChangeListEntries
             chooseMergeButton.AddToClassList(ChooseMergeButtonUssClassName);
             chooseMergeButton.tooltip = StringAssets.useMergeTool;
 
-            chooseRemoteButton = new IconButton();
-            chooseRemoteButton.AddToClassList(IconButton.ChooseRemoteUssClassName);
-            chooseRemoteButton.AddToClassList(ButtonUssClassName);
-            chooseRemoteButton.AddToClassList(ChooseRemoteButtonUssClassName);
-            chooseRemoteButton.tooltip = StringAssets.useRemoteChanges;
-
             chooseMineButton = new IconButton();
             chooseMineButton.AddToClassList(IconButton.ChooseMineUssClassName);
             chooseMineButton.AddToClassList(ButtonUssClassName);
             chooseMineButton.AddToClassList(ChooseMineButtonUssClassName);
             chooseMineButton.tooltip = StringAssets.useMyChanges;
 
+            chooseRemoteButton = new IconButton();
+            chooseRemoteButton.AddToClassList(IconButton.ChooseRemoteUssClassName);
+            chooseRemoteButton.AddToClassList(ButtonUssClassName);
+            chooseRemoteButton.AddToClassList(ChooseRemoteButtonUssClassName);
+            chooseRemoteButton.tooltip = StringAssets.useRemoteChanges;
+
             buttons.Add(showButton);
             buttons.Add(chooseMergeButton);
-            buttons.Add(chooseRemoteButton);
             buttons.Add(chooseMineButton);
+            buttons.Add(chooseRemoteButton);
         }
 
         public override void ClearData()

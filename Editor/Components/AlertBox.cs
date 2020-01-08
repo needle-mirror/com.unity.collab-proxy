@@ -112,6 +112,8 @@ namespace Unity.Cloud.Collaborate.Components
 
             if (m_AlertEntryList.Count == 0)
             {
+                m_Button.text = string.Empty;
+                m_Button.AddToClassList(UiConstants.ussHidden);
                 AddToClassList(UiConstants.ussHidden);
             }
             else
@@ -128,6 +130,7 @@ namespace Unity.Cloud.Collaborate.Components
                 }
                 else
                 {
+                    m_Button.text = string.Empty;
                     m_Button.AddToClassList(UiConstants.ussHidden);
                 }
 
