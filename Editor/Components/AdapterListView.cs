@@ -1,8 +1,8 @@
 using System;
 using JetBrains.Annotations;
-using NUnit.Framework;
 using Unity.Cloud.Collaborate.Views.Adapters;
 using Unity.Cloud.Collaborate.Views.Adapters.ListAdapters;
+using UnityEngine.Assertions;
 using UnityEngine.UIElements;
 
 namespace Unity.Cloud.Collaborate.Components
@@ -31,7 +31,7 @@ namespace Unity.Cloud.Collaborate.Components
         /// <typeparam name="T">The type of the list entries.</typeparam>
         public void SetAdapter<T>(BaseListAdapter<T> adapter) where T : VisualElement
         {
-            Assert.Null(m_Adapter, "There cannot be more than one adapter at a time.");
+            Assert.IsNull(m_Adapter, "There cannot be more than one adapter at a time.");
             m_Adapter = adapter;
             m_Adapter.RegisterObserver(this);
             m_ListView.makeItem = m_Adapter.MakeItem;
@@ -45,7 +45,7 @@ namespace Unity.Cloud.Collaborate.Components
         /// </summary>
         public void RemoveAdapter()
         {
-            Assert.NotNull(m_Adapter, "Cannot remove a non-existent adapter.");
+            Assert.IsNotNull(m_Adapter, "Cannot remove a non-existent adapter.");
             m_Adapter.DeregisterObserver(this);
             m_ListView.makeItem = null;
             m_ListView.bindItem = null;

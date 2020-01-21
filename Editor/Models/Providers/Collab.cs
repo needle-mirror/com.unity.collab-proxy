@@ -7,7 +7,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using NUnit.Framework;
 using Unity.Cloud.Collaborate.Assets;
 using Unity.Cloud.Collaborate.Models.Api;
 using Unity.Cloud.Collaborate.Models.Enums;
@@ -18,6 +17,7 @@ using UnityEditor.Collaboration;
 using UnityEditor.Connect;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Assertions;
 using static UnityEditor.Collaboration.Collab;
 using ProgressInfo = UnityEditor.Collaboration.ProgressInfo;
 

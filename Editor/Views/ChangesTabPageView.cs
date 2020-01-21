@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using NUnit.Framework;
 using Unity.Cloud.Collaborate.Assets;
 using Unity.Cloud.Collaborate.Views.Adapters.ListAdapters;
 using Unity.Cloud.Collaborate.Components;
@@ -10,6 +9,7 @@ using Unity.Cloud.Collaborate.Presenters;
 using Unity.Cloud.Collaborate.UserInterface;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.UIElements;
 
 namespace Unity.Cloud.Collaborate.Views

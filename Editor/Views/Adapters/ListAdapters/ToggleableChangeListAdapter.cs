@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using NUnit.Framework;
 using Unity.Cloud.Collaborate.Assets;
 using Unity.Cloud.Collaborate.Components.ChangeListEntries;
 using Unity.Cloud.Collaborate.Models.Structures;
 using Unity.Cloud.Collaborate.Presenters;
+using UnityEngine.Assertions;
 
 namespace Unity.Cloud.Collaborate.Views.Adapters.ListAdapters
 {
@@ -23,7 +23,7 @@ namespace Unity.Cloud.Collaborate.Views.Adapters.ListAdapters
         }
 
         readonly IChangesPresenter m_Presenter;
-        int lastBoundElementIndex = 0;
+        int m_LastBoundElementIndex;
 
         public ToggleableChangeListAdapter(IChangesPresenter presenter)
         {
@@ -39,8 +39,8 @@ namespace Unity.Cloud.Collaborate.Views.Adapters.ListAdapters
 
         protected override void BindItem(ToggleableChangeListElement element, int index)
         {
-            Assert.NotNull(m_List, "List should not be null at this point.");
-            lastBoundElementIndex = index;
+            Assert.IsNotNull(m_List, "List should not be null at this point.");
+            m_LastBoundElementIndex = index;
             element.ClearData();
             var changesEntry = m_List[index];
             var path = changesEntry.All ? StringAssets.all : changesEntry.Entry.Path;
@@ -97,7 +97,7 @@ namespace Unity.Cloud.Collaborate.Views.Adapters.ListAdapters
 
         void OnItemToggleChanged(int index, bool toggled)
         {
-            Assert.NotNull(m_List, "List should not be null at this point.");
+            Assert.IsNotNull(m_List, "List should not be null at this point.");
             var changeEntry = m_List[index];
             var refresh = m_Presenter.UpdateEntryToggle(changeEntry.Entry.Path, toggled);
             if (refresh) NotifyDataSetChanged();
@@ -105,19 +105,20 @@ namespace Unity.Cloud.Collaborate.Views.Adapters.ListAdapters
 
         void OnDiscardClicked(int index)
         {
-            Assert.NotNull(m_List, "List should not be null at this point.");
+            Assert.IsNotNull(m_List, "List should not be null at this point.");
             var changeEntry = m_List[index];
             m_Presenter.RequestDiscard(changeEntry.Entry.Path);
         }
 
         public int GetLastBoundElementIndex()
         {
-            return lastBoundElementIndex;
+            return m_LastBoundElementIndex;
         }
 
         public int GetFirstToggledIndex()
         {
-            for(int i=0; i < m_List.Count; i++)
+            Assert.IsNotNull(m_List, "List should not be null at this point.");
+            for (var i=0; i < m_List.Count; i++)
             {
                 if(m_List[i].Toggled)
                 {
@@ -130,7 +131,7 @@ namespace Unity.Cloud.Collaborate.Views.Adapters.ListAdapters
 
         void OnDiffClicked(int index)
         {
-            Assert.NotNull(m_List, "List should not be null at this point.");
+            Assert.IsNotNull(m_List, "List should not be null at this point.");
             var changeEntry = m_List[index];
             m_Presenter.RequestDiffChanges(changeEntry.Entry.Path);
         }

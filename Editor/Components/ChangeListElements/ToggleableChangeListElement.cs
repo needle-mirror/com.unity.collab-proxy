@@ -1,8 +1,8 @@
 using System;
 using JetBrains.Annotations;
-using NUnit.Framework;
 using Unity.Cloud.Collaborate.UserInterface;
 using UnityEditor;
+using UnityEngine.Assertions;
 using UnityEngine.UIElements;
 
 namespace Unity.Cloud.Collaborate.Components.ChangeListEntries

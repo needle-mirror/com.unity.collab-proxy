@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using NUnit.Framework;
 using Unity.Cloud.Collaborate.Assets;
 using Unity.Cloud.Collaborate.Components.ChangeListEntries;
 using Unity.Cloud.Collaborate.Models.Structures;
 using Unity.Cloud.Collaborate.Presenters;
+using UnityEngine.Assertions;
 
 namespace Unity.Cloud.Collaborate.Views.Adapters.ListAdapters
 {
@@ -38,7 +38,7 @@ namespace Unity.Cloud.Collaborate.Views.Adapters.ListAdapters
 
         protected override void BindItem(ConflictedChangeListElement element, int index)
         {
-            Assert.NotNull(m_List, "List should not be null at this point.");
+            Assert.IsNotNull(m_List, "List should not be null at this point.");
             element.ClearData();
             var changesEntry = m_List[index];
             var path = changesEntry.All ? StringAssets.all : changesEntry.Entry.Path;

@@ -2,9 +2,9 @@ using System;
 using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
-using NUnit.Framework;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Assertions;
 using Object = UnityEngine.Object;
 
 namespace Unity.Cloud.Collaborate.Common

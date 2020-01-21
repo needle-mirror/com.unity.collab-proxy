@@ -1,11 +1,11 @@
 using JetBrains.Annotations;
-using NUnit.Framework;
 using Unity.Cloud.Collaborate.Assets;
 using Unity.Cloud.Collaborate.Components;
 using Unity.Cloud.Collaborate.Models;
 using Unity.Cloud.Collaborate.Models.Structures;
 using Unity.Cloud.Collaborate.Views;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Unity.Cloud.Collaborate.Presenters
 {

@@ -1,9 +1,9 @@
 using System;
 using JetBrains.Annotations;
-using NUnit.Framework;
 using Unity.Cloud.Collaborate.Models.Api;
 using Unity.Cloud.Collaborate.Models.Structures;
 using Unity.Cloud.Collaborate.UserInterface;
+using UnityEngine.Assertions;
 
 namespace Unity.Cloud.Collaborate.Models
 {
@@ -159,7 +159,7 @@ namespace Unity.Cloud.Collaborate.Models
         /// <inheritdoc />
         public void RegisterBackNavigation(string id, string text, Action backAction)
         {
-            Assert.IsNull(m_BackNavigation, "There should only be one back navigation registered at a time.");
+            Assert.IsTrue(m_BackNavigation == null, "There should only be one back navigation registered at a time.");
             m_BackNavigation = (id, text, backAction);
             BackButtonStateUpdated?.Invoke(text);
         }

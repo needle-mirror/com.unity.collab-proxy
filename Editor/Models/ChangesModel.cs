@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using NUnit.Framework;
 using Unity.Cloud.Collaborate.Models.Api;
 using Unity.Cloud.Collaborate.Models.Structures;
 using Unity.Cloud.Collaborate.UserInterface;
 using Unity.Cloud.Collaborate.Utilities;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Unity.Cloud.Collaborate.Models
 {
