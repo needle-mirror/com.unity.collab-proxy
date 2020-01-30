@@ -554,9 +554,10 @@ namespace Unity.Cloud.Collaborate.Tests.Models
             model.OnStart();
 
             const string path = "path";
-            model.RequestDiscard(path);
+            var entry = new ChangeEntry(path);
+            model.RequestDiscard(entry);
             Assert.AreEqual(1, provider.RequestedDiscardCount);
-            Assert.AreEqual(path, provider.RequestedDiscardPath);
+            Assert.AreEqual(path, provider.RequestedDiscardEntry?.Path);
         }
 
         [Test]

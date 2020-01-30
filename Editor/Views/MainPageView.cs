@@ -21,6 +21,11 @@ namespace Unity.Cloud.Collaborate.Views
         public const string TabViewUssClassName = UssClassName + "__tab-view";
         public const string ContainerUssClassName = UssClassName + "__container";
 
+        // WARNING - These are hard-coded values. If you do anything to change the order
+        // these tabs are initialized, you'll need to change these
+        public const int ChangesTabIndex = 0;
+        public const int HistoryTabIndex = 1;
+
         static readonly string k_LayoutPath = $"{CollaborateWindow.LayoutPath}/{nameof(MainPageView)}.uxml";
         static readonly string k_StylePath = $"{CollaborateWindow.StylePath}/{nameof(MainPageView)}.uss";
 

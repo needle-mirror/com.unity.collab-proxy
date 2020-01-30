@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using Unity.Cloud.Collaborate.Models.Structures;
 
 namespace Unity.Cloud.Collaborate.Presenters
 {
@@ -41,8 +42,8 @@ namespace Unity.Cloud.Collaborate.Presenters
         /// <summary>
         /// Request a discard for the file at the given path.
         /// </summary>
-        /// <param name="path"></param>
-        void RequestDiscard([NotNull] string path);
+        /// <param name="entry">Entry to discard.</param>
+        void RequestDiscard([NotNull] IChangeEntry entry);
 
         /// <summary>
         /// Request a diff of the file at the given path.

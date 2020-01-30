@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using Unity.Cloud.Collaborate.Assets;
 using Unity.Cloud.Collaborate.Components.Menus;
 using Unity.Cloud.Collaborate.Models;
+using Unity.Cloud.Collaborate.Models.Structures;
 using Unity.Cloud.Collaborate.Utilities;
 using Unity.Cloud.Collaborate.Views;
 using UnityEngine;
@@ -174,34 +175,29 @@ namespace Unity.Cloud.Collaborate.Presenters
         }
 
         /// <inheritdoc />
-        public void RequestDiscard(string path)
+        public void RequestDiscard(IChangeEntry entry)
         {
             if (m_View.DisplayDialogue(StringAssets.confirmDiscardChangesTitle,
                 StringAssets.confirmDiscardChangeMessage, StringAssets.discardChanges,
                 StringAssets.cancel))
             {
-                m_Model.RequestDiscard(path);
+                m_Model.RequestDiscard(entry);
             }
         }
 
-//        /// <summary>
-//        /// Discard all toggled entries. Fire and forget method -- must be called on main thread.
-//        /// </summary>
-//        void RequestDiscardToggled()
-//        {
-//            Assert.IsTrue(Threading.IsMainThread, "Bulk discard must be down from the main thread.");
-//
-//            // Get with a query can be long running, so run that on a separate thread.
-//            Task.Run(() => m_Model.GetToggledEntries(m_Model.SavedSearchQuery))
-//                .ContinueWith(r =>
-//                {
-//                    // Loop through and discard each one.
-//                    foreach (var entry in r.Result)
-//                    {
-//                        m_Model.RequestDiscard(entry.Entry.Path);
-//                    }
-//                }, TaskScheduler.FromCurrentSynchronizationContext());
-//        }
+        /// <summary>
+        /// Discard all toggled entries. Fire and forget method -- must be called on main thread.
+        /// </summary>
+        void RequestDiscardToggled()
+        {
+            var entries = m_Model.GetToggledEntries(m_Model.SavedSearchQuery).Select(e => e.Entry).ToList();
+            if (m_View.DisplayDialogue(StringAssets.confirmDiscardChangesTitle,
+                string.Format(StringAssets.confirmDiscardChangesMessage, entries.Count), StringAssets.discardChanges,
+                StringAssets.cancel))
+            {
+                m_Model.RequestBulkDiscard(entries);
+            }
+        }
 
         /// <summary>
         /// Update the state of the publish button in the view based on the state of the model.
@@ -254,14 +250,15 @@ namespace Unity.Cloud.Collaborate.Presenters
         }
 
         /// <inheritdoc />
-        public int GroupOverflowEntryCount => 0;
+        public int GroupOverflowEntryCount => 1;
 
         /// <inheritdoc />
         public void OnClickGroupOverflow(float x, float y)
         {
-//            new FloatingMenu()
-//                .SetOpenDirection(MenuUtilities.OpenDirection.DownLeft)
-//                .Open(x, y);
+            new FloatingMenu()
+                .AddEntry(StringAssets.menuDiscardToggledChanges, RequestDiscardToggled, ToggledCount > 0)
+                .SetOpenDirection(MenuUtilities.OpenDirection.DownLeft)
+                .Open(x, y);
         }
 
         /// <inheritdoc />

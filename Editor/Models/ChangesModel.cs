@@ -354,9 +354,15 @@ namespace Unity.Cloud.Collaborate.Models
         }
 
         /// <inheritdoc />
-        public void RequestDiscard(string path)
+        public void RequestDiscard(IChangeEntry entry)
         {
-            m_Provider.RequestDiscard(path);
+            m_Provider.RequestDiscard(entry);
+        }
+
+        /// <inheritdoc />
+        public void RequestBulkDiscard(IReadOnlyList<IChangeEntry> entries)
+        {
+            m_Provider.RequestBulkDiscard(entries);
         }
 
         /// <inheritdoc />

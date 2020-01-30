@@ -1,4 +1,6 @@
 # Collaborate Client Package
+![ReleaseBadge](https://badges.cds.internal.unity3d.com/packages/com.unity.collab-proxy/release-badge.svg) ![ReleaseBadge](https://badges.cds.internal.unity3d.com/packages/com.unity.collab-proxy/candidates-badge.svg)
+
 This is the package to add Collaborate support to the Unity Editor. Unlike its predecessor CollabProxy,
 this package has completely switched the UI to using UIElements. There is no more CEF, JS, or HTML.
 

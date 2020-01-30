@@ -31,7 +31,7 @@ or `.light` to the line. For example:
 ```
 
 Documentation about the two file types is provided within the Unity documentation for UiElements:
-https://docs.unity3d.com/2019.1/Documentation/Manual/UIElements.html
+https://docs.unity3d.com/2020.1/Documentation/Manual/UIElements.html
 
 In general each Component and View will have its own layout file. When adding new components with their uxml factories
 the UIElements schema will need to updated within the editor if you want auto completion in your editor. Click

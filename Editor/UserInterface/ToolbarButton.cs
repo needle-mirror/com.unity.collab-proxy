@@ -10,7 +10,7 @@ namespace Unity.Cloud.Collaborate.UserInterface
 {
     internal class ToolbarButton : SubToolbar
     {
-        enum ToolbarButtonState
+        protected enum ToolbarButtonState
         {
             NeedToEnableCollab,
             UpToDate,
@@ -33,23 +33,28 @@ namespace Unity.Cloud.Collaborate.UserInterface
             Collab.instance.StateChanged += OnCollabStateChanged;
             UnityConnect.instance.StateChanged += OnUnityConnectStateChanged;
             UnityConnect.instance.UserStateChanged += OnUnityConnectUserStateChanged;
+        }
 
-            UpdateToolbarButtonState();
+        ~ToolbarButton()
+        {
+            Collab.instance.StateChanged -= OnCollabStateChanged;
+            UnityConnect.instance.StateChanged -= OnUnityConnectStateChanged;
+            UnityConnect.instance.UserStateChanged -= OnUnityConnectUserStateChanged;
         }
 
         void OnUnityConnectUserStateChanged(UserInfo state)
         {
-            UpdateToolbarButtonState();
+            Update();
         }
 
         void OnUnityConnectStateChanged(ConnectInfo state)
         {
-            UpdateToolbarButtonState();
+            Update();
         }
 
         void OnCollabStateChanged(CollabInfo info)
         {
-            UpdateToolbarButtonState();
+            Update();
         }
 
         [CanBeNull]
@@ -140,7 +145,16 @@ namespace Unity.Cloud.Collaborate.UserInterface
             }
         }
 
-        void UpdateToolbarButtonState()
+        public void Update()
+        {
+            var currentState = GetCurrentState();
+
+            if (m_CurrentState == currentState) return;
+            m_CurrentState = currentState;
+            Toolbar.RepaintToolbar();
+        }
+
+        protected virtual ToolbarButtonState GetCurrentState()
         {
             var currentState = ToolbarButtonState.UpToDate;
             var networkAvailable = UnityConnect.instance.connectInfo.online && UnityConnect.instance.connectInfo.loggedIn;
@@ -200,16 +214,7 @@ namespace Unity.Cloud.Collaborate.UserInterface
                 currentState = ToolbarButtonState.Offline;
             }
 
-            if (m_CurrentState == currentState) return;
-            m_CurrentState = currentState;
-            Toolbar.RepaintToolbar();
-        }
-
-        public void Dispose()
-        {
-            Collab.instance.StateChanged -= OnCollabStateChanged;
-            UnityConnect.instance.StateChanged -= OnUnityConnectStateChanged;
-            UnityConnect.instance.UserStateChanged -= OnUnityConnectUserStateChanged;
+            return currentState;
         }
     }
 }

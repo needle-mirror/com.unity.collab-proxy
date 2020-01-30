@@ -125,11 +125,18 @@ namespace Unity.Cloud.Collaborate.Models.Api
         void RequestHistoryCount([NotNull] Action<int?> callback);
 
         /// <summary>
+        /// Revert the specified file to the state of the current revision.
+        /// of the source control system, or delete it if it's a new file.
+        /// </summary>
+        /// <param name="entry">Entry to discard.</param>
+        void RequestDiscard([NotNull] IChangeEntry entry);
+
+        /// <summary>
         /// Revert the specified files to the state of the current revision.
         /// of the source control system.
         /// </summary>
-        /// <param name="path">Path of the entry to discard.</param>
-        void RequestDiscard([NotNull] string path);
+        /// <param name="paths">List of entries to discard.</param>
+        void RequestBulkDiscard([NotNull] IReadOnlyList<IChangeEntry> entries);
 
         /// <summary>
         /// Diff the changes for the file at the given path.

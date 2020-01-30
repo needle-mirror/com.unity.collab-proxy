@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -549,9 +550,47 @@ namespace Unity.Cloud.Collaborate.Models.Providers
         }
 
         /// <inheritdoc />
-        public void RequestDiscard(string path)
+        public void RequestDiscard(IChangeEntry entry)
         {
-            instance.RevertFile(path, true);
+            // Collab cannot revert a new file as it has nothing to go back to. So, instead we delete them.
+            if (entry.Status == ChangeEntryStatus.Added)
+            {
+                File.Delete(entry.Path);
+                // Notify ADB to refresh since a change has been made.
+                AssetDatabase.Refresh();
+            }
+            else
+            {
+                instance.RevertFile(entry.Path, true);
+            }
+        }
+
+        /// <inheritdoc />
+        public void RequestBulkDiscard(IReadOnlyList<IChangeEntry> entries)
+        {
+            var revertEntries = new List<ChangeItem>();
+            var deleteOccured = false;
+            foreach (var entry in entries)
+            {
+                // Collab cannot revert a new file as it has nothing to go back to. So, instead we delete them.
+                if (entry.Status == ChangeEntryStatus.Added)
+                {
+                    File.Delete(entry.Path);
+                    deleteOccured = true;
+                }
+                else
+                {
+                    revertEntries.Add((ChangeItem)entry.Tag);
+                }
+            }
+
+            // If a change has been made, notify the ADB to refresh.
+            if (deleteOccured)
+            {
+                AssetDatabase.Refresh();
+            }
+
+            instance.RevertFiles(revertEntries.ToArray(), true);
         }
 
         /// <inheritdoc />

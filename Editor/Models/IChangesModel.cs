@@ -111,10 +111,16 @@ namespace Unity.Cloud.Collaborate.Models
         void RequestDiffChanges([NotNull] string path);
 
         /// <summary>
-        /// Request discard of the file and the given path.
+        /// Request discard of the file at the given path.
         /// </summary>
-        /// <param name="path">Path of the file to discard.</param>
-        void RequestDiscard([NotNull] string path);
+        /// <param name="entry">Entry to discard.</param>
+        void RequestDiscard([NotNull] IChangeEntry entry);
+
+        /// <summary>
+        /// Request discard of the given list of files.
+        /// </summary>
+        /// <param name="entries">List of entries to discard.</param>
+        void RequestBulkDiscard([NotNull] IReadOnlyList<IChangeEntry> entries);
 
         /// <summary>
         /// Request publish with the given message and list of files.

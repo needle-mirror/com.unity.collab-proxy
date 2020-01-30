@@ -27,7 +27,10 @@ namespace Unity.Cloud.Collaborate.Tests.Models
         public int RequestInitialDataCount;
 
         public int RequestDiscardCount;
-        public string RequestDiscardPath;
+        public IChangeEntry RequestDiscardEntry;
+
+        public int RequestBulkDiscardCount;
+        public IReadOnlyList<IChangeEntry> RequestBulkDiscardPaths;
 
         public int RequestDiffCount;
         public string RequestDiffPath;
@@ -119,10 +122,16 @@ namespace Unity.Cloud.Collaborate.Tests.Models
             RequestDiffPath = path;
         }
 
-        public void RequestDiscard(string path)
+        public void RequestDiscard(IChangeEntry entry)
         {
             RequestDiscardCount++;
-            RequestDiscardPath = path;
+            RequestDiscardEntry = entry;
+        }
+
+        public void RequestBulkDiscard(IReadOnlyList<IChangeEntry> paths)
+        {
+            RequestBulkDiscardCount++;
+            RequestBulkDiscardPaths = paths;
         }
 
         public void RequestPublish(string message, IReadOnlyList<IChangeEntry> changes = null)

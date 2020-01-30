@@ -161,7 +161,12 @@ namespace Unity.Cloud.Collaborate.Models.Providers
             SafeDelayCall(() => callback(m_History.Count));
         }
 
-        public void RequestDiscard(string path)
+        public void RequestDiscard(IChangeEntry entry)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RequestBulkDiscard(IReadOnlyList<IChangeEntry> entries)
         {
             throw new NotImplementedException();
         }

@@ -46,6 +46,11 @@ namespace Unity.Cloud.Collaborate.UserInterface
         [MenuItem("Window/Collaborate")]
         internal static void Init()
         {
+            Init(FocusTarget.None);
+        }
+
+        internal static void Init(FocusTarget focusTarget)
+        {
             var openLocation = CollabSettingsManager.Get(CollabSettings.settingDefaultOpenLocation, fallback: CollabSettings.OpenLocation.Docked);
 
             CollaborateWindow window;
@@ -67,10 +72,15 @@ namespace Unity.Cloud.Collaborate.UserInterface
             // Display window
             window.Show();
             window.Focus();
+            if (focusTarget != FocusTarget.None)
+            {
+                window.RequestFocus(focusTarget);
+            }
         }
 
         void OnDisable()
         {
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
             AssemblyReloadEvents.beforeAssemblyReload -= OnBeforeAssemblyReload;
             AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
             m_Provider.UpdatedProjectStatus -= OnUpdatedProjectStatus;
@@ -79,6 +89,7 @@ namespace Unity.Cloud.Collaborate.UserInterface
 
         void OnEnable()
         {
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
             AssemblyReloadEvents.beforeAssemblyReload += OnBeforeAssemblyReload;
             AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
 
@@ -117,6 +128,29 @@ namespace Unity.Cloud.Collaborate.UserInterface
         }
 
         /// <summary>
+        /// React to the play mode state changing. When in play mode, disable collab.
+        /// </summary>
+        /// <param name="state">Editor play mode state.</param>
+        void OnPlayModeStateChanged(PlayModeStateChange state)
+        {
+            bool enabled;
+            switch (state)
+            {
+                case PlayModeStateChange.EnteredEditMode:
+                case PlayModeStateChange.ExitingEditMode:
+                    enabled = true;
+                    break;
+                case PlayModeStateChange.EnteredPlayMode:
+                case PlayModeStateChange.ExitingPlayMode:
+                    enabled = false;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
+            }
+            m_ViewContainer.SetEnabled(enabled);
+        }
+
+        /// <summary>
         /// Restore window state after assembly reload.
         /// </summary>
         void OnAfterAssemblyReload()
@@ -148,6 +182,28 @@ namespace Unity.Cloud.Collaborate.UserInterface
                 WindowCache.Instance.Clear();
                 m_Models.ForEach(m => m.RestoreState(WindowCache.Instance));
                 UpdateDisplayMode(Display.Add);
+            }
+        }
+
+        void RequestFocus(FocusTarget focusTarget)
+        {
+            if (m_ActivePage != m_MainView)
+            {
+                // Cannot focus changes or history pane if we're not already on mainview
+                return;
+            }
+
+            if (focusTarget == FocusTarget.Changes)
+            {
+                m_MainView.SetTab(MainPageView.ChangesTabIndex);
+            }
+            else if (focusTarget == FocusTarget.History)
+            {
+                m_MainView.SetTab(MainPageView.HistoryTabIndex);
+            }
+            else
+            {
+                Debug.LogError("Collab Error: Attempting to focus unknown target.");
             }
         }
 
@@ -186,6 +242,13 @@ namespace Unity.Cloud.Collaborate.UserInterface
             Add,
             Error,
             Main
+        }
+
+        public enum FocusTarget
+        {
+            None,
+            History,
+            Changes
         }
     }
 }

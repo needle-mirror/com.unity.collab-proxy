@@ -126,9 +126,10 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
         {
             m_Presenter.Start();
             const string path = "path";
-            m_Presenter.RequestDiscard(path);
+            var entry = new ChangeEntry(path);
+            m_Presenter.RequestDiscard(entry);
             Assert.AreEqual(1, m_Model.RequestDiscardCount);
-            Assert.AreEqual(path, m_Model.RequestDiscardPath);
+            Assert.AreEqual(path, m_Model.RequestDiscardEntry.Path);
             // Ensure it created a dialogue
             Assert.AreEqual(1, m_View.DisplayDialogueCount);
         }

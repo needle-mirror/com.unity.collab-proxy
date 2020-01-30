@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEditor.Collaboration;
 using UnityEngine;
 
 using Unity.Cloud.Collaborate.UserInterface;
@@ -10,7 +11,19 @@ namespace CollabProxy.UI
     {
         static Bootstrap()
         {
-            Toolbar.AddSubToolbar(new ToolbarButton { Width = 32f });
+            var toolbar = new ToolbarButton { Width = 32f };
+            Toolbar.AddSubToolbar(toolbar);
+            toolbar.Update();
+
+            Collab.ShowHistoryWindow += () =>
+            {
+                CollaborateWindow.Init(CollaborateWindow.FocusTarget.History);
+            };
+
+            Collab.ShowChangesWindow += () =>
+            {
+                CollaborateWindow.Init(CollaborateWindow.FocusTarget.Changes);
+            };
         }
     }
 }

@@ -49,15 +49,8 @@ namespace Unity.Cloud.Collaborate.Views.Adapters.ListAdapters
             // Setup callbacks
             element.SetToggleCallback(c => OnItemToggleChanged(index, c));
             element.diffButton.Clicked += () => OnDiffClicked(index);
-            if (changesEntry.Entry.Status != ChangeEntryStatus.Added)
-            {
-                element.discardButton.RemoveFromClassList(UiConstants.ussHidden);
-                element.discardButton.Clicked += () => OnDiscardClicked(index);
-            }
-            else
-            {
-                element.discardButton.AddToClassList(UiConstants.ussHidden);
-            }
+            element.discardButton.RemoveFromClassList(UiConstants.ussHidden);
+            element.discardButton.Clicked += () => OnDiscardClicked(index);
 
             // Update the toggle and tooltips.
             if (changesEntry.ToggleReadOnly)
@@ -107,7 +100,7 @@ namespace Unity.Cloud.Collaborate.Views.Adapters.ListAdapters
         {
             Assert.IsNotNull(m_List, "List should not be null at this point.");
             var changeEntry = m_List[index];
-            m_Presenter.RequestDiscard(changeEntry.Entry.Path);
+            m_Presenter.RequestDiscard(changeEntry.Entry);
         }
 
         public int GetLastBoundElementIndex()
