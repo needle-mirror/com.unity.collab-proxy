@@ -1,29 +1,29 @@
-﻿using CollabProxy.Client;
 using UnityEditor;
 using UnityEditor.Collaboration;
+using UnityEngine;
+
+using Unity.Cloud.Collaborate.UserInterface;
 
 namespace CollabProxy.UI
 {
     [InitializeOnLoad]
-    internal static class Bootstrap
+    public class Bootstrap
     {
-        private const float kCollabToolbarButtonWidth = 78.0f;
-
         static Bootstrap()
         {
-            Collab.ShowHistoryWindow = CollabHistoryWindow.ShowHistoryWindow;
-            Collab.ShowToolbarAtPosition = CollabToolbarWindow.ShowCenteredAtPosition;
-            Collab.IsToolbarVisible = CollabToolbarWindow.IsVisible;
-            Collab.CloseToolbar = CollabToolbarWindow.CloseToolbar;
-            Toolbar.AddSubToolbar(new CollabToolbarButton
-            {
-                Width = kCollabToolbarButtonWidth
-            });
+            var toolbar = new ToolbarButtonV2 { Width = 32f };
+            Toolbar.AddSubToolbar(toolbar);
+            toolbar.Update();
 
-            // Register get changes callbacks
-            CollabVersionControl.GetChangesFinished += CollabToolbarWindow.OnGetChangesFinish;
-            CollabVersionControl.GetChangesStarted += CollabToolbarWindow.OnGetChangesStart;
-            CollabVersionControl.UpdateCachedChangesFinished += CollabToolbarWindow.OnUpdateCachedChangesFinish;
+            Collab.ShowHistoryWindow += () =>
+            {
+                CollaborateWindow.Init(CollaborateWindow.FocusTarget.History);
+            };
+
+            Collab.ShowChangesWindow += () =>
+            {
+                CollaborateWindow.Init(CollaborateWindow.FocusTarget.Changes);
+            };
         }
     }
 }
