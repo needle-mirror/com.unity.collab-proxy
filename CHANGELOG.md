@@ -4,6 +4,15 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0-preview.20] - 2020-6-08
+- Add warning to advise against use on 2020.1 and above
+
+## [2.0.0-preview.19] - 2019-5-31
+- Adds yamato ci to the package
+
+## [2.0.0-preview.18] - 2019-5-30
+- Updates CI script for package promotion
+
 ## [2.0.0-preview.17] - 2019-5-28
 - Fixes missing .meta files
 
@@ -51,7 +60,7 @@ Update CHANGELOG.md
 - Bug fixes to remove migration dialog that should be forced.
 - Performance improvements to reduce polling frequency and unnecessary file hashes.
 
-## [2.0.0] - 2019-1-22
+## [2.0.0-preview.5] - 2019-1-22
 Bump major semantic version to reflect move from Unity.CollabProxy.Editor.
 
 ## [1.3.0-preview.4] - 2018-12-17

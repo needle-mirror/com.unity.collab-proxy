@@ -1,0 +1,6 @@
+{
+	"name": "Unity.CollabProxy.Compat",
+	"includePlatforms": [
+		"Editor"
+	]
+}
