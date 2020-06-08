@@ -4,6 +4,12 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.3.8] - 2020-06-08
+## Fixed
+- Fix incorrect priority of error messages
+- Fix Collab button being stuck in inprogress state
+- Fix error when partially publishing without the window open
+
 ## [1.3.7] - 2020-01-30
 ## Changed
 - Bulk revert is now supported.

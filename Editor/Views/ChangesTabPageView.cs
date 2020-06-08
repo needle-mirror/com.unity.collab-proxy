@@ -175,6 +175,13 @@ namespace Unity.Cloud.Collaborate.Views
         public void SetSelectedChanges()
         {
             Assert.IsNotNull(m_Presenter, "Invalid state while setting selected items from toggleable list.");
+            if(m_ToggleableChangeListAdapter == null)
+            {
+                // we might be Selecting partial changes before the view loads the first time,
+                // so we just ignore it ....
+                return;
+            }
+            
             Assert.IsTrue(m_ToggleableChangeListAdapter != null && m_EntryToggleableGroup != null, "Invalid state while setting selected items in toggleable list");
             var scrollToIndex = m_ToggleableChangeListAdapter.GetFirstToggledIndex();
             m_ToggleableChangeListAdapter.NotifyDataSetChanged();

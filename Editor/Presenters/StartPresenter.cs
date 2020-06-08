@@ -65,11 +65,6 @@ namespace Unity.Cloud.Collaborate.Presenters
         void OnProjectStatusChanged(ProjectStatus status)
         {
             switch (status) {
-                case ProjectStatus.Unbound:
-                    m_View.Text = StringAssets.projectStatusTitleUnbound;
-                    m_View.ButtonText = StringAssets.projectStatusButtonUnbound;
-                    m_View.SetButtonVisible(true);
-                    break;
                 case ProjectStatus.Offline:
                     m_View.Text = StringAssets.projectStatusTitleOffline;
                     m_View.ButtonText = string.Empty;
@@ -83,6 +78,11 @@ namespace Unity.Cloud.Collaborate.Presenters
                 case ProjectStatus.LoggedOut:
                     m_View.Text = StringAssets.projectStatusTitleLoggedOut;
                     m_View.ButtonText = StringAssets.projectStatusButtonLoggedOut;
+                    m_View.SetButtonVisible(true);
+                    break;
+                case ProjectStatus.Unbound:
+                    m_View.Text = StringAssets.projectStatusTitleUnbound;
+                    m_View.ButtonText = StringAssets.projectStatusButtonUnbound;
                     m_View.SetButtonVisible(true);
                     break;
                 case ProjectStatus.NoSeat:
