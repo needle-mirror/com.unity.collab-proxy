@@ -40,7 +40,7 @@ namespace Unity.Cloud.Collaborate.UserInterface
         {
             var currentState = ToolbarButtonState.UpToDate;
             var networkAvailable = UnityConnect.instance.connectInfo.online && UnityConnect.instance.connectInfo.loggedIn;
-            m_ErrorMessage = "";
+            m_ErrorMessage = string.Empty;
 
             if (UnityConnect.instance.isDisableCollabWindow)
             {
@@ -50,20 +50,16 @@ namespace Unity.Cloud.Collaborate.UserInterface
             {
                 var collab = Collab.instance;
                 var currentInfo = collab.collabInfo;
-                var error = false;
-                if (collab.GetError(UnityConnect.UnityErrorFilter.ByContext | UnityConnect.UnityErrorFilter.ByChild, out var errInfo))
-                {
-                    error = errInfo.priority <= (int)UnityConnect.UnityErrorPriority.Error;
-                    m_ErrorMessage = errInfo.shortMsg;
-                }
 
                 if (!currentInfo.ready)
                 {
                     currentState = ToolbarButtonState.InProgress;
                 }
-                else if (error)
+                else if (collab.GetError(UnityConnect.UnityErrorFilter.ByContext | UnityConnect.UnityErrorFilter.ByChild, out var errInfo) &&
+                    errInfo.priority <= (int)UnityConnect.UnityErrorPriority.Error)
                 {
                     currentState = ToolbarButtonState.OperationError;
+                    m_ErrorMessage = errInfo.shortMsg;
                 }
                 else if (currentInfo.inProgress)
                 {

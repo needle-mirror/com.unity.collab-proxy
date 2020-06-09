@@ -4,6 +4,15 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.1.0-preview.5] - 2020-06-09
+## Fixed
+- Fix error when partially publishing without the window open
+
+## [2.1.0-preview.4] - 2020-04-03
+## Fixed
+- Fixed bug with process info not updating properly after canceled publish
+- Fixed bug with error message when refreshing changes
+
 ## [2.1.0-preview.3] - 2020-02-03
 ## Changed
 - Revert can now handle new files.
@@ -32,15 +41,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Ignored changes are now correctly displayed.
 - Conflicts list will update as entries are resolved.
 
-## [2.0.0-preview.17] - 2019-5-28
+## [2.0.0-preview.17] - 2019-05-28
 ### Fixed
 - Fixes missing .meta files
 
-## [2.0.0-preview.16] - 2019-5-28
+## [2.0.0-preview.16] - 2019-05-28
 ### Fixed
 - Fixes display issues on the refreshed editor theme in 2019.3
 
-## [2.0.0-preview.15] - 2019-5-17
+## [2.0.0-preview.15] - 2019-05-17
 ### Changed
 - Block user from triggering scan while publishing
 ### Fixed
@@ -48,40 +57,40 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bug fixes to ensure server errors/responses are provided to the editor/user
 - Bug fixes to ensure server logs correctly
 
-## [2.0.0-preview.14] - 2019-5-10
+## [2.0.0-preview.14] - 2019-05-10
 ### Fixed
 - Bug fixes to reduce proxy server polling
 - Bug fixes to rotate proxy server logs
 
-## [2.0.0-preview.13] - 2019-5-10
+## [2.0.0-preview.13] - 2019-05-10
 ### Fixed
 - Bug fixes to update status of subsets of files
 
-## [2.0.0-preview.12] - 2019-4-30
+## [2.0.0-preview.12] - 2019-04-30
 ### Fixed
 - Bug fixes to stop collab getting stuck in looking for changes.
 - Bug fixes to stop "Unknown operation error" on collab init.
 - Bug fices to stop error on publishing when a file has been deleted.
 
-## [2.0.0-preview.11] - 2019-4-24
+## [2.0.0-preview.11] - 2019-04-24
 - Remove automatic get changes when domain reload occurs.
 
-## [2.0.0-preview.10] - 2019-4-23
+## [2.0.0-preview.10] - 2019-04-23
 ### Changed
 - Update to LibGit2Sharp 0.26.0.
 - Move to https.
 ### Fixed
 - Ensure default .collabignore rules are used.
 
-## [2.0.0-preview.9] - 2019-4-19
+## [2.0.0-preview.9] - 2019-04-19
 ### Removed
 - Remove automatic identification of changes
 
-## [2.0.0-preview.8] - 2019-4-8
+## [2.0.0-preview.8] - 2019-04-08
 ### Fixed
 - Performance fixes to reduce CPU load.
 
-## [2.0.0-preview.6] - 2019-3-23
+## [2.0.0-preview.6] - 2019-03-23
 ### Fixed
 - Bug fixes to serialization when using legacy scripting runtime.
 - Bug fixes to remove migration dialog that should be forced.

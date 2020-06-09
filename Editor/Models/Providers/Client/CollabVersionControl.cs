@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -16,7 +17,7 @@ namespace Unity.Cloud.Collaborate.Models.Providers.Client
     /// Collab. This allows it to be used as the backend for Collab's core and user interface, through the exposed
     /// methods.
     /// </summary>
-    internal class CollabVersionControl : IVersionControl
+    internal class CollabVersionControl : IVersionControl_V2
     {
         const string k_CloneUrl = "{0}/api/projects/{1}/git";
         const string k_NoTip = "none";
@@ -30,6 +31,8 @@ namespace Unity.Cloud.Collaborate.Models.Providers.Client
 
         bool m_IsProjectBound;
         bool m_GitRepoExists;
+        private static readonly ManualResetEvent RefreshChangesEvent = new ManualResetEvent(false);
+        private static readonly object RefreshChangesLock = new object();
         string m_CachedTip = k_NoTip;
 
         public static bool IsGettingChanges;
@@ -224,6 +227,7 @@ namespace Unity.Cloud.Collaborate.Models.Providers.Client
             SetChangesToPublish(changes);
             // Notify new changes and call event on main thread.
             IsGettingChanges = false;
+            RefreshChangesEvent.Set();
             EditorApplication.delayCall += () => GetChangesFinished?.Invoke();
         }
 
@@ -231,6 +235,17 @@ namespace Unity.Cloud.Collaborate.Models.Providers.Client
         {
             // Notify new changes and call event on main thread.
             IsGettingChanges = false;
+
+            // NOTE this indicates that the server has received multiple
+            // GetChanges requests and is cancelling this on in favor of a newer one.
+            // No need to log the error in this case.
+            if (e is CollabProxyException cpe &&
+                cpe.InnermostExceptionMessage.Contains("AbortGetChangesRequestException"))
+            {
+                return;
+            }
+
+            RefreshChangesEvent.Set();
             EditorApplication.delayCall += () => GetChangesFinished?.Invoke();
             LogExceptionDetails(e);
         }
@@ -367,6 +382,19 @@ namespace Unity.Cloud.Collaborate.Models.Providers.Client
             IsGettingChanges = true;
             GetChangesStarted?.Invoke();
             Git.GetWorkingDirectoryChangesAsync();
+        }
+
+        // The purpose of this method is to act as a synchronous version of StartGetChanges()
+        // It triggers StartGetChanges() once, and then waits for a corresponding
+        // OnGetChanges() to be called.
+        public void RefreshAvailableLocalChangesSynchronous()
+        {
+            lock (RefreshChangesLock)
+            {
+                RefreshChangesEvent.Reset();
+                StartGetChanges();
+                RefreshChangesEvent.WaitOne();
+            }
         }
 
         internal void StartUpdateCachedChanges()

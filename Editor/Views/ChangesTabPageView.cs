@@ -176,6 +176,13 @@ namespace Unity.Cloud.Collaborate.Views
         public void SetSelectedChanges()
         {
             Assert.IsNotNull(m_Presenter, "Invalid state while setting selected items from toggleable list.");
+            if (m_ToggleableChangeListAdapter == null)
+            {
+                // we might be Selecting partial changes before the view loads the first time,
+                // so we just ignore it ....
+                return;
+            }
+
             Assert.IsTrue(m_ToggleableChangeListAdapter != null && m_EntryToggleableGroup != null, "Invalid state while setting selected items in toggleable list");
             var scrollToIndex = m_ToggleableChangeListAdapter.GetFirstToggledIndex();
             m_ToggleableChangeListAdapter.NotifyDataSetChanged();
@@ -184,7 +191,7 @@ namespace Unity.Cloud.Collaborate.Views
                 scrollToIndex = Math.Min(scrollToIndex, m_ToggleableChangeListAdapter.GetEntryCount() - 1);
 
                 m_EntryToggleableGroup.ScrollTo(scrollToIndex);
-                if(m_ToggleableChangeListAdapter.GetLastBoundElementIndex() < scrollToIndex + 3)
+                if (m_ToggleableChangeListAdapter.GetLastBoundElementIndex() < scrollToIndex + 3)
                 {
                     // the pool of the list is 14 elements .. but the list actually shows only 12 ..
                     // so the normal scrollTo call of the list view may stop 1 element short of the selected
@@ -207,7 +214,7 @@ namespace Unity.Cloud.Collaborate.Views
                 m_ToggleableChangeListAdapter = new ToggleableChangeListAdapter(m_Presenter);
                 toggleableListView.SetAdapter(m_ToggleableChangeListAdapter);
                 m_EntryToggleableGroup = new ChangeEntryGroup(toggleableListView)
-                    { Title = StringAssets.changeListFullHeader };
+                { Title = StringAssets.changeListFullHeader };
                 m_EntryToggleableGroup.SetOverflowCallback(m_Presenter.OnClickGroupOverflow);
                 m_EntryToggleableGroup.SetRefreshCallback(m_Presenter.OnClickGroupRefresh);
                 m_EntryToggleableGroup.Searching = m_Presenter.Searching;
