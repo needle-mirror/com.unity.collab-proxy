@@ -1,7 +1,7 @@
 {
   "name": "com.unity.collab-proxy",
   "displayName": "Unity Collaborate",
-  "version": "2.0.0-preview.21",
+  "version": "2.0.0-preview.22",
   "unity": "2018.3",
   "unityRelease": "10f1",
   "description": "Collaborate is a simple way for teams to save, share, and sync their Unity project\n\nNote: Unity version 2020.1 requires Collaborate version 1.3 or 2.1-preview.",
@@ -15,11 +15,11 @@
   ],
   "dependencies": {},
   "upmCi": {
-    "footprint": "2f90069373f1e755fdb32ebe4667f240a66268d2"
+    "footprint": "664fdce081c9a79f5daea1ec6c062ce000c6ea82"
   },
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.collab-proxy.git",
     "type": "git",
-    "revision": "9600ffdd230552641adb3cf530c8cae941702dc2"
+    "revision": "75fed7d504e5e905e12509df4e69f65e12daa6f2"
   }
 }
