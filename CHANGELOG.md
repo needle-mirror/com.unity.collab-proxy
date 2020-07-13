@@ -4,27 +4,33 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.1.0-preview.6] - 2020-07-13
+### Fixed
+- Unnecessary use of texture compression in icons that slowed down platform switching
+- Update publish button state when selected changes update
+- Use colorized icons when changes are available.
+
 ## [2.1.0-preview.5] - 2020-06-09
-## Fixed
+### Fixed
 - Fix error when partially publishing without the window open
 
 ## [2.1.0-preview.4] - 2020-04-03
-## Fixed
+### Fixed
 - Fixed bug with process info not updating properly after canceled publish
 - Fixed bug with error message when refreshing changes
 
 ## [2.1.0-preview.3] - 2020-02-03
-## Changed
+### Changed
 - Revert can now handle new files.
-## Fixed
+### Fixed
 - Bulk revert missing confirmation dialogue.
 - Bulk revert errors when reverting new files.
 
 ## [2.1.0-preview.2] - 2020-01-30
-## Changed
+### Changed
 - Bulk revert is now supported.
 - Collab is blocked in play mode.
-## Fixed
+### Fixed
 - Ignore files behavior is now matched between Collab v1 and v2.
 - Ignore icons are now consistent with the ignored state of a file.
 - Fixed Collab toolbar button always stating there are changes to publish.

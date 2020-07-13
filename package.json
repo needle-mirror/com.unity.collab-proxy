@@ -1,7 +1,7 @@
 {
   "name": "com.unity.collab-proxy",
   "displayName": "Unity Collaborate",
-  "version": "2.1.0-preview.5",
+  "version": "2.1.0-preview.6",
   "unity": "2020.1",
   "unityRelease": "0b5",
   "description": "Collaborate with your teammates with the official version control system for Unity. Collaborate is a simple way for teams to save, share, and sync your Unity project.",
@@ -22,11 +22,11 @@
     "com.unity.nuget.newtonsoft-json": "2.0.0"
   },
   "upmCi": {
-    "footprint": "b4448c96c607b898d9c27f2ff52333e894146eeb"
+    "footprint": "5b5cf2c69dd0780673b5762c76d850b2d20d808c"
   },
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.cloud.collaborate.git",
     "type": "git",
-    "revision": "4e158a5fc9ce042caf643c260ae957cec6d2e324"
+    "revision": "4df99a728ad02aa20fe677532b187285ff5b5645"
   }
 }
