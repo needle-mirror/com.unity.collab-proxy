@@ -84,7 +84,7 @@ namespace Unity.Cloud.Collaborate.Presenters
         /// Event handler to receive updated remote changes available status.
         /// </summary>
         /// <param name="available">Whether or not remote changes are available.</param>
-        void OnRemoteRevisionsAvailabilityChange(bool available)
+        protected void OnRemoteRevisionsAvailabilityChange(bool available)
          {
              UpdatePublishButton();
          }
@@ -101,7 +101,7 @@ namespace Unity.Cloud.Collaborate.Presenters
         /// <summary>
         /// Event handler for when the model reports an updated change list.
         /// </summary>
-        void OnUpdatedChangeList()
+        protected void OnUpdatedChangeList()
         {
             UpdatePublishButton();
             UpdateChangeList();
@@ -131,8 +131,9 @@ namespace Unity.Cloud.Collaborate.Presenters
         /// <summary>
         /// Inform view to refresh its selections.
         /// </summary>
-        void OnUpdatedPartiallySelectedChanges()
+        protected void OnUpdatedPartiallySelectedChanges()
         {
+            UpdatePublishButton();
             m_View.SetSelectedChanges();
         }
 
@@ -140,7 +141,7 @@ namespace Unity.Cloud.Collaborate.Presenters
         /// Update changelist display in response to the conflict status changing.
         /// </summary>
         /// <param name="conflicted">New conflicted status.</param>
-        void OnConflictStatusChange(bool conflicted)
+        protected void OnConflictStatusChange(bool conflicted)
         {
             UpdatePublishButton();
             UpdateChangeList();

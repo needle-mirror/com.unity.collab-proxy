@@ -52,6 +52,6 @@ namespace Unity.Cloud.Collaborate.Components {
         }
 
         [UsedImplicitly]
-        public new class UxmlFactory : UxmlFactory<IconTextButton, UxmlTraits> {}
+        public new class UxmlFactory : UxmlFactory<TextButton, UxmlTraits> {}
     }
 }

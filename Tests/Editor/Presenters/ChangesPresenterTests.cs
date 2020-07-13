@@ -1,17 +1,47 @@
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using NUnit.Framework;
+using Unity.Cloud.Collaborate.Models;
 using Unity.Cloud.Collaborate.Models.Structures;
 using Unity.Cloud.Collaborate.Presenters;
 using Unity.Cloud.Collaborate.Tests.Models;
+using Unity.Cloud.Collaborate.Views;
 
 namespace Unity.Cloud.Collaborate.Tests.Presenters
 {
     public class ChangesPresenterTests
     {
+        class TestableChangesPresenter : ChangesPresenter
+        {
+            public TestableChangesPresenter([NotNull] IChangesView view, [NotNull] IChangesModel model, [NotNull] IMainModel mainModel)
+                : base(view, model, mainModel)
+            {
+            }
+
+            public void NotifyOnRemoteRevisionsAvailabilityChange(bool available)
+            {
+                base.OnRemoteRevisionsAvailabilityChange(available);
+            }
+
+            public void NotifyOnUpdatedChangeList()
+            {
+                base.OnUpdatedChangeList();
+            }
+
+            public void NotifyOnUpdatedPartiallySelectedChanges()
+            {
+                base.OnUpdatedPartiallySelectedChanges();
+            }
+
+            public void NotifyOnConflictStatusChange(bool conflicted)
+            {
+                base.OnConflictStatusChange(conflicted);
+            }
+        }
         TestChangesView m_View;
         TestChangesModel m_Model;
         TestMainModel m_MainModel;
-        ChangesPresenter m_Presenter;
+        TestableChangesPresenter m_Presenter;
 
         [SetUp]
         public void Setup()
@@ -19,7 +49,7 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
             m_View = new TestChangesView();
             m_Model = new TestChangesModel();
             m_MainModel = new TestMainModel();
-            m_Presenter = new ChangesPresenter(m_View, m_Model, m_MainModel);
+            m_Presenter = new TestableChangesPresenter(m_View, m_Model, m_MainModel);
         }
 
         [TearDown]
@@ -245,6 +275,67 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
             m_Model.TriggerBusyStatusUpdated(false);
             Assert.AreEqual(3, m_View.SetBusyStatusCount);
             Assert.AreEqual(false, m_View.SetBusyStatusValue);
+        }
+
+        [Test]
+        public void TestOnUpdatedChangeListUpdatesPublishButton()
+        {
+            m_Presenter.Start();
+            m_Model.ToggledEntries = new List<IChangeEntryData>
+            {
+                new TestChangesModel.ChangeEntryData { Toggled = true, Entry = new ChangeEntry("path") },
+                new TestChangesModel.ChangeEntryData { Toggled = false, Entry = new ChangeEntry("path2") }
+            };
+            m_Presenter.NotifyOnUpdatedChangeList();
+            Assert.AreEqual(true, m_View.SetPublishEnabledValue);
+        }
+
+        [Test]
+        public void TestOnPartialChangesUpdatesPublishButton()
+        {
+            m_Presenter.Start();
+            m_Model.ToggledEntries = new List<IChangeEntryData>
+            {
+                new TestChangesModel.ChangeEntryData { Toggled = true, Entry = new ChangeEntry("path") },
+                new TestChangesModel.ChangeEntryData { Toggled = false, Entry = new ChangeEntry("path2") }
+            };
+            m_Presenter.NotifyOnUpdatedPartiallySelectedChanges();
+            Assert.AreEqual(true, m_View.SetPublishEnabledValue);
+        }
+
+        [Test]
+        public void TestOnRemoteRevisionsAvailabilityChangeUpdatesPublishButton()
+        {
+            m_Presenter.Start();
+            m_Model.ToggledEntries = new List<IChangeEntryData>
+            {
+                new TestChangesModel.ChangeEntryData { Toggled = true, Entry = new ChangeEntry("path") },
+                new TestChangesModel.ChangeEntryData { Toggled = false, Entry = new ChangeEntry("path2") }
+            };
+            m_MainModel.RemoteRevisionsAvailable = true;
+            m_Presenter.NotifyOnRemoteRevisionsAvailabilityChange(true);
+            Assert.AreEqual(false, m_View.SetPublishEnabledValue);
+        }
+
+        [Test]
+        public void TestOnConflictStatusChangeUpdatesPublishButton()
+        {
+            m_Presenter.Start();
+            m_Model.ToggledEntries = new List<IChangeEntryData>
+            {
+                new TestChangesModel.ChangeEntryData { Toggled = true, Entry = new ChangeEntry("path") },
+                new TestChangesModel.ChangeEntryData { Toggled = false, Entry = new ChangeEntry("path2") }
+            };
+            m_Model.ConflictedEntries = new List<IChangeEntryData>
+            {
+                new TestChangesModel.ChangeEntryData
+                {
+                    Conflicted = true,
+                    Entry = new ChangeEntry("path", null, ChangeEntryStatus.Unmerged, false, true)
+                }
+            };
+            m_Presenter.NotifyOnConflictStatusChange(true);
+            Assert.AreEqual(false, m_View.SetPublishEnabledValue);
         }
     }
 }

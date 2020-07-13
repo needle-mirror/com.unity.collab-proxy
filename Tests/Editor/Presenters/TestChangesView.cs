@@ -89,7 +89,6 @@ namespace Unity.Cloud.Collaborate.Tests.Presenters
 
         public void SetSelectedChanges()
         {
-            throw new System.NotImplementedException();
         }
     }
 }
