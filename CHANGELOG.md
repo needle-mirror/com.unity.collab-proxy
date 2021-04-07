@@ -4,6 +4,14 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.5.7] - 2021-04-07
+### Unreleased
+- The Version Control package will be expanding to include both Collaborate and Plastic SCM version control interfaces. This release is preparing for that move and contains no new functionality or bug fixes for Collaborate.
+### Changed
+- Collaborate Package renamed to Version Control with changes to package display name and description.
+### Fixed
+- Fixed NPE when updating the version of the Collab package.
+
 ## [1.3.9] - 2020-07-13
 ### Fixed
 - Unnecessary use of texture compression in icons that slowed down platform switching
@@ -20,7 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Bulk revert is now supported.
 - Collab is blocked in play mode.
-## Fixed
+### Fixed
 - Fixed services window's links to open Collab.
 
 ## [1.3.6] - 2020-01-21

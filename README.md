@@ -61,33 +61,34 @@ Here are some files and folders of note:
   ├── Third Party Notices.md
   ├── QAReport.md
   ├── Editor/
-  │   ├── Unity.SourceControl.asmdef
-  │   ├── Assets/
-  │   │   ├── Icons/
-  │   │   ├── Layouts/
-  │   │   ├── Styles/
-  │   │   └── UiConstants.cs
-  │   ├── Models/
-  │   │   ├── Api/
-  │   │   │   └── ISourceControlProvider.cs
-  │   │   └── Providers/
-  │   │       └── Collab.cs
-  │   ├── Views/
-  │   │   └── Adaptors/
-  │   ├── Presenters/
-  │   ├── Common/
-  │   ├── Settings/
-  │   ├── Components/
-  │   ├── Utilities/
-  │   └── UserInterface/
-  │       ├── Bootstrap.cs
-  │       ├── WindowCache.cs
-  │       ├── ToolbarButton.cs
-  │       └── CollaborateWindow.cs
+  │   └── Collaborate
+  │       ├── Unity.CollabProxy.Editor.asmdef
+  │       ├── Assets/
+  │       │   ├── Icons/
+  │       │   ├── Layouts/
+  │       │   ├── Styles/
+  │       │   └── UiConstants.cs
+  │       ├── Models/
+  │       │   ├── Api/
+  │       │   │   └── ISourceControlProvider.cs
+  │       │   └── Providers/
+  │       │       └── Collab.cs
+  │       ├── Views/
+  │       ├── Presenters/
+  │       ├── Common/
+  │       ├── Settings/
+  │       ├── Components/
+  │       ├── Utilities/
+  │       └── UserInterface/
+  │           ├── Bootstrap.cs
+  │           ├── WindowCache.cs
+  │           ├── ToolbarButton.cs
+  │           └── CollaborateWindow.cs
   ├── Tests/
-  │   ├── .tests.json
-  │   └── Editor/
-  │       └── Unity.CollabProxy.EditorTests.asmdef
+  │   ├── Collaborate
+  │   │   └── Editor/
+  │   │       └── Unity.CollabProxy.EditorTests.asmdef
+  │   └── .tests.json
   └── Documentation~/
        ├── unity-cloud-collaborate.md
        └── Images/

@@ -6,14 +6,15 @@ This is the structure of the project:
 ```none
 <root>
   ├── .tests.json
-  └── Editor/
-      ├── Unity.CollabProxy.EditorTests.asmdef
-      ├── Components/
-      ├── Models/
-      ├── Ppresenters/
-      ├── Scenario/
-      ├── UserInterface/
-      └── Views/
+  └── Collaborate
+      └── Editor/
+          ├── Components/
+          ├── Models/
+          ├── Ppresenters/
+          ├── Scenario/
+          ├── UserInterface/
+          ├── Views/
+          └── Unity.CollabProxy.EditorTests.asmdef
 ```
 
 Each directory features tests and mock classes for classes in the editor code.
