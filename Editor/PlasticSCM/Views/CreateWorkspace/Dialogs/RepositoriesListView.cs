@@ -98,7 +98,8 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
 
         void IPlasticTable<RepositoryInfo>.Fill(
             List<RepositoryInfo> entries,
-            List<RepositoryInfo> entriesToSelect)
+            List<RepositoryInfo> entriesToSelect,
+            string currentFilter)
         {
             mUnfilteredRepositories = entries;
 

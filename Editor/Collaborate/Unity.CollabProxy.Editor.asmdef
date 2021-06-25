@@ -1,5 +1,6 @@
 {
     "name": "Unity.CollabProxy.Editor",
+    "rootNamespace": "",
     "references": [
         "Unity.Settings.Editor"
     ],

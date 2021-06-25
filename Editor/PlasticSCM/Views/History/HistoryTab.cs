@@ -22,6 +22,7 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.Changesets;
+using Unity.PlasticSCM.Editor.Tool;
 
 namespace Unity.PlasticSCM.Editor.Views.History
 {
@@ -192,6 +193,9 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         void IHistoryViewMenuOperations.DiffWithPrevious()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+                return;
+
             HistoryRevision revision = HistorySelection.
                 GetSelectedHistoryRevision(mHistoryListView);
 
@@ -210,6 +214,9 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         void IHistoryViewMenuOperations.DiffSelectedRevisions()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+                return;
+
             List<HistoryRevision> revisions = HistorySelection.
                 GetSelectedHistoryRevisions(mHistoryListView);
 
@@ -373,7 +380,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 wkInfo.ClientPath,
                 repSpec,
                 headerState,
-                new HistoryListViewMenu(this, this),
+                new HistoryListViewMenu(this, this, mIsGluonMode),
                 HistoryListHeaderState.GetColumnNames());
 
             mHistoryListView.Reload();

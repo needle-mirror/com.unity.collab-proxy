@@ -7,7 +7,7 @@ using PlasticGui;
 
 namespace Unity.PlasticSCM.Editor.UI.Progress
 {
-    internal class ProgressControlsForDialogs : IProgressControls
+    class ProgressControlsForDialogs : IProgressControls
     {
         internal class Data
         {

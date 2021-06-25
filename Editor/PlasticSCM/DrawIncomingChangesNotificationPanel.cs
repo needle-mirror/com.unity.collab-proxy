@@ -53,7 +53,7 @@ namespace Unity.PlasticSCM.Editor
     {
         internal static void ForMode(
             WorkspaceInfo workspaceInfo,
-            PlasticGUIClient plasticClient,
+            WorkspaceWindow workspaceWindow,
             IMergeViewLauncher mergeViewLauncher,
             IGluonViewSwitcher gluonSwitcher,
             bool isGluonMode,
@@ -79,7 +79,7 @@ namespace Unity.PlasticSCM.Editor
             GUILayout.Label(labelContent, UnityStyles.Notification.Label);
 
             DoActionButton(
-                workspaceInfo, plasticClient,
+                workspaceInfo, workspaceWindow,
                 mergeViewLauncher, gluonSwitcher, isGluonMode,
                 notificationPanelData.HasUpdateAction,
                 buttonContent, EditorStyles.miniButton);
@@ -89,7 +89,7 @@ namespace Unity.PlasticSCM.Editor
 
         static void DoActionButton(
             WorkspaceInfo workspaceInfo,
-            PlasticGUIClient plasticClient,
+            WorkspaceWindow workspaceWindow,
             IMergeViewLauncher mergeViewLauncher,
             IGluonViewSwitcher gluonSwitcher,
             bool isGluonMode,
@@ -105,7 +105,7 @@ namespace Unity.PlasticSCM.Editor
 
             if (isUpdateAction)
             {
-                plasticClient.UpdateWorkspace();
+                workspaceWindow.UpdateWorkspace();
                 return;
             }
 

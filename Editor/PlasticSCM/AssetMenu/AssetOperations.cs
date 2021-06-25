@@ -23,6 +23,7 @@ using Unity.PlasticSCM.Editor.UI;
 using GluonCheckoutOperation = GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer.Operations.CheckoutOperation;
 using GluonUndoCheckoutOperation = GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer.Operations.UndoCheckoutOperation;
 using GluonAddoperation = GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer.Operations.AddOperation;
+using Unity.PlasticSCM.Editor.Tool;
 
 namespace Unity.PlasticSCM.Editor.AssetMenu
 {
@@ -62,8 +63,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
             mGuiMessage = new UnityPlasticGuiMessage(parentWindow);
             mProgressControls = new EditorProgressControls(mGuiMessage);
-
         }
+
         void IAssetMenuOperations.ShowPendingChanges()
         {
             mViewSwitcher.ShowPendingChanges();
@@ -183,6 +184,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         void IAssetMenuOperations.ShowDiff()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+                return;
+
             string selectedPath = AssetsSelection.GetSelectedPath(
                 mAssetSelection.GetSelectedAssets());
 
@@ -215,6 +219,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         void IAssetMenuOperations.ShowHistory()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+                return;
+
             AssetList assetList = mAssetSelection.GetSelectedAssets();
 
             Asset selectedAsset = AssetsSelection.GetSelectedAsset(

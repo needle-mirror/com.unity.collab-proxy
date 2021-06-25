@@ -14,6 +14,7 @@ using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.Views.Diff.Dialogs;
+using Unity.PlasticSCM.Editor.Tool;
 
 namespace Unity.PlasticSCM.Editor.Views.Diff
 {
@@ -27,7 +28,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             IWorkspaceWindow workspaceWindow,
             IViewSwitcher viewSwitcher,
             IHistoryViewLauncher historyViewLauncher,
-            EditorWindow parentWindow)
+            EditorWindow parentWindow,
+            bool isGluonMode)
         {
             mWkInfo = wkInfo;
             mWorkspaceWindow = workspaceWindow;
@@ -35,6 +37,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             mHistoryViewLauncher = historyViewLauncher;
             mParentWindow = parentWindow;
             mGuiMessage = new UnityPlasticGuiMessage(parentWindow);
+            mIsGluonMode = isGluonMode;
 
             BuildComponents();
 
@@ -102,6 +105,9 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void IDiffTreeViewMenuOperations.Diff()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+                return;
+
             ClientDiffInfo clientDiffInfo =
                 DiffSelection.GetSelectedDiff(mDiffTreeView);
 
@@ -167,6 +173,9 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void DiffTreeViewMenu.IMetaMenuOperations.DiffMeta()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+                return;
+
             ClientDiffInfo clientDiffInfo =
                 DiffSelection.GetSelectedDiff(mDiffTreeView);
 
@@ -181,7 +190,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                 imageDiffLauncher: null);
         }
 
-        GetRestorePathData 
+        GetRestorePathData
             UndeleteClientDiffsOperation.IGetRestorePathDialog.GetRestorePath(
                 string wkPath, string restorePath, string explanation,
                 bool isDirectory, bool showSkipButton)
@@ -409,7 +418,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             mSearchField.downOrUpArrowKeyPressed += SearchField_OnDownOrUpArrowKeyPressed;
 
             mDiffTreeView = new DiffTreeView(
-                new DiffTreeViewMenu(this, this));
+                new DiffTreeViewMenu(this, this, mIsGluonMode));
             mDiffTreeView.Reload();
         }
 
@@ -431,5 +440,6 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         readonly IHistoryViewLauncher mHistoryViewLauncher;
         readonly IViewSwitcher mViewSwitcher;
         readonly WorkspaceInfo mWkInfo;
+        readonly bool mIsGluonMode;
     }
 }

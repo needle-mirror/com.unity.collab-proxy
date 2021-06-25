@@ -27,7 +27,7 @@ namespace Unity.PlasticSCM.Editor.UI
             if (disableCollabWhenLoaded)
                 window.DisableCollabIfEnabledWhenLoaded();
 
-            window.SetupWindowTitle();
+            window.SetupWindowTitle(false);
 
             return window;
         }

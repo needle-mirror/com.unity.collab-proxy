@@ -83,8 +83,14 @@ namespace Unity.Cloud.Collaborate.UserInterface
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
             AssemblyReloadEvents.beforeAssemblyReload -= OnBeforeAssemblyReload;
             AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
-            m_Provider.UpdatedProjectStatus -= OnUpdatedProjectStatus;
-            m_Models.ForEach(m => m.OnStop());
+            if (m_Provider != null)
+            {
+                m_Provider.UpdatedProjectStatus -= OnUpdatedProjectStatus;
+            }
+            if (m_Models != null)
+            {
+                m_Models.ForEach(m => m.OnStop());
+            }
         }
 
         void CreateGUI()

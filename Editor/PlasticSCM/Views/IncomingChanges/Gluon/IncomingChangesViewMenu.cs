@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
-
 using UnityEditor;
 
 using PlasticGui;
 using PlasticGui.Gluon.WorkspaceWindow.Views.IncomingChanges;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.Tool;
 
 namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 {
@@ -38,6 +38,9 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         void MergeSelectedFilesMenuItem_Click()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(false))
+                return;
+
             mIncomingChangesViewMenuOperations.MergeContributors();
         }
 

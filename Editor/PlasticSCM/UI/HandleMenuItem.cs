@@ -9,15 +9,20 @@ namespace Unity.PlasticSCM.Editor.UI
     internal static class HandleMenuItem
     {
         internal static void AddMenuItem(
-            string name, int priority,
-            Action execute, Func<bool> validate)
+            string name, 
+            int priority,
+            Action execute,
+            Func<bool> validate)
         {
             AddMenuItem(name, string.Empty, priority, execute, validate);
         }
 
         internal static void AddMenuItem(
-            string name, string shortcut, int priority,
-            Action execute, Func<bool> validate)
+            string name,
+            string shortcut,
+            int priority,
+            Action execute,
+            Func<bool> validate)
         {
             MethodInfo InternalAddMenuItem = MenuType.GetMethod(
                 "AddMenuItem",
@@ -26,7 +31,8 @@ namespace Unity.PlasticSCM.Editor.UI
             if (InternalAddMenuItem == null)
             {
                 Debug.LogWarningFormat(
-                    PlasticLocalization.GetString(PlasticLocalization.Name.ErrorAddPlasticSCMMenuItem),
+                    PlasticLocalization.GetString(
+                        PlasticLocalization.Name.ErrorAddPlasticSCMMenuItem),
                     name);
                 return;
             }
@@ -46,7 +52,8 @@ namespace Unity.PlasticSCM.Editor.UI
             if (InternalRemoveMenuItem == null)
             {
                 Debug.LogWarningFormat(
-                    PlasticLocalization.GetString(PlasticLocalization.Name.ErrorRemovePlasticSCMMenuItem),
+                    PlasticLocalization.GetString(
+                        PlasticLocalization.Name.ErrorRemovePlasticSCMMenuItem),
                     name);
                 return;
             }
@@ -64,7 +71,8 @@ namespace Unity.PlasticSCM.Editor.UI
             if (InternalUpdateAllMenus == null)
             {
                 Debug.LogWarning(
-                    PlasticLocalization.GetString(PlasticLocalization.Name.ErrorUpdatePlasticSCMMenus));
+                    PlasticLocalization.GetString(
+                        PlasticLocalization.Name.ErrorUpdatePlasticSCMMenus));
                 return;
             }
 

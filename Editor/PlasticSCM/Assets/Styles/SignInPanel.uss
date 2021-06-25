@@ -1,9 +1,7 @@
 .sign-in-buttons {
     margin-top: 5px;
     margin-bottom: 5px;
-    width: 420px;
-    height: 36px;
-    font-size: 14px;
+    height: 30px;
 }
 
 #iconUnity, #iconEmail {
@@ -11,7 +9,11 @@
     height: 32px
 }
 
-#signInWithUnityId {
-    background-color: #000000;
-    color: #C4C4C4;
+#unityIDButton {
+    color: white;
+    background-color: black;
+}
+
+#emailButton {
+    color: black;
 }

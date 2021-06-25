@@ -4,21 +4,21 @@ namespace Unity.PlasticSCM.Editor.Developer
 {
     internal class GenericProgress
     {
-        internal GenericProgress(PlasticGUIClient guiClient)
+        internal GenericProgress(WorkspaceWindow workspaceWindow)
         {
-            mGuiClient = guiClient;
-            mGuiClient.Progress.CanCancelProgress = false;
+            mWorkspaceWindow = workspaceWindow;
+            mWorkspaceWindow.Progress.CanCancelProgress = false;
         }
 
         internal void RefreshProgress(ProgressData progressData)
         {
-            var progress = mGuiClient.Progress;
+            var progress = mWorkspaceWindow.Progress;
 
             progress.ProgressHeader = progressData.Status;
             progress.TotalProgressMessage = progressData.Details;
             progress.TotalProgressPercent = progressData.ProgressValue / 100f;
         }
 
-        PlasticGUIClient mGuiClient;
+        WorkspaceWindow mWorkspaceWindow;
     }
 }

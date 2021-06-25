@@ -23,6 +23,7 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer.DirectoryConflicts;
+using Unity.PlasticSCM.Editor.Tool;
 
 namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 {
@@ -34,17 +35,16 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         IIncomingChangesViewMenuOperations,
         IncomingChangesViewMenu.IMetaMenuOperations
     {
-
         internal IncomingChangesTab(
             WorkspaceInfo wkInfo,
+            IWorkspaceWindow workspaceWindow,
             IViewSwitcher switcher,
-            PlasticGUIClient plasticClient,
             NewIncomingChangesUpdater newIncomingChangesUpdater,
             EditorWindow parentWindow)
         {
             mWkInfo = wkInfo;
+            mWorkspaceWindow = workspaceWindow;
             mSwitcher = switcher;
-            mPlasticClient = plasticClient;
             mNewIncomingChangesUpdater = newIncomingChangesUpdater;
             mParentWindow = parentWindow;
             mGuiMessage = new UnityPlasticGuiMessage(parentWindow);
@@ -82,11 +82,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             ((IRefreshableView)this).Refresh();
         }
 
-        bool IIncomingChangesTab.IsVisible
-        {
-            get { return mIsVisible; }
-            set { mIsVisible = value; }
-        }
+        bool IIncomingChangesTab.IsVisible{ get; set; }
 
         void IIncomingChangesTab.OnDisable()
         {
@@ -117,12 +113,11 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 mProcessMergesButtonText,
                 mHasPendingDirectoryConflicts,
                 mIsOperationRunning,
-                mPlasticClient,
+                mWorkspaceWindow,
                 mMergeViewLogic,
                 mProgressControls.ProgressData);
 
             DoFileConflictsArea(
-                mPlasticClient,
                 mIncomingChangesTreeView,
                 mResultConflicts,
                 mSolvedFileConflicts,
@@ -176,7 +171,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
                     mMergeController.UpdateMergeObjectInfoIfNeeded(workingBranch);
                     mMergeViewLogic.AutoRefresh();
-                 });
+                });
         }
 
         void IRefreshableView.Refresh()
@@ -296,7 +291,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     mIncomingChangesTreeView);
 
             mMergeViewLogic.ProcessMerges(
-                mPlasticClient,
+                mWorkspaceWindow,
                 mSwitcher,
                 mGuiMessage,
                 selectedPaths,
@@ -311,7 +306,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     mIncomingChangesTreeView);
 
             mMergeViewLogic.ProcessMerges(
-                mPlasticClient,
+                mWorkspaceWindow,
                 mSwitcher,
                 mGuiMessage,
                 selectedPaths,
@@ -326,7 +321,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     mIncomingChangesTreeView);
 
             mMergeViewLogic.ProcessMerges(
-                mPlasticClient,
+                mWorkspaceWindow,
                 mSwitcher,
                 mGuiMessage,
                 selectedPaths,
@@ -368,7 +363,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             if (incomingChange == null)
                 return;
 
-
             DiffIncomingChanges(
                 mIncomingChangesTreeView.GetMetaChange(incomingChange),
                 mWkInfo);
@@ -396,6 +390,9 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             IncomingChangeInfo incomingChange,
             WorkspaceInfo wkInfo)
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(false))
+                return;
+
             DiffOperation.DiffYoursWithIncoming(
                 wkInfo,
                 incomingChange.GetMount(),
@@ -409,6 +406,9 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             IncomingChangeInfo incomingChange,
             WorkspaceInfo wkInfo)
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(false))
+                return;
+
             DiffOperation.DiffRevisions(
                 wkInfo,
                 incomingChange.GetMount().RepSpec,
@@ -538,11 +538,14 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             string processMergesButtonText,
             bool hasPendingDirectoryConflictsCount,
             bool isOperationRunning,
-            PlasticGUIClient plasticClient,
+            IWorkspaceWindow workspaceWindow,
             MergeViewLogic mergeViewLogic,
             ProgressControlsForViews.Data progressData)
         {
-            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+            GUIStyle guiStyle = new GUIStyle();
+            guiStyle.margin = new RectOffset(5, 5, 5, 5);
+
+            EditorGUILayout.BeginHorizontal(guiStyle);
 
             if (isProcessMergesButtonVisible)
             {
@@ -550,7 +553,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     isProcessMergesButtonEnabled && !hasPendingDirectoryConflictsCount,
                     processMergesButtonText,
                     mSwitcher,
-                    mPlasticClient,
+                    workspaceWindow,
                     mGuiMessage,
                     mergeViewLogic);
             }
@@ -578,14 +581,12 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
             DoRefreshButton(
                 !isOperationRunning,
-                plasticClient,
                 mergeViewLogic);
 
             EditorGUILayout.EndHorizontal();
         }
 
         static void DoFileConflictsArea(
-            PlasticGUIClient plasticClient,
             IncomingChangesTreeView incomingChangesTreeView,
             MergeTreeResult conflicts,
             MergeSolvedFileConflicts solvedConflicts,
@@ -695,7 +696,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             bool isEnabled,
             string processMergesButtonText,
             IViewSwitcher switcher,
-            PlasticGUIClient plasticClient,
+            IWorkspaceWindow workspaceWindow,
             GuiMessage.IGuiMessage guiMessage,
             MergeViewLogic mergeViewLogic)
         {
@@ -704,7 +705,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             if (DrawActionButton.For(processMergesButtonText))
             {
                 mergeViewLogic.ProcessMerges(
-                    plasticClient,
+                    workspaceWindow,
                     switcher,
                     guiMessage,
                     new List<string>(),
@@ -743,13 +744,12 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
         static void DoRefreshButton(
             bool isEnabled,
-            PlasticGUIClient plasticClient,
             MergeViewLogic mergeViewLogic)
         {
             GUI.enabled = isEnabled;
 
             if (GUILayout.Button(new GUIContent(
-                    Images.GetRefreshIcon()), EditorStyles.toolbarButton))
+                    Images.GetRefreshIcon())))
                 mergeViewLogic.Refresh();
 
             GUI.enabled = true;
@@ -802,6 +802,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         {
             IncomingChangesTreeHeaderState incomingChangesHeaderState =
                 IncomingChangesTreeHeaderState.GetDefault();
+
             TreeHeaderSettings.Load(incomingChangesHeaderState,
                 UnityConstants.DEVELOPER_INCOMING_CHANGES_TABLE_SETTINGS_NAME,
                 (int)IncomingChangesTreeColumn.Path, true);
@@ -810,6 +811,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 wkInfo, incomingChangesHeaderState,
                 IncomingChangesTreeHeaderState.GetColumnNames(),
                 new IncomingChangesViewMenu(this, this));
+
             mIncomingChangesTreeView.Reload();
         }
 
@@ -843,8 +845,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
             return result;
         }
-
-        bool mIsVisible;
         bool mIsProcessMergesButtonVisible;
         bool mIsCancelMergesButtonVisible;
         bool mIsMessageLabelVisible;
@@ -874,8 +874,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         readonly GuiMessage.IGuiMessage mGuiMessage;
         readonly EditorWindow mParentWindow;
         readonly NewIncomingChangesUpdater mNewIncomingChangesUpdater;
-        readonly PlasticGUIClient mPlasticClient;
         readonly IViewSwitcher mSwitcher;
+        readonly IWorkspaceWindow mWorkspaceWindow;
         readonly WorkspaceInfo mWkInfo;
     }
 }

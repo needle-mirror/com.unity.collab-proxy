@@ -1,11 +1,11 @@
 ﻿using UnityEditor;
 using UnityEngine;
-
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Items;
 using PlasticGui.WorkspaceWindow.Open;
 using PlasticGui.WorkspaceWindow.PendingChanges;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.Tool;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
@@ -25,11 +25,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             IPendingChangesMenuOperations pendingChangesMenuOperations,
             IOpenMenuOperations openMenuOperations,
             IMetaMenuOperations metaMenuOperations,
-            IFilesFilterPatternsMenuOperations filterMenuOperations)
+            IFilesFilterPatternsMenuOperations filterMenuOperations,
+            bool isGluonMode)
         {
             mPendingChangesMenuOperations = pendingChangesMenuOperations;
             mOpenMenuOperations = openMenuOperations;
             mMetaMenuOperations = metaMenuOperations;
+            mIsGluonMode = isGluonMode;
 
             mFilterMenuBuilder = new FilesFilterPatternsMenuBuilder(filterMenuOperations);
 
@@ -62,7 +64,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             if (operationToExecute != PendingChangesMenuOperations.None)
                 return ProcessKeyActionForPendingChangesMenu(
-                    operationToExecute, mPendingChangesMenuOperations, info);
+                    operationToExecute, mPendingChangesMenuOperations, info, mIsGluonMode);
 
             return ProcessKeyActionForOpenMenu(
                 openOperationToExecute, mOpenMenuOperations, info);
@@ -320,7 +322,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         static bool ProcessKeyActionForPendingChangesMenu(
             PendingChangesMenuOperations operationToExecute,
             IPendingChangesMenuOperations pendingChangesMenuOperations,
-            SelectedChangesGroupInfo info)
+            SelectedChangesGroupInfo info,
+            bool isGluonMode)
         {
             PendingChangesMenuOperations operations =
                     PendingChangesMenuUpdater.GetAvailableMenuOperations(info);
@@ -329,7 +332,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return false;
 
             ProcessPendingChangesMenuOperation(
-                operationToExecute, pendingChangesMenuOperations);
+                operationToExecute, pendingChangesMenuOperations, isGluonMode);
 
             return true;
         }
@@ -353,10 +356,14 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         static void ProcessPendingChangesMenuOperation(
             PendingChangesMenuOperations operationToExecute,
-            IPendingChangesMenuOperations pendingChangesMenuOperations)
+            IPendingChangesMenuOperations pendingChangesMenuOperations,
+            bool isGluonMode)
         {
             if (operationToExecute == PendingChangesMenuOperations.DiffWorkspaceContent)
             {
+                if (LaunchTool.ShowDownloadPlasticExeWindow(isGluonMode))
+                    return;
+
                 pendingChangesMenuOperations.Diff();
                 return;
             }
@@ -428,5 +435,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         IMetaMenuOperations mMetaMenuOperations;
         IOpenMenuOperations mOpenMenuOperations;
         IPendingChangesMenuOperations mPendingChangesMenuOperations;
+        bool mIsGluonMode;
     }
 }

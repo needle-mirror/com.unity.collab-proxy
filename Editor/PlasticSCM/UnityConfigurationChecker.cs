@@ -1,7 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 using Codice.Client.Common;
+using Codice.CM.Common;
 using Codice.Utils;
 using Unity.PlasticSCM.Editor.Tool;
 
@@ -13,12 +13,17 @@ namespace Unity.PlasticSCM.Editor
         {
             string plasticClientBinDir = PlasticInstallPath.GetClientBinDir();
 
-            if (string.IsNullOrEmpty(plasticClientBinDir))
+            if (!string.IsNullOrEmpty(plasticClientBinDir))
+                SetupUnityEditionToken.FromPlasticInstallation(plasticClientBinDir);
+
+            if (ConfigurationChecker.NeedConfiguration())
                 return true;
 
-            SetupUnityEditionToken.FromPlasticInstallation(plasticClientBinDir);
+            if (ClientConfig.Get().GetClientConfigData().WorkingMode == "SSOWorkingMode" &&
+                !CmConnection.Get().IsAnyTokenConfigured())
+                return true;
 
-            return ConfigurationChecker.NeedConfiguration();
+            return false;
         }
     }
 

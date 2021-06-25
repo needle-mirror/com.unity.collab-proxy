@@ -3,7 +3,6 @@
 using UnityEditor;
 
 using Codice.Client.Common.Threading;
-using Codice.Client.Common.WebApi;
 using Codice.LogWrapper;
 using Unity.PlasticSCM.Editor.WebApi;
 
@@ -22,24 +21,23 @@ namespace Unity.PlasticSCM.Editor.Beta
             if (string.IsNullOrEmpty(CloudProjectSettings.accessToken))
                 return;
 
-            EditorApplication.update -= RunOnceWhenAccessTokenIsInitialized;
-
             if (CollabPlugin.IsEnabled())
                 return;
 
             Execute(CloudProjectSettings.accessToken);
+
+            EditorApplication.update -= RunOnceWhenAccessTokenIsInitialized;
         }
 
         static void Execute(string unityAccessToken)
         {
-            if (SessionState.GetBool(
-                    IS_USER_BETA_PROGRAM_ALREADY_CALCULATED_KEY, false))
+            if (SessionState.GetInt(
+                    IS_USER_BETA_PROGRAM_ALREADY_CALCULATED_KEY,
+                    BETA_PROGRAM_NOT_CALCULATED) == BETA_PROGRAM_ENABLED)
             {
+                PlasticMenuItem.Add();
                 return;
             }
-
-            SessionState.SetBool(
-                IS_USER_BETA_PROGRAM_ALREADY_CALCULATED_KEY, true);
 
             PlasticApp.InitializeIfNeeded();
 
@@ -69,17 +67,28 @@ namespace Unity.PlasticSCM.Editor.Beta
                     ExceptionsHandler.LogException(
                         "CalculateUserBetaProgramSetting",
                         waiter.Exception);
+
+                    SetBetaProgramNotEnabled();
+
                     return;
                 }
 
                 if (response == null)
+                {
+                    SetBetaProgramNotEnabled();
+
                     return;
+                }
 
                 if (response.Error != null)
                 {
                     mLog.ErrorFormat(
                         "Unable to retrieve is beta enabled: {0} [code {1}]",
-                        response.Error.Message, response.Error.ErrorCode);
+                        response.Error.Message,
+                        response.Error.ErrorCode);
+
+                    SetBetaProgramNotEnabled();
+
                     return;
                 }
 
@@ -88,15 +97,33 @@ namespace Unity.PlasticSCM.Editor.Beta
                     mLog.InfoFormat(
                         "Beta is disabled for accessToken: {0}",
                         unityAccessToken);
+
+                    SetBetaProgramNotEnabled();
+
                     return;
                 }
 
+                SessionState.SetInt(
+                    IS_USER_BETA_PROGRAM_ALREADY_CALCULATED_KEY,
+                    BETA_PROGRAM_ENABLED);
+
                 PlasticMenuItem.Add();
             });
-    }
+        }
+
+        static void SetBetaProgramNotEnabled()
+        {
+            SessionState.SetInt(
+                IS_USER_BETA_PROGRAM_ALREADY_CALCULATED_KEY,
+                BETA_PROGRAM_NOT_ENABLED);
+        }
 
         const string IS_USER_BETA_PROGRAM_ALREADY_CALCULATED_KEY =
             "PlasticSCM.UserBetaProgram.IsAlreadyCalculated";
+
+        const int BETA_PROGRAM_NOT_CALCULATED = 0;
+        const int BETA_PROGRAM_NOT_ENABLED = 1;
+        const int BETA_PROGRAM_ENABLED = 2;
 
         static readonly ILog mLog = LogManager.GetLogger("CalculateUserBetaProgramSetting");
     }

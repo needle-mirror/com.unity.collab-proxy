@@ -43,6 +43,32 @@ namespace Unity.PlasticSCM.Editor.WebApi
             }
         }
 
+        internal static TokenExchangeResponse TokenExchange(string unityAccessToken)
+        {
+            Uri endpoint = mWebApiUris.GetFullUri(
+                string.Format("{0}/{1}",TokenExchangeEndpoint,unityAccessToken ));
+
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(endpoint);
+                request.Method = "GET";
+                request.ContentType = "application/json";
+                return GetResponse<TokenExchangeResponse>(request);
+            }
+            catch (Exception ex)
+            {
+                mLog.ErrorFormat(
+                    "Unable to exchange tokens '{0}': {1}",
+                    endpoint.ToString(), ex.Message);
+
+                mLog.DebugFormat(
+                    "StackTrace:{0}{1}",
+                    Environment.NewLine, ex.StackTrace);
+
+                return null;
+            }
+        }
+
         internal static NewVersionResponse GetLastVersion(Edition plasticEdition)
         {
             Uri endpoint = mWebApiUris.GetFullUri(
@@ -134,6 +160,7 @@ namespace Unity.PlasticSCM.Editor.WebApi
         }
 
         const string IsBetaEnabledEndpoint = "api/unity-package/beta/is-enabled";
+        const string TokenExchangeEndpoint = "api/oauth/unityid/exchange";
         static readonly PlasticWebApiUris mWebApiUris = PlasticWebApiUris.BuildDefault();
         static readonly ILog mLog = LogManager.GetLogger("PlasticScmRestApiClient");
     }

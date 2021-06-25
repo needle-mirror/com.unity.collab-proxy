@@ -10,18 +10,20 @@ using Unity.PlasticSCM.Editor.UI.UIElements;
 using PlasticGui.Configuration.TeamEdition;
 using PlasticGui.Configuration;
 using PlasticGui.WebApi;
+using Unity.PlasticSCM.Editor.Views.Welcome;
 
 namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
 {
     internal class TeamEditionConfigurationWindow : EditorWindow
     {
-        internal static void ShowWindow(IPlasticWebRestApi restApi)
+        internal static void ShowWindow(IPlasticWebRestApi restApi, WelcomeView welcomeView)
         {
             TeamEditionConfigurationWindow window = GetWindow<TeamEditionConfigurationWindow>();
             window.mRestApi = restApi;
+            window.mWelcomeView = welcomeView;
             window.titleContent = new GUIContent(
                 PlasticLocalization.GetString(PlasticLocalization.Name.WelcomeToPlasticSCM));
-            window.minSize = new Vector2(650, 300);
+            window.minSize = window.maxSize = new Vector2(650, 300);
             window.Show();
         }
 
@@ -68,6 +70,9 @@ namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
         void OnDestroy()
         {
             Dispose();
+
+            if (mWelcomeView != null)
+                mWelcomeView.OnUserClosedConfigurationWindow();
         }
 
         void CheckConnectionButton_Clicked()
@@ -182,7 +187,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
             mUseSslToggle.RegisterValueChangedCallback(OnUseSslToggleChanged);
 
             mUserTextField = root.Query<TextField>("userTextField").First();
-            mUserTextField.value = Environment.UserName;
             mUserTextField.SetEnabled(false);
 
             mPasswordTextField = root.Query<TextField>("passwordTextField").First();
@@ -303,6 +307,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
             new ConfigurationDialogUserAssistant();
 
         IPlasticWebRestApi mRestApi;
+        WelcomeView mWelcomeView;
         TextField mUserTextField;
     }
 }

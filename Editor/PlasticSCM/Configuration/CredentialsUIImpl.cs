@@ -44,7 +44,7 @@ namespace Unity.PlasticSCM.Editor.Configuration
 
             GUIActionRunner.RunGUIAction(delegate
             {
-                result = CredentialsDialog.RequestCredentials(
+                result = SSOCredentialsDialog.RequestCredentials(
                     cloudServer, mParentWindow);
             });
 

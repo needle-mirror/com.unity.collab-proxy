@@ -1,6 +1,9 @@
 == Branch ==
 Branch
 
+== Branches ==
+Branches
+
 == Changeset ==
 Changeset
 
@@ -12,6 +15,15 @@ changesets
 
 == Label ==
 Label
+
+== Labels ==
+Labels
+
+== CodeReview ==
+Code review
+
+== CodeReviews ==
+Code reviews
 
 == Server ==
 Server
@@ -363,6 +375,9 @@ Moved items - {0} of 1 item selected
 
 == MovedItemsSelectedPlural ==
 Moved items - {0} of {1} items selected
+
+== DeleteConfirmationMessage ==
+You are about to delete
 
 == DeletingObjectsSingular ==
 Deleting 1 object
@@ -1359,6 +1374,9 @@ Checkin changes to a different branch...
 == CheckinToADifferentBranch ==
 Checkin changes to a different branch
 
+== CheckinToADifferentBranchNewBranchWaterMark ==
+task001
+
 == MoveChangesetsToADifferentBranch ==
 Move changesets to a different branch
 
@@ -1614,6 +1632,18 @@ Editing attribute '{0}'...
 == ChangingRevisionType ==
 Changing the revision type...
 
+== DeleteWorkspaceSingular ==
+Deleting 1 workspace. Are you sure?
+
+== DeleteWorkspacesPlural ==
+Deleting {0} workspaces. Are you sure?
+
+== DeleteDynamicWorkspaceSingular ==
+Workspace{0} is dynamic. You will LOSE all of the private items in the workspace if you delete it. Are you sure?
+
+== DeleteDynamicWorkspacesPlural ==
+The following workspaces are dynamic:{0}. You will LOSE all of the private items in those workspaces if you delete them. Are you sure?
+
 == DeletingWorkspacesSingular ==
 Deleting workspace{0}...
 
@@ -1806,6 +1836,9 @@ The workspace is the local copy to work on files and make changes. A workspace h
 
 == RenameWorkspaceExplanation ==
 Renaming the workspace won’t modify its path.
+
+== RenameRepositoryExplanation ==
+Enter a new name for the selected repository
 
 == PendingChangesOptionsInfo ==
 * This option requires a disk search, so if your workspace is very large, or it has lots of private files, the operation could take awhile.
@@ -5028,18 +5061,18 @@ Recognize all
 You can use the following command-line parameters when invoking the external diff tool.
 It's up to you to ensure that the specified files have the contents of the revisions to be compared.
 
-    @sourcefile: full path of file whose contents will be displayed in left panel
-    @destinationfile: full path of file whose contents will be displayed in right panel
+@sourcefile: full path of file whose contents will be displayed in left panel
+@destinationfile: full path of file whose contents will be displayed in right panel
 
-    @sourcesymbolic: "left file" string to be displayed in control panel
-    @destinationsymbolic: "right file" string to be displayed in control panel
+@sourcesymbolic: "left file" string to be displayed in control panel
+@destinationsymbolic: "right file" string to be displayed in control panel
 
-    @sourcehash: MD5 string calculated from @leftrev file contents
-    @destinationhash: MD5 string calculated from @rightrev file contents
+@sourcehash: MD5 string calculated from @leftrev file contents
+@destinationhash: MD5 string calculated from @rightrev file contents
 
-    @filetype: MIME type, used for syntax highlighting
-    @comparationmethod: comparison method used
-    @fileencoding: default file encoding to use when no encoding is detected
+@filetype: MIME type, used for syntax highlighting
+@comparationmethod: comparison method used
+@fileencoding: default file encoding to use when no encoding is detected
 
 Examples:
 
@@ -5147,27 +5180,27 @@ User Profile
 == MergeVariables ==
 The following variables are available to use as arguments when invoking the external merge tool in the command line:
 
-    @sourcefile: full path of the source merge file  
-    @destinationfile: path of the destination merge file
-    @basefile: path of the common ancestor merge file
+@sourcefile: full path of the source merge file  
+@destinationfile: path of the destination merge file
+@basefile: path of the common ancestor merge file
 
-    @output: path of the merge result file
+@output: path of the merge result file
 
-    @sourcesymbolic: symbolic name of the source contributor
-    @destinationsymbolic: symbolic name of the destination contributor
-    @basesymbolic: symbolic name of the common ancestor contributor
+@sourcesymbolic: symbolic name of the source contributor
+@destinationsymbolic: symbolic name of the destination contributor
+@basesymbolic: symbolic name of the common ancestor contributor
 
-    @sourcehash: MD5 string calculated from the source file content
-    @destinationhash: MD5 string calculated from the destination file content
-    @basehash: MD5 string calculated from the common ancestor file content
+@sourcehash: MD5 string calculated from the source file content
+@destinationhash: MD5 string calculated from the destination file content
+@basehash: MD5 string calculated from the common ancestor file content
 
-    @filetype: MIME type used for the syntax highlight
-    @comparationmethod: comparison method used
-    @fileencoding: default file encoding to use when no encoding is detected
-    @resultencoding: result file encoding (NONE -> it will be calculated from contributors encodings)
-    @mergetype: type of merge used
-    @progress: a progress string indicating the current operation, for example Merging file 3/10
-    @extrainfofile: path of a file that contains extra information about the current merge
+@filetype: MIME type used for the syntax highlight
+@comparationmethod: comparison method used
+@fileencoding: default file encoding to use when no encoding is detected
+@resultencoding: result file encoding (NONE -> it will be calculated from contributors encodings)
+@mergetype: type of merge used
+@progress: a progress string indicating the current operation, for example Merging file 3/10
+@extrainfofile: path of a file that contains extra information about the current merge
 
 Examples:
 
@@ -5339,15 +5372,6 @@ Creating organization '{0}'...
 == OrganizationNameTooShort ==
 Organization name must be at least three characters long
 
-== Login ==
-Login
-
-== LoginTitle ==
-Use your existing plasticscm.com account to login
-
-== LoginButton ==
-Login
-
 == SignUp ==
 Sign up
 
@@ -5360,7 +5384,7 @@ Can't find the account {0}, please create a plasticscm.com account
 == SignUpButton ==
 Sign up
 
-== SignInButton ==
+== SignIn ==
 Sign in
 
 == SignInToPlasticSCM ==
@@ -5446,7 +5470,7 @@ By clicking 'Sign up' below, you agree to our {0} and {1}. We'll occasionally se
 == SignUpAgreeToShort ==
 By clicking 'Sign up', you agree to our {0} and {1}
 
-== SigninAgreeToShort ==
+== SignInAgreeToShort ==
 By clicking 'Sign in', you agree to our {0} and {1}
 
 == TermsOfService ==
@@ -5485,6 +5509,9 @@ Launch
 
 == LaunchGluonButton ==
 Launch Gluon
+
+== InviteMembers ==
+Invite Members to Workspace
 
 == ReplyButton ==
 Reply
@@ -5570,7 +5597,7 @@ Title
 == ReviewStatus ==
 Status
 
-== Reworkrequired ==
+== ReworkRequired ==
 Rework required
 
 == UnderReview ==
@@ -6146,7 +6173,7 @@ Details
 Author
 
 == PrivacyStatementText ==
-Controller: Codice Software, S.L. Purposes of the processing: Create your account and provide the requested services. You may exercise your rights of access, rectification, erasure and other data protection rights as described in our Privacy Statement. For additional information, please see our {0}
+Controller: Unity Technologies ApS. Purpose of the processing: Create your account and provide the requested services. You may exercise your rights of access, rectification, erasure and other data protection rights as described in the Unity Privacy Policy. For additional information please see the Unity {0}
 
 == PrivacyStatement ==
 Privacy Statement
@@ -6391,6 +6418,9 @@ remaining
 == DiffLinkButtonTooltip ==
 Copy link to share diffs
 
+== CodeReviewLinkButtonTooltip ==
+Copy link to share the code review
+
 == MainWindowTitleForLinux ==
 Plastic SCM - wk: {0}
 
@@ -6506,7 +6536,7 @@ Checkout
 Some items were not correctly updated. You may want to check the errors and retry the operation after solving the problems
 
 == PluginModalInformation ==
-The modal dialog is not available in this version and it is required for the Plastic SCM plugin works fine. \n Please contact support@codicesoftware.com for further info.
+The modal dialog is not available in this version and it is required for the Plastic SCM plugin works fine. \n Please contact support@plasticscm.com for further info.
 
 == ChangesetsCount ==
 {0} changesets
@@ -6667,6 +6697,9 @@ Download Cloud Edition
 == DownloadEnterpriseEdition ==
 Download Enterprise Edition
 
+== NeedEnterprise ==
+Need Plastic Enterprise?
+
 == PrefixPlasticMenu ==
 Assets/Plastic SCM
 
@@ -6775,7 +6808,7 @@ _Del
 == UnityOpenShortcut ==
 #o
 
-== CheckingInFilesProgress ==
+== CheckinInFilesProgress ==
 Checking in files...
 
 == Files ==
@@ -6816,3 +6849,198 @@ The selected repository must be a cloud repository
 
 == DisableAllHelpTips ==
 Disable all tips
+
+== Available ==
+Available
+
+== Unavailable ==
+Unavailable
+
+== PlasticOpenShortcutForWindows ==
+Alt+O
+
+== PlasticOpenShortcutForMacOS ==
+Cmd+O
+
+== PlasticOpenShortcutForLinux ==
+Alt+O
+
+== PlasticOpenInNewWindowShortcutForWindows ==
+Shift+O
+
+== PlasticOpenInNewWindowShortcutForMacOS ==
+Cmd+Shift+O
+
+== PlasticOpenInNewWindowShortcutForLinux ==
+Shift+O
+
+== PlasticNewShortcutForWindows ==
+Alt+N
+
+== PlasticNewShortcutForMacOS ==
+Cmd+N
+
+== PlasticNewShortcutForLinux ==
+Alt+N
+
+== PlasticNewWorkspaceShortcutForWindows ==
+Alt+W
+
+== PlasticNewWorkspaceShortcutForMacOS ==
+Cmd+W
+
+== PlasticNewWorkspaceShortcutForLinux ==
+Alt+W
+
+== PlasticNewSyncViewShortcutForWindows ==
+Alt+C
+
+== PlasticNewSyncViewShortcutForMacOS ==
+Cmd+C
+
+== PlasticNewSyncViewShortcutForLinux ==
+Alt+C
+
+== PlasticRenameShortcutForWindows ==
+F2
+
+== PlasticRenameShortcutForMacOS ==
+Cmd+R
+
+== PlasticRenameShortcutForLinux ==
+F2
+
+== PlasticDeleteShortcutForWindows ==
+Delete
+
+== PlasticDeleteShortcutForMacOS ==
+Cmd+Delete
+
+== PlasticDeleteShortcutForLinux ==
+Delete
+
+== PlasticPermissionsShortcutForWindows ==
+Alt+P
+
+== PlasticPermissionsShortcutForMacOS ==
+Cmd+P
+
+== PlasticPermissionsShortcutForLinux ==
+Alt+P
+
+== PlasticMergeShortcutForWindows ==
+Alt+M
+
+== PlasticMergeShortcutForMacOS ==
+Cmd+M
+
+== PlasticMergeShortcutForLinux ==
+Alt+M
+
+== PlasticDiffShortcutForWindows ==
+Alt+D
+
+== PlasticDiffShortcutForMacOS ==
+Cmd+D
+
+== PlasticDiffShortcutForLinux ==
+Alt+D
+
+== PlasticApplyShortcutForWindows ==
+Alt+A
+
+== PlasticApplyShortcutForMacOS ==
+Cmd+A
+
+== PlasticApplyShortcutForLinux ==
+Alt+A
+
+== PlasticSwitchShortcutForWindows ==
+Alt+W
+
+== PlasticSwitchShortcutForMacOS ==
+Cmd+W
+
+== PlasticSwitchShortcutForLinux ==
+Alt+W
+
+== PlasticBranchShortcutForWindows ==
+Alt+B
+
+== PlasticBranchShortcutForMacOS ==
+Cmd+B
+
+== PlasticBranchShortcutForLinux ==
+Alt+B
+
+== PlasticLabelShortcutForWindows ==
+Alt+L
+
+== PlasticLabelShortcutForMacOS ==
+Cmd+L
+
+== PlasticLabelShortcutForLinux ==
+Alt+L
+
+== PlasticSaveShortcutForWindows ==
+Ctrl+S
+
+== PlasticSaveShortcutForMacOS ==
+Cmd+S
+
+== PlasticSaveShortcutForLinux ==
+Ctrl+S
+
+== PlasticAnnotateShortcutForWindows ==
+Ctrl+A
+
+== PlasticAnnotateShortcutForMacOS ==
+Cmd+A
+
+== PlasticAnnotateShortcutForLinux ==
+Ctrl+A
+
+== PlasticHistoryShortcutForWindows ==
+Ctrl+H
+
+== PlasticHistoryShortcutForMacOS ==
+Cmd+H
+
+== PlasticHistoryShortcutForLinux ==
+Ctrl+H
+
+== TurnOffPlasticSCM ==
+Turn off Plastic SCM
+
+== TurnOffPlasticSCMDescrition ==
+Here you can turn off Plastic. It will delete current workspace and Plastic settings, but the files will remain intact.
+
+== TurningOffPlasticSCM ==
+Turning off Plastic SCM
+
+== TurnOffPlasticSCMAreYouSure ==
+Are you sure you want to turn off Plastic SCM?
+
+== TurnOffPlasticSCMClosing ==
+Closing Plastic SCM
+
+== TurnOffPlasticSCMClosingWindow ==
+Closing Plastic SCM window
+
+== TurnOffPlasticSCMCleaning ==
+Cleaning the settings
+
+== TurnOffPlasticSCMDeleting ==
+Deleting the workspace
+
+== StatusBarReady ==
+Ready
+
+== PendingMergeLinksCaption ==
+Pending merge links will be committed when you checkin your changes or reverted if you undo your changes
+
+== PendingMergeLinksCountSingular ==
+1 pending merge link
+
+== PendingMergeLinksCountPlural ==
+{0} pending merge links

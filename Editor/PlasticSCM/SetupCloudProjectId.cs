@@ -58,7 +58,7 @@ namespace Unity.PlasticSCM.Editor
             AssetDatabase.SaveAssets();
         }
 
-        static void SetCloudProjectId(string projectId)
+        internal static void SetCloudProjectId(string projectId)
         {
             MethodInfo InternalSetCloudProjectId = PlayerSettingsType.GetMethod(
                 "SetCloudProjectId",

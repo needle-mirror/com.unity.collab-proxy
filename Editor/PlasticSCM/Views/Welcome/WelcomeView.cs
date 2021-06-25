@@ -2,76 +2,78 @@
 using UnityEngine;
 
 using Codice.Client.Common;
-using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WebApi;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.Views.CreateWorkspace;
 using Unity.PlasticSCM.Editor.UI.Progress;
+using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
+using Codice.Client.BaseCommands;
+using Unity.PlasticSCM.Editor.Configuration.TeamEdition;
+using Codice.CM.Common;
 
 namespace Unity.PlasticSCM.Editor.Views.Welcome
 {
     internal class WelcomeView
     {
         internal WelcomeView(
-            EditorWindow parentWindow,
+            PlasticWindow parentWindow,
             CreateWorkspaceView.ICreateWorkspaceListener createWorkspaceListener,
             PlasticAPI plasticApi,
+            CmConnection cmConnection,
             IPlasticWebRestApi plasticWebRestApi)
         {
             mParentWindow = parentWindow;
             mCreateWorkspaceListener = createWorkspaceListener;
             mPlasticApi = plasticApi;
+            mCmConnection = cmConnection;
             mPlasticWebRestApi = plasticWebRestApi;
 
             mGuiMessage = new UnityPlasticGuiMessage(parentWindow);
-            mDownloadProgress = new ProgressControlsForViews();
             mConfigureProgress = new ProgressControlsForViews();
 
             mInstallerFile = GetInstallerTmpFileName.ForPlatform();
         }
-
 
         internal void Update()
         {
             if (mCreateWorkspaceView != null)
                 mCreateWorkspaceView.Update();
 
-            mDownloadProgress.UpdateDeterminateProgress(mParentWindow);
             mConfigureProgress.UpdateDeterminateProgress(mParentWindow);
         }
 
-        internal void OnGUI(
-            bool isPlasticExeAvailable,
-            bool clientNeedsConfiguration,
-            bool isGluonMode)
+        internal void OnGUI(bool clientNeedsConfiguration)
         {
             GUILayout.BeginHorizontal();
 
             GUILayout.Space(LEFT_MARGIN);
 
             DoContentViewArea(
-                isPlasticExeAvailable,
                 clientNeedsConfiguration,
-                isGluonMode,
                 mIsCreateWorkspaceButtonClicked,
                 mInstallerFile,
                 mGuiMessage,
-                mDownloadProgress,
                 mConfigureProgress);
 
             GUILayout.EndHorizontal();
         }
 
+        internal void OnUserClosedConfigurationWindow()
+        {
+            ((IProgressControls)mConfigureProgress).HideProgress();
+
+            ClientConfig.Reset();
+            CmConnection.Reset();
+            ClientHandlers.Register();
+        }
+
         void DoContentViewArea(
-            bool isPlasticExeAvailable,
             bool clientNeedsConfiguration,
-            bool isGluonMode,
             bool isCreateWorkspaceButtonClicked,
             string installerFile,
             GuiMessage.IGuiMessage guiMessage,
-            ProgressControlsForViews downloadProgress,
             ProgressControlsForViews configureProgress)
         {
             GUILayout.BeginVertical();
@@ -82,24 +84,18 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
                 GetCreateWorkspaceView().OnGUI();
             else
                 DoSetupViewArea(
-                    isPlasticExeAvailable,
                     clientNeedsConfiguration,
-                    isGluonMode,
                     mInstallerFile,
                     mGuiMessage,
-                    mDownloadProgress,
                     mConfigureProgress);
 
             GUILayout.EndVertical();
         }
 
         void DoSetupViewArea(
-            bool isPlasticExeAvailable,
             bool clientNeedsConfiguration,
-            bool isGluonMode,
             string installerFile,
             GuiMessage.IGuiMessage guiMessage,
-            ProgressControlsForViews downloadProgress,
             ProgressControlsForViews configureProgress)
         {
             DoTitleLabel();
@@ -107,128 +103,92 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             GUILayout.Space(STEPS_TOP_MARGIN);
 
             bool isStep1Completed =
-                isPlasticExeAvailable &
-                !downloadProgress.ProgressData.IsOperationRunning;
-
-            bool isStep2Completed =
-                isStep1Completed &
-                !clientNeedsConfiguration &
+                !clientNeedsConfiguration &&
                 !configureProgress.ProgressData.IsOperationRunning;
 
-            DoStepsArea(
-                isStep1Completed,
-                isStep2Completed,
-                downloadProgress.ProgressData,
-                configureProgress.ProgressData);
+            DoStepsArea(isStep1Completed, configureProgress.ProgressData);
 
             GUILayout.Space(BUTTON_MARGIN);
 
             DoActionButtonsArea(
                 isStep1Completed,
-                isStep2Completed,
-                isGluonMode,
                 installerFile,
                 guiMessage,
-                downloadProgress,
                 configureProgress);
 
-            DoNotificationArea(
-                downloadProgress.ProgressData,
-                configureProgress.ProgressData);
+            DoNotificationArea(configureProgress.ProgressData);
         }
 
         void DoActionButtonsArea(
             bool isStep1Completed,
-            bool isStep2Completed,
-            bool isGluonMode,
             string installerFile,
             GuiMessage.IGuiMessage guiMessage,
-            ProgressControlsForViews downloadProgress,
             ProgressControlsForViews configureProgress)
         {
-            GUILayout.BeginHorizontal();
-
             DoActionButton(
                 isStep1Completed,
-                isStep2Completed,
-                isGluonMode,
                 installerFile,
                 guiMessage,
-                downloadProgress,
                 configureProgress);
-
-            GUILayout.FlexibleSpace();
-
-            GUILayout.EndHorizontal();
         }
 
         void DoActionButton(
             bool isStep1Completed,
-            bool isStep2Completed,
-            bool isGluonMode,
             string installerFile,
             GuiMessage.IGuiMessage guiMessage,
-            ProgressControlsForViews downloadProgress,
             ProgressControlsForViews configureProgress)
         {
             if (!isStep1Completed)
             {
-                DoInstallButton(
-                    downloadProgress, guiMessage, installerFile);
+                DoConfigureButton(configureProgress);
                 return;
             }
 
-            if (!isStep2Completed)
-            {
-                DoConfigureButton(
-                    isGluonMode, configureProgress);
-                return;
-            }
-
-            if (GUILayout.Button(PlasticLocalization.GetString(PlasticLocalization.Name.CreateWorkspace),
-                    GUILayout.Width(BUTTON_WIDTH)))
+            if (GUILayout.Button(
+                PlasticLocalization.GetString(PlasticLocalization.Name.CreateWorkspace),
+                GUILayout.Width(BUTTON_WIDTH)))
                 mIsCreateWorkspaceButtonClicked = true;
         }
 
-        static void DoInstallButton(
-            ProgressControlsForViews downloadProgress,
-            GuiMessage.IGuiMessage guiMessage,
-            string installerFile)
-        {
-            GUI.enabled = !downloadProgress.ProgressData.IsOperationRunning;
-
-            if (GUILayout.Button(PlasticLocalization.GetString(PlasticLocalization.Name.InstallPlasticSCM),
-                    GUILayout.Width(BUTTON_WIDTH)))
-            {
-                Edition plasticEdition;
-                if (TryGetPlasticEditionToDownload(
-                        guiMessage, out plasticEdition))
-                {
-                    DownloadAndInstallOperation.Run(
-                        plasticEdition, installerFile,
-                        downloadProgress);
-
-                    GUIUtility.ExitGUI();
-                }
-            }
-
-            GUI.enabled = true;
-        }
-
-        static void DoConfigureButton(
-            bool isGluonMode,
-            ProgressControlsForViews configureProgress)
+        void DoConfigureButton(ProgressControlsForViews configureProgress)
         {
             GUI.enabled = !configureProgress.ProgressData.IsOperationRunning;
 
-            if (GUILayout.Button(PlasticLocalization.GetString(PlasticLocalization.Name.LoginOrSignUp),
-                    GUILayout.Width(BUTTON_WIDTH)))
+            if (GUILayout.Button(PlasticLocalization.GetString(
+                PlasticLocalization.Name.LoginOrSignUp),
+                GUILayout.Width(BUTTON_WIDTH)))
             {
-                ConfigurePlasticOperation.Run(
-                    isGluonMode,
-                    configureProgress);
+                ((IProgressControls)configureProgress).ShowProgress(string.Empty);
+
+                // Login button defaults to Cloud sign up
+                CloudEditionWelcomeWindow.ShowWindow(
+                        mPlasticWebRestApi,
+                        mCmConnection,
+                        this);
 
                 GUIUtility.ExitGUI();
+            }
+
+            // If client configuration cannot be determined, keep login button default as Cloud
+            // sign in window, but show Enterprise option as well
+            if (EditionToken.IsCloudEdition())
+            {
+                GUILayout.FlexibleSpace();
+
+                var anchorStyle = new GUIStyle(GUI.skin.label);
+                anchorStyle.normal.textColor = new Color(0.129f, 0.588f, 0.953f);
+                anchorStyle.hover.textColor = new Color(0.239f, 0.627f, 0.949f);
+                anchorStyle.active.textColor = new Color(0.239f, 0.627f, 0.949f);
+
+                if (GUILayout.Button(
+                    PlasticLocalization.GetString(
+                        PlasticLocalization.Name.NeedEnterprise),
+                        anchorStyle,
+                        GUILayout.Width(BUTTON_WIDTH),
+                        GUILayout.Height(20)))
+                    TeamEditionConfigurationWindow.ShowWindow(mPlasticWebRestApi, this);
+
+                GUILayout.Space(BUTTON_MARGIN);
             }
 
             GUI.enabled = true;
@@ -236,67 +196,27 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
 
         static void DoStepsArea(
             bool isStep1Completed,
-            bool isStep2Completed,
-            ProgressControlsForViews.Data downloadProgressData,
             ProgressControlsForViews.Data configureProgressData)
         {
-            DoDownloadAndInstallStep(
-                isStep1Completed,
-                downloadProgressData);
-
-            DoLoginOrSignUpStep(
-                isStep2Completed,
-                configureProgressData);
+            DoLoginOrSignUpStep(isStep1Completed, configureProgressData);
 
             DoCreatePlasticWorkspaceStep();
         }
 
-        static void DoDownloadAndInstallStep(
+        static void DoLoginOrSignUpStep(
             bool isStep1Completed,
             ProgressControlsForViews.Data progressData)
         {
-            Images.Name stepImage = (isStep1Completed) ?
-                Images.Name.StepOk :
-                Images.Name.Step1;
+            Images.Name stepImage = (isStep1Completed) ? Images.Name.StepOk : Images.Name.Step1;
 
-            string stepText = GetDownloadStepText(
-                progressData,
-                isStep1Completed);
+            string stepText = GetConfigurationStepText(progressData, isStep1Completed);
 
             GUIStyle style = new GUIStyle(EditorStyles.label);
             style.richText = true;
 
             GUILayout.BeginHorizontal();
 
-            DoStepLabel(
-                stepText,
-                stepImage,
-                style);
-
-            GUILayout.EndHorizontal();
-        }
-
-        static void DoLoginOrSignUpStep(
-            bool isStep2Completed,
-            ProgressControlsForViews.Data progressData)
-        {
-            Images.Name stepImage = (isStep2Completed) ?
-                Images.Name.StepOk :
-                Images.Name.Step2;
-
-            string stepText = GetConfigurationStepText(
-                progressData,
-                isStep2Completed);
-
-            GUIStyle style = new GUIStyle(EditorStyles.label);
-            style.richText = true;
-
-            GUILayout.BeginHorizontal();
-
-            DoStepLabel(
-                stepText,
-                stepImage,
-                style);
+            DoStepLabel(stepText, stepImage, style);
 
             GUILayout.EndHorizontal();
         }
@@ -307,7 +227,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
 
             DoStepLabel(
                 PlasticLocalization.GetString(PlasticLocalization.Name.CreateAPlasticWorkspace),
-                Images.Name.Step3,
+                Images.Name.Step2,
                 EditorStyles.label);
 
             GUILayout.EndHorizontal();
@@ -339,80 +259,26 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             GUILayout.Label(labelContent, EditorStyles.boldLabel);
         }
 
-        static void DoNotificationArea(
-            ProgressControlsForViews.Data downloadProgressData,
-            ProgressControlsForViews.Data configureProgressData)
+        static void DoNotificationArea(ProgressControlsForViews.Data configureProgressData)
         {
-            if (!string.IsNullOrEmpty(downloadProgressData.NotificationMessage))
-                DrawProgressForViews.ForNotificationArea(downloadProgressData);
-
             if (!string.IsNullOrEmpty(configureProgressData.NotificationMessage))
                 DrawProgressForViews.ForNotificationArea(configureProgressData);
         }
 
-        static string GetDownloadStepText(
+        static string GetConfigurationStepText(
             ProgressControlsForViews.Data progressData,
             bool isStep1Completed)
         {
-            string result = PlasticLocalization.GetString(PlasticLocalization.Name.DownloadAndInstall);
+            string result = PlasticLocalization.GetString(
+                PlasticLocalization.Name.LoginOrSignUpPlastic);
 
             if (isStep1Completed)
-                return result;
-
-            if (progressData.IsOperationRunning)
-                result = string.Format("<b>{0}</b>  -  ", result);
-
-            result += progressData.ProgressMessage;
-
-            if (progressData.IsOperationRunning && progressData.ProgressPercent >= 0)
-            {
-                result += string.Format(
-                    " {0}%", progressData.ProgressPercent * 100);
-            }
-
-            return result;
-        }
-
-        static string GetConfigurationStepText(
-            ProgressControlsForViews.Data progressData,
-            bool isStep2Completed)
-        {
-            string result = PlasticLocalization.GetString(PlasticLocalization.Name.LoginOrSignUpPlastic);
-
-            if (isStep2Completed)
                 return result;
 
             if (!progressData.IsOperationRunning)
                 return result;
 
             return string.Format("<b>{0}</b>", result);
-        }
-
-        static bool TryGetPlasticEditionToDownload(
-            GuiMessage.IGuiMessage guiMessage,
-            out Edition plasticEdition)
-        {
-            plasticEdition = Edition.Cloud;
-
-            if (EditionToken.IsCloudEdition())
-                return true;
-
-            GuiMessage.GuiMessageResponseButton result = guiMessage.ShowQuestion(
-                    PlasticLocalization.GetString(PlasticLocalization.Name.PlasticSCM),
-                    PlasticLocalization.GetString(PlasticLocalization.Name.WhichVersionInstall),
-                    PlasticLocalization.GetString(PlasticLocalization.Name.DownloadCloudEdition),
-                    PlasticLocalization.GetString(PlasticLocalization.Name.DownloadEnterpriseEdition),
-                    PlasticLocalization.GetString(PlasticLocalization.Name.CancelButton),
-                    true);
-
-            if (result == GuiMessage.GuiMessageResponseButton.Third)
-                return false;
-
-            if (result == GuiMessage.GuiMessageResponseButton.First)
-                return true;
-
-            plasticEdition = Edition.Enterprise;
-            return true;
         }
 
         CreateWorkspaceView GetCreateWorkspaceView()
@@ -437,14 +303,13 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
         bool mIsCreateWorkspaceButtonClicked = false;
 
         CreateWorkspaceView mCreateWorkspaceView;
-
-        readonly ProgressControlsForViews mDownloadProgress;
         readonly ProgressControlsForViews mConfigureProgress;
         readonly GuiMessage.IGuiMessage mGuiMessage;
+        readonly CmConnection mCmConnection;
         readonly PlasticAPI mPlasticApi;
         readonly IPlasticWebRestApi mPlasticWebRestApi;
         readonly CreateWorkspaceView.ICreateWorkspaceListener mCreateWorkspaceListener;
-        readonly EditorWindow mParentWindow;
+        readonly PlasticWindow mParentWindow;
 
         const int LEFT_MARGIN = 30;
         const int TOP_MARGIN = 20;

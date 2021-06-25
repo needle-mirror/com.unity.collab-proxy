@@ -1,6 +1,9 @@
 == Branch ==
 Branch
 
+== Branches ==
+Branches
+
 == Changeset ==
 Changeset
 
@@ -12,6 +15,9 @@ changesets
 
 == Label ==
 Label
+
+== Labels ==
+Labels
 
 == Server ==
 Server
@@ -351,6 +357,9 @@ Added and private - {0} of 1 item selected
 
 == AddedPrivateItemsSelectedPlural ==
 Added and private - {0} of {1} items selected
+
+== DeleteConfirmationMessage ==
+Está a punto de eliminar
 
 == DeletedItemsSelectedSingular ==
 Deleted items - {0} of 1 item selected
@@ -1353,6 +1362,9 @@ Checkin changes to a different branch
 == MoveChangesetsToADifferentBranch ==
 Move changesets to a different branch
 
+== CheckinToADifferentBranchNewBranchWaterMark ==
+task001
+
 == ShelveButton ==
 Shelve
 
@@ -1604,6 +1616,18 @@ Editando atributo '{0}'...
 
 == ChangingRevisionType ==
 Changing the revision type...
+
+== DeleteWorkspaceSingular ==
+Deleting 1 workspace. Are you sure?
+
+== DeleteWorkspacesPlural ==
+Deleting {0} workspaces. Are you sure?
+
+== DeleteDynamicWorkspaceSingular ==
+Workspace{0} is dynamic. You will LOSE all of the private items in the workspace if you delete it. Are you sure?
+
+== DeleteDynamicWorkspacesPlural ==
+The following workspaces are dynamic:{0}. You will LOSE all of the private items in those workspaces if you delete them. Are you sure?
 
 == DeletingWorkspacesSingular ==
 Deleting workspace{0}...
@@ -5027,18 +5051,18 @@ Reconocer todo
 == DiffVariables ==
 Las siguientes variables están disponibles para utilizar como parámetros al invocar la herramienta externa de diferencias:
 
-    @sourcefile: ruta en disco del fichero origen
-    @destinationfile: ruta en disco del fichero destino
+@sourcefile: ruta en disco del fichero origen
+@destinationfile: ruta en disco del fichero destino
 
-    @sourcesymbolic: nombre simbólico del fichero origen
-    @destinationsymbolic: nombre simbólico del fichero destino
+@sourcesymbolic: nombre simbólico del fichero origen
+@destinationsymbolic: nombre simbólico del fichero destino
 
-    @sourcehash: cadena MD5 calculada a partir del fichero origen
-    @destinationhash: cadena MD5 calculada a partir del fichero destino
+@sourcehash: cadena MD5 calculada a partir del fichero origen
+@destinationhash: cadena MD5 calculada a partir del fichero destino
 
-    @filetype: tipo MIME usado para el realzado de sintaxis
-    @comparationmethod: método de comparación utilizado
-    @fileencoding: codificación de fichero utilizada por defecto si no se detecta la del fichero
+@filetype: tipo MIME usado para el realzado de sintaxis
+@comparationmethod: método de comparación utilizado
+@fileencoding: codificación de fichero utilizada por defecto si no se detecta la del fichero
 
 Ejemplos:
 
@@ -5146,27 +5170,27 @@ Perfil del usuario
 == MergeVariables ==
 Las siguientes variables están disponibles para utilizar como parámetros al invocar la herramienta externa de merge:
 
-    @sourcefile: ruta en disco del fichero origen
-    @destinationfile: ruta en disco del fichero destino
+@sourcefile: ruta en disco del fichero origen
+@destinationfile: ruta en disco del fichero destino
     @basefile: ruta en disco del fichero antecesor co mún
 
-    @output: ruta en disco del fichero de resultado del merge
+@output: ruta en disco del fichero de resultado del merge
 
-    @sourcesymbolic: nombre simbólico del contribuidor origen
-    @destinationsymbolic: nombre simbólico del contribuidor destino
-    @basesymbolic: nombre simbólico del contribuidor antecesor común
+@sourcesymbolic: nombre simbólico del contribuidor origen
+@destinationsymbolic: nombre simbólico del contribuidor destino
+@basesymbolic: nombre simbólico del contribuidor antecesor común
 
-    @sourcehash: cadena MD5 calculada a partir del fichero origen
-    @destinationhash: cadena MD5 calculada a partir del fichero destino
-    @basehash: cadena MD5 calculada a partir del fichero antecesor común
+@sourcehash: cadena MD5 calculada a partir del fichero origen
+@destinationhash: cadena MD5 calculada a partir del fichero destino
+@basehash: cadena MD5 calculada a partir del fichero antecesor común
 
-    @filetype: tipo MIME usado para el realzado de sintaxis
-    @comparationmethod: método de comparación utilizado
-    @fileencoding: codificación de fichero utilizada por defecto si no se detecta la del fichero
-    @resultencoding: codificación para el fichero resultado (NONE para que se calcule en funcion de los contribuidores)
-    @mergetype: tipo de merge utilizado
-    @progress: cadena de progreso que indica la operación actual, por ejemplo: Mezclando file 3/10
-    @extrainfofile: ruta a un fichero que contiene información extra acerca del merge actual
+@filetype: tipo MIME usado para el realzado de sintaxis
+@comparationmethod: método de comparación utilizado
+@fileencoding: codificación de fichero utilizada por defecto si no se detecta la del fichero
+@resultencoding: codificación para el fichero resultado (NONE para que se calcule en funcion de los contribuidores)
+@mergetype: tipo de merge utilizado
+@progress: cadena de progreso que indica la operación actual, por ejemplo: Mezclando file 3/10
+@extrainfofile: ruta a un fichero que contiene información extra acerca del merge actual
 
 Ejemplos:
 
@@ -5338,15 +5362,6 @@ Creando organización '{0}'...
 == OrganizationNameTooShort ==
 El nombre de la organización debe tener al menos tres caracteres
 
-== Login ==
-Iniciar sesión
-
-== LoginTitle ==
-Use su cuenta de plasticscm.com para iniciar sesión
-
-== LoginButton ==
-Iniciar sesión
-
 == SignUp ==
 Crear cuenta
 
@@ -5359,7 +5374,7 @@ No se ha podido encontrar la cuenta {0}, por favor cree una cuenta en plasticscm
 == SignUpButton ==
 Crear cuenta
 
-== SignInButton ==
+== SignIn ==
 Inicia sesión
 
 == SignInToPlasticSCM ==
@@ -5485,6 +5500,9 @@ Lanzar
 == LaunchGluonButton ==
 Lanzar Gluon
 
+== InviteMembers ==
+Invitar Miembros a la Organización
+
 == ReplyButton ==
 Responder
 
@@ -5569,7 +5587,7 @@ Título
 == ReviewStatus ==
 Estado
 
-== Reworkrequired ==
+== ReworkRequired ==
 Requiere cambios
 
 == UnderReview ==
@@ -6145,10 +6163,10 @@ Detalles
 Autor
 
 == PrivacyStatementText ==
-Controladora: Codice Software, S.L. Propósito: Crear su cuenta y proporcionar los servicios necesarios. Puede ejercer sus derechos de acceso, rectificación, borrado y otro derechos de protección de datos como se describe en nuestra Declaración de Privacidad. Para más información ver {0}
+Controlador: Unity Technologies ApS. Finalidad del tratamiento: Crear su cuenta y prestar los servicios solicitados. Puede ejercer sus derechos de acceso, rectificación, borrado y otros derechos de protección de datos como se describe en la Política de privacidad de Unity. para obtener información adicional, consulte la {0}
 
 == PrivacyStatement ==
-Declaración de Privacidad
+Política de privacidad de Unity
 
 == SignUpWithUnity ==
 Regístrate con Unity. Usa tu ID y contraseña de Unity.
@@ -6257,7 +6275,7 @@ Eliminar
 == AllowAll ==
 Permitir todo
 
-== Deny All ==
+== DenyAll ==
 Denegar todo
 
 == RepositoryServerPermissions ==
@@ -6354,8 +6372,6 @@ Añadir o eliminar ramas del grupo de ramas
 == PathPermissionFormExplanation ==
 Configurar permisos para una ruta. Los permisos de la ruta especificada serán mezclados con la rama correspondiente y las rutas padre.
 
-== RetrievingRepositoryInfoProgress ==
-
 == RetrievingRepositoryServerInfoProgress ==
 Obteniendo detalles del servidor de repositorios...
 
@@ -6391,6 +6407,9 @@ restante
 
 == DiffLinkButtonTooltip ==
 Copiar link para compartir el diff
+
+== CodeReviewLinkButtonTooltip ==
+Copiar link para compartir la revisión
 
 == MainWindowTitleForLinux ==
 Plastic SCM - wk: {0}
@@ -6445,9 +6464,6 @@ Email de Empresa
 
 == SignInWithSingleSignOn ==
 Inicia sesión con Single Sign On
-
-== SentEmailStatement ==
-Sign in with Single Sign On
 
 == SentEmailStatementText ==
 Te hemos enviado un email a {0} indicándote las organizaciones a las que perteneces. Ábrelo e inicia sesión utilizando tu {1}
@@ -6510,7 +6526,7 @@ Checkout
 Some items were not correctly updated. You may want to check the errors and retry the operation after solving the problems
 
 == PluginModalInformation ==
-The modal dialog is not available in this version and it is required for the Plastic SCM plugin works fine. \n Please contact support@codicesoftware.com for further info.
+The modal dialog is not available in this version and it is required for the Plastic SCM plugin works fine. \n Please contact support@plasticscm.com for further info.
 
 == ChangesetsCount ==
 {0} changesets
@@ -6626,9 +6642,6 @@ Open .meta with...
 == OpenMetaInExplorer ==
 Open .meta in explorer
 
-== UnderscoreDel ==
-_Del
-
 == DownloadingProgress ==
 Downloading
 
@@ -6673,6 +6686,9 @@ Download Cloud Edition
 
 == DownloadEnterpriseEdition ==
 Download Enterprise Edition
+
+== NeedEnterprise ==
+¿Necesitas Plastic SCM Enterprise?
 
 == PrefixPlasticMenu ==
 Assets/Plastic SCM
@@ -6782,7 +6798,7 @@ _Del
 == UnityOpenShortcut ==
 #o
 
-== CheckingInFilesProgress ==
+== CheckinInFilesProgress ==
 Checking in files...
 
 == Files ==
@@ -6823,3 +6839,199 @@ El repositorio seleccionado debe ser un repositorio cloud
 
 == DisableAllHelpTips ==
 Deshabilitar toda la ayuda
+
+== Available ==
+Disponible
+
+== Unavailable ==
+No disponible
+
+== PlasticOpenShortcutForWindows ==
+Alt+O
+
+== PlasticOpenShortcutForMacOS ==
+Cmd+O
+
+== PlasticOpenShortcutForLinux ==
+Alt+O
+
+== PlasticOpenInNewWindowShortcutForWindows ==
+Shift+O
+
+== PlasticOpenInNewWindowShortcutForMacOS ==
+Cmd+Shift+O
+
+== PlasticOpenInNewWindowShortcutForLinux ==
+Shift+O
+
+== PlasticNewShortcutForWindows ==
+Alt+N
+
+== PlasticNewShortcutForMacOS ==
+Cmd+N
+
+== PlasticNewShortcutForLinux ==
+Alt+N
+
+== PlasticNewWorkspaceShortcutForWindows ==
+Alt+W
+
+== PlasticNewWorkspaceShortcutForMacOS ==
+Cmd+W
+
+== PlasticNewWorkspaceShortcutForLinux ==
+Alt+W
+
+== PlasticNewSyncViewShortcutForWindows ==
+Alt+C
+
+== PlasticNewSyncViewShortcutForMacOS ==
+Cmd+C
+
+== PlasticNewSyncViewShortcutForLinux ==
+Alt+C
+
+== PlasticRenameShortcutForWindows ==
+F2
+
+== PlasticRenameShortcutForMacOS ==
+Cmd+R
+
+== PlasticRenameShortcutForLinux ==
+F2
+
+== PlasticDeleteShortcutForWindows ==
+Delete
+
+== PlasticDeleteShortcutForMacOS ==
+Cmd+Delete
+
+== PlasticDeleteShortcutForLinux ==
+Delete
+
+== PlasticPermissionsShortcutForWindows ==
+Alt+P
+
+== PlasticPermissionsShortcutForMacOS ==
+Cmd+P
+
+== PlasticPermissionsShortcutForLinux ==
+Alt+P
+
+== PlasticMergeShortcutForWindows ==
+Alt+M
+
+== PlasticMergeShortcutForMacOS ==
+Cmd+M
+
+== PlasticMergeShortcutForLinux ==
+Alt+M
+
+== PlasticDiffShortcutForWindows ==
+Alt+D
+
+== PlasticDiffShortcutForMacOS ==
+Cmd+D
+
+== PlasticDiffShortcutForLinux ==
+Alt+D
+
+== PlasticApplyShortcutForWindows ==
+Alt+A
+
+== PlasticApplyShortcutForMacOS ==
+Cmd+A
+
+== PlasticApplyShortcutForLinux ==
+Alt+A
+
+== PlasticSwitchShortcutForWindows ==
+Alt+W
+
+== PlasticSwitchShortcutForMacOS ==
+Cmd+W
+
+== PlasticSwitchShortcutForLinux ==
+Alt+W
+
+== PlasticBranchShortcutForWindows ==
+Alt+R
+
+== PlasticBranchShortcutForMacOS ==
+Cmd+R
+
+== PlasticBranchShortcutForLinux ==
+Alt+R
+
+
+== PlasticLabelShortcutForWindows ==
+Alt+E
+
+== PlasticLabelShortcutForMacOS ==
+Cmd+E
+
+== PlasticLabelShortcutForLinux ==
+Alt+E
+
+== PlasticSaveShortcutForWindows ==
+Ctrl+S
+
+== PlasticSaveShortcutForMacOS ==
+Cmd+S
+
+== PlasticSaveShortcutForLinux ==
+Ctrl+S
+
+== PlasticAnnotateShortcutForWindows ==
+Ctrl+A
+
+== PlasticAnnotateShortcutForMacOS ==
+Cmd+A
+
+== PlasticAnnotateShortcutForLinux ==
+Ctrl+A
+
+== PlasticHistoryShortcutForWindows ==
+Ctrl+H
+
+== PlasticHistoryShortcutForMacOS ==
+Cmd+H
+
+== PlasticHistoryShortcutForLinux ==
+Ctrl+H
+
+== TurnOffPlasticSCM ==
+Turn off Plastic SCM
+
+== TurnOffPlasticSCMDescrition ==
+Here you can turn off Plastic. It will delete current workspace and Plastic settings, but the files will remain intact.
+
+== TurningOffPlasticSCM ==
+Turning off Plastic SCM
+
+== TurnOffPlasticSCMAreYouSure ==
+Are you sure you want to turn off Plastic SCM?
+
+== TurnOffPlasticSCMClosing ==
+Closing Plastic SCM
+
+== TurnOffPlasticSCMClosingWindow ==
+Closing Plastic SCM window
+
+== TurnOffPlasticSCMCleaning ==
+Cleaning the settings
+
+== TurnOffPlasticSCMDeleting ==
+Deleting the workspace
+
+== StatusBarReady ==
+Ready
+
+== PendingMergeLinksCaption ==
+Los merge links pendientes se confirmarán cuando haga checkin de sus cambios o se desharán si usted deshace los cambios.
+
+== PendingMergeLinksCountSingular ==
+1 merge link pendiente
+
+== PendingMergeLinksCountPlural ==
+{0} merge links pendientes

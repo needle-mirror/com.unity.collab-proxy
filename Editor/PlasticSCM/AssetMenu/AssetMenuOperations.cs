@@ -180,7 +180,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             AssetMenuOperations result = AssetMenuOperations.None;
 
             if (info.SelectedCount == 0)
+            {
                 return result;
+            }
 
             if (info.IsControlledSelection &&
                 info.IsCheckedInSelection &&
@@ -218,7 +220,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             {
                 result |= AssetMenuOperations.History;
             }
-
+           
             return result;
         }
     }

@@ -7,8 +7,10 @@ namespace Unity.PlasticSCM.Editor
         internal static void Add()
         {
             HandleMenuItem.AddMenuItem(
-                MENU_ITEM_NAME, MENU_ITEM_PRIORITY,
-                ShowPanel, ValidateMenu);
+                MENU_ITEM_NAME,
+                MENU_ITEM_PRIORITY,
+                ShowPanel,
+                ValidateMenu);
 
             HandleMenuItem.UpdateAllMenus();
         }

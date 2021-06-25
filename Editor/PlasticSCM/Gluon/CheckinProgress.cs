@@ -4,23 +4,23 @@ namespace Unity.PlasticSCM.Editor.Gluon
 {
     internal class CheckinProgress
     {
-        internal CheckinProgress(PlasticGUIClient guiClient)
+        internal CheckinProgress(WorkspaceWindow workspaceWindow)
         {
-            mGuiClient = guiClient;
+            mWorkspaceWindow = workspaceWindow;
         }
 
         internal void Refresh(CheckinProgressData progress)
         {
-            mGuiClient.Progress.ProgressHeader = progress.ProgressText;
+            mWorkspaceWindow.Progress.ProgressHeader = progress.ProgressText;
 
-            mGuiClient.Progress.TotalProgressMessage = progress.TotalProgressText;
-            mGuiClient.Progress.TotalProgressPercent = ((double)progress.TotalProgressValue) / 100;
+            mWorkspaceWindow.Progress.TotalProgressMessage = progress.TotalProgressText;
+            mWorkspaceWindow.Progress.TotalProgressPercent = ((double)progress.TotalProgressValue) / 100;
 
-            mGuiClient.Progress.ShowCurrentBlock = progress.bShowCurrentBlock;
-            mGuiClient.Progress.CurrentBlockProgressMessage = progress.CurrentBlockText;
-            mGuiClient.Progress.CurrentBlockProgressPercent = ((double)progress.CurrentBlockProgressValue) / 100;
+            mWorkspaceWindow.Progress.ShowCurrentBlock = progress.bShowCurrentBlock;
+            mWorkspaceWindow.Progress.CurrentBlockProgressMessage = progress.CurrentBlockText;
+            mWorkspaceWindow.Progress.CurrentBlockProgressPercent = ((double)progress.CurrentBlockProgressValue) / 100;
         }
 
-        PlasticGUIClient mGuiClient;
+        WorkspaceWindow mWorkspaceWindow;
     }
 }

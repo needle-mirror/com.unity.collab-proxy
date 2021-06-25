@@ -2,7 +2,6 @@
     width: 55%;
     height: 100%;
     flex-direction: column;
-    padding: 0 10px;
 }
 
 .field {
@@ -11,14 +10,12 @@
     margin-bottom: 20px;
 }
 
-Label {
-    white-space: normal;
-}
-
 .footer {
     flex-direction: row;
     justify-content: flex-end;
-    padding: 0 10px;
+    right: 0px;
+    bottom: 0px;
+    margin-right: 25px;
 }
 
 .footer Button {
@@ -27,4 +24,3 @@ Label {
     border-width: 2px;
     border-radius: 0;
 }
-

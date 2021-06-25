@@ -1,19 +1,44 @@
-﻿using UnityEngine.UIElements;
+﻿using Codice.Client.Common;
 
 using PlasticGui;
+using PlasticGui.Configuration.CloudEdition.Welcome;
+using PlasticGui.WebApi;
 using Unity.PlasticSCM.Editor.UI.UIElements;
+using UnityEngine.UIElements;
 
 namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 {
     internal class WaitingSignInPanel : VisualElement
     {
-        internal WaitingSignInPanel(CloudEditionWelcomeWindow parentWindow)
+        internal WaitingSignInPanel(
+            IWelcomeWindowNotify parentNotify,
+            OAuthSignIn.INotify notify,
+            IPlasticWebRestApi restApi,
+            CmConnection cmConnection)
         {
-            mParentWindow = parentWindow;
+            mParentNotify = parentNotify;
+
+            mNotify = notify;
+            mRestApi = restApi;
+            mCmConnection = cmConnection;
 
             InitializeLayoutAndStyles();
 
             BuildComponents();
+        }
+
+        internal void OAuthSignInForConfigure(string ssoProviderName)
+        {
+            mSignIn = new OAuthSignIn();
+
+            mSignIn.ForConfigure(
+                mRestApi,
+                ssoProviderName,
+                mProgressControls,
+                mNotify,
+                mCmConnection);
+
+            ShowWaitingSpinner();
         }
 
         internal void Dispose()
@@ -23,22 +48,21 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         void CancelButton_Clicked()
         {
-            mParentWindow.BuildComponents();
+            mSignIn.Cancel();
+            mParentNotify.Back();
         }
 
         void BuildComponents()
         {
-            this.SetControlImage("buho",
-                PlasticGui.Help.HelpImage.GenericBuho);
-
             this.SetControlText<Label>("signInToPlasticSCM",
                 PlasticLocalization.Name.SignInToPlasticSCM);
 
             this.SetControlText<Label>("completeSignInOnBrowser",
                 PlasticLocalization.Name.CompleteSignInOnBrowser);
 
-            this.SetControlText<Label>("oAuthSignInCheckMessage",
-                PlasticLocalization.Name.OAuthSignInCheckMessage);
+            mProgressContainer = this.Q<VisualElement>("progressContainer");
+
+            mProgressControls = new UI.Progress.ProgressControlsForDialogs();
 
             mCancelButton = this.Query<Button>("cancelButton").First();
             mCancelButton.text = PlasticLocalization.GetString(
@@ -54,8 +78,27 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             this.LoadStyle(typeof(WaitingSignInPanel).Name);
         }
 
-        Button mCancelButton;
+        void ShowWaitingSpinner()
+        {
+            var spinner = new LoadingSpinner();
+            mProgressContainer.Add(spinner);
+            spinner.Start();
 
-        readonly CloudEditionWelcomeWindow mParentWindow;
+            var checkinMessageLabel = new Label(mProgressControls.ProgressData.ProgressMessage);
+            checkinMessageLabel.style.paddingLeft = 10;
+            mProgressContainer.Add(checkinMessageLabel);
+        }
+
+        Button mCancelButton;
+        VisualElement mProgressContainer;
+
+        OAuthSignIn mSignIn;
+
+        UI.Progress.ProgressControlsForDialogs mProgressControls;
+
+        readonly IPlasticWebRestApi mRestApi;
+        readonly CmConnection mCmConnection;
+        readonly OAuthSignIn.INotify mNotify;
+        readonly IWelcomeWindowNotify mParentNotify;
     }
 }

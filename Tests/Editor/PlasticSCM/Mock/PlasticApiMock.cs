@@ -983,6 +983,11 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
             throw new NotImplementedException();
         }
 
+        ReviewInfo IPlasticAPI.GetReview(RepositorySpec repSpec, long reviewId)
+        {
+            throw new NotImplementedException();
+        }
+
         BranchInfo mWorkingBranch;
         Dictionary<string, WorkspaceTreeNode> mWorkspaceTreeNodes =
             new Dictionary<string, WorkspaceTreeNode>();

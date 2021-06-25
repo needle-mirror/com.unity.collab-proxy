@@ -4,6 +4,7 @@ using UnityEngine;
 using Codice.CM.Common;
 using PlasticGui.WorkspaceWindow.QueryViews.Changesets;
 using PlasticGui;
+using Unity.PlasticSCM.Editor.Tool;
 
 namespace Unity.PlasticSCM.Editor.Views.Changesets
 {
@@ -17,14 +18,15 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         internal ChangesetsViewMenu(
             IChangesetMenuOperations changesetMenuOperations,
-            IMenuOperations menuOperations)
+            IMenuOperations menuOperations,
+            bool isGluonMode)
         {
             mChangesetMenuOperations = changesetMenuOperations;
             mMenuOperations = menuOperations;
+            mIsGluonMode = isGluonMode;
 
             BuildComponents();
         }
-
 
         internal void Popup()
         {
@@ -37,11 +39,17 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         void DiffChangesetMenuItem_Click()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+                return;
+
             mChangesetMenuOperations.DiffChangeset();
         }
 
         void DiffSelectedChangesetsMenuItem_Click()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+                return;
+
             mChangesetMenuOperations.DiffSelectedChangesets();
         }
         void DiffBranchMenuItem_Click()
@@ -94,7 +102,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 changeset.ChangesetId.ToString() :
                 string.Empty;
 
-            menuItemContent.text = 
+            menuItemContent.text =
                 PlasticLocalization.GetString(PlasticLocalization.Name.AnnotateDiffChangesetMenuItem,
                 changesetName);
 
@@ -139,7 +147,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         {
             string branchName = GetBranchName(changeset);
 
-            menuItemContent.text = 
+            menuItemContent.text =
                 PlasticLocalization.GetString(PlasticLocalization.Name.AnnotateDiffBranchMenuItem,
                 branchName);
 
@@ -193,6 +201,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         readonly IChangesetMenuOperations mChangesetMenuOperations;
         readonly IMenuOperations mMenuOperations;
+        readonly bool mIsGluonMode;
 
         const string MAIN_BRANCH_NAME = "/main";
     }

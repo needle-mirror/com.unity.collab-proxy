@@ -11,21 +11,21 @@ namespace Unity.PlasticSCM.Editor.Developer
     {
         internal UpdateProgress(
             UpdateNotifier notifier, string wkPath, string title,
-            PlasticGUIClient guiClient)
+            WorkspaceWindow workspaceWindow)
         {
             mNotifier = notifier;
             mWkPath = wkPath;
-            mGuiClient = guiClient;
+            mWorkspaceWindow = workspaceWindow;
 
             mProgressData = new BuildProgressSpeedAndRemainingTime.ProgressData(DateTime.Now);
 
-            mGuiClient.Progress.ProgressHeader = title;
-            mGuiClient.Progress.CanCancelProgress = false;
+            mWorkspaceWindow.Progress.ProgressHeader = title;
+            mWorkspaceWindow.Progress.CanCancelProgress = false;
         }
 
         internal void OnUpdateProgress()
         {
-            var progress = mGuiClient.Progress;
+            var progress = mWorkspaceWindow.Progress;
 
             progress.ProgressHeader = UpdateProgressRender.FixNotificationPath(
                 mWkPath, mNotifier.GetNotificationMessage());
@@ -40,7 +40,7 @@ namespace Unity.PlasticSCM.Editor.Developer
         }
 
         readonly BuildProgressSpeedAndRemainingTime.ProgressData mProgressData;
-        readonly PlasticGUIClient mGuiClient;
+        readonly WorkspaceWindow mWorkspaceWindow;
         readonly string mWkPath;
         readonly UpdateNotifier mNotifier;
     }

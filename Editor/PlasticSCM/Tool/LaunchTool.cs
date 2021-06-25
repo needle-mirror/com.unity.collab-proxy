@@ -7,39 +7,17 @@ using Codice.CM.Common;
 using Codice.LogWrapper;
 using Codice.Utils;
 using PlasticGui;
+using Unity.PlasticSCM.Editor.Views;
 
 namespace Unity.PlasticSCM.Editor.Tool
 {
     internal static class LaunchTool
     {
-        internal static Process OpenConfigurationForMode(bool isGluonMode)
-        {
-            mLog.Debug("Opening Configuration'.");
-
-            if (isGluonMode)
-            {
-                Process gluonProcess = ExecuteProcess(
-                    PlasticInstallPath.GetGluonExePath(),
-                    ToolConstants.Gluon.GUI_CONFIGURE_ARG);
-
-                if (gluonProcess != null)
-                    mGluonProcessId = gluonProcess.Id;
-
-                return gluonProcess;
-            }
-
-            Process plasticProcess = ExecuteProcess(
-                PlasticInstallPath.GetPlasticExePath(),
-                ToolConstants.Plastic.GUI_CONFIGURE_ARG);
-
-            if (plasticProcess != null)
-                mPlasticProcessId = plasticProcess.Id;
-
-            return plasticProcess;
-        }
-
         internal static void OpenGUIForMode(WorkspaceInfo wkInfo, bool isGluonMode)
         {
+            if (ShowDownloadPlasticExeWindow(isGluonMode))
+                return;
+
             mLog.DebugFormat(
                 "Opening GUI on wkPath '{0}'.",
                 wkInfo.ClientPath);
@@ -91,8 +69,11 @@ namespace Unity.PlasticSCM.Editor.Tool
                     wkInfo.ClientPath));
         }
 
-        internal static void OpenBranchExplorer(WorkspaceInfo wkInfo)
+        internal static void OpenBranchExplorer(WorkspaceInfo wkInfo, bool isGluonMode)
         {
+            if (ShowDownloadPlasticExeWindow(isGluonMode))
+                return;
+
             mLog.DebugFormat(
                 "Opening Branch Explorer on wkPath '{0}'.",
                 wkInfo.ClientPath);
@@ -131,6 +112,9 @@ namespace Unity.PlasticSCM.Editor.Tool
 
         internal static void OpenChangesetDiffs(string fullChangesetSpec, bool isGluonMode)
         {
+            if (ShowDownloadPlasticExeWindow(isGluonMode))
+                return;
+
             mLog.DebugFormat(
                 "Launching changeset diffs for '{0}'",
                 fullChangesetSpec);
@@ -153,6 +137,9 @@ namespace Unity.PlasticSCM.Editor.Tool
             string dstFullChangesetSpec,
             bool isGluonMode)
         {
+            if (ShowDownloadPlasticExeWindow(isGluonMode))
+                return;
+
             mLog.DebugFormat(
                 "Launching selected changesets diffs for '{0}' and '{1}'",
                 srcFullChangesetSpec,
@@ -175,6 +162,9 @@ namespace Unity.PlasticSCM.Editor.Tool
 
         internal static void OpenBranchDiffs(string fullBranchSpec, bool isGluonMode)
         {
+            if (ShowDownloadPlasticExeWindow(isGluonMode))
+                return;
+
             mLog.DebugFormat(
                 "Launching branch diffs for '{0}'",
                 fullBranchSpec);
@@ -192,8 +182,11 @@ namespace Unity.PlasticSCM.Editor.Tool
                     branchDiffArg, fullBranchSpec));
         }
 
-        internal static void OpenWorkspaceConfiguration(WorkspaceInfo wkInfo)
+        internal static void OpenWorkspaceConfiguration(WorkspaceInfo wkInfo, bool isGluonMode)
         {
+            if (ShowDownloadPlasticExeWindow(isGluonMode))
+                return;
+
             mLog.DebugFormat(
                 "Opening Workspace Configuration on wkPath '{0}'.",
                 wkInfo.ClientPath);
@@ -217,8 +210,11 @@ namespace Unity.PlasticSCM.Editor.Tool
             mGluonProcessId = gluonProcess.Id;
         }
 
-        internal static void OpenMerge(string wkPath)
+        internal static void OpenMerge(string wkPath, bool isGluonMode)
         {
+            if (ShowDownloadPlasticExeWindow(isGluonMode))
+                return;
+
             mLog.DebugFormat(
                 "Opening Merge on wkPath '{0}'.",
                 wkPath);
@@ -241,6 +237,15 @@ namespace Unity.PlasticSCM.Editor.Tool
             ExecuteProcess(
                 PlasticInstallPath.GetPlasticExePath(),
                 string.Format(ToolConstants.Plastic.GUI_WINDOWS_MERGE_ARG, wkPath));
+        }
+
+        internal static bool ShowDownloadPlasticExeWindow(bool isGluonMode)
+        {
+            if (IsExeAvailable.ForMode(isGluonMode))
+                return false;
+
+            DownloadPlasticExeWindow.ShowWindow(isGluonMode);
+            return true;
         }
 
         static Process ExecuteGUI(

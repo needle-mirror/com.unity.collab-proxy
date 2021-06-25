@@ -6,7 +6,7 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
     internal static class DrawProgressForOperations
     {
         internal static void For(
-            PlasticGUIClient plasticClient,
+            WorkspaceWindow workspaceWindow,
             OperationProgressData operationProgressData,
             float width)
         {
@@ -23,7 +23,7 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
                 operationProgressData.CanCancelProgress, width);
 
             if (operationProgressData.CanCancelProgress)
-                DoCancelButton(plasticClient);
+                DoCancelButton(workspaceWindow);
 
             if (operationProgressData.ShowCurrentBlock)
             {
@@ -56,7 +56,7 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
         }
 
         static void DoCancelButton(
-            PlasticGUIClient plasticClient)
+            WorkspaceWindow workspaceWindow)
         {
             Rect beginRect = GUILayoutUtility.GetLastRect();
             Rect endRect = GUILayoutUtility.GetLastRect();
@@ -71,7 +71,7 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
             if (!GUI.Button(cancelButtonRect, GUIContent.none, UnityStyles.CancelButton))
                 return;
 
-            plasticClient.CancelCurrentOperation();
+            workspaceWindow.CancelCurrentOperation();
         }
     }
 }

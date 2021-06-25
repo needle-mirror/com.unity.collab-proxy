@@ -24,6 +24,7 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
                 text = name,
                 name = name
             };
+            newButton.AddToClassList("tab-button");
 
             mButtons.Add(name, newButton);
 
@@ -73,6 +74,8 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
 
         void InitializeLayoutAndStyles()
         {
+            name = "TabView";
+
             this.LoadLayout(typeof(TabView).Name);
 
             this.LoadStyle(typeof(TabView).Name);

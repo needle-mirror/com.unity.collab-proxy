@@ -18,6 +18,7 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon.Errors;
+using Unity.PlasticSCM.Editor.Tool;
 
 namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 {
@@ -31,13 +32,12 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         internal IncomingChangesTab(
             WorkspaceInfo wkInfo,
             ViewHost viewHost,
-            PlasticGUIClient plasticClient,
+            WorkspaceWindow workspaceWindow,
             NewIncomingChangesUpdater newIncomingChangesUpdater,
             CheckIncomingChanges.IUpdateIncomingChanges updateIncomingChanges,
             EditorWindow parentWindow)
         {
             mWkInfo = wkInfo;
-            mPlasticClient = plasticClient;
             mNewIncomingChangesUpdater = newIncomingChangesUpdater;
             mParentWindow = parentWindow;
 
@@ -60,7 +60,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             mIncomingChangesViewLogic = new IncomingChangesViewLogic(
                 wkInfo, viewHost, this, new UnityPlasticGuiMessage(parentWindow),
                 mProgressControls, updateIncomingChanges,
-                plasticClient.GluonProgressOperationHandler, plasticClient,
+                workspaceWindow.GluonProgressOperationHandler, workspaceWindow,
                 new IncomingChangesViewLogic.ApplyWorkspaceLocalChanges(),
                 new IncomingChangesViewLogic.OutOfDateItemsOperations(),
                 new IncomingChangesViewLogic.ResolveUserName(),
@@ -74,7 +74,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         bool IIncomingChangesTab.IsVisible
         {
             get { return mIsVisible; }
-            set { mIsVisible = value ; }
+            set { mIsVisible = value; }
         }
 
         void IIncomingChangesTab.OnDisable()
@@ -111,7 +111,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 PlasticSplitterGUILayout.BeginVerticalSplit(mErrorsSplitterState);
 
             DoIncomingChangesArea(
-                mPlasticClient,
                 mIncomingChangesTreeView,
                 mPendingConflictsLabelData,
                 mChangesToApplySummaryLabelText,
@@ -277,6 +276,9 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         void IIncomingChangesViewMenuOperations.DiffYoursWithIncoming()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(true))
+                return;
+
             IncomingChangeInfo incomingChange = IncomingChangesSelection.
                 GetSingleSelectedIncomingChange(mIncomingChangesTreeView);
 
@@ -303,6 +305,9 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         void IncomingChangesViewMenu.IMetaMenuOperations.DiffYoursWithIncoming()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(true))
+                return;
+
             IncomingChangeInfo incomingChange = IncomingChangesSelection.
                 GetSingleSelectedIncomingChange(mIncomingChangesTreeView);
 
@@ -323,6 +328,9 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             IncomingChangeInfo incomingChange,
             WorkspaceInfo wkInfo)
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(true))
+                return;
+
             DiffOperation.DiffRevisions(
                 wkInfo,
                 incomingChange.GetMount().RepSpec,
@@ -339,6 +347,9 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             IncomingChangeInfo incomingChange,
             WorkspaceInfo wkInfo)
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(true))
+                return;
+
             DiffOperation.DiffYoursWithIncoming(
                 wkInfo,
                 incomingChange.GetMount(),
@@ -380,7 +391,10 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             IncomingChangesTreeView incomingChangesTreeView,
             ProgressControlsForViews progressControls)
         {
-            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+            GUIStyle guiStyle = new GUIStyle();
+            guiStyle.margin = new RectOffset(5, 5, 5, 5);
+
+            EditorGUILayout.BeginHorizontal(guiStyle);
 
             if (isProcessMergesButtonVisible)
             {
@@ -414,7 +428,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         }
 
         static void DoIncomingChangesArea(
-            PlasticGUIClient plasticClient,
             IncomingChangesTreeView incomingChangesTreeView,
             PendingConflictsLabelData pendingConflictsLabelData,
             string changesToApplySummaryLabelText,
@@ -628,7 +641,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             GUI.enabled = isEnabled;
 
             if (GUILayout.Button(new GUIContent(
-                    Images.GetRefreshIcon()), EditorStyles.toolbarButton))
+                    Images.GetRefreshIcon())))
                 incomingChangesViewLogic.Refresh();
 
             GUI.enabled = true;
@@ -697,7 +710,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         readonly IncomingChangesViewLogic mIncomingChangesViewLogic;
         readonly EditorWindow mParentWindow;
         readonly NewIncomingChangesUpdater mNewIncomingChangesUpdater;
-        readonly PlasticGUIClient mPlasticClient;
         readonly WorkspaceInfo mWkInfo;
     }
 }

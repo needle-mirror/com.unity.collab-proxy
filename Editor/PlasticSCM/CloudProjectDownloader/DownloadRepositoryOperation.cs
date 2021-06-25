@@ -18,6 +18,7 @@ using PlasticGui.WorkspaceWindow.Update;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
 
 namespace Unity.PlasticSCM.Editor.ProjectDownloader
 {
@@ -116,6 +117,15 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
                     wkInfo.Name,
                     wkInfo.ClientPath);
 
+                AutoLogin autoLogin = new AutoLogin();
+                autoLogin.ExchangeTokens(parameters.AccessToken);
+
+                CloudEditionWelcomeWindow.JoinOrganization(parameters.CloudOrganization, AutoLogin.sAccessToken, AutoLogin.sUserName);
+
+                ClientConfigData clientConfigData = ClientConfig.Get().GetClientConfigData();
+                clientConfigData.WorkspaceServer = parameters.CloudOrganization;
+                ClientConfig.Get().Save(clientConfigData);
+
                 Plastic.API.Update(
                     wkInfo.ClientPath,
                     UpdateFlags.None,
@@ -137,7 +147,7 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
                 mOperationFinished = true;
             }
         }
-
+    
         static void DisplayProgress(
             UpdateOperationStatus status,
             BuildProgressSpeedAndRemainingTime.ProgressData progressData,

@@ -8,10 +8,10 @@ using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
-    static class DrawCommentTextArea
+    internal static class DrawCommentTextArea
     {
         internal static void For(
-            PlasticGUIClient plasticClient,
+            PendingChangesTab pendingChangesTab,
             float width,
             bool isOperationRunning)
         {
@@ -20,33 +20,34 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 EditorGUILayout.BeginHorizontal();
 
                 Rect textAreaRect = BuildTextAreaRect(
-                    plasticClient.CommentText, width);
+                    pendingChangesTab.CommentText, width);
 
                 EditorGUI.BeginChangeCheck();
 
-                plasticClient.CommentText = DoTextArea(
-                    plasticClient.CommentText ?? string.Empty,
-                    plasticClient.ForceToShowComment,
+                pendingChangesTab.CommentText = DoTextArea(
+                    pendingChangesTab.CommentText ?? string.Empty,
+                    pendingChangesTab.ForceToShowComment,
                     textAreaRect);
 
-                plasticClient.ForceToShowComment = false;
+                pendingChangesTab.ForceToShowComment = false;
 
                 if (EditorGUI.EndChangeCheck())
-                    OnTextAreaChanged(plasticClient, plasticClient.CommentText);
+                    OnTextAreaChanged(pendingChangesTab);
 
-                if (string.IsNullOrEmpty(plasticClient.CommentText))
+                if (string.IsNullOrEmpty(pendingChangesTab.CommentText))
                 {
                     DoPlaceholderIfNeeded(PlasticLocalization.GetString(
-                        PlasticLocalization.Name.CheckinComment), textAreaRect);
+                        PlasticLocalization.Name.CheckinComment),
+                        textAreaRect);
                 }
 
                 EditorGUILayout.EndHorizontal();
             }
         }
 
-        static void OnTextAreaChanged(PlasticGUIClient plasticClient, string text)
+        static void OnTextAreaChanged(PendingChangesTab pendingChangesTab)
         {
-            plasticClient.UpdateIsCommentWarningNeeded(text);
+            pendingChangesTab.ClearIsCommentWarningNeeded();
         }
 
         static string DoTextArea(string text, bool forceToShowText, Rect textAreaRect)
@@ -65,8 +66,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             if (shouldBeFocusFixed)
                 EditorGUIUtility.keyboardControl = 0;
 
-            text = EditorGUI.TextArea(
-                textAreaRect, text, EditorStyles.textArea);
+            text = EditorGUI.TextArea(textAreaRect, text, EditorStyles.textArea);
 
             if (shouldBeFocusFixed)
                 EditorGUIUtility.keyboardControl = textEditor.controlID;

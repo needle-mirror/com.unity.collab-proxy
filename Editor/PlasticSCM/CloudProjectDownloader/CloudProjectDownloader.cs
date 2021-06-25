@@ -41,15 +41,18 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
             DownloadRepository(unityAccessToken);
         }
 
-        static void DownloadRepository(string unityAccessToken)
+        internal static void DownloadRepository(string unityAccessToken)
         {
-            Dictionary<string, string> args = CommandLineArguments.Build(
-                Environment.GetCommandLineArgs());
+            DownloadRepository(unityAccessToken, Environment.GetCommandLineArgs());
+        }
+
+        internal static void DownloadRepository(string unityAccessToken, string[] commandLineArgs)
+        {
+            Dictionary<string, string> args = CommandLineArguments.Build(commandLineArgs);
 
             mLog.DebugFormat(
-                "Processing Unity arguments: {0}",
-                string.Join(" ", Environment.GetCommandLineArgs()));
-
+                "Processing Unity arguments: {0}", string.Join(" ", commandLineArgs));
+            
             string projectPath = ParseArguments.ProjectPath(args);
             string cloudRepository = ParseArguments.CloudProject(args);
             string cloudOrganization = ParseArguments.CloudOrganization(args);
@@ -70,7 +73,7 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
                 Path.GetFullPath(projectPath),
                 unityAccessToken);
         }
-
+  
         const string IS_PROJECT_DOWNLOADER_ALREADY_EXECUTED_KEY =
             "PlasticSCM.ProjectDownloader.IsAlreadyExecuted";
 

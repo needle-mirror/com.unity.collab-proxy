@@ -6,34 +6,82 @@ using UnityEngine.UIElements;
 
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI.UIElements;
+using PlasticGui.WebApi;
 
 namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 {
     internal class OrganizationPanel : VisualElement
     {
-        internal OrganizationPanel(List<string> organizations)
+        internal OrganizationPanel(
+            CloudEditionWelcomeWindow parentWindow,
+            IPlasticWebRestApi restApi,
+            string title,
+            List<string> organizations, 
+            bool canCreateAnOrganization)
         {
+            mParentWindow = parentWindow;
+            mRestApi = restApi;
             mOrganizations = organizations;
 
             InitializeLayoutAndStyles();
 
-            BuildComponents();
+            BuildComponents(title, canCreateAnOrganization);
         }
 
-        void BuildComponents()
+        void BuildComponents(string title, bool canCreateAnOrganization)
         {
-            this.SetControlImage("buho",
-                PlasticGui.Help.HelpImage.CloudBuho);
+            mParentWindow.titleContent = new UnityEngine.GUIContent(title);
 
             this.SetControlText<Label>("confirmationMessage",
                 PlasticLocalization.Name.SignedUpTitle);
 
             if (mOrganizations.Count == 1)
-                BuildSingleOrganizationSection("Codice");
+            {
+                BuildSingleOrganizationSection(mOrganizations.First());
+                mJoinSingleOrganizationButton = this.Q<Button>("joinSingleOrganizationButton");
+                mJoinSingleOrganizationButton.clicked += JoinOrganizationButton_clicked;
+            }
             else if (mOrganizations.Count > 1)
+            {
                 BuildMultipleOrganizationsSection(mOrganizations);
+                mJoinMultipleOrganizationsButton = this.Q<Button>("joinMultipleOrganizationsButton");
+                mJoinMultipleOrganizationsButton.clicked += JoinOrganizationButton_clicked;
+                mOrganizationToJoin = mOrganizations.First();
+            }
 
-            BuildCreateOrganizationSection(!mOrganizations.Any());
+            if (canCreateAnOrganization)
+            {
+                BuildCreateOrganizationSection(!mOrganizations.Any());
+
+                mCreateOrganizationButton = this.Q<Button>("createOrganizationButton");
+                mCreateOrganizationButton.clicked += CreateOrganizationButton_Clicked;
+            }
+        }
+
+        internal void Dispose()
+        {
+            if (mJoinSingleOrganizationButton != null)
+                mJoinSingleOrganizationButton.clicked -= JoinOrganizationButton_clicked;
+
+            if (mJoinMultipleOrganizationsButton != null)
+                mJoinMultipleOrganizationsButton.clicked -= JoinOrganizationButton_clicked;
+
+            if (mCreateOrganizationButton != null)
+                mCreateOrganizationButton.clicked -= CreateOrganizationButton_Clicked;
+        }
+
+        private void JoinOrganizationButton_clicked()
+        {
+            mParentWindow.JoinOrganizationAndWelcomePage(mOrganizationToJoin);
+
+            // TODO: Closing the window for now. Need to connect this event to the main on boarding
+            //       workflow.
+            mParentWindow.Close();
+        }
+
+        private void CreateOrganizationButton_Clicked()
+        {
+            mParentWindow.ReplaceRootPanel(new CreateOrganizationPanel(mParentWindow, this, mRestApi));
         }
 
         void BuildSingleOrganizationSection(string organizationName)
@@ -77,6 +125,8 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         void BuildCreateOrganizationSection(bool firstOrganization)
         {
+            this.Query<VisualElement>("createOrganization").First().RemoveFromClassList("display-none");
+
             PlasticLocalization.Name createOrganizationLabelName = firstOrganization ?
                 PlasticLocalization.Name.CreateFirstOrganizationLabel :
                 PlasticLocalization.Name.CreateOtherOrganizationLabel;
@@ -97,6 +147,13 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         }
 
         List<string> mOrganizations;
+
+        Button mJoinSingleOrganizationButton = null;
+        Button mJoinMultipleOrganizationsButton = null;
+        Button mCreateOrganizationButton = null;
         public string mOrganizationToJoin = "";
+
+        readonly CloudEditionWelcomeWindow mParentWindow;
+        readonly IPlasticWebRestApi mRestApi;
     }
 }

@@ -313,7 +313,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             if (queryResult == null)
                 return 0;
 
-           return queryResult.Count();
+            return queryResult.Count();
         }
 
         void DoActionsToolbar(
@@ -491,7 +491,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mChangesetsListView = new ChangesetsListView(
                 headerState,
                 ChangesetsListHeaderState.GetColumnNames(),
-                new ChangesetsViewMenu(this, this),
+                new ChangesetsViewMenu(this, this, mIsGluonMode),
                 sizeChangedAction: OnChangesetsListViewSizeChanged,
                 selectionChangedAction: OnSelectionChanged,
                 doubleClickAction: ((IChangesetMenuOperations)this).DiffChangeset);
@@ -503,7 +503,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
             mDiffPanel = new DiffPanel(
                 wkInfo, workspaceWindow, viewSwitcher,
-                historyViewLauncher, parentWindow);
+                historyViewLauncher, parentWindow, mIsGluonMode);
         }
 
         bool mIsRefreshing;

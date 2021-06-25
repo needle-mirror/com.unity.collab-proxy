@@ -4,9 +4,9 @@ namespace Unity.PlasticSCM.Editor.Gluon
 {
     internal class UpdateProgress
     {
-        internal UpdateProgress(PlasticGUIClient guiClient)
+        internal UpdateProgress(WorkspaceWindow workspaceWindow)
         {
-            mGuiClient = guiClient;
+            mWorkspaceWindow = workspaceWindow;
         }
 
         internal void Cancel()
@@ -19,7 +19,7 @@ namespace Unity.PlasticSCM.Editor.Gluon
 
         internal void SetCancellable(bool bCancelable)
         {
-            mGuiClient.Progress.CanCancelProgress = bCancelable;
+            mWorkspaceWindow.Progress.CanCancelProgress = bCancelable;
         }
 
         internal void RefreshProgress(
@@ -28,14 +28,14 @@ namespace Unity.PlasticSCM.Editor.Gluon
         {
             mUpdateProgress = progress;
 
-            mGuiClient.Progress.ProgressHeader = updateProgressData.Details;
+            mWorkspaceWindow.Progress.ProgressHeader = updateProgressData.Details;
 
-            mGuiClient.Progress.TotalProgressMessage = updateProgressData.Status;
-            mGuiClient.Progress.TotalProgressPercent = updateProgressData.ProgressValue / 100;
+            mWorkspaceWindow.Progress.TotalProgressMessage = updateProgressData.Status;
+            mWorkspaceWindow.Progress.TotalProgressPercent = updateProgressData.ProgressValue / 100;
         }
 
         Codice.Client.BaseCommands.UpdateProgress mUpdateProgress;
 
-        PlasticGUIClient mGuiClient;
+        WorkspaceWindow mWorkspaceWindow;
     }
 }
