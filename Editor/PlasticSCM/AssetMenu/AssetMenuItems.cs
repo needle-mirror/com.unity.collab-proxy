@@ -1,30 +1,63 @@
-﻿using PlasticGui;
+﻿using UnityEditor;
+using UnityEngine;
+
+using Codice.CM.Common;
+using PlasticGui;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
+using Unity.PlasticSCM.Editor.Inspector;
 using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor.AssetMenu
 {
+    [InitializeOnLoad]
     internal class AssetMenuItems
     {
-        internal static void Enable(
-            IAssetMenuOperations operations,
-            IAssetStatusCache assetStatusCache,
-            AssetOperations.IAssetSelection assetsSelection)
+        // Adds about 500ms to startup time
+        static AssetMenuItems()
         {
-            mOperations = operations;
-            mAssetStatusCache = assetStatusCache;
-            mAssetsSelection = assetsSelection;
+            PlasticApp.InitializeIfNeeded();
+            sPlasticAPI = new PlasticAPI();
+
+            Enable();
+        }
+
+        // TODO: do this after calling plastic workspace
+        static void Enable()
+        {
+            WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
+                Application.dataPath,
+                sPlasticAPI);
+
+            if (wkInfo == null)
+            {
+                return;
+            }
+
+            sOperations = new AssetMenuRoutingOperations();
+            sAssetStatusCache = new AssetStatusCache(
+                wkInfo,
+                sPlasticAPI.IsGluonWorkspace(wkInfo),
+                RepaintProjectWindow);
+            sAssetSelection = new InspectorAssetSelection();
 
             AddMenuItems();
         }
 
+        // TODO: Call this from the delete plastic workspace window
         internal static void Disable()
         {
             RemoveMenuItems();
         }
 
+
         static void AddMenuItems()
         {
+            // TODO: Try removing this
+            // Somehow first item always disappears. So this is a filler item
+            HandleMenuItem.AddMenuItem(
+                GetPlasticMenuItemName(PlasticLocalization.Name.PendingChangesPlasticMenu),
+                PENDING_CHANGES_MENU_ITEM_PRIORITY,
+                PendingChanges, ValidatePendingChanges);
             HandleMenuItem.AddMenuItem(
                 GetPlasticMenuItemName(PlasticLocalization.Name.PendingChangesPlasticMenu),
                 PENDING_CHANGES_MENU_ITEM_PRIORITY,
@@ -59,29 +92,28 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             HandleMenuItem.UpdateAllMenus();
         }
 
-        static void RemoveMenuItems()
+        static string GetPlasticMenuItemName(PlasticLocalization.Name name)
         {
-            HandleMenuItem.RemoveMenuItem(
-                PlasticLocalization.GetString(PlasticLocalization.Name.PrefixPlasticMenu));
-
-            HandleMenuItem.UpdateAllMenus();
+            return string.Format("{0}/{1}",
+                PlasticLocalization.GetString(PlasticLocalization.Name.PrefixPlasticMenu),
+                PlasticLocalization.GetString(name));
         }
 
-        internal static void PendingChanges()
+        static void PendingChanges()
         {
             ShowWindow.Plastic();
 
-            mOperations.ShowPendingChanges();
+            sOperations.ShowPendingChanges();
         }
 
-        internal static bool ValidatePendingChanges()
+        static bool ValidatePendingChanges()
         {
             return true;
         }
 
-        internal static void Add()
+        static void Add()
         {
-            mOperations.Add();
+            sOperations.Add();
         }
 
         static bool ValidateAdd()
@@ -89,9 +121,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             return ShouldMenuItemBeEnabled(AssetMenuOperations.Add);
         }
 
-        internal static void Checkout()
+        static void Checkout()
         {
-            mOperations.Checkout();
+            sOperations.Checkout();
         }
 
         static bool ValidateCheckout()
@@ -99,9 +131,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             return ShouldMenuItemBeEnabled(AssetMenuOperations.Checkout);
         }
 
-        internal static void Checkin()
+        static void Checkin()
         {
-            mOperations.Checkin();
+            sOperations.Checkin();
         }
 
         static bool ValidateCheckin()
@@ -109,9 +141,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             return ShouldMenuItemBeEnabled(AssetMenuOperations.Checkin);
         }
 
-        internal static void Undo()
+        static void Undo()
         {
-            mOperations.Undo();
+            sOperations.Undo();
         }
 
         static bool ValidateUndo()
@@ -119,9 +151,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             return ShouldMenuItemBeEnabled(AssetMenuOperations.Undo);
         }
 
-        internal static void Diff()
+        static void Diff()
         {
-            mOperations.ShowDiff();
+            sOperations.ShowDiff();
         }
 
         static bool ValidateDiff()
@@ -129,11 +161,11 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             return ShouldMenuItemBeEnabled(AssetMenuOperations.Diff);
         }
 
-        internal static void History()
+        static void History()
         {
             ShowWindow.Plastic();
 
-            mOperations.ShowHistory();
+            sOperations.ShowHistory();
         }
 
         static bool ValidateHistory()
@@ -143,13 +175,13 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         static bool ShouldMenuItemBeEnabled(AssetMenuOperations operation)
         {
-            if (mOperations == null)
+            if (sOperations == null)
                 return false;
 
             SelectedAssetGroupInfo selectedGroupInfo = SelectedAssetGroupInfo.
                 BuildFromAssetList(
-                    mAssetsSelection.GetSelectedAssets(),
-                    mAssetStatusCache);
+                    sAssetSelection.GetSelectedAssets(),
+                    sAssetStatusCache);
 
             AssetMenuOperations operations = AssetMenuUpdater.
                 GetAvailableMenuOperations(selectedGroupInfo);
@@ -157,16 +189,28 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             return operations.HasFlag(operation);
         }
 
-        static string GetPlasticMenuItemName(PlasticLocalization.Name name)
+        static void RepaintProjectWindow()
         {
-            return string.Format("{0}/{1}",
-                PlasticLocalization.GetString(PlasticLocalization.Name.PrefixPlasticMenu),
-                PlasticLocalization.GetString(name));
+            EditorWindow projectWindow = FindEditorWindow.ProjectWindow();
+
+            if (projectWindow == null)
+                return;
+
+            projectWindow.Repaint();
         }
 
-        static IAssetMenuOperations mOperations;
-        static IAssetStatusCache mAssetStatusCache;
-        static AssetOperations.IAssetSelection mAssetsSelection;
+        static void RemoveMenuItems()
+        {
+            HandleMenuItem.RemoveMenuItem(
+                PlasticLocalization.GetString(PlasticLocalization.Name.PrefixPlasticMenu));
+
+            HandleMenuItem.UpdateAllMenus();
+        }
+
+        static PlasticAPI sPlasticAPI;
+        static IAssetMenuOperations sOperations;
+        static IAssetStatusCache sAssetStatusCache;
+        static AssetOperations.IAssetSelection sAssetSelection;
 
         const int BASE_MENU_ITEM_PRIORITY = 19; // Puts Plastic SCM right below Create menu
 

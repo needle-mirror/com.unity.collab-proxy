@@ -2,6 +2,8 @@
 
 using UnityEditor;
 
+using Codice.Client.Common;
+
 using Codice.CM.Common;
 using GluonGui;
 using PlasticGui;
@@ -58,9 +60,9 @@ namespace Unity.PlasticSCM.Editor
             mHistoryTabButton = new TabButton();
         }
 
-        internal void SetPlasticGUIClient(PlasticGUIClient plasticClient)
+        internal void SetWorkspaceWindow(WorkspaceWindow workspaceWindow)
         {
-            mPlasticClient = plasticClient;
+            mWorkspaceWindow = workspaceWindow;
         }
 
         internal void ShowInitialView()
@@ -224,7 +226,7 @@ namespace Unity.PlasticSCM.Editor
                 return;
             }
 
-            LaunchTool.OpenMerge(mWkInfo.ClientPath);
+            LaunchTool.OpenMerge(mWkInfo.ClientPath, mIsGluonMode);
         }
 
         void IGluonViewSwitcher.ShowIncomingChangesView()
@@ -267,11 +269,15 @@ namespace Unity.PlasticSCM.Editor
             {
                 mPendingChangesTab = new PendingChangesTab(
                     mWkInfo,
-                    mPlasticClient,
+                    mViewHost,
                     mIsGluonMode,
+                    mWorkspaceWindow,
+                    this,
+                    this,
+                    this,
                     mPendingChanges,
                     mDeveloperNewIncomingChangesUpdater,
-                    this,
+                    mGluonNewIncomingChangesUpdater,
                     mAssetStatusCache,
                     mParentWindow);
 
@@ -302,14 +308,14 @@ namespace Unity.PlasticSCM.Editor
                     new Views.IncomingChanges.Gluon.IncomingChangesTab(
                         mWkInfo,
                         mViewHost,
-                        mPlasticClient,
+                        mWorkspaceWindow,
                         mGluonNewIncomingChangesUpdater,
                         (Gluon.IncomingChangesNotificationPanel)mIncomingChangesNotificationPanel,
                         mParentWindow) as IIncomingChangesTab :
                     new Views.IncomingChanges.Developer.IncomingChangesTab(
                         mWkInfo,
+                        mWorkspaceWindow,
                         this,
-                        mPlasticClient,
                         mDeveloperNewIncomingChangesUpdater,
                         mParentWindow);
 
@@ -336,7 +342,7 @@ namespace Unity.PlasticSCM.Editor
             {
                 mChangesetsTab = new ChangesetsTab(
                     mWkInfo,
-                    mPlasticClient,
+                    mWorkspaceWindow,
                     this,
                     this,
                     mParentWindow,
@@ -366,7 +372,7 @@ namespace Unity.PlasticSCM.Editor
             {
                 mHistoryTab = new HistoryTab(
                     mWkInfo,
-                    mPlasticClient,
+                    mWorkspaceWindow,
                     repSpec,
                     mDeveloperNewIncomingChangesUpdater,
                     mViewHost,
@@ -404,9 +410,11 @@ namespace Unity.PlasticSCM.Editor
                 case SelectedTab.PendingChanges:
                     ShowPendingChangesView();
                     break;
+
                 case SelectedTab.IncomingChanges:
                     ShowIncomingChangesView();
                     break;
+
                 case SelectedTab.Changesets:
                     ShowChangesetsView();
                     break;
@@ -419,12 +427,16 @@ namespace Unity.PlasticSCM.Editor
             {
                 case ViewType.PendingChangesView:
                     return mPendingChangesTab;
+
                 case ViewType.IncomingChangesView:
                     return (IRefreshableView)mIncomingChangesTab;
+
                 case ViewType.ChangesetsView:
                     return mChangesetsTab;
+
                 case ViewType.HistoryView:
                     return mHistoryTab;
+
                 default:
                     return null;
             }
@@ -547,7 +559,7 @@ namespace Unity.PlasticSCM.Editor
         TabButton mIncomingChangesTabButton;
         TabButton mHistoryTabButton;
 
-        PlasticGUIClient mPlasticClient;
+        WorkspaceWindow mWorkspaceWindow;
 
         readonly EditorWindow mParentWindow;
         readonly IAssetStatusCache mAssetStatusCache;

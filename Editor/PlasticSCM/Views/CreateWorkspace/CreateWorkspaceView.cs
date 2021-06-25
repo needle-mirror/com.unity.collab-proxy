@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
-using UnityEditor;
 using UnityEngine;
 
 using Codice.Client.BaseCommands;
@@ -33,7 +32,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
         }
 
         internal CreateWorkspaceView(
-            EditorWindow parentWindow,
+            PlasticWindow parentWindow,
             ICreateWorkspaceListener listener,
             PlasticAPI plasticApi,
             IPlasticWebRestApi plasticWebRestApi,
@@ -111,8 +110,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                         return;
                     }
 
-                    string serverSpecPart = string.Format("@{0}",
-                        mDefaultServer);
+                    string serverSpecPart = string.Format("@{0}", mDefaultServer);
 
                     mCreateWorkspaceState.RepositoryName = ValidRepositoryName.Get(
                         string.Format("{0}{1}",
@@ -152,8 +150,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                 dialogUserAssistant.GetProposedWorkspaceName();
         }
 
-        void CreateRepository(
-            RepositoryCreationData data)
+        void CreateRepository(RepositoryCreationData data)
         {
             if (!data.Result)
                 return;
@@ -169,7 +166,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             waiter.Execute(
                 /*threadOperationDelegate*/ delegate
                 {
-                    createdRepository = Plastic.API.CreateRepository(
+                    createdRepository = PlasticGui.Plastic.API.CreateRepository(
                         data.ServerName, data.RepName);
                 },
                 /*afterOperationDelegate*/ delegate
@@ -213,11 +210,11 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                     RepositorySpec repSpec = new SpecGenerator().GenRepositorySpec(
                         false, mWkCreationData.Repository);
 
-                    bool repositoryExist = Plastic.API.CheckRepositoryExists(
+                    bool repositoryExist = PlasticGui.Plastic.API.CheckRepositoryExists(
                         repSpec.Server, repSpec.Name);
 
                     if (!repositoryExist)
-                        Plastic.API.CreateRepository(repSpec.Server, repSpec.Name);
+                        PlasticGui.Plastic.API.CreateRepository(repSpec.Server, repSpec.Name);
                 },
                 /*afterOperationDelegate*/ delegate
                 {
@@ -240,9 +237,12 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
         void IWorkspacesRefreshableView.RefreshAndSelect(WorkspaceInfo wkInfo)
         {
             PerformInitialCheckin.IfRepositoryIsEmpty(
-                wkInfo, mWkCreationData.Repository,
-                mWkCreationData.IsGluonWorkspace, Plastic.API,
-                mProgressControls, mCreateWorkspaceListener);
+                wkInfo,
+                mWkCreationData.Repository,
+                mWkCreationData.IsGluonWorkspace,
+                PlasticGui.Plastic.API,
+                mProgressControls,
+                mCreateWorkspaceListener);
         }
 
         static WorkspaceCreationData BuildCreationDataFromState(
@@ -421,7 +421,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
         {
             internal static string ToCreateWorkspace(IPlasticWebRestApi plasticWebRestApi)
             {
-                string clientConfServer = Plastic.ConfigAPI.GetClientConfServer();
+                string clientConfServer = PlasticGui.Plastic.ConfigAPI.GetClientConfServer();
 
                 if (!EditionToken.IsCloudEdition())
                     return clientConfServer;
@@ -458,7 +458,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
         readonly ProgressControlsForViews mProgressControls;
         readonly string mWorkspacePath;
         readonly ICreateWorkspaceListener mCreateWorkspaceListener;
-        readonly EditorWindow mParentWindow;
+        readonly PlasticWindow mParentWindow;
         readonly IPlasticWebRestApi mPlasticWebRestApi;
     }
 }

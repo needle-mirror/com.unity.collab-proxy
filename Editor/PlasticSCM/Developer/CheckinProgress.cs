@@ -13,12 +13,12 @@ namespace Unity.PlasticSCM.Editor.Developer
     {
         internal bool CancelPressed;
 
-        internal CheckinProgress(WorkspaceInfo wkInfo, PlasticGUIClient guiClient)
+        internal CheckinProgress(WorkspaceInfo wkInfo, WorkspaceWindow workspaceWindow)
         {
             mWkInfo = wkInfo;
-            mGuiClient = guiClient;
+            mWorkspaceWindow = workspaceWindow;
 
-            mGuiClient.Progress.CanCancelProgress = true;
+            mWorkspaceWindow.Progress.CanCancelProgress = true;
 
             mProgressRender = new CheckinUploadProgressRender(
                 PlasticLocalization.GetString(
@@ -40,7 +40,7 @@ namespace Unity.PlasticSCM.Editor.Developer
             if (checkinStatus == null)
                 return;
 
-            var progress = mGuiClient.Progress;
+            var progress = mWorkspaceWindow.Progress;
 
             progress.ProgressHeader = checkinStatus.StatusString;
 
@@ -77,7 +77,7 @@ namespace Unity.PlasticSCM.Editor.Developer
         }
 
         CheckinUploadProgressRender mProgressRender;
-        PlasticGUIClient mGuiClient;
+        WorkspaceWindow mWorkspaceWindow;
         WorkspaceInfo mWkInfo;
     }
 }

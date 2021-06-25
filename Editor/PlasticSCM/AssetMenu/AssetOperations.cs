@@ -23,6 +23,7 @@ using Unity.PlasticSCM.Editor.UI;
 using GluonCheckoutOperation = GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer.Operations.CheckoutOperation;
 using GluonUndoCheckoutOperation = GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer.Operations.UndoCheckoutOperation;
 using GluonAddoperation = GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer.Operations.AddOperation;
+using Unity.PlasticSCM.Editor.Tool;
 
 namespace Unity.PlasticSCM.Editor.AssetMenu
 {
@@ -62,8 +63,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
             mGuiMessage = new UnityPlasticGuiMessage(parentWindow);
             mProgressControls = new EditorProgressControls(mGuiMessage);
-
         }
+
         void IAssetMenuOperations.ShowPendingChanges()
         {
             mViewSwitcher.ShowPendingChanges();
@@ -183,6 +184,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         void IAssetMenuOperations.ShowDiff()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+                return;
+
             string selectedPath = AssetsSelection.GetSelectedPath(
                 mAssetSelection.GetSelectedAssets());
 
@@ -195,7 +199,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                     string symbolicName = GetSymbolicName(selectedPath);
                     string extension = Path.GetExtension(selectedPath);
 
-                    diffInfo = Plastic.API.BuildDiffInfoForDiffWithPrevious(
+                    diffInfo = PlasticGui.Plastic.API.BuildDiffInfoForDiffWithPrevious(
                         selectedPath, symbolicName, selectedPath, extension, mWkInfo);
                 },
                 /*afterOperationDelegate*/ delegate
@@ -215,6 +219,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         void IAssetMenuOperations.ShowHistory()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+                return;
+
             AssetList assetList = mAssetSelection.GetSelectedAssets();
 
             Asset selectedAsset = AssetsSelection.GetSelectedAsset(
@@ -222,7 +229,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             string selectedPath = AssetsSelection.GetSelectedPath(
                 assetList);
 
-            WorkspaceTreeNode node = Plastic.API.
+            WorkspaceTreeNode node = PlasticGui.Plastic.API.
                 GetWorkspaceTreeNode(selectedPath);
 
             mHistoryViewLauncher.ShowHistoryView(
@@ -234,14 +241,14 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         static string GetSymbolicName(string selectedPath)
         {
-            WorkspaceTreeNode node = Plastic.API.
+            WorkspaceTreeNode node = PlasticGui.Plastic.API.
                 GetWorkspaceTreeNode(selectedPath);
 
             string branchName = string.Empty;
             BranchInfoCache.TryGetBranchName(
                 node.RepSpec, node.RevInfo.BranchId, out branchName);
 
-            string userName = Plastic.API.GetUserName(
+            string userName = PlasticGui.Plastic.API.GetUserName(
                 node.RepSpec.Server, node.RevInfo.Owner);
 
             string symbolicName = string.Format(

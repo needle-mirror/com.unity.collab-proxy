@@ -1,13 +1,10 @@
 <UXML xmlns="UnityEngine.UIElements">
     <VisualElement class="flex-container main">
-        <Image name="buho" />
-        <VisualElement>
-            <Label name="signInToPlasticSCM" class="title" />
-            <Label name="completeSignInOnBrowser" />
-            <VisualElement class="flex-container wait">
-                <Label name="oAuthSignInCheckMessage" class="wait-text" />
-                <Button name="cancelButton"></Button>
-            </VisualElement>
+        <Label name="signInToPlasticSCM" class="title" />
+        <Label name="completeSignInOnBrowser" />
+        <VisualElement name="wait" class="flex-container row">
+            <VisualElement name="progressContainer" class="row" />
+            <Button name="cancelButton"></Button>
         </VisualElement>
     </VisualElement>
 </UXML>

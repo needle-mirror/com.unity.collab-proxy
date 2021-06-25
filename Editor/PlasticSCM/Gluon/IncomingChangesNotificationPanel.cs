@@ -19,18 +19,19 @@ namespace Unity.PlasticSCM.Editor.Gluon
         }
 
         internal IncomingChangesNotificationPanel(
-            EditorWindow window)
+            PlasticWindow plasticWindow)
         {
-            mWindow = window;
+            mPlasticWindow = plasticWindow;
         }
 
         void CheckIncomingChanges.IUpdateIncomingChanges.Hide()
         {
+            mPlasticWindow.SetupWindowTitle(false);
             mPanelData.Clear();
 
             mIsVisible = false;
 
-            mWindow.Repaint();
+            mPlasticWindow.Repaint();
         }
 
         void CheckIncomingChanges.IUpdateIncomingChanges.Show(
@@ -39,13 +40,14 @@ namespace Unity.PlasticSCM.Editor.Gluon
             string tooltipText,
             CheckIncomingChanges.Severity severity)
         {
+            mPlasticWindow.SetupWindowTitle(true);
             UpdateData(
                 mPanelData, infoText, actionText,
                 tooltipText, severity);
 
             mIsVisible = true;
 
-            mWindow.Repaint();
+            mPlasticWindow.Repaint();
         }
 
         static void UpdateData(
@@ -69,6 +71,6 @@ namespace Unity.PlasticSCM.Editor.Gluon
 
         NotificationPanelData mPanelData = new NotificationPanelData();
 
-        EditorWindow mWindow;
+        PlasticWindow mPlasticWindow;
     }
 }

@@ -1,30 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+using Codice.Client.Common;
 using PlasticGui;
 using PlasticGui.WebApi;
+using PlasticGui.Configuration.CloudEdition;
+using PlasticGui.Configuration.CloudEdition.Welcome;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.UIElements;
+using PlasticGui.WebApi.Responses;
 
 namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 {
-    internal class SSOSignUpPanel : VisualElement
+    internal class SSOSignUpPanel :
+        VisualElement,
+        SignUp.INotify
     {
         internal SSOSignUpPanel(
             CloudEditionWelcomeWindow parentWindow,
-            IPlasticWebRestApi restApi)
+            IPlasticWebRestApi restApi,
+            CmConnection cmConnection)
         {
             mParentWindow = parentWindow;
             mRestApi = restApi;
+            mCmConnection = cmConnection;
 
             InitializeLayoutAndStyles();
 
             BuildComponents();
+        }
+
+        internal void SetSignUpData(
+            string user,
+            string password)
+        {
+            mUserNameTextField.value = user;
+            mPasswordTextField.value = password;
+
+            CleanNotificationLabels();
         }
 
         internal void Dispose()
@@ -35,112 +52,96 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mPrivacyPolicyStatementButton.clicked -= PrivacyPolicyStatementButton_Clicked;
 
             mUserNameTextField.UnregisterValueChangedCallback(
-                OnUserNameTextFieldChanged);
+                UserNameTextBox_TextChanged);
             mPasswordTextField.UnregisterValueChangedCallback(
-                OnPasswordTextFieldChanged);
+                PasswordTextBox_TextChanged);
             mConfirmPasswordTextField.UnregisterValueChangedCallback(
-                OnPasswordTextFieldChanged);
+                ConfirmPasswordTextBox_TextChanged);
         }
 
-        void OnUserNameTextFieldChanged(ChangeEvent<string> evt)
+        void UserNameTextBox_TextChanged(ChangeEvent<string> evt)
         {
-            if (!evt.newValue.Contains('@'))
-            {
-                mUserNotificationLabel.RemoveFromClassList("hidden");
-                mValidEmail = false;
-            }
-            else
-            {
-                mUserNotificationLabel.AddToClassList("hidden");
-                mValidEmail = true;
-            }
-
-            SetSignUpButtonEnablement();
+            CleanNotification(mUserNotificationLabel);
         }
 
-        void OnPasswordTextFieldChanged(ChangeEvent<string> evt)
+        void PasswordTextBox_TextChanged(ChangeEvent<string> evt)
         {
-            if (mPasswordTextField.value != mConfirmPasswordTextField.value)
-            {
-                mPasswordNotificationLabel.RemoveFromClassList("hidden");
-                mMatchingPasswords = false;
-            }
-            else
-            {
-                mPasswordNotificationLabel.AddToClassList("hidden");
-                mMatchingPasswords = true;
-            }
+            CleanNotification(mPasswordNotificationLabel);
+        }
 
-            SetSignUpButtonEnablement();
+        void ConfirmPasswordTextBox_TextChanged(ChangeEvent<string> evt)
+        {
+            CleanNotification(mConfirmPasswordNotificationLabel);
         }
 
         void SignUpButton_Clicked()
         {
-            OrganizationPanel organizationPanel = new OrganizationPanel(
-                    new List<string>() { "codice@codice", "skullcito@codice" });
-            //OrganizationPanel organizationPanel = new OrganizationPanel(new List<string>() { "codice@codice" });
-            //OrganizationPanel organizationPanel = new OrganizationPanel(new List<string>() { });
-            mParentWindow.mTabView.SwitchContent(organizationPanel);
+            CleanNotificationLabels();
+
+            SignUp.Run(
+                mRestApi,
+                new SaveCloudEditionCreds(),
+                new SignUp.Data(
+                    mUserNameTextField.text,
+                    mPasswordTextField.text,
+                    mConfirmPasswordTextField.text,
+                    false),
+                mProgressControls,
+                this);
+        }
+
+        void SignUpWithUnityButton_clicked()
+        {
+            mWaitingSignInPanel = new WaitingSignInPanel(
+                mParentWindow,
+                mParentWindow,
+                mRestApi,
+                mCmConnection);
+
+            mParentWindow.ReplaceRootPanel(mWaitingSignInPanel);
+            mWaitingSignInPanel.OAuthSignInForConfigure(SsoProvider.UNITY_URL_ACTION);
         }
 
         void TermsOfServiceButton_Clicked()
         {
-            Application.OpenURL("https://www.plasticscm.com/releases/eula/licenseagreement.pdf");
+            Application.OpenURL(SignUp.TERMS_OF_SERVICE_URL);
         }
 
         void PrivacyPolicyButton_Clicked()
         {
-            Application.OpenURL("https://unity3d.com/legal/privacy-policy");
+            Application.OpenURL(SignUp.PRIVACY_POLICY_URL);
         }
 
         void PrivacyPolicyStatementButton_Clicked()
         {
-            // TODO: update when dll is avaiable PlasticGui.Configuration.CloudEdition.Welcome
-            //       SignUp.PRIVACY_POLICY_URL
-            Application.OpenURL("https://unity3d.com/legal/privacy-policy");
-        }
-
-        void SetSignUpButtonEnablement()
-        {
-            if (!mValidEmail || !mMatchingPasswords || String.IsNullOrEmpty(mPasswordTextField.value))
-                mSignUpButton.SetEnabled(false);
-            else
-                mSignUpButton.SetEnabled(true);
+            Application.OpenURL(SignUp.PRIVACY_POLICY_URL);
         }
 
         void BuildComponents()
         {
-            this.SetControlImage("buho",
-                PlasticGui.Help.HelpImage.GenericBuho);
-
-            this.SetControlText<Label>("signUpLabel",
-                PlasticLocalization.Name.SignUp);
 
             mUserNameTextField = this.Q<TextField>("emailField");
             mUserNameTextField.label = PlasticLocalization.GetString(
                 PlasticLocalization.Name.Email);
             mUserNameTextField.RegisterValueChangedCallback(
-                OnUserNameTextFieldChanged);
+                UserNameTextBox_TextChanged);
 
             mUserNotificationLabel = this.Q<Label>("emailNotification");
-            mUserNotificationLabel.text = PlasticLocalization.GetString(
-                PlasticLocalization.Name.EnterValidEmailAddress);
 
             mPasswordTextField = this.Q<TextField>("passwordField");
             mPasswordTextField.label = PlasticLocalization.GetString(
                 PlasticLocalization.Name.Password);
             mPasswordTextField.RegisterValueChangedCallback(
-                OnPasswordTextFieldChanged);
+                PasswordTextBox_TextChanged);
 
             mConfirmPasswordTextField = this.Q<TextField>("confirmPasswordField");
             mConfirmPasswordTextField.label = PlasticLocalization.GetString(
                 PlasticLocalization.Name.ConfirmPassword);
             mConfirmPasswordTextField.RegisterValueChangedCallback(
-                OnPasswordTextFieldChanged);
+                ConfirmPasswordTextBox_TextChanged);
 
             mPasswordNotificationLabel = this.Q<Label>("passwordNotificationLabel");
-            mPasswordNotificationLabel.text = PlasticLocalization.GetString(
-                PlasticLocalization.Name.PasswordDoesntMatch);
+            mConfirmPasswordNotificationLabel = this.Q<Label>("confirmPasswordNotificationLabel");
 
             mSignUpButton = this.Q<Button>("signUp");
             mSignUpButton.text = PlasticLocalization.GetString(PlasticLocalization.Name.SignUp);
@@ -162,45 +163,87 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mPrivacyPolicyButton.text = PlasticLocalization.GetString(PlasticLocalization.Name.PrivacyPolicy);
             mPrivacyPolicyButton.clicked += PrivacyPolicyButton_Clicked;
 
-            List<VisualElement> dashes = this.Query<VisualElement>("dash").ToList();
-            if (EditorGUIUtility.isProSkin)
-                dashes.ForEach(x => x.style.borderTopColor = new StyleColor(new UnityEngine.Color(0.769f, 0.769f, 0.769f)));
-            else
-                dashes.ForEach(x => x.style.borderTopColor = new StyleColor(new UnityEngine.Color(0.008f, 0.008f, 0.008f)));
+            this.SetControlImage("unityIcon", Images.Name.ButtonSsoSignInUnity);
 
-            this.SetControlText<Label>("or",
-                PlasticLocalization.Name.Or);
-
-            this.SetControlImage("unityIcon",
-                Images.Name.ButtonSsoSignInUnity);
-
-            Button unityIDButton = this.Q<Button>("unityIDButton");
-            unityIDButton.text = PlasticLocalization.GetString(PlasticLocalization.Name.SignUpUnityID);
-
-            this.SetControlImage("googleIcon",
-                Images.Name.ButtonSsoSignInGoogle);
-
-            Button googleButton = this.Q<Button>("googleButton");
-            googleButton.text = PlasticLocalization.GetString(PlasticLocalization.Name.SignUpGoogle);
+            mSignUpWithUnityButton = this.Q<Button>("unityIDButton");
+            mSignUpWithUnityButton.text = PlasticLocalization.GetString(PlasticLocalization.Name.SignInWithUnityID);
+            mSignUpWithUnityButton.clicked += SignUpWithUnityButton_clicked;
 
             this.SetControlText<Label>("privacyStatementText",
                 PlasticLocalization.Name.PrivacyStatementText,
                 PlasticLocalization.GetString(PlasticLocalization.Name.PrivacyStatement));
 
-            mPrivacyPolicyStatementButton = this.Query<Button>("privacyStatement").First();
+            mPrivacyPolicyStatementButton = this.Q<Button>("privacyStatement");
             mPrivacyPolicyStatementButton.text = PlasticLocalization.GetString(
                 PlasticLocalization.Name.PrivacyStatement);
             mPrivacyPolicyStatementButton.clicked += PrivacyPolicyStatementButton_Clicked;
 
-            SetSignUpButtonEnablement();
+            // TODO: add controls to disable and disable control logic
+            mProgressControls = new ProgressControlsForDialogs(new VisualElement[] { mSignUpButton, mSignUpWithUnityButton });
+            mProgressContainer = this.Q<VisualElement>("progressContainer");
+            mProgressContainer.Add((VisualElement)mProgressControls);
         }
 
         void InitializeLayoutAndStyles()
         {
+            AddToClassList("grow");
+
             this.LoadLayout(typeof(SSOSignUpPanel).Name);
 
             this.LoadStyle("SignInSignUp");
             this.LoadStyle(typeof(SSOSignUpPanel).Name);
+        }
+
+        void CleanNotificationLabels()
+        {
+            CleanNotification(mUserNotificationLabel);
+            CleanNotification(mPasswordNotificationLabel);
+            CleanNotification(mConfirmPasswordNotificationLabel);
+        }
+
+        static void ShowNotification(Label label, string text)
+        {
+            label.text = text;
+            label.RemoveFromClassList("hidden");
+        }
+
+        static void CleanNotification(Label label)
+        {
+            label.text = "";
+            label.AddToClassList("hidden");
+        }
+
+        void SignUp.INotify.Success(List<string> organizations, bool canCreateAnOrganization)
+        {
+            mParentWindow.ShowOrganizationPanel(
+                PlasticLocalization.GetString(PlasticLocalization.Name.SignUp),
+                organizations,
+                canCreateAnOrganization);
+        }
+
+        void SignUp.INotify.ValidationFailed(SignUp.ValidationResult validationResult)
+        {
+            if (validationResult.UserError != null)
+                ShowNotification(mUserNotificationLabel, validationResult.UserError);
+
+            if (validationResult.ClearPasswordError != null)
+                ShowNotification(mPasswordNotificationLabel, validationResult.ClearPasswordError);
+
+            if (validationResult.ClearPasswordConfirmationError != null)
+                ShowNotification(mConfirmPasswordNotificationLabel, validationResult.ClearPasswordConfirmationError);
+        }
+
+        void SignUp.INotify.LoginNeeded(Login.Data loginData, string message)
+        {
+            Debug.Log("LoginNeeded");
+            throw new NotImplementedException();
+            //mWelcomeForm.SwitchToLoginPage(
+            //    loginData.User, loginData.ClearPassword, message);
+        }
+
+        void SignUp.INotify.Error(string message)
+        {
+            mProgressControls.ShowError(message);
         }
 
         Button mTermsOfServiceButton;
@@ -211,12 +254,18 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         TextField mConfirmPasswordTextField;
         Label mUserNotificationLabel;
         Label mPasswordNotificationLabel;
+        Label mConfirmPasswordNotificationLabel;
         Button mSignUpButton;
-
-        bool mValidEmail;
-        bool mMatchingPasswords;
+        Button mSignUpWithUnityButton;
+        VisualElement mProgressContainer;
+        IProgressControls mProgressControls;
+        WaitingSignInPanel mWaitingSignInPanel;
 
         readonly CloudEditionWelcomeWindow mParentWindow;
         readonly IPlasticWebRestApi mRestApi;
+        readonly CmConnection mCmConnection;
+
+        //TODO: remove this once Google sign up functionality is added
+        const bool hideGoogleSignUpButton = true;
     }
 }

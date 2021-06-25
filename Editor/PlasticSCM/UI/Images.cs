@@ -5,8 +5,6 @@ using UnityEditor;
 using UnityEngine;
 
 using Codice.LogWrapper;
-using Codice.Utils;
-using PlasticGui;
 using PlasticGui.Help;
 using Unity.PlasticSCM.Editor.AssetUtils;
 
@@ -36,8 +34,8 @@ namespace Unity.PlasticSCM.Editor.UI
             NotOnDisk,
             IconRepository,
             IconPlasticView,
+            IconPlasticViewNotify,
             Loading,
-
             IconEmptyGravatar,
             Step1,
             Step2,

@@ -15,7 +15,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         Size,
         Author,
         Details,
-        Resolution
+        Resolution,
+        DateModififed
     }
 
     [Serializable]
@@ -34,6 +35,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CreatedByColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.DetailsColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.ResolutionMethodColumn));
+            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.DateModifiedColumn));
             return result;
         }
 
@@ -51,6 +53,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     return PlasticLocalization.GetString(PlasticLocalization.Name.DetailsColumn);
                 case IncomingChangesTreeColumn.Resolution:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.ResolutionMethodColumn);
+                case IncomingChangesTreeColumn.DateModififed:
+                    return PlasticLocalization.GetString(PlasticLocalization.Name.DateModifiedColumn);
                 default:
                     return null;
             }
@@ -72,44 +76,51 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         static Column[] BuildColumns()
         {
             return new Column[]
+            {
+                new Column()
                 {
-                    new Column()
-                    {
-                        width = 450,
-                        headerContent = new GUIContent(
-                            GetColumnName(IncomingChangesTreeColumn.Path)),
-                        minWidth = 200,
-                        allowToggleVisibility = false,
-                    },
-                    new Column()
-                    {
-                        width = 150,
-                        headerContent = new GUIContent(
-                            GetColumnName(IncomingChangesTreeColumn.Size)),
-                        minWidth = 45
-                    },
-                    new Column()
-                    {
-                        width = 150,
-                        headerContent = new GUIContent(
-                            GetColumnName(IncomingChangesTreeColumn.Author)),
-                        minWidth = 80
-                    },
-                    new Column()
-                    {
-                        width = 200,
-                        headerContent = new GUIContent(
-                            GetColumnName(IncomingChangesTreeColumn.Details)),
-                        minWidth = 100
-                    },
-                    new Column()
-                    {
-                        width = 250,
-                        headerContent = new GUIContent(
-                            GetColumnName(IncomingChangesTreeColumn.Resolution)),
-                        minWidth = 120
-                    }
-                };
+                    width = 450,
+                    headerContent = new GUIContent(
+                        GetColumnName(IncomingChangesTreeColumn.Path)),
+                    minWidth = 200,
+                    allowToggleVisibility = false,
+                },
+                new Column()
+                {
+                    width = 150,
+                    headerContent = new GUIContent(
+                        GetColumnName(IncomingChangesTreeColumn.Size)),
+                    minWidth = 45
+                },
+                new Column()
+                {
+                    width = 150,
+                    headerContent = new GUIContent(
+                        GetColumnName(IncomingChangesTreeColumn.Author)),
+                    minWidth = 80
+                },
+                new Column()
+                {
+                    width = 200,
+                    headerContent = new GUIContent(
+                        GetColumnName(IncomingChangesTreeColumn.Details)),
+                    minWidth = 100
+                },
+                new Column()
+                {
+                    width = 250,
+                    headerContent = new GUIContent(
+                        GetColumnName(IncomingChangesTreeColumn.Resolution)),
+                    minWidth = 120
+                },
+                new Column()
+                {
+                    width = 330,
+                    headerContent = new GUIContent(
+                        GetColumnName(IncomingChangesTreeColumn.DateModififed)),
+                    minWidth = 100
+                }
+            };
         }
 
         IncomingChangesTreeHeaderState(Column[] columns)

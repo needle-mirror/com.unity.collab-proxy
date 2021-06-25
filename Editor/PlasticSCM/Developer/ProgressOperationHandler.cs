@@ -9,10 +9,10 @@ namespace Unity.PlasticSCM.Editor.Developer
 {
     internal class ProgressOperationHandler
     {
-        internal ProgressOperationHandler(WorkspaceInfo wkInfo, PlasticGUIClient guiClient)
+        internal ProgressOperationHandler(WorkspaceInfo wkInfo, WorkspaceWindow workspaceWindow)
         {
             mWkInfo = wkInfo;
-            mGuiClient = guiClient;
+            mWorkspaceWindow = workspaceWindow;
         }
 
         internal void Update(double elapsedSeconds)
@@ -50,7 +50,7 @@ namespace Unity.PlasticSCM.Editor.Developer
 
         internal void ShowProgress()
         {
-            mProgress = new GenericProgress(mGuiClient);
+            mProgress = new GenericProgress(mWorkspaceWindow);
         }
 
         internal void RefreshProgress(ProgressData progressData)
@@ -61,20 +61,21 @@ namespace Unity.PlasticSCM.Editor.Developer
         internal void EndProgress()
         {
             mProgress = null;
-            mGuiClient.Progress.ResetProgress();
-            mGuiClient.RequestRepaint();
+            mWorkspaceWindow.Progress.ResetProgress();
+            mWorkspaceWindow.RequestRepaint();
         }
 
         internal void ShowUpdateProgress(string title, UpdateNotifier notifier)
         {
-            mUpdateProgress = new UpdateProgress(notifier, mWkInfo.ClientPath, title, mGuiClient);
+            mUpdateProgress = new UpdateProgress(
+                notifier, mWkInfo.ClientPath, title, mWorkspaceWindow);
             mUpdateProgress.OnUpdateProgress();
             mSecondsSinceLastProgressUpdate = 0;
         }
 
         internal void ShowCheckinProgress()
         {
-            mCheckinProgress = new CheckinProgress(mWkInfo, mGuiClient);
+            mCheckinProgress = new CheckinProgress(mWkInfo, mWorkspaceWindow);
         }
 
         internal void RefreshCheckinProgress(
@@ -92,15 +93,15 @@ namespace Unity.PlasticSCM.Editor.Developer
         internal void EndUpdateProgress()
         {
             mUpdateProgress = null;
-            mGuiClient.Progress.ResetProgress();
-            mGuiClient.RequestRepaint();
+            mWorkspaceWindow.Progress.ResetProgress();
+            mWorkspaceWindow.RequestRepaint();
         }
 
         internal void EndCheckinProgress()
         {
             mCheckinProgress = null;
-            mGuiClient.Progress.ResetProgress();
-            mGuiClient.RequestRepaint();
+            mWorkspaceWindow.Progress.ResetProgress();
+            mWorkspaceWindow.RequestRepaint();
         }
 
         internal bool HasCheckinCancelled()
@@ -115,7 +116,7 @@ namespace Unity.PlasticSCM.Editor.Developer
         CheckinProgress mCheckinProgress;
         WorkspaceInfo mWkInfo;
 
-        PlasticGUIClient mGuiClient;
+        WorkspaceWindow mWorkspaceWindow;
 
         const double UPDATE_INTERVAL_SECONDS = 0.5;
     }

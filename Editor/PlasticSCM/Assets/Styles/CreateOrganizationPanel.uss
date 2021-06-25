@@ -1,15 +1,4 @@
-﻿CreateOrganizationPanel {
-    width: 100%;
-}
-
-.form {
-    width: 55%;
-    height: 100%;
-    flex-direction: column;
-    padding: 0 10px;
-}
-
-.field {
+﻿.field {
     font-size: 14px;
     margin-bottom: 10px;
     width: 100%;
@@ -21,6 +10,10 @@
 
 .field TextField Label, .field-label {
     margin: 5px;
+}
+
+#encryptField {
+    margin-bottom: 25px;
 }
 
 #datacenter {
@@ -45,7 +38,8 @@ Label {
 .footer {
     flex-direction: row;
     justify-content: flex-end;
-    padding: 0 10px;
+    right: 0px;
+    bottom: 0px;
 }
 
 .footer Button {
@@ -53,12 +47,16 @@ Label {
     margin-top: 10px;
     border-width: 2px;
     border-radius: 0;
+    width: 125px;
 }
 
 #gettingDatacenters {
     align-self: center;
     height: 30px;
     flex-direction: row;
+    margin-top: 10px;
+    padding-top: 7px;
+    width: 125px;
 }
 
 #gdSpinner {

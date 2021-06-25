@@ -4,6 +4,7 @@ using UnityEngine;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Diff;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.Tool;
 
 namespace Unity.PlasticSCM.Editor.Views.Diff
 {
@@ -18,10 +19,12 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         internal DiffTreeViewMenu(
             IDiffTreeViewMenuOperations operations,
-            IMetaMenuOperations metaMenuOperations)
+            IMetaMenuOperations metaMenuOperations,
+            bool isGluonMode)
         {
             mOperations = operations;
             mMetaMenuOperations = metaMenuOperations;
+            mIsGluonMode = isGluonMode;
 
             BuildComponents();
         }
@@ -51,7 +54,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             if (!operations.HasFlag(operationToExecute))
                 return false;
 
-            ProcessMenuOperation(operationToExecute, mOperations);
+            ProcessMenuOperation(operationToExecute, mOperations, mIsGluonMode);
             return true;
         }
 
@@ -221,8 +224,12 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         static void ProcessMenuOperation(
             DiffTreeViewMenuOperations operationToExecute,
-            IDiffTreeViewMenuOperations operations)
+            IDiffTreeViewMenuOperations operations,
+            bool isGluonMode)
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(isGluonMode))
+                return;
+
             if (operationToExecute == DiffTreeViewMenuOperations.Diff)
             {
                 operations.Diff();
@@ -278,5 +285,6 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         readonly IDiffTreeViewMenuOperations mOperations;
         readonly IMetaMenuOperations mMetaMenuOperations;
+        readonly bool mIsGluonMode;
     }
 }

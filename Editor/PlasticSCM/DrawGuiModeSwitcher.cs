@@ -2,7 +2,6 @@
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-using Unity.PlasticSCM.Editor.Views;
 using Unity.PlasticSCM.Editor.Views.PendingChanges;
 
 namespace Unity.PlasticSCM.Editor
@@ -11,11 +10,11 @@ namespace Unity.PlasticSCM.Editor
     {
         internal static void ForMode(
             bool isGluonMode,
-            PlasticGUIClient plasticClient,
+            WorkspaceWindow workspaceWindow,
             TreeView changesTreeView,
             EditorWindow editorWindow)
         {
-            GUI.enabled = !plasticClient.IsOperationInProgress();
+            GUI.enabled = !workspaceWindow.IsOperationInProgress();
 
             EditorGUI.BeginChangeCheck();
 
@@ -30,7 +29,7 @@ namespace Unity.PlasticSCM.Editor
             if (EditorGUI.EndChangeCheck())
             {
                 SwitchGuiModeIfUserWants(
-                    plasticClient, currentMode, selectedMode,
+                    workspaceWindow, currentMode, selectedMode,
                     changesTreeView, editorWindow);
             }
 
@@ -38,7 +37,7 @@ namespace Unity.PlasticSCM.Editor
         }
 
         static void SwitchGuiModeIfUserWants(
-            PlasticGUIClient plasticClient,
+            WorkspaceWindow workspaceWindow,
             GuiMode currentMode, GuiMode selectedMode,
             TreeView changesTreeView,
             EditorWindow editorWindow)
@@ -54,8 +53,8 @@ namespace Unity.PlasticSCM.Editor
 
             bool isGluonMode = selectedMode == GuiMode.GluonMode;
 
-            LaunchOperation.UpdateWorkspaceForMode(
-                isGluonMode, plasticClient);
+            workspaceWindow.UpdateWorkspaceForMode(
+                isGluonMode, workspaceWindow);
 
             PendingChangesTreeHeaderState.SetMode(
                 changesTreeView.multiColumnHeader.state,

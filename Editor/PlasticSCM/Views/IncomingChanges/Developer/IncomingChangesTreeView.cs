@@ -168,9 +168,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             int sortedColumnIdx = multiColumnHeader.state.sortedColumnIndex;
             bool sortAscending = multiColumnHeader.IsSortedAscending(sortedColumnIdx);
 
-            mIncomingChangesTree.Sort(
-                mColumnNames[sortedColumnIdx],
-                sortAscending);
+            mIncomingChangesTree.Sort(mColumnNames[sortedColumnIdx], sortAscending);
         }
 
         internal void UpdateSolvedFileConflicts(

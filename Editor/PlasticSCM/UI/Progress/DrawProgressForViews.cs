@@ -20,7 +20,7 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
         internal static void ForIndeterminateProgress(
             ProgressControlsForViews.Data data)
         {
-            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+            EditorGUILayout.BeginHorizontal();
 
             GUILayout.Space(10);
 

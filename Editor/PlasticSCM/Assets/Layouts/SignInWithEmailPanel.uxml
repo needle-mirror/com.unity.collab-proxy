@@ -4,23 +4,16 @@
     xmlns="UnityEngine.UIElements"
     xsi:noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd"
     xsi:schemaLocation="UnityEngine.UIElements ../UIElementsSchema/UnityEngine.UIElements.xsd">
-
-    <VisualElement name="emailSignInContainer">
-        <VisualElement name="windowContainer">
-            <VisualElement name="imageContainer">
-                <Image name="buho"/>
-            </VisualElement>
-            <VisualElement name="loginContainer">
-                <Label name="signInLabel"/>
-                <TextField name="email"/>
-                <Label name="emailNotification"/>
-                <TextField name="password" password="true"/>
-                <Label name="passwordNotification"/>
-                <Button name="signIn"/>
-            </VisualElement>
+    <VisualElement name="loginContainer" class="flex-container main">
+        <Label name="signInLabel" class="title" />
+        <TextField name="email" />
+        <Label name="emailNotification" class="alert-label" />
+        <TextField name="password" password="true" />
+        <Label name="passwordNotification" class="alert-label" />
+        <VisualElement name="buttonContainer" class="row grow">
+            <Button name="back" class="classic-button" />
+            <Button name="signIn" class="classic-button" />
         </VisualElement>
-        <VisualElement name="backContainer">
-            <Button name="back"/>
-        </VisualElement>
+        <VisualElement name="progressContainer" />
     </VisualElement>
 </UXML>

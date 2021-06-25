@@ -7,9 +7,10 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 {
     internal class CreatedOrganizationPanel : VisualElement
     {
-        internal CreatedOrganizationPanel(string organizationName)
+        internal CreatedOrganizationPanel(string organizationName, CloudEditionWelcomeWindow parentWindow)
         {
             mOrganizationName = organizationName;
+            mParentWindow = parentWindow;
 
             InitializeLayoutAndStyles();
 
@@ -18,13 +19,12 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         void BuildComponents()
         {
-            this.SetControlImage("buho",
-                PlasticGui.Help.HelpImage.CloudBuho);
-
             this.SetControlText<Label>("createdTitle",
                 PlasticLocalization.Name.CreatedOrganizationTitle);
             this.SetControlText<Label>("createdExplanation",
                 PlasticLocalization.Name.CreatedOrganizationExplanation, mOrganizationName);
+
+            this.Q<Button>("continue").clicked += ContinueButton_Clicked;
             this.SetControlText<Button>("continue",
                 PlasticLocalization.Name.ContinueButton);
         }
@@ -37,6 +37,17 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             this.LoadStyle(typeof(CreatedOrganizationPanel).Name);
         }
 
+        void ContinueButton_Clicked()
+        {
+            mParentWindow.Close();
+        }
+
+        internal void Dispose()
+        {
+            this.Q<Button>("continue").clicked -= ContinueButton_Clicked;
+        }
+
         string mOrganizationName;
+        CloudEditionWelcomeWindow mParentWindow;
     } 
 }

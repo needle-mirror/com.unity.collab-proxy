@@ -97,6 +97,7 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
         {
             Image imageElem = element.Query<Image>(name).First();
             imageElem.image = Images.GetHelpImage(imageName);
+            imageElem.image.wrapMode = UnityEngine.TextureWrapMode.Clamp;
         }
 
         internal static void SetControlText<T>(

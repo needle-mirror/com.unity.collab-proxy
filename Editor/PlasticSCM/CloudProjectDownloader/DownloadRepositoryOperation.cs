@@ -18,6 +18,7 @@ using PlasticGui.WorkspaceWindow.Update;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
 
 namespace Unity.PlasticSCM.Editor.ProjectDownloader
 {
@@ -116,7 +117,16 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
                     wkInfo.Name,
                     wkInfo.ClientPath);
 
-                Plastic.API.Update(
+                AutoLogin autoLogin = new AutoLogin();
+                autoLogin.ExchangeTokens(parameters.AccessToken);
+
+                CloudEditionWelcomeWindow.JoinOrganization(parameters.CloudOrganization, AutoLogin.sAccessToken, AutoLogin.sUserName);
+
+                ClientConfigData clientConfigData = ClientConfig.Get().GetClientConfigData();
+                clientConfigData.WorkspaceServer = parameters.CloudOrganization;
+                ClientConfig.Get().Save(clientConfigData);
+
+                PlasticGui.Plastic.API.Update(
                     wkInfo.ClientPath,
                     UpdateFlags.None,
                     null,
@@ -137,7 +147,7 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
                 mOperationFinished = true;
             }
         }
-
+    
         static void DisplayProgress(
             UpdateOperationStatus status,
             BuildProgressSpeedAndRemainingTime.ProgressData progressData,
@@ -162,14 +172,14 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
         {
             CreateWorkspaceDialogUserAssistant assistant = new CreateWorkspaceDialogUserAssistant(
                 PlasticGuiConfig.Get().Configuration.DefaultWorkspaceRoot,
-                Plastic.API.GetAllWorkspacesArray());
+                PlasticGui.Plastic.API.GetAllWorkspacesArray());
 
             assistant.RepositoryChanged(
                 repositorySpec.ToString(),
                 string.Empty,
                 string.Empty);
 
-            return Plastic.API.CreateWorkspace(
+            return PlasticGui.Plastic.API.CreateWorkspace(
                 projectPath,
                 assistant.GetProposedWorkspaceName(),
                 repositorySpec.ToString());
@@ -199,7 +209,7 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
 
         static bool WorkspaceExists(string projectPath)
         {
-            return Plastic.API.GetWorkspaceFromPath(projectPath) != null;
+            return PlasticGui.Plastic.API.GetWorkspaceFromPath(projectPath) != null;
         }
 
         class DownloadRepositoryParameters

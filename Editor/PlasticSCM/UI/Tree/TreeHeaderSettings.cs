@@ -18,7 +18,9 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                 GetSettingKey(treeSettingsName, VISIBLE_COLUMNS_KEY), string.Empty)
                     .Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
                     .Select(idx => int.Parse(idx))
+                    .Where(idx => idx >= 0 && idx < headerState.columns.Length)
                     .ToArray();
+
             var columnWidths = EditorPrefs.GetString(
                 GetSettingKey(treeSettingsName, COLUMNS_WIDTHS_KEY), string.Empty)
                     .Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
@@ -35,9 +37,15 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                 return;
 
             var sortColumnIdx = EditorPrefs.GetInt(
-                GetSettingKey(treeSettingsName, SORT_COLUMN_INDEX_KEY), defaultSortColumnIdx);
+                GetSettingKey(treeSettingsName, SORT_COLUMN_INDEX_KEY),
+                defaultSortColumnIdx);
+
+            if (sortColumnIdx < 0 || sortColumnIdx >= headerState.columns.Length)
+                sortColumnIdx = defaultSortColumnIdx;
+
             var sortColumnAscending = EditorPrefs.GetBool(
-                GetSettingKey(treeSettingsName, SORT_ASCENDING_KEY), defaultSortedAscending);
+                GetSettingKey(treeSettingsName, SORT_ASCENDING_KEY),
+                defaultSortedAscending);
 
             headerState.sortedColumnIndex = sortColumnIdx;
             headerState.columns[sortColumnIdx].sortedAscending = sortColumnAscending;

@@ -1,21 +1,4 @@
-﻿/* Basic Classes */
-.row {
-	flex-direction: row;
-}
-
-.column {
-    flex-direction: column;
-}
-
-.horizontally-centered {
-    justify-content: center;
-}
-
-.hidden {
-    visibility: hidden;
-}
-
-SignUp {
+﻿SignUp {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -26,12 +9,8 @@ SignUp {
     height: 100%;
 }
 
-#signUpForm {
-    width: 420px;
-}
-
 #email {
-    margin-bottom: 20px;
+    margin-bottom: 5px;
 }
 
 TextField {
@@ -49,31 +28,35 @@ TextField {
 }
 
 #signUp {
-    margin-top: 20px;
+    margin-top: 10px;
     height: 30px;
+    width: 195px;
+    margin-left: 56%;
+    margin-right: 25px;
 }
 
 #policyContainer {
     margin: 5px;
-    margin-left: -8px;
+}
+
+.policyFont {
+    font-size: 11px;
 }
 
 #median {
-    margin-top: 15px;
-    margin-left: -8px;
-}
-
-.dash {
+    margin-top: 5px;
+    margin-bottom: 5px;
     border-top-width: 0.5px;
     border-color: rgba(196, 196, 196, 1);
-    width: 49%;
     height: 1px;
-    margin: 8px 3px 8px 3px;
+    margin: 8px 20px 8px 20px;
 }
 
 .alternate-button {
-    width: 48.5%;
+    width: 195px;
     height: 30px;
+    margin-left: 56%;
+    margin-right: 25px;
 }
 
 .icon {
@@ -86,7 +69,14 @@ TextField {
     background-color: black;
 }
 
-#googleButton {
-    color: black;
-    background-color: rgba(66, 133, 244, 1);
+#emailNotification, #passwordNotificationLabel, confirmPasswordNotificationLabel {
+    height: 15px;
+}
+
+#passwordNotificationLabel, confirmPasswordNotificationLabel {
+    width: 50%;
+}
+
+#progressContainer {
+    margin-top: 5px;
 }

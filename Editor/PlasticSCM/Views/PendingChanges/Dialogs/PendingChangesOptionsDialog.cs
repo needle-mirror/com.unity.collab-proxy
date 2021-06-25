@@ -88,7 +88,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             mSelectedTab = (Tab)GUI.Toolbar(toolbarRect, (int)mSelectedTab, new string[]{
                 PlasticLocalization.GetString(PlasticLocalization.Name.PendingChangesWhatToFindTab),
                 PlasticLocalization.GetString(PlasticLocalization.Name.PendingChangesWhatToShowTab),
-                PlasticLocalization.GetString(PlasticLocalization.Name.PendingChangesMoveDetectionTab)});
+                PlasticLocalization.GetString(PlasticLocalization.Name.PendingChangesMoveDetectionTab)
+            });
 
             if (EditorGUI.EndChangeCheck())
                 EditorGUIUtility.keyboardControl = -1;
@@ -330,7 +331,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             GUILayout.Space(-10);
 
             string formattedExplanation = isEnabled ?
-                GetFsWatcherEnabledExplanation():
+                GetFsWatcherEnabledExplanation() :
                 GetFsWatcherDisabledExplanation();
 
             string helpLink = GetHelpLink();
@@ -453,17 +454,17 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             IThreadWaiter waiter = ThreadWaiter.GetWaiter(10);
             waiter.Execute(
                 /*threadOperationDelegate*/ delegate
-                {
-                    isFileSystemWatcherEnabled =
-                        IsFileSystemWatcherEnabled(wkInfo);
-                },
+                                            {
+                                                isFileSystemWatcherEnabled =
+                                                    IsFileSystemWatcherEnabled(wkInfo);
+                                            },
                 /*afterOperationDelegate*/ delegate
-                {
-                    if (waiter.Exception != null)
-                        return;
+                                           {
+                                               if (waiter.Exception != null)
+                                                   return;
 
-                    mIsFileSystemWatcherEnabled = isFileSystemWatcherEnabled;
-                });
+                                               mIsFileSystemWatcherEnabled = isFileSystemWatcherEnabled;
+                                           });
         }
 
         static bool IsEnabled(WorkspaceStatusOptions option, WorkspaceStatusOptions options)
@@ -503,8 +504,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
                 return PlasticLocalization.GetString(
                     PlasticLocalization.Name.PendingChangesFilesystemWatcherEnabledExplanation);
 
-                return PlasticLocalization.GetString(
-                PlasticLocalization.Name.PendingChangesINotifyEnabledExplanation);
+            return PlasticLocalization.GetString(
+            PlasticLocalization.Name.PendingChangesINotifyEnabledExplanation);
         }
 
         static string GetFsWatcherDisabledExplanation()

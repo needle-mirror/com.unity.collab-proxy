@@ -5,9 +5,9 @@ namespace Unity.PlasticSCM.Editor.Gluon
 {
     internal class ProgressOperationHandler : IUpdateProgress, ICheckinProgress
     {
-        internal ProgressOperationHandler(PlasticGUIClient guiClient)
+        internal ProgressOperationHandler(WorkspaceWindow workspaceWindow)
         {
-            mGuiClient = guiClient;
+            mWorkspaceWindow = workspaceWindow;
         }
 
         internal bool IsOperationInProgress()
@@ -23,7 +23,7 @@ namespace Unity.PlasticSCM.Editor.Gluon
 
         void ICheckinProgress.ShowProgress()
         {
-            mCheckinProgress = new CheckinProgress(mGuiClient);
+            mCheckinProgress = new CheckinProgress(mWorkspaceWindow);
         }
 
         void ICheckinProgress.RefreshProgress(CheckinProgressData progress)
@@ -34,19 +34,19 @@ namespace Unity.PlasticSCM.Editor.Gluon
         void ICheckinProgress.EndProgress()
         {
             mCheckinProgress = null;
-            mGuiClient.Progress.ResetProgress();
-            mGuiClient.RequestRepaint();
+            mWorkspaceWindow.Progress.ResetProgress();
+            mWorkspaceWindow.RequestRepaint();
         }
 
         void IUpdateProgress.ShowNoCancelableProgress()
         {
-            mUpdateProgress = new UpdateProgress(mGuiClient);
+            mUpdateProgress = new UpdateProgress(mWorkspaceWindow);
             mUpdateProgress.SetCancellable(false);
         }
 
         void IUpdateProgress.ShowCancelableProgress()
         {
-            mUpdateProgress = new UpdateProgress(mGuiClient);
+            mUpdateProgress = new UpdateProgress(mWorkspaceWindow);
             mUpdateProgress.SetCancellable(true);
         }
 
@@ -60,13 +60,13 @@ namespace Unity.PlasticSCM.Editor.Gluon
         void IUpdateProgress.EndProgress()
         {
             mUpdateProgress = null;
-            mGuiClient.Progress.ResetProgress();
-            mGuiClient.RequestRepaint();
+            mWorkspaceWindow.Progress.ResetProgress();
+            mWorkspaceWindow.RequestRepaint();
         }
 
         UpdateProgress mUpdateProgress;
         CheckinProgress mCheckinProgress;
 
-        PlasticGUIClient mGuiClient;
+        WorkspaceWindow mWorkspaceWindow;
     }
 }

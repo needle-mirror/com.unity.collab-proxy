@@ -3,14 +3,13 @@ using System.IO;
 using System.Net;
 
 using Codice.Client.Common.Threading;
-using Codice.Client.Common.WebApi;
 using Codice.CM.Common;
 using Codice.Utils;
 using PlasticGui;
 using PlasticGui.Help.NewVersions;
 using PlasticGui.WorkspaceWindow;
 using Unity.PlasticSCM.Editor.Tool;
-using Unity.PlasticSCM.Editor.UI.Progress;
+using Unity.PlasticSCM.Editor.UI.UIElements;
 using Unity.PlasticSCM.Editor.WebApi;
 
 namespace Unity.PlasticSCM.Editor.Views.Welcome
@@ -20,7 +19,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
         internal static void Run(
             Edition plasticEdition,
             string installerDestinationPath,
-            ProgressControlsForViews progressControls)
+            ProgressControlsForDialogs progressControls)
         {
             ((IProgressControls)progressControls).ShowProgress(
                 PlasticLocalization.GetString(PlasticLocalization.Name.DownloadingProgress));
@@ -81,7 +80,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
 
         static void RunInstaller(
             string installerPath,
-            ProgressControlsForViews progressControls)
+            ProgressControlsForDialogs progressControls)
         {
             progressControls.ProgressData.ProgressPercent = -1;
 
@@ -122,7 +121,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
         static void DownloadInstaller(
             string url,
             string destinationPath,
-            ProgressControlsForViews progressControls)
+            ProgressControlsForDialogs progressControls)
         {
             int bytesProcessed = 0;
 
@@ -159,9 +158,10 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
                     localStream.Write(buffer, 0, bytesRead);
                     bytesProcessed += bytesRead;
 
-                    progressControls.ProgressData.ProgressPercent = GetProgressBarPercent.
-                        ForTransfer(bytesProcessed, totalBytes) / 100f;
-
+                    progressControls.ProgressData.ProgressPercent =
+                        GetProgressBarPercent.ForTransfer(
+                            bytesProcessed,
+                            totalBytes) / 100f;
                 } while (bytesRead > 0);
             }
             finally

@@ -48,7 +48,7 @@ namespace Unity.PlasticSCM.Editor.Tool
             if (PlatformIdentifier.IsMac())
                 return GetToolCommand(Plastic.GUI_MACOS);
 
-                return null;
+            return null;
         }
 
         internal static string GetGluonExePath()
@@ -97,6 +97,5 @@ namespace Unity.PlasticSCM.Editor.Tool
             internal const string GUI_WINDOWS = "gluon.exe";
             internal const string GUI_MACOS = "/Applications/Gluon.app/Contents/MacOS/Gluon";
         }
-            }
-            }
-
+    }
+}

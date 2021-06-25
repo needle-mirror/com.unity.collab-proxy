@@ -10,8 +10,15 @@ namespace Unity.PlasticSCM.Editor
     {
         internal static string PathForApplicationPath(string path)
         {
-            return FindWorkspacePath(
-                path, ClientConfig.Get().GetWkConfigDir());
+            try
+            {
+                return FindWorkspacePath(
+                    path, ClientConfig.Get().GetWkConfigDir());
+            }
+            catch (NotConfiguredClientException)
+            {
+                return null;
+            }
         }
 
         internal static WorkspaceInfo InfoForApplicationPath(

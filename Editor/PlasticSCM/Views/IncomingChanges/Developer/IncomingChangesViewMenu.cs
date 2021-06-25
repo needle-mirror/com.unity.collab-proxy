@@ -4,6 +4,7 @@ using UnityEngine;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.IncomingChanges;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.Tool;
 
 namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 {
@@ -37,6 +38,9 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
         void MergeSelectedFilesMenuItem_Click()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(false))
+                return;
+
             mIncomingChangesViewMenuOperations.MergeContributors();
         }
 
@@ -155,8 +159,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             if (mNoActionMenuItemContent == null)
             {
                 mNoActionMenuItemContent = new GUIContent(
-                    PlasticLocalization.GetString(PlasticLocalization.
-                        Name.NoActionMenuItem));
+                    PlasticLocalization.GetString(
+                        PlasticLocalization.Name.NoActionMenuItem));
             }
 
             return mNoActionMenuItemContent;
@@ -167,10 +171,12 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             mMergeSelectedFilesMenuItemContent = new GUIContent(
                 PlasticLocalization.GetString(PlasticLocalization.
                     Name.MergeSelectedFiles));
+
             mMergeKeepingSourceChangesMenuItemContent = new GUIContent(
                 UnityMenuItem.EscapedText(
                     PlasticLocalization.GetString(PlasticLocalization.
                         Name.IncomingChangesMenuItemMergeKeepingSourceChanges)));
+
             mMergeKeepingWorkspaceChangesMenuItemContent = new GUIContent(
                 UnityMenuItem.EscapedText(
                     PlasticLocalization.GetString(PlasticLocalization.
@@ -186,6 +192,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
             mDiffYoursWithIncomingMenuItemContent = new GUIContent(
                 diffYoursWithIncomingText);
+
             mDiffIncomingChangesMenuItemContent = new GUIContent(
                 diffIncomingChangesText);
 
