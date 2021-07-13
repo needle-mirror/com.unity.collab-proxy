@@ -77,6 +77,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             NewIncomingChangesUpdater developerNewIncomingChangesUpdater,
             GluonNewIncomingChangesUpdater gluonNewIncomingChangesUpdater,
             IAssetStatusCache assetStatusCache,
+            NotificationDrawer notificationDrawer,
             EditorWindow parentWindow)
         {
             mWkInfo = wkInfo;
@@ -88,24 +89,37 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mDeveloperNewIncomingChangesUpdater = developerNewIncomingChangesUpdater;
             mGluonNewIncomingChangesUpdater = gluonNewIncomingChangesUpdater;
             mAssetStatusCache = assetStatusCache;
+            mNotificationDrawer = notificationDrawer;
             mParentWindow = parentWindow;
             mGuiMessage = new UnityPlasticGuiMessage(parentWindow);
 
             mCheckedStateManager = new CheckedStateManager();
 
             mNewChangesInWk = NewChangesInWk.Build(
-                mWkInfo, new BuildWorkspacekIsRelevantNewChange());
+                mWkInfo, 
+                new BuildWorkspacekIsRelevantNewChange());
 
             BuildComponents(isGluonMode, parentWindow);
 
+            mBorderColor = EditorGUIUtility.isProSkin
+                ? (Color)new Color32(35, 35, 35, 255)
+                : (Color)new Color32(153, 153, 153, 255);
+
             mProgressControls = new ProgressControlsForViews();
 
-            workspaceWindow.RegisterPendingChangesProgressControls(
-                mProgressControls);
+            workspaceWindow.RegisterPendingChangesProgressControls(mProgressControls);
 
             mPendingChangesOperations = new PendingChangesOperations(
-                mWkInfo, workspaceWindow, switcher, mergeViewLauncher, this,
-                mProgressControls, workspaceWindow, null, null, null);
+                mWkInfo,
+                workspaceWindow,
+                switcher,
+                mergeViewLauncher,
+                this,
+                mProgressControls,
+                workspaceWindow,
+                null,
+                null,
+                null);
 
             InitIgnoreRulesAndRefreshView(mWkInfo.ClientPath, this);
         }
@@ -155,17 +169,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         internal void OnGUI()
         {
-            DrawCommentTextArea.For(
-                this,
-                mParentWindow.position.width,
-                mProgressControls.IsOperationRunning());
-
-            DoOperationsToolbar(
-                mWkInfo,
-                mIsGluonMode,
-                mAdvancedDropdownMenu,
-                mProgressControls.IsOperationRunning());
-
             if (!string.IsNullOrEmpty(mGluonWarningMessage))
                 DoWarningMessage(mGluonWarningMessage);
 
@@ -180,13 +183,18 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 mPendingChangesTreeView,
                 mProgressControls.IsOperationRunning());
 
+            // Border
+            Rect result = GUILayoutUtility.GetRect(mParentWindow.position.width, 1);
+            EditorGUI.DrawRect(result, mBorderColor);
+
+            DoCommentsSection();
+
             if (HasPendingMergeLinks())
                 DoMergeLinksArea(mMergeLinksListView, mParentWindow.position.width);
 
             if (mProgressControls.HasNotification())
             {
-                DrawProgressForViews.ForNotificationArea(
-                    mProgressControls.ProgressData);
+                DrawProgressForViews.ForNotificationArea(mProgressControls.ProgressData);
             }
 
             DrawHelpPanel.For(mHelpPanel);
@@ -309,7 +317,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 selectedChangeMeta,
                 changedForMovedMeta,
                 mProgressControls,
-                null, null);
+                null,
+                null);
         }
 
         void PendingChangesViewMenu.IMetaMenuOperations.HistoryMeta()
@@ -585,7 +594,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                     mPendingChanges.Calculate(
                         options, PendingChangesOptions.GetMovedMatchingOptions());
 
-                    mergeLinks = Plastic.API.GetPendingMergeLinks(mWkInfo);
+                    mergeLinks = PlasticGui.Plastic.API.GetPendingMergeLinks(mWkInfo);
                 },
                 /*afterOperationDelegate*/ delegate
                 {
@@ -619,19 +628,60 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 });
         }
 
+        void DoCommentsSection()
+        {
+            EditorGUILayout.BeginVertical();
+            EditorGUILayout.Space(10);
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.Space(2);
+
+            EditorGUILayout.BeginVertical();
+            GUILayout.FlexibleSpace();
+            DrawUserIcon.ForPendeingChangesTab(CommentText);
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndVertical();
+
+            float width = Mathf.Clamp(mParentWindow.position.width, 300f, 820f);
+
+            DrawCommentTextArea.For(
+               this,
+               width,
+               mProgressControls.IsOperationRunning());
+
+            EditorGUILayout.Space(2);
+
+            // To center the action buttons vertically
+            EditorGUILayout.BeginVertical();
+            GUILayout.FlexibleSpace();
+            DoOperationsToolbar(
+              mWkInfo,
+              mIsGluonMode,
+              mAdvancedDropdownMenu,
+              mProgressControls.IsOperationRunning());
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndVertical();
+
+            GUILayout.FlexibleSpace();
+
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space(10);
+
+            EditorGUILayout.EndVertical();
+        }
+
         void DoOperationsToolbar(
             WorkspaceInfo wkInfo,
             bool isGluonMode,
             GenericMenu advancedDropdownMenu,
             bool isOperationRunning)
         {
-            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
-
-            GUISpace.ForToolbar();
+            EditorGUILayout.BeginHorizontal();
 
             using (new GuiEnabled(!isOperationRunning))
             {
-                if (DrawActionButton.For(PlasticLocalization.GetString(
+                if (DrawActionButton.ForCommentSection(PlasticLocalization.GetString(
                         PlasticLocalization.Name.CheckinChanges)))
                 {
                     UpdateIsCommentWarningNeeded(CommentText);
@@ -640,7 +690,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                         CheckinForMode(wkInfo, isGluonMode, mKeepItemsLocked);
                 }
 
-                if (DrawActionButton.For(PlasticLocalization.GetString(
+                GUILayout.Space(2);
+
+                if (DrawActionButton.ForCommentSection(PlasticLocalization.GetString(
                         PlasticLocalization.Name.UndoChanges)))
                 {
                     UndoForMode(wkInfo, isGluonMode);
@@ -665,22 +717,18 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                         advancedDropdownMenu.DropDown(dropDownRect);
                 }*/
             }
-
             if (mIsCommentWarningNeeded)
             {
                 GUILayout.Space(5);
                 DoCheckinWarningMessage();
             }
 
-            GUILayout.FlexibleSpace();
-
             EditorGUILayout.EndHorizontal();
         }
 
         void UpdateChangesTree()
         {
-            mPendingChangesTreeView.BuildModel(
-                mPendingChanges, mCheckedStateManager);
+            mPendingChangesTreeView.BuildModel(mPendingChanges, mCheckedStateManager);
 
             mPendingChangesTreeView.Refilter();
 
@@ -703,7 +751,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         void UpdateNotificationPanel()
         {
-            if (Plastic.API.IsFsReaderWatchLimitReached(mWkInfo))
+            if (PlasticGui.Plastic.API.IsFsReaderWatchLimitReached(mWkInfo))
             {
                 ((IProgressControls)mProgressControls).ShowWarning(PlasticLocalization.
                     GetString(PlasticLocalization.Name.NotifyLinuxWatchLimitWarning));
@@ -749,16 +797,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 mPendingChangesTreeView,
                 UnityConstants.SEARCH_FIELD_WIDTH);
 
-            if (GUILayout.Button(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.Options),
-                    EditorStyles.toolbarButton,
-                    GUILayout.Width(UnityConstants.REGULAR_BUTTON_WIDTH)))
-            {
-                PendingChangesOptionsDialog.ChangeOptions(
-                    workspaceInfo, refreshableView, this, editorWindow);
-                GUIUtility.ExitGUI();
-            }
-
             DoRefreshButton(
                 refreshableView,
                 progressControls.IsOperationRunning());
@@ -798,7 +836,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             float desiredTreeHeight = mergeLinksListView.DesiredHeight;
 
             Rect treeRect = GUILayoutUtility.GetRect(
-                0, width, desiredTreeHeight, desiredTreeHeight);
+                0,
+                width,
+                desiredTreeHeight,
+                desiredTreeHeight);
 
             mergeLinksListView.OnGUI(treeRect);
         }
@@ -868,13 +909,16 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         bool mIsCommentWarningNeeded = false;
         bool mKeepItemsLocked;
         string mGluonWarningMessage;
-
+        
         IDictionary<MountPoint, IList<PendingMergeLink>> mPendingMergeLinks;
 
         SearchField mSearchField;
 
+        Color mBorderColor;
+
         readonly ProgressControlsForViews mProgressControls;
         readonly EditorWindow mParentWindow;
+        readonly NotificationDrawer mNotificationDrawer;
         readonly IAssetStatusCache mAssetStatusCache;
 
         readonly PendingChangesOperations mPendingChangesOperations;

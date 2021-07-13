@@ -23,8 +23,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             WorkspaceInfo wkInfo,
             EditorWindow parentWindow)
         {
-            RepositorySpec repSpec = Plastic.API.GetRepositorySpec(wkInfo);
-            BranchInfo parentBranchInfo = Plastic.API.GetWorkingBranch(wkInfo);
+            RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(wkInfo);
+            BranchInfo parentBranchInfo = PlasticGui.Plastic.API.GetWorkingBranch(wkInfo);
 
             CheckinMergeNeededDialog dialog = Create(
                 repSpec, parentBranchInfo,

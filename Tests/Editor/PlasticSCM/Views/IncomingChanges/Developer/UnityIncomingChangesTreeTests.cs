@@ -4,7 +4,7 @@ using Codice.Client.Commands;
 using Codice.Client.Commands.Mount;
 using Codice.CM.Common;
 using Codice.CM.Common.Merge;
-using PlasticGui.WorkspaceWindow.IncomingChanges;
+using PlasticGui.WorkspaceWindow.Merge;
 using Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer;
 
 namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
@@ -25,12 +25,12 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             conflicts.FileConflicts.Add(fileConflict);
 
             UnityIncomingChangesTree tree = UnityIncomingChangesTree.BuildIncomingChangeCategories(
-                IncomingChangesTree.BuildIncomingChangeCategories(
+                MergeChangesTree.BuildForIncomingChangesView(
                     conflicts,
                     new GetConflictResolutionMock(),
                     rootMountPointWithPath));
 
-            IncomingChangeInfo conflictChangeInfo = FindChangeInfo.FromFileConflict(
+            MergeChangeInfo conflictChangeInfo = FindChangeInfo.FromFileConflict(
                 fileConflict, tree);
 
             Assert.IsNotNull(
@@ -59,12 +59,12 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             conflicts.FileConflicts.Add(fileConflictMeta);
 
             UnityIncomingChangesTree tree = UnityIncomingChangesTree.BuildIncomingChangeCategories(
-                IncomingChangesTree.BuildIncomingChangeCategories(
+                MergeChangesTree.BuildForIncomingChangesView(
                     conflicts,
                     new GetConflictResolutionMock(),
                     rootMountPointWithPath));
 
-            IncomingChangeInfo conflictChangeInfo = FindChangeInfo.FromFileConflict(
+            MergeChangeInfo conflictChangeInfo = FindChangeInfo.FromFileConflict(
                 fileConflict, tree);
 
             Assert.IsNotNull(
@@ -89,12 +89,12 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             conflicts.FilesModifiedOnSource.Add(fileConflict);
 
             UnityIncomingChangesTree tree = UnityIncomingChangesTree.BuildIncomingChangeCategories(
-                IncomingChangesTree.BuildIncomingChangeCategories(
+                MergeChangesTree.BuildForIncomingChangesView(
                     conflicts,
                     new GetConflictResolutionMock(),
                     rootMountPointWithPath));
 
-            IncomingChangeInfo changeInfo = FindChangeInfo.FromFileConflict(
+            MergeChangeInfo changeInfo = FindChangeInfo.FromFileConflict(
                 fileConflict, tree);
 
             Assert.IsNotNull(
@@ -123,12 +123,12 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             conflicts.FilesModifiedOnSource.Add(fileConflictMeta);
 
             UnityIncomingChangesTree tree = UnityIncomingChangesTree.BuildIncomingChangeCategories(
-                IncomingChangesTree.BuildIncomingChangeCategories(
+                MergeChangesTree.BuildForIncomingChangesView(
                     conflicts,
                     new GetConflictResolutionMock(),
                     rootMountPointWithPath));
 
-            IncomingChangeInfo changeInfo = FindChangeInfo.FromFileConflict(
+            MergeChangeInfo changeInfo = FindChangeInfo.FromFileConflict(
                 fileConflict, tree);
 
             Assert.IsNotNull(
@@ -153,12 +153,12 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             conflicts.MovesToApply.Add(difference);
 
             UnityIncomingChangesTree tree = UnityIncomingChangesTree.BuildIncomingChangeCategories(
-                IncomingChangesTree.BuildIncomingChangeCategories(
+                MergeChangesTree.BuildForIncomingChangesView(
                     conflicts,
                     new GetConflictResolutionMock(),
                     rootMountPointWithPath));
 
-            IncomingChangeInfo changeInfo = FindChangeInfo.FromDifference(
+            MergeChangeInfo changeInfo = FindChangeInfo.FromDifference(
                 difference, tree);
 
             Assert.IsNotNull(
@@ -186,12 +186,12 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             conflicts.MovesToApply.Add(differenceMeta);
 
             UnityIncomingChangesTree tree = UnityIncomingChangesTree.BuildIncomingChangeCategories(
-                IncomingChangesTree.BuildIncomingChangeCategories(
+                MergeChangesTree.BuildForIncomingChangesView(
                     conflicts,
                     new GetConflictResolutionMock(),
                     rootMountPointWithPath));
 
-            IncomingChangeInfo changeInfo = FindChangeInfo.FromDifference(
+            MergeChangeInfo changeInfo = FindChangeInfo.FromDifference(
                 difference, tree);
 
             Assert.IsNotNull(
@@ -227,14 +227,14 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             conflicts.MovesToApply.Add(differenceMeta);
 
             UnityIncomingChangesTree tree = UnityIncomingChangesTree.BuildIncomingChangeCategories(
-                IncomingChangesTree.BuildIncomingChangeCategories(
+                MergeChangesTree.BuildForIncomingChangesView(
                     conflicts,
                     new GetConflictResolutionMock(),
                     rootMountPointWithPath));
 
-            IncomingChangeInfo fileChangeInfo = FindChangeInfo.FromFileConflict(
+            MergeChangeInfo fileChangeInfo = FindChangeInfo.FromFileConflict(
                 fileConflict, tree);
-            IncomingChangeInfo differenceChangeInfo = FindChangeInfo.FromDifference(
+            MergeChangeInfo differenceChangeInfo = FindChangeInfo.FromDifference(
                 difference, tree);
 
             Assert.IsNotNull(
@@ -267,12 +267,12 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             conflicts.AddsToApply.Add(difference);
 
             UnityIncomingChangesTree tree = UnityIncomingChangesTree.BuildIncomingChangeCategories(
-                IncomingChangesTree.BuildIncomingChangeCategories(
+                MergeChangesTree.BuildForIncomingChangesView(
                     conflicts,
                     new GetConflictResolutionMock(),
                     rootMountPointWithPath));
 
-            IncomingChangeInfo addedChangeInfo = FindChangeInfo.FromDifference(
+            MergeChangeInfo addedChangeInfo = FindChangeInfo.FromDifference(
                 difference, tree);
 
             Assert.IsNotNull(
@@ -300,12 +300,12 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             conflicts.AddsToApply.Add(differenceMeta);
 
             UnityIncomingChangesTree tree = UnityIncomingChangesTree.BuildIncomingChangeCategories(
-                IncomingChangesTree.BuildIncomingChangeCategories(
+                MergeChangesTree.BuildForIncomingChangesView(
                     conflicts,
                     new GetConflictResolutionMock(),
                     rootMountPointWithPath));
 
-            IncomingChangeInfo addedChangeInfo = FindChangeInfo.FromDifference(
+            MergeChangeInfo addedChangeInfo = FindChangeInfo.FromDifference(
                 difference, tree);
 
             Assert.IsNotNull(
@@ -330,12 +330,12 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             conflicts.DeletesToApply.Add(difference);
 
             UnityIncomingChangesTree tree = UnityIncomingChangesTree.BuildIncomingChangeCategories(
-                IncomingChangesTree.BuildIncomingChangeCategories(
+                MergeChangesTree.BuildForIncomingChangesView(
                     conflicts,
                     new GetConflictResolutionMock(),
                     rootMountPointWithPath));
 
-            IncomingChangeInfo addedChangeInfo = FindChangeInfo.FromDifference(
+            MergeChangeInfo addedChangeInfo = FindChangeInfo.FromDifference(
                 difference, tree);
 
             Assert.IsNotNull(
@@ -363,12 +363,12 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             conflicts.DeletesToApply.Add(differenceMeta);
 
             UnityIncomingChangesTree tree = UnityIncomingChangesTree.BuildIncomingChangeCategories(
-                IncomingChangesTree.BuildIncomingChangeCategories(
+                MergeChangesTree.BuildForIncomingChangesView(
                     conflicts,
                     new GetConflictResolutionMock(),
                     rootMountPointWithPath));
 
-            IncomingChangeInfo addedChangeInfo = FindChangeInfo.FromDifference(
+            MergeChangeInfo addedChangeInfo = FindChangeInfo.FromDifference(
                 difference, tree);
 
             Assert.IsNotNull(
@@ -393,12 +393,12 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             conflicts.FileConflicts.Add(fileConflictMeta);
 
             UnityIncomingChangesTree tree = UnityIncomingChangesTree.BuildIncomingChangeCategories(
-                IncomingChangesTree.BuildIncomingChangeCategories(
+                MergeChangesTree.BuildForIncomingChangesView(
                     conflicts,
                     new GetConflictResolutionMock(),
                     rootMountPointWithPath));
 
-            IncomingChangeInfo conflictMetaChangeInfo = FindChangeInfo.FromFileConflict(
+            MergeChangeInfo conflictMetaChangeInfo = FindChangeInfo.FromFileConflict(
                 fileConflictMeta, tree);
 
             Assert.IsNotNull(
@@ -423,12 +423,12 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             conflicts.EvilTwins.Add(directoryConflict);
 
             UnityIncomingChangesTree tree = UnityIncomingChangesTree.BuildIncomingChangeCategories(
-                IncomingChangesTree.BuildIncomingChangeCategories(
+                MergeChangesTree.BuildForIncomingChangesView(
                     conflicts,
                     new GetConflictResolutionMock(),
                     rootMountPointWithPath));
 
-            IncomingChangeInfo conflictChangeInfo = FindChangeInfo.FromDirectoryConflict(
+            MergeChangeInfo conflictChangeInfo = FindChangeInfo.FromDirectoryConflict(
                 directoryConflict, tree);
 
             Assert.IsNotNull(
@@ -456,12 +456,12 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             conflicts.EvilTwins.Add(directoryConflictMeta);
 
             UnityIncomingChangesTree tree = UnityIncomingChangesTree.BuildIncomingChangeCategories(
-                IncomingChangesTree.BuildIncomingChangeCategories(
+                MergeChangesTree.BuildForIncomingChangesView(
                     conflicts,
                     new GetConflictResolutionMock(),
                     rootMountPointWithPath));
 
-            IncomingChangeInfo conflictChangeInfo = FindChangeInfo.FromDirectoryConflict(
+            MergeChangeInfo conflictChangeInfo = FindChangeInfo.FromDirectoryConflict(
                 directoryConflict, tree);
 
             Assert.IsNotNull(
@@ -490,15 +490,15 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             conflicts.DeletesToApply.Add(deletedMeta);
 
             UnityIncomingChangesTree tree = UnityIncomingChangesTree.BuildIncomingChangeCategories(
-                IncomingChangesTree.BuildIncomingChangeCategories(
+                MergeChangesTree.BuildForIncomingChangesView(
                     conflicts,
                     new GetConflictResolutionMock(),
                     rootMountPointWithPath));
 
-            IncomingChangeInfo changeInfo = FindChangeInfo.FromFileConflict(
+            MergeChangeInfo changeInfo = FindChangeInfo.FromFileConflict(
                 modified, tree);
 
-            IncomingChangeInfo deleteInfo = FindChangeInfo.FromDifference(
+            MergeChangeInfo deleteInfo = FindChangeInfo.FromDifference(
                 deletedMeta, tree);
 
             Assert.IsNotNull(
@@ -609,9 +609,9 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             }
         }
 
-        class GetConflictResolutionMock : IncomingChangesTree.IGetConflictResolution
+        class GetConflictResolutionMock : MergeChangesTree.IGetConflictResolution
         {
-            string IncomingChangesTree.IGetConflictResolution.GetConflictResolution(
+            string MergeChangesTree.IGetConflictResolution.GetConflictResolution(
                 DirectoryConflict conflict)
             {
                 return string.Empty;
@@ -620,16 +620,16 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
 
         class FindChangeInfo
         {
-            internal static IncomingChangeInfo FromFileConflict(
+            internal static MergeChangeInfo FromFileConflict(
                 FileConflict fileConflict,
                 UnityIncomingChangesTree tree)
             {
-                foreach (IncomingChangesCategory category in tree.GetNodes())
+                foreach (MergeChangesCategory category in tree.GetNodes())
                 {
-                    foreach (IncomingChangeInfo changeInfo in category.GetChanges())
+                    foreach (MergeChangeInfo changeInfo in category.GetChanges())
                     {
-                        if (changeInfo.CategoryType != IncomingChangesCategory.Type.FileConflicts &&
-                            changeInfo.CategoryType != IncomingChangesCategory.Type.Changed)
+                        if (changeInfo.CategoryType != MergeChangesCategory.Type.FileConflicts &&
+                            changeInfo.CategoryType != MergeChangesCategory.Type.Changed)
                             continue;
 
                         if (changeInfo.GetPath() != fileConflict.SrcDiff.Path)
@@ -642,17 +642,17 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
                 return null;
             }
 
-            internal static IncomingChangeInfo FromDifference(
+            internal static MergeChangeInfo FromDifference(
                 Difference difference,
                 UnityIncomingChangesTree tree)
             {
-                foreach (IncomingChangesCategory category in tree.GetNodes())
+                foreach (MergeChangesCategory category in tree.GetNodes())
                 {
-                    foreach (IncomingChangeInfo changeInfo in category.GetChanges())
+                    foreach (MergeChangeInfo changeInfo in category.GetChanges())
                     {
-                        if (changeInfo.CategoryType != IncomingChangesCategory.Type.Added &&
-                            changeInfo.CategoryType != IncomingChangesCategory.Type.Moved &&
-                            changeInfo.CategoryType != IncomingChangesCategory.Type.Deleted)
+                        if (changeInfo.CategoryType != MergeChangesCategory.Type.Added &&
+                            changeInfo.CategoryType != MergeChangesCategory.Type.Moved &&
+                            changeInfo.CategoryType != MergeChangesCategory.Type.Deleted)
                             continue;
 
                         if (changeInfo.GetPath() != difference.Path)
@@ -665,15 +665,15 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
                 return null;
             }
 
-            internal static IncomingChangeInfo FromDirectoryConflict(
+            internal static MergeChangeInfo FromDirectoryConflict(
                 DirectoryConflict directoryConflict,
                 UnityIncomingChangesTree tree)
             {
-                foreach (IncomingChangesCategory category in tree.GetNodes())
+                foreach (MergeChangesCategory category in tree.GetNodes())
                 {
-                    foreach (IncomingChangeInfo changeInfo in category.GetChanges())
+                    foreach (MergeChangeInfo changeInfo in category.GetChanges())
                     {
-                        if (changeInfo.CategoryType != IncomingChangesCategory.Type.DirectoryConflicts)
+                        if (changeInfo.CategoryType != MergeChangesCategory.Type.DirectoryConflicts)
                             continue;
 
                         if (changeInfo.GetPath() != directoryConflict.SrcDiff.Path)

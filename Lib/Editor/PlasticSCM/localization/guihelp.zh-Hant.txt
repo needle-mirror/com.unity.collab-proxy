@@ -543,6 +543,15 @@ Plastic 相當擅長偵測和追蹤移動。
 
 這可能就是您找不到您要尋找的內容的原因 :-O
 
+== PlasticNewVersionAvailableWithDownloadAction ==
+[title]有可用的新版本[/title]
+
+[bold]全新 {version} - {releaseDate}[/bold] ({versionsBehind})
+
+[action:DownloadNewVersion]下載[/action] - [link:{releaseNotesLink}]檢視版本資訊[/link]
+
+{releaseNotes}
+
 == PlasticNewVersionAvailable ==
 [title]有可用的新版本[/title]
 

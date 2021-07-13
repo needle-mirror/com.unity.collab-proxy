@@ -42,6 +42,7 @@ namespace Unity.PlasticSCM.Editor
             GluonNewIncomingChangesUpdater gluonNewIncomingChangesUpdater,
             IIncomingChangesNotificationPanel incomingChangesNotificationPanel,
             IAssetStatusCache assetStatusCache,
+            NotificationDrawer notificationDrawer,
             EditorWindow parentWindow)
         {
             mWkInfo = wkInfo;
@@ -52,6 +53,7 @@ namespace Unity.PlasticSCM.Editor
             mGluonNewIncomingChangesUpdater = gluonNewIncomingChangesUpdater;
             mIncomingChangesNotificationPanel = incomingChangesNotificationPanel;
             mAssetStatusCache = assetStatusCache;
+            mNotificationDrawer = notificationDrawer;
             mParentWindow = parentWindow;
 
             mPendingChangesTabButton = new TabButton();
@@ -279,6 +281,7 @@ namespace Unity.PlasticSCM.Editor
                     mDeveloperNewIncomingChangesUpdater,
                     mGluonNewIncomingChangesUpdater,
                     mAssetStatusCache,
+                    mNotificationDrawer,
                     mParentWindow);
 
                 mViewHost.AddRefreshableView(
@@ -562,6 +565,7 @@ namespace Unity.PlasticSCM.Editor
         WorkspaceWindow mWorkspaceWindow;
 
         readonly EditorWindow mParentWindow;
+        readonly NotificationDrawer mNotificationDrawer;
         readonly IAssetStatusCache mAssetStatusCache;
         readonly IIncomingChangesNotificationPanel mIncomingChangesNotificationPanel;
         readonly GluonNewIncomingChangesUpdater mGluonNewIncomingChangesUpdater;

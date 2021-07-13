@@ -1,40 +1,42 @@
-﻿namespace Unity.PlasticSCM.Editor.UI
+﻿using UnityEngine;
+
+namespace Unity.PlasticSCM.Editor.UI
 {
     internal static class UnityConstants
     {
-        internal const float CANCEL_BUTTON_SIZE = 15;
+        internal const float CANCEL_BUTTON_SIZE = 15f;
 
-        internal const float SMALL_BUTTON_WIDTH = 40;
-        internal const float REGULAR_BUTTON_WIDTH = 60;
-        internal const float LARGE_BUTTON_WIDTH = 100;
-        internal const float EXTRA_LARGE_BUTTON_WIDTH = 130;
+        internal const float SMALL_BUTTON_WIDTH = 40f;
+        internal const float REGULAR_BUTTON_WIDTH = 60f;
+        internal const float LARGE_BUTTON_WIDTH = 100f;
+        internal const float EXTRA_LARGE_BUTTON_WIDTH = 130f;
 
-        internal const float SEARCH_FIELD_WIDTH = 550;
+        internal const float SEARCH_FIELD_WIDTH = 550f;
 
         internal const string TREEVIEW_META_LABEL = " +meta";
-        internal const float TREEVIEW_CHECKBOX_SIZE = 17;
+        internal const float TREEVIEW_CHECKBOX_SIZE = 17f;
         internal const float TREEVIEW_BASE_INDENT = 16f;
-        internal const float FIRST_COLUMN_WITHOUT_ICON_INDENT = 5;
+        internal const float FIRST_COLUMN_WITHOUT_ICON_INDENT = 5f;
 #if UNITY_2019_1_OR_NEWER
-        internal const float DROPDOWN_ICON_Y_OFFSET = 2;
-        internal const float TREEVIEW_FOLDOUT_Y_OFFSET = 0;
-        internal const float TREEVIEW_ROW_HEIGHT = 21;
-        internal const float TREEVIEW_HEADER_CHECKBOX_Y_OFFSET = 0;
-        internal const float TREEVIEW_CHECKBOX_Y_OFFSET = 0;
-        internal static float DIR_CONFLICT_VALIDATION_WARNING_LABEL_HEIGHT = 21;
+        internal const float DROPDOWN_ICON_Y_OFFSET = 2f;
+        internal const float TREEVIEW_FOLDOUT_Y_OFFSET = 0f;
+        internal const float TREEVIEW_ROW_HEIGHT = 21f;
+        internal const float TREEVIEW_HEADER_CHECKBOX_Y_OFFSET = 0f;
+        internal const float TREEVIEW_CHECKBOX_Y_OFFSET = 0f;
+        internal static float DIR_CONFLICT_VALIDATION_WARNING_LABEL_HEIGHT = 21f;
 #else
-        internal const float DROPDOWN_ICON_Y_OFFSET = 5;
-        internal const float TREEVIEW_FOLDOUT_Y_OFFSET = 1;
-        internal const float TREEVIEW_ROW_HEIGHT = 20;
-        internal const float TREEVIEW_HEADER_CHECKBOX_Y_OFFSET = 6;
-        internal const float TREEVIEW_CHECKBOX_Y_OFFSET = 2;
-        internal static float DIR_CONFLICT_VALIDATION_WARNING_LABEL_HEIGHT = 18;
+        internal const float DROPDOWN_ICON_Y_OFFSET = 5f;
+        internal const float TREEVIEW_FOLDOUT_Y_OFFSET = 1f;
+        internal const float TREEVIEW_ROW_HEIGHT = 20f;
+        internal const float TREEVIEW_HEADER_CHECKBOX_Y_OFFSET = 6f;
+        internal const float TREEVIEW_CHECKBOX_Y_OFFSET = 2f;
+        internal static float DIR_CONFLICT_VALIDATION_WARNING_LABEL_HEIGHT = 18f;
 #endif
 
 #if UNITY_2020_1_OR_NEWER
-        internal const float INSPECTOR_ACTIONS_BACK_RECTANGLE_TOP_MARGIN = -2;
+        internal const float INSPECTOR_ACTIONS_BACK_RECTANGLE_TOP_MARGIN = -2f;
 #else
-        internal const float INSPECTOR_ACTIONS_BACK_RECTANGLE_TOP_MARGIN = 0;
+        internal const float INSPECTOR_ACTIONS_BACK_RECTANGLE_TOP_MARGIN = 0f;
 #endif
 
 #if UNITY_2019
@@ -51,6 +53,9 @@
 
         internal const string PLASTIC_WINDOW_TITLE = "Plastic SCM";
         internal const string LOGIN_WINDOW_TITLE = "Sign in to Plastic SCM";
+        internal const float PLASTIC_WINDOW_MIN_SIZE_WIDTH = 600f;
+        internal const float PLASTIC_WINDOW_MIN_SIZE_HEIGHT = 350f;
+        internal const float PLASTIC_WINDOW_COMMENT_SECTION_HEIGHT = 55f;
 
         internal const int ACTIVE_TAB_UNDERLINE_HEIGHT = 2;
         internal const int SPLITTER_INDICATOR_HEIGHT = 1;
@@ -74,20 +79,20 @@
 
         internal static class ChangesetsColumns
         {
-            internal const float CHANGESET_NUMBER_WIDTH = 80;
-            internal const float CHANGESET_NUMBER_MIN_WIDTH = 50;
-            internal const float CREATION_DATE_WIDTH = 150;
-            internal const float CREATION_DATE_MIN_WIDTH = 100;
-            internal const float CREATED_BY_WIDTH = 200;
-            internal const float CREATED_BY_MIN_WIDTH = 110;
-            internal const float COMMENT_WIDTH = 300;
-            internal const float COMMENT_MIN_WIDTH = 100;
-            internal const float BRANCH_WIDTH = 160;
-            internal const float BRANCH_MIN_WIDTH = 90;
-            internal const float REPOSITORY_WIDTH = 210;
-            internal const float REPOSITORY_MIN_WIDTH = 90;
-            internal const float GUID_WIDTH = 270;
-            internal const float GUID_MIN_WIDTH = 100;
+            internal const float CHANGESET_NUMBER_WIDTH = 80f;
+            internal const float CHANGESET_NUMBER_MIN_WIDTH = 50f;
+            internal const float CREATION_DATE_WIDTH = 150f;
+            internal const float CREATION_DATE_MIN_WIDTH = 100f;
+            internal const float CREATED_BY_WIDTH = 200f;
+            internal const float CREATED_BY_MIN_WIDTH = 110f;
+            internal const float COMMENT_WIDTH = 300f;
+            internal const float COMMENT_MIN_WIDTH = 100f;
+            internal const float BRANCH_WIDTH = 160f;
+            internal const float BRANCH_MIN_WIDTH = 90f;
+            internal const float REPOSITORY_WIDTH = 210f;
+            internal const float REPOSITORY_MIN_WIDTH = 90f;
+            internal const float GUID_WIDTH = 270f;
+            internal const float GUID_MIN_WIDTH = 100f;
         }
     }
 }

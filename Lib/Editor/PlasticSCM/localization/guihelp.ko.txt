@@ -543,6 +543,15 @@ Cloud에서 호스팅된 리포지토리를 사용하여 직접 체크인하고 
 
 이러한 이유로 찾고자 하는 항목을 찾지 못할 수 있습니다 :-O
 
+== PlasticNewVersionAvailableWithDownloadAction ==
+[title]새 버전을 사용할 수 있습니다[/title]
+
+[bold]새 {version} - {releaseDate}[/bold]({versionsBehind})
+
+[action:DownloadNewVersion]다운로드[/action] - [link:{releaseNotesLink}]릴리스 노트 보기[/link]
+
+{releaseNotes}
+
 == PlasticNewVersionAvailable ==
 [title]새 버전을 사용할 수 있습니다[/title]
 

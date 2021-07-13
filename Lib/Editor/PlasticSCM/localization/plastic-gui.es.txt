@@ -32,7 +32,7 @@ Repository
 Checkin
 
 == UndoChanges ==
-Undo Changes
+Undo
 
 == UpdateWorkspace ==
 Update workspace
@@ -489,21 +489,21 @@ New files in the branch, update needed.
 
 == CheckinAutoUpdateMergeRequestMessage ==
 New changes appeared on the branch you are working on since you started your own changes in the workspace. You need to get those changes to your workspace before checking in yours.
-      
-Since the changes in the branch don't conflict with your changes in the workspace, you can simply update the workspace before checking in. 
-      
+
+Since the changes in the branch don't conflict with your changes in the workspace, you can simply update the workspace before checking in.
+
 Do you want to update the workspace and checkin your changes now?
 
 == UpdateWorkspaceMergeRequest ==
 Conflicts detected before updating
 
 == UpdateWorkspaceMergeRequestMessage ==
-Some files you have changed in your workspace were modified as well in the branch and you need to merge them before continuing. 
+Some files you have changed in your workspace were modified as well in the branch and you need to merge them before continuing.
 
 A merge view will open so that you can merge the items with conflicts. Please resolve them and then proceed with the update.
 
 == CheckinMergeRequest ==
-Checkin on this branch cannot proceed. 
+Checkin on this branch cannot proceed.
 
 == CheckinMergeRequestMessage ==
 Other changes have been checked in while you were making your changes.
@@ -520,7 +520,7 @@ Repository server must not be empty
 == CouldNotGetOrganizationNameFromCredentials ==
 Invalid credentials. Couldn't get organization name
 
-== CouldNotGetOrganizationName == 
+== CouldNotGetOrganizationName ==
 Unable to get the organization name from the cloud server. Maybe your credentials are wrong. Please run again the configuration tool enter new credentials ('{0} --configure')
 
 == RepositoryServerIsNotAvailable ==
@@ -887,7 +887,7 @@ Rename item
 Rename items
 
 == RenameDialogDescription ==
-Enter new name: 
+Enter new name:
 
 == ItemsMenuItemRename ==
 Rename...
@@ -992,9 +992,9 @@ La búsqueda de merges ha finalizado, el intervalo seleccionado no es válido.
 La búsqueda de merges ha finalizado. No se han detectado merges.
 
 == MergeNoMergesDetectedCreateLink ==
-La búsqueda de merges ha finalizado. No se han detectado elementos a mezclar; sin embargo los changesets de origen y destino son diferentes. Normalmente esto ocurre cuando se han hecho los mismos cambios en el origen y en el destino. 
+La búsqueda de merges ha finalizado. No se han detectado elementos a mezclar; sin embargo los changesets de origen y destino son diferentes. Normalmente esto ocurre cuando se han hecho los mismos cambios en el origen y en el destino.
 
-Haga click en "Explicar merge" para ver más detalles de los contribuidores implicados. 
+Haga click en "Explicar merge" para ver más detalles de los contribuidores implicados.
 
 Haga click en "Aplicar cambios" para unificar origen y destino (creando un enlace de merge entre ellos).
 
@@ -1810,7 +1810,7 @@ Applying conflicts...
 Loading repositories...
 
 == PendingChangesOptionsExplanation ==
-Select the type of items to be displayed 
+Select the type of items to be displayed
 These following options let you choose how the items are shown in the 'Pending changes' view:
 
 == NewRepositoryExplanation ==
@@ -2063,7 +2063,7 @@ Checkin conflicts
 == CheckinConflictsExplanation ==
 The checkin operation found the following conflicts that can't be checked in.
 Click "OK" to continue the operation for the items not in conflict.
-Click "Cancel" to abort the entire operation. 
+Click "Cancel" to abort the entire operation.
 
 == CheckinConflictsToMergeTitle ==
 Files need merge
@@ -2567,7 +2567,7 @@ Actions
 Explore workspace
 
 == CheckinChanges ==
-Checkin changes
+Checkin Changes
 
 == Configure ==
 Configure
@@ -2636,7 +2636,7 @@ No matches found
 Container folder
 
 == CheckinComment ==
-Introduce your checkin comment here
+Introduce your checkin comment...
 
 == BrowseForFolderTitle ==
 Browse for folder
@@ -2763,7 +2763,7 @@ Select a file type or extension and enter the command to run the diff tool:
 == DiffToolsCommandHelp ==
 You can use the following command-line parameters when invoking the external diff tool.
             You must ensure that the specified files have the actual revision contents to be compared.
-    
+
             @sourcefile: full path of file whose contents will be displayed in the panel on the left
             @destinationfile: full path of file whose contents will be displayed in the panel on the right
 
@@ -2785,8 +2785,8 @@ Select a file type or extension and enter the command to run the merge tool:
 
 == MergeToolsCommandHelp ==
 The following variables are available to use as arguments when invoking the external merge tool in the command line:
-  
-            @sourcefile: full path of the source merge file  
+
+            @sourcefile: full path of the source merge file
             @destinationfile: path of the destination merge file
             @basefile: path of the common ancestor merge file
             @output: path of the merge result file
@@ -3440,7 +3440,7 @@ Your pending changes have been shelved to: {0}
 Server SSL certificate is not in the store
 
 == NewCertificateMessage ==
-The server you are connecting to has sent a certificate which is not in the store. This is normal if it is the first time you connect to this server. 
+The server you are connecting to has sent a certificate which is not in the store. This is normal if it is the first time you connect to this server.
 
             Certificate details:.
             - Issued to: {0}
@@ -3448,15 +3448,15 @@ The server you are connecting to has sent a certificate which is not in the stor
             - Expiration date: {3}
             - Certificate hash: {5}
 
-            If you trust this host, hit "Yes" to add the key to the Plastic SCM key store (recommended if it is the first time you connect to this server). 
-            If you want to carry on connecting just once, without adding the key to the store, hit "No". 
+            If you trust this host, hit "Yes" to add the key to the Plastic SCM key store (recommended if it is the first time you connect to this server).
+            If you want to carry on connecting just once, without adding the key to the store, hit "No".
             If you do not trust this host, hit "Cancel" to abandon the connection.
 
 == ExistingCertificateChangedTitle ==
 Server certificate has changed!
 
 == ExistingCertificateChangedMessage ==
-WARNING: this host certificate does NOT match the one you have in the key store. It may mean that the server identity has been compromised or a man-in-the-middle attack is being performed on you. 
+WARNING: this host certificate does NOT match the one you have in the key store. It may mean that the server identity has been compromised or a man-in-the-middle attack is being performed on you.
 
             Certificate details:
             - Issued to: {0}
@@ -3464,20 +3464,20 @@ WARNING: this host certificate does NOT match the one you have in the key store.
             - Expiration date: {3}
             - Certificate hash: {5}
 
-            If you were expecting this change and trust the new certificate, hit "Yes" to add the key to the Plastic SCM key store and trust this certificate in the future. 
-            If you want to carry on connecting just once, without adding the key to the store, hit "No". 
+            If you were expecting this change and trust the new certificate, hit "Yes" to add the key to the Plastic SCM key store and trust this certificate in the future.
+            If you want to carry on connecting just once, without adding the key to the store, hit "No".
             If you want to abandon this connection, hit "Cancel". This is the ONLY guaranteed safe choice.
 
 == InvalidCertificateHostnameTitle ==
 Hostname mismatch in secure connection
 
 == InvalidCertificateHostnameMessage ==
-WARNING: the hostname provided in the server certificate does NOT match the server hostname. This means that the certificate was not issued to this hostname or that there is a network configuration problem with this host. 
+WARNING: the hostname provided in the server certificate does NOT match the server hostname. This means that the certificate was not issued to this hostname or that there is a network configuration problem with this host.
 
             - Certificate hostname: {0}
             - Server hostname: {1}
 
-            If you want to continue connecting to this host, choose "Yes". The certificate validation will continue (not recommended). 
+            If you want to continue connecting to this host, choose "Yes". The certificate validation will continue (not recommended).
             If you want to abandon the connection, choose "No" (recommended).
 
 == PreviousContent ==
@@ -3833,7 +3833,7 @@ Mergetool usage
 
                 Usage: gtkmergetool <mergeoptions>
 
-                mergeOptions: <sourceFile> [<sourceSymbolicName>] 
+                mergeOptions: <sourceFile> [<sourceSymbolicName>]
                               <baseFile> [<baseSymbolicName>]
                               <destinationfile> [<destinationSymbolicName>]
                               [[<autosave>] <resultFile>]
@@ -3842,14 +3842,14 @@ Mergetool usage
 
                     sourceFile:              {-s | --source}=<filename>
                     sourceSymbolicName:      {-sn | --srcsymbolicname}=<symbolicname>
-                    baseFile:                {-b | --base}=<filename> 
+                    baseFile:                {-b | --base}=<filename>
                     baseSymbolicName:        {-bn | --basesymbolicname}=<symbolicname>
-                    destinationFile:         {-d | --destination}=<filename>; 
+                    destinationFile:         {-d | --destination}=<filename>;
                     destinationSymbolicName: {-dn | --dstsymbolicname}=<symbolicname>
                     autosave:                -as | --autosave
                     resultFile:              {-r | --result}=<filename>
                     mergeType:               {-m | --mergeresolutiontype}={onlyone | onlysrc | onlydst | try | forced}
-        
+
 
                 generalOptions: [<defaultEncoding>] [<comparisonMethod>] [<resultEncoding>]
 
@@ -4543,19 +4543,19 @@ days
 local
 
 == AnnotateAuthorField ==
-Author: 
+Author:
 
 == AnnotateDateField ==
-Date: 
+Date:
 
 == AnnotateBranchField ==
-Branch: 
+Branch:
 
 == AnnotateChangesetField ==
-Changeset: 
+Changeset:
 
 == AnnotateChangedDuringMerge ==
-Changed during merge: 
+Changed during merge:
 
 == ComboBoxValuesReduced ==
 We only loaded the last 500 values. Otherwise the dropdown control takes forever to load.
@@ -5039,7 +5039,7 @@ Campos no seleccionados
 == EOLMethod ==
 Ignorar fines de línea
 
-== WhitespacesMethod == 
+== WhitespacesMethod ==
 Ignorar espacios y tabuladores
 
 == EOLWhitespacesMethod ==
@@ -5119,7 +5119,7 @@ Ejecutables (*.exe; *.bat;)|*.exe; *.bat|Todos los archivos (*.*)|*.*
 == ExecutableOpenFileDialogFilterNoWin ==
 Todos los archivos (*.*)|*.*
 
-== ValidatePreviewTypeName == 
+== ValidatePreviewTypeName ==
 Por favor, introduzca un nombre
 
 == ValidatePreviewAddExtension ==
@@ -5210,7 +5210,7 @@ Ejemplos:
   Araxis Merge:
   https://www.araxis.com/merge/documentation-windows/command-line.en
 
-    <ruta-a-araxis>\compare.exe" /wait /a1 /3 /title1:"@basesymbolic" 
+    <ruta-a-araxis>\compare.exe" /wait /a1 /3 /title1:"@basesymbolic"
       /title2:"@sourcesymbolic" /title3:"@destinationsymbolic" "@basefile" "@sourcefile"
       "@destinationfile" "@output"
 
@@ -5807,6 +5807,12 @@ Cambios con conflictos en la estructura de directorios (1 item)
 == ChangesWithDirectoryConflictsPlural ==
 Cambios con conflictos en la estructura de directorios ({0} items)
 
+== MergeDiscardedConflictsSingular ==
+Conflictos que ya no se aplican y posibles advertencias (1 item)
+
+== MergeDiscardedConflictsPlural ==
+Conflictos que ya no se aplican y posibles advertencias ({0} items)
+
 == MergeFileChangesInConflictForIncomingViewSingular ==
 Ficheros a descargar que están en conflicto con sus cambios (1 item)
 
@@ -6375,7 +6381,7 @@ Configurar permisos para una ruta. Los permisos de la ruta especificada serán m
 == RetrievingRepositoryServerInfoProgress ==
 Obteniendo detalles del servidor de repositorios...
 
-== CalculatingPermissionsInfo == 
+== CalculatingPermissionsInfo ==
 Obteniendo información de permisos...
 
 == RetrievingSecuredPathsProgress ==
@@ -7001,7 +7007,7 @@ Cmd+H
 Ctrl+H
 
 == TurnOffPlasticSCM ==
-Turn off Plastic SCM
+Turn off Plastic SCM for Unity
 
 == TurnOffPlasticSCMDescrition ==
 Here you can turn off Plastic. It will delete current workspace and Plastic settings, but the files will remain intact.
@@ -7035,3 +7041,27 @@ Los merge links pendientes se confirmarán cuando haga checkin de sus cambios o 
 
 == PendingMergeLinksCountPlural ==
 {0} merge links pendientes
+
+== NewReleaseProgressDownloading ==
+Descargando instalador - {0} / {1} ({2} restante)
+
+== NewReleaseProgressDownloadFinished ==
+Descarga completada. Listo para instalar.
+
+== NewReleaseProgressRestartAndUpgrade ==
+Reinicia ahora para actualizar a la versión {0}
+
+== RestartAndUpgradeButton ==
+Reiniciar && actualizar
+
+== ItemDeletedDialogTitle ==
+No se puede mostrar el item
+
+== ItemDeletedDialogMessageForMacOS ==
+El item ha sido eliminado o está siendo excluido por el filtro actual.
+
+== ItemDeletedDialogMessage ==
+El item de este comentario no se puede mostrar porque ha sido eliminado.
+
+== CannotConnectToWebadmin ==
+No se pudo conectar al servidor webadmin

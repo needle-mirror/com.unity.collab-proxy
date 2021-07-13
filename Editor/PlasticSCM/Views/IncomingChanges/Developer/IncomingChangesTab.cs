@@ -31,7 +31,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         IIncomingChangesTab,
         IRefreshableView,
         MergeViewLogic.IMergeView,
-        IncomingChangesTree.IGetConflictResolution,
+        MergeChangesTree.IGetConflictResolution,
         IIncomingChangesViewMenuOperations,
         IncomingChangesViewMenu.IMetaMenuOperations
     {
@@ -124,7 +124,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 mRootMountPoint,
                 mIsOperationRunning);
 
-            List<IncomingChangeInfo> selectedIncomingChanges =
+            List<MergeChangeInfo> selectedIncomingChanges =
                 mIncomingChangesTreeView.GetSelectedIncomingChanges();
 
             if (GetSelectedIncomingChangesGroupInfo.For(
@@ -133,7 +133,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             {
                 DoDirectoryConflictResolutionPanel(
                     selectedIncomingChanges,
-                    new Action<IncomingChangeInfo>(ResolveDirectoryConflict),
+                    new Action<MergeChangeInfo>(ResolveDirectoryConflict),
                     mConflictResolutionStates);
             }
 
@@ -220,7 +220,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             mConflictResolutionStates.Clear();
 
             UpdateFileConflictsTree(
-                IncomingChangesTree.BuildIncomingChangeCategories(
+                MergeChangesTree.BuildForIncomingChangesView(
                     mResultConflicts,
                     this,
                     mRootMountPoint),
@@ -278,7 +278,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             return IncomingChangesSelection.GetSelectedGroupInfo(mIncomingChangesTreeView);
         }
 
-        string IncomingChangesTree.IGetConflictResolution.GetConflictResolution(
+        string MergeChangesTree.IGetConflictResolution.GetConflictResolution(
             DirectoryConflict conflict)
         {
             return mMergeViewLogic.GetConflictResolution(conflict);
@@ -331,7 +331,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
         void IIncomingChangesViewMenuOperations.DiffYoursWithIncoming()
         {
-            IncomingChangeInfo incomingChange = IncomingChangesSelection.
+            MergeChangeInfo incomingChange = IncomingChangesSelection.
                 GetSingleSelectedIncomingChange(mIncomingChangesTreeView);
 
             if (incomingChange == null)
@@ -344,7 +344,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
         void IIncomingChangesViewMenuOperations.DiffIncomingChanges()
         {
-            IncomingChangeInfo incomingChange = IncomingChangesSelection.
+            MergeChangeInfo incomingChange = IncomingChangesSelection.
                 GetSingleSelectedIncomingChange(mIncomingChangesTreeView);
 
             if (incomingChange == null)
@@ -357,7 +357,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
         void IncomingChangesViewMenu.IMetaMenuOperations.DiffIncomingChanges()
         {
-            IncomingChangeInfo incomingChange = IncomingChangesSelection.
+            MergeChangeInfo incomingChange = IncomingChangesSelection.
                 GetSingleSelectedIncomingChange(mIncomingChangesTreeView);
 
             if (incomingChange == null)
@@ -370,7 +370,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
         void IncomingChangesViewMenu.IMetaMenuOperations.DiffYoursWithIncoming()
         {
-            IncomingChangeInfo incomingChange = IncomingChangesSelection.
+            MergeChangeInfo incomingChange = IncomingChangesSelection.
                 GetSingleSelectedIncomingChange(mIncomingChangesTreeView);
 
             if (incomingChange == null)
@@ -387,7 +387,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         }
 
         static void DiffYoursWithIncoming(
-            IncomingChangeInfo incomingChange,
+            MergeChangeInfo incomingChange,
             WorkspaceInfo wkInfo)
         {
             if (LaunchTool.ShowDownloadPlasticExeWindow(false))
@@ -403,7 +403,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         }
 
         static void DiffIncomingChanges(
-            IncomingChangeInfo incomingChange,
+            MergeChangeInfo incomingChange,
             WorkspaceInfo wkInfo)
         {
             if (LaunchTool.ShowDownloadPlasticExeWindow(false))
@@ -438,11 +438,11 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         }
 
         static void DoDirectoryConflictResolutionPanel(
-            List<IncomingChangeInfo> selectedChangeInfos,
-            Action<IncomingChangeInfo> resolveDirectoryConflictAction,
+            List<MergeChangeInfo> selectedChangeInfos,
+            Action<MergeChangeInfo> resolveDirectoryConflictAction,
             Dictionary<DirectoryConflict, ConflictResolutionState> conflictResolutionStates)
         {
-            IncomingChangeInfo selectedDirectoryConflict = selectedChangeInfos[0];
+            MergeChangeInfo selectedDirectoryConflict = selectedChangeInfos[0];
 
             if (selectedDirectoryConflict.DirectoryConflict.IsResolved())
                 return;
@@ -473,7 +473,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 ref conflictResolutionState);
         }
 
-        void ResolveDirectoryConflict(IncomingChangeInfo conflict)
+        void ResolveDirectoryConflict(MergeChangeInfo conflict)
         {
             ConflictResolutionState state;
 
@@ -489,7 +489,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 state.RenameValue,
                 conflictResolutions);
 
-            IncomingChangeInfo metaConflict =
+            MergeChangeInfo metaConflict =
                 mIncomingChangesTreeView.GetMetaChange(conflict);
 
             if (metaConflict != null)
@@ -503,7 +503,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
             if (state.IsApplyActionsForNextConflictsChecked)
             {
-                foreach (IncomingChangeInfo otherConflict in mIncomingChangesTreeView.GetSelectedIncomingChanges())
+                foreach (MergeChangeInfo otherConflict in mIncomingChangesTreeView.GetSelectedIncomingChanges())
                 {
                     AddConflictResolution(
                         otherConflict,
@@ -517,7 +517,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         }
 
         static void AddConflictResolution(
-            IncomingChangeInfo conflict,
+            MergeChangeInfo conflict,
             DirectoryConflictResolveActions resolveAction,
             string renameValue,
             List<DirectoryConflictResolutionData> conflictResolutions)
@@ -692,6 +692,16 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 UnityStyles.IncomingChangesTab.ChangesToApplySummaryLabel);
         }
 
+        static void AfterProcessMerges()
+        {
+            EditorWindow.GetWindow<PlasticWindow>().
+                    mNotificationDrawer.Notify("Project successfully updated",
+                    UnityEditor.MessageType.None,
+                    Images.Name.StepOk);
+
+            RefreshAsset.UnityAssetDatabase();
+        }
+
         static void DoProcessMergesButton(
             bool isEnabled,
             string processMergesButtonText,
@@ -710,7 +720,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     guiMessage,
                     new List<string>(),
                     MergeContributorType.MergeContributors,
-                    RefreshAsset.UnityAssetDatabase);
+                    AfterProcessMerges);
             }
 
             GUI.enabled = true;
@@ -756,7 +766,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         }
 
         void UpdateFileConflictsTree(
-            IncomingChangesTree incomingChangesTree,
+            MergeChangesTree incomingChangesTree,
             IncomingChangesTreeView incomingChangesTreeView)
         {
             UnityIncomingChangesTree unityIncomingChangesTree = null;
@@ -768,7 +778,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     unityIncomingChangesTree = UnityIncomingChangesTree.BuildIncomingChangeCategories(
                         incomingChangesTree);
                     incomingChangesTree.ResolveUserNames(
-                        new IncomingChangesTree.ResolveUserName());
+                        new MergeChangesTree.ResolveUserName());
                 },
                 /*afterOperationDelegate*/ delegate
                 {
@@ -832,10 +842,10 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         }
 
         static int GetPendingConflictsCount(
-            List<IncomingChangeInfo> selectedChangeInfos)
+            List<MergeChangeInfo> selectedChangeInfos)
         {
             int result = 0;
-            foreach (IncomingChangeInfo changeInfo in selectedChangeInfos)
+            foreach (MergeChangeInfo changeInfo in selectedChangeInfos)
             {
                 if (changeInfo.DirectoryConflict.IsResolved())
                     continue;

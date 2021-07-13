@@ -34,6 +34,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             mConfigureProgress = new ProgressControlsForViews();
 
             mInstallerFile = GetInstallerTmpFileName.ForPlatform();
+            autoLoginState = AutoLogin.State.Off;
         }
 
         internal void Update()
@@ -152,12 +153,21 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
 
         void DoConfigureButton(ProgressControlsForViews configureProgress)
         {
-            GUI.enabled = !configureProgress.ProgressData.IsOperationRunning;
+            bool isAutoLoginRunning = autoLoginState > AutoLogin.State.Running && autoLoginState <= AutoLogin.State.InitializingPlastic;
+            GUI.enabled = !(configureProgress.ProgressData.IsOperationRunning || isAutoLoginRunning);
 
             if (GUILayout.Button(PlasticLocalization.GetString(
                 PlasticLocalization.Name.LoginOrSignUp),
                 GUILayout.Width(BUTTON_WIDTH)))
             {
+                if (autoLoginState > AutoLogin.State.Off && autoLoginState <= AutoLogin.State.InitializingPlastic)
+                {
+                    autoLoginState = AutoLogin.State.Running;
+                    AutoLogin autoLogin = new AutoLogin();
+                    autoLogin.Run();
+                    return;
+                }
+
                 ((IProgressControls)configureProgress).ShowProgress(string.Empty);
 
                 // Login button defaults to Cloud sign up
@@ -298,6 +308,8 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
 
             return mCreateWorkspaceView;
         }
+
+        internal AutoLogin.State autoLoginState = AutoLogin.State.Off;
 
         string mInstallerFile;
         bool mIsCreateWorkspaceButtonClicked = false;

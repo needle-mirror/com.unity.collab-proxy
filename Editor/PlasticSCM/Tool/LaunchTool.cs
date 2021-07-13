@@ -23,7 +23,7 @@ namespace Unity.PlasticSCM.Editor.Tool
                 wkInfo.ClientPath);
 
             TrackFeatureUseEvent.For(
-                Plastic.API.GetRepositorySpec(wkInfo),
+                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
                 isGluonMode ?
                     TrackFeatureUseEvent.Features.LaunchGluonTool :
                     TrackFeatureUseEvent.Features.LaunchPlasticTool);
@@ -79,7 +79,7 @@ namespace Unity.PlasticSCM.Editor.Tool
                 wkInfo.ClientPath);
 
             TrackFeatureUseEvent.For(
-                Plastic.API.GetRepositorySpec(wkInfo),
+                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
                 TrackFeatureUseEvent.Features.LaunchBranchExplorer);
 
             if (PlatformIdentifier.IsMac())
@@ -192,7 +192,7 @@ namespace Unity.PlasticSCM.Editor.Tool
                 wkInfo.ClientPath);
 
             TrackFeatureUseEvent.For(
-                Plastic.API.GetRepositorySpec(wkInfo),
+                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
                 TrackFeatureUseEvent.Features.LaunchPartialConfigure);
 
             Process gluonProcess = ExecuteGUI(

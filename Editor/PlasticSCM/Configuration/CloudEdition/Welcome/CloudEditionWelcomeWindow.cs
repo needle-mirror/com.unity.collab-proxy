@@ -12,6 +12,8 @@ using Codice.Client.Common;
 using Codice.Utils;
 using Unity.PlasticSCM.Editor.Views.Welcome;
 
+using Codice.CM.Common;
+
 namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 {
     internal interface IWelcomeWindowNotify
@@ -59,6 +61,14 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             BuildComponents();
         }
 
+        internal void CancelJoinOrganization()
+        {
+            if (sAutoLogin)
+            {
+                GetWindow<PlasticWindow>().GetWelcomeView().autoLoginState = AutoLogin.State.Started;
+            }
+        }
+
         internal void JoinOrganizationAndWelcomePage(string organization)
         {
             JoinOrganization(organization,
@@ -91,11 +101,16 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                username,
                 accessToken);
 
-            ClientConfigData clientConfigData = ClientConfig.Get().GetClientConfigData();
-            clientConfigData.WorkspaceServer = organization;
-            ClientConfig.Get().Save(clientConfigData);
+            if (sAutoLogin)
+            {
+                ClientConfigData clientConfigData = ConfigurationChecker.GetClientConfigData();
+                clientConfigData.WorkspaceServer = organization;
+                clientConfigData.WorkingMode = SEIDWorkingMode.SSOWorkingMode.ToString();
+                clientConfigData.SecurityConfig = username;
+                ClientConfig.Get().Save(clientConfigData);
 
-           
+                GetWindow<PlasticWindow>().GetWelcomeView().autoLoginState = AutoLogin.State.OrganizationChoosed;
+            }
         }
 
         internal void ReplaceRootPanel(VisualElement panel)

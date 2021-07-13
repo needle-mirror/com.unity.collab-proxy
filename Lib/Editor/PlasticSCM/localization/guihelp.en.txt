@@ -546,6 +546,15 @@ Click on [action:QueryViewClickAdvanced]Advanced[/action] to customize it.
 
 That's maybe why you are not finding what you are looking for :-O
 
+== PlasticNewVersionAvailableWithDownloadAction ==
+[title]A new version is available[/title]
+
+[bold]New {version} - {releaseDate}[/bold] ({versionsBehind})
+
+[action:DownloadNewVersion]Download[/action] - [link:{releaseNotesLink}]View release notes[/link]
+
+{releaseNotes}
+
 == PlasticNewVersionAvailable ==
 [title]A new version is available[/title]
 

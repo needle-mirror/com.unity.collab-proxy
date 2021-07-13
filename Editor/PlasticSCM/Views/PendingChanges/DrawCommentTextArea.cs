@@ -20,7 +20,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 EditorGUILayout.BeginHorizontal();
 
                 Rect textAreaRect = BuildTextAreaRect(
-                    pendingChangesTab.CommentText, width);
+                    pendingChangesTab.CommentText,
+                    width);
 
                 EditorGUI.BeginChangeCheck();
 
@@ -50,7 +51,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             pendingChangesTab.ClearIsCommentWarningNeeded();
         }
 
-        static string DoTextArea(string text, bool forceToShowText, Rect textAreaRect)
+        static string DoTextArea(
+            string text,
+            bool forceToShowText,
+            Rect textAreaRect)
         {
             // while the text area has the focus, the changes to 
             // the source string will not be picked up by the text editor. 
@@ -66,7 +70,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             if (shouldBeFocusFixed)
                 EditorGUIUtility.keyboardControl = 0;
 
-            text = EditorGUI.TextArea(textAreaRect, text, EditorStyles.textArea);
+            var modifiedTextAreaStyle = EditorStyles.textArea;
+            modifiedTextAreaStyle.padding.left = 7;
+            modifiedTextAreaStyle.padding.top = 5;
+            modifiedTextAreaStyle.stretchWidth = false;
+            modifiedTextAreaStyle.stretchHeight = false;
+
+            text = EditorGUI.TextArea(textAreaRect, text, modifiedTextAreaStyle);
 
             if (shouldBeFocusFixed)
                 EditorGUIUtility.keyboardControl = textEditor.controlID;
@@ -84,27 +94,25 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             Rect hintRect = textAreaRect;
             hintRect.height = EditorStyles.textArea.lineHeight;
 
-            GUI.Label(hintRect, placeholder,
-                UnityStyles.PendingChangesTab.CommentPlaceHolder);
+            GUI.Label(hintRect, placeholder, UnityStyles.PendingChangesTab.CommentPlaceHolder);
         }
 
         static Rect BuildTextAreaRect(string text, float width)
         {
-            GUIStyle commentTextAreaStyle =
-                UnityStyles.PendingChangesTab.CommentTextArea;
+            GUIStyle commentTextAreaStyle = UnityStyles.PendingChangesTab.CommentTextArea;
+            commentTextAreaStyle.stretchWidth = false;
 
-            float contentWidth = width -
-                commentTextAreaStyle.margin.left -
-                commentTextAreaStyle.margin.right;
-
-            float requiredHeight = commentTextAreaStyle
-                .CalcHeight(new GUIContent(text), contentWidth);
+            // The number here (230) controls how much the right side buttons are pushed off the
+            // screen when window is at min width
+            float contentWidth = width - 230f;
 
             Rect result = GUILayoutUtility.GetRect(
-                contentWidth, Mathf.Max(requiredHeight, 42));
-            result.x += commentTextAreaStyle.margin.left;
+                contentWidth,
+                UnityConstants.PLASTIC_WINDOW_COMMENT_SECTION_HEIGHT);
+
             result.width = contentWidth;
-            result.height = Mathf.Max(result.height, 42);
+            result.height = UnityConstants.PLASTIC_WINDOW_COMMENT_SECTION_HEIGHT;
+            result.xMin = 50f;
 
             return result;
         }

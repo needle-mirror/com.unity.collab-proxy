@@ -543,6 +543,15 @@ Cloud でホストされたリポジトリを、直接チェックイン/更新 
 
 お探しのものが見つからないのは、おそらくそれが理由です。
 
+== PlasticNewVersionAvailableWithDownloadAction ==
+[title]新しいバージョンが使用可能になっています[/title]
+
+[bold]新しい {バージョン} - {リリース日付}[/bold] ({バージョン遅れ})
+
+[action:DownloadNewVersion]ダウンロード[/action] - [link:{releaseNotesLink}]リリースノートを見る[/link]
+
+{リリースノート}
+
 == PlasticNewVersionAvailable ==
 [title]新しいバージョンが使用可能になっています[/title]
 

@@ -529,11 +529,11 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
             throw new NotImplementedException();
         }
 
-        int IPlasticAPI.GetServerWebPort(string server)
+		WebadminAddress IPlasticAPI.GetServerWebPortAndProtocol(string server)
         {
             throw new NotImplementedException();
         }
-
+		
         ReplicationLogEntryInfo[] IPlasticAPI.GetSortedReplicationLogsFromBranch(RepositorySpec repSpec, BranchInfo branchInfo)
         {
             throw new NotImplementedException();

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using PlasticGui.WorkspaceWindow.IncomingChanges;
+using PlasticGui.WorkspaceWindow.Merge;
 
 namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 {
@@ -11,12 +12,12 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         {
             List<string> result = new List<string>();
 
-            List<IncomingChangeInfo> selection =
+            List<MergeChangeInfo> selection =
                 treeView.GetSelectedFileConflicts();
 
             treeView.FillWithMeta(selection);
 
-            foreach (IncomingChangeInfo incomingChange in selection)
+            foreach (MergeChangeInfo incomingChange in selection)
             {
                 result.Add(incomingChange.GetPath());
             }
@@ -27,14 +28,14 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         internal static SelectedIncomingChangesGroupInfo GetSelectedGroupInfo(
             IncomingChangesTreeView treeView)
         {
-            List<IncomingChangeInfo> selectedIncomingChanges =
+            List<MergeChangeInfo> selectedIncomingChanges =
                 treeView.GetSelectedIncomingChanges();
 
             return GetSelectedIncomingChangesGroupInfo.For(
                 selectedIncomingChanges);
         }
 
-        internal static IncomingChangeInfo GetSingleSelectedIncomingChange(
+        internal static MergeChangeInfo GetSingleSelectedIncomingChange(
             IncomingChangesTreeView treeView)
         {
             return treeView.GetSelectedIncomingChange();

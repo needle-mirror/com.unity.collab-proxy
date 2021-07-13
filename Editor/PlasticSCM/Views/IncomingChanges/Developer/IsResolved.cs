@@ -1,13 +1,13 @@
 ﻿using Codice.Client.BaseCommands.Merge;
-using PlasticGui.WorkspaceWindow.IncomingChanges;
+using PlasticGui.WorkspaceWindow.Merge;
 
 namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 {
     internal static class IsSolved
     {
         internal static bool Conflict(
-            IncomingChangeInfo changeInfo,
-            IncomingChangeInfo metaChangeInfo,
+            MergeChangeInfo changeInfo,
+            MergeChangeInfo metaChangeInfo,
             MergeSolvedFileConflicts solvedFileConflicts)
         {
             if (IsDirectoryConflict(changeInfo))
@@ -30,7 +30,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         }
 
         static bool IsFileConflictResolved(
-            IncomingChangeInfo changeInfo,
+            MergeChangeInfo changeInfo,
             MergeSolvedFileConflicts solvedFileConflicts)
         {
             if (solvedFileConflicts == null)
@@ -41,12 +41,12 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 changeInfo.GetRevision().ItemId);
         }
 
-        static bool IsDirectoryConflictResolved(IncomingChangeInfo changeInfo)
+        static bool IsDirectoryConflictResolved(MergeChangeInfo changeInfo)
         {
             return changeInfo.DirectoryConflict.IsResolved();
         }
 
-        static bool IsDirectoryConflict(IncomingChangeInfo changeInfo)
+        static bool IsDirectoryConflict(MergeChangeInfo changeInfo)
         {
             return (changeInfo.DirectoryConflict != null);
         }

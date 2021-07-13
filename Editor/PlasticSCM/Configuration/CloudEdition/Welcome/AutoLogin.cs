@@ -15,12 +15,31 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 {
     internal class AutoLogin : OAuthSignIn.INotify
     {
+        internal enum State : byte
+        { 
+            Off = 0,
+            Started = 1,
+            Running = 2,
+            ResponseInit = 3,
+            ResponseEnd = 6,
+            ResponseSuccess = 7,
+            OrganizationChoosed = 8,
+            InitializingPlastic = 9,
+            ErrorNoToken = 20,
+            ErrorTokenException = 21,
+            ErrorResponseNull = 22,
+            ErrorResponseError = 23,
+            ErrorTokenEmpty = 24,
+            ErrorResponseCancel = 25
+        }
+
         void OAuthSignIn.INotify.SuccessForConfigure(
             List<string> organizations,
             bool canCreateAnOrganization,
             string userName,
             string accessToken)
         {
+            mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseSuccess;
             ChooseOrganization(organizations, canCreateAnOrganization);
         }
 
@@ -40,6 +59,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         void OAuthSignIn.INotify.Cancel(string errorMessage)
         {
+            mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorResponseCancel;
         }
 
         internal void Run()
@@ -49,6 +69,10 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             if (!string.IsNullOrEmpty(CloudProjectSettings.accessToken))
             {
                 ExchangeTokensAndJoinOrganization(CloudProjectSettings.accessToken);
+            }
+            else
+            {
+                mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorNoToken;
             }
         }
 
@@ -62,6 +86,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             waiter.Execute(
             /*threadOperationDelegate*/ delegate
             {
+                mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseInit;
                 response = PlasticScmRestApiClient.TokenExchange(unityAccessToken);
             },
             /*afterOperationDelegate*/ delegate
@@ -72,6 +97,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
                 if (waiter.Exception != null)
                 {
+                    mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorTokenException;
                     ExceptionsHandler.LogException(
                         "TokenExchangeSetting",
                         waiter.Exception);
@@ -80,12 +106,14 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
                 if (response == null)
                 {
+                    mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorResponseNull;
                     Debug.Log("response null");
                     return;
                 }
                    
                 if (response.Error != null)
                 {
+                    mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorResponseError;
                     mLog.ErrorFormat(
                         "Unable to exchange token: {0} [code {1}]",
                         response.Error.Message, response.Error.ErrorCode);
@@ -94,12 +122,14 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
                 if (string.IsNullOrEmpty(response.AccessToken))
                 {
+                    mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorTokenEmpty;
                     mLog.InfoFormat(
                         "Access token is empty for user: {0}",
                         response.User);
                     return;
                 }
 
+                mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseEnd;
                 sAccessToken = response.AccessToken;
                 sUserName = response.User;
                 GetOrganizationList();
@@ -119,44 +149,45 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 response = PlasticScmRestApiClient.TokenExchange(unityAccessToken);
             },
             /*afterOperationDelegate*/ delegate
-        {
-            mLog.DebugFormat(
-                "TokenExchange time {0} ms",
-                Environment.TickCount - ini);
-
-            if (waiter.Exception != null)
             {
-                ExceptionsHandler.LogException(
-                    "TokenExchangeSetting",
-                    waiter.Exception);
-                return;
-            }
-
-            if (response == null)
-            {
-                Debug.Log("response null");
-                return;
-            }
-
-            if (response.Error != null)
-            {
-                mLog.ErrorFormat(
-                    "Unable to exchange token: {0} [code {1}]",
-                    response.Error.Message, response.Error.ErrorCode);
-                return;
-            }
-
-            if (string.IsNullOrEmpty(response.AccessToken))
-            {
-                mLog.InfoFormat(
-                    "Access token is empty for user: {0}",
-                    response.User);
-                return;
-            }
-
-            sAccessToken = response.AccessToken;
-            sUserName = response.User;
-        });
+                mLog.DebugFormat(
+                    "TokenExchange time {0} ms",
+                    Environment.TickCount - ini);
+            
+                if (waiter.Exception != null)
+                {
+                    ExceptionsHandler.LogException(
+                        "TokenExchangeSetting",
+                        waiter.Exception);
+                    return;
+                }
+            
+                if (response == null)
+                {
+                    Debug.Log("response null");
+                    return;
+                }
+            
+                if (response.Error != null)
+                {
+                    mLog.ErrorFormat(
+                        "Unable to exchange token: {0} [code {1}]",
+                        response.Error.Message,
+                        response.Error.ErrorCode);
+                    return;
+                }
+            
+                if (string.IsNullOrEmpty(response.AccessToken))
+                {
+                    mLog.InfoFormat(
+                        "Access token is empty for user: {0}",
+                        response.User);
+                    return;
+                }
+            
+                sAccessToken = response.AccessToken;
+                sUserName = response.User;
+            });
         }
 
         internal void GetOrganizationList()

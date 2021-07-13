@@ -1,5 +1,5 @@
 ﻿using Codice.Client.BaseCommands.Merge;
-using PlasticGui.WorkspaceWindow.IncomingChanges;
+using PlasticGui.WorkspaceWindow.Merge;
 
 namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 {
@@ -7,8 +7,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
     internal static class IsCurrent
     {
         internal static bool Conflict(
-            IncomingChangeInfo changeInfo,
-            IncomingChangeInfo metaChangeInfo,
+            MergeChangeInfo changeInfo,
+            MergeChangeInfo metaChangeInfo,
             MergeSolvedFileConflicts solvedFileConflicts)
         {
             if (solvedFileConflicts == null)
@@ -25,13 +25,13 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
         static bool IsSameConflict(
             MergeSolvedFileConflicts.CurrentConflict currentConflict,
-            IncomingChangeInfo changeInfo)
+            MergeChangeInfo changeInfo)
         {
             if (changeInfo == null)
                 return false;
 
-            return currentConflict.MountId.Equals(changeInfo.GetMount().Id) &&
-                   currentConflict.ItemId == changeInfo.GetRevision().ItemId;
+            return currentConflict.MountId.Equals(changeInfo.GetMount().Id)
+                && currentConflict.ItemId == changeInfo.GetRevision().ItemId;
         }
     }
 }

@@ -10,8 +10,8 @@ using Codice.Client.Common;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.CM.Common.Replication;
-using GluonGui;
 using GluonGui.WorkspaceWindow.Views;
+using GluonGui;
 using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
@@ -37,13 +37,8 @@ namespace Unity.PlasticSCM.Editor
         {
             mUpdateNotifierForTesting = updateNotifier;
         }
-
         internal string HeaderTitle { get; private set; }
-
-        internal OperationProgressData Progress
-        {
-            get { return mOperationProgressData; }
-        }
+        internal OperationProgressData Progress { get { return mOperationProgressData; } }
 
         internal Gluon.ProgressOperationHandler GluonProgressOperationHandler
         {
@@ -71,12 +66,6 @@ namespace Unity.PlasticSCM.Editor
             mOperationProgressData = new OperationProgressData();
 
             ((IWorkspaceWindow)this).UpdateTitle();
-        }
-
-        internal void RegisterPendingChangesProgressControls(
-            ProgressControlsForViews progressControls)
-        {
-            mProgressControls = progressControls;
         }
 
         internal bool IsOperationInProgress()
@@ -116,19 +105,6 @@ namespace Unity.PlasticSCM.Editor
         internal void RequestRepaint()
         {
             mRequestedRepaint = true;
-        }
-
-        internal void UpdateWorkspaceForMode(
-            bool isGluonMode,
-            WorkspaceWindow workspaceWindow)
-        {
-            if (isGluonMode)
-            {
-                PartialUpdateWorkspace();
-                return;
-            }
-
-            UpdateWorkspace();
         }
 
         internal void UpdateWorkspace()
@@ -255,16 +231,62 @@ namespace Unity.PlasticSCM.Editor
                 mPlasticWindow);
         }
 
+        void IGluonUpdateReport.AppendReport(string updateReport)
+        {
+            throw new NotImplementedException();
+        }
+
+        static string GetTitle(WorkspaceInfo wkInfo)
+        {
+            WorkspaceStatusString.Data wkStatusData =
+                WorkspaceStatusString.GetSelectorData(wkInfo);
+
+            return string.Format("{0} {1} @ {2} @ {3}",
+                wkStatusData.ObjectName,
+                wkStatusData.ObjectSpec,
+                wkStatusData.RepositoryName,
+                wkStatusData.Server);
+        }
+        bool mRequestedRepaint;
+
+        UpdateNotifier mUpdateNotifierForTesting;
+        IProgressControls mProgressControls;
+
+        readonly OperationProgressData mOperationProgressData;
+        readonly Developer.ProgressOperationHandler mDeveloperProgressOperationHandler;
+        readonly Gluon.ProgressOperationHandler mGluonProgressOperationHandler;
+        readonly GuiMessage.IGuiMessage mGuiMessage;
+        readonly EditorWindow mPlasticWindow;
+        readonly NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
+        readonly IMergeViewLauncher mMergeViewLauncher;
+        readonly ViewSwitcher mSwitcher;
+        readonly ViewHost mViewHost;
+        readonly WorkspaceInfo mWkInfo;
+
+        internal void RegisterPendingChangesProgressControls(
+            ProgressControlsForViews progressControls)
+        {
+            mProgressControls = progressControls;
+        }
+
+        internal void UpdateWorkspaceForMode(
+            bool isGluonMode,
+            WorkspaceWindow workspaceWindow)
+        {
+            if (isGluonMode)
+            {
+                PartialUpdateWorkspace();
+                return;
+            }
+
+            UpdateWorkspace();
+        }
+
         UpdateReportResult IGluonUpdateReport.ShowUpdateReport(
             WorkspaceInfo wkInfo, List<ErrorMessage> errors)
         {
             return GluonUpdateReportDialog.ShowUpdateReport(
                 wkInfo, errors, mPlasticWindow);
-        }
-
-        void IGluonUpdateReport.AppendReport(string updateReport)
-        {
-            throw new NotImplementedException();
         }
 
         void PartialUpdateWorkspace()
@@ -352,33 +374,5 @@ namespace Unity.PlasticSCM.Editor
                 updateReportResult.UpdateForcedPaths,
                 updateReportResult.UnaffectedErrors);
         }
-
-        static string GetTitle(WorkspaceInfo wkInfo)
-        {
-            WorkspaceStatusString.Data wkStatusData =
-                WorkspaceStatusString.GetSelectorData(wkInfo);
-
-            return string.Format("{0} {1} @ {2} @ {3}",
-                wkStatusData.ObjectName,
-                wkStatusData.ObjectSpec,
-                wkStatusData.RepositoryName,
-                wkStatusData.Server);
-        }
-
-        bool mRequestedRepaint;
-        UpdateNotifier mUpdateNotifierForTesting;
-
-        IProgressControls mProgressControls;
-
-        readonly OperationProgressData mOperationProgressData;
-        readonly Developer.ProgressOperationHandler mDeveloperProgressOperationHandler;
-        readonly Gluon.ProgressOperationHandler mGluonProgressOperationHandler;
-        readonly GuiMessage.IGuiMessage mGuiMessage;
-        readonly EditorWindow mPlasticWindow;
-        readonly NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
-        readonly IMergeViewLauncher mMergeViewLauncher;
-        readonly ViewSwitcher mSwitcher;
-        readonly ViewHost mViewHost;
-        readonly WorkspaceInfo mWkInfo;
     }
 }

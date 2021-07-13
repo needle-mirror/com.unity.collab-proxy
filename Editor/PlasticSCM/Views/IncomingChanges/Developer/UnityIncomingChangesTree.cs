@@ -1,41 +1,41 @@
 ﻿using System.Collections.Generic;
 
-using PlasticGui.WorkspaceWindow.IncomingChanges;
+using PlasticGui.WorkspaceWindow.Merge;
 
 namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 {
     internal class UnityIncomingChangesTree
     {
         internal static UnityIncomingChangesTree BuildIncomingChangeCategories(
-            IncomingChangesTree tree)
+            MergeChangesTree tree)
         {
             return new UnityIncomingChangesTree(tree);
         }
 
         UnityIncomingChangesTree(
-            IncomingChangesTree tree)
+            MergeChangesTree tree)
         {
             mInnerTree = tree;
 
             mMetaCache.Build(mInnerTree.GetNodes());
         }
 
-        internal List<IncomingChangesCategory> GetNodes()
+        internal List<MergeChangesCategory> GetNodes()
         {
             return mInnerTree.GetNodes();
         }
 
-        internal bool HasMeta(IncomingChangeInfo changeInfo)
+        internal bool HasMeta(MergeChangeInfo changeInfo)
         {
             return mMetaCache.ContainsMeta(changeInfo);
         }
 
-        internal IncomingChangeInfo GetMetaChange(IncomingChangeInfo change)
+        internal MergeChangeInfo GetMetaChange(MergeChangeInfo change)
         {
             return mMetaCache.GetExistingMeta(change);
         }
 
-        internal void FillWithMeta(List<IncomingChangeInfo> changes)
+        internal void FillWithMeta(List<MergeChangeInfo> changes)
         {
             changes.AddRange(
                 mMetaCache.GetExistingMeta(changes));
@@ -47,26 +47,26 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         }
 
         internal void ResolveUserNames(
-            IncomingChangesTree.ResolveUserName resolveUserName)
+            MergeChangesTree.ResolveUserName resolveUserName)
         {
             mInnerTree.ResolveUserNames(resolveUserName);
         }
 
         MetaCache mMetaCache = new MetaCache();
-        IncomingChangesTree mInnerTree;
+        MergeChangesTree mInnerTree;
 
         class MetaCache
         {
-            internal bool ContainsMeta(IncomingChangeInfo changeInfo)
+            internal bool ContainsMeta(MergeChangeInfo changeInfo)
             {
                 string key = BuildKey.ForMetaChange(changeInfo);
 
                 return mCache.ContainsKey(key);
             }
 
-            internal IncomingChangeInfo GetExistingMeta(IncomingChangeInfo change)
+            internal MergeChangeInfo GetExistingMeta(MergeChangeInfo change)
             {
-                IncomingChangeInfo result;
+                MergeChangeInfo result;
 
                 if (!mCache.TryGetValue(BuildKey.ForMetaChange(change), out result))
                     return null;
@@ -74,16 +74,16 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 return result;
             }
 
-            internal List<IncomingChangeInfo> GetExistingMeta(
-                List<IncomingChangeInfo> changes)
+            internal List<MergeChangeInfo> GetExistingMeta(
+                List<MergeChangeInfo> changes)
             {
-                List<IncomingChangeInfo> result = new List<IncomingChangeInfo>();
+                List<MergeChangeInfo> result = new List<MergeChangeInfo>();
 
-                foreach (IncomingChangeInfo change in changes)
+                foreach (MergeChangeInfo change in changes)
                 {
                     string key = BuildKey.ForMetaChange(change);
 
-                    IncomingChangeInfo metaChange;
+                    MergeChangeInfo metaChange;
                     if (!mCache.TryGetValue(key, out metaChange))
                         continue;
 
@@ -93,28 +93,28 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 return result;
             }
 
-            internal void Build(List<IncomingChangesCategory> incomingChangesCategories)
+            internal void Build(List<MergeChangesCategory> incomingChangesCategories)
             {
                 mCache.Clear();
 
-                foreach (IncomingChangesCategory category in incomingChangesCategories)
+                foreach (MergeChangesCategory category in incomingChangesCategories)
                 {
                     ExtractMetaToCache(category, mCache);
                 }
             }
 
             static void ExtractMetaToCache(
-                IncomingChangesCategory category,
-                Dictionary<string, IncomingChangeInfo> cache)
+                MergeChangesCategory category,
+                Dictionary<string, MergeChangeInfo> cache)
             {
-                List<IncomingChangeInfo> changes = category.GetChanges();
+                List<MergeChangeInfo> changes = category.GetChanges();
 
                 HashSet<string> indexedKeys = BuildIndexedKeys(
                     changes);
 
                 for (int i = changes.Count - 1; i >= 0; i--)
                 {
-                    IncomingChangeInfo currentChange = changes[i];
+                    MergeChangeInfo currentChange = changes[i];
 
                     string path = currentChange.GetPath();
 
@@ -134,11 +134,11 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             }
 
             static HashSet<string> BuildIndexedKeys(
-                List<IncomingChangeInfo> changes)
+                List<MergeChangeInfo> changes)
             {
                 HashSet<string> result = new HashSet<string>();
 
-                foreach (IncomingChangeInfo change in changes)
+                foreach (MergeChangeInfo change in changes)
                 {
                     if (MetaPath.IsMetaPath(change.GetPath()))
                         continue;
@@ -149,13 +149,13 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 return result;
             }
 
-            Dictionary<string, IncomingChangeInfo> mCache =
-                new Dictionary<string, IncomingChangeInfo>();
+            Dictionary<string, MergeChangeInfo> mCache =
+                new Dictionary<string, MergeChangeInfo>();
 
             static class BuildKey
             {
                 internal static string ForChange(
-                    IncomingChangeInfo change)
+                    MergeChangeInfo change)
                 {
                     return BuildCacheKey(
                         change.CategoryType,
@@ -163,7 +163,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 }
 
                 internal static string ForMetaChange(
-                    IncomingChangeInfo change)
+                    MergeChangeInfo change)
                 {
                     return BuildCacheKey(
                         change.CategoryType,
@@ -171,7 +171,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 }
 
                 internal static string BuildCacheKey(
-                    IncomingChangesCategory.Type type,
+                    MergeChangesCategory.Type type,
                     string path)
                 {
                     return string.Concat(type, ":", path);

@@ -20,10 +20,6 @@
     margin-top: 15px;
 }
 
-#buttonContainer {
-    margin-left: 42.5%;
-}
-
 #signIn,
 #back {
     width: 125px;

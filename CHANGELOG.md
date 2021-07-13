@@ -4,6 +4,28 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2021-07-13
+
+Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!
+If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
+Removing a previously added Plastic SCM Asset Store Plug-In:
+- Select the PlasticSCM folder in the Assets\Plugins folder on the Project tab, then click Edit > Delete
+- Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
+
+### Added
+- Added Checkin and Update confirmation notification
+- Added auto sign in when logged into Unity account
+
+### Changed
+- Simplified UI: decluttered UI
+- Improved load time performance
+
+### Fixed
+- Fixed view not switching to workspace after creating an Enterprise Gluon workspace
+- Fixed contextual menu not showing up in project view
+- Fixed SSO renew token after password change
+- Fixed some namespace collisions with Antlr3
+
 ## [1.7.1] - 2021-06-25
 
 Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!

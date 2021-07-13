@@ -3,12 +3,12 @@
 using Codice.Client.BaseCommands;
 using Codice.Client.Commands;
 using Codice.ThemeImages;
-using PlasticGui.WorkspaceWindow.IncomingChanges;
+using PlasticGui.WorkspaceWindow.Merge;
 using PlasticGui.WorkspaceWindow.PendingChanges;
+using Unity.PlasticSCM.Editor.AssetsOverlays;
 
 using GluonIncomingChangeInfo = PlasticGui.Gluon.WorkspaceWindow.Views.IncomingChanges.IncomingChangeInfo;
 using GluonIncomingChangeCategory = PlasticGui.Gluon.WorkspaceWindow.Views.IncomingChanges.IncomingChangeCategory;
-using Unity.PlasticSCM.Editor.AssetsOverlays;
 
 namespace Unity.PlasticSCM.Editor.UI.Tree
 {
@@ -31,20 +31,20 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
         }
 
         internal static Data ForPlasticIncomingChange(
-            IncomingChangeInfo incomingChange,
+            MergeChangeInfo incomingChange,
             bool isSolvedConflict)
         {
-            if (incomingChange.CategoryType == IncomingChangesCategory.Type.FileConflicts ||
-                incomingChange.CategoryType == IncomingChangesCategory.Type.DirectoryConflicts)
+            if (incomingChange.CategoryType == MergeChangesCategory.Type.FileConflicts ||
+                incomingChange.CategoryType == MergeChangesCategory.Type.DirectoryConflicts)
                 return ForConflict(isSolvedConflict);
 
             if (incomingChange.IsXLink())
                 return BuildData.ForXLink();
 
-            if (incomingChange.CategoryType == IncomingChangesCategory.Type.Deleted)
+            if (incomingChange.CategoryType == MergeChangesCategory.Type.Deleted)
                 return BuildData.ForDeletedOnServer();
 
-            if (incomingChange.CategoryType == IncomingChangesCategory.Type.Changed)
+            if (incomingChange.CategoryType == MergeChangesCategory.Type.Changed)
                 return BuildData.ForOutOfDate();
 
             return null;

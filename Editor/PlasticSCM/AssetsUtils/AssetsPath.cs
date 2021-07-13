@@ -50,7 +50,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
                 "Assets/Plugins/PlasticSCM/Editor/Assets";
         }
 
-        static bool IsRunningAsUPMPackage()
+        internal static bool IsRunningAsUPMPackage()
         {
             string unityPlasticDllPath = Path.GetFullPath(
                 AssemblyLocation.GetAssemblyDirectory(
