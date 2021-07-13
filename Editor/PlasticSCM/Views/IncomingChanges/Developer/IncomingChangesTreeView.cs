@@ -7,7 +7,7 @@ using UnityEngine;
 using Codice.Client.BaseCommands.Merge;
 using Codice.Client.Common;
 using Codice.CM.Common;
-using PlasticGui.WorkspaceWindow.IncomingChanges;
+using PlasticGui.WorkspaceWindow.Merge;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Tree;
 
@@ -32,7 +32,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
             customFoldoutYOffset = UnityConstants.TREEVIEW_FOLDOUT_Y_OFFSET;
             rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = true;
+            showAlternatingRowBackgrounds = false;
         }
 
         public override IList<TreeViewItem> GetRows()
@@ -104,7 +104,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 ChangeTreeViewItem changeTreeViewItem =
                     (ChangeTreeViewItem)args.item;
 
-                IncomingChangeInfo changeInfo =
+                MergeChangeInfo changeInfo =
                     changeTreeViewItem.ChangeInfo;
 
                 bool isCurrentConflict = IsCurrent.Conflict(
@@ -133,12 +133,12 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
         internal void SelectFirstUnsolvedDirectoryConflict()
         {
-            foreach (IncomingChangesCategory category in mIncomingChangesTree.GetNodes())
+            foreach (MergeChangesCategory category in mIncomingChangesTree.GetNodes())
             {
-                if (category.CategoryType != IncomingChangesCategory.Type.DirectoryConflicts)
+                if (category.CategoryType != MergeChangesCategory.Type.DirectoryConflicts)
                     continue;
 
-                foreach (IncomingChangeInfo changeInfo in category.GetChanges())
+                foreach (MergeChangeInfo changeInfo in category.GetChanges())
                 {
                     if (changeInfo.DirectoryConflict.IsResolved())
                         continue;
@@ -177,7 +177,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             mSolvedFileConflicts = solvedFileConflicts;
         }
 
-        internal IncomingChangeInfo GetMetaChange(IncomingChangeInfo change)
+        internal MergeChangeInfo GetMetaChange(MergeChangeInfo change)
         {
             if (change == null)
                 return null;
@@ -185,14 +185,14 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             return mIncomingChangesTree.GetMetaChange(change);
         }
 
-        internal void FillWithMeta(List<IncomingChangeInfo> changes)
+        internal void FillWithMeta(List<MergeChangeInfo> changes)
         {
             mIncomingChangesTree.FillWithMeta(changes);
         }
 
         internal bool SelectionHasMeta()
         {
-            IncomingChangeInfo selectedChangeInfo = GetSelectedIncomingChange();
+            MergeChangeInfo selectedChangeInfo = GetSelectedIncomingChange();
 
             if (selectedChangeInfo == null)
                 return false;
@@ -200,7 +200,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             return mIncomingChangesTree.HasMeta(selectedChangeInfo);
         }
 
-        internal IncomingChangeInfo GetSelectedIncomingChange()
+        internal MergeChangeInfo GetSelectedIncomingChange()
         {
             IList<int> selectedIds = GetSelection();
 
@@ -209,7 +209,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
             int selectedId = selectedIds[0];
 
-            foreach (KeyValuePair<IncomingChangeInfo, int> item
+            foreach (KeyValuePair<MergeChangeInfo, int> item
                 in mTreeViewItemIds.GetInfoItems())
             {
                 if (selectedId == item.Value)
@@ -219,16 +219,16 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             return null;
         }
 
-        internal List<IncomingChangeInfo> GetSelectedIncomingChanges()
+        internal List<MergeChangeInfo> GetSelectedIncomingChanges()
         {
-            List<IncomingChangeInfo> result = new List<IncomingChangeInfo>();
+            List<MergeChangeInfo> result = new List<MergeChangeInfo>();
 
             IList<int> selectedIds = GetSelection();
 
             if (selectedIds.Count == 0)
                 return result;
 
-            foreach (KeyValuePair<IncomingChangeInfo, int> item
+            foreach (KeyValuePair<MergeChangeInfo, int> item
                 in mTreeViewItemIds.GetInfoItems())
             {
                 if (!selectedIds.Contains(item.Value))
@@ -240,23 +240,23 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             return result;
         }
 
-        internal List<IncomingChangeInfo> GetSelectedFileConflicts()
+        internal List<MergeChangeInfo> GetSelectedFileConflicts()
         {
-            List<IncomingChangeInfo> result = new List<IncomingChangeInfo>();
+            List<MergeChangeInfo> result = new List<MergeChangeInfo>();
 
             IList<int> selectedIds = GetSelection();
 
             if (selectedIds.Count == 0)
                 return result;
 
-            foreach (KeyValuePair<IncomingChangeInfo, int> item
+            foreach (KeyValuePair<MergeChangeInfo, int> item
                 in mTreeViewItemIds.GetInfoItems())
             {
                 if (!selectedIds.Contains(item.Value))
                     continue;
 
                 if (item.Key.CategoryType !=
-                        IncomingChangesCategory.Type.FileConflicts)
+                        MergeChangesCategory.Type.FileConflicts)
                     continue;
 
                 result.Add(item.Key);
@@ -274,7 +274,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
         static void RegenerateRows(
             UnityIncomingChangesTree incomingChangesTree,
-            TreeViewItemIds<IncomingChangesCategory, IncomingChangeInfo> treeViewItemIds,
+            TreeViewItemIds<MergeChangesCategory, MergeChangeInfo> treeViewItemIds,
             IncomingChangesTreeView treeView,
             TreeViewItem rootItem,
             List<TreeViewItem> rows,
@@ -285,14 +285,14 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
             ClearRows(rootItem, rows);
 
-            List<IncomingChangesCategory> categories = incomingChangesTree.GetNodes();
+            List<MergeChangesCategory> categories = incomingChangesTree.GetNodes();
 
             if (categories == null)
                 return;
 
             List<int> categoriesToExpand = new List<int>();
 
-            foreach (IncomingChangesCategory category in categories)
+            foreach (MergeChangesCategory category in categories)
             {
                 int categoryId;
                 if (!treeViewItemIds.TryGetCategoryItemId(category, out categoryId))
@@ -313,7 +313,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
                 categoriesToExpand.Add(categoryTreeViewItem.id);
 
-                foreach (IncomingChangeInfo changeInfo in category.GetChanges())
+                foreach (MergeChangeInfo changeInfo in category.GetChanges())
                 {
                     int differenceId;
                     if (!treeViewItemIds.TryGetInfoItemId(changeInfo, out differenceId))
@@ -412,7 +412,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             bool isCurrentConflict,
             bool isSolvedConflict)
         {
-            IncomingChangeInfo incomingChange = item.ChangeInfo;
+            MergeChangeInfo incomingChange = item.ChangeInfo;
 
             string label = incomingChange.GetColumnText(
                 IncomingChangesTreeHeaderState.GetColumnName(column));
@@ -455,20 +455,20 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         }
 
         static Texture GetCategoryIcon(
-            IncomingChangesCategory.Type categoryType)
+            MergeChangesCategory.Type categoryType)
         {
             switch (categoryType)
             {
-                case IncomingChangesCategory.Type.DirectoryConflicts:
-                case IncomingChangesCategory.Type.FileConflicts:
+                case MergeChangesCategory.Type.DirectoryConflicts:
+                case MergeChangesCategory.Type.FileConflicts:
                     return Images.GetImage(Images.Name.IconMergeConflict);
-                case IncomingChangesCategory.Type.Changed:
+                case MergeChangesCategory.Type.Changed:
                     return Images.GetImage(Images.Name.IconChanged);
-                case IncomingChangesCategory.Type.Moved:
+                case MergeChangesCategory.Type.Moved:
                     return Images.GetImage(Images.Name.IconMoved);
-                case IncomingChangesCategory.Type.Deleted:
+                case MergeChangesCategory.Type.Deleted:
                     return Images.GetImage(Images.Name.IconDeleted);
-                case IncomingChangesCategory.Type.Added:
+                case MergeChangesCategory.Type.Added:
                     return Images.GetImage(Images.Name.IconAdded);
                 default:
                     return null;
@@ -477,7 +477,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
         static Texture GetIcon(
             string wkPath,
-            IncomingChangeInfo incomingChange)
+            MergeChangeInfo incomingChange)
         {
             RevisionInfo revInfo = incomingChange.GetRevision();
             bool isDirectory = revInfo.
@@ -495,17 +495,17 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         }
 
         static GUIStyle GetCategoryStyle(
-            IncomingChangesCategory category,
+            MergeChangesCategory category,
             int solvedChildrenCount,
             bool isSelected)
         {
             if (isSelected)
                 return UnityStyles.Tree.Label;
 
-            if (category.CategoryType == IncomingChangesCategory.Type.FileConflicts ||
-                category.CategoryType == IncomingChangesCategory.Type.DirectoryConflicts)
+            if (category.CategoryType == MergeChangesCategory.Type.FileConflicts ||
+                category.CategoryType == MergeChangesCategory.Type.DirectoryConflicts)
             {
-                return category.GetChangesCount() > solvedChildrenCount ?
+                return category.GetChildrenCount() > solvedChildrenCount ?
                     UnityStyles.Tree.RedLabel : UnityStyles.Tree.GreenLabel;
             }
 
@@ -524,10 +524,10 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     return true;
 
                 if (categoryTreeViewItem.Category.CategoryType ==
-                    IncomingChangesCategory.Type.FileConflicts)
+                    MergeChangesCategory.Type.FileConflicts)
                     return true;
 
-                if (categoryTreeViewItem.Category.GetChangesCount() >
+                if (categoryTreeViewItem.Category.GetChildrenCount() >
                     NODES_TO_EXPAND_CATEGORY)
                     return false;
 
@@ -538,13 +538,13 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         }
 
         static int GetSolvedChildrenCount(
-            IncomingChangesCategory category,
+            MergeChangesCategory category,
             MergeSolvedFileConflicts solvedFileConflicts)
         {
             int solvedDirConflicts = 0;
-            if (category.CategoryType == IncomingChangesCategory.Type.DirectoryConflicts)
+            if (category.CategoryType == MergeChangesCategory.Type.DirectoryConflicts)
             {
-                foreach (IncomingChangeInfo change in category.GetChanges())
+                foreach (MergeChangeInfo change in category.GetChanges())
                 {
                     if (change.DirectoryConflict.IsResolved())
                         solvedDirConflicts++;
@@ -559,8 +559,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
         bool mExpandCategories;
 
-        TreeViewItemIds<IncomingChangesCategory, IncomingChangeInfo> mTreeViewItemIds =
-            new TreeViewItemIds<IncomingChangesCategory, IncomingChangeInfo>();
+        TreeViewItemIds<MergeChangesCategory, MergeChangeInfo> mTreeViewItemIds =
+            new TreeViewItemIds<MergeChangesCategory, MergeChangeInfo>();
         List<TreeViewItem> mRows = new List<TreeViewItem>();
 
         MergeSolvedFileConflicts mSolvedFileConflicts;

@@ -1,14 +1,14 @@
 ﻿using UnityEditor.IMGUI.Controls;
 
-using PlasticGui.WorkspaceWindow.IncomingChanges;
+using PlasticGui.WorkspaceWindow.Merge;
 
 namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 {
     internal class ChangeTreeViewItem : TreeViewItem
     {
-        internal IncomingChangeInfo ChangeInfo { get; private set; }
+        internal MergeChangeInfo ChangeInfo { get; private set; }
 
-        internal ChangeTreeViewItem(int id, IncomingChangeInfo change)
+        internal ChangeTreeViewItem(int id, MergeChangeInfo change)
             : base(id, 1)
         {
             ChangeInfo = change;

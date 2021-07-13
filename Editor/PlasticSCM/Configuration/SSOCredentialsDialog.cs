@@ -220,6 +220,11 @@ namespace Unity.PlasticSCM.Editor.Configuration
         {
             OkButtonAction();
         }
+        void Login.INotify.SuccessForCredentials(string userName, string password)
+        {
+            OkButtonAction();
+        }
+
 
         void Login.INotify.SuccessForProfile(
             string userName)

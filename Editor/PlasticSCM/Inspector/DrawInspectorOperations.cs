@@ -92,8 +92,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
             // that breaks the visual style. Draw an empty rectangle
             // matching the background color to cover it
 
-            GUILayout.Space(
-                UnityConstants.INSPECTOR_ACTIONS_BACK_RECTANGLE_TOP_MARGIN);
+            GUILayout.Space(UnityConstants.INSPECTOR_ACTIONS_BACK_RECTANGLE_TOP_MARGIN);
 
             GUIStyle targetStyle = (isEnabled) ?
                 UnityStyles.Inspector.HeaderBackgroundStyle :

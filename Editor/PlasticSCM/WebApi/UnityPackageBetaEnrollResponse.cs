@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using Unity.Plastic.Newtonsoft.Json;
 
 using PlasticGui.WebApi.Responses;
 

@@ -5,7 +5,7 @@ using Codice.Client.Commands;
 using Codice.Client.Commands.Mount;
 using Codice.CM.Common;
 using Codice.CM.Common.Merge;
-using PlasticGui.WorkspaceWindow.IncomingChanges;
+using PlasticGui.WorkspaceWindow.Merge;
 using Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer;
 
 namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
@@ -16,7 +16,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
         [Test]
         public void IsDirectoryConflictResolved()
         {
-            IncomingChangeInfo dirConflict = BuilDirectoryConflict(true, 55);
+            MergeChangeInfo dirConflict = BuilDirectoryConflict(true, 55);
 
             Assert.IsTrue(
                 IsSolved.Conflict(dirConflict, null, null),
@@ -26,7 +26,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
         [Test]
         public void IsDirectoryConflictNotResolved()
         {
-            IncomingChangeInfo dirConflict = BuilDirectoryConflict(false, 55);
+            MergeChangeInfo dirConflict = BuilDirectoryConflict(false, 55);
 
             Assert.IsFalse(
                 IsSolved.Conflict(dirConflict, null, null),
@@ -40,7 +40,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             long itemId = 55;
             MountPointId mountPointId = MountPointId.WORKSPACE_ROOT;
 
-            IncomingChangeInfo fileConflict = BuildFileConflict(mountPointId, itemId);
+            MergeChangeInfo fileConflict = BuildFileConflict(mountPointId, itemId);
 
             MergeSolvedFileConflicts solvedFileConflicts = new MergeSolvedFileConflicts();
             solvedFileConflicts.AddResolveFile(mountPointId, itemId, "foo.c");
@@ -56,7 +56,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             long itemId = 55;
             MountPointId mountPointId = MountPointId.WORKSPACE_ROOT;
 
-            IncomingChangeInfo fileConflict = BuildFileConflict(mountPointId, itemId);
+            MergeChangeInfo fileConflict = BuildFileConflict(mountPointId, itemId);
 
             MergeSolvedFileConflicts solvedFileConflicts = new MergeSolvedFileConflicts();
 
@@ -68,8 +68,8 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
         [Test]
         public void IsDirectoryConflictWithMetaResolved()
         {
-            IncomingChangeInfo dirConflict = BuilDirectoryConflict(true, 55);
-            IncomingChangeInfo metaDirConflict = BuilDirectoryConflict(true, 55);
+            MergeChangeInfo dirConflict = BuilDirectoryConflict(true, 55);
+            MergeChangeInfo metaDirConflict = BuilDirectoryConflict(true, 55);
 
             Assert.IsTrue(
                 IsSolved.Conflict(dirConflict, metaDirConflict, null),
@@ -79,8 +79,8 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
         [Test]
         public void IsDirectoryConflictWithMetaNotResolved()
         {
-            IncomingChangeInfo dirConflict = BuilDirectoryConflict(true, 55);
-            IncomingChangeInfo metaDirConflict = BuilDirectoryConflict(false, 66);
+            MergeChangeInfo dirConflict = BuilDirectoryConflict(true, 55);
+            MergeChangeInfo metaDirConflict = BuilDirectoryConflict(false, 66);
 
             Assert.IsFalse(
                 IsSolved.Conflict(dirConflict, metaDirConflict, null),
@@ -95,8 +95,8 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
 
             MountPointId mountPointId = MountPointId.WORKSPACE_ROOT;
 
-            IncomingChangeInfo fileConflict = BuildFileConflict(mountPointId, itemId);
-            IncomingChangeInfo metaFileConflict = BuildFileConflict(mountPointId, metaItemId);
+            MergeChangeInfo fileConflict = BuildFileConflict(mountPointId, itemId);
+            MergeChangeInfo metaFileConflict = BuildFileConflict(mountPointId, metaItemId);
 
             MergeSolvedFileConflicts solvedFileConflicts = new MergeSolvedFileConflicts();
             solvedFileConflicts.AddResolveFile(mountPointId, itemId, "foo.c");
@@ -115,8 +115,8 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
 
             MountPointId mountPointId = MountPointId.WORKSPACE_ROOT;
 
-            IncomingChangeInfo fileConflict = BuildFileConflict(mountPointId, itemId);
-            IncomingChangeInfo metaFileConflict = BuildFileConflict(mountPointId, metaItemId);
+            MergeChangeInfo fileConflict = BuildFileConflict(mountPointId, itemId);
+            MergeChangeInfo metaFileConflict = BuildFileConflict(mountPointId, metaItemId);
 
             MergeSolvedFileConflicts solvedFileConflicts = new MergeSolvedFileConflicts();
             solvedFileConflicts.AddResolveFile(mountPointId, itemId, "foo.c");
@@ -126,7 +126,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
                 "Conflict shouldn't be resolved");
         }
 
-        IncomingChangeInfo BuilDirectoryConflict(bool isResolved, long itemId)
+        MergeChangeInfo BuilDirectoryConflict(bool isResolved, long itemId)
         {
             DiffChanged src = new DiffChanged(
                 CreateFileRevision(itemId), -1, "foo.c", -1,
@@ -139,7 +139,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             DirectoryConflict dirConflict = new EvilTwinConflict(src, dst);
             dirConflict.SetIsResolved(isResolved);
 
-            IncomingChangeInfo result = new IncomingChangeInfo(
+            MergeChangeInfo result = new MergeChangeInfo(
                 new MountPointWithPath(
                     MountPointId.WORKSPACE_ROOT,
                     new RepositorySpec(),
@@ -147,12 +147,13 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
                 dirConflict,
                 null,
                 null,
-                IncomingChangesCategory.Type.DirectoryConflicts);
+                MergeChangesCategory.Type.DirectoryConflicts,
+                true);
 
             return result;
         }
 
-        IncomingChangeInfo BuildFileConflict(MountPointId mountPointId, long itemId)
+        MergeChangeInfo BuildFileConflict(MountPointId mountPointId, long itemId)
         {
             DiffChanged src = new DiffChanged(
                 CreateFileRevision(itemId), -1, "foo.c", -1,
@@ -162,13 +163,14 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
                 CreateFileRevision(itemId), -1, "foo.c", -1,
                 Difference.DiffNodeStatus.Changed);
 
-            return new IncomingChangeInfo(
+            return new MergeChangeInfo(
                 new MountPointWithPath(
                     mountPointId,
                     new RepositorySpec(),
                     "/"),
                 new FileConflict(src, dst),
-                IncomingChangesCategory.Type.FileConflicts);
+                MergeChangesCategory.Type.FileConflicts,
+                true);
         }
 
         static RevisionInfo CreateFileRevision(long itemId)

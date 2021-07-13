@@ -35,8 +35,9 @@ using Unity.PlasticSCM.Editor.Views.Welcome;
 using GluonCheckIncomingChanges = PlasticGui.Gluon.WorkspaceWindow.CheckIncomingChanges;
 using GluonNewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncomingChangesUpdater;
 using EventTracking = PlasticGui.EventTracking.EventTracking;
-using Unity.PlasticSCM.Editor.Views;
 using System.Linq;
+using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
+using Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs;
 
 namespace Unity.PlasticSCM.Editor
 {
@@ -124,12 +125,24 @@ namespace Unity.PlasticSCM.Editor
             Repaint();
         }
 
+        internal void RefreshWorkspaceUI()
+        {
+            InitializePlastic();
+            Repaint();
+
+            OnFocus();
+        }
+
         void OnEnable()
         {
             wantsMouseMove = true;
 
             if (mException != null)
                 return;
+
+            minSize = new Vector2(
+                UnityConstants.PLASTIC_WINDOW_MIN_SIZE_WIDTH,
+                UnityConstants.PLASTIC_WINDOW_MIN_SIZE_HEIGHT);
 
             SetupWindowTitle(false);
 
@@ -149,7 +162,8 @@ namespace Unity.PlasticSCM.Editor
 
             mEventSenderScheduler = EventTracking.Configure(
                 mPlasticWebRestApi,
-                ApplicationIdentifier.UnityPackage,
+                AssetsPath.IsRunningAsUPMPackage() ?
+                 ApplicationIdentifier.UnityPackage : ApplicationIdentifier.UnityAssetStorePlugin,
                 IdentifyEventPlatform.Get());
 
             if (mEventSenderScheduler != null)
@@ -252,21 +266,32 @@ namespace Unity.PlasticSCM.Editor
                 bool isPlasticExeAvailable = IsExeAvailable.ForMode(mIsGluonMode);
                 bool clientNeedsConfiguration = UnityConfigurationChecker.NeedsConfiguration();
 
-                if (NeedsToDisplayWelcomeView(
-                        clientNeedsConfiguration,
-                        mWkInfo))
+                var welcomeView = GetWelcomeView();
+
+                if (clientNeedsConfiguration && welcomeView.autoLoginState == AutoLogin.State.Off)
                 {
-                    GetWelcomeView().OnGUI(clientNeedsConfiguration);
+                    welcomeView.autoLoginState = AutoLogin.State.Started;
+                }
+
+                if (welcomeView.autoLoginState == AutoLogin.State.OrganizationChoosed)
+                {
+                    OnEnable();
+                    welcomeView.autoLoginState = AutoLogin.State.InitializingPlastic;
+                }
+
+                if (NeedsToDisplayWelcomeView(clientNeedsConfiguration, mWkInfo))
+                {
+                    welcomeView.OnGUI(clientNeedsConfiguration);
                     return;
                 }
 
                 DoHeader(
-                    mWkInfo,
-                    mWorkspaceWindow,
-                    mViewSwitcher,
-                    mViewSwitcher,
-                    mIsGluonMode,
-                    mIncomingChangesNotificationPanel);
+                   mWkInfo,
+                   mWorkspaceWindow,
+                   mViewSwitcher,
+                   mViewSwitcher,
+                   mIsGluonMode,
+                   mIncomingChangesNotificationPanel);
 
                 DoTabToolbar(
                     isPlasticExeAvailable,
@@ -280,6 +305,8 @@ namespace Unity.PlasticSCM.Editor
                     DrawProgressForOperations.For(
                         mWorkspaceWindow, mWorkspaceWindow.Progress,
                         position.width);
+
+                mNotificationDrawer.DoDrawer();
             }
             catch (Exception ex)
             {
@@ -393,6 +420,7 @@ namespace Unity.PlasticSCM.Editor
                     mGluonNewIncomingChangesUpdater,
                     mIncomingChangesNotificationPanel,
                     assetStatusCache,
+                    mNotificationDrawer,
                     this);
 
                 mCooldownAutoRefreshPendingChangesAction = new CooldownWindowDelayer(
@@ -559,7 +587,7 @@ namespace Unity.PlasticSCM.Editor
                 ExecuteFullReload);
         }
 
-        WelcomeView GetWelcomeView()
+        internal WelcomeView GetWelcomeView()
         {
             if (mWelcomeView != null)
                 return mWelcomeView;
@@ -644,17 +672,29 @@ namespace Unity.PlasticSCM.Editor
                     LaunchTool.OpenBranchExplorer(wkInfo, isGluonMode);
             }
 
-            string openToolText = isGluonMode ?
-                PlasticLocalization.GetString(PlasticLocalization.Name.LaunchGluonButton) :
-                PlasticLocalization.GetString(PlasticLocalization.Name.LaunchPlasticButton);
-
-            if (DrawActionButton.For(openToolText))
-                LaunchTool.OpenGUIForMode(wkInfo, isGluonMode);
-
             if (GUILayout.Button(new GUIContent(
                 EditorGUIUtility.IconContent("settings")), EditorStyles.toolbarButton))
             {
                 GenericMenu menu = new GenericMenu();
+
+                string openToolText = isGluonMode ?
+                    PlasticLocalization.GetString(PlasticLocalization.Name.LaunchGluonButton) :
+                    PlasticLocalization.GetString(PlasticLocalization.Name.LaunchPlasticButton);
+
+                menu.AddItem(
+                   new GUIContent(openToolText),
+                   false,
+                   () => LaunchTool.OpenGUIForMode(wkInfo, isGluonMode));
+
+                var plasticWindow = EditorWindow.GetWindow<PlasticWindow>();
+
+                menu.AddItem(
+                    new GUIContent(
+                        PlasticLocalization.GetString(
+                    PlasticLocalization.Name.Options)),
+                    false,
+                    () => PendingChangesOptionsDialog.ChangeOptions(wkInfo, PlasticAssetsProcessor.mPendingChangesTab, plasticWindow));
+
                 menu.AddItem(
                     new GUIContent(
                         PlasticLocalization.GetString(
@@ -918,6 +958,7 @@ namespace Unity.PlasticSCM.Editor
         CooldownWindowDelayer mCooldownAutoRefreshPendingChangesAction;
         ViewSwitcher mViewSwitcher;
         WelcomeView mWelcomeView;
+        internal NotificationDrawer mNotificationDrawer = new NotificationDrawer();
 
         PlasticGui.WorkspaceWindow.NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
         GluonNewIncomingChangesUpdater mGluonNewIncomingChangesUpdater;

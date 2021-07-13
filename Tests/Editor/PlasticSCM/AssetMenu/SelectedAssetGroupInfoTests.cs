@@ -27,7 +27,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             {
                 PlasticApiMock apiMock = new PlasticApiMock();
 
-                Plastic.InitializeAPIForTesting(apiMock);
+                PlasticGui.Plastic.InitializeAPIForTesting(apiMock);
 
                 string fooPath = Path.Combine(Path.GetTempPath(), "foo.c");
                 string barPath = Path.Combine(Path.GetTempPath(), "bar.c");
@@ -55,7 +55,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             }
             finally
             {
-                Plastic.InitializeAPIForTesting(new PlasticAPI());
+                PlasticGui.Plastic.InitializeAPIForTesting(new PlasticAPI());
             }
         }
 
@@ -66,7 +66,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             {
                 PlasticApiMock apiMock = new PlasticApiMock();
 
-                Plastic.InitializeAPIForTesting(apiMock);
+                PlasticGui.Plastic.InitializeAPIForTesting(apiMock);
 
                 string fooPath = Path.Combine(Path.GetTempPath(), "foo.c");
                 string barPath = Path.Combine(Path.GetTempPath(), "bar.c");
@@ -94,7 +94,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             }
             finally
             {
-                Plastic.InitializeAPIForTesting(new PlasticAPI());
+                PlasticGui.Plastic.InitializeAPIForTesting(new PlasticAPI());
             }
 
         }
@@ -106,7 +106,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             {
                 PlasticApiMock apiMock = new PlasticApiMock();
 
-                Plastic.InitializeAPIForTesting(apiMock);
+                PlasticGui.Plastic.InitializeAPIForTesting(apiMock);
 
                 string fooPath = Path.Combine(Path.GetTempPath(), "foo.c");
                 string barPath = Path.Combine(Path.GetTempPath(), "bar.c");
@@ -134,7 +134,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             }
             finally
             {
-                Plastic.InitializeAPIForTesting(new PlasticAPI());
+                PlasticGui.Plastic.InitializeAPIForTesting(new PlasticAPI());
             }
         }
 
@@ -145,7 +145,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             {
                 PlasticApiMock apiMock = new PlasticApiMock();
 
-                Plastic.InitializeAPIForTesting(apiMock);
+                PlasticGui.Plastic.InitializeAPIForTesting(apiMock);
 
                 string fooPath = Path.Combine(Path.GetTempPath(), "foo.c");
                 string barPath = Path.Combine(Path.GetTempPath(), "bar.c");
@@ -173,7 +173,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             }
             finally
             {
-                Plastic.InitializeAPIForTesting(new PlasticAPI());
+                PlasticGui.Plastic.InitializeAPIForTesting(new PlasticAPI());
             }
         }
 
@@ -184,7 +184,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             {
                 PlasticApiMock apiMock = new PlasticApiMock();
 
-                Plastic.InitializeAPIForTesting(apiMock);
+                PlasticGui.Plastic.InitializeAPIForTesting(apiMock);
 
                 string fooPath = Path.Combine(Path.GetTempPath(), "foo.c");
                 string barPath = Path.Combine(Path.GetTempPath(), "bar.c");
@@ -210,7 +210,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             }
             finally
             {
-                Plastic.InitializeAPIForTesting(new PlasticAPI());
+                PlasticGui.Plastic.InitializeAPIForTesting(new PlasticAPI());
             }
         }
 
@@ -221,7 +221,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             {
                 PlasticApiMock apiMock = new PlasticApiMock();
 
-                Plastic.InitializeAPIForTesting(apiMock);
+                PlasticGui.Plastic.InitializeAPIForTesting(apiMock);
 
                 string fooPath = Path.Combine(Path.GetTempPath(), "foo.c");
                 string barPath = Path.Combine(Path.GetTempPath(), "bar.c");
@@ -249,7 +249,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             }
             finally
             {
-                Plastic.InitializeAPIForTesting(new PlasticAPI());
+                PlasticGui.Plastic.InitializeAPIForTesting(new PlasticAPI());
             }
         }
 
@@ -260,7 +260,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             {
                 PlasticApiMock apiMock = new PlasticApiMock();
 
-                Plastic.InitializeAPIForTesting(apiMock);
+                PlasticGui.Plastic.InitializeAPIForTesting(apiMock);
 
                 string fooPath = Path.Combine(Path.GetTempPath(), "foo.c");
                 string barPath = Path.Combine(Path.GetTempPath(), "bar.c");
@@ -288,7 +288,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             }
             finally
             {
-                Plastic.InitializeAPIForTesting(new PlasticAPI());
+                PlasticGui.Plastic.InitializeAPIForTesting(new PlasticAPI());
             }
         }
 
@@ -299,7 +299,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             {
                 PlasticApiMock apiMock = new PlasticApiMock();
 
-                Plastic.InitializeAPIForTesting(apiMock);
+                PlasticGui.Plastic.InitializeAPIForTesting(apiMock);
 
                 string fooPath = Path.Combine(Path.GetTempPath(), "foo.c");
                 string barPath = Path.Combine(Path.GetTempPath(), "bar.c");
@@ -327,7 +327,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             }
             finally
             {
-                Plastic.InitializeAPIForTesting(new PlasticAPI());
+                PlasticGui.Plastic.InitializeAPIForTesting(new PlasticAPI());
             }
         }
 
@@ -340,7 +340,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             {
                 PlasticApiMock apiMock = new PlasticApiMock();
 
-                Plastic.InitializeAPIForTesting(apiMock);
+                PlasticGui.Plastic.InitializeAPIForTesting(apiMock);
 
                 string fooPath = Path.Combine(Path.GetTempPath(), "foo.c");
 
@@ -367,7 +367,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             }
             finally
             {
-                Plastic.InitializeAPIForTesting(new PlasticAPI());
+                PlasticGui.Plastic.InitializeAPIForTesting(new PlasticAPI());
 
                 if (Directory.Exists(barPath))
                     Directory.Delete(barPath);
@@ -381,7 +381,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             {
                 PlasticApiMock apiMock = new PlasticApiMock();
 
-                Plastic.InitializeAPIForTesting(apiMock);
+                PlasticGui.Plastic.InitializeAPIForTesting(apiMock);
 
                 string fooPath = Path.Combine(Path.GetTempPath(), "foo.c");
                 string barPath = Path.Combine(Path.GetTempPath(), "bar.c");
@@ -411,7 +411,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             }
             finally
             {
-                Plastic.InitializeAPIForTesting(new PlasticAPI());
+                PlasticGui.Plastic.InitializeAPIForTesting(new PlasticAPI());
             }
         }
 
@@ -422,7 +422,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             {
                 PlasticApiMock apiMock = new PlasticApiMock();
 
-                Plastic.InitializeAPIForTesting(apiMock);
+                PlasticGui.Plastic.InitializeAPIForTesting(apiMock);
 
                 string fooPath = Path.Combine(Path.GetTempPath(), "foo.c");
                 string barPath = Path.Combine(Path.GetTempPath(), "bar.c");
@@ -454,7 +454,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             }
             finally
             {
-                Plastic.InitializeAPIForTesting(new PlasticAPI());
+                PlasticGui.Plastic.InitializeAPIForTesting(new PlasticAPI());
             }
         }
 
@@ -465,7 +465,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             {
                 PlasticApiMock apiMock = new PlasticApiMock();
 
-                Plastic.InitializeAPIForTesting(apiMock);
+                PlasticGui.Plastic.InitializeAPIForTesting(apiMock);
 
                 string fooPath = Path.Combine(Path.GetTempPath(), "foo.c");
                 string barPath = Path.Combine(Path.GetTempPath(), "bar.c");
@@ -493,7 +493,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             }
             finally
             {
-                Plastic.InitializeAPIForTesting(new PlasticAPI());
+                PlasticGui.Plastic.InitializeAPIForTesting(new PlasticAPI());
             }
         }
 
@@ -504,7 +504,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             {
                 PlasticApiMock apiMock = new PlasticApiMock();
 
-                Plastic.InitializeAPIForTesting(apiMock);
+                PlasticGui.Plastic.InitializeAPIForTesting(apiMock);
 
                 string fooPath = Path.Combine(Path.GetTempPath(), "foo.c");
                 string barPath = Path.Combine(Path.GetTempPath(), "bar.c");
@@ -532,7 +532,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             }
             finally
             {
-                Plastic.InitializeAPIForTesting(new PlasticAPI());
+                PlasticGui.Plastic.InitializeAPIForTesting(new PlasticAPI());
             }
         }
 
@@ -543,7 +543,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             {
                 PlasticApiMock apiMock = new PlasticApiMock();
 
-                Plastic.InitializeAPIForTesting(apiMock);
+                PlasticGui.Plastic.InitializeAPIForTesting(apiMock);
 
                 string fooPath = Path.Combine(Path.GetTempPath(), "foo.c");
                 string barPath = Path.Combine(Path.GetTempPath(), "bar.c");
@@ -568,7 +568,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             }
             finally
             {
-                Plastic.InitializeAPIForTesting(new PlasticAPI());
+                PlasticGui.Plastic.InitializeAPIForTesting(new PlasticAPI());
             }
         }
 
@@ -579,7 +579,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             {
                 PlasticApiMock apiMock = new PlasticApiMock();
 
-                Plastic.InitializeAPIForTesting(apiMock);
+                PlasticGui.Plastic.InitializeAPIForTesting(apiMock);
 
                 string fooPath = Path.Combine(Path.GetTempPath(), "foo.c");
                 string barPath = Path.Combine(Path.GetTempPath(), "bar.c");
@@ -606,7 +606,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             }
             finally
             {
-                Plastic.InitializeAPIForTesting(new PlasticAPI());
+                PlasticGui.Plastic.InitializeAPIForTesting(new PlasticAPI());
             }
         }
 
@@ -617,7 +617,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             {
                 PlasticApiMock apiMock = new PlasticApiMock();
 
-                Plastic.InitializeAPIForTesting(apiMock);
+                PlasticGui.Plastic.InitializeAPIForTesting(apiMock);
 
                 string fooPath = Path.Combine(Path.GetTempPath(), "foo.c");
                 string barPath = Path.Combine(Path.GetTempPath(), "bar.c");
@@ -645,7 +645,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             }
             finally
             {
-                Plastic.InitializeAPIForTesting(new PlasticAPI());
+                PlasticGui.Plastic.InitializeAPIForTesting(new PlasticAPI());
             }
         }
 
@@ -656,7 +656,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             {
                 PlasticApiMock apiMock = new PlasticApiMock();
 
-                Plastic.InitializeAPIForTesting(apiMock);
+                PlasticGui.Plastic.InitializeAPIForTesting(apiMock);
 
                 string fooPath = Path.Combine(Path.GetTempPath(), "foo.c");
                 string barPath = Path.Combine(Path.GetTempPath(), "bar.c");
@@ -684,7 +684,7 @@ namespace Unity.PlasticSCM.Tests.Editor.AssetMenu
             }
             finally
             {
-                Plastic.InitializeAPIForTesting(new PlasticAPI());
+                PlasticGui.Plastic.InitializeAPIForTesting(new PlasticAPI());
             }
         }
 

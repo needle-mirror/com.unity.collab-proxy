@@ -11,9 +11,31 @@ namespace Unity.PlasticSCM.Editor.UI
 
             GUIStyle buttonStyle = EditorStyles.miniButton;
 
+            buttonStyle.stretchWidth = false;
+
             Rect rt = GUILayoutUtility.GetRect(
-                buttonContent, buttonStyle,
+                buttonContent,
+                buttonStyle,
                 GUILayout.MinWidth(UnityConstants.REGULAR_BUTTON_WIDTH));
+
+            return GUI.Button(rt, buttonText, buttonStyle);
+        }
+
+        internal static bool ForCommentSection(string buttonText)
+        {
+            GUIContent buttonContent = new GUIContent(buttonText);
+
+            GUIStyle buttonStyle = EditorStyles.miniButton;
+
+            buttonStyle.stretchWidth = false;
+
+            var width = MeasureMaxWidth.ForTexts(buttonStyle, buttonText);
+
+            Rect rt = GUILayoutUtility.GetRect(
+                buttonContent,
+                buttonStyle,
+                GUILayout.MinWidth(width),
+                GUILayout.MaxWidth(width));
 
             return GUI.Button(rt, buttonText, buttonStyle);
         }

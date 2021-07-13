@@ -5,7 +5,7 @@ using Codice.Client.Commands;
 using Codice.Client.Commands.Mount;
 using Codice.CM.Common;
 using Codice.CM.Common.Merge;
-using PlasticGui.WorkspaceWindow.IncomingChanges;
+using PlasticGui.WorkspaceWindow.Merge;
 using Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer;
 
 namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
@@ -27,7 +27,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             long itemId = 55;
             MountPointId mountPointId = MountPointId.WORKSPACE_ROOT;
 
-            IncomingChangeInfo changeInfo = BuildChangeInfo(mountPointId, itemId);
+            MergeChangeInfo changeInfo = BuildChangeInfo(mountPointId, itemId);
             MergeSolvedFileConflicts solvedFileConflicts = new MergeSolvedFileConflicts();
 
             Assert.IsFalse(
@@ -41,7 +41,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             long itemId = 55;
             MountPointId mountPointId = MountPointId.WORKSPACE_ROOT;
 
-            IncomingChangeInfo changeInfo = BuildChangeInfo(mountPointId, itemId);
+            MergeChangeInfo changeInfo = BuildChangeInfo(mountPointId, itemId);
             MergeSolvedFileConflicts solvedFileConflicts = new MergeSolvedFileConflicts();
 
             MergeSolvedFileConflicts.CurrentConflict currentConflict = new MergeSolvedFileConflicts.CurrentConflict(
@@ -62,8 +62,8 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
 
             MountPointId mountPointId = MountPointId.WORKSPACE_ROOT;
 
-            IncomingChangeInfo changeInfo = BuildChangeInfo(mountPointId, itemId);
-            IncomingChangeInfo metaChangeInfo = BuildChangeInfo(mountPointId, metaItemId);
+            MergeChangeInfo changeInfo = BuildChangeInfo(mountPointId, itemId);
+            MergeChangeInfo metaChangeInfo = BuildChangeInfo(mountPointId, metaItemId);
 
             MergeSolvedFileConflicts solvedFileConflicts = new MergeSolvedFileConflicts();
 
@@ -80,8 +80,8 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
 
             MountPointId mountPointId = MountPointId.WORKSPACE_ROOT;
 
-            IncomingChangeInfo changeInfo = BuildChangeInfo(mountPointId, itemId);
-            IncomingChangeInfo metaChangeInfo = BuildChangeInfo(mountPointId, metaItemId);
+            MergeChangeInfo changeInfo = BuildChangeInfo(mountPointId, itemId);
+            MergeChangeInfo metaChangeInfo = BuildChangeInfo(mountPointId, metaItemId);
 
             MergeSolvedFileConflicts solvedFileConflicts = new MergeSolvedFileConflicts();
 
@@ -103,8 +103,8 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
 
             MountPointId mountPointId = MountPointId.WORKSPACE_ROOT;
 
-            IncomingChangeInfo changeInfo = BuildChangeInfo(mountPointId, itemId);
-            IncomingChangeInfo metaChangeInfo = BuildChangeInfo(mountPointId, metaItemId);
+            MergeChangeInfo changeInfo = BuildChangeInfo(mountPointId, itemId);
+            MergeChangeInfo metaChangeInfo = BuildChangeInfo(mountPointId, metaItemId);
 
             MergeSolvedFileConflicts solvedFileConflicts = new MergeSolvedFileConflicts();
 
@@ -118,15 +118,16 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
                 "Should return true");
         }
 
-        IncomingChangeInfo BuildChangeInfo(MountPointId mountId, long itemId)
+        MergeChangeInfo BuildChangeInfo(MountPointId mountId, long itemId)
         {
-            return new IncomingChangeInfo(
+            return new MergeChangeInfo(
                 new MountPointWithPath(
                     mountId,
                     new RepositorySpec(),
                     "/"),
                 BuildFileConflict(itemId),
-                IncomingChangesCategory.Type.FileConflicts);
+                MergeChangesCategory.Type.FileConflicts,
+                true);
         }
 
         FileConflict BuildFileConflict(long itemId)

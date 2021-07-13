@@ -190,7 +190,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                 imageDiffLauncher: null);
         }
 
-        GetRestorePathData
+        GetRestorePathData 
             UndeleteClientDiffsOperation.IGetRestorePathDialog.GetRestorePath(
                 string wkPath, string restorePath, string explanation,
                 bool isDirectory, bool showSkipButton)
@@ -253,7 +253,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             waiter.Execute(
                 /*threadOperationDelegate*/ delegate
                 {
-                    mDiffs = Plastic.API.GetChangesetDifferences(
+                    mDiffs = PlasticGui.Plastic.API.GetChangesetDifferences(
                         mountWithPath, csetInfo);
                 },
                 /*afterOperationDelegate*/ delegate

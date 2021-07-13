@@ -4,17 +4,13 @@
     width: 100%;
 }
 
-.field TextField {
-    flex-direction: column;
-}
+    .field TextField {
+        flex-direction: column;
+    }
 
-.field TextField Label, .field-label {
-    margin: 5px;
-}
-
-#encryptField {
-    margin-bottom: 25px;
-}
+        .field TextField Label, .field-label {
+            margin: 5px;
+        }
 
 #datacenter {
     margin-bottom: 35px;
@@ -35,14 +31,7 @@ Label {
     margin-bottom: 5px;
 }
 
-.footer {
-    flex-direction: row;
-    justify-content: flex-end;
-    right: 0px;
-    bottom: 0px;
-}
-
-.footer Button {
+.footerButton {
     padding: 5px 7px;
     margin-top: 10px;
     border-width: 2px;
@@ -51,12 +40,10 @@ Label {
 }
 
 #gettingDatacenters {
-    align-self: center;
     height: 30px;
     flex-direction: row;
     margin-top: 10px;
     padding-top: 7px;
-    width: 125px;
 }
 
 #gdSpinner {

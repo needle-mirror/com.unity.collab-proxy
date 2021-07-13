@@ -2,7 +2,7 @@
 using System.IO;
 using System.Net;
 
-using Newtonsoft.Json;
+using Unity.Plastic.Newtonsoft.Json;
 
 using Codice.Client.Common.WebApi;
 using Codice.CM.Common;

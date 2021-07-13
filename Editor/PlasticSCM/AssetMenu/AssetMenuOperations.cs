@@ -120,7 +120,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             string assetPath = Path.GetFullPath(path);
 
             WorkspaceTreeNode wkTreeNode =
-                Plastic.API.GetWorkspaceTreeNode(assetPath);
+                PlasticGui.Plastic.API.GetWorkspaceTreeNode(assetPath);
 
             if (isDirectory)
                 isFileSelection = false;

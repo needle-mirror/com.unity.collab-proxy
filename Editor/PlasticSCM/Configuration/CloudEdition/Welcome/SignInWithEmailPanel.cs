@@ -74,6 +74,11 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mNotify.SuccessForProfile(userName);
         }
 
+        void Login.INotify.SuccessForCredentials(string userName, string password)
+        {
+            mNotify.SuccessForCredentials(userName, password);
+        }
+
         void Login.INotify.ValidationFailed(
             Login.ValidationResult validationResult)
         {

@@ -543,6 +543,15 @@ Plastic 非常擅长于检测和跟踪移动。
 
 这可能就是为什么找不到想要的结果 :-O
 
+== PlasticNewVersionAvailableWithDownloadAction ==
+[title]有新版本可用[/title]
+
+[bold]新版 {version} - {releaseDate}[/bold] ({versionsBehind})
+
+[action:DownloadNewVersion]下载[/action] - [link:{releaseNotesLink}]查看发行说明[/link]
+
+{releaseNotes}
+
 == PlasticNewVersionAvailable ==
 [title]有新版本可用[/title]
 

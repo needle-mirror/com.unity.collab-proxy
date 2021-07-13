@@ -283,14 +283,16 @@ namespace Unity.PlasticSCM.Editor.UI
             {
                 var style = new GUIStyle();
                 style.normal = new GUIStyleState() { textColor = Color.gray };
-                style.padding = new RectOffset(2, 0, 0, 0);
+                style.padding = new RectOffset(7, 0, 4, 0);
                 return style;
             });
 
             internal static readonly LazyStyle CommentTextArea = new LazyStyle(() =>
             {
                 var style = new GUIStyle(EditorStyles.textArea);
-                style.margin = new RectOffset(6, 4, 0, 0);
+                style.margin = new RectOffset(7, 4, 0, 0);
+                style.padding = new RectOffset(0, 0, 4, 0);
+
                 return style;
             });
 

@@ -19,6 +19,7 @@ using PlasticGui.SwitcherWindow.Repositories;
 using PlasticGui.SwitcherWindow.Workspaces;
 using PlasticGui.WebApi;
 using Unity.PlasticSCM.Editor.UI.Progress;
+using Unity.PlasticSCM.Editor.AssetMenu;
 
 namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
 {
@@ -98,7 +99,8 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                     allWorkspaces = plasticApi.GetAllWorkspacesArray();
 
                     allRepositories = plasticApi.GetAllRepositories(
-                        mDefaultServer, true);
+                        mDefaultServer,
+                        true);
                 },
                 /*afterOperationDelegate*/ delegate
                 {
@@ -120,7 +122,8 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
 
                     mCreateWorkspaceState.WorkspaceName =
                         mCreateWorkspaceState.RepositoryName.Replace(
-                            serverSpecPart, string.Empty);
+                            serverSpecPart,
+                            string.Empty);
 
                     mDialogUserAssistant = new CreateWorkspaceDialogUserAssistant(
                         mWorkspacePath,
@@ -166,7 +169,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             waiter.Execute(
                 /*threadOperationDelegate*/ delegate
                 {
-                    createdRepository = Plastic.API.CreateRepository(
+                    createdRepository = PlasticGui.Plastic.API.CreateRepository(
                         data.ServerName, data.RepName);
                 },
                 /*afterOperationDelegate*/ delegate
@@ -210,11 +213,11 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                     RepositorySpec repSpec = new SpecGenerator().GenRepositorySpec(
                         false, mWkCreationData.Repository);
 
-                    bool repositoryExist = Plastic.API.CheckRepositoryExists(
+                    bool repositoryExist = PlasticGui.Plastic.API.CheckRepositoryExists(
                         repSpec.Server, repSpec.Name);
 
                     if (!repositoryExist)
-                        Plastic.API.CreateRepository(repSpec.Server, repSpec.Name);
+                        PlasticGui.Plastic.API.CreateRepository(repSpec.Server, repSpec.Name);
                 },
                 /*afterOperationDelegate*/ delegate
                 {
@@ -240,9 +243,10 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                 wkInfo,
                 mWkCreationData.Repository,
                 mWkCreationData.IsGluonWorkspace,
-                Plastic.API,
+                PlasticGui.Plastic.API,
                 mProgressControls,
-                mCreateWorkspaceListener);
+                mCreateWorkspaceListener,
+                mParentWindow);
         }
 
         static WorkspaceCreationData BuildCreationDataFromState(
@@ -253,8 +257,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                 state.WorkspaceName,
                 workspacePath,
                 state.RepositoryName,
-                state.WorkspaceMode ==
-                    CreateWorkspaceViewState.WorkspaceModes.Gluon,
+                state.WorkspaceMode == CreateWorkspaceViewState.WorkspaceModes.Gluon,
                 false);
         }
 
@@ -277,7 +280,8 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                 bool isGluonWorkspace,
                 IPlasticAPI plasticApi,
                 IProgressControls progressControls,
-                ICreateWorkspaceListener createWorkspaceListener)
+                ICreateWorkspaceListener createWorkspaceListener,
+                PlasticWindow plasticWindow)
             {
                 RepositoryInfo repInfo = null;
                 bool isEmptyRepository = false;
@@ -310,7 +314,11 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                         SetupCloudProjectId.ForRepository(repInfo);
 
                     if (!isEmptyRepository)
+                    {
+                        plasticWindow.RefreshWorkspaceUI();
+                        AssetMenu.AssetMenuItems.Enable();
                         return;
+                    }
 
                     CheckinPackagesAndProjectSettingsFolders(
                         wkInfo, isGluonWorkspace, plasticApi,
@@ -334,7 +342,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                     PlasticLocalization.Name.UnityInitialCheckinComment);
 
                 progressControls.ShowProgress(PlasticLocalization.GetString(
-                PlasticLocalization.Name.UnityInitialCheckinProgress));
+                    PlasticLocalization.Name.UnityInitialCheckinProgress));
 
                 IThreadWaiter waiter = ThreadWaiter.GetWaiter(10);
                 waiter.Execute(
@@ -342,8 +350,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                 {
                     PerformAdd(paths, plasticApi);
 
-                    PerformCheckinForMode(
-                        wkInfo, paths, comment, isGluonWorkspace);
+                    PerformCheckinForMode(wkInfo, paths, comment, isGluonWorkspace);
                 },
                 /*afterOperationDelegate*/ delegate
                 {
@@ -356,8 +363,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                         return;
                     }
 
-                    createWorkspaceListener.OnWorkspaceCreated(
-                        wkInfo, isGluonWorkspace);
+                    createWorkspaceListener.OnWorkspaceCreated(wkInfo, isGluonWorkspace);
                 });
             }
 
@@ -373,9 +379,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                 options.SkipIgnored = true;
 
                 IList checkouts;
-                plasticApi.Add(
-                    paths.ToArray(), options,
-                    out checkouts);
+                plasticApi.Add(paths.ToArray(), options, out checkouts);
             }
 
             static void PerformCheckinForMode(
@@ -386,8 +390,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             {
                 if (isGluonWorkspace)
                 {
-                    new BaseCommandsImpl().PartialCheckin(
-                        wkInfo, paths, comment);
+                    new BaseCommandsImpl().PartialCheckin(wkInfo, paths, comment);
                     return;
                 }
 
@@ -395,9 +398,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                 ciParams.paths = paths.ToArray();
                 ciParams.comment = comment;
                 ciParams.time = DateTime.MinValue;
-                ciParams.flags =
-                    CheckinFlags.Recurse |
-                    CheckinFlags.ProcessSymlinks;
+                ciParams.flags = CheckinFlags.Recurse | CheckinFlags.ProcessSymlinks;
 
                 new BaseCommandsImpl().CheckIn(ciParams);
             }
@@ -421,7 +422,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
         {
             internal static string ToCreateWorkspace(IPlasticWebRestApi plasticWebRestApi)
             {
-                string clientConfServer = Plastic.ConfigAPI.GetClientConfServer();
+                string clientConfServer = PlasticGui.Plastic.ConfigAPI.GetClientConfServer();
 
                 if (!EditionToken.IsCloudEdition())
                     return clientConfServer;

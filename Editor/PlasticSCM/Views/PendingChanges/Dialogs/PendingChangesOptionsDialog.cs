@@ -28,17 +28,16 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
                 return new Rect(baseRect.x, baseRect.y, 667, 660);
             }
         }
-
+       
         internal static void ChangeOptions(
             WorkspaceInfo wkInfo,
             IRefreshableView view,
-            IAutorefreshView autorefreshView,
             EditorWindow window)
         {
             PendingChangesOptionsDialog dialog = Build(wkInfo);
 
-            autorefreshView.DisableAutorefresh();
-
+            ((PendingChangesOptionsDialog.IAutorefreshView)(view)).DisableAutorefresh();
+            
             bool isDialogDirty = false;
 
             try
@@ -56,7 +55,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             }
             finally
             {
-                autorefreshView.EnableAutorefresh();
+                ((PendingChangesOptionsDialog.IAutorefreshView)(view)).EnableAutorefresh();
 
                 if (isDialogDirty)
                     view.Refresh();

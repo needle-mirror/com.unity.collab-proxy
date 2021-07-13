@@ -6,6 +6,7 @@ using Codice.CM.Common;
 using GluonGui.WorkspaceWindow.Views.Checkin.Operations;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.AssetUtils;
+using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
@@ -15,7 +16,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         void CheckinForMode(WorkspaceInfo wkInfo, bool isGluonMode, bool keepItemsLocked)
         {
             TrackFeatureUseEvent.For(
-                Plastic.API.GetRepositorySpec(wkInfo),
+                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
                 isGluonMode ?
                     TrackFeatureUseEvent.Features.PartialCheckin :
                     TrackFeatureUseEvent.Features.Checkin);
@@ -32,7 +33,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         void UndoForMode(WorkspaceInfo wkInfo, bool isGluonMode)
         {
             TrackFeatureUseEvent.For(
-                Plastic.API.GetRepositorySpec(wkInfo),
+                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
                     isGluonMode ?
                     TrackFeatureUseEvent.Features.PartialUndo :
                     TrackFeatureUseEvent.Features.Undo);
@@ -125,7 +126,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 dependenciesCandidates,
                 CommentText,
                 null,
-                RefreshAsset.UnityAssetDatabase);
+                EndCheckin);
         }
 
         void PartialUndo()
@@ -194,6 +195,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 dependenciesCandidates,
                 mPendingMergeLinks.Count,
                 RefreshAsset.UnityAssetDatabase);
+        }
+
+        void EndCheckin()
+        {
+            // TODO: Localization
+            mNotificationDrawer.Notify("Checkin successfully completed", UnityEditor.MessageType.None, Images.Name.StepOk);
+            RefreshAsset.UnityAssetDatabase();
         }
 
         static bool CheckEmptyOperation(List<ChangeInfo> elements)

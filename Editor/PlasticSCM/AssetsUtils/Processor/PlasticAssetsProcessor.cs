@@ -293,7 +293,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
         static volatile IPlasticAPI mPlasticAPI;
 
-        static PendingChangesTab mPendingChangesTab;
+        static internal PendingChangesTab mPendingChangesTab;
         static IIncomingChangesTab mIncomingChangesTab;
 
         static CooldownWindowDelayer mCooldownAutorefreshAction = new CooldownWindowDelayer(

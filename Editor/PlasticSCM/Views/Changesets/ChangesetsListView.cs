@@ -35,7 +35,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             multiColumnHeader.sortingChanged += SortingChanged;
 
             rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = true;
+            showAlternatingRowBackgrounds = false;
 
             mCooldownFilterAction = new CooldownWindowDelayer(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);

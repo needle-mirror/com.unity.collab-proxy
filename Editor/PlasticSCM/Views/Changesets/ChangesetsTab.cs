@@ -188,7 +188,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 /*threadOperationDelegate*/ delegate
                 {
                     queryResult = new ViewQueryResult(
-                        Plastic.API.FindQuery(wkInfo, query));
+                        PlasticGui.Plastic.API.FindQuery(wkInfo, query));
 
                     loadedChangesetId = GetLoadedChangesetId(
                         wkInfo, mIsGluonMode);
@@ -291,7 +291,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             if (isGluonMode)
                 return -1;
 
-            return Plastic.API.GetLoadedChangeset(wkInfo);
+            return PlasticGui.Plastic.API.GetLoadedChangeset(wkInfo);
         }
 
         static string GetChangesetsQuery(DateFilter dateFilter)
@@ -313,7 +313,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             if (queryResult == null)
                 return 0;
 
-            return queryResult.Count();
+           return queryResult.Count();
         }
 
         void DoActionsToolbar(

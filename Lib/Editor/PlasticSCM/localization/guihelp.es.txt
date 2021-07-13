@@ -548,6 +548,15 @@ Clic [action:QueryViewClickAdvanced]Avanzadas[/action] para configurarla.
 
 Es posible que ese sea el motivo por el que no encuentras lo que estás buscando :-O
 
+== PlasticNewVersionAvailableWithDownloadAction ==
+[title]Hay una nueva versión disponible[/title]
+
+[bold]Nueva {version} - {releaseDate}[/bold] ({versionsBehind})
+
+[action:DownloadNewVersion]Descargar[/action] - [link:{releaseNotesLink}]Notas de la release[/link]
+
+{releaseNotes}
+
 == PlasticNewVersionAvailable ==
 [title]Hay una nueva versión disponible[/title]
 

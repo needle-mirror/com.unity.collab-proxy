@@ -6,24 +6,37 @@ using PlasticGui;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.Inspector;
 using Unity.PlasticSCM.Editor.UI;
+using System.ComponentModel;
 
 namespace Unity.PlasticSCM.Editor.AssetMenu
 {
     [InitializeOnLoad]
     internal class AssetMenuItems
     {
-        // Adds about 500ms to startup time
         static AssetMenuItems()
         {
-            PlasticApp.InitializeIfNeeded();
-            sPlasticAPI = new PlasticAPI();
+            BackgroundWorker backgroundWorker = new BackgroundWorker();
+            backgroundWorker.DoWork += new DoWorkEventHandler(BackgroundWorker_DoWork);
+            backgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorker_CompletedWork);
+            backgroundWorker.RunWorkerAsync();
+        }
 
+        static void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            PlasticApp.InitializeIfNeeded();
+        }
+
+        static void BackgroundWorker_CompletedWork(object sender, RunWorkerCompletedEventArgs e)
+        {
+            sPlasticAPI = new PlasticAPI();
             Enable();
         }
 
         // TODO: do this after calling plastic workspace
-        static void Enable()
+        internal static void Enable()
         {
+            if (sPlasticAPI==null) sPlasticAPI = new PlasticAPI();
+
             WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
                 Application.dataPath,
                 sPlasticAPI);

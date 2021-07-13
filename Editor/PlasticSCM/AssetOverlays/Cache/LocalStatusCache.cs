@@ -50,7 +50,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
             if (!IsOnWorkspace(fullPath, wkPath))
                 return AssetStatus.None;
 
-            WorkspaceTreeNode treeNode = Plastic.API.GetWorkspaceTreeNode(fullPath);
+            WorkspaceTreeNode treeNode = PlasticGui.Plastic.API.GetWorkspaceTreeNode(fullPath);
 
             if (CheckWorkspaceTreeNodeStatus.IsPrivate(treeNode))
             {

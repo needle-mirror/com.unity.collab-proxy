@@ -60,6 +60,8 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         internal void Dispose()
         {
+            mParentWindow.CancelJoinOrganization();
+
             if (mJoinSingleOrganizationButton != null)
                 mJoinSingleOrganizationButton.clicked -= JoinOrganizationButton_clicked;
 
