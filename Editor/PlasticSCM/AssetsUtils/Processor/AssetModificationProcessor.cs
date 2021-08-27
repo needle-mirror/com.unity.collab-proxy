@@ -8,6 +8,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
     class AssetModificationProcessor : UnityEditor.AssetModificationProcessor
     {
         internal static bool IsEnabled { get; set; }
+        internal static bool ForceCheckout { get; set; }
 
         internal static void RegisterAssetStatusCache(
             IAssetStatusCache assetStatusCache)
@@ -32,6 +33,9 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                 return true;
 
             if (assetPath.StartsWith("ProjectSettings/"))
+                return true;
+
+            if (ForceCheckout)
                 return true;
 
             if (MetaPath.IsMetaPath(assetPath))

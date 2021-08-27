@@ -1,5 +1,7 @@
-﻿using Codice.Client.Common.Servers;
+﻿using Codice.Client.Common.Connection;
+using Codice.Client.Common.Servers;
 using Codice.Client.Common.Threading;
+using Codice.CM.Common;
 using Codice.LogWrapper;
 using PlasticGui.Configuration.CloudEdition.Welcome;
 using PlasticGui.WebApi;
@@ -62,17 +64,19 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorResponseCancel;
         }
 
-        internal void Run()
+        internal ResponseType Run()
         {
             mPlasticWindow = GetPlasticWindow();
 
             if (!string.IsNullOrEmpty(CloudProjectSettings.accessToken))
             {
                 ExchangeTokensAndJoinOrganization(CloudProjectSettings.accessToken);
+                return ResponseType.Ok;
             }
             else
             {
                 mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorNoToken;
+                return ResponseType.None;
             }
         }
 
@@ -101,31 +105,36 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                     ExceptionsHandler.LogException(
                         "TokenExchangeSetting",
                         waiter.Exception);
+                    Debug.LogWarning(waiter.Exception.Message);
                     return;
                 }
 
                 if (response == null)
                 {
                     mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorResponseNull;
-                    Debug.Log("response null");
+                    Debug.LogWarning("Auto Login response null");
                     return;
                 }
                    
                 if (response.Error != null)
                 {
                     mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorResponseError;
-                    mLog.ErrorFormat(
-                        "Unable to exchange token: {0} [code {1}]",
-                        response.Error.Message, response.Error.ErrorCode);
+                    var warning = string.Format(
+                            "Unable to exchange token: {0} [code {1}]",
+                            response.Error.Message, response.Error.ErrorCode);
+                    mLog.ErrorFormat(warning);
+                    Debug.LogWarning(warning);
                     return;
                 }
 
                 if (string.IsNullOrEmpty(response.AccessToken))
                 {
                     mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorTokenEmpty;
-                    mLog.InfoFormat(
+                    var warning = string.Format(
                         "Access token is empty for user: {0}",
                         response.User);
+                    mLog.InfoFormat(warning);
+                    Debug.LogWarning(warning);
                     return;
                 }
 
@@ -212,7 +221,8 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             return plasticWindow;
         }
 
-        internal void ChooseOrganization(List<string> organizations,
+        internal void ChooseOrganization(
+            List<string> organizations,
             bool canCreateAnOrganization)
         {
             mPlasticWindow = GetPlasticWindow();
@@ -229,6 +239,16 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 return;
             }
             mCloudEditionWelcomeWindow.ShowOrganizationPanelFromAutoLogin(organizations, canCreateAnOrganization);
+        }
+
+        internal AskCredentialsToUser.DialogData BuildCredentialsDialogData(ResponseType dialogResult)
+        {
+            return new AskCredentialsToUser.DialogData(
+                dialogResult == ResponseType.Ok,
+                sUserName,
+                sAccessToken, 
+                false,
+                SEIDWorkingMode.SSOWorkingMode);
         }
 
         internal static string sAccessToken = string.Empty;

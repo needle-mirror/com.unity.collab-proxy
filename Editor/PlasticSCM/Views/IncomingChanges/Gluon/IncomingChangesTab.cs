@@ -640,8 +640,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         {
             GUI.enabled = isEnabled;
 
-            if (GUILayout.Button(new GUIContent(
-                    Images.GetRefreshIcon())))
+            if (GUILayout.Button(
+                new GUIContent(Images.GetRefreshIcon())))
                 incomingChangesViewLogic.Refresh();
 
             GUI.enabled = true;

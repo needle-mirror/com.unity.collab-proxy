@@ -346,6 +346,9 @@ GUID
 == CommentColumn ==
 註解
 
+== ItemsSelected ==
+({0}/{1} selected)
+
 == ChangedItemsSelectedSingular ==
 已變更項目 - 已選取 {0} 個項目，共 1 個
 
@@ -442,8 +445,17 @@ GUID
 == NoItemsAreSelected ==
 未選取任何項目。請使用項目的核取方塊來選取項目。如果您有選取項目，也會發生此情形，但全部都可忽略。
 
+== EmptyCommentsDialogTitle ==
+Empty Checkin Message
+
+== EmptyCommentsDialogContent ==
+Checkin comment is blank. Writing a comment is recommended.
+
 == EmptyComments ==
 註解欄位是空的。請不要忘記先新增簽入註解後，再建立新的變更集。
+
+== CheckinAnyway ==
+Checkin Anyway
 
 == RepositoryNameLabel ==
 新儲存庫的名稱:
@@ -6271,6 +6283,9 @@ Git 儲存庫 URL:
 == ContinueQuestion ==
 您是否要繼續?
 
+== DoNotShowMessageAgain ==
+Do not show this message again
+
 == PathPermissions ==
 路徑權限
 
@@ -6426,3 +6441,6 @@ Semantic Merge
 
 == UnitySmartMerge ==
 Unity Smart Merge
+
+== LaunchPlasticButton ==
+Launch Plastic SCM

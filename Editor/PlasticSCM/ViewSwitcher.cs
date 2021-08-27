@@ -30,8 +30,10 @@ namespace Unity.PlasticSCM.Editor
         IGluonViewSwitcher,
         IHistoryViewLauncher
     {
-        internal PendingChangesTab PendingChangesTabForTesting { get { return mPendingChangesTab; } }
         internal IIncomingChangesTab IncomingChangesTabForTesting { get { return mIncomingChangesTab; } }
+        internal PendingChangesTab PendingChangesTab { get; private set; }
+        internal ChangesetsTab ChangesetsTab { get; private set; }
+        internal HistoryTab HistoryTab { get; private set; }
 
         internal ViewSwitcher(
             WorkspaceInfo wkInfo,
@@ -75,7 +77,7 @@ namespace Unity.PlasticSCM.Editor
         internal void AutoRefreshPendingChangesView()
         {
             AutoRefresh.PendingChangesView(
-                mPendingChangesTab);
+                PendingChangesTab);
         }
 
         internal void AutoRefreshIncomingChangesView()
@@ -94,28 +96,38 @@ namespace Unity.PlasticSCM.Editor
             view.Refresh();
         }
 
+        internal void RefreshSelectedView()
+        {
+            IRefreshableView view = GetRefreshableViewBasedOnSelectedTab(mSelectedTab);
+
+            if (view == null)
+                return;
+
+            view.Refresh();
+        }
+
         internal void OnDisable()
         {
             PlasticAssetsProcessor.UnRegisterViews();
 
-            if (mPendingChangesTab != null)
-                mPendingChangesTab.OnDisable();
+            if (PendingChangesTab != null)
+                PendingChangesTab.OnDisable();
 
             if (mIncomingChangesTab != null)
                 mIncomingChangesTab.OnDisable();
 
-            if (mChangesetsTab != null)
-                mChangesetsTab.OnDisable();
+            if (ChangesetsTab != null)
+                ChangesetsTab.OnDisable();
 
-            if (mHistoryTab != null)
-                mHistoryTab.OnDisable();
+            if (HistoryTab != null)
+                HistoryTab.OnDisable();
         }
 
         internal void Update()
         {
             if (IsViewSelected(SelectedTab.PendingChanges))
             {
-                mPendingChangesTab.Update();
+                PendingChangesTab.Update();
                 return;
             }
 
@@ -127,13 +139,13 @@ namespace Unity.PlasticSCM.Editor
 
             if (IsViewSelected(SelectedTab.Changesets))
             {
-                mChangesetsTab.Update();
+                ChangesetsTab.Update();
                 return;
             }
 
             if (IsViewSelected(SelectedTab.History))
             {
-                mHistoryTab.Update();
+                HistoryTab.Update();
                 return;
             }
         }
@@ -155,7 +167,7 @@ namespace Unity.PlasticSCM.Editor
         {
             if (IsViewSelected(SelectedTab.PendingChanges))
             {
-                mPendingChangesTab.OnGUI();
+                PendingChangesTab.OnGUI();
                 return;
             }
 
@@ -167,13 +179,13 @@ namespace Unity.PlasticSCM.Editor
 
             if (IsViewSelected(SelectedTab.Changesets))
             {
-                mChangesetsTab.OnGUI();
+                ChangesetsTab.OnGUI();
                 return;
             }
 
             if (IsViewSelected(SelectedTab.History))
             {
-                mHistoryTab.OnGUI();
+                HistoryTab.OnGUI();
                 return;
             }
         }
@@ -257,19 +269,19 @@ namespace Unity.PlasticSCM.Editor
             ShowView(mPreviousSelectedTab);
 
             mViewHost.RemoveRefreshableView(
-                ViewType.HistoryView, mHistoryTab);
+                ViewType.HistoryView, HistoryTab);
 
-            mHistoryTab.OnDisable();
-            mHistoryTab = null;
+            HistoryTab.OnDisable();
+            HistoryTab = null;
 
             mParentWindow.Repaint();
         }
 
         void ShowPendingChangesView()
         {
-            if (mPendingChangesTab == null)
+            if (PendingChangesTab == null)
             {
-                mPendingChangesTab = new PendingChangesTab(
+                PendingChangesTab = new PendingChangesTab(
                     mWkInfo,
                     mViewHost,
                     mIsGluonMode,
@@ -286,10 +298,10 @@ namespace Unity.PlasticSCM.Editor
 
                 mViewHost.AddRefreshableView(
                     ViewType.CheckinView,
-                    mPendingChangesTab);
+                    PendingChangesTab);
 
                 PlasticAssetsProcessor.
-                    RegisterPendingChangesView(mPendingChangesTab);
+                    RegisterPendingChangesView(PendingChangesTab);
             }
 
             bool wasPendingChangesSelected =
@@ -297,7 +309,7 @@ namespace Unity.PlasticSCM.Editor
 
             if (!wasPendingChangesSelected)
             {
-                mPendingChangesTab.AutoRefresh();
+                PendingChangesTab.AutoRefresh();
             }
 
             SetSelectedView(SelectedTab.PendingChanges);
@@ -341,9 +353,9 @@ namespace Unity.PlasticSCM.Editor
 
         void ShowChangesetsView()
         {
-            if (mChangesetsTab == null)
+            if (ChangesetsTab == null)
             {
-                mChangesetsTab = new ChangesetsTab(
+                ChangesetsTab = new ChangesetsTab(
                     mWkInfo,
                     mWorkspaceWindow,
                     this,
@@ -353,14 +365,14 @@ namespace Unity.PlasticSCM.Editor
 
                 mViewHost.AddRefreshableView(
                     ViewType.ChangesetsView,
-                    mChangesetsTab);
+                    ChangesetsTab);
             }
 
             bool wasChangesetsSelected =
                 IsViewSelected(SelectedTab.Changesets);
 
             if (!wasChangesetsSelected)
-                ((IRefreshableView)mChangesetsTab).Refresh();
+                ((IRefreshableView)ChangesetsTab).Refresh();
 
             SetSelectedView(SelectedTab.Changesets);
         }
@@ -371,9 +383,9 @@ namespace Unity.PlasticSCM.Editor
             string path,
             bool isDirectory)
         {
-            if (mHistoryTab == null)
+            if (HistoryTab == null)
             {
-                mHistoryTab = new HistoryTab(
+                HistoryTab = new HistoryTab(
                     mWkInfo,
                     mWorkspaceWindow,
                     repSpec,
@@ -383,10 +395,10 @@ namespace Unity.PlasticSCM.Editor
                     mIsGluonMode);
 
                 mViewHost.AddRefreshableView(
-                    ViewType.HistoryView, mHistoryTab);
+                    ViewType.HistoryView, HistoryTab);
             }
 
-            mHistoryTab.RefreshForItem(
+            HistoryTab.RefreshForItem(
                 itemId,
                 path,
                 isDirectory);
@@ -400,7 +412,7 @@ namespace Unity.PlasticSCM.Editor
                 return;
 
             mTabButtonWidth = MeasureMaxWidth.ForTexts(
-                UnityStyles.PlasticWindow.ActiveTabButton,
+                UnityStyles.PlasticWindow.TabButton,
                 PlasticLocalization.GetString(PlasticLocalization.Name.PendingChangesViewTitle),
                 PlasticLocalization.GetString(PlasticLocalization.Name.IncomingChangesViewTitle),
                 PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetsViewTitle));
@@ -424,28 +436,49 @@ namespace Unity.PlasticSCM.Editor
             }
         }
 
-        IRefreshableView GetRefreshableView(ViewType viewType)
+        IRefreshableView GetRefreshableViewBasedOnSelectedTab(SelectedTab selectedTab)
         {
-            switch (viewType)
+            switch (selectedTab)
             {
-                case ViewType.PendingChangesView:
-                    return mPendingChangesTab;
+                case SelectedTab.PendingChanges:
+                    return PendingChangesTab;
 
-                case ViewType.IncomingChangesView:
+                case SelectedTab.IncomingChanges:
                     return (IRefreshableView)mIncomingChangesTab;
 
-                case ViewType.ChangesetsView:
-                    return mChangesetsTab;
+                case SelectedTab.Changesets:
+                    return ChangesetsTab;
 
-                case ViewType.HistoryView:
-                    return mHistoryTab;
+                case SelectedTab.History:
+                    return HistoryTab;
 
                 default:
                     return null;
             }
         }
 
-        bool IsViewSelected(SelectedTab tab)
+        IRefreshableView GetRefreshableView(ViewType viewType)
+        {
+            switch (viewType)
+            {
+                case ViewType.PendingChangesView:
+                    return PendingChangesTab;
+
+                case ViewType.IncomingChangesView:
+                    return (IRefreshableView)mIncomingChangesTab;
+
+                case ViewType.ChangesetsView:
+                    return ChangesetsTab;
+
+                case ViewType.HistoryView:
+                    return HistoryTab;
+
+                default:
+                    return null;
+            }
+        }
+
+        internal bool IsViewSelected(SelectedTab tab)
         {
             return mSelectedTab == tab;
         }
@@ -511,7 +544,7 @@ namespace Unity.PlasticSCM.Editor
 
         void HistoryTabButtonGUI()
         {
-            if (mHistoryTab == null)
+            if (HistoryTab == null)
                 return;
 
             bool wasHistorySelected =
@@ -538,7 +571,7 @@ namespace Unity.PlasticSCM.Editor
                 SetSelectedView(SelectedTab.History);
         }
 
-        enum SelectedTab
+        internal enum SelectedTab
         {
             None = 0,
             PendingChanges = 1,
@@ -547,10 +580,7 @@ namespace Unity.PlasticSCM.Editor
             History = 4
         }
 
-        PendingChangesTab mPendingChangesTab;
         IIncomingChangesTab mIncomingChangesTab;
-        ChangesetsTab mChangesetsTab;
-        HistoryTab mHistoryTab;
 
         SelectedTab mSelectedTab;
         SelectedTab mPreviousSelectedTab;

@@ -169,6 +169,10 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                         return;
                     }
 
+                    // No need for merge info if it's a label
+                    if (workingBranch == null)
+                        return;
+
                     mMergeController.UpdateMergeObjectInfoIfNeeded(workingBranch);
                     mMergeViewLogic.AutoRefresh();
                 });
@@ -192,6 +196,10 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                         ExceptionsHandler.DisplayException(waiter.Exception);
                         return;
                     }
+
+                    // No need for merge info if it's a label
+                    if (workingBranch == null)
+                        return;
 
                     mMergeController.UpdateMergeObjectInfoIfNeeded(workingBranch);
                     mMergeViewLogic.Refresh();
@@ -225,6 +233,10 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     this,
                     mRootMountPoint),
                 mIncomingChangesTreeView);
+        }
+
+        void MergeViewLogic.IMergeView.UpdateSolvedDirectoryConflicts()
+        {
         }
 
         void MergeViewLogic.IMergeView.UpdateSolvedFileConflicts(
@@ -542,10 +554,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             MergeViewLogic mergeViewLogic,
             ProgressControlsForViews.Data progressData)
         {
-            GUIStyle guiStyle = new GUIStyle();
-            guiStyle.margin = new RectOffset(5, 5, 5, 5);
-
-            EditorGUILayout.BeginHorizontal(guiStyle);
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
             if (isProcessMergesButtonVisible)
             {
@@ -578,10 +587,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             }
 
             GUILayout.FlexibleSpace();
-
-            DoRefreshButton(
-                !isOperationRunning,
-                mergeViewLogic);
 
             EditorGUILayout.EndHorizontal();
         }
@@ -750,19 +755,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             GUILayout.Label(
                 new GUIContent(label, Images.GetWarnIcon()),
                 UnityStyles.IncomingChangesTab.HeaderWarningLabel);
-        }
-
-        static void DoRefreshButton(
-            bool isEnabled,
-            MergeViewLogic mergeViewLogic)
-        {
-            GUI.enabled = isEnabled;
-
-            if (GUILayout.Button(new GUIContent(
-                    Images.GetRefreshIcon())))
-                mergeViewLogic.Refresh();
-
-            GUI.enabled = true;
         }
 
         void UpdateFileConflictsTree(

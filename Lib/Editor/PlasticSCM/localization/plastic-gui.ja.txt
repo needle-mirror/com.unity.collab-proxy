@@ -346,6 +346,9 @@ GUID
 == CommentColumn ==
 コメント
 
+== ItemsSelected ==
+({0}/{1} selected)
+
 == ChangedItemsSelectedSingular ==
 変更された項目 - 1 項目のうち {0} 個が選択されています
 
@@ -442,8 +445,17 @@ GUID
 == NoItemsAreSelected ==
 項目が選択されていません。項目のチェックボックスを使用して選択してください。この状況は、項目を選択してもすべて無視されている場合にも発生する可能性があります。
 
+== EmptyCommentsDialogTitle ==
+Empty Checkin Message
+
+== EmptyCommentsDialogContent ==
+Checkin comment is blank. Writing a comment is recommended.
+
 == EmptyComments ==
 コメントフィールドが空です。新規変更セットを作成する前に、忘れずにチェックインのコメントを追加してください。
+
+== CheckinAnyway ==
+Checkin Anyway
 
 == RepositoryNameLabel ==
 新規リポジトリの名前:
@@ -6271,6 +6283,9 @@ Git リポジトリ URL:
 == ContinueQuestion ==
 続行しますか?
 
+== DoNotShowMessageAgain ==
+Do not show this message again
+
 == PathPermissions ==
 パス権限
 
@@ -6426,3 +6441,6 @@ Semantic Merge
 
 == UnitySmartMerge ==
 Unity Smart Merge
+
+== LaunchPlasticButton ==
+Launch Plastic SCM

@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Reflection;
 
 using UnityEditor;
 using UnityEngine;
@@ -20,12 +19,23 @@ namespace Unity.PlasticSCM.Editor.UI
             IconCloseButton,
             IconPressedCloseButton,
             IconAdded,
+            IconAddedOverlay,
+            IconPrivateOverlay,
+            IconCheckedOutLocalOverlay,
             IconDeleted,
+            IconDeletedLocalOverlay,
+            IconDeletedRemoteOverlay,
             IconChanged,
+            IconOutOfSyncOverlay,
             IconMoved,
             IconMergeLink,
             Ignored,
+            IgnoredOverlay,
             IconMergeConflict,
+            IconMergeConflictOverlay,
+            IconConflictResolvedOverlay,
+            IconLockedLocalOverlay,
+            IconLockedRemoteOverlay,
             IconMerged,
             IconFsChanged,
             IconMergeCategory,
@@ -44,6 +54,10 @@ namespace Unity.PlasticSCM.Editor.UI
             ButtonSsoSignInUnity,
             ButtonSsoSignInEmail,
             ButtonSsoSignInGoogle,
+            DownloadIconGreen,
+            DownloadIconRed,
+            IconBranch,
+            IconUndo
         }
 
         internal static Texture2D GetHelpImage(HelpImage image)
@@ -127,7 +141,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetPrivatedOverlayIcon()
         {
             if (mPrivatedOverlayIcon == null)
-                mPrivatedOverlayIcon = EditorGUIUtility.IconContent("P4_Local").image;
+                mPrivatedOverlayIcon = GetImage(Name.IconPrivateOverlay);
 
             return mPrivatedOverlayIcon;
         }
@@ -135,39 +149,39 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetAddedOverlayIcon()
         {
             if (mAddedOverlayIcon == null)
-                mAddedOverlayIcon = EditorGUIUtility.IconContent("P4_AddedLocal").image;
+                mAddedOverlayIcon = GetImage(Name.IconAddedOverlay);
 
             return mAddedOverlayIcon;
         }
 
-        internal static Texture GetDeletedOverlayIcon()
+        internal static Texture GetDeletedLocalOverlayIcon()
         {
-            if (mDeletedOverlayIcon == null)
-                mDeletedOverlayIcon = EditorGUIUtility.IconContent("P4_DeletedLocal").image;
+            if (mDeletedLocalOverlayIcon == null)
+                mDeletedLocalOverlayIcon = GetImage(Name.IconDeletedLocalOverlay);
 
-            return mDeletedOverlayIcon;
-        }
-
-        internal static Texture GetCheckedOutOverlayIcon()
-        {
-            if (mCheckedOutOverlayIcon == null)
-                mCheckedOutOverlayIcon = EditorGUIUtility.IconContent("P4_CheckOutLocal").image;
-
-            return mCheckedOutOverlayIcon;
+            return mDeletedLocalOverlayIcon;
         }
 
         internal static Texture GetDeletedRemoteOverlayIcon()
         {
             if (mDeletedRemoteOverlayIcon == null)
-                mDeletedRemoteOverlayIcon = EditorGUIUtility.IconContent("P4_DeletedRemote").image;
+                mDeletedRemoteOverlayIcon = GetImage(Name.IconDeletedRemoteOverlay);
 
             return mDeletedRemoteOverlayIcon;
+        }
+
+        internal static Texture GetCheckedOutOverlayIcon()
+        {
+            if (mCheckedOutOverlayIcon == null)
+                mCheckedOutOverlayIcon = GetImage(Name.IconCheckedOutLocalOverlay);
+
+            return mCheckedOutOverlayIcon;
         }
 
         internal static Texture GetOutOfSyncOverlayIcon()
         {
             if (mOutOfSyncOverlayIcon == null)
-                mOutOfSyncOverlayIcon = EditorGUIUtility.IconContent("P4_OutOfSync").image;
+                mOutOfSyncOverlayIcon = GetImage(Name.IconOutOfSyncOverlay);
 
             return mOutOfSyncOverlayIcon;
         }
@@ -175,15 +189,23 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetConflictedOverlayIcon()
         {
             if (mConflictedOverlayIcon == null)
-                mConflictedOverlayIcon = EditorGUIUtility.IconContent("P4_Conflicted").image;
+                mConflictedOverlayIcon = GetImage(Name.IconMergeConflictOverlay);
 
             return mConflictedOverlayIcon;
+        }
+
+        internal static Texture GetConflictResolvedOverlayIcon()
+        {
+            if (mConflictResolvedOverlayIcon == null)
+                mConflictResolvedOverlayIcon = GetImage(Name.IconConflictResolvedOverlay);
+
+            return mConflictResolvedOverlayIcon;
         }
 
         internal static Texture GetLockedLocalOverlayIcon()
         {
             if (mLockedLocalOverlayIcon == null)
-                mLockedLocalOverlayIcon = EditorGUIUtility.IconContent("P4_LockedLocal").image;
+                mLockedLocalOverlayIcon = GetImage(Name.IconLockedLocalOverlay);
 
             return mLockedLocalOverlayIcon;
         }
@@ -191,9 +213,17 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetLockedRemoteOverlayIcon()
         {
             if (mLockedRemoteOverlayIcon == null)
-                mLockedRemoteOverlayIcon = EditorGUIUtility.IconContent("P4_LockedRemote").image;
+                mLockedRemoteOverlayIcon = GetImage(Name.IconLockedRemoteOverlay);
 
             return mLockedRemoteOverlayIcon;
+        }
+
+        internal static Texture GetIgnoredOverlayIcon()
+        {
+            if (mIgnoredverlayIcon == null)
+                mIgnoredverlayIcon = GetImage(Name.IgnoredOverlay);
+
+            return mIgnoredverlayIcon;
         }
 
         internal static Texture GetWarnIcon()
@@ -238,10 +268,15 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal static Texture GetRefreshIcon()
         {
-            if (mRefreshIcon == null)
-                mRefreshIcon = EditorGUIUtility.FindTexture("Refresh");
+            return EditorGUIUtility.IconContent("refresh").image;
+        }
 
-            return mRefreshIcon;
+        internal static Texture GetSettingsIcon()
+        {
+            if (mSettingsIcon == null)
+                mSettingsIcon = EditorGUIUtility.IconContent("settings").image;
+
+            return mSettingsIcon;
         }
 
         internal static Texture GetCloseIcon()
@@ -347,13 +382,15 @@ namespace Unity.PlasticSCM.Editor.UI
 
         static Texture mPrivatedOverlayIcon;
         static Texture mAddedOverlayIcon;
-        static Texture mDeletedOverlayIcon;
-        static Texture mCheckedOutOverlayIcon;
+        static Texture mDeletedLocalOverlayIcon;
         static Texture mDeletedRemoteOverlayIcon;
+        static Texture mCheckedOutOverlayIcon;
         static Texture mOutOfSyncOverlayIcon;
         static Texture mConflictedOverlayIcon;
+        static Texture mConflictResolvedOverlayIcon;
         static Texture mLockedLocalOverlayIcon;
         static Texture mLockedRemoteOverlayIcon;
+        static Texture mIgnoredverlayIcon;
 
         static Texture mWarnIcon;
         static Texture mInfoIcon;
@@ -363,6 +400,7 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture mInfoDialogIcon;
 
         static Texture mRefreshIcon;
+        static Texture mSettingsIcon;
 
         static Texture mCloseIcon;
         static Texture mClickedCloseIcon;

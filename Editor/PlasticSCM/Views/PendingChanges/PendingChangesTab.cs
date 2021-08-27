@@ -6,6 +6,7 @@ using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 using Codice.Client.BaseCommands;
+using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Commands;
 using Codice.Client.Common;
 using Codice.Client.Common.FsNodeReaders;
@@ -37,6 +38,7 @@ using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.Tool;
 
 using GluonNewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncomingChangesUpdater;
+using Codice.CM.Client.Gui;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
@@ -92,11 +94,11 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mNotificationDrawer = notificationDrawer;
             mParentWindow = parentWindow;
             mGuiMessage = new UnityPlasticGuiMessage(parentWindow);
-
+            mMergeViewLauncher = mergeViewLauncher;
             mCheckedStateManager = new CheckedStateManager();
 
             mNewChangesInWk = NewChangesInWk.Build(
-                mWkInfo, 
+                mWkInfo,
                 new BuildWorkspacekIsRelevantNewChange());
 
             BuildComponents(isGluonMode, parentWindow);
@@ -143,13 +145,16 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         internal void ClearIsCommentWarningNeeded()
         {
-            mIsCommentWarningNeeded = false;
+            mIsEmptyCheckinCommentWarningNeeded = false;
         }
 
         internal void UpdateIsCommentWarningNeeded(string comment)
         {
-            mIsCommentWarningNeeded = string.IsNullOrEmpty(comment)
-                && mPendingChanges.HasPendingChanges();
+            mIsEmptyCheckinCommentWarningNeeded =
+                string.IsNullOrEmpty(comment) &&
+                GuiClientConfig.Get().Configuration.ShowEmptyCommentWarning;
+
+            mNeedsToShowEmptyCommentDialog = mIsEmptyCheckinCommentWarningNeeded;
         }
 
         internal void OnDisable()
@@ -165,6 +170,18 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         internal void Update()
         {
             mProgressControls.UpdateProgress(mParentWindow);
+
+            // Displaying the dialog here, because showing it during the window's OnGUI function
+            // caused errors
+            if(mNeedsToShowEmptyCommentDialog)
+            {
+                mNeedsToShowEmptyCommentDialog = false;
+
+                mHasPendingCheckinFromPreviousUpdate =
+                    EmptyCheckinMessageDialog.ShouldContinueWithCheckin(mParentWindow, mWkInfo);
+
+                mIsEmptyCheckinCommentWarningNeeded = !mHasPendingCheckinFromPreviousUpdate;
+            }
         }
 
         internal void OnGUI()
@@ -175,7 +192,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             DoActionsToolbar(
                 mWkInfo,
                 mIsGluonMode,
-                this,
                 mProgressControls,
                 mParentWindow);
 
@@ -198,6 +214,14 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             }
 
             DrawHelpPanel.For(mHelpPanel);
+        }
+
+        internal void DrawSearchFieldForPendingChangesTab()
+        {
+            DrawSearchField.For(
+                mSearchField,
+                mPendingChangesTreeView,
+                UnityConstants.SEARCH_FIELD_WIDTH);
         }
 
         void IPendingChangesView.ClearComments()
@@ -681,13 +705,23 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             using (new GuiEnabled(!isOperationRunning))
             {
-                if (DrawActionButton.ForCommentSection(PlasticLocalization.GetString(
-                        PlasticLocalization.Name.CheckinChanges)))
+                if(mHasPendingCheckinFromPreviousUpdate)
+                {
+                    mHasPendingCheckinFromPreviousUpdate = false;
+                    CheckinChanges(wkInfo, isGluonMode);
+                }
+
+                else if (DrawActionButton.ForCommentSection(
+                        PlasticLocalization.GetString(
+                            PlasticLocalization.Name.CheckinChanges)))
                 {
                     UpdateIsCommentWarningNeeded(CommentText);
 
-                    if (!mIsCommentWarningNeeded)
-                        CheckinForMode(wkInfo, isGluonMode, mKeepItemsLocked);
+                    if (!mIsEmptyCheckinCommentWarningNeeded &&
+                        mPendingChanges.HasPendingChanges())
+                    {
+                        CheckinChanges(wkInfo, isGluonMode);
+                    }
                 }
 
                 GUILayout.Space(2);
@@ -695,6 +729,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 if (DrawActionButton.ForCommentSection(PlasticLocalization.GetString(
                         PlasticLocalization.Name.UndoChanges)))
                 {
+                    TrackFeatureUseEvent.For(PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
+                        TrackFeatureUseEvent.Features.UndoTextButton);
                     UndoForMode(wkInfo, isGluonMode);
                 }
 
@@ -717,13 +753,15 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                         advancedDropdownMenu.DropDown(dropDownRect);
                 }*/
             }
-            if (mIsCommentWarningNeeded)
-            {
-                GUILayout.Space(5);
-                DoCheckinWarningMessage();
-            }
 
             EditorGUILayout.EndHorizontal();
+        }
+
+        void CheckinChanges(WorkspaceInfo wkInfo, bool isGluonMode)
+        {
+            CheckinForMode(wkInfo, isGluonMode, mKeepItemsLocked);
+
+            CommentText = string.Empty;
         }
 
         void UpdateChangesTree()
@@ -759,30 +797,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             }
         }
 
-        static void DoCheckinWarningMessage()
-        {
-            string label = PlasticLocalization.GetString(PlasticLocalization.Name.PleaseComment);
-
-            GUILayout.Label(
-                new GUIContent(label, Images.GetWarnIcon()),
-                UnityStyles.PendingChangesTab.CommentWarningIcon);
-        }
-
         void DoActionsToolbar(
             WorkspaceInfo workspaceInfo,
             bool isGluonMode,
-            IRefreshableView refreshableView,
             ProgressControlsForViews progressControls,
             EditorWindow editorWindow)
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
-
-            string checkinHeader = string.Format(
-                PlasticLocalization.GetString(PlasticLocalization.Name.CheckinHeader),
-                mPendingChangesTreeView.GetSelectedItemCount(),
-                mPendingChangesTreeView.GetTotalItemCount());
-
-            GUILayout.Label(checkinHeader, UnityStyles.PendingChangesTab.HeaderLabel);
 
             if (progressControls.IsOperationRunning())
             {
@@ -791,15 +812,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             }
 
             GUILayout.FlexibleSpace();
-
-            DrawSearchField.For(
-                mSearchField,
-                mPendingChangesTreeView,
-                UnityConstants.SEARCH_FIELD_WIDTH);
-
-            DoRefreshButton(
-                refreshableView,
-                progressControls.IsOperationRunning());
 
             EditorGUILayout.EndHorizontal();
         }
@@ -842,19 +854,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 desiredTreeHeight);
 
             mergeLinksListView.OnGUI(treeRect);
-        }
-
-        static void DoRefreshButton(
-            IRefreshableView refreshableView,
-            bool isOperationRunning)
-        {
-            EditorGUI.BeginDisabledGroup(isOperationRunning);
-
-            if (GUILayout.Button(new GUIContent(
-                    Images.GetRefreshIcon()), EditorStyles.toolbarButton))
-                refreshableView.Refresh();
-
-            EditorGUI.EndDisabledGroup();
         }
 
         void BuildComponents(
@@ -906,7 +905,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         bool mIsRefreshing;
 
         bool mIsAutoRefreshDisabled;
-        bool mIsCommentWarningNeeded = false;
+        bool mIsEmptyCheckinCommentWarningNeeded = false;
+        bool mNeedsToShowEmptyCommentDialog = false;
+        bool mHasPendingCheckinFromPreviousUpdate = false;
         bool mKeepItemsLocked;
         string mGluonWarningMessage;
         
@@ -932,6 +933,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         readonly WorkspaceWindow mWorkspaceWindow;
         readonly ViewHost mViewHost;
         readonly WorkspaceInfo mWkInfo;
+        readonly IMergeViewLauncher mMergeViewLauncher;
 
         static readonly ILog mLog = LogManager.GetLogger("PendingChangesTab");
     }

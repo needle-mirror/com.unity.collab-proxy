@@ -36,9 +36,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CreationDateColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CreatedByColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn));
-            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.BranchColumn));
-            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.RepositoryColumn));
-            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.GuidColumn));
             return result;
         }
 
@@ -54,12 +51,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                     return PlasticLocalization.GetString(PlasticLocalization.Name.CreatedByColumn);
                 case ChangesetsListColumn.Comment:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn);
-                case ChangesetsListColumn.Branch:
-                    return PlasticLocalization.GetString(PlasticLocalization.Name.BranchColumn);
-                case ChangesetsListColumn.Repository:
-                    return PlasticLocalization.GetString(PlasticLocalization.Name.RepositoryColumn);
-                case ChangesetsListColumn.Guid:
-                    return PlasticLocalization.GetString(PlasticLocalization.Name.GuidColumn);
                 default:
                     return null;
             }
@@ -81,58 +72,37 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         static Column[] BuildColumns()
         {
             return new Column[]
+            {
+                new Column()
                 {
-                    new Column()
-                    {
-                        width = UnityConstants.ChangesetsColumns.CHANGESET_NUMBER_WIDTH,
-                        minWidth = UnityConstants.ChangesetsColumns.CHANGESET_NUMBER_MIN_WIDTH,
-                        headerContent = new GUIContent(
-                            GetColumnName(ChangesetsListColumn.Name)),
-                        allowToggleVisibility = false
-                    },
-                    new Column()
-                    {
-                        width = UnityConstants.ChangesetsColumns.CREATION_DATE_WIDTH,
-                        minWidth = UnityConstants.ChangesetsColumns.CREATION_DATE_MIN_WIDTH,
-                        headerContent = new GUIContent(
-                            GetColumnName(ChangesetsListColumn.CreationDate))
-                    },
-                    new Column()
-                    {
-                        width = UnityConstants.ChangesetsColumns.CREATED_BY_WIDTH,
-                        minWidth = UnityConstants.ChangesetsColumns.CREATED_BY_MIN_WIDTH,
-                        headerContent = new GUIContent(
-                            GetColumnName(ChangesetsListColumn.CreatedBy))
-                    },
-                    new Column()
-                    {
-                        width = UnityConstants.ChangesetsColumns.COMMENT_WIDTH,
-                        minWidth = UnityConstants.ChangesetsColumns.COMMENT_MIN_WIDTH,
-                        headerContent = new GUIContent(
-                            GetColumnName(ChangesetsListColumn.Comment))
-                    },
-                    new Column()
-                    {
-                        width = UnityConstants.ChangesetsColumns.BRANCH_WIDTH,
-                        minWidth = UnityConstants.ChangesetsColumns.BRANCH_MIN_WIDTH,
-                        headerContent = new GUIContent(
-                            GetColumnName(ChangesetsListColumn.Branch))
-                    },
-                    new Column()
-                    {
-                        width = UnityConstants.ChangesetsColumns.REPOSITORY_WIDTH,
-                        minWidth = UnityConstants.ChangesetsColumns.REPOSITORY_MIN_WIDTH,
-                        headerContent = new GUIContent(
-                            GetColumnName(ChangesetsListColumn.Repository))
-                    },
-                    new Column()
-                    {
-                        width = UnityConstants.ChangesetsColumns.GUID_WIDTH,
-                        minWidth = UnityConstants.ChangesetsColumns.GUID_MIN_WIDTH,
-                        headerContent = new GUIContent(
-                            GetColumnName(ChangesetsListColumn.Guid))
-                    }
-                };
+                    width = UnityConstants.ChangesetsColumns.CHANGESET_NUMBER_WIDTH,
+                    minWidth = UnityConstants.ChangesetsColumns.CHANGESET_NUMBER_MIN_WIDTH,
+                    headerContent = new GUIContent(
+                        GetColumnName(ChangesetsListColumn.Name)),
+                    allowToggleVisibility = false
+                },
+                new Column()
+                {
+                    width = UnityConstants.ChangesetsColumns.CREATION_DATE_WIDTH,
+                    minWidth = UnityConstants.ChangesetsColumns.CREATION_DATE_MIN_WIDTH,
+                    headerContent = new GUIContent(
+                        GetColumnName(ChangesetsListColumn.CreationDate))
+                },
+                new Column()
+                {
+                    width = UnityConstants.ChangesetsColumns.CREATED_BY_WIDTH,
+                    minWidth = UnityConstants.ChangesetsColumns.CREATED_BY_MIN_WIDTH,
+                    headerContent = new GUIContent(
+                        GetColumnName(ChangesetsListColumn.CreatedBy))
+                },
+                new Column()
+                {
+                    width = UnityConstants.ChangesetsColumns.COMMENT_WIDTH,
+                    minWidth = UnityConstants.ChangesetsColumns.COMMENT_MIN_WIDTH,
+                    headerContent = new GUIContent(
+                        GetColumnName(ChangesetsListColumn.Comment))
+                }
+            };
         }
 
         ChangesetsListHeaderState(Column[] columns)

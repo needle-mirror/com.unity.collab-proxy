@@ -128,7 +128,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
         static Data ForConflict(bool isResolved)
         {
             if (isResolved)
-                return BuildData.ForOk();
+                return BuildData.ForConflictResolved();
 
             return BuildData.ForConflicted();
         }
@@ -152,7 +152,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             internal static Data ForIgnored()
             {
                 return new Data(
-                    Images.GetImage(Images.Name.Ignored),
+                    Images.GetIgnoredOverlayIcon(),
                     GetLeftXOffset(),
                     GetBottomYOffset(),
                     SIZE);
@@ -179,7 +179,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             internal static Data ForDeleted()
             {
                 return new Data(
-                    Images.GetDeletedOverlayIcon(),
+                    Images.GetDeletedLocalOverlayIcon(),
                     GetLeftXOffset(),
                     GetTopYOffset(),
                     SIZE);
@@ -198,7 +198,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             {
                 return new Data(
                     Images.GetDeletedRemoteOverlayIcon(),
-                    GetRightXOffset(),
+                    GetLeftXOffset(),
                     GetTopYOffset(),
                     SIZE);
             }
@@ -244,6 +244,15 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                     SIZE);
             }
 
+            internal static Data ForConflictResolved()
+            {
+                return new Data(
+                    Images.GetConflictResolvedOverlayIcon(),
+                    GetLeftXOffset(),
+                    GetBottomYOffset(),
+                    SIZE);
+            }
+
             static float GetRightXOffset()
             {
                 return 8f;
@@ -259,7 +268,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                 return -1f;
             }
 
-            const float SIZE = 16;
+            const float SIZE = 16f;
         }
     }
 }

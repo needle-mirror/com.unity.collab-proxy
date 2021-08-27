@@ -88,6 +88,27 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             state.visibleColumns = result.ToArray();
         }
 
+        internal void UpdateItemColumnHeader(PendingChangesTreeView treeView)
+        {
+            Column itemColumn = columns[(int)PendingChangesTreeColumn.Item];
+            string columnName = GetColumnName(PendingChangesTreeColumn.Item);
+            int totalItemCount = treeView.GetTotalItemCount();
+
+            if (totalItemCount > 0)
+            {
+                string columnStatus = string.Format(
+                    PlasticLocalization.GetString(PlasticLocalization.Name.ItemsSelected),
+                    treeView.GetSelectedItemCount(),
+                    totalItemCount);
+
+                itemColumn.headerContent.text = string.Format("{0} {1}", columnName, columnStatus);
+            }
+            else
+            {
+                itemColumn.headerContent.text = columnName;
+            }
+        }
+
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             if (mHeaderTitles != null)

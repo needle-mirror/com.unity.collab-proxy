@@ -50,6 +50,19 @@ namespace Unity.PlasticSCM.Editor
             mIsInitialized = true;
         }
 
+        // These two (ClientHandlers and ThreadWatier) need to be reinitialized if they have not been 
+        // or else an error will be thrown and the Plastic context menu will not show up
+        internal static void RegisterClientHandlersIfNeeded()
+        {
+            if (mIsInitialized)
+                return;
+
+            ClientHandlers.Register();
+            ThreadWaiter.Initialize(new UnityThreadWaiterBuilder());
+
+            mIsInitialized = true;
+        }
+
         internal static void Dispose()
         {
             UnRegisterExceptionHandlers();

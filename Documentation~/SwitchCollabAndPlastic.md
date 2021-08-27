@@ -5,3 +5,5 @@ To switch from Collaborate to Plastic SCM, open your **Project Settings** &gt; *
 ![Collaborate switch](images/SwitchCollab.png)
 
 To switch from Plastic SCM to Collaborate, navigate to your Plastic SCM window, select **Settings** (gear icon) &gt; **Turn off Plastic SCM for Unity**.
+
+![Plastic switch](images/GearIconOptions.png)

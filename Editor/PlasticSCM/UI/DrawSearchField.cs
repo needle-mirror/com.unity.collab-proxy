@@ -14,8 +14,8 @@ namespace Unity.PlasticSCM.Editor.UI
             float width)
         {
             Rect searchFieldRect = GUILayoutUtility.GetRect(
-                width / 2, EditorGUIUtility.singleLineHeight);
-            searchFieldRect.y += 2;
+                width / 2f, EditorGUIUtility.singleLineHeight);
+            searchFieldRect.y += 2f;
 
             treeView.searchString = searchField.OnToolbarGUI(
                 searchFieldRect, treeView.searchString);

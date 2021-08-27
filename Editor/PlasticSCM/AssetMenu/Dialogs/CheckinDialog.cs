@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-
+using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Common;
 using Codice.CM.Common;
 using GluonGui;
@@ -209,6 +209,15 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             }
             finally
             {
+                if (!mSentCheckinTrackEvent)
+                {
+                    TrackFeatureUseEvent.For(
+                      PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                      TrackFeatureUseEvent.Features.ContextMenuCheckinDialogCheckin);
+
+                    mSentCheckinTrackEvent = true;
+                }
+
                 GUI.enabled = true;
             }
 
@@ -220,6 +229,15 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             if (!NormalButton(PlasticLocalization.GetString(
                     PlasticLocalization.Name.CancelButton)))
                 return;
+
+            if (!mSentCancelTrackEvent)
+            {
+                TrackFeatureUseEvent.For(
+                    PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                    TrackFeatureUseEvent.Features.ContextMenuCheckinDialogCancel);
+
+                mSentCancelTrackEvent = true;
+            }
 
             CancelButtonAction();
         }
@@ -303,6 +321,10 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
 
         bool mIsRunningCheckin;
         Vector2 mFileListScrollPosition;
+
+        // IMGUI evaluates every frame, need to make sure feature tracks get sent only once
+        bool mSentCheckinTrackEvent = false;
+        bool mSentCancelTrackEvent = false;
 
         ProgressControlsForDialogs mProgressControls;
 

@@ -1,5 +1,4 @@
 ﻿using System.IO;
-
 using Codice.Client.Common;
 using Codice.CM.Common;
 using PlasticGui;
@@ -12,8 +11,7 @@ namespace Unity.PlasticSCM.Editor
         {
             try
             {
-                return FindWorkspacePath(
-                    path, ClientConfig.Get().GetWkConfigDir());
+                return FindWorkspacePath(path, ClientConfig.Get().GetWkConfigDir());
             }
             catch (NotConfiguredClientException)
             {
@@ -21,8 +19,7 @@ namespace Unity.PlasticSCM.Editor
             }
         }
 
-        internal static WorkspaceInfo InfoForApplicationPath(
-            string path, IPlasticAPI plasticApi)
+        internal static WorkspaceInfo InfoForApplicationPath(string path, IPlasticAPI plasticApi)
         {
             string wkPath = PathForApplicationPath(path);
 

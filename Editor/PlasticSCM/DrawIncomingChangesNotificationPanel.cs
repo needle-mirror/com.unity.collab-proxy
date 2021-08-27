@@ -51,8 +51,7 @@ namespace Unity.PlasticSCM.Editor
 
     internal static class DrawIncomingChangesNotificationPanel
     {
-        internal static void ForMode(
-            WorkspaceInfo workspaceInfo,
+        internal static void For(WorkspaceInfo workspaceInfo,
             WorkspaceWindow workspaceWindow,
             IMergeViewLauncher mergeViewLauncher,
             IGluonViewSwitcher gluonSwitcher,
@@ -60,35 +59,45 @@ namespace Unity.PlasticSCM.Editor
             bool isVisible,
             NotificationPanelData notificationPanelData)
         {
-            if (!isVisible)
-                return;
+            GUILayout.BeginVertical();
+            GUILayout.FlexibleSpace();
+            
+            var icon = Images.GetImage(
+                notificationPanelData.NotificationStyle == NotificationPanelData.StyleType.Green
+                ? Images.Name.DownloadIconGreen : Images.Name.DownloadIconRed);
+            GUILayout.Label(icon, GUILayout.Height(16), GUILayout.Width(16));
 
-            GUIContent labelContent = new GUIContent(
-                notificationPanelData.InfoText, notificationPanelData.TooltipText);
-            GUIContent buttonContent = new GUIContent(
-                notificationPanelData.ActionText, notificationPanelData.TooltipText);
+            GUILayout.FlexibleSpace();
+            GUILayout.EndVertical();
 
-            float panelWidth = GetPanelWidth(
-                labelContent, buttonContent,
-                UnityStyles.Notification.Label, EditorStyles.miniButton);
 
-            EditorGUILayout.BeginHorizontal(
-                GetStyle(notificationPanelData.NotificationStyle),
-                GUILayout.Width(panelWidth));
+            GUILayout.BeginVertical();
+            GUILayout.FlexibleSpace();
 
-            GUILayout.Label(labelContent, UnityStyles.Notification.Label);
+            GUIStyle labelStyle = new GUIStyle(EditorStyles.label);
+            labelStyle.fontStyle = FontStyle.Bold;
+            GUILayout.Label(notificationPanelData.InfoText, labelStyle);
 
+            GUILayout.FlexibleSpace();
+            GUILayout.EndVertical();
+
+            GUILayout.BeginVertical();
+            GUILayout.FlexibleSpace();
+
+            GUIStyle buttonStyle = new GUIStyle(EditorStyles.miniButtonLeft);
+            buttonStyle.fixedWidth = 60;
             DoActionButton(
                 workspaceInfo, workspaceWindow,
                 mergeViewLauncher, gluonSwitcher, isGluonMode,
                 notificationPanelData.HasUpdateAction,
-                buttonContent, EditorStyles.miniButton);
+                new GUIContent(
+                notificationPanelData.ActionText, notificationPanelData.TooltipText), buttonStyle);
 
-            EditorGUILayout.EndHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.EndVertical();
         }
 
-        static void DoActionButton(
-            WorkspaceInfo workspaceInfo,
+        static void DoActionButton(WorkspaceInfo workspaceInfo,
             WorkspaceWindow workspaceWindow,
             IMergeViewLauncher mergeViewLauncher,
             IGluonViewSwitcher gluonSwitcher,
@@ -97,21 +106,18 @@ namespace Unity.PlasticSCM.Editor
             GUIContent buttonContent,
             GUIStyle buttonStyle)
         {
-            if (!GUILayout.Button(
-                    buttonContent, buttonStyle,
-                    GUILayout.ExpandHeight(true),
-                    GUILayout.MinWidth(40)))
-                return;
-
-            if (isUpdateAction)
+            if (GUILayout.Button(buttonContent, buttonStyle))
             {
-                workspaceWindow.UpdateWorkspace();
-                return;
-            }
+                if (isUpdateAction)
+                {
+                    workspaceWindow.UpdateWorkspace();
+                    return;
+                }
 
-            ShowIncomingChangesForMode(
-                workspaceInfo, mergeViewLauncher,
-                gluonSwitcher, isGluonMode);
+                ShowIncomingChangesForMode(
+                    workspaceInfo, mergeViewLauncher,
+                    gluonSwitcher, isGluonMode);
+            }
         }
 
         static void ShowIncomingChangesForMode(
@@ -129,23 +135,6 @@ namespace Unity.PlasticSCM.Editor
 
             ShowIncomingChanges.FromNotificationBar(
                 workspaceInfo, mergeViewLauncher);
-        }
-
-        static GUIStyle GetStyle(
-            NotificationPanelData.StyleType styleType)
-        {
-            if (styleType == NotificationPanelData.StyleType.Red)
-                return UnityStyles.Notification.RedNotification;
-
-            return UnityStyles.Notification.GreenNotification;
-        }
-
-        static float GetPanelWidth(
-            GUIContent labelContent, GUIContent buttonContent,
-            GUIStyle labelStyle, GUIStyle buttonStyle)
-        {
-            return labelStyle.CalcSize(labelContent).x +
-                buttonStyle.CalcSize(buttonContent).x + 12;
         }
     }
 }

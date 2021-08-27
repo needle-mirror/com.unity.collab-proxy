@@ -1,42 +1,12 @@
 # Getting started with an existing Plastic SCM repository
 
-1. Download and install the Plastic SCM [Cloud Client](https://www.plasticscm.com/download/).
+Suppose you want to start working on a Unity project in an existing Plastic SCM repository and already have a Plastic SCM account linked to your Unity ID. In that case, you will be able to open the project straight from the **Unity Hub**! A workspace will automatically be created for your project on your machine.
 
-2. Open the Plastic SCM Cloud Client and log in.
 
-   ![Plastic sign-in page](images/SignIn.png)
+* In **Hub v3 Beta**, select **Open** &gt; **Open Remote Project** to see the list of your Plastic SCM repositories that contain a Unity project.
+* In **Hub 2.4.4** and up, your Plastic SCM projects will be listed alongside Collaborate projects.
 
-3. Join the Plastic **Organization** (this is different from your Unity organization) where the existing repository is located).
-
-4. Select the workflow that fits your needs.
-
-* **Developer Workflow**
-
-  With this workflow, you can work with branching and merging. To check in your changes straight to your cloud repository, create your workspace using the centralized tab.
-
-  ![Developer workflow](images/DeveloperWorkflow.png)
-
-* **Gluon Workflow**
-
-    This workflow tailored for artists allows you to pick the files you want to work on and check them back in without updating your whole workspace. To work inside the Unity Editor, make sure to configure Gluon to pull down all Unity project files required to open a Unity project.
-
-  ![Gluon workflow](images/GluonWorkflow.png)
-
-5. Create a Workspace.
-
-* If your Unity project files are already on your machine, select the directory path corresponding to your Unity project's root.
-* If your Unity project files are not on your machine, you can choose any location in which to create your workspace.
-
-6. Update or Configure your Workspace.
-
-* If you select the **Gluon Workflow** , configure your workspace to pull down all Unity project files required to open a Unity project.
-* If you choose the **Developer Workflow** , update your workspace to ensure your project is up to date with all incoming changes.
-
-7. Open your Unity project through the Hub.
-
-   **Note**: Unity will add the ability to join projects directly from the Unity Hub in a future version.
-
-8. Select **Window** &gt; **Plastic SCM**.
+![Plastic Hub](images/plasticHub.gif)
 
 ## Accessing the Plastic SCM Window
 

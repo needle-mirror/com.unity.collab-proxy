@@ -187,7 +187,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
                 switch (status)
                 {
                     case AssetStatus.Ignored:
-                        return Images.GetImage(Images.Name.Ignored);
+                        return Images.GetIgnoredOverlayIcon();
                     case AssetStatus.Private:
                         return Images.GetPrivatedOverlayIcon();
                     case AssetStatus.Added:
@@ -214,8 +214,8 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
                 return new Rect(
                     rect.x - width,
                     rect.y - height,
-                    rect.width + 2 * width,
-                    rect.height + 2 * height);
+                    rect.width + 2f * width,
+                    rect.height + 2f * height);
             }
 
             static Rect GetOverlayRect(
@@ -242,7 +242,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
                     return overlayRect;
                 }
 
-                return Inflate(overlayRect, 3, 3);
+                return Inflate(overlayRect, 3f, 3f);
             }
 
             static Rect GetOverlayRectForSmallestSize(
@@ -250,8 +250,8 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
                 Texture overlayIcon,
                 OverlayAlignment alignment)
             {
-                float xOffset = IsLeftAligned(alignment) ? -5 : 5;
-                float yOffset = IsTopAligned(alignment) ? -4 : 4;
+                float xOffset = IsLeftAligned(alignment) ? -5f : 5f;
+                float yOffset = IsTopAligned(alignment) ? -4f : 4f;
 
                 return new Rect(
                     selectionRect.x + xOffset,
@@ -266,10 +266,10 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
                 OverlayAlignment alignment)
             {
                 float xOffset = IsLeftAligned(alignment) ?
-                    0 : selectionRect.width - overlayIcon.width;
+                    0f : selectionRect.width - overlayIcon.width;
 
                 float yOffset = IsTopAligned(alignment) ?
-                    0 : selectionRect.height - overlayIcon.height - 12;
+                    0f : selectionRect.height - overlayIcon.height;
 
                 return new Rect(
                     selectionRect.x + xOffset,
@@ -318,7 +318,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
         static IAssetStatusCache mAssetStatusCache;
         static Action mRepaintProjectWindow;
 
-        const float OVERLAY_ICON_SIZE = 16;
+        const float OVERLAY_ICON_SIZE = 16f;
     }
 }
 

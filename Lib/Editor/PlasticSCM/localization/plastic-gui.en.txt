@@ -352,6 +352,9 @@ Guid
 == CommentColumn ==
 Comment
 
+== ItemsSelected ==
+({0}/{1} selected)
+
 == ChangedItemsSelectedSingular ==
 Changed items - {0} of 1 item selected
 
@@ -451,8 +454,17 @@ Annotate
 == NoItemsAreSelected ==
 No items are selected. Use the items' checkboxes to select them. This can also occur if you have selected items, but they are all ignored.
 
+== EmptyCommentsDialogTitle ==
+Empty Checkin Message
+
+== EmptyCommentsDialogContent ==
+Checkin comment is blank. Writing a comment is recommended.
+
 == EmptyComments ==
 The comment field is empty. Don't forget to add a checkin comment before creating a new changeset.
+
+== CheckinAnyway ==
+Checkin Anyway
 
 == RepositoryNameLabel ==
 Name of the new repository:
@@ -1289,10 +1301,10 @@ Only filesystem permissions changed: 1 item
 Only filesystem permissions changed: {0} items
 
 == Source ==
-Source:
+Source/theirs:
 
 == Destination ==
-Destination:
+Destination/yours:
 
 == KeepSrcChanges ==
 Keep source changes
@@ -1751,6 +1763,9 @@ Diff ancestor with destination contributor
 
 == DiffSourceWithAncestor ==
 Diff ancestor with source contributor
+
+== DiffSourceWithDestination ==
+Diff source with destination
 
 == DiffSourceWithDestinationEvilTwin ==
 Diff item added in source with item added in destination
@@ -4725,6 +4740,9 @@ No connection profile found for server '{0}', please configure one.
 == UserProfileWrongAuthMode ==
 The user profile can only be configured using LDAP or User/Password authentication.
 
+== UserProfileCloudServer ==
+The user profile can't be configured for cloud servers.
+
 == LoadingUserProfile ==
 Loading user profile...
 
@@ -6133,6 +6151,9 @@ Loading members...
 == UserChooserDialogTitle ==
 Please select a user or group from the list below:
 
+== SelectUserGroupDialogTitle ==
+Select user or group
+
 == NoUserSelectedErrorMessage ==
 Select a user from the list
 
@@ -6346,6 +6367,9 @@ You are going to delete the selected group of branches.
 == ContinueQuestion ==
 Do you want to continue?
 
+== DoNotShowMessageAgain ==
+Do not show this message again
+
 == PathPermissions ==
 Path permissions
 
@@ -6429,6 +6453,9 @@ Copy link to share the code review
 
 == MainWindowTitleForLinux ==
 Plastic SCM - wk: {0}
+
+== MainWindowTitleForAvalonia ==
+ wk: {0} - Plastic SCM
 
 == GluonFilePlasticLinkText ==
 Get link - copy a link to this file so you can easily share it with others
@@ -6782,7 +6809,7 @@ Configure Gluon
 Launch branch explorer
 
 == LaunchPlasticButton ==
-Launch Plastic
+Launch Plastic SCM
 
 == CannotWriteCloudProjectId ==
 Cannot write cloudProjectId: Method PlayerSettings.SetCloudProjectId not found
@@ -7016,7 +7043,7 @@ Cmd+H
 Ctrl+H
 
 == TurnOffPlasticSCM ==
-Turn off Plastic SCM for Unity
+Turn Off Plastic SCM for Unity
 
 == TurnOffPlasticSCMDescrition ==
 Here you can turn off Plastic. It will delete current workspace and Plastic settings, but the files will remain intact.
@@ -7038,6 +7065,12 @@ Cleaning the settings
 
 == TurnOffPlasticSCMDeleting ==
 Deleting the workspace
+
+== DisableForcedCheckout ==
+Disable Forced Checkout of Unity Assets
+
+== EnableForcedCheckout ==
+Enable Forced Checkout of Unity Assets
 
 == StatusBarReady ==
 Ready

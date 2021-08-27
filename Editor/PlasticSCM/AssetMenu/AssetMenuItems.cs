@@ -7,6 +7,7 @@ using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.Inspector;
 using Unity.PlasticSCM.Editor.UI;
 using System.ComponentModel;
+using Codice.Client.BaseCommands.EventTracking;
 
 namespace Unity.PlasticSCM.Editor.AssetMenu
 {
@@ -15,6 +16,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
     {
         static AssetMenuItems()
         {
+            sPlasticAPI = new PlasticAPI();
+
             BackgroundWorker backgroundWorker = new BackgroundWorker();
             backgroundWorker.DoWork += new DoWorkEventHandler(BackgroundWorker_DoWork);
             backgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorker_CompletedWork);
@@ -28,23 +31,22 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         static void BackgroundWorker_CompletedWork(object sender, RunWorkerCompletedEventArgs e)
         {
-            sPlasticAPI = new PlasticAPI();
+            PlasticApp.RegisterClientHandlersIfNeeded();
             Enable();
         }
 
         // TODO: do this after calling plastic workspace
         internal static void Enable()
         {
-            if (sPlasticAPI==null) sPlasticAPI = new PlasticAPI();
+            if (sPlasticAPI == null)
+                sPlasticAPI = new PlasticAPI();
 
             WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
                 Application.dataPath,
                 sPlasticAPI);
 
             if (wkInfo == null)
-            {
                 return;
-            }
 
             sOperations = new AssetMenuRoutingOperations();
             sAssetStatusCache = new AssetStatusCache(
@@ -146,6 +148,17 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         static void Checkin()
         {
+            WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
+                Application.dataPath,
+                sPlasticAPI);
+            
+            if (wkInfo != null)
+            {
+                TrackFeatureUseEvent.For(
+                    PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
+                    TrackFeatureUseEvent.Features.ContextMenuCheckinOption);
+            }
+
             sOperations.Checkin();
         }
 

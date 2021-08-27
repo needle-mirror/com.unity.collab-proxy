@@ -8,4 +8,5 @@ Collaborate makes it easy for teams to save, share, and sync their Unity project
 
 ## Plastic SCM
 
-Plastic SCM Plugin for Unity (beta) is a free Unity plugin that gives you the ability to use Plastic SCM, a leading version control solution, directly in Unity. It is currently available on the Unity Asset Store but will be moving to this package in an upcoming release.
+Plastic SCM Plugin for Unity is a free Unity plugin that gives you the ability to use Plastic SCM, a leading version control solution, directly in Unity. Get started with [Plastic SCM](QuickStartGuide.md).
+

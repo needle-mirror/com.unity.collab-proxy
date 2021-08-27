@@ -15,6 +15,7 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.Views.Diff.Dialogs;
 using Unity.PlasticSCM.Editor.Tool;
+using Codice.Client.BaseCommands.EventTracking;
 
 namespace Unity.PlasticSCM.Editor.Views.Diff
 {
@@ -78,7 +79,6 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             DoActionsToolbar(
                 mDiffs,
                 mProgressControls,
-                GetHeaderLabelText(mSelectedChangesetInfo),
                 mIsSkipMergeTrackingButtonVisible,
                 mIsSkipMergeTrackingButtonChecked,
                 mSearchField,
@@ -321,30 +321,15 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             diffTreeView.Reload();
         }
 
-        static string GetHeaderLabelText(
-            ChangesetInfo changesetInfo)
-        {
-            if (changesetInfo == null)
-                return PlasticLocalization.GetString(PlasticLocalization.Name.ChangesLabelPlural);
-
-            return string.Format(
-                PlasticLocalization.GetString(PlasticLocalization.Name.ChangesOfChangeset),
-                changesetInfo.ChangesetId);
-        }
-
         void DoActionsToolbar(
             List<ClientDiff> diffs,
             ProgressControlsForViews progressControls,
-            string headerLabelText,
             bool isSkipMergeTrackingButtonVisible,
             bool isSkipMergeTrackingButtonChecked,
             SearchField searchField,
             DiffTreeView diffTreeView)
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
-
-            GUILayout.Label(headerLabelText,
-                UnityStyles.DiffPanel.HeaderLabel);
 
             if (progressControls.IsOperationRunning())
             {
@@ -366,8 +351,24 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                 searchField,
                 diffTreeView,
                 UnityConstants.SEARCH_FIELD_WIDTH);
+            VerifyIfSearchFieldIsRecentlyFocused(searchField);
 
             EditorGUILayout.EndHorizontal();
+        }
+
+        void VerifyIfSearchFieldIsRecentlyFocused(SearchField searchField)
+        {
+            if (searchField.HasFocus() != mIsSearchFieldFocused)
+            {
+                mIsSearchFieldFocused = !mIsSearchFieldFocused;
+
+                if (mIsSearchFieldFocused)
+                {
+                    TrackFeatureUseEvent.For(
+                        PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                        TrackFeatureUseEvent.Features.ChangesetViewDiffSearchBox);
+                }
+            }
         }
 
         void DoSkipMergeTrackingButton(
@@ -381,7 +382,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                 PlasticLocalization.GetString(
                     PlasticLocalization.Name.SkipDiffMergeTracking));
 
-            GUIStyle buttonStyle = EditorStyles.toolbarButton;
+            GUIStyle buttonStyle = new GUIStyle(EditorStyles.toolbarButton);
 
             float buttonWidth = buttonStyle.CalcSize(buttonContent).x + 10;
 
@@ -393,6 +394,14 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             if (wasChecked == isChecked)
                 return;
+
+            // if user just checked the skip merge tracking button
+            if (isChecked)
+            {
+                TrackFeatureUseEvent.For(
+                    PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                    TrackFeatureUseEvent.Features.ChangesetViewSkipMergeTrackingButton);
+            }
 
             UpdateDiffTreeView(diffs, isChecked, diffTreeView);
 
@@ -428,6 +437,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         bool mIsSkipMergeTrackingButtonChecked;
 
         SearchField mSearchField;
+        bool mIsSearchFieldFocused = false;
+
         DiffTreeView mDiffTreeView;
 
         ChangesetInfo mSelectedChangesetInfo;

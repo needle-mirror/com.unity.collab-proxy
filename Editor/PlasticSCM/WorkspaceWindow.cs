@@ -37,7 +37,7 @@ namespace Unity.PlasticSCM.Editor
         {
             mUpdateNotifierForTesting = updateNotifier;
         }
-        internal string HeaderTitle { get; private set; }
+        internal WorkspaceStatusString.Data WorkspaceStatus { get; private set; }
         internal OperationProgressData Progress { get { return mOperationProgressData; } }
 
         internal Gluon.ProgressOperationHandler GluonProgressOperationHandler
@@ -126,20 +126,20 @@ namespace Unity.PlasticSCM.Editor
 
         void IWorkspaceWindow.UpdateTitle()
         {
-            string title = string.Empty;
+            WorkspaceStatusString.Data status = null;
 
             IThreadWaiter waiter = ThreadWaiter.GetWaiter();
             waiter.Execute(
                 /*threadOperationDelegate*/ delegate
                 {
-                    title = GetTitle(mWkInfo);
+                    status = GetWorkspaceStatus(mWkInfo);
                 },
                 /*afterOperationDelegate*/ delegate
                 {
                     if (waiter.Exception != null)
                         return;
 
-                    HeaderTitle = title;
+                    WorkspaceStatus = status;
 
                     RequestRepaint();
                 });
@@ -236,16 +236,9 @@ namespace Unity.PlasticSCM.Editor
             throw new NotImplementedException();
         }
 
-        static string GetTitle(WorkspaceInfo wkInfo)
+        static WorkspaceStatusString.Data GetWorkspaceStatus(WorkspaceInfo wkInfo)
         {
-            WorkspaceStatusString.Data wkStatusData =
-                WorkspaceStatusString.GetSelectorData(wkInfo);
-
-            return string.Format("{0} {1} @ {2} @ {3}",
-                wkStatusData.ObjectName,
-                wkStatusData.ObjectSpec,
-                wkStatusData.RepositoryName,
-                wkStatusData.Server);
+            return WorkspaceStatusString.GetSelectorData(wkInfo);
         }
         bool mRequestedRepaint;
 

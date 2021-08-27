@@ -303,7 +303,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
 
         static void DoLabel(string labelText)
         {
-            GUIStyle labelStyle = EditorStyles.label;
+            GUIStyle labelStyle = new GUIStyle(EditorStyles.label);
 
             Rect rect = GUILayoutUtility.GetRect(
                 new GUIContent(labelText),
@@ -361,8 +361,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
         {
             GUI.enabled = isEnabled;
 
-            GUIStyle radioButtonStyle =
-                EditorStyles.radioButton;
+            GUIStyle radioButtonStyle = new GUIStyle(EditorStyles.radioButton);
 
             var rect = GUILayoutUtility.GetRect(
                 new GUIContent(text),

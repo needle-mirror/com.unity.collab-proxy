@@ -69,7 +69,7 @@ namespace Unity.PlasticSCM.Editor.UI
             {
                 // If the Dialog has been saved into the Unity editor layout and persisted between restarts, the methods
                 // to configure the dialogs will be skipped. Simple fix here is to close it when this state is detected.
-                // Fixes a NPE loop when the state mentioned above is occuring.
+                // Fixes a NPE loop when the state mentioned above is occurring.
                 if (!mIsConfigured)
                 {
                     mIsClosed = true;
@@ -322,7 +322,7 @@ namespace Unity.PlasticSCM.Editor.UI
             }
         }
 
-        protected static bool AcceptButton(string text)
+        protected static bool AcceptButton(string text, int extraWidth = 10)
         {
             GUI.color = new Color(0.098f, 0.502f, 0.965f, .8f);
 
@@ -331,7 +331,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
             bool pressed = GUILayout.Button(
                 string.Empty, GetEditorSkin().button,
-                GUILayout.MinWidth(Math.Max(80, textWidth + 10)),
+                GUILayout.MinWidth(Math.Max(80, textWidth + extraWidth)),
                 GUILayout.Height(25));
 
             GUI.color = Color.white;
@@ -401,9 +401,9 @@ namespace Unity.PlasticSCM.Editor.UI
 
         EditorWindow mParentWindow;
 
-        protected const float DEFAULT_LINE_SPACING = -5;
-        const float DEFAULT_WIDTH = 500;
-        const float DEFAULT_HEIGHT = 180;
+        protected const float DEFAULT_LINE_SPACING = -5f;
+        const float DEFAULT_WIDTH = 500f;
+        const float DEFAULT_HEIGHT = 180f;
         const float DEFAULT_PARAGRAPH_SPACING = 10f;
 
         static class BuildLine

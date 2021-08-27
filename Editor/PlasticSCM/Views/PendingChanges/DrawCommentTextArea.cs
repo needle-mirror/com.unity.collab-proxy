@@ -70,7 +70,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             if (shouldBeFocusFixed)
                 EditorGUIUtility.keyboardControl = 0;
 
-            var modifiedTextAreaStyle = EditorStyles.textArea;
+            var modifiedTextAreaStyle = new GUIStyle(EditorStyles.textArea);
             modifiedTextAreaStyle.padding.left = 7;
             modifiedTextAreaStyle.padding.top = 5;
             modifiedTextAreaStyle.stretchWidth = false;

@@ -16,7 +16,6 @@ using Codice.LogWrapper;
 using CodiceApp.EventTracking;
 using GluonGui;
 using PlasticGui;
-using PlasticGui.Gluon;
 using PlasticGui.WebApi;
 using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetUtils;
@@ -38,10 +37,14 @@ using EventTracking = PlasticGui.EventTracking.EventTracking;
 using System.Linq;
 using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
 using Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs;
+using processor = Unity.PlasticSCM.Editor.AssetUtils.Processor;
 
 namespace Unity.PlasticSCM.Editor
 {
-    internal class PlasticWindow : EditorWindow,
+    /// <summary>
+    /// The Plastic SCM window.
+    /// </summary>
+    public class PlasticWindow : EditorWindow,
         PlasticGui.WorkspaceWindow.CheckIncomingChanges.IAutoRefreshIncomingChangesView,
         GluonCheckIncomingChanges.IAutoRefreshIncomingChangesView,
         CreateWorkspaceView.ICreateWorkspaceListener
@@ -52,13 +55,31 @@ namespace Unity.PlasticSCM.Editor
         internal IPlasticWebRestApi PlasticWebRestApiForTesting { get { return mPlasticWebRestApi; } }
         internal CmConnection CmConnectionForTesting { get { return CmConnection.Get(); } }
 
+        /// <summary>
+        /// Check if the Plastic window has notification.
+        /// </summary>
+        public static bool HasNotification { get; private set; }
+
+        /// <summary>
+        /// Open the Plastic SCM window.
+        /// </summary>
+        public static void Open()
+        {
+            ShowWindow.Plastic();
+        }
+
         internal void SetupWindowTitle(bool hasNotification)
         {
-            titleContent = new GUIContent(
-                UnityConstants.PLASTIC_WINDOW_TITLE,
-                hasNotification ?
-                    Images.GetImage(Images.Name.IconPlasticViewNotify) :
-                    Images.GetImage(Images.Name.IconPlasticView));
+            HasNotification = hasNotification;
+
+            var icon = hasNotification ?
+                Images.GetImage(Images.Name.IconPlasticViewNotify) :
+                Images.GetImage(Images.Name.IconPlasticView);
+
+            // The titleContent icon does not update unless we also update the title text
+            var title = UnityConstants.PLASTIC_WINDOW_TITLE + (hasNotification ? " " : string.Empty);
+
+            titleContent = new GUIContent(title, icon);
         }
 
         internal void DisableCollabIfEnabledWhenLoaded()
@@ -135,6 +156,7 @@ namespace Unity.PlasticSCM.Editor
 
         void OnEnable()
         {
+            processor.AssetModificationProcessor.ForceCheckout = EditorPrefs.GetBool("forceCheckoutPlasticSCM"); 
             wantsMouseMove = true;
 
             if (mException != null)
@@ -178,6 +200,9 @@ namespace Unity.PlasticSCM.Editor
 
         void OnDisable()
         {
+            EditorPrefs.SetBool("forceCheckoutPlasticSCM",
+                processor.AssetModificationProcessor.ForceCheckout);
+
             AssetsProcessors.Disable();
 
             if (mWkInfo != null)
@@ -285,13 +310,9 @@ namespace Unity.PlasticSCM.Editor
                     return;
                 }
 
-                DoHeader(
-                   mWkInfo,
-                   mWorkspaceWindow,
-                   mViewSwitcher,
-                   mViewSwitcher,
-                   mIsGluonMode,
-                   mIncomingChangesNotificationPanel);
+                //TODO: Codice - beta: hide the switcher until the update dialog is implemented
+                //DrawGuiModeSwitcher.ForMode(
+                //    isGluonMode, plasticClient, changesTreeView, editorWindow);
 
                 DoTabToolbar(
                     isPlasticExeAvailable,
@@ -307,6 +328,14 @@ namespace Unity.PlasticSCM.Editor
                         position.width);
 
                 mNotificationDrawer.DoDrawer();
+
+                DrawStatusBar.For(
+                    mWkInfo,
+                    mWorkspaceWindow,
+                    mViewSwitcher,
+                    mViewSwitcher,
+                    mIsGluonMode,
+                    mIncomingChangesNotificationPanel);
             }
             catch (Exception ex)
             {
@@ -540,7 +569,7 @@ namespace Unity.PlasticSCM.Editor
                 mGluonNewIncomingChangesUpdater);
 
             // When Unity Editor window is activated it writes some files to its Temp folder.
-            // This causes the fswatcher to process those events.
+            // This causes the fswatcher to process those events. 
             // We need to wait until the fswatcher finishes processing the events,
             // otherwise the NewChangesInWk method will return TRUE, causing
             // the pending changes view to unwanted auto-refresh.
@@ -602,33 +631,21 @@ namespace Unity.PlasticSCM.Editor
             return mWelcomeView;
         }
 
-        static void DoHeader(
-            WorkspaceInfo workspaceInfo,
-            WorkspaceWindow workspaceWindow,
-            IMergeViewLauncher mergeViewLauncher,
-            IGluonViewSwitcher gluonSwitcher,
-            bool isGluonMode,
-            IIncomingChangesNotificationPanel incomingChangesNotificationPanel)
+        static void DoSearchField(ViewSwitcher viewSwitcher)
         {
-            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.PendingChanges))
+            {
+                viewSwitcher.PendingChangesTab.DrawSearchFieldForPendingChangesTab();
+            }
 
-            GUILayout.Label(
-                workspaceWindow.HeaderTitle,
-                UnityStyles.PlasticWindow.HeaderTitleLabel);
-
-            GUILayout.FlexibleSpace();
-
-            DrawIncomingChangesNotificationPanel.ForMode(
-                workspaceInfo, workspaceWindow,
-                mergeViewLauncher, gluonSwitcher, isGluonMode,
-                incomingChangesNotificationPanel.IsVisible,
-                incomingChangesNotificationPanel.Data);
-
-            //TODO: Codice - beta: hide the switcher until the update dialog is implemented
-            //DrawGuiModeSwitcher.ForMode(
-            //    isGluonMode, plasticClient, changesTreeView, editorWindow);
-
-            EditorGUILayout.EndHorizontal();
+            else if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Changesets))
+            {
+                viewSwitcher.ChangesetsTab.DrawSearchFieldForChangesetsTab();
+            }
+            else if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.History))
+            {
+                viewSwitcher.HistoryTab.DrawSearchFieldForHistoryTab();
+            }
         }
 
         static void DoTabToolbar(
@@ -643,7 +660,13 @@ namespace Unity.PlasticSCM.Editor
 
             GUILayout.FlexibleSpace();
 
-            DoLaunchButtons(isPlasticExeAvailable, workspaceInfo, isGluonMode);
+            DoSearchField(viewSwitcher);
+
+            DoLaunchButtons(
+                isPlasticExeAvailable,
+                workspaceInfo,
+                viewSwitcher,
+                isGluonMode);
 
             EditorGUILayout.EndHorizontal();
         }
@@ -651,6 +674,7 @@ namespace Unity.PlasticSCM.Editor
         static void DoLaunchButtons(
             bool isPlasticExeAvailable,
             WorkspaceInfo wkInfo,
+            ViewSwitcher viewSwitcher,
             bool isGluonMode)
         {
             //TODO: Codice - beta: hide the diff button until the behavior is implemented
@@ -658,6 +682,36 @@ namespace Unity.PlasticSCM.Editor
                 PlasticLocalization.Name.DiffWindowMenuItemDiff),
                 EditorStyles.toolbarButton,
                 GUILayout.Width(UnityConstants.REGULAR_BUTTON_WIDTH));*/
+
+            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Changesets))
+            {
+                viewSwitcher.ChangesetsTab.DrawDateFilter();
+            }
+
+            var refreshIcon = Images.GetRefreshIcon();
+            var refreshIconTooltip = PlasticLocalization.GetString(
+                PlasticLocalization.Name.RefreshButton);
+
+            if (DrawLaunchButton(refreshIcon, refreshIconTooltip))
+            {
+                viewSwitcher.RefreshSelectedView();
+            }
+
+            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.PendingChanges))
+            {
+                var icon = Images.GetImage(Images.Name.IconUndo);
+                var tooltip = PlasticLocalization.GetString(
+                    PlasticLocalization.Name.UndoSelectedChanges);
+
+                if (DrawLaunchButton(icon, tooltip))
+                {
+                    TrackFeatureUseEvent.For(
+                        PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
+                        TrackFeatureUseEvent.Features.UndoIconButton);
+
+                    viewSwitcher.PendingChangesTab.UndoForMode(wkInfo, isGluonMode);
+                }
+            }
 
             if (isGluonMode)
             {
@@ -667,13 +721,14 @@ namespace Unity.PlasticSCM.Editor
             }
             else
             {
-                var label = PlasticLocalization.GetString(PlasticLocalization.Name.LaunchBranchExplorer);
-                if (DrawActionButton.For(label))
+                var icon = Images.GetImage(Images.Name.IconBranch);
+                var tooltip = PlasticLocalization.GetString(PlasticLocalization.Name.BranchExplorerMenu);
+                if (DrawLaunchButton(icon, tooltip))
                     LaunchTool.OpenBranchExplorer(wkInfo, isGluonMode);
             }
 
-            if (GUILayout.Button(new GUIContent(
-                EditorGUIUtility.IconContent("settings")), EditorStyles.toolbarButton))
+            //TODO: Add settings button tooltip localization
+            if (DrawLaunchButton(Images.GetSettingsIcon(), string.Empty))
             {
                 GenericMenu menu = new GenericMenu();
 
@@ -691,17 +746,19 @@ namespace Unity.PlasticSCM.Editor
                 menu.AddItem(
                     new GUIContent(
                         PlasticLocalization.GetString(
-                    PlasticLocalization.Name.Options)),
+                           PlasticLocalization.Name.InviteMembers)),
                     false,
-                    () => PendingChangesOptionsDialog.ChangeOptions(wkInfo, PlasticAssetsProcessor.mPendingChangesTab, plasticWindow));
+                   InviteMemberButton_clicked,
+                   null);
+
+                menu.AddSeparator("");
 
                 menu.AddItem(
                     new GUIContent(
                         PlasticLocalization.GetString(
-                            PlasticLocalization.Name.InviteMembers)),
+                    PlasticLocalization.Name.Options)),
                     false,
-                    InviteMemberButton_clicked,
-                    null);
+                    () => PendingChangesOptionsDialog.ChangeOptions(wkInfo, PlasticAssetsProcessor.mPendingChangesTab, plasticWindow));
 
                 // If the user has the simplified UI key of type .txt in the Assets folder
                 // TODO: Remove when Simplified UI is complete
@@ -710,6 +767,15 @@ namespace Unity.PlasticSCM.Editor
                         false,
                         TrySimplifiedUIButton_Clicked,
                         null);
+
+                //TODO: Localization
+                menu.AddItem(
+                    new GUIContent(processor.AssetModificationProcessor.ForceCheckout ?
+                    PlasticLocalization.GetString(PlasticLocalization.Name.DisableForcedCheckout) :
+                    PlasticLocalization.GetString(PlasticLocalization.Name.EnableForcedCheckout)),
+                    false,
+                    ForceCheckout_Clicked,
+                    null);
 
                 menu.AddSeparator("");
 
@@ -723,6 +789,14 @@ namespace Unity.PlasticSCM.Editor
 
                 menu.ShowAsContext();
             }
+        }
+
+        static bool DrawLaunchButton(Texture icon, string tooltip)
+        {
+            return GUILayout.Button(
+                new GUIContent(icon, tooltip),
+                EditorStyles.toolbarButton, 
+                GUILayout.Width(26));
         }
 
         static void InviteMemberButton_clicked(object obj)
@@ -739,6 +813,13 @@ namespace Unity.PlasticSCM.Editor
         {
             ShowWindow.Plastic();
             TurnOffPlasticWindow.ShowWindow();
+        }
+        static void ForceCheckout_Clicked(object obj)
+        {
+            processor.AssetModificationProcessor.ForceCheckout = 
+                !processor.AssetModificationProcessor.ForceCheckout;
+            EditorPrefs.SetBool("forceCheckoutPlasticSCM",
+                processor.AssetModificationProcessor.ForceCheckout);
         }
 
         static void SetupCloudProjectIdIfNeeded(
@@ -924,7 +1005,7 @@ namespace Unity.PlasticSCM.Editor
                             return;
 
                         reloadAction();
-                    });
+                });
             }
 
             static bool IsWorkspaceConfigChanged(
@@ -951,12 +1032,12 @@ namespace Unity.PlasticSCM.Editor
 
         Exception mException;
 
-        IIncomingChangesNotificationPanel mIncomingChangesNotificationPanel;
+        internal IIncomingChangesNotificationPanel mIncomingChangesNotificationPanel;
 
         double mLastUpdateTime = 0f;
 
         CooldownWindowDelayer mCooldownAutoRefreshPendingChangesAction;
-        ViewSwitcher mViewSwitcher;
+        internal ViewSwitcher mViewSwitcher;
         WelcomeView mWelcomeView;
         internal NotificationDrawer mNotificationDrawer = new NotificationDrawer();
 
