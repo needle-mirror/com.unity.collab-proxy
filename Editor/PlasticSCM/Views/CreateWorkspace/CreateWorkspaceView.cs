@@ -247,6 +247,8 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                 mProgressControls,
                 mCreateWorkspaceListener,
                 mParentWindow);
+
+            AssetMenuItems.Enable();
         }
 
         static WorkspaceCreationData BuildCreationDataFromState(

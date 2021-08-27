@@ -346,6 +346,9 @@ GUID
 == CommentColumn ==
 注释
 
+== ItemsSelected ==
+({0}/{1} selected)
+
 == ChangedItemsSelectedSingular ==
 已更改项 - 已选择 {0} / 1 项
 
@@ -442,8 +445,17 @@ GUID
 == NoItemsAreSelected ==
 未选择项。请使用项的复选框来选择相应的项。如果您选择了项，但这些项全被忽略，也会发生这种情况。
 
+== EmptyCommentsDialogTitle ==
+Empty Checkin Message
+
+== EmptyCommentsDialogContent ==
+Checkin comment is blank. Writing a comment is recommended.
+
 == EmptyComments ==
 注释字段为空。创建新的变更集之前，请不要忘记添加签入注释。
+
+== CheckinAnyway ==
+Checkin Anyway
 
 == RepositoryNameLabel ==
 新存储库的名称：
@@ -6271,6 +6283,9 @@ Git 存储库 URL：
 == ContinueQuestion ==
 是否要继续？
 
+== DoNotShowMessageAgain ==
+Do not show this message again
+
 == PathPermissions ==
 路径权限
 
@@ -6426,3 +6441,6 @@ Semantic Merge
 
 == UnitySmartMerge ==
 Unity Smart Merge
+
+== LaunchPlasticButton ==
+Launch Plastic SCM

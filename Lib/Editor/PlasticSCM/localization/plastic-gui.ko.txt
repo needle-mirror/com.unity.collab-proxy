@@ -346,6 +346,9 @@ GUID
 == CommentColumn ==
 코멘트
 
+== ItemsSelected ==
+({0}/{1} selected)
+
 == ChangedItemsSelectedSingular ==
 변경된 항목 - {0}/1개 항목 선택됨
 
@@ -442,8 +445,17 @@ GUID
 == NoItemsAreSelected ==
 선택한 항목이 없습니다. 항목의 체크박스를 사용하여 선택하십시오. 선택한 항목이 모두 무시 항목인 경우에도 이러한 현상이 발생할 수 있습니다.
 
+== EmptyCommentsDialogTitle ==
+Empty Checkin Message
+
+== EmptyCommentsDialogContent ==
+Checkin comment is blank. Writing a comment is recommended.
+
 == EmptyComments ==
 코멘트 필드가 비어 있습니다. 새 체인지 세트를 생성하기 전에 반드시 체크인 코멘트를 추가하십시오.
+
+== CheckinAnyway ==
+Checkin Anyway
 
 == RepositoryNameLabel ==
 새 리포지토리 이름:
@@ -6259,6 +6271,9 @@ Git 리포지토리 URL:
 == ContinueQuestion ==
 계속하시겠습니까?
 
+== DoNotShowMessageAgain ==
+Do not show this message again
+
 == PathPermissions ==
 경로 권한
 
@@ -6402,3 +6417,6 @@ Single Sign On으로 로그인
 
 == EmailNotSent ==
 이메일을 보낼 수 없습니다
+
+== LaunchPlasticButton ==
+Launch Plastic SCM

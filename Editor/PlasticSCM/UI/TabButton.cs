@@ -35,9 +35,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
             GUIContent buttonContent = new GUIContent(buttonText);
 
-            GUIStyle buttonStyle = (wasActive) ?
-               UnityStyles.PlasticWindow.ActiveTabButton :
-               EditorStyles.toolbarButton;
+            GUIStyle buttonStyle = UnityStyles.PlasticWindow.TabButton;
 
             Rect toggleRect = GUILayoutUtility.GetRect(
                 buttonContent, buttonStyle,
@@ -137,7 +135,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
             Rect underlineRect = new Rect(
                 toggleRect.x,
-                toggleRect.yMax - activeTabStyle.fixedHeight,
+                toggleRect.yMax - (activeTabStyle.fixedHeight / 2),
                 toggleRect.width,
                 activeTabStyle.fixedHeight);
 

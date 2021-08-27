@@ -1,8 +1,56 @@
 # Changelog
 All notable changes to this package will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+## [1.11.2] - 2021-08-27
+
+Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!
+If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
+Removing a previously added Plastic SCM Asset Store Plug-In:
+- Select the PlasticSCM folder in the Assets\Plugins folder on the Project tab, then click Edit > Delete
+- Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
+
+### Added
+- Added horizontal scroll bar to Changesets list for easier viewing
+- Added auto-login for SSO credentials handler
+- Added metrics for changeset tab usage
+- Added metrics for checkin actions
+- Added new Undo icon
+- Added missing API documentation
+- Added ability to modify assets without checkout
+- Added ability to allow empty checkin messages
+- Added empty checking message localization
+- Added Plastic toolbar button to Unity editor
+- Added notification icon for incoming changes to Plastic toolbar button
+
+### Changed
+- Removed the unneeded refresh button from History Tab
+- Moved search bar to the top right global icon section in all tabs
+- Updated capitalization of options in the Settings context menu
+- Updated tab button styling to be consistent with Unity Editor conventions
+- Status bar visible across all tabs
+- Moved refresh button to the toolbar at the top right corner of the window
+- Moved changesets time period selector to the right corner of the window
+- Removed "Changes of changeset" header on the Changesets tab
+- Moved number of selected items next to "Item" metadata title on the Pending Changes tab
+- Improved refresh icon resolution
+- Changed changesets detail to appear in vertical column
+- Reduced default number of columns in changesets tab
+- The number of changesets is no longer displayed in changesets tab
+- Changed Launch branch explorer into an icon with tooltip
+- Removed the hide changes button in changesets tab
+- Moved incoming change prompt and button into a status bar
+- Changed "Launch Plastic" to "Launch Plastic SCM" in options menu
+- Wording change for plastic installation
+- Updated file status icons
+
+### Fixed
+- Fixed a bug where the Texture2D error would pop up after downloading a project
+- Fixed a bug when context menu would sometimes disappear
+- Fixed small textbox on checkin dialog when launched from context menu
+- Fixed a workspace NullReferenceException bug
+- Fixed notification icon not showing on Plastic window
+- Fixed auto login errors not showing up for users
+- Fixed unexpected error message after user switched workspace to a label
 
 ## [1.9.0] - 2021-07-13
 

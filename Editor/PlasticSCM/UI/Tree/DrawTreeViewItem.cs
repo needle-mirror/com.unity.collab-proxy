@@ -220,6 +220,10 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             {
                 GUIStyle secondaryBoldLabel =
                     UnityStyles.Tree.SecondaryBoldLabel;
+
+                secondaryBoldLabel.fontSize = UnityConstants.PENDING_CHANGES_FONT_SIZE;
+                secondaryBoldLabel.normal.textColor = Color.red;
+
                 secondaryBoldLabel.Draw(
                     rect, label, false, true, isSelected, isFocused);
                 return;
@@ -227,6 +231,9 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 
             GUIStyle secondaryLabel =
                 UnityStyles.Tree.SecondaryLabel;
+
+            secondaryLabel.fontSize = UnityConstants.PENDING_CHANGES_FONT_SIZE;
+
             secondaryLabel.Draw(
                 rect, label, false, true, isSelected, isFocused);
         }

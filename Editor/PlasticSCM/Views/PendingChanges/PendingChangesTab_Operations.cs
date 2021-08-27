@@ -30,7 +30,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             Checkin();
         }
 
-        void UndoForMode(WorkspaceInfo wkInfo, bool isGluonMode)
+        internal void UndoForMode(WorkspaceInfo wkInfo, bool isGluonMode)
         {
             TrackFeatureUseEvent.For(
                 PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),

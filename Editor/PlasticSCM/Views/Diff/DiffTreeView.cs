@@ -25,6 +25,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             mCooldownFilterAction = new CooldownWindowDelayer(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
+
+            EnableHorizontalScrollbar();
         }
 
         public override IList<TreeViewItem> GetRows()
@@ -94,6 +96,12 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             Repaint();
         }
 
+        protected override void BeforeRowsGUI()
+        {
+            mLargestRowWidth = 0;
+            base.BeforeRowsGUI();
+        }
+
         protected override void RowGUI(RowGUIArgs args)
         {
             DrawTreeViewItem.InitializeStyles();
@@ -122,17 +130,35 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             if (args.item is ClientDiffTreeViewItem)
             {
+                float itemWidth;
+
                 ClientDiffTreeViewItemGUI(
                     args.rowRect,
                     rowHeight,
                     mDiffTree,
                     (ClientDiffTreeViewItem)args.item,
                     args.selected,
-                    args.focused);
+                    args.focused,
+                    out itemWidth);
+
+                float rowWidth = baseIndent + args.item.depth * depthIndentWidth + 
+                    itemWidth + UnityConstants.TREEVIEW_ROW_WIDTH_OFFSET;
+
+                if (rowWidth > mLargestRowWidth)
+                    mLargestRowWidth = rowWidth;
+
                 return;
             }
 
             base.RowGUI(args);
+        }
+
+        protected override void AfterRowsGUI()
+        {
+            if (mHorizontalColumn != null)
+                mHorizontalColumn.width = mLargestRowWidth;
+            
+            base.AfterRowsGUI();
         }
 
         internal void ClearModel()
@@ -220,6 +246,18 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             Reload();
 
             TableViewOperations.ScrollToSelection(this);
+        }
+
+        void EnableHorizontalScrollbar()
+        {
+            mHorizontalColumn = new MultiColumnHeaderState.Column();
+            mHorizontalColumn.autoResize = false;
+
+            MultiColumnHeaderState.Column[] cols = { mHorizontalColumn };
+            MultiColumnHeaderState headerState = new MultiColumnHeaderState(cols);
+            
+            multiColumnHeader = new MultiColumnHeader(headerState);
+            multiColumnHeader.height = 0f;
         }
 
         static void RegenerateRows(
@@ -419,7 +457,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             UnityDiffTree diffTree,
             ClientDiffTreeViewItem item,
             bool isSelected,
-            bool isFocused)
+            bool isFocused,
+            out float itemWidth)
         {
             string label = ClientDiffView.GetColumnText(
                 item.Difference.DiffWithMount.Mount.RepSpec,
@@ -433,6 +472,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                 item.Difference.DiffWithMount.Difference.IsDirectory,
                 label);
 
+            itemWidth = CalculateItemWidth(label, icon, rowHeight);
+
             DrawTreeViewItem.ForItemCell(
                 rowRect,
                 rowHeight,
@@ -444,6 +485,18 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                 isFocused,
                 false,
                 false);
+        }
+
+        static float CalculateItemWidth(
+            string label,
+            Texture icon,
+            float rowHeight)
+        {
+            GUIContent content = new GUIContent(label);
+            Vector2 contentSize = TreeView.DefaultStyles.label.CalcSize(content);
+            float iconWidth = rowHeight * ((float)icon.width / icon.height);
+
+            return iconWidth + contentSize.x;
         }
 
         static Texture GetChangeCategoryIcon(ChangeCategory category)
@@ -482,6 +535,9 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         List<TreeViewItem> mRows = new List<TreeViewItem>();
 
         UnityDiffTree mDiffTree = new UnityDiffTree();
+
+        MultiColumnHeaderState.Column mHorizontalColumn;
+        float mLargestRowWidth;
 
         readonly CooldownWindowDelayer mCooldownFilterAction;
 

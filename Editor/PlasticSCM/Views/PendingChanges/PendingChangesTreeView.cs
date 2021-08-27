@@ -34,18 +34,21 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mWkInfo = wkInfo;
             mIsGluonMode = isGluonMode;
             mColumnNames = columnNames;
+            mHeaderState = headerState;
             mMenu = menu;
             mAssetStatusCache = assetStatusCache;
 
             mPendingChangesTree = new UnityPendingChangesTree();
 
             multiColumnHeader = new PendingChangesMultiColumnHeader(
-                headerState, mPendingChangesTree);
+                this,
+                headerState,
+                mPendingChangesTree);
             multiColumnHeader.canSort = true;
             multiColumnHeader.sortingChanged += SortingChanged;
 
             customFoldoutYOffset = UnityConstants.TREEVIEW_FOLDOUT_Y_OFFSET;
-            rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
+            rowHeight = UnityConstants.TREEVIEW_PENDING_CHANGES_ROW_HEIGHT;
             showAlternatingRowBackgrounds = false;
 
             mCooldownFilterAction = new CooldownWindowDelayer(
@@ -54,6 +57,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         protected override void SelectionChanged(IList<int> selectedIds)
         {
+            mHeaderState.UpdateItemColumnHeader(this);
+
             if (mIsSelectionChangedEventDisabled)
                 return;
 
@@ -70,6 +75,11 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             }
 
             UnityEditor.Selection.objects = assets.ToArray();
+        }
+
+        protected void SelectionChanged()
+        {
+            SelectionChanged(GetSelection());
         }
 
         public override IList<TreeViewItem> GetRows()
@@ -141,6 +151,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             if (args.item is ChangeCategoryTreeViewItem)
             {
                 CategoryTreeViewItemGUI(
+                    this,
                     args.rowRect, rowHeight,
                     (ChangeCategoryTreeViewItem)args.item,
                     args.selected, args.focused);
@@ -588,6 +599,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         }
 
         static void CategoryTreeViewItemGUI(
+            PendingChangesTreeView treeView,
             Rect rowRect,
             float rowHeight,
             ChangeCategoryTreeViewItem item,
@@ -604,16 +616,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 rowRect, rowHeight, item.depth, icon, label,
                 isSelected, isFocused, wasChecked, hadCheckedChildren);
 
-            if (!wasChecked && isChecked)
+            if (wasChecked != isChecked)
             {
-                item.Category.UpdateCheckedState(true);
-                return;
-            }
-
-            if (wasChecked && !isChecked)
-            {
-                item.Category.UpdateCheckedState(false);
-                return;
+                item.Category.UpdateCheckedState(isChecked);
+                treeView.SelectionChanged();
             }
         }
 
@@ -664,8 +670,11 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             string label = changeInfo.GetColumnText(
                 PendingChangesTreeHeaderState.GetColumnName(column));
 
+            DefaultStyles.label.fontSize = UnityConstants.PENDING_CHANGES_FONT_SIZE;
+
             if (column == PendingChangesTreeColumn.Item)
             {
+
                 if (pendingChangesTree.HasMeta(changeInfo.ChangeInfo))
                     label = string.Concat(label, UnityConstants.TREEVIEW_META_LABEL);
 
@@ -690,7 +699,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 changeInfo.UpdateCheckedState(isChecked);
 
                 if (wasChecked != isChecked)
+                {
                     UpdateCheckStateForSelection(treeView, item);
+                    treeView.SelectionChanged();
+                }
 
                 return;
             }
@@ -843,6 +855,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         UnityPendingChangesTree mPendingChangesTree;
         CooldownWindowDelayer mCooldownFilterAction;
 
+        readonly PendingChangesTreeHeaderState mHeaderState;
         readonly PendingChangesViewMenu mMenu;
         readonly IAssetStatusCache mAssetStatusCache;
         readonly List<string> mColumnNames;

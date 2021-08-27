@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.Collaboration;
 using UnityEditor.Connect;
 using UnityEngine;
+using Unity.PlasticSCM.Editor;
 
 namespace Unity.Cloud.Collaborate.UserInterface
 {
@@ -20,12 +21,15 @@ namespace Unity.Cloud.Collaborate.UserInterface
             FilesToPush,
             InProgress,
             Disabled,
-            Offline
+            Offline,
+            Plastic
         }
 
         ToolbarButtonState m_CurrentState;
         string m_ErrorMessage;
         readonly Dictionary<ToolbarButtonState, GUIContent> m_IconCache = new Dictionary<ToolbarButtonState, GUIContent>();
+        GUIContent m_PlasticIconCache;
+        GUIContent m_PlasticNotifyIconCache;
         ButtonWithAnimatedIconRotation m_CollabButton;
 
         public ToolbarButton()
@@ -129,19 +133,49 @@ namespace Unity.Cloud.Collaborate.UserInterface
             return icon;
         }
 
+        [NotNull]
+        GUIContent GetIconForPlastic(bool hasNotification)
+        {
+            if (hasNotification)
+            {
+                if (m_PlasticNotifyIconCache == null)
+                    m_PlasticNotifyIconCache = new GUIContent(LoadIcon("plastic-notify"), "Plastic SCM");
+                return m_PlasticNotifyIconCache;
+            }
+            else
+            {
+                if (m_PlasticIconCache == null)
+                    m_PlasticIconCache = new GUIContent(LoadIcon("plastic"), "Plastic SCM");
+                return m_PlasticIconCache;
+            }
+        }
+
         public override void OnGUI(Rect rect)
         {
             GUIStyle collabButtonStyle = "AppCommand";
             var disable = EditorApplication.isPlaying;
             using (new EditorGUI.DisabledScope(disable))
             {
-                var icon = GetIconForState();
-                EditorGUIUtility.SetIconSize(new Vector2(16, 16));
-                if (GUI.Button(rect, icon, collabButtonStyle))
+                if (m_CurrentState == ToolbarButtonState.Plastic)
                 {
-                    CollaborateWindow.Init();
+                    var icon = GetIconForPlastic(PlasticWindow.HasNotification);
+                    EditorGUIUtility.SetIconSize(new Vector2(16, 16));
+                    if (GUI.Button(rect, icon, collabButtonStyle))
+                    {
+                        PlasticWindow.Open();
+                    }
+                    EditorGUIUtility.SetIconSize(Vector2.zero);
                 }
-                EditorGUIUtility.SetIconSize(Vector2.zero);
+                else
+                {
+                    var icon = GetIconForState();
+                    EditorGUIUtility.SetIconSize(new Vector2(16, 16));
+                    if (GUI.Button(rect, icon, collabButtonStyle))
+                    {
+                        CollaborateWindow.Init();
+                    }
+                    EditorGUIUtility.SetIconSize(Vector2.zero);
+                }
             }
         }
 
@@ -162,7 +196,7 @@ namespace Unity.Cloud.Collaborate.UserInterface
 
             if (UnityConnect.instance.isDisableCollabWindow)
             {
-                currentState = ToolbarButtonState.Disabled;
+                currentState = ToolbarButtonState.Plastic;
             }
             else if (networkAvailable)
             {
@@ -189,7 +223,7 @@ namespace Unity.Cloud.Collaborate.UserInterface
 
                     if (UnityConnect.instance.projectInfo.projectBound == false || !collabEnabled)
                     {
-                        currentState = ToolbarButtonState.NeedToEnableCollab;
+                        currentState = ToolbarButtonState.Plastic;
                     }
                     else if (currentInfo.update)
                     {

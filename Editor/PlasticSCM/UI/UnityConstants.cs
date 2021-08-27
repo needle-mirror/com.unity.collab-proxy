@@ -12,15 +12,20 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const float EXTRA_LARGE_BUTTON_WIDTH = 130f;
 
         internal const float SEARCH_FIELD_WIDTH = 550f;
+        internal const float DIFF_PANEL_MIN_WIDTH = SEARCH_FIELD_WIDTH / 2f + 8f;
 
         internal const string TREEVIEW_META_LABEL = " +meta";
         internal const float TREEVIEW_CHECKBOX_SIZE = 17f;
         internal const float TREEVIEW_BASE_INDENT = 16f;
+        internal const float TREEVIEW_ROW_WIDTH_OFFSET = 24f;
         internal const float FIRST_COLUMN_WITHOUT_ICON_INDENT = 5f;
+        internal const int PENDING_CHANGES_FONT_SIZE = 12;
+
 #if UNITY_2019_1_OR_NEWER
         internal const float DROPDOWN_ICON_Y_OFFSET = 2f;
         internal const float TREEVIEW_FOLDOUT_Y_OFFSET = 0f;
         internal const float TREEVIEW_ROW_HEIGHT = 21f;
+        internal const float TREEVIEW_PENDING_CHANGES_ROW_HEIGHT = 24f;
         internal const float TREEVIEW_HEADER_CHECKBOX_Y_OFFSET = 0f;
         internal const float TREEVIEW_CHECKBOX_Y_OFFSET = 0f;
         internal static float DIR_CONFLICT_VALIDATION_WARNING_LABEL_HEIGHT = 21f;
@@ -28,6 +33,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const float DROPDOWN_ICON_Y_OFFSET = 5f;
         internal const float TREEVIEW_FOLDOUT_Y_OFFSET = 1f;
         internal const float TREEVIEW_ROW_HEIGHT = 20f;
+        internal const float TREEVIEW_PENDING_CHANGES_ROW_HEIGHT = 24f;
         internal const float TREEVIEW_HEADER_CHECKBOX_Y_OFFSET = 6f;
         internal const float TREEVIEW_CHECKBOX_Y_OFFSET = 2f;
         internal static float DIR_CONFLICT_VALIDATION_WARNING_LABEL_HEIGHT = 18f;
@@ -57,7 +63,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const float PLASTIC_WINDOW_MIN_SIZE_HEIGHT = 350f;
         internal const float PLASTIC_WINDOW_COMMENT_SECTION_HEIGHT = 55f;
 
-        internal const int ACTIVE_TAB_UNDERLINE_HEIGHT = 2;
+        internal const int ACTIVE_TAB_UNDERLINE_HEIGHT = 1;
         internal const int SPLITTER_INDICATOR_HEIGHT = 1;
 
         internal const double SEARCH_DELAYED_INPUT_ACTION_INTERVAL = 0.25;

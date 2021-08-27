@@ -4,6 +4,7 @@ using Codice.Client.Common;
 using Codice.Client.Common.Connection;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
 
 namespace Unity.PlasticSCM.Editor.Configuration
 {
@@ -42,13 +43,28 @@ namespace Unity.PlasticSCM.Editor.Configuration
         {
             AskCredentialsToUser.DialogData result = null;
 
+            // Check SSO auto login here
             GUIActionRunner.RunGUIAction(delegate
             {
-                result = SSOCredentialsDialog.RequestCredentials(
-                    cloudServer, mParentWindow);
+                result = RunCredentialsRequest(cloudServer);
             });
 
             return result;
+        }
+
+        private AskCredentialsToUser.DialogData RunCredentialsRequest(string cloudServer)
+        {
+            AutoLogin autoLogin = new AutoLogin();
+            var response = autoLogin.Run();
+
+            if (response != ResponseType.None)
+            {
+                return autoLogin.BuildCredentialsDialogData(response);
+            }
+            else
+            {
+                return SSOCredentialsDialog.RequestCredentials(cloudServer, mParentWindow);
+            }
         }
 
         EditorWindow mParentWindow;

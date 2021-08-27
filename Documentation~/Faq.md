@@ -1,11 +1,11 @@
 # FAQ
 
-**What is the pricing for Plastic SCM Cloud Edition?**
+**Which integration of Plastic SCM should I use in Unity moving forward?**
 
-The pricing for Plastic SCM Cloud Edition depends on the number of users and amount of storage. It does not have a limit on bandwidth (except in cases of excessive use of egress).
+You should use the **Version Control package**, which contains Plastic SCM for Unity. This is the package the team will be actively working on moving forward. 
 
-* As your team grows, the 3 first users will remain free. For a team of 5 users, you pay for 2 users.
-* Storage depends on the size of your repositories. For more details, see [Plastic SCM Cloud Edition pricing](https://www.plasticscm.com/plasticscm-cloud-edition/pricing).
+* The standard version control integration of Plastic will be removed from future editor versions and its functionality has been ported to the Version control package.
+* The Asset store plugin functionality will be deprecated as the functionality from the plugin has been ported to the Version Control package.
 
 **Where should I post questions related to Plastic SCM?**
 

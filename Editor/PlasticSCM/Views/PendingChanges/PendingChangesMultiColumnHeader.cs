@@ -12,9 +12,12 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
     internal class PendingChangesMultiColumnHeader : MultiColumnHeader
     {
         internal PendingChangesMultiColumnHeader(
-            MultiColumnHeaderState headerState, UnityPendingChangesTree tree)
+            PendingChangesTreeView treeView,
+            MultiColumnHeaderState headerState, 
+            UnityPendingChangesTree tree)
             : base(headerState)
         {
+            mPendingChangesTreeView = treeView;
             mPendingChangesTree = tree;
         }
 
@@ -40,6 +43,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 if (checkAllWasTrue != checkAllIsTrue)
                 {
                     UpdateCheckedState(checkAllIsTrue);
+                    ((PendingChangesTreeHeaderState)state).UpdateItemColumnHeader(mPendingChangesTreeView);
                 }
 
                 headerRect.x = checkRect.xMax;
@@ -94,6 +98,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 category.UpdateCheckedState(isChecked);
         }
 
+        readonly PendingChangesTreeView mPendingChangesTreeView;
         protected UnityPendingChangesTree mPendingChangesTree;
     }
 }

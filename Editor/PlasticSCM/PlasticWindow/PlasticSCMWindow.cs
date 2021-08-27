@@ -78,7 +78,7 @@ namespace Unity.PlasticSCM.Editor
             controlsContainer.AddToClassList("row");
 
             mRefreshButton = new Button() { name = "RefreshButton" };
-            mRefreshButton.Add(new Image() { image = EditorGUIUtility.IconContent("refresh").image });
+            mRefreshButton.Add(new Image() { image = Images.GetRefreshIcon() });
             mRefreshButton.clicked += RefreshButton_Clicked;
             controlsContainer.Add(mRefreshButton);
 

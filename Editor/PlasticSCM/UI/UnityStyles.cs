@@ -49,11 +49,14 @@ namespace Unity.PlasticSCM.Editor.UI
                 new Color(60f / 255, 60f / 255, 60f / 255) :
                 new Color(210f / 255, 210f / 255, 210f / 255);
 #endif
-            internal static Color TabUnderline = new Color(0.128f, 0.456f, 0.776f);
+            internal static Color TabUnderline = new Color(58f / 255, 121f / 255, 187f / 255);
             internal static Color Link = new Color(0f, 120f / 255, 218f / 255);
             internal static Color SecondaryLabel = (EditorGUIUtility.isProSkin) ?
-                new Color(135f / 255, 135f / 255, 135f / 255) :
+                new Color(196f / 255, 196f / 255, 196f / 255) :
                 new Color(105f / 255, 105f / 255, 105f / 255);
+            internal static Color BackgroundBar = (EditorGUIUtility.isProSkin) ? 
+                new Color(35f / 255, 35f / 255, 35f / 255) :
+                new Color(160f / 255, 160f / 255, 160f / 255);
         }
 
         internal static class HexColors
@@ -242,16 +245,28 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal static class PlasticWindow
         {
-            internal static readonly LazyStyle HeaderTitleLabel = new LazyStyle(() =>
+            internal static readonly LazyStyle StatusBarLabel = new LazyStyle(() =>
             {
                 var style = new GUIStyle(EditorStyles.label);
                 return style;
             });
 
-            internal static readonly LazyStyle ActiveTabButton = new LazyStyle(() =>
+            internal static readonly LazyStyle StatusBarIcon = new LazyStyle(() =>
             {
-                GUIStyle result = new GUIStyle(EditorStyles.toolbarButton);
-                result.fontStyle = FontStyle.Bold;
+                var style = new GUIStyle(EditorStyles.label);
+                style.padding.left = 0;
+                style.padding.right = 0;
+                return style;
+            });
+
+            internal static readonly LazyStyle TabButton = new LazyStyle(() =>
+            {
+                GUIStyle result = new GUIStyle(EditorStyles.label);
+                result.padding = EditorStyles.toolbarButton.padding;
+                result.margin = EditorStyles.toolbarButton.margin;
+                result.contentOffset = EditorStyles.toolbarButton.contentOffset;
+                result.alignment = EditorStyles.toolbarButton.alignment;
+                result.fixedHeight = EditorStyles.toolbarButton.fixedHeight;
                 return result;
             });
 

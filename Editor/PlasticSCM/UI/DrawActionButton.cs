@@ -9,7 +9,7 @@ namespace Unity.PlasticSCM.Editor.UI
         {
             GUIContent buttonContent = new GUIContent(buttonText);
 
-            GUIStyle buttonStyle = EditorStyles.miniButton;
+            GUIStyle buttonStyle = new GUIStyle(EditorStyles.miniButton);
 
             buttonStyle.stretchWidth = false;
 
@@ -25,7 +25,7 @@ namespace Unity.PlasticSCM.Editor.UI
         {
             GUIContent buttonContent = new GUIContent(buttonText);
 
-            GUIStyle buttonStyle = EditorStyles.miniButton;
+            GUIStyle buttonStyle = new GUIStyle(EditorStyles.miniButton);
 
             buttonStyle.stretchWidth = false;
 

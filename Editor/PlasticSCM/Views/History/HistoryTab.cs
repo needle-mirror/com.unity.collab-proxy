@@ -90,6 +90,14 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 mProgressControls.IsOperationRunning());
         }
 
+        internal void DrawSearchFieldForHistoryTab()
+        {
+            DrawSearchField.For(
+                mSearchField,
+                mHistoryListView,
+                UnityConstants.SEARCH_FIELD_WIDTH);
+        }
+
         internal void OnDisable()
         {
             mSearchField.downOrUpArrowKeyPressed -=
@@ -314,29 +322,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
             GUILayout.FlexibleSpace();
 
-            DrawSearchField.For(
-                searchField,
-                listView,
-                UnityConstants.SEARCH_FIELD_WIDTH);
-
-            DoRefreshButton(
-                refreshableView,
-                progressControls.IsOperationRunning());
-
             EditorGUILayout.EndHorizontal();
-        }
-
-        static void DoRefreshButton(
-            IRefreshableView refreshableView,
-            bool isOperationRunning)
-        {
-            EditorGUI.BeginDisabledGroup(isOperationRunning);
-
-            if (GUILayout.Button(new GUIContent(
-                    Images.GetRefreshIcon()), EditorStyles.toolbarButton))
-                refreshableView.Refresh();
-
-            EditorGUI.EndDisabledGroup();
         }
 
         static void DoHistoryArea(

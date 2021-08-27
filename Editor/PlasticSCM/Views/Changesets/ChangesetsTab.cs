@@ -15,6 +15,7 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.Diff;
+using Codice.Client.BaseCommands.EventTracking;
 
 namespace Unity.PlasticSCM.Editor.Views.Changesets
 {
@@ -43,9 +44,13 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
             mSplitterState = PlasticSplitterGUILayout.InitSplitterState(
                 new float[] { 0.50f, 0.50f },
-                new int[] { 100, 100 },
+                new int[] { 100, (int)UnityConstants.DIFF_PANEL_MIN_WIDTH },
                 new int[] { 100000, 100000 }
             );
+
+            mBorderColor = EditorGUIUtility.isProSkin
+                ? (Color)new Color32(35, 35, 35, 255)
+                : (Color)new Color32(153, 153, 153, 255);
 
             ((IRefreshableView)this).Refresh();
         }
@@ -60,10 +65,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             TreeHeaderSettings.Save(
                 mChangesetsListView.multiColumnHeader.state,
                 UnityConstants.CHANGESETS_TABLE_SETTINGS_NAME);
-
-            BoolSetting.Save(
-                mIsChangesPanelVisible,
-                UnityConstants.CHANGESETS_SHOW_CHANGES_SETTING_NAME);
         }
 
         internal void Update()
@@ -77,35 +78,40 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         {
             InitializeShowChangesButtonWidth();
 
-            bool wasChangesPanelVisible = mIsChangesPanelVisible;
-
             DoActionsToolbar(
                 this,
                 mProgressControls,
                 mSearchField,
                 mChangesetsListView,
-                mDateFilter,
-                mChangesetsLabelText,
-                mShowChangesButtonWidth,
-                wasChangesPanelVisible);
+                mDateFilter);
 
-            if (mIsChangesPanelVisible)
-            {
-                PlasticSplitterGUILayout.BeginVerticalSplit(mSplitterState);
-            }
+            PlasticSplitterGUILayout.BeginHorizontalSplit(mSplitterState);
 
             DoChangesetsArea(
                 mChangesetsListView,
                 mProgressControls.IsOperationRunning());
 
-            if (mIsChangesPanelVisible)
-            {
-                if (!wasChangesPanelVisible)
-                    mShouldScrollToSelection = true;
+            EditorGUILayout.BeginHorizontal();
 
-                DoChangesArea(mDiffPanel);
-                PlasticSplitterGUILayout.EndVerticalSplit();
-            }
+            Rect border = GUILayoutUtility.GetRect(1, 0, 1, 100000);
+            EditorGUI.DrawRect(border, mBorderColor);
+
+            DoChangesArea(mDiffPanel);
+
+            EditorGUILayout.EndHorizontal();
+
+            PlasticSplitterGUILayout.EndHorizontalSplit();
+
+        }
+
+        internal void DrawSearchFieldForChangesetsTab()
+        {
+            DrawSearchField.For(
+                mSearchField,
+                mChangesetsListView,
+                UnityConstants.SEARCH_FIELD_WIDTH);
+
+            VerifyIfSearchFieldIsRecentlyFocused(mSearchField);
         }
 
         void IRefreshableView.Refresh()
@@ -203,16 +209,12 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                             return;
                         }
 
-                        int changesetsCount = GetChangesetsCount(queryResult);
-
-                        mChangesetsLabelText = string.Format(
-                            PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetsCount),
-                            changesetsCount);
-
                         UpdateChangesetsList(
                             mChangesetsListView,
                             queryResult,
                             loadedChangesetId);
+
+                        int changesetsCount = GetChangesetsCount(queryResult);
 
                         if (changesetsCount == 0)
                         {
@@ -316,24 +318,29 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
            return queryResult.Count();
         }
 
+        void VerifyIfSearchFieldIsRecentlyFocused(SearchField searchField)
+        {
+            if (searchField.HasFocus() != mIsSearchFieldFocused)
+            {
+                mIsSearchFieldFocused = !mIsSearchFieldFocused;
+
+                if (mIsSearchFieldFocused)
+                {
+                    TrackFeatureUseEvent.For(
+                        PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                        TrackFeatureUseEvent.Features.ChangesetsViewChangesetsSearchBox);
+                }
+            }
+        }
+
         void DoActionsToolbar(
             IRefreshableView refreshableView,
             ProgressControlsForViews progressControls,
             SearchField searchField,
             ChangesetsListView changesetsListView,
-            DateFilter dateFilter,
-            string changesetsLabelText,
-            float showChangesButtonWidth,
-            bool wasChangesPanelVisible)
+            DateFilter dateFilter)
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
-
-            if (!string.IsNullOrEmpty(changesetsLabelText))
-            {
-                GUILayout.Label(
-                    changesetsLabelText,
-                    UnityStyles.ChangesetsTab.HeaderLabel);
-            }
 
             if (progressControls.IsOperationRunning())
             {
@@ -343,26 +350,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
             GUILayout.FlexibleSpace();
 
-            mIsChangesPanelVisible =
-                DoShowChangesButton(
-                    showChangesButtonWidth,
-                    wasChangesPanelVisible);
-
             GUILayout.Space(2);
-
-            DrawSearchField.For(
-                searchField,
-                changesetsListView,
-                UnityConstants.SEARCH_FIELD_WIDTH);
-
-            DoDateFilter(
-                refreshableView,
-                dateFilter,
-                progressControls.IsOperationRunning());
-
-            DoRefreshButton(
-                refreshableView,
-                progressControls.IsOperationRunning());
 
             EditorGUILayout.EndHorizontal();
         }
@@ -393,66 +381,28 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             EditorGUILayout.EndVertical();
         }
 
-        static bool DoShowChangesButton(
-            float showChangesButtonWidth,
-            bool wasChecked)
+        internal void DrawDateFilter()
         {
-            string buttonText = wasChecked ?
-                PlasticLocalization.GetString(PlasticLocalization.Name.HideChanges) :
-                PlasticLocalization.GetString(PlasticLocalization.Name.ShowChanges);
-
-            GUIContent buttonContent = new GUIContent(buttonText);
-
-            GUIStyle buttonStyle = EditorStyles.toolbarButton;
-
-            Rect toggleRect = GUILayoutUtility.GetRect(
-                buttonContent, buttonStyle,
-                GUILayout.Width(showChangesButtonWidth));
-
-            bool isChecked = GUI.Toggle(
-                toggleRect, wasChecked, buttonContent, buttonStyle);
-
-            return isChecked;
-        }
-
-        static void DoDateFilter(
-            IRefreshableView refreshableView,
-            DateFilter dateFilter,
-            bool isOperationRunning)
-        {
-            GUI.enabled = !isOperationRunning;
+            GUI.enabled = !mProgressControls.IsOperationRunning();
 
             EditorGUI.BeginChangeCheck();
 
-            dateFilter.FilterType = (DateFilter.Type)
+            mDateFilter.FilterType = (DateFilter.Type)
                 EditorGUILayout.EnumPopup(
-                    dateFilter.FilterType,
+                    mDateFilter.FilterType,
                     EditorStyles.toolbarDropDown,
                     GUILayout.Width(100));
 
             if (EditorGUI.EndChangeCheck())
             {
                 EnumPopupSetting<DateFilter.Type>.Save(
-                    dateFilter.FilterType,
+                    mDateFilter.FilterType,
                     UnityConstants.CHANGESETS_DATE_FILTER_SETTING_NAME);
 
-                refreshableView.Refresh();
+                ((IRefreshableView)this).Refresh();
             }
 
             GUI.enabled = true;
-        }
-
-        static void DoRefreshButton(
-            IRefreshableView refreshableView,
-            bool isOperationRunning)
-        {
-            EditorGUI.BeginDisabledGroup(isOperationRunning);
-
-            if (GUILayout.Button(new GUIContent(
-                    Images.GetRefreshIcon()), EditorStyles.toolbarButton))
-                refreshableView.Refresh();
-
-            EditorGUI.EndDisabledGroup();
         }
 
         void InitializeShowChangesButtonWidth()
@@ -497,10 +447,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 doubleClickAction: ((IChangesetMenuOperations)this).DiffChangeset);
             mChangesetsListView.Reload();
 
-            mIsChangesPanelVisible = BoolSetting.Load(
-                UnityConstants.CHANGESETS_SHOW_CHANGES_SETTING_NAME,
-                true);
-
             mDiffPanel = new DiffPanel(
                 wkInfo, workspaceWindow, viewSwitcher,
                 historyViewLauncher, parentWindow, mIsGluonMode);
@@ -510,16 +456,16 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         bool mShouldScrollToSelection;
 
-        bool mIsChangesPanelVisible;
-
         float mShowChangesButtonWidth = -1;
 
-        string mChangesetsLabelText;
         object mSplitterState;
+        Color mBorderColor;
 
         DateFilter mDateFilter;
 
         SearchField mSearchField;
+        bool mIsSearchFieldFocused = false;
+
         ChangesetsListView mChangesetsListView;
         DiffPanel mDiffPanel;
 

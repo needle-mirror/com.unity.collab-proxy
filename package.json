@@ -1,7 +1,7 @@
 {
   "name": "com.unity.collab-proxy",
   "displayName": "Version Control",
-  "version": "1.9.0",
+  "version": "1.11.2",
   "unity": "2020.3",
   "unityRelease": "14f1",
   "description": "The Version Control package gives you the ability to use either Collaborate or Plastic SCM for Unity (beta) in the Unity editor. To use Plastic SCM for Unity (beta), a Plastic SCM subscription is required. Learn more about how you can get started for free by visiting plasticscm.com.",
@@ -22,11 +22,11 @@
   ],
   "category": "Editor",
   "upmCi": {
-    "footprint": "c63da6951c64dc575d5a5933f878d88cdbe65db5"
+    "footprint": "fc14d0c3d4a74a9ff16c12d3f3f1fb62d3715a25"
   },
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.cloud.collaborate.git",
     "type": "git",
-    "revision": "51447944a1e7d94937e6b7f9e887d58f5097ed13"
+    "revision": "3bc7fe2ab9acbe4538785fec6100ac17fe9e8da5"
   }
 }
