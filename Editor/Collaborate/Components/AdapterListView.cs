@@ -36,7 +36,11 @@ namespace Unity.Cloud.Collaborate.Components
             m_Adapter.RegisterObserver(this);
             m_ListView.makeItem = m_Adapter.MakeItem;
             m_ListView.bindItem = m_Adapter.BindItem;
+#if UNITY_2021_2_OR_NEWER
+            m_ListView.fixedItemHeight = m_Adapter.Height;
+#else
             m_ListView.itemHeight = m_Adapter.Height;
+#endif
             NotifyDataSetChanged();
         }
 
@@ -49,7 +53,11 @@ namespace Unity.Cloud.Collaborate.Components
             m_Adapter.DeregisterObserver(this);
             m_ListView.makeItem = null;
             m_ListView.bindItem = null;
+#if UNITY_2021_2_OR_NEWER
+            m_ListView.fixedItemHeight = 0;
+#else
             m_ListView.itemHeight = 0;
+#endif
             m_ListView.itemsSource = null;
             m_Adapter = null;
         }

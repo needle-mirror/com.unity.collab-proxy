@@ -33,7 +33,7 @@ namespace Unity.PlasticSCM.Editor
         {
             string toolPath = PlasticInstallPath.GetPlasticExePath();
 
-            if (!string.IsNullOrEmpty(toolPath))
+            if (string.IsNullOrEmpty(toolPath))
                 return;
 
             string tokenFilePath = UserConfigFolder.GetConfigFile(

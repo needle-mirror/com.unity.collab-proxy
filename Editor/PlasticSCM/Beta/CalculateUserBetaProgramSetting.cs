@@ -54,7 +54,7 @@ namespace Unity.PlasticSCM.Editor.Beta
             waiter.Execute(
             /*threadOperationDelegate*/ delegate
             {
-                response = PlasticScmRestApiClient.IsBetaEnabled(unityAccessToken);
+                response = WebRestApiClient.PlasticScm.IsBetaEnabled(unityAccessToken);
             },
             /*afterOperationDelegate*/ delegate
             {

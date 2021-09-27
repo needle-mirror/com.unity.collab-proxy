@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 
 using UnityEditor;
+using PackageManager = UnityEditor.PackageManager;
+
+using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor
 {
@@ -14,12 +18,26 @@ namespace Unity.PlasticSCM.Editor
 
         internal static void Disable()
         {
-            DisableCollabInstance();
+            SetCollabEnabledInstanceAs(false);
 
-            DisableCollabInProjectSettings();
+            SetCollabEnabledInProjectSettingsAs(false);
         }
 
-        static void DisableCollabInstance()
+        internal static void GetVersion(Action<string> onGetVersionCompleted)
+        {
+            PackageManager.Requests.ListRequest listRequest = PackageManager.Client.List(true);
+
+            RunGetVersion(listRequest, onGetVersionCompleted);
+        }
+
+        internal static void Enable()
+        {
+            SetCollabEnabledInstanceAs(true);
+
+            SetCollabEnabledInProjectSettingsAs(true);
+        }
+
+        static void SetCollabEnabledInstanceAs(bool value)
         {
             object collabInstance = GetCollabInstance();
 
@@ -27,13 +45,41 @@ namespace Unity.PlasticSCM.Editor
                 return;
 
             // Invokes Collab.instance.SetCollabEnabledForCurrentProject(false)
-            SetCollabEnabledForCurrentProject(collabInstance, false);
+            SetCollabEnabledForCurrentProject(collabInstance, value);
         }
 
-        static void DisableCollabInProjectSettings()
+        static void RunGetVersion(
+            PackageManager.Requests.ListRequest listRequest,
+            Action<string> onGetVersionCompleted)
+        {
+            EditorDispatcher.Dispatch(() =>
+            {
+                if (!listRequest.IsCompleted)
+                {
+                    RunGetVersion(listRequest, onGetVersionCompleted);
+                    return;
+                }
+
+                string pluginVersion = string.Empty;
+
+                if (listRequest.Status == PackageManager.StatusCode.Success &&
+                    listRequest.Result != null)
+                {
+                    PackageManager.PackageInfo collabPackage = listRequest.Result
+                        .FirstOrDefault(package => package.name == mCollabPackageName);
+
+                    if (collabPackage != null)
+                        pluginVersion = collabPackage.version;
+                }
+
+                onGetVersionCompleted.Invoke(pluginVersion);
+            });
+        }
+
+        static void SetCollabEnabledInProjectSettingsAs(bool value)
         {
             // Invokes PlayerSettings.SetCloudServiceEnabled("Collab", false)
-            SetCloudServiceEnabled("Collab", false);
+            SetCloudServiceEnabled("Collab", value);
 
             AssetDatabase.SaveAssets();
         }
@@ -106,5 +152,7 @@ namespace Unity.PlasticSCM.Editor
 
         static readonly Type PlayerSettingsType =
             typeof(UnityEditor.PlayerSettings);
+
+        static readonly string mCollabPackageName = "com.unity.collab-proxy";
     }
 }

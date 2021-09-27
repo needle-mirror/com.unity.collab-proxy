@@ -15,9 +15,14 @@ namespace Unity.PlasticSCM.Editor
     {
         internal static bool HasCloudProjectId()
         {
+            return !string.IsNullOrEmpty(GetCloudProjectId());
+        }
+
+        internal static string GetCloudProjectId()
+        {
             //disable Warning CS0618  'PlayerSettings.cloudProjectId' is obsolete: 'cloudProjectId is deprecated
 #pragma warning disable 0618
-            return !string.IsNullOrEmpty(PlayerSettings.cloudProjectId);
+            return PlayerSettings.cloudProjectId;
         }
 
         internal static void ForWorkspace(

@@ -97,7 +97,7 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
                 {
                     AutoConfigClientConf.FromUnityAccessToken(
                         parameters.AccessToken,
-                        repSpec,
+                        repSpec.Server,
                         parameters.ProjectPath);
                 }
 
@@ -120,7 +120,10 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
                 AutoLogin autoLogin = new AutoLogin();
                 autoLogin.ExchangeTokens(parameters.AccessToken);
 
-                CloudEditionWelcomeWindow.JoinOrganization(parameters.CloudOrganization, AutoLogin.sAccessToken, AutoLogin.sUserName);
+                CloudEditionWelcomeWindow.JoinCloudServer(
+                    parameters.CloudOrganization,
+                    autoLogin.UserName,
+                    autoLogin.AccessToken);
 
                 ClientConfigData clientConfigData = ClientConfig.Get().GetClientConfigData();
                 clientConfigData.WorkspaceServer = parameters.CloudOrganization;

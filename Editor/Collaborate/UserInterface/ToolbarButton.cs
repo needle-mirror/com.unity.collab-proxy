@@ -28,8 +28,6 @@ namespace Unity.Cloud.Collaborate.UserInterface
         ToolbarButtonState m_CurrentState;
         string m_ErrorMessage;
         readonly Dictionary<ToolbarButtonState, GUIContent> m_IconCache = new Dictionary<ToolbarButtonState, GUIContent>();
-        GUIContent m_PlasticIconCache;
-        GUIContent m_PlasticNotifyIconCache;
         ButtonWithAnimatedIconRotation m_CollabButton;
 
         public ToolbarButton()
@@ -37,6 +35,7 @@ namespace Unity.Cloud.Collaborate.UserInterface
             Collab.instance.StateChanged += OnCollabStateChanged;
             UnityConnect.instance.StateChanged += OnUnityConnectStateChanged;
             UnityConnect.instance.UserStateChanged += OnUnityConnectUserStateChanged;
+            PlasticWindow.OnNotificationUpdated += OnPlasticNotificationUpdated;
         }
 
         ~ToolbarButton()
@@ -44,6 +43,7 @@ namespace Unity.Cloud.Collaborate.UserInterface
             Collab.instance.StateChanged -= OnCollabStateChanged;
             UnityConnect.instance.StateChanged -= OnUnityConnectStateChanged;
             UnityConnect.instance.UserStateChanged -= OnUnityConnectUserStateChanged;
+            PlasticWindow.OnNotificationUpdated -= OnPlasticNotificationUpdated;
         }
 
         void OnUnityConnectUserStateChanged(UserInfo state)
@@ -59,6 +59,11 @@ namespace Unity.Cloud.Collaborate.UserInterface
         void OnCollabStateChanged(CollabInfo info)
         {
             Update();
+        }
+
+        void OnPlasticNotificationUpdated()
+        {
+            Toolbar.RepaintToolbar();
         }
 
         [CanBeNull]
@@ -133,23 +138,6 @@ namespace Unity.Cloud.Collaborate.UserInterface
             return icon;
         }
 
-        [NotNull]
-        GUIContent GetIconForPlastic(bool hasNotification)
-        {
-            if (hasNotification)
-            {
-                if (m_PlasticNotifyIconCache == null)
-                    m_PlasticNotifyIconCache = new GUIContent(LoadIcon("plastic-notify"), "Plastic SCM");
-                return m_PlasticNotifyIconCache;
-            }
-            else
-            {
-                if (m_PlasticIconCache == null)
-                    m_PlasticIconCache = new GUIContent(LoadIcon("plastic"), "Plastic SCM");
-                return m_PlasticIconCache;
-            }
-        }
-
         public override void OnGUI(Rect rect)
         {
             GUIStyle collabButtonStyle = "AppCommand";
@@ -158,9 +146,9 @@ namespace Unity.Cloud.Collaborate.UserInterface
             {
                 if (m_CurrentState == ToolbarButtonState.Plastic)
                 {
-                    var icon = GetIconForPlastic(PlasticWindow.HasNotification);
+                    var icon = PlasticWindow.GetWindowIcon();
                     EditorGUIUtility.SetIconSize(new Vector2(16, 16));
-                    if (GUI.Button(rect, icon, collabButtonStyle))
+                    if (GUI.Button(rect, new GUIContent(icon, "Plastic SCM"), collabButtonStyle))
                     {
                         PlasticWindow.Open();
                     }

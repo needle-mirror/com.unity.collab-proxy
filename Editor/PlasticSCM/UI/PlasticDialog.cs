@@ -140,6 +140,10 @@ namespace Unity.PlasticSCM.Editor.UI
                 return;
 
             SaveSettings();
+
+            if (mParentWindow == null)
+                return;
+
             mParentWindow.Focus();
         }
 

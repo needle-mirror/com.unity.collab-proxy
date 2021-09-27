@@ -17,4 +17,4 @@ The Version Control package follows the Unity support schedule. Currently, suppo
 
 
 * [Getting started with Collaborate](StartWithCollab.md)
-* [Getting started with Plastic SCM for Unity (beta)](StartPlasticForUnity.md)
+* [Getting started with Plastic SCM for Unity](StartPlasticForUnity.md)

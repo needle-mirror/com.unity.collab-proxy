@@ -96,10 +96,10 @@ namespace Unity.PlasticSCM.Editor.Configuration
             CancelButtonAction();
         }
         void OAuthSignIn.INotify.SuccessForConfigure(
-                   List<string> organizations,
-                   bool canCreateAnOrganization,
-                   string userName,
-                   string accessToken)
+            List<string> organizations,
+            bool canCreateAnOrganization,
+            string userName,
+            string accessToken)
         {
             mEmail = userName;
             mPassword = accessToken;
@@ -110,7 +110,8 @@ namespace Unity.PlasticSCM.Editor.Configuration
                 return;
             }
 
-            CloudEditionWelcomeWindow.JoinOrganization(mServer, userName, accessToken);
+            CloudEditionWelcomeWindow.JoinCloudServer(
+                mServer, userName, accessToken);
 
             GetWindow<PlasticWindow>().InitializePlastic();
             OkButtonAction();

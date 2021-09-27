@@ -4,7 +4,7 @@
   * [Getting started with Collaborate](StartWithCollab.md)
   * [Switch between Collaborate and Plastic SCM](SwitchCollabAndPlastic.md)
 * [Migration from Collaborate to Plastic SCM](MigrateCollab.md)
-* [Getting started with Plastic SCM for Unity (beta)](StartPlasticForUnity.md)
+* [Getting started with Plastic SCM for Unity](StartPlasticForUnity.md)
   * [Getting started with a new Plastic SCM repository](NewPlasticRepo.md)
   * [Getting started with an existing Plastic SCM repository](ExistingPlasticRepo.md)
   * [Accessing the Plastic SCM Window](NewPlasticRepo.md#Accessing-the-Plastic-SCM-Window)

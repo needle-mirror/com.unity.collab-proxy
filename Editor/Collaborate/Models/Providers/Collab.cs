@@ -697,7 +697,11 @@ namespace Unity.Cloud.Collaborate.Models.Providers
         /// <inheritdoc />
         public virtual void ShowServicePage()
         {
+#if ENABLE_EDITOR_GAME_SERVICES
+            SettingsService.OpenProjectSettings("Project/Services/Version Control");
+#else
             SettingsService.OpenProjectSettings("Project/Services/Collaborate");
+#endif
         }
 
         /// <inheritdoc />
