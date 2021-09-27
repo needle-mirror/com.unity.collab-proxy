@@ -56,9 +56,9 @@ namespace Unity.PlasticSCM.Editor
         internal CmConnection CmConnectionForTesting { get { return CmConnection.Get(); } }
 
         /// <summary>
-        /// Check if the Plastic window has notification.
+        /// Invoked when notification status changed.
         /// </summary>
-        public static bool HasNotification { get; private set; }
+        public static event Action OnNotificationUpdated = delegate { };
 
         /// <summary>
         /// Open the Plastic SCM window.
@@ -68,18 +68,35 @@ namespace Unity.PlasticSCM.Editor
             ShowWindow.Plastic();
         }
 
-        internal void SetupWindowTitle(bool hasNotification)
+        /// <summary>
+        /// Get the Plastic window current icon.
+        /// </summary>
+        public static Texture GetWindowIcon()
         {
-            HasNotification = hasNotification;
+            return HasOpenInstances<PlasticWindow>() ?
+                mPlasticWindowIcon :
+                PlasticNotification.GetIcon(PlasticNotification.Status.None);
+        }
 
-            var icon = hasNotification ?
-                Images.GetImage(Images.Name.IconPlasticViewNotify) :
-                Images.GetImage(Images.Name.IconPlasticView);
+        internal void SetupWindowTitle()
+        {
+            mPlasticWindowIcon = PlasticNotification.GetIcon(mNotificationStatus);
 
             // The titleContent icon does not update unless we also update the title text
-            var title = UnityConstants.PLASTIC_WINDOW_TITLE + (hasNotification ? " " : string.Empty);
+            // Temporarily doing it by adding space characters
+            string title = UnityConstants.PLASTIC_WINDOW_TITLE;
+            title += String.Concat(Enumerable.Repeat(" ", (int)mNotificationStatus));
 
-            titleContent = new GUIContent(title, icon);
+            titleContent = new GUIContent(title, mPlasticWindowIcon);
+        }
+
+        internal void SetNotificationStatus(PlasticNotification.Status status)
+        {
+            if (status == mNotificationStatus) return;
+
+            mNotificationStatus = status;
+            SetupWindowTitle();
+            OnNotificationUpdated.Invoke();
         }
 
         internal void DisableCollabIfEnabledWhenLoaded()
@@ -166,7 +183,7 @@ namespace Unity.PlasticSCM.Editor
                 UnityConstants.PLASTIC_WINDOW_MIN_SIZE_WIDTH,
                 UnityConstants.PLASTIC_WINDOW_MIN_SIZE_HEIGHT);
 
-            SetupWindowTitle(false);
+            SetupWindowTitle();
 
             GuiMessage.Initialize(new UnityPlasticGuiMessage(this));
 
@@ -193,6 +210,8 @@ namespace Unity.PlasticSCM.Editor
                 mPingEventLoop = new PingEventLoop();
                 mPingEventLoop.Start();
                 mPingEventLoop.SetUnityVersion(Application.unityVersion);
+
+                CollabPlugin.GetVersion(pluginVersion => mPingEventLoop.SetPluginVersion(pluginVersion));
             }
 
             InitializePlastic();
@@ -1054,6 +1073,9 @@ namespace Unity.PlasticSCM.Editor
         EventSenderScheduler mEventSenderScheduler;
         PingEventLoop mPingEventLoop;
         IAssetMenuOperations mAssetOperations;
+
+        PlasticNotification.Status mNotificationStatus = PlasticNotification.Status.None;
+        static Texture mPlasticWindowIcon;
 
         static readonly ILog mLog = LogManager.GetLogger("PlasticWindow");
     }

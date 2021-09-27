@@ -35,6 +35,9 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             ErrorResponseCancel = 25
         }
 
+        internal string AccessToken;
+        internal string UserName;
+
         void OAuthSignIn.INotify.SuccessForConfigure(
             List<string> organizations,
             bool canCreateAnOrganization,
@@ -91,7 +94,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             /*threadOperationDelegate*/ delegate
             {
                 mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseInit;
-                response = PlasticScmRestApiClient.TokenExchange(unityAccessToken);
+                response = WebRestApiClient.PlasticScm.TokenExchange(unityAccessToken);
             },
             /*afterOperationDelegate*/ delegate
             {
@@ -139,8 +142,8 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 }
 
                 mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseEnd;
-                sAccessToken = response.AccessToken;
-                sUserName = response.User;
+                AccessToken = response.AccessToken;
+                UserName = response.User;
                 GetOrganizationList();
             });
         }
@@ -155,7 +158,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             waiter.Execute(
             /*threadOperationDelegate*/ delegate
             {
-                response = PlasticScmRestApiClient.TokenExchange(unityAccessToken);
+                response = WebRestApiClient.PlasticScm.TokenExchange(unityAccessToken);
             },
             /*afterOperationDelegate*/ delegate
             {
@@ -193,9 +196,9 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                         response.User);
                     return;
                 }
-            
-                sAccessToken = response.AccessToken;
-                sUserName = response.User;
+
+                AccessToken = response.AccessToken;
+                UserName = response.User;
             });
         }
 
@@ -206,7 +209,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 new Editor.UI.Progress.ProgressControlsForDialogs(),
                 this,
                 CloudProjectSettings.userName,
-                sAccessToken
+                AccessToken
             );
         }
 
@@ -232,7 +235,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                    mPlasticWindow.CmConnectionForTesting,null, true);
 
             mCloudEditionWelcomeWindow = CloudEditionWelcomeWindow.GetWelcomeWindow();
-            mCloudEditionWelcomeWindow.FillUserAndToken(sUserName, sAccessToken);
+            mCloudEditionWelcomeWindow.FillUserAndToken(UserName, AccessToken);
             if (organizations.Count == 1)
             {
                 mCloudEditionWelcomeWindow.JoinOrganizationAndWelcomePage(organizations[0]);
@@ -245,16 +248,15 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         {
             return new AskCredentialsToUser.DialogData(
                 dialogResult == ResponseType.Ok,
-                sUserName,
-                sAccessToken, 
+                UserName,
+                AccessToken, 
                 false,
                 SEIDWorkingMode.SSOWorkingMode);
         }
 
-        internal static string sAccessToken = string.Empty;
-        internal static string sUserName = string.Empty;
         PlasticWindow mPlasticWindow;
         CloudEditionWelcomeWindow mCloudEditionWelcomeWindow;
+
         static readonly ILog mLog = LogManager.GetLogger("TokensExchange");
     }
 

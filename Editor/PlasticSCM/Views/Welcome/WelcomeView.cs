@@ -181,25 +181,22 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
 
             // If client configuration cannot be determined, keep login button default as Cloud
             // sign in window, but show Enterprise option as well
-            if (EditionToken.IsCloudEdition())
-            {
-                GUILayout.FlexibleSpace();
+            GUILayout.FlexibleSpace();
 
-                var anchorStyle = new GUIStyle(GUI.skin.label);
-                anchorStyle.normal.textColor = new Color(0.129f, 0.588f, 0.953f);
-                anchorStyle.hover.textColor = new Color(0.239f, 0.627f, 0.949f);
-                anchorStyle.active.textColor = new Color(0.239f, 0.627f, 0.949f);
+            var anchorStyle = new GUIStyle(GUI.skin.label);
+            anchorStyle.normal.textColor = new Color(0.129f, 0.588f, 0.953f);
+            anchorStyle.hover.textColor = new Color(0.239f, 0.627f, 0.949f);
+            anchorStyle.active.textColor = new Color(0.239f, 0.627f, 0.949f);
 
-                if (GUILayout.Button(
-                    PlasticLocalization.GetString(
-                        PlasticLocalization.Name.NeedEnterprise),
-                        anchorStyle,
-                        GUILayout.Width(BUTTON_WIDTH),
-                        GUILayout.Height(20)))
-                    TeamEditionConfigurationWindow.ShowWindow(mPlasticWebRestApi, this);
+            if (GUILayout.Button(
+                PlasticLocalization.GetString(
+                    PlasticLocalization.Name.NeedEnterprise),
+                    anchorStyle,
+                    GUILayout.Width(BUTTON_WIDTH),
+                    GUILayout.Height(20)))
+                TeamEditionConfigurationWindow.ShowWindow(mPlasticWebRestApi, this);
 
-                GUILayout.Space(BUTTON_MARGIN);
-            }
+            GUILayout.Space(BUTTON_MARGIN);
 
             GUI.enabled = true;
         }

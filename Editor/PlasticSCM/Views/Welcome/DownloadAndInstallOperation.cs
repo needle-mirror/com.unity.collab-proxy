@@ -30,8 +30,8 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             waiter.Execute(
                 /*threadOperationDelegate*/ delegate
                 {
-                    plasticVersion =
-                        PlasticScmRestApiClient.GetLastVersion(plasticEdition);
+                    plasticVersion = WebRestApiClient.PlasticScm.
+                        GetLastVersion(plasticEdition);
 
                     if (plasticVersion == null)
                         return;

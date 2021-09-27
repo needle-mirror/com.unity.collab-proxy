@@ -26,7 +26,7 @@ namespace Unity.PlasticSCM.Editor.Gluon
 
         void CheckIncomingChanges.IUpdateIncomingChanges.Hide()
         {
-            mPlasticWindow.SetupWindowTitle(false);
+            mPlasticWindow.SetNotificationStatus(PlasticNotification.Status.None);
             mPanelData.Clear();
 
             mIsVisible = false;
@@ -40,7 +40,13 @@ namespace Unity.PlasticSCM.Editor.Gluon
             string tooltipText,
             CheckIncomingChanges.Severity severity)
         {
-            mPlasticWindow.SetupWindowTitle(true);
+            PlasticNotification.Status status = PlasticNotification.Status.None;
+            if (severity == CheckIncomingChanges.Severity.Info)
+                status = PlasticNotification.Status.IncomingChanges;
+            else if (severity == CheckIncomingChanges.Severity.Warning)
+                status = PlasticNotification.Status.Conflicts;
+            mPlasticWindow.SetNotificationStatus(status);
+            
             UpdateData(
                 mPanelData, infoText, actionText,
                 tooltipText, severity);

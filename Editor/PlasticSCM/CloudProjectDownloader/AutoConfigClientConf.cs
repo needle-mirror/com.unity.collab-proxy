@@ -1,5 +1,4 @@
 ﻿using Codice.Client.Common;
-using Codice.Client.Common.WebApi;
 using Codice.CM.Common;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.WebApi;
@@ -10,16 +9,17 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
     {
         internal static void FromUnityAccessToken(
             string unityAccessToken,
-            RepositorySpec repSpec,
+            string serverName,
             string projectPath)
         {
-            CredentialsResponse response =
-                PlasticScmRestApiClient.GetCredentials(unityAccessToken);
+            CredentialsResponse response = WebRestApiClient.
+                PlasticScm.GetCredentials(unityAccessToken);
 
             if (response.Error != null)
             {
                 UnityEngine.Debug.LogErrorFormat(
-                    PlasticLocalization.GetString(PlasticLocalization.Name.ErrorGettingCredentialsCloudProject),
+                    PlasticLocalization.GetString(
+                        PlasticLocalization.Name.ErrorGettingCredentialsCloudProject),
                     response.Error.Message,
                     response.Error.ErrorCode);
 
@@ -27,29 +27,28 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
             }
 
             ClientConfigData configData = BuildClientConfigData(
-                repSpec,
-                projectPath,
-                response);
+                serverName, projectPath, response);
 
             ClientConfig.Get().Save(configData);
         }
 
         static ClientConfigData BuildClientConfigData(
-            RepositorySpec repSpec,
+            string serverName,
             string projectPath,
             CredentialsResponse response)
         {
-            SEIDWorkingMode workingMode = SEIDWorkingMode.LDAPWorkingMode;
+            SEIDWorkingMode workingMode = GetWorkingMode(response.Type);
 
             ClientConfigData configData = new ClientConfigData();
 
-            configData.WorkspaceServer = repSpec.Server;
+            configData.WorkspaceServer = serverName;
             configData.CurrentWorkspace = projectPath;
             configData.WorkingMode = workingMode.ToString();
             configData.SecurityConfig = UserInfo.GetSecurityConfigStr(
                 workingMode,
                 response.Email,
                 GetPassword(response.Token, response.Type));
+            configData.LastRunningEdition = InstalledEdition.Get();
             return configData;
         }
 
@@ -61,6 +60,14 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
                 return BEARER_PREFIX + token;
 
             return token;
+        }
+
+        static SEIDWorkingMode GetWorkingMode(CredentialsResponse.TokenType tokenType)
+        {
+            if (tokenType == CredentialsResponse.TokenType.Bearer)
+                return SEIDWorkingMode.SSOWorkingMode;
+
+            return SEIDWorkingMode.LDAPWorkingMode;
         }
 
         const string BEARER_PREFIX = "Bearer ";

@@ -71,40 +71,34 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         internal void JoinOrganizationAndWelcomePage(string organization)
         {
-            JoinOrganization(organization,
+            JoinCloudServer(organization,
                 mUserName,
                 mAccessToken);
 
             GetWelcomePage.Run(sRestApi, organization);
         }
 
-        internal void JoinOrganization(string organization)
+        internal static void JoinCloudServer(
+            string cloudServer,
+            string username,
+            string accessToken)
         {
-            JoinOrganization(organization,
-                mUserName,
-                mAccessToken);
-        }
-
-        internal static void JoinOrganization(string organization, string username, string accessToken)
-        {
-            SaveCloudServer.ToPlasticGuiConfig(organization);
+            SaveCloudServer.ToPlasticGuiConfig(cloudServer);
             SaveCloudServer.ToPlasticGuiConfigFile(
-                organization, GetPlasticConfigFileToSaveOrganization());
+                cloudServer, GetPlasticConfigFileToSaveOrganization());
             SaveCloudServer.ToPlasticGuiConfigFile(
-                organization, GetGluonConfigFileToSaveOrganization());
+                cloudServer, GetGluonConfigFileToSaveOrganization());
 
             KnownServers.ServersFromCloud.InitializeForWindows(
                 PlasticGuiConfig.Get().Configuration.DefaultCloudServer);
 
             CloudEditionWelcome.WriteToTokensConf(
-                organization,
-               username,
-                accessToken);
+                cloudServer, username, accessToken);
 
             if (sAutoLogin)
             {
                 ClientConfigData clientConfigData = ConfigurationChecker.GetClientConfigData();
-                clientConfigData.WorkspaceServer = organization;
+                clientConfigData.WorkspaceServer = cloudServer;
                 clientConfigData.WorkingMode = SEIDWorkingMode.SSOWorkingMode.ToString();
                 clientConfigData.SecurityConfig = username;
                 ClientConfig.Get().Save(clientConfigData);
@@ -207,9 +201,9 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             string userName,
             string accessToken)
         {
-                mUserName = userName;
-                mAccessToken = accessToken;
-            }
+            mUserName = userName;
+            mAccessToken = accessToken;
+        }
 
         internal void ShowOrganizationPanelFromAutoLogin(
             List<string> organizations,

@@ -45,6 +45,8 @@ namespace Unity.PlasticSCM.Editor.UI
             IconRepository,
             IconPlasticView,
             IconPlasticViewNotify,
+            IconPlasticNotifyIncoming,
+            IconPlasticNotifyConflict,
             Loading,
             IconEmptyGravatar,
             Step1,
@@ -86,7 +88,7 @@ namespace Unity.PlasticSCM.Editor.UI
             string darkImageFileName2x = string.Format("d_{0}", imageFileName2x);
 
             string imageFileRelativePath = GetImageFileRelativePath(imageFileName);
-            string imageFileRelativePath2x = GetImageFileRelativePath(imageFileName);
+            string imageFileRelativePath2x = GetImageFileRelativePath(imageFileName2x);
 
             string darkImageFileRelativePath = GetImageFileRelativePath(darkImageFileName);
             string darkImageFileRelativePath2x = GetImageFileRelativePath(darkImageFileName2x);
