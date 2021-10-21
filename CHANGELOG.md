@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this package will be documented in this file.
 
-## [1.14.1] - 2021-10-21
+## [1.15.1] - 2021-10-21
 
 Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!
 If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
@@ -35,7 +35,7 @@ Removing a previously added Plastic SCM Asset Store Plug-In:
 - Removed meta file warning message for the deleted Beta folder
 - Fixed Plastic SCM menu missing from Project view context menu
 
-## [1.12.5] - 2021-09-27
+## [1.13.5] - 2021-09-27
 
 Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!
 If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
@@ -60,7 +60,7 @@ Removing a previously added Plastic SCM Asset Store Plug-In:
 - Fixed missing Enterprise login link
 - Fixed low resolution icons in light theme
 
-## [1.10.2] - 2021-08-27
+## [1.11.2] - 2021-08-27
 
 Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!
 If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
@@ -111,7 +111,7 @@ Removing a previously added Plastic SCM Asset Store Plug-In:
 - Fixed auto login errors not showing up for users
 - Fixed unexpected error message after user switched workspace to a label
 
-## [1.8.0] - 2021-07-13
+## [1.9.0] - 2021-07-13
 
 Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!
 If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
@@ -133,7 +133,7 @@ Removing a previously added Plastic SCM Asset Store Plug-In:
 - Fixed SSO renew token after password change
 - Fixed some namespace collisions with Antlr3
 
-## [1.6.0] - 2021-06-25
+## [1.7.1] - 2021-06-25
 
 Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!
 If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
@@ -158,32 +158,84 @@ Removing a previously added Plastic SCM Asset Store Plug-In:
 ### Fixed
 - Stability and performance improvements
 
-## [1.4.9] - 2021-06-03
+## [1.5.7] - 2021-04-07
 ### Unreleased
 - The Version Control package will be expanding to include both Collaborate and Plastic SCM version control interfaces. This release is preparing for that move and contains no new functionality or bug fixes for Collaborate.
 ### Changed
 - Collaborate Package renamed to Version Control with changes to package display name and description.
-- Updating license to better conform with expected customer usage.
-- Updated documentation file to meet standards.
-- Updated third-party usage.
+### Fixed
+- Fixed NPE when updating the version of the Collab package.
+
+## [1.3.9] - 2020-07-13
+### Fixed
+- Unnecessary use of texture compression in icons that slowed down platform switching
+- Update publish button state when selected changes update
+- Use colorized icons when changes are available.
+
+## [1.3.8] - 2020-06-08
+### Fixed
+- Fix incorrect priority of error messages
+- Fix Collab button being stuck in inprogress state
+- Fix error when partially publishing without the window open
+
+## [1.3.7] - 2020-01-30
+### Changed
+- Bulk revert is now supported.
+- Collab is blocked in play mode.
+### Fixed
+- Fixed services window's links to open Collab.
+
+## [1.3.6] - 2020-01-21
+### Fixed
+- Fixed compile errors when removing the NUnit package by removing unnecessary references.
+
+## [1.3.5] - 2020-01-08
+### Fixed
+- Fix "accept mine" / "accept remote" icon swap in conflicts view.
+
+## [1.3.4] - 2019-12-16
+### Changed
+- Window state is no longer restored after the window is closed and opened.
+### Fixed
+- History tab failing to load on startup if it is left open in the previous session.
+- Progress bar percentage not matching the bar.
+- History list correctly updates after a new revision is published.
+- UI instabilities when restoring or going back to a revision with a different package manifest.
+- Improve handling of changes to the project id.
+
+## [1.3.3] - 2019-12-10
+### Changed
+- Disable UI test cases that can be unstable.
+
+## [1.3.2] - 2019-12-05
+### Changed
+- Update UX to UIElements.
+- Increased minimum supported version to 2020.1.
+- Update Documentation to required standards.
 
 ## [1.2.16] - 2019-02-11
-Update stylesheet to pass USS validation
+### Fixed
+- Update stylesheet to pass USS validation
 
 ## [1.2.15] - 2018-11-16
-Added support for non-experimental UIElements.
+### Changed
+- Added support for non-experimental UIElements.
 
 ## [1.2.11] - 2018-09-04
-Made some performance improvements to reduce impact on ReloadAssemblies.
+### Fixed
+- Made some performance improvements to reduce impact on ReloadAssemblies.
 
 ## [1.2.9] - 2018-08-13
-Test issues for the Collab History Window are now fixed.
+### Fixed
+- Test issues for the Collab History Window are now fixed.
 
 ## [1.2.7] - 2018-08-07
-Toolbar drop-down will no longer show up when package is uninstalled.
+### Fixed
+- Toolbar drop-down will no longer show up when package is uninstalled.
 
 ## [1.2.6] - 2018-06-15
-Fixed an issue where Collab's History window wouldn't load properly.
+### Fixed
+- Fixed an issue where Collab's History window wouldn't load properly.
 
 ## [1.2.5] - 2018-05-21
 This is the first release of *Unity Package CollabProxy*.

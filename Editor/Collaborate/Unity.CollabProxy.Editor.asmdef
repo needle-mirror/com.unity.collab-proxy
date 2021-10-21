@@ -1,7 +1,10 @@
 {
     "name": "Unity.CollabProxy.Editor",
+    "rootNamespace": "",
     "references": [
-        "Unity.PlasticSCM.Editor"
+        "Unity.PlasticSCM.Editor",
+        "Unity.Services.Core.Editor",
+        "Unity.Settings.Editor"
     ],
     "includePlatforms": [
         "Editor"
