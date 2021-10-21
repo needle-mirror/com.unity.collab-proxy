@@ -1,6 +1,8 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
+using Codice.Client.BaseCommands.EventTracking;
+using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.History;
 using Unity.PlasticSCM.Editor.UI;
@@ -17,12 +19,10 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         internal HistoryListViewMenu(
             IHistoryViewMenuOperations operations,
-            IMenuOperations menuOperations,
-            bool isGluonMode)
+            IMenuOperations menuOperations)
         {
             mOperations = operations;
             mMenuOperations = menuOperations;
-            mIsGluonMode = isGluonMode;
 
             BuildComponents();
         }
@@ -52,7 +52,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
             if (!operations.HasFlag(operationToExecute))
                 return false;
 
-            ProcessMenuOperation(operationToExecute, mOperations, mIsGluonMode);
+            ProcessMenuOperation(operationToExecute);
             return true;
         }
 
@@ -73,25 +73,16 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         void DiffWithPreviousMenuItem_Click()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
-                return;
-
             mOperations.DiffWithPrevious();
         }
 
         void DiffSelectedRevisionsMenu_Click()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
-                return;
-
             mOperations.DiffSelectedRevisions();
         }
 
         void DiffChangesetMenu_Click()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
-                return;
-
             mOperations.DiffChangeset();
         }
         void RevertToThisRevisionMenu_Click()
@@ -161,20 +152,13 @@ namespace Unity.PlasticSCM.Editor.Views.History
             return HistoryMenuOperations.None;
         }
 
-        static void ProcessMenuOperation(
-            HistoryMenuOperations operationToExecute,
-            IHistoryViewMenuOperations operations,
-            bool isGluonMode)
+        void ProcessMenuOperation(HistoryMenuOperations operationToExecute)
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(isGluonMode))
-                return;
-
             if (operationToExecute == HistoryMenuOperations.DiffWithPrevious)
             {
-                operations.DiffWithPrevious();
-                return;
+                DiffWithPreviousMenuItem_Click();
             }
-        }
+         }
 
         GUIContent GetNoActionMenuItemContent()
         {
@@ -228,6 +212,5 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         readonly IHistoryViewMenuOperations mOperations;
         readonly IMenuOperations mMenuOperations;
-        readonly bool mIsGluonMode;
-    }
+     }
 }

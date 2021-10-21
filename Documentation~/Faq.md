@@ -4,8 +4,8 @@
 
 You should use the **Version Control package**, which contains Plastic SCM for Unity. This is the package the team will be actively working on moving forward. 
 
-* The standard version control integration of Plastic will be removed from future editor versions and its functionality has been ported to the Version control package.
-* The Asset store plugin functionality will be deprecated as the functionality from the plugin has been ported to the Version Control package.
+* Plastic's standard version control integration has been removed from editor versions, and its functionality has been ported to the Version control package.
+* The Asset store plugin functionality is deprecated, as the functionality from the plugin has been ported to the Version Control package.
 
 **Where should I post questions related to Plastic SCM?**
 

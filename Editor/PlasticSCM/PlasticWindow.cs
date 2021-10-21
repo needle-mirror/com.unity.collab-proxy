@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 using UnityEditor;
 using UnityEngine;
@@ -23,20 +24,19 @@ using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.Configuration;
+using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
 using Unity.PlasticSCM.Editor.Inspector;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Avatar;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.Views.CreateWorkspace;
+using Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs;
 using Unity.PlasticSCM.Editor.Views.Welcome;
 
 using GluonCheckIncomingChanges = PlasticGui.Gluon.WorkspaceWindow.CheckIncomingChanges;
 using GluonNewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncomingChangesUpdater;
 using EventTracking = PlasticGui.EventTracking.EventTracking;
-using System.Linq;
-using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
-using Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs;
 using processor = Unity.PlasticSCM.Editor.AssetUtils.Processor;
 
 namespace Unity.PlasticSCM.Editor
@@ -138,7 +138,7 @@ namespace Unity.PlasticSCM.Editor
         {
             mAssetOperations.ShowHistory();
         }
-
+ 
         void PlasticGui.WorkspaceWindow.CheckIncomingChanges.IAutoRefreshIncomingChangesView.IfVisible()
         {
             mViewSwitcher.AutoRefreshIncomingChangesView();
@@ -534,6 +534,8 @@ namespace Unity.PlasticSCM.Editor
                     RepaintProjectWindow);
 
                 mLastUpdateTime = EditorApplication.timeSinceStartup;
+
+                mViewSwitcher.ShowBranchesViewIfNeeded();
             }
             catch (Exception ex)
             {
@@ -588,7 +590,7 @@ namespace Unity.PlasticSCM.Editor
                 mGluonNewIncomingChangesUpdater);
 
             // When Unity Editor window is activated it writes some files to its Temp folder.
-            // This causes the fswatcher to process those events. 
+            // This causes the fswatcher to process those events.
             // We need to wait until the fswatcher finishes processing the events,
             // otherwise the NewChangesInWk method will return TRUE, causing
             // the pending changes view to unwanted auto-refresh.
@@ -655,15 +657,22 @@ namespace Unity.PlasticSCM.Editor
             if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.PendingChanges))
             {
                 viewSwitcher.PendingChangesTab.DrawSearchFieldForPendingChangesTab();
+                return;
             }
-
-            else if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Changesets))
+            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Changesets))
             {
                 viewSwitcher.ChangesetsTab.DrawSearchFieldForChangesetsTab();
+                return;
             }
-            else if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.History))
+            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.History))
             {
                 viewSwitcher.HistoryTab.DrawSearchFieldForHistoryTab();
+                return;
+            }
+            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Branches))
+            {
+                viewSwitcher.BranchesTab.DrawSearchFieldForBranchesTab();
+                return;
             }
         }
 
@@ -690,6 +699,106 @@ namespace Unity.PlasticSCM.Editor
             EditorGUILayout.EndHorizontal();
         }
 
+        static void OpenBranchListViewAndSendEvent(
+            WorkspaceInfo wkInfo,
+            ViewSwitcher viewSwitcher)
+        {
+            viewSwitcher.ShowBranchesView();
+            TrackFeatureUseEvent.For(
+               PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
+               TrackFeatureUseEvent.Features.OpenBranchesView);
+        }
+
+        static void ShowBranchesContextMenu(
+             WorkspaceInfo wkInfo,
+            ViewSwitcher viewSwitcher,
+            bool isGluonMode)
+        {
+            GenericMenu menu = new GenericMenu();
+
+            string branchesListView = PlasticLocalization.GetString(
+                PlasticLocalization.Name.Branches);
+
+            menu.AddItem(
+               new GUIContent(branchesListView),
+               false,
+               () => OpenBranchListViewAndSendEvent(wkInfo, viewSwitcher));
+
+            string branchExplorer = PlasticLocalization.GetString(
+            PlasticLocalization.Name.BranchExplorerMenu);
+
+            menu.AddItem(
+              new GUIContent(branchExplorer),
+              false,
+              () => LaunchTool.OpenBranchExplorer(wkInfo, isGluonMode));
+
+            menu.ShowAsContext();
+        }
+
+        static void ShowSettingsContextMenu(
+            WorkspaceInfo wkInfo,
+            bool isGluonMode)
+        {
+            GenericMenu menu = new GenericMenu();
+
+            string openToolText = isGluonMode ?
+                PlasticLocalization.GetString(PlasticLocalization.Name.LaunchGluonButton) :
+                PlasticLocalization.GetString(PlasticLocalization.Name.LaunchPlasticButton);
+
+            menu.AddItem(
+               new GUIContent(openToolText),
+               false,
+               () => LaunchTool.OpenGUIForMode(wkInfo, isGluonMode));
+
+            PlasticWindow plasticWindow = EditorWindow.GetWindow<PlasticWindow>();
+
+            menu.AddItem(
+                new GUIContent(
+                    PlasticLocalization.GetString(
+                       PlasticLocalization.Name.InviteMembers)),
+                false,
+               InviteMemberButton_clicked,
+               null);
+
+            menu.AddSeparator("");
+
+            menu.AddItem(
+                new GUIContent(
+                    PlasticLocalization.GetString(
+                PlasticLocalization.Name.Options)),
+                false,
+                () => PendingChangesOptionsDialog.ChangeOptions(wkInfo, PlasticAssetsProcessor.mPendingChangesTab, plasticWindow));
+
+            // If the user has the simplified UI key of type .txt in the Assets folder
+            // TODO: Remove when Simplified UI is complete
+            if (AssetDatabase.FindAssets("simplifieduikey t:textasset", new[] { "Assets" }).Any())
+                menu.AddItem(new GUIContent("Try Simplified UI"),
+                    false,
+                    TrySimplifiedUIButton_Clicked,
+                    null);
+
+            //TODO: Localization
+            menu.AddItem(
+                new GUIContent(processor.AssetModificationProcessor.ForceCheckout ?
+                PlasticLocalization.GetString(PlasticLocalization.Name.DisableForcedCheckout) :
+                PlasticLocalization.GetString(PlasticLocalization.Name.EnableForcedCheckout)),
+                false,
+                ForceCheckout_Clicked,
+                null);
+
+            menu.AddSeparator("");
+
+            menu.AddItem(
+                new GUIContent(
+                    PlasticLocalization.GetString(
+                        PlasticLocalization.Name.TurnOffPlasticSCM)),
+                false,
+                TurnOffPlasticButton_Clicked,
+                null);
+
+            menu.ShowAsContext();
+        }
+
         static void DoLaunchButtons(
             bool isPlasticExeAvailable,
             WorkspaceInfo wkInfo,
@@ -706,9 +815,13 @@ namespace Unity.PlasticSCM.Editor
             {
                 viewSwitcher.ChangesetsTab.DrawDateFilter();
             }
+            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Branches))
+            {
+                viewSwitcher.BranchesTab.DrawDateFilter();
+            }
 
-            var refreshIcon = Images.GetRefreshIcon();
-            var refreshIconTooltip = PlasticLocalization.GetString(
+            Texture refreshIcon = Images.GetRefreshIcon();
+            string refreshIconTooltip = PlasticLocalization.GetString(
                 PlasticLocalization.Name.RefreshButton);
 
             if (DrawLaunchButton(refreshIcon, refreshIconTooltip))
@@ -718,8 +831,8 @@ namespace Unity.PlasticSCM.Editor
 
             if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.PendingChanges))
             {
-                var icon = Images.GetImage(Images.Name.IconUndo);
-                var tooltip = PlasticLocalization.GetString(
+                Texture2D icon = Images.GetImage(Images.Name.IconUndo);
+                string tooltip = PlasticLocalization.GetString(
                     PlasticLocalization.Name.UndoSelectedChanges);
 
                 if (DrawLaunchButton(icon, tooltip))
@@ -734,79 +847,29 @@ namespace Unity.PlasticSCM.Editor
 
             if (isGluonMode)
             {
-                var label = PlasticLocalization.GetString(PlasticLocalization.Name.ConfigureGluon);
+                string label = PlasticLocalization.GetString(PlasticLocalization.Name.ConfigureGluon);
                 if (DrawActionButton.For(label))
                     LaunchTool.OpenWorkspaceConfiguration(wkInfo, isGluonMode);
             }
             else
             {
-                var icon = Images.GetImage(Images.Name.IconBranch);
-                var tooltip = PlasticLocalization.GetString(PlasticLocalization.Name.BranchExplorerMenu);
+                Texture2D icon = Images.GetImage(Images.Name.IconBranch);
+                string tooltip = PlasticLocalization.GetString(PlasticLocalization.Name.Branches);
                 if (DrawLaunchButton(icon, tooltip))
-                    LaunchTool.OpenBranchExplorer(wkInfo, isGluonMode);
+                {
+                    ShowBranchesContextMenu(
+                        wkInfo,
+                        viewSwitcher,
+                        isGluonMode);
+                }
             }
 
             //TODO: Add settings button tooltip localization
             if (DrawLaunchButton(Images.GetSettingsIcon(), string.Empty))
             {
-                GenericMenu menu = new GenericMenu();
-
-                string openToolText = isGluonMode ?
-                    PlasticLocalization.GetString(PlasticLocalization.Name.LaunchGluonButton) :
-                    PlasticLocalization.GetString(PlasticLocalization.Name.LaunchPlasticButton);
-
-                menu.AddItem(
-                   new GUIContent(openToolText),
-                   false,
-                   () => LaunchTool.OpenGUIForMode(wkInfo, isGluonMode));
-
-                var plasticWindow = EditorWindow.GetWindow<PlasticWindow>();
-
-                menu.AddItem(
-                    new GUIContent(
-                        PlasticLocalization.GetString(
-                           PlasticLocalization.Name.InviteMembers)),
-                    false,
-                   InviteMemberButton_clicked,
-                   null);
-
-                menu.AddSeparator("");
-
-                menu.AddItem(
-                    new GUIContent(
-                        PlasticLocalization.GetString(
-                    PlasticLocalization.Name.Options)),
-                    false,
-                    () => PendingChangesOptionsDialog.ChangeOptions(wkInfo, PlasticAssetsProcessor.mPendingChangesTab, plasticWindow));
-
-                // If the user has the simplified UI key of type .txt in the Assets folder
-                // TODO: Remove when Simplified UI is complete
-                if (AssetDatabase.FindAssets("simplifieduikey t:textasset", new[] { "Assets" }).Any())
-                    menu.AddItem(new GUIContent("Try Simplified UI"),
-                        false,
-                        TrySimplifiedUIButton_Clicked,
-                        null);
-
-                //TODO: Localization
-                menu.AddItem(
-                    new GUIContent(processor.AssetModificationProcessor.ForceCheckout ?
-                    PlasticLocalization.GetString(PlasticLocalization.Name.DisableForcedCheckout) :
-                    PlasticLocalization.GetString(PlasticLocalization.Name.EnableForcedCheckout)),
-                    false,
-                    ForceCheckout_Clicked,
-                    null);
-
-                menu.AddSeparator("");
-
-                menu.AddItem(
-                    new GUIContent(
-                        PlasticLocalization.GetString(
-                            PlasticLocalization.Name.TurnOffPlasticSCM)),
-                    false,
-                    TurnOffPlasticButton_Clicked,
-                    null);
-
-                menu.ShowAsContext();
+                ShowSettingsContextMenu(
+                    wkInfo,
+                    isGluonMode);
             }
         }
 
@@ -1024,7 +1087,7 @@ namespace Unity.PlasticSCM.Editor
                             return;
 
                         reloadAction();
-                });
+                    });
             }
 
             static bool IsWorkspaceConfigChanged(
@@ -1076,7 +1139,6 @@ namespace Unity.PlasticSCM.Editor
 
         PlasticNotification.Status mNotificationStatus = PlasticNotification.Status.None;
         static Texture mPlasticWindowIcon;
-
         static readonly ILog mLog = LogManager.GetLogger("PlasticWindow");
     }
 }

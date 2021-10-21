@@ -137,10 +137,10 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 true);
         }
 
-        void CreateOrganization.INotify.Success(string organization)
+        void CreateOrganization.INotify.Success(string organizationName)
         {
             mParentWindow.ReplaceRootPanel(new CreatedOrganizationPanel(
-                mOrganizationNameTextField.text,
+                organizationName,
                 mParentWindow));
         }
 

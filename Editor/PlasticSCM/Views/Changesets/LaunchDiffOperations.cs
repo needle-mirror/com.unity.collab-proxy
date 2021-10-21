@@ -17,6 +17,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 repSpec, changesetId);
 
             LaunchTool.OpenChangesetDiffs(
+                repSpec,
                 changesetFullSpec,
                 isGluonMode);
         }
@@ -33,6 +34,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 repSpec, changesetInfo.ChangesetId);
 
             LaunchTool.OpenChangesetDiffs(
+                repSpec,
                 changesetFullSpec,
                 isGluonMode);
         }
@@ -59,6 +61,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 repSpec, dstChangesetInfo.ChangesetId);
 
             LaunchTool.OpenSelectedChangesetsDiffs(
+                repSpec,
                 srcChangesetFullSpec,
                 dstChangesetFullSpec,
                 isGluonMode);
@@ -76,6 +79,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 repSpec, changesetExtendedInfo);
 
             LaunchTool.OpenBranchDiffs(
+                repSpec,
                 branchFullSpec,
                 isGluonMode);
         }

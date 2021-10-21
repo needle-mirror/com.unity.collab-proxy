@@ -16,10 +16,17 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
 {
     class DownloadAndInstallOperation
     {
+        internal interface INotify
+        {
+            void InstallationStarted();
+            void InstallationFinished();
+        }
+
         internal static void Run(
             Edition plasticEdition,
             string installerDestinationPath,
-            ProgressControlsForDialogs progressControls)
+            ProgressControlsForDialogs progressControls,
+            INotify notify)
         {
             ((IProgressControls)progressControls).ShowProgress(
                 PlasticLocalization.GetString(PlasticLocalization.Name.DownloadingProgress));
@@ -74,18 +81,22 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
 
                     RunInstaller(
                         installerDestinationPath,
-                        progressControls);
+                        progressControls,
+                        notify);
                 });
         }
 
         static void RunInstaller(
             string installerPath,
-            ProgressControlsForDialogs progressControls)
+            ProgressControlsForDialogs progressControls,
+            INotify notify)
         {
             progressControls.ProgressData.ProgressPercent = -1;
 
             ((IProgressControls)progressControls).ShowProgress(
                 PlasticLocalization.GetString(PlasticLocalization.Name.InstallingProgress));
+
+            notify.InstallationStarted();
 
             MacOSConfigWorkaround configWorkaround = new MacOSConfigWorkaround();
 
@@ -105,6 +116,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
                 },
                 /*afterOperationDelegate*/ delegate
                 {
+                    notify.InstallationFinished();
                     ((IProgressControls)progressControls).HideProgress();
 
                     if (waiter.Exception != null)

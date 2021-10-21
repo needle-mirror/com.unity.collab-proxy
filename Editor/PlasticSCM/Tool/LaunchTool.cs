@@ -6,7 +6,6 @@ using Codice.Client.BaseCommands.EventTracking;
 using Codice.CM.Common;
 using Codice.LogWrapper;
 using Codice.Utils;
-using PlasticGui;
 using Unity.PlasticSCM.Editor.Views;
 
 namespace Unity.PlasticSCM.Editor.Tool
@@ -15,7 +14,12 @@ namespace Unity.PlasticSCM.Editor.Tool
     {
         internal static void OpenGUIForMode(WorkspaceInfo wkInfo, bool isGluonMode)
         {
-            if (ShowDownloadPlasticExeWindow(isGluonMode))
+            if (ShowDownloadPlasticExeWindow(
+                wkInfo,
+                isGluonMode,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenGUI,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromOpenGUI,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromOpenGUI))
                 return;
 
             mLog.DebugFormat(
@@ -71,7 +75,12 @@ namespace Unity.PlasticSCM.Editor.Tool
 
         internal static void OpenBranchExplorer(WorkspaceInfo wkInfo, bool isGluonMode)
         {
-            if (ShowDownloadPlasticExeWindow(isGluonMode))
+            if (ShowDownloadPlasticExeWindow(
+                wkInfo,
+                isGluonMode,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenBranchExplorer,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromOpenBranchExplorer,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromOpenBranchExplorer))
                 return;
 
             mLog.DebugFormat(
@@ -110,9 +119,14 @@ namespace Unity.PlasticSCM.Editor.Tool
                 mBrexProcessId = brexProcess.Id;
         }
 
-        internal static void OpenChangesetDiffs(string fullChangesetSpec, bool isGluonMode)
+        internal static void OpenChangesetDiffs(RepositorySpec repSpec, string fullChangesetSpec, bool isGluonMode)
         {
-            if (ShowDownloadPlasticExeWindow(isGluonMode))
+            if (ShowDownloadPlasticExeWindow(
+                repSpec,
+                isGluonMode,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenChangesetDiffs,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromOpenChangesetDiffs,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromOpenChangesetDiffs))
                 return;
 
             mLog.DebugFormat(
@@ -133,11 +147,17 @@ namespace Unity.PlasticSCM.Editor.Tool
         }
 
         internal static void OpenSelectedChangesetsDiffs(
+            RepositorySpec repSpec,
             string srcFullChangesetSpec,
             string dstFullChangesetSpec,
             bool isGluonMode)
         {
-            if (ShowDownloadPlasticExeWindow(isGluonMode))
+            if (ShowDownloadPlasticExeWindow(
+                repSpec,
+                isGluonMode,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenSelectedChangesetsDiffs,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromOpenSelectedChangesetsDiffs,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromOpenSelectedChangesetsDiffs))
                 return;
 
             mLog.DebugFormat(
@@ -160,9 +180,14 @@ namespace Unity.PlasticSCM.Editor.Tool
                     dstFullChangesetSpec));
         }
 
-        internal static void OpenBranchDiffs(string fullBranchSpec, bool isGluonMode)
+        internal static void OpenBranchDiffs(RepositorySpec repSpec, string fullBranchSpec, bool isGluonMode)
         {
-            if (ShowDownloadPlasticExeWindow(isGluonMode))
+            if (ShowDownloadPlasticExeWindow(
+                repSpec,
+                isGluonMode,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenBranchDiff,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromOpenBranchDiff,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromOpenBranchDiff))
                 return;
 
             mLog.DebugFormat(
@@ -184,7 +209,12 @@ namespace Unity.PlasticSCM.Editor.Tool
 
         internal static void OpenWorkspaceConfiguration(WorkspaceInfo wkInfo, bool isGluonMode)
         {
-            if (ShowDownloadPlasticExeWindow(isGluonMode))
+            if (ShowDownloadPlasticExeWindow(
+                wkInfo,
+                isGluonMode,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenWorkspaceConfiguration,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromOpenWorkspaceConfiguration,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromOpenWorkspaceConfiguration))
                 return;
 
             mLog.DebugFormat(
@@ -210,20 +240,25 @@ namespace Unity.PlasticSCM.Editor.Tool
             mGluonProcessId = gluonProcess.Id;
         }
 
-        internal static void OpenMerge(string wkPath, bool isGluonMode)
+        internal static void OpenMerge(WorkspaceInfo wkInfo, bool isGluonMode)
         {
-            if (ShowDownloadPlasticExeWindow(isGluonMode))
+            if (ShowDownloadPlasticExeWindow(
+                wkInfo,
+                isGluonMode,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenMerge,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromOpenMerge,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromOpenMerge))
                 return;
 
             mLog.DebugFormat(
                 "Opening Merge on wkPath '{0}'.",
-                wkPath);
+                wkInfo.ClientPath);
 
             if (PlatformIdentifier.IsMac())
             {
                 Process plasticProcess = ExecuteGUI(
                     PlasticInstallPath.GetPlasticExePath(),
-                    string.Format(ToolConstants.Plastic.GUI_MACOS_MERGE_ARG, wkPath),
+                    string.Format(ToolConstants.Plastic.GUI_MACOS_MERGE_ARG, wkInfo.ClientPath),
                     ToolConstants.Plastic.GUI_MACOS_COMMAND_FILE_ARG,
                     ToolConstants.Plastic.GUI_MACOS_COMMAND_FILE,
                     mPlasticProcessId);
@@ -236,17 +271,46 @@ namespace Unity.PlasticSCM.Editor.Tool
 
             ExecuteProcess(
                 PlasticInstallPath.GetPlasticExePath(),
-                string.Format(ToolConstants.Plastic.GUI_WINDOWS_MERGE_ARG, wkPath));
+                string.Format(ToolConstants.Plastic.GUI_WINDOWS_MERGE_ARG, wkInfo.ClientPath));
         }
 
-        internal static bool ShowDownloadPlasticExeWindow(bool isGluonMode)
+        internal static bool ShowDownloadPlasticExeWindow(
+            WorkspaceInfo wkInfo,
+            bool isGluonMode,
+            string installCloudFrom,
+            string installEnterpriseFrom,
+            string cancelInstallFrom)
+        {
+            RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(wkInfo);
+
+            return ShowDownloadPlasticExeWindow(
+                repSpec,
+                isGluonMode,
+                installCloudFrom,
+                installEnterpriseFrom,
+                cancelInstallFrom);
+        }
+
+        internal static bool ShowDownloadPlasticExeWindow(
+            RepositorySpec repSpec,
+            bool isGluonMode,
+            string installCloudFrom,
+            string installEnterpriseFrom,
+            string cancelInstallFrom)
         {
             if (IsExeAvailable.ForMode(isGluonMode))
                 return false;
 
-            DownloadPlasticExeWindow.ShowWindow(isGluonMode);
+            DownloadPlasticExeWindow.ShowWindow(
+                repSpec,
+                isGluonMode,
+                installCloudFrom,
+                installEnterpriseFrom,
+                cancelInstallFrom);
+
             return true;
         }
+
 
         static Process ExecuteGUI(
             string program,

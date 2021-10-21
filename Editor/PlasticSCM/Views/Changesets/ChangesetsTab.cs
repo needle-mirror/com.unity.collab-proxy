@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
+using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Commands;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
@@ -15,7 +16,6 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.Diff;
-using Codice.Client.BaseCommands.EventTracking;
 
 namespace Unity.PlasticSCM.Editor.Views.Changesets
 {
@@ -301,7 +301,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             if (dateFilter.FilterType == DateFilter.Type.AllTime)
                 return QueryConstants.ChangesetsBeginningQuery;
 
-            string whereClause = QueryConstants.GetChangesetsDateWhereClause(
+            string whereClause = QueryConstants.GetDateWhereClause(
                 dateFilter.GetFilterDate(DateTime.UtcNow));
 
             return string.Format("{0} {1}",
@@ -441,7 +441,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mChangesetsListView = new ChangesetsListView(
                 headerState,
                 ChangesetsListHeaderState.GetColumnNames(),
-                new ChangesetsViewMenu(this, this, mIsGluonMode),
+                new ChangesetsViewMenu(wkInfo, this, this, mIsGluonMode),
                 sizeChangedAction: OnChangesetsListViewSizeChanged,
                 selectionChangedAction: OnSelectionChanged,
                 doubleClickAction: ((IChangesetMenuOperations)this).DiffChangeset);

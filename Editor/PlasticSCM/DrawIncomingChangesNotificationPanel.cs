@@ -64,7 +64,7 @@ namespace Unity.PlasticSCM.Editor
             
             var icon = Images.GetImage(
                 notificationPanelData.NotificationStyle == NotificationPanelData.StyleType.Green
-                ? Images.Name.DownloadIconGreen : Images.Name.DownloadIconRed);
+                ? Images.Name.IconOutOfSync : Images.Name.IconConflicted);
             GUILayout.Label(icon, GUILayout.Height(16), GUILayout.Width(16));
 
             GUILayout.FlexibleSpace();

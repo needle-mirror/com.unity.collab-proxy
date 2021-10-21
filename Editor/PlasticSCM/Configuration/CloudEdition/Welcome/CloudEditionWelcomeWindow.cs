@@ -95,6 +95,8 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             CloudEditionWelcome.WriteToTokensConf(
                 cloudServer, username, accessToken);
 
+            SetupUnityEditionToken.CreateCloudEditionTokenIfNeeded();
+
             if (sAutoLogin)
             {
                 ClientConfigData clientConfigData = ConfigurationChecker.GetClientConfigData();

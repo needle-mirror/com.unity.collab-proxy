@@ -62,7 +62,7 @@
 正在移動項目...
 
 == Options ==
-選項 
+選項
 
 == OptionsAmp ==
 選項(&O)
@@ -149,7 +149,7 @@ Copyright © 2006-{0} Codice Software S.L.All Rights Reserved.
 請造訪我們
 
 == MeetUsText ==
-請與我們聯絡 
+請與我們聯絡
 
 == ReleaseText ==
 版本:
@@ -254,7 +254,7 @@ Designed in Boecillo Park (Valladolid), Spain
 分支瀏覽器
 
 == MainSidebarChangesetsItem ==
-變更集 
+變更集
 
 == MainSidebarLabelsItem ==
 標籤
@@ -498,9 +498,9 @@ Checkin Anyway
 
 == CheckinAutoUpdateMergeRequestMessage ==
 自從您在工作區中啟動自己的變更之後，您正在使用的分支上出現的新變更。您需要先取得這些工作區的變更，然後才能簽入您自己的變更。
-      
+
 由於分支中的變更與工作區中的變更並未衝突，您只要在簽入之前更新工作區即可。
-      
+
 您是否要立即更新工作區，並簽入變更?
 
 == UpdateWorkspaceMergeRequest ==
@@ -529,7 +529,7 @@ Checkin Anyway
 == CouldNotGetOrganizationNameFromCredentials ==
 無效的憑證。無法取得組織名稱
 
-== CouldNotGetOrganizationName == 
+== CouldNotGetOrganizationName ==
 無法從雲端伺服器取得組織名稱。您的憑證或許錯誤。請再次執行設定工具以輸入新的憑證 ('{0} --configure')
 
 == RepositoryServerIsNotAvailable ==
@@ -659,7 +659,7 @@ Checkin Anyway
 切換工作區至此分支
 
 == BranchMenuItemDiff ==
-差異比對分支 
+差異比對分支
 
 == BranchMenuItemDiffWithAnotherBranch ==
 對另一個修訂進行差異比對...
@@ -671,7 +671,7 @@ Checkin Anyway
 從此變更集建立分支...
 
 == ChangesetMenuChangesetDiff ==
-差異比對變更集 
+差異比對變更集
 
 == ChangesetMenuItemDiff ==
 與舊版進行差異比對
@@ -893,7 +893,7 @@ Checkin Anyway
 對選取的修訂進行差異比對
 
 == HistoryMenuItemDiffChangeset ==
-差異比對變更集 
+差異比對變更集
 
 == HistoryMenuItemRevertToThisRevision ==
 恢復至此修訂
@@ -1298,7 +1298,7 @@ Checkin Anyway
 目的地:
 
 == KeepSrcChanges ==
-保留來源變更 
+保留來源變更
 
 == KeepSrcNotSupported ==
 此衝突類型不支援保留來源項目
@@ -1426,7 +1426,7 @@ Checkin Anyway
 尋找分支
 
 == DefaultChangesetsQuery ==
-尋找變更集 
+尋找變更集
 
 == ExecuteButton ==
 執行
@@ -1699,7 +1699,7 @@ The following workspaces are dynamic:{0}. You will LOSE all of the private items
 下一個結果
 
 == BrexSearchFieldLabel ==
-分支瀏覽器搜尋 
+分支瀏覽器搜尋
 
 == BrexDisplayOptions ==
 顯示選項
@@ -1708,7 +1708,7 @@ The following workspaces are dynamic:{0}. You will LOSE all of the private items
 日期篩選:
 
 == InitialDateLabel ==
-從: 
+從:
 
 == EndDateLabel ==
 到:
@@ -1973,7 +1973,7 @@ Plastic SCM 複寫
 重新命名標籤
 
 == EditAttributeTitle ==
-編輯屬性 
+編輯屬性
 
 == LastChangeset ==
 最後一個變更集
@@ -1988,7 +1988,7 @@ Plastic SCM 複寫
 標籤 {0} 已存在 ({1})
 
 == LabelNameEntry ==
-標籤名稱: 
+標籤名稱:
 
 == AttributeNameEntry ==
 屬性名稱:
@@ -2228,7 +2228,7 @@ ID
 屬性名稱不得為空白
 
 == LabelButton ==
-標籤 
+標籤
 
 == LabelAllXlinksCheckButton ==
 將所有 Xlinked 儲存庫加上標籤
@@ -2597,7 +2597,7 @@ Plastic Cloud Edition 設定
 無法執行作業
 
 == OperationRunning ==
-作業執行中 
+作業執行中
 
 == OperationInProgress ==
 目前有一個作業已在執行中。請等候執行完成。
@@ -2778,7 +2778,7 @@ Plastic SCM 內建差異比對與合併工具 (Xmerge) 的偏好設定:
 == DiffToolsCommandHelp ==
 叫用外部差異比對工具時，可以使用下列命令列參數。
             您必須確定指定檔案中包含要比較的實際修訂內容。
-    
+
             @sourcefile:內容將顯示於左側面板的檔案完整路徑。
             @destinationfile:內容將顯示於右側面板的檔案完整路徑。
 
@@ -2800,7 +2800,7 @@ Plastic SCM 內建差異比對與合併工具 (Xmerge) 的偏好設定:
 
 == MergeToolsCommandHelp ==
 使用命令列叫用外部合併工具時，可使用下列參數做為引數:
-  
+
             @sourcefile:目的地合併檔案的完整路徑。
             @destinationfile:目的地合併檔案的路徑。
             @basefile:共同上階合併檔案的路徑。
@@ -3066,7 +3066,7 @@ Xlinked cset '{0}@{1}' 無法使用
 分支
 
 == ChangesetsViewTitle ==
-變更集 
+變更集
 
 == LabelsViewTitle ==
 標籤
@@ -3078,7 +3078,7 @@ Xlinked cset '{0}@{1}' 無法使用
 同步至 Cloud
 
 == ShelvesViewTitle ==
-擱置 
+擱置
 
 == HistoryViewTitle ==
 {0} 歷史記錄
@@ -3374,13 +3374,13 @@ GameUI 使用狀況
 來源儲存庫
 
 == SourceReplicationBranch ==
-來源分支 
+來源分支
 
 == DestinationReplicationServer ==
 目的地伺服器
 
 == DestinationReplicationRepository ==
-目的地儲存庫 
+目的地儲存庫
 
 == CreateWorkspaceButton ==
 建立新工作區...
@@ -3640,7 +3640,7 @@ cs:{0} 中的修訂
 來源儲存庫
 
 == NewSyncViewDestinationRepository ==
-目的地儲存庫 
+目的地儲存庫
 
 == NewSyncViewEnterSyncViewName ==
 請輸入同步檢視名稱
@@ -3709,10 +3709,10 @@ cs:{0} 中的修訂
 重新整理
 
 == SyncMenuItemPushBranch ==
-推送分支 
+推送分支
 
 == SyncMenuItemPullBranch ==
-提取分支 
+提取分支
 
 == SyncMenuItemExcludeBranch ==
 排除分支
@@ -3855,7 +3855,7 @@ Mergetool 用法
                     autosave:-as | --autosave
                     resultFile:{-r | --result}=<filename>
                     mergeType:{-m | --mergeresolutiontype}={onlyone | onlysrc | onlydst | try | forced}
-        
+
 
                 generalOptions:[<defaultEncoding>] [<comparisonMethod>] [<resultEncoding>]
 
@@ -3923,13 +3923,13 @@ Xlink 選項
 定義如何在 Xlink 連結的儲存庫之間擴充分支
 
 == SourceBranch ==
-來源分支 
+來源分支
 
 == DestinationBranch ==
 目的地分支
 
 == IsDefinedByUser ==
-由使用者定義 
+由使用者定義
 
 == Yes ==
 是
@@ -4010,7 +4010,7 @@ ID:
 擁有者:
 
 == PlasticTaskStatusProperty ==
-狀態: 
+狀態:
 
 == PlasticTaskTitleProperty ==
 標題:
@@ -4393,7 +4393,7 @@ Cloud 儲存庫
 名稱:
 
 == NewName ==
-新名稱: 
+新名稱:
 
 == NoCsetCreatedWarning ==
 無法建立新的變更集，因為檔案資料並未變更
@@ -4549,7 +4549,7 @@ Cloud 儲存庫
 作者:
 
 == AnnotateDateField ==
-日期: 
+日期:
 
 == AnnotateBranchField ==
 分支:
@@ -4564,7 +4564,7 @@ Cloud 儲存庫
 我們僅載入最近 500 筆的值。否則，下拉式控制會花很久的時間載入。
 
 == CreateAttribute ==
-建立新屬性 
+建立新屬性
 
 == CreateAttributeExplanation ==
 鍵入新屬性的名稱。這個名稱將以 '{0}' 建立。
@@ -4585,7 +4585,7 @@ Cloud 儲存庫
 正在建立屬性 ...
 
 == AttributeNameAlreadyExists ==
-屬性 {0} 已存在 ({1}) 
+屬性 {0} 已存在 ({1})
 
 == MergeToPendingFileConflicts ==
 有暫止的檔案衝突，必須先解決才能處理合併目標。
@@ -4718,6 +4718,9 @@ Cloud 儲存庫
 
 == UserProfileWrongAuthMode ==
 使用者設定檔只能使用 LDAP 或使用者/密碼驗證進行設定。
+
+== UserProfileCloudServer ==
+The user profile can't be configured for cloud servers.
 
 == LoadingUserProfile ==
 正在載入使用者設定檔...
@@ -5039,7 +5042,7 @@ Plastic 會監看進行變更的工作區，加快作業速度。這會免除進
 == EOLMethod ==
 忽略 EOL
 
-== WhitespacesMethod == 
+== WhitespacesMethod ==
 忽略空格
 
 == EOLWhitespacesMethod ==
@@ -5101,7 +5104,7 @@ Plastic 會監看進行變更的工作區，加快作業速度。這會免除進
 == ExecutableOpenFileDialogFilterNoWin ==
 所有檔案 (*.*)|*.*
 
-== ValidatePreviewTypeName == 
+== ValidatePreviewTypeName ==
 請鍵入名稱
 
 == ValidatePreviewAddExtension ==
@@ -5138,7 +5141,7 @@ Plastic 會監看進行變更的工作區，加快作業速度。這會免除進
 合併工具
 
 == OptionsOther ==
-其他選項 
+其他選項
 
 == OptionsProfiles ==
 連線設定檔
@@ -6070,6 +6073,9 @@ https://www.plasticscm.com/download/help/locking
 == UserChooserDialogTitle ==
 請從下列清單選取使用者或群組:
 
+== SelectUserGroupDialogTitle ==
+Select user or group
+
 == NoUserSelectedErrorMessage ==
 從清單中選取使用者
 
@@ -6208,7 +6214,7 @@ Git 儲存庫 URL:
 已選取的使用者或群組:
 
 == User ==
-使用者 
+使用者
 
 == Group ==
 群組
@@ -6331,7 +6337,7 @@ Do not show this message again
 == RetrievingRepositoryServerInfoProgress ==
 正在擷取儲存庫伺服器資訊...
 
-== CalculatingPermissionsInfo == 
+== CalculatingPermissionsInfo ==
 正在計算權限資訊...
 
 == RetrievingSecuredPathsProgress ==
@@ -6367,6 +6373,9 @@ Do not show this message again
 == MainWindowTitleForLinux ==
 Plastic SCM - 工作區:{0}
 
+== MainWindowTitleForAvalonia ==
+工作區:{0} - Plastic SCM
+
 == GluonFilePlasticLinkText ==
 取得連結 - 複製此檔案的連結，讓您輕鬆與他人分享
 
@@ -6392,10 +6401,10 @@ Plastic SCM - 工作區:{0}
 使用您的瀏覽器完成登入。
 
 == Or ==
-或 
+或
 
 == OrganizationNameWatermark ==
-您的組織名稱 
+您的組織名稱
 
 == SSOSignInTitle ==
 使用單一登入進行登入

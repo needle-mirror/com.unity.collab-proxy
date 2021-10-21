@@ -11,6 +11,7 @@ using Codice.Client.Commands;
 using Codice.Client.Common;
 using Codice.Client.Common.FsNodeReaders;
 using Codice.Client.Common.Threading;
+using Codice.CM.Client.Gui;
 using Codice.CM.Common;
 using Codice.CM.Common.Merge;
 using Codice.LogWrapper;
@@ -25,20 +26,19 @@ using PlasticGui.WorkspaceWindow.Diff;
 using PlasticGui.WorkspaceWindow.Items;
 using PlasticGui.WorkspaceWindow.Open;
 using PlasticGui.WorkspaceWindow.PendingChanges;
-using Unity.PlasticSCM.Editor.AssetsOverlays;
 
+using Unity.PlasticSCM.Editor.AssetsOverlays;
+using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Help;
+using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs;
 using Unity.PlasticSCM.Editor.Views.PendingChanges.PendingMergeLinks;
-using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
-using Unity.PlasticSCM.Editor.Tool;
 
 using GluonNewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncomingChangesUpdater;
-using Codice.CM.Client.Gui;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
@@ -324,7 +324,12 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         void PendingChangesViewMenu.IMetaMenuOperations.DiffMeta()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+            if (LaunchTool.ShowDownloadPlasticExeWindow(
+                mWkInfo,
+                mIsGluonMode,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffWorkspaceContent,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromDiffWorkspaceContent,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromDiffWorkspaceContent))
                 return;
 
             ChangeInfo selectedChange = PendingChangesSelection
@@ -396,7 +401,12 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         void IPendingChangesMenuOperations.Diff()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+            if (LaunchTool.ShowDownloadPlasticExeWindow(
+                mWkInfo,
+                mIsGluonMode,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffWorkspaceContent,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromDiffWorkspaceContent,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromDiffWorkspaceContent))
                 return;
 
             ChangeInfo selectedChange = PendingChangesSelection
@@ -879,7 +889,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mPendingChangesTreeView = new PendingChangesTreeView(
                 mWkInfo, mIsGluonMode, headerState,
                 PendingChangesTreeHeaderState.GetColumnNames(),
-                new PendingChangesViewMenu(this, this, this, this, mIsGluonMode),
+                new PendingChangesViewMenu(mWkInfo, this, this, this, this, mIsGluonMode),
                 mAssetStatusCache);
             mPendingChangesTreeView.Reload();
 

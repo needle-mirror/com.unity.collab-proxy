@@ -91,6 +91,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         {
             base.OnGUI(rect);
 
+            if (!base.HasFocus())
+                return;
+
             Event e = Event.current;
 
             if (e.type != EventType.KeyDown)

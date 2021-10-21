@@ -1,32 +1,22 @@
-﻿using Unity.PlasticSCM.Editor.UI;
+﻿using UnityEditor;
+using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor
 {
     internal static class PlasticMenuItem
     {
-        internal static void Add()
-        {
-            HandleMenuItem.AddMenuItem(
-                MENU_ITEM_NAME,
-                MENU_ITEM_PRIORITY,
-                ShowPanel,
-                ValidateMenu);
-
-            HandleMenuItem.UpdateAllMenus();
-        }
-
-        static bool ValidateMenu()
-        {
-            return !CollabPlugin.IsEnabled();
-        }
-
+        [MenuItem(MENU_ITEM_NAME, false)]
         static void ShowPanel()
         {
             ShowWindow.Plastic();
         }
 
-        const string MENU_ITEM_NAME = "Window/" + UnityConstants.PLASTIC_WINDOW_TITLE;
+        [MenuItem(MENU_ITEM_NAME, true)]
+        static bool ValidateMenu()
+        {
+            return !CollabPlugin.IsEnabled();
+        }
 
-        const int MENU_ITEM_PRIORITY = 1000;
+        const string MENU_ITEM_NAME = "Window/" + UnityConstants.PLASTIC_WINDOW_TITLE;
     }
 }

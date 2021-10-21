@@ -498,21 +498,21 @@ Checkin Anyway
 
 == CheckinAutoUpdateMergeRequestMessage ==
 워크스페이스에서 자체적인 변경사항을 시작한 이후 현재 작업 중인 브랜치에 새로운 변경사항이 표시되었습니다. 변경사항을 체크인하기 전에 이러한 변경사항을 워크스페이스로 가져와야 합니다.
-      
-브랜치의 변경사항이 워크스페이스의 변경사항과 충돌하지 않으므로 체크인하기 전에 워크스페이스를 업데이트할 수 있습니다. 
-      
+
+브랜치의 변경사항이 워크스페이스의 변경사항과 충돌하지 않으므로 체크인하기 전에 워크스페이스를 업데이트할 수 있습니다.
+
 지금 워크스페이스를 업데이트하고 변경사항을 체크인하시겠습니까?
 
 == UpdateWorkspaceMergeRequest ==
 업데이트 전에 감지된 충돌
 
 == UpdateWorkspaceMergeRequestMessage ==
-워크스페이스에서 변경한 파일 중 일부가 브랜치에서도 수정되었으며, 계속하기 전에 이를 병합해야 합니다. 
+워크스페이스에서 변경한 파일 중 일부가 브랜치에서도 수정되었으며, 계속하기 전에 이를 병합해야 합니다.
 
 충돌이 있는 항목을 병합할 수 있도록 병합 뷰가 열립니다. 문제를 해결한 다음 업데이트를 진행하십시오.
 
 == CheckinMergeRequest ==
-이 브랜치에서 체크인을 진행할 수 없습니다. 
+이 브랜치에서 체크인을 진행할 수 없습니다.
 
 == CheckinMergeRequestMessage ==
 변경하는 동안 다른 변경사항이 체크인되었습니다.
@@ -529,7 +529,7 @@ Checkin Anyway
 == CouldNotGetOrganizationNameFromCredentials ==
 잘못된 자격 증명입니다. 조직 이름을 가져올 수 없습니다
 
-== CouldNotGetOrganizationName == 
+== CouldNotGetOrganizationName ==
 클라우드 서버에서 조직 이름을 가져올 수 없습니다. 자격 증명에 오류가 있을 수 있습니다. 새 자격 증명을 입력하려면 구성 툴을 다시 실행하십시오('{0} --configure').
 
 == RepositoryServerIsNotAvailable ==
@@ -905,7 +905,7 @@ Xlink 편집...
 항목 이름 변경
 
 == RenameDialogDescription ==
-새 이름 입력: 
+새 이름 입력:
 
 == ItemsMenuItemRename ==
 이름 변경...
@@ -938,8 +938,8 @@ Xlink 편집...
 변경된 파일 감지됨
 
 == MergeWithPendingChangesMessage ==
-워크스페이스에 체크인해야 하는 대기 중인 변경사항이 있습니다. 병합 실행 취소 시 발생할 수 있는 문제를 방지하려면 병합하기 전에 체크인하는 것이 좋습니다. 
-병합에 익숙한 경우 기본 설정 / 비교 및 병합 / 대기 중인 변경사항과 병합하도록 허용으로 이동해 이 동작을 변경할 수 있습니다. 
+워크스페이스에 체크인해야 하는 대기 중인 변경사항이 있습니다. 병합 실행 취소 시 발생할 수 있는 문제를 방지하려면 병합하기 전에 체크인하는 것이 좋습니다.
+병합에 익숙한 경우 기본 설정 / 비교 및 병합 / 대기 중인 변경사항과 병합하도록 허용으로 이동해 이 동작을 변경할 수 있습니다.
 
 참고: 병합 작동 방식에 익숙하다면 이를 활성화하는 것이 위험하지 않지만, 새 사용자에게 문제가 발생하지 않도록 이 동작을 변경했습니다.
 
@@ -1010,11 +1010,11 @@ Xlink 편집...
 병합 검색이 완료되었습니다. 병합할 항목이 감지되지 않았습니다.
 
 == MergeNoMergesDetectedCreateLink ==
-병합 검색이 완료되었습니다. 병합할 항목이 감지되지 않았지만 소스 기여자와 대상 기여자가 서로 다릅니다. 이는 일반적으로 소스 및 대상에서 정확히 동일한 사항이 변경된 경우에 그러합니다. 
+병합 검색이 완료되었습니다. 병합할 항목이 감지되지 않았지만 소스 기여자와 대상 기여자가 서로 다릅니다. 이는 일반적으로 소스 및 대상에서 정확히 동일한 사항이 변경된 경우에 그러합니다.
 
-관련된 기여자에 대한 자세한 내용을 보려면 "병합 설명" 버튼을 클릭하십시오. 
+관련된 기여자에 대한 자세한 내용을 보려면 "병합 설명" 버튼을 클릭하십시오.
 
-소스 및 대상을 통합하려면(둘 사이에 병합 링크 생성) "변경사항 적용" 버튼을 클릭하십시오. 
+소스 및 대상을 통합하려면(둘 사이에 병합 링크 생성) "변경사항 적용" 버튼을 클릭하십시오.
 
 
 == MergeNoMergesDetectedCreateLinkForIncomingView ==
@@ -1813,7 +1813,7 @@ Gluon - 워크스페이스: {0} - {1}
 리포지토리 로드 중...
 
 == PendingChangesOptionsExplanation ==
-표시할 항목 유형을 선택합니다. 
+표시할 항목 유형을 선택합니다.
 다음 옵션을 사용하면 항목이 '대기 중인 변경사항' 뷰에 표시되는 방식을 선택할 수 있습니다.
 
 == NewRepositoryExplanation ==
@@ -2005,7 +2005,7 @@ Plastic SCM 복제
 == SwitchToExplanation ==
 워크스페이스에 대기 중인 변경사항이 있습니다.
 
- 전환 작업을 계속하거나 전환을 취소하고 대기 중인 변경사항 뷰를 열어 대기 중인 변경사항을 체크인(또는 실행 취소)할 수 있습니다. 그런 다음 "{0}" 명령을 다시 실행할 수 있습니다. 
+ 전환 작업을 계속하거나 전환을 취소하고 대기 중인 변경사항 뷰를 열어 대기 중인 변경사항을 체크인(또는 실행 취소)할 수 있습니다. 그런 다음 "{0}" 명령을 다시 실행할 수 있습니다.
 
 전환 작업을 계속해도 로컬 변경사항은 사라지지 않고 전환 작업 후에도 대기 중인 변경사항으로 계속 표시됩니다.
 
@@ -2014,7 +2014,7 @@ Plastic SCM 복제
 
 전환 작업을 계속하거나 전환을 취소하고 대기 중인 변경사항 뷰를 열어 대기 중인 변경사항을 체크인(또는 실행 취소)할 수 있습니다. 그런 다음 "워크스페이스를 이 레이블로 전환" 명령을 다시 실행할 수 있습니다.
 
-전환 작업을 계속해도 로컬 변경사항은 사라지지 않고 전환 작업 후에도 대기 중인 변경사항으로 계속 표시됩니다. 하지만 레이블 구성이 읽기 전용 구성이므로 이 변경사항을 제출할 수 없습니다. 
+전환 작업을 계속해도 로컬 변경사항은 사라지지 않고 전환 작업 후에도 대기 중인 변경사항으로 계속 표시됩니다. 하지만 레이블 구성이 읽기 전용 구성이므로 이 변경사항을 제출할 수 없습니다.
 
 레이블링된 구성을 수정하려면 브랜치를 생성하고 레이블을 브랜치 베이스로 설정합니다. 그런 다음 워크스페이스를 해당 브랜치로 전환하고 보통 때처럼 변경을 수행합니다.
 
@@ -2038,7 +2038,7 @@ Plastic SCM 복제
 == SwitchToLabelConfirmation ==
 워크스페이스를 레이블로 전환하여 각 항목의 레이블링된 개정을 로드합니다. 로드된 모든 개정은 읽기 전용입니다.
 
- 레이블링된 구성을 수정하려면 브랜치를 생성하고 레이블을 브랜치 베이스로 설정합니다. 그런 다음 워크스페이스를 해당 브랜치로 전환하고 보통 때처럼 변경을 수행합니다. 
+ 레이블링된 구성을 수정하려면 브랜치를 생성하고 레이블을 브랜치 베이스로 설정합니다. 그런 다음 워크스페이스를 해당 브랜치로 전환하고 보통 때처럼 변경을 수행합니다.
 
 계속하시겠습니까?
 
@@ -2064,16 +2064,16 @@ Plastic SCM 복제
 체크인 충돌
 
 == CheckinConflictsExplanation ==
-체크인 작업 도중 체크인될 수 없는 다음 충돌이 발견되었습니다. 
+체크인 작업 도중 체크인될 수 없는 다음 충돌이 발견되었습니다.
 충돌하지 않는 항목에 대해 작업을 계속하려면 "확인"을 클릭하십시오.
- 전체 작업을 중단하려면 "취소"를 클릭하십시오. 
+ 전체 작업을 중단하려면 "취소"를 클릭하십시오.
 
 == CheckinConflictsToMergeTitle ==
 병합이 필요한 파일
 
 == CheckinConflictsToMergeExplanation ==
-본인의 변경사항과 병합해야 하는 최신 변경사항이 있습니다. 
-지금 파일을 병합하려면 "병합"을 클릭하십시오. 
+본인의 변경사항과 병합해야 하는 최신 변경사항이 있습니다.
+지금 파일을 병합하려면 "병합"을 클릭하십시오.
 그렇지 않으면 "취소"를 클릭하십시오.
 
 == EditAttributeExplanation ==
@@ -2766,7 +2766,7 @@ Unix 유사 파일 시스템에만 적용
 == DiffToolsCommandHelp ==
 외부 비교 툴을 호출할 때 다음 명령줄 매개 변수를 사용할 수 있습니다.
             지정된 파일에 비교할 실제 개정 콘텐츠가 있는지 확인해야 합니다.
-    
+
             @sourcefile: 콘텐츠가 왼쪽 패널에 표시되는 파일의 전체 경로입니다.
             @destinationfile: 콘텐츠가 오른쪽 패널에 표시되는 파일의 전체 경로입니다.
 
@@ -2788,8 +2788,8 @@ Unix 유사 파일 시스템에만 적용
 
 == MergeToolsCommandHelp ==
 명령줄에서 외부 병합 툴을 호출할 때 다음 변수를 인수로 사용할 수 있습니다.
-  
-            @sourcefile: 소스 병합 파일의 전체 경로입니다.  
+
+            @sourcefile: 소스 병합 파일의 전체 경로입니다.
             @destinationfile: 대상 병합 파일의 경로입니다.
             @basefile: 공통 조상 병합 파일의 경로입니다.
             @output: 병합 결과 파일의 경로입니다.
@@ -3434,7 +3434,7 @@ ACL 내보내기 진행 중({0}%)
 서버 SSL 인증서가 저장소에 없습니다
 
 == NewCertificateMessage ==
-연결하려는 서버에서 저장소에 없는 인증서를 보냈습니다. 이 서버에 처음 연결하는 경우 이는 정상입니다. 
+연결하려는 서버에서 저장소에 없는 인증서를 보냈습니다. 이 서버에 처음 연결하는 경우 이는 정상입니다.
 
             인증서 세부사항:
             - 발급 대상: {0}
@@ -3442,15 +3442,15 @@ ACL 내보내기 진행 중({0}%)
             - 만료일: {3}
             - 인증서 해시: {5}
 
-            이 호스트를 신뢰하는 경우 "예"를 클릭하여 Plastic SCM 키 저장소에 키를 추가합니다(이 서버에 처음 연결하는 경우 권장). 
-            키를 저장소에 추가하지 않고 일회성으로 연결하려는 경우 "아니요"를 클릭합니다. 
+            이 호스트를 신뢰하는 경우 "예"를 클릭하여 Plastic SCM 키 저장소에 키를 추가합니다(이 서버에 처음 연결하는 경우 권장).
+            키를 저장소에 추가하지 않고 일회성으로 연결하려는 경우 "아니요"를 클릭합니다.
             이 호스트를 신뢰하지 않는 경우 "취소"를 클릭하여 연결을 중단합니다.
 
 == ExistingCertificateChangedTitle ==
 서버 인증서가 변경되었습니다.
 
 == ExistingCertificateChangedMessage ==
-경고: 이 호스트의 인증서가 키 저장소에 있는 인증서와 일치하지 않습니다. 서버 ID가 손상되었거나 중간자 공격이 진행 중이기 때문일 수 있습니다. 
+경고: 이 호스트의 인증서가 키 저장소에 있는 인증서와 일치하지 않습니다. 서버 ID가 손상되었거나 중간자 공격이 진행 중이기 때문일 수 있습니다.
 
             인증서 세부사항:
             - 발급 대상: {0}
@@ -3458,20 +3458,20 @@ ACL 내보내기 진행 중({0}%)
             - 만료일: {3}
             - 인증서 해시: {5}
 
-            이러한 인증서 변경을 알고 있고 새 인증서를 신뢰하는 경우 "예"를 클릭하여 Plastic SCM 키 저장소에 키를 추가하고, 이후 이 인증서를 신뢰하십시오. 
-            키를 저장소에 추가하지 않고 일회성으로 연결하려는 경우 "아니요"를 클릭합니다. 
+            이러한 인증서 변경을 알고 있고 새 인증서를 신뢰하는 경우 "예"를 클릭하여 Plastic SCM 키 저장소에 키를 추가하고, 이후 이 인증서를 신뢰하십시오.
+            키를 저장소에 추가하지 않고 일회성으로 연결하려는 경우 "아니요"를 클릭합니다.
             이 연결을 중단하려면 "취소"를 클릭합니다. 이는 유일하게 안전이 보장되는 선택입니다.
 
 == InvalidCertificateHostnameTitle ==
 보안 연결에서 호스트 이름 불일치
 
 == InvalidCertificateHostnameMessage ==
-경고: 서버 인증서에 제공된 호스트 이름이 서버 호스트 이름과 일치하지 않습니다. 인증서가 해당 호스트 이름에 발급되지 않았거나 해당 호스트에 네트워크 구성 문제가 있을 수 있습니다. 
+경고: 서버 인증서에 제공된 호스트 이름이 서버 호스트 이름과 일치하지 않습니다. 인증서가 해당 호스트 이름에 발급되지 않았거나 해당 호스트에 네트워크 구성 문제가 있을 수 있습니다.
 
             - 인증서 호스트 이름: {0}
             - 서버 호스트 이름: {1}
 
-            이 호스트에 대한 연결을 계속하려면 "예"를 클릭합니다. 그러면 인증서 검증이 계속 진행됩니다(권장하지 않음). 
+            이 호스트에 대한 연결을 계속하려면 "예"를 클릭합니다. 그러면 인증서 검증이 계속 진행됩니다(권장하지 않음).
             연결을 중단하려면 "아니요"를 클릭합니다(권장).
 
 == PreviousContent ==
@@ -3827,7 +3827,7 @@ Mergetool 사용
 
                 사용법: gtkmergetool <mergeoptions>
 
-                mergeOptions: <sourceFile> [<sourceSymbolicName>] 
+                mergeOptions: <sourceFile> [<sourceSymbolicName>]
                               <baseFile> [<baseSymbolicName>]
                               <destinationfile> [<destinationSymbolicName>]
                               [[<autosave>] <resultFile>]
@@ -3836,14 +3836,14 @@ Mergetool 사용
 
                     sourceFile:              {-s | --source}=<filename>
                     sourceSymbolicName:      {-sn | --srcsymbolicname}=<symbolicname>
-                    baseFile:                {-b | --base}=<filename> 
+                    baseFile:                {-b | --base}=<filename>
                     baseSymbolicName:        {-bn | --basesymbolicname}=<symbolicname>
-                    destinationFile:         {-d | --destination}=<filename>; 
+                    destinationFile:         {-d | --destination}=<filename>;
                     destinationSymbolicName: {-dn | --dstsymbolicname}=<symbolicname>
                     autosave:                -as | --autosave
                     resultFile:              {-r | --result}=<filename>
                     mergeType:               {-m | --mergeresolutiontype}={onlyone | onlysrc | onlydst | try | forced}
-        
+
 
                 generalOptions: [<defaultEncoding>] [<comparisonMethod>] [<resultEncoding>]
 
@@ -4534,19 +4534,19 @@ CLI 또는 임시 저장 뷰에서 다음 쿼리를 실행하여 지정된 체�
 로컬
 
 == AnnotateAuthorField ==
-작성자: 
+작성자:
 
 == AnnotateDateField ==
-날짜: 
+날짜:
 
 == AnnotateBranchField ==
-브랜치: 
+브랜치:
 
 == AnnotateChangesetField ==
-체인지 세트: 
+체인지 세트:
 
 == AnnotateChangedDuringMerge ==
-병합 중 변경됨: 
+병합 중 변경됨:
 
 == ComboBoxValuesReduced ==
 가장 최근의 500개 값만 로드했습니다. 그렇지 않으면 드롭다운 컨트롤을 로드하는 데 긴 시간이 소요됩니다.
@@ -4706,6 +4706,9 @@ cs:{0} 체인지 세트에서 개정을 찾을 수 없습니다
 
 == UserProfileWrongAuthMode ==
 사용자 프로필은 LDAP 또는 사용자/비밀번호 인증을 사용해야만 구성할 수 있습니다.
+
+== UserProfileCloudServer ==
+The user profile can't be configured for cloud servers.
 
 == LoadingUserProfile ==
 사용자 프로필 로드 중...
@@ -5027,7 +5030,7 @@ Plastic Cloud(plasticscm.com과 동일)에 연결하는 데 사용하는 사용�
 == EOLMethod ==
 EOL 무시
 
-== WhitespacesMethod == 
+== WhitespacesMethod ==
 공백 무시
 
 == EOLWhitespacesMethod ==
@@ -5089,7 +5092,7 @@ EOL 및 공백 무시
 == ExecutableOpenFileDialogFilterNoWin ==
 모든 파일(*.*)|*.*
 
-== ValidatePreviewTypeName == 
+== ValidatePreviewTypeName ==
 이름을 입력하십시오
 
 == ValidatePreviewAddExtension ==
@@ -5140,7 +5143,7 @@ EOL 및 공백 무시
 == MergeVariables ==
 명령줄에서 외부 병합 툴을 호출할 때 다음 변수를 인수로 사용할 수 있습니다.
 
-@sourcefile: 소스 병합 파일의 전체 경로  
+@sourcefile: 소스 병합 파일의 전체 경로
 @destinationfile: 대상 병합 파일의 경로
 @basefile: 공통 조상 병합 파일의 경로
 @output: 병합 결과 파일의 경로
@@ -6058,6 +6061,9 @@ Xlink 파일에 대한 검토 코멘트가 아직 지원되지 않습니다
 == UserChooserDialogTitle ==
 아래 목록에서 사용자 또는 그룹을 선택하십시오:
 
+== SelectUserGroupDialogTitle ==
+Select user or group
+
 == NoUserSelectedErrorMessage ==
 목록에서 사용자 선택
 
@@ -6319,7 +6325,7 @@ Do not show this message again
 == RetrievingRepositoryServerInfoProgress ==
 리포지토리 서버 정보를 가져오는 중...
 
-== CalculatingPermissionsInfo == 
+== CalculatingPermissionsInfo ==
 권한 정보 계산 중...
 
 == RetrievingSecuredPathsProgress ==
@@ -6355,6 +6361,9 @@ Do not show this message again
 == MainWindowTitleForLinux ==
 Plastic SCM - 워크스페이스: {0}
 
+== MainWindowTitleForAvalonia ==
+워크스페이스: {0} - Plastic SCM
+
 == GluonFilePlasticLinkText ==
 링크 받기 - 이 파일의 링크를 복사하여 타인과 쉽게 공유할 수 있습니다
 
@@ -6380,7 +6389,7 @@ Plastic SCM - 워크스페이스: {0}
 브라우저를 사용하여 로그인을 완료하십시오.
 
 == Or ==
-또는 
+또는
 
 == OrganizationNameWatermark ==
 조직 이름

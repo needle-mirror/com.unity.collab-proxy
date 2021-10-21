@@ -4,6 +4,8 @@ using Codice.Client.Common;
 using Codice.CM.Common;
 using Codice.Utils;
 using Unity.PlasticSCM.Editor.Tool;
+using Unity.PlasticSCM.Editor.Views;
+using UnityEditor;
 
 namespace Unity.PlasticSCM.Editor
 {
@@ -13,7 +15,7 @@ namespace Unity.PlasticSCM.Editor
         {
             string plasticClientBinDir = PlasticInstallPath.GetClientBinDir();
 
-            if (!string.IsNullOrEmpty(plasticClientBinDir))
+            if (!string.IsNullOrEmpty(plasticClientBinDir) && !IsPlasticInstalling())
                 SetupUnityEditionToken.FromPlasticInstallation(plasticClientBinDir);
 
             if (ConfigurationChecker.NeedConfiguration())
@@ -25,15 +27,27 @@ namespace Unity.PlasticSCM.Editor
 
             return false;
         }
-    }
 
+        static bool IsPlasticInstalling()
+        {
+            if (!EditorWindow.HasOpenInstances<DownloadPlasticExeWindow>())
+                return false;
+       
+            DownloadPlasticExeWindow window = EditorWindow.
+                GetWindow<DownloadPlasticExeWindow>(null,false);
+            if (window == null)
+                return false;
+
+            return window.IsPlasticInstalling;
+        }
+    }
     internal static class SetupUnityEditionToken
     {
         internal static void CreateCloudEditionTokenIfNeeded()
         {
             string toolPath = PlasticInstallPath.GetPlasticExePath();
 
-            if (string.IsNullOrEmpty(toolPath))
+            if (!string.IsNullOrEmpty(toolPath))
                 return;
 
             string tokenFilePath = UserConfigFolder.GetConfigFile(

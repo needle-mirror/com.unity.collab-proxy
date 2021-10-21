@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.VersionControl;
 
+using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Commands;
 using Codice.Client.Commands.WkTree;
 using Codice.Client.Common;
@@ -18,12 +19,12 @@ using PlasticGui.WorkspaceWindow.Items;
 using Unity.PlasticSCM.Editor.AssetMenu.Dialogs;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
+using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 
 using GluonCheckoutOperation = GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer.Operations.CheckoutOperation;
 using GluonUndoCheckoutOperation = GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer.Operations.UndoCheckoutOperation;
 using GluonAddoperation = GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer.Operations.AddOperation;
-using Unity.PlasticSCM.Editor.Tool;
 
 namespace Unity.PlasticSCM.Editor.AssetMenu
 {
@@ -184,7 +185,12 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         void IAssetMenuOperations.ShowDiff()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+            if (LaunchTool.ShowDownloadPlasticExeWindow(
+                mWkInfo,
+                mIsGluonMode,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromShowDiff,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromFromShowDiff,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromFromShowDiff))
                 return;
 
             string selectedPath = AssetsSelection.GetSelectedPath(
@@ -219,7 +225,12 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         void IAssetMenuOperations.ShowHistory()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+            if (LaunchTool.ShowDownloadPlasticExeWindow(
+               mWkInfo,
+               mIsGluonMode,
+               TrackFeatureUseEvent.Features.InstallPlasticCloudFromShowHistory,
+               TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromShowHistory,
+               TrackFeatureUseEvent.Features.CancelPlasticInstallationFromShowHistory))
                 return;
 
             AssetList assetList = mAssetSelection.GetSelectedAssets();

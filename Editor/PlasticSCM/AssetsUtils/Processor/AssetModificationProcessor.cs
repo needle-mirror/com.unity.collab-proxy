@@ -35,7 +35,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             if (assetPath.StartsWith("ProjectSettings/"))
                 return true;
 
-            if (ForceCheckout)
+            if (!ForceCheckout)
                 return true;
 
             if (MetaPath.IsMetaPath(assetPath))

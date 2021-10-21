@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 
 using Codice.Client.BaseCommands;
+using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Commands;
 using Codice.Client.Common.FsNodeReaders;
 using Codice.CM.Common;
@@ -14,11 +15,11 @@ using PlasticGui.Gluon.WorkspaceWindow;
 using PlasticGui.Gluon.WorkspaceWindow.Views.IncomingChanges;
 using PlasticGui.WorkspaceWindow.Diff;
 using Unity.PlasticSCM.Editor.AssetUtils;
+using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon.Errors;
-using Unity.PlasticSCM.Editor.Tool;
 
 namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 {
@@ -230,6 +231,14 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         void IIncomingChangesViewMenuOperations.MergeContributors()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(
+              mWkInfo,
+              true,
+              TrackFeatureUseEvent.Features.InstallPlasticCloudFromMergeSelectedFiles,
+              TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromMergeSelectedFiles,
+              TrackFeatureUseEvent.Features.CancelPlasticInstallationFromMergeSelectedFiles))
+                return;
+
             List<IncomingChangeInfo> fileConflicts = IncomingChangesSelection.
                 GetSelectedFileConflictsIncludingMeta(mIncomingChangesTreeView);
 
@@ -276,7 +285,12 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         void IIncomingChangesViewMenuOperations.DiffYoursWithIncoming()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(true))
+            if (LaunchTool.ShowDownloadPlasticExeWindow(
+                mWkInfo,
+                true,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffYoursWithIncoming,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromDiffYoursWithIncoming,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromDiffYoursWithIncoming))
                 return;
 
             IncomingChangeInfo incomingChange = IncomingChangesSelection.
@@ -305,7 +319,12 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         void IncomingChangesViewMenu.IMetaMenuOperations.DiffYoursWithIncoming()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(true))
+            if (LaunchTool.ShowDownloadPlasticExeWindow(
+                 mWkInfo,
+                 true,
+                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffYoursWithIncoming,
+                 TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromDiffYoursWithIncoming,
+                 TrackFeatureUseEvent.Features.CancelPlasticInstallationFromDiffYoursWithIncoming))
                 return;
 
             IncomingChangeInfo incomingChange = IncomingChangesSelection.
@@ -328,7 +347,12 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             IncomingChangeInfo incomingChange,
             WorkspaceInfo wkInfo)
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(true))
+            if (LaunchTool.ShowDownloadPlasticExeWindow(
+                wkInfo,
+                true,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffIncomingChanges,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromDiffIncomingChanges,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromDiffIncomingChanges))
                 return;
 
             DiffOperation.DiffRevisions(
@@ -347,7 +371,12 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             IncomingChangeInfo incomingChange,
             WorkspaceInfo wkInfo)
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(true))
+            if (LaunchTool.ShowDownloadPlasticExeWindow(
+                wkInfo,
+                true,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffYoursWithIncoming,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromDiffYoursWithIncoming,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromDiffYoursWithIncoming))
                 return;
 
             DiffOperation.DiffYoursWithIncoming(
@@ -419,10 +448,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             }
 
             GUILayout.FlexibleSpace();
-
-            DoRefreshButton(
-                !progressControls.IsOperationRunning(),
-                incomingChangesViewLogic);
 
             EditorGUILayout.EndHorizontal();
         }
@@ -634,19 +659,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             GUILayout.EndScrollView();
         }
 
-        static void DoRefreshButton(
-            bool isEnabled,
-            IncomingChangesViewLogic incomingChangesViewLogic)
-        {
-            GUI.enabled = isEnabled;
-
-            if (GUILayout.Button(
-                new GUIContent(Images.GetRefreshIcon())))
-                incomingChangesViewLogic.Refresh();
-
-            GUI.enabled = true;
-        }
-
         static void DoInfoMessageArea(string message)
         {
             EditorGUILayout.BeginHorizontal();
@@ -667,7 +679,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             mIncomingChangesTreeView = new IncomingChangesTreeView(
                 mWkInfo, incomingChangesHeaderState,
                 IncomingChangesTreeHeaderState.GetColumnNames(),
-                new IncomingChangesViewMenu(this, this),
+                new IncomingChangesViewMenu(mWkInfo, this, this),
                 UpdateProcessMergesButtonText);
             mIncomingChangesTreeView.Reload();
 

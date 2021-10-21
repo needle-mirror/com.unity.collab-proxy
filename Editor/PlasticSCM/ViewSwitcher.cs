@@ -2,14 +2,14 @@
 
 using UnityEditor;
 
-using Codice.Client.Common;
-
+using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using GluonGui;
 using PlasticGui;
 using PlasticGui.Gluon;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.Merge;
+using PlasticGui.WorkspaceWindow.QueryViews;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.Tool;
@@ -18,6 +18,7 @@ using Unity.PlasticSCM.Editor.Views.Changesets;
 using Unity.PlasticSCM.Editor.Views.History;
 using Unity.PlasticSCM.Editor.Views.IncomingChanges;
 using Unity.PlasticSCM.Editor.Views.PendingChanges;
+using Unity.PlasticSCM.Editor.Views.Branches;
 
 using GluonNewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncomingChangesUpdater;
 using ObjectInfo = Codice.CM.Common.ObjectInfo;
@@ -33,6 +34,7 @@ namespace Unity.PlasticSCM.Editor
         internal IIncomingChangesTab IncomingChangesTabForTesting { get { return mIncomingChangesTab; } }
         internal PendingChangesTab PendingChangesTab { get; private set; }
         internal ChangesetsTab ChangesetsTab { get; private set; }
+        internal BranchesTab BranchesTab { get; private set; }
         internal HistoryTab HistoryTab { get; private set; }
 
         internal ViewSwitcher(
@@ -61,6 +63,7 @@ namespace Unity.PlasticSCM.Editor
             mPendingChangesTabButton = new TabButton();
             mIncomingChangesTabButton = new TabButton();
             mChangesetsTabButton = new TabButton();
+            mBranchesTabButton = new TabButton();
             mHistoryTabButton = new TabButton();
         }
 
@@ -119,6 +122,9 @@ namespace Unity.PlasticSCM.Editor
             if (ChangesetsTab != null)
                 ChangesetsTab.OnDisable();
 
+            if (BranchesTab != null)
+                BranchesTab.OnDisable();
+
             if (HistoryTab != null)
                 HistoryTab.OnDisable();
         }
@@ -143,6 +149,12 @@ namespace Unity.PlasticSCM.Editor
                 return;
             }
 
+            if (IsViewSelected(SelectedTab.Branches))
+            {
+                BranchesTab.Update();
+                return;
+            }
+
             if (IsViewSelected(SelectedTab.History))
             {
                 HistoryTab.Update();
@@ -159,6 +171,8 @@ namespace Unity.PlasticSCM.Editor
             IncomingChangesTabButtonGUI();
 
             ChangesetsTabButtonGUI();
+
+            BranchesTabButtonGUI();
 
             HistoryTabButtonGUI();
         }
@@ -183,11 +197,62 @@ namespace Unity.PlasticSCM.Editor
                 return;
             }
 
+            if (IsViewSelected(SelectedTab.Branches))
+            {
+                BranchesTab.OnGUI();
+                return;
+            }
+
             if (IsViewSelected(SelectedTab.History))
             {
                 HistoryTab.OnGUI();
                 return;
             }
+        }
+
+        internal void ShowBranchesViewIfNeeded()
+        {
+            if (!BoolSetting.Load(UnityConstants.SHOW_BRANCHES_VIEW_KEY_NAME, true))
+                return;
+
+            string query = QueryConstants.BranchesBeginningQuery;
+
+            ViewQueryResult queryResult = null;
+
+            IThreadWaiter waiter = ThreadWaiter.GetWaiter();
+            waiter.Execute(
+                /*threadOperationDelegate*/ delegate
+                {
+                    queryResult = new ViewQueryResult(
+                        PlasticGui.Plastic.API.FindQuery(mWkInfo, query));
+                },
+                /*afterOperationDelegate*/ delegate
+                {
+                    if (waiter.Exception != null)
+                    {
+                        ExceptionsHandler.DisplayException(waiter.Exception);
+                        return;
+                    }
+
+                    if (queryResult == null)
+                        return;
+                   
+                    if (queryResult.Count()>0)
+                        OpenBranchesTab();
+                });
+        }
+
+        internal void ShowBranchesView()
+        {
+            OpenBranchesTab();
+
+            bool wasBranchesSelected =
+                IsViewSelected(SelectedTab.Branches);
+
+            if (!wasBranchesSelected)
+                ((IRefreshableView)BranchesTab).Refresh();
+
+            SetSelectedView(SelectedTab.Branches);
         }
 
         void IViewSwitcher.ShowPendingChanges()
@@ -240,7 +305,7 @@ namespace Unity.PlasticSCM.Editor
                 return;
             }
 
-            LaunchTool.OpenMerge(mWkInfo.ClientPath, mIsGluonMode);
+            LaunchTool.OpenMerge(mWkInfo, mIsGluonMode);
         }
 
         void IGluonViewSwitcher.ShowIncomingChangesView()
@@ -273,6 +338,41 @@ namespace Unity.PlasticSCM.Editor
 
             HistoryTab.OnDisable();
             HistoryTab = null;
+
+            mParentWindow.Repaint();
+        }
+
+        void OpenBranchesTab()
+        {
+            if (BranchesTab == null)
+            {
+                BranchesTab = new BranchesTab(
+                     mWkInfo,
+                     mWorkspaceWindow,
+                     this,
+                     this,
+                     mWorkspaceWindow,
+                     mDeveloperNewIncomingChangesUpdater,
+                     mParentWindow);
+
+                mViewHost.AddRefreshableView(
+                    ViewType.BranchesView, BranchesTab);
+            }
+
+            BoolSetting.Save(true, UnityConstants.SHOW_BRANCHES_VIEW_KEY_NAME);
+        }
+
+        void CloseBranchesTab()
+        {
+            BoolSetting.Save(false,UnityConstants.SHOW_BRANCHES_VIEW_KEY_NAME);
+
+            ShowView(mPreviousSelectedTab);
+
+            mViewHost.RemoveRefreshableView(
+                ViewType.BranchesView, BranchesTab);
+
+            BranchesTab.OnDisable();
+            BranchesTab = null;
 
             mParentWindow.Repaint();
         }
@@ -415,6 +515,7 @@ namespace Unity.PlasticSCM.Editor
                 UnityStyles.PlasticWindow.TabButton,
                 PlasticLocalization.GetString(PlasticLocalization.Name.PendingChangesViewTitle),
                 PlasticLocalization.GetString(PlasticLocalization.Name.IncomingChangesViewTitle),
+                PlasticLocalization.GetString(PlasticLocalization.Name.BranchesViewTitle),
                 PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetsViewTitle));
         }
 
@@ -449,6 +550,9 @@ namespace Unity.PlasticSCM.Editor
                 case SelectedTab.Changesets:
                     return ChangesetsTab;
 
+                case SelectedTab.Branches:
+                    return BranchesTab;
+
                 case SelectedTab.History:
                     return HistoryTab;
 
@@ -470,9 +574,11 @@ namespace Unity.PlasticSCM.Editor
                 case ViewType.ChangesetsView:
                     return ChangesetsTab;
 
+                case ViewType.BranchesView:
+                    return BranchesTab;
+
                 case ViewType.HistoryView:
                     return HistoryTab;
-
                 default:
                     return null;
             }
@@ -571,13 +677,43 @@ namespace Unity.PlasticSCM.Editor
                 SetSelectedView(SelectedTab.History);
         }
 
+        void BranchesTabButtonGUI()
+        {
+            if (BranchesTab == null)
+                return;
+
+            bool wasBranchesSelected =
+                 IsViewSelected(SelectedTab.Branches);
+
+            bool isCloseButtonClicked;
+            
+            bool isBranchesSelected = mBranchesTabButton.
+                DrawClosableTabButton(PlasticLocalization.GetString(
+                    PlasticLocalization.Name.Branches),
+                    wasBranchesSelected,
+                    true,
+                    mTabButtonWidth,
+                    mParentWindow.Repaint,
+                    out isCloseButtonClicked);
+                        
+            if (isCloseButtonClicked)
+            {
+                CloseBranchesTab();
+                return;
+            }
+
+            if (isBranchesSelected)
+                SetSelectedView(SelectedTab.Branches);
+        }
+
         internal enum SelectedTab
         {
             None = 0,
             PendingChanges = 1,
             IncomingChanges = 2,
             Changesets = 3,
-            History = 4
+            Branches = 4,
+            History = 5
         }
 
         IIncomingChangesTab mIncomingChangesTab;
@@ -591,6 +727,7 @@ namespace Unity.PlasticSCM.Editor
         TabButton mChangesetsTabButton;
         TabButton mIncomingChangesTabButton;
         TabButton mHistoryTabButton;
+        TabButton mBranchesTabButton;
 
         WorkspaceWindow mWorkspaceWindow;
 

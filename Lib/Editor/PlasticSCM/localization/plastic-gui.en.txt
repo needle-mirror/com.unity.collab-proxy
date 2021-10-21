@@ -1,3 +1,27 @@
+== Attribute ==
+Attribute
+
+== Attributes ==
+Attributes
+
+== Object ==
+Object
+
+== Objects ==
+Objects
+
+== Item ==
+Item
+
+== Items ==
+Items
+
+== File ==
+File
+
+== Directories ==
+Directories
+
 == Branch ==
 Branch
 
@@ -381,6 +405,9 @@ Moved items - {0} of {1} items selected
 
 == DeleteConfirmationMessage ==
 You are about to delete
+
+== DeleteOthersMessage ==
+...and {0} others.
 
 == DeletingObjectsSingular ==
 Deleting 1 object
@@ -2669,7 +2696,7 @@ No matches found
 Container folder
 
 == CheckinComment ==
-Enter your checkin comment...
+Your checkin comment...
 
 == BrowseForFolderTitle ==
 Browse for folder
@@ -5877,6 +5904,12 @@ Files that just need update ({0} of 1 item)
 == MergeChangesMadeInSourceOfMergeForGluonPlural ==
 Files that just need update ({0} of {1} items)
 
+== MergeChangesMadeInSourceOfMergeOverviewSingular ==
+1 changed file updated ({1})
+
+== MergeChangesMadeInSourceOfMergeOverviewPlural ==
+{0} changed files updated ({1})
+
 == MergeMovesToApplySingular ==
 Moves to apply (1 item)
 
@@ -5907,6 +5940,12 @@ Deletes to apply ({0} of 1 item)
 == MergeDeletesToApplyForGluonPlural ==
 Deletes to apply ({0} of {1} items)
 
+== MergeDeletesToApplyOverviewSingular ==
+1 file deleted ({1})
+
+== MergeDeletesToApplyOverviewPlural ==
+{0} files deleted ({1})
+
 == MergeDeletesToApplyRemark ==
 Deleted on source
 
@@ -5924,6 +5963,12 @@ New items to download ({0} of 1 item)
 
 == MergeNewItemsToDownloadForGluonPlural ==
 New items to download ({0} of {1} items)
+
+== MergeNewItemsToDownloadOverviewSingular ==
+1 file added ({1})
+
+== MergeNewItemsToDownloadOverviewPlural ==
+{0} files added ({1})
 
 == MergeNewItemsToDownloadRemark ==
 Added on source
@@ -6201,6 +6246,12 @@ Author
 
 == PrivacyStatementText ==
 Controller: Unity Technologies ApS. Purpose of the processing: Create your account and provide the requested services. You may exercise your rights of access, rectification, erasure and other data protection rights as described in the Unity Privacy Policy. For additional information please see the Unity {0}
+
+== PrivacyStatementTextFirstLine ==
+Controller: Unity Technologies ApS. Purpose of the processing: Create your account and provide the requested services. You may exercise your rights of access, rectification, erasure and other data protection rights as described in the Unity Privacy Policy.
+
+== PrivacyStatementTextSecondLine ==
+For additional information please see the Unity {0}
 
 == PrivacyStatement ==
 Privacy Statement
@@ -6602,10 +6653,10 @@ New
 How do you prefer to work?
 
 == WorkPreferenceAnswerPlastic ==
-I need branching, merging and the ability to push/pull (Plastic workspace)
+I need branching, merging, and the ability to push/pull (Plastic workspace)
 
 == WorkPreferenceAnswerGluon ==
-I simply need to checkin my work (Gluon workspace)
+I only need to checkin my work (Gluon workspace)
 
 == CreateWorkspace ==
 Create workspace
@@ -6890,13 +6941,13 @@ Available
 Unavailable
 
 == PlasticOpenShortcutForWindows ==
-Alt+O
+Ctrl+O
 
 == PlasticOpenShortcutForMacOS ==
 Cmd+O
 
 == PlasticOpenShortcutForLinux ==
-Alt+O
+Ctrl+O
 
 == PlasticOpenInNewWindowShortcutForWindows ==
 Shift+O
@@ -6908,31 +6959,31 @@ Cmd+Shift+O
 Shift+O
 
 == PlasticNewShortcutForWindows ==
-Alt+N
+Ctrl+N
 
 == PlasticNewShortcutForMacOS ==
 Cmd+N
 
 == PlasticNewShortcutForLinux ==
-Alt+N
+Ctrl+N
 
 == PlasticNewWorkspaceShortcutForWindows ==
-Alt+W
+Ctrl+W
 
 == PlasticNewWorkspaceShortcutForMacOS ==
 Cmd+W
 
 == PlasticNewWorkspaceShortcutForLinux ==
-Alt+W
+Ctrl+W
 
 == PlasticNewSyncViewShortcutForWindows ==
-Alt+C
+Ctrl+C
 
 == PlasticNewSyncViewShortcutForMacOS ==
 Cmd+C
 
 == PlasticNewSyncViewShortcutForLinux ==
-Alt+C
+Ctrl+C
 
 == PlasticRenameShortcutForWindows ==
 F2
@@ -6953,67 +7004,67 @@ Cmd+Delete
 Delete
 
 == PlasticPermissionsShortcutForWindows ==
-Alt+P
+Ctrl+P
 
 == PlasticPermissionsShortcutForMacOS ==
 Cmd+P
 
 == PlasticPermissionsShortcutForLinux ==
-Alt+P
+Ctrl+P
 
 == PlasticMergeShortcutForWindows ==
-Alt+M
+Ctrl+M
 
 == PlasticMergeShortcutForMacOS ==
 Cmd+M
 
 == PlasticMergeShortcutForLinux ==
-Alt+M
+Ctrl+M
 
 == PlasticDiffShortcutForWindows ==
-Alt+D
+Ctrl+D
 
 == PlasticDiffShortcutForMacOS ==
 Cmd+D
 
 == PlasticDiffShortcutForLinux ==
-Alt+D
+Ctrl+D
 
 == PlasticApplyShortcutForWindows ==
-Alt+A
+Ctrl+A
 
 == PlasticApplyShortcutForMacOS ==
 Cmd+A
 
 == PlasticApplyShortcutForLinux ==
-Alt+A
+Ctrl+A
 
 == PlasticSwitchShortcutForWindows ==
-Alt+W
+Ctrl+W
 
 == PlasticSwitchShortcutForMacOS ==
 Cmd+W
 
 == PlasticSwitchShortcutForLinux ==
-Alt+W
+Ctrl+W
 
 == PlasticBranchShortcutForWindows ==
-Alt+B
+Ctrl+B
 
 == PlasticBranchShortcutForMacOS ==
 Cmd+B
 
 == PlasticBranchShortcutForLinux ==
-Alt+B
+Ctrl+B
 
 == PlasticLabelShortcutForWindows ==
-Alt+L
+Ctrl+L
 
 == PlasticLabelShortcutForMacOS ==
 Cmd+L
 
 == PlasticLabelShortcutForLinux ==
-Alt+L
+Ctrl+L
 
 == PlasticSaveShortcutForWindows ==
 Ctrl+S
@@ -7041,6 +7092,129 @@ Cmd+H
 
 == PlasticHistoryShortcutForLinux ==
 Ctrl+H
+
+== PlasticCheckinShortcutForWindows ==
+Ctrl+I
+
+== PlasticCheckinShortcutForMacOS ==
+Cmd+I
+
+== PlasticCheckinShortcutForLinux ==
+Ctrl+I
+
+== PlasticCheckoutShortcutForWindows ==
+Shift+Ctrl+O
+
+== PlasticCheckoutShortcutForMacOS ==
+Shift+Cmd+O
+
+== PlasticCheckoutShortcutForLinux ==
+Shift+Ctrl+O
+
+== PlasticUndoShortcutForWindows ==
+Shift+Ctrl+U
+
+== PlasticUndoShortcutForMacOS ==
+Shift+Cmd+U
+
+== PlasticUndoShortcutForLinux ==
+Shift+Ctrl+U
+
+== PlasticCutShortcutForWindows ==
+Ctrl+X
+
+== PlasticCutShortcutForMacOS ==
+Cmd+X
+
+== PlasticCutShortcutForLinux ==
+Ctrl+X
+
+== PlasticPasteShortcutForWindows ==
+Ctrl+V
+
+== PlasticPasteShortcutForMacOS ==
+Cmd+V
+
+== PlasticPasteShortcutForLinux ==
+Ctrl+V
+
+== PlasticBinTypeShortcutForWindows ==
+Shift+Ctrl+B
+
+== PlasticBinTypeShortcutForMacOS ==
+Shift+Cmd+B
+
+== PlasticBinTypeShortcutForLinux ==
+Shift+Ctrl+B
+
+== PlasticTxtTypeShortcutForWindows ==
+Shift+Ctrl+T
+
+== PlasticTxtTypeShortcutForMacOS ==
+Shift+Cmd+T
+
+== PlasticTxtTypeShortcutForLinux ==
+Shift+Ctrl+T
+
+== PlasticNewFileShortcutForWindows ==
+Shift+Ctrl+N
+
+== PlasticNewFileShortcutForMacOS ==
+Shift+Cmd+N
+
+== PlasticNewFileShortcutForLinux ==
+Shift+Ctrl+N
+
+== PlasticNewDirectoryShortcutForWindows ==
+Shift+Ctrl+D
+
+== PlasticNewDirectoryShortcutForMacOS ==
+Shift+Cmd+D
+
+== PlasticNewDirectoryShortcutForLinux ==
+Shift+Ctrl+D
+
+== PlasticAddShortcutForWindows ==
+Shift+Ctrl+A
+
+== PlasticAddShortcutForMacOS ==
+Shift+Cmd+A
+
+== PlasticAddShortcutForLinux ==
+Shift+Ctrl+A
+
+== PlasticAddRecursiveShortcutForWindows ==
+Shift+Ctrl+R
+
+== PlasticAddRecursiveShortcutForMacOS ==
+Shift+Cmd+R
+
+== PlasticAddRecursiveShortcutForLinux ==
+Shift+Ctrl+R
+
+== PlasticSearchShortcutForWindows ==
+Ctrl+F
+
+== PlasticSearchShortcutForMacOS ==
+Cmd+F
+
+== PlasticSearchShortcutForLinux ==
+Ctrl+F
+
+== BranchExplorerSearchFieldShortcutsTooltipForWindows ==
+Keyboard shortcuts:
+  Enter: focus the next search result
+  Ctrl+Enter: focus the previous one
+
+== BranchExplorerSearchFieldShortcutsTooltipForMacOS ==
+Keyboard shortcuts:
+  Enter: focus the next search result
+  Cmd+Enter: focus the previous one
+
+== BranchExplorerSearchFieldShortcutsTooltipForLinux ==
+Keyboard shortcuts:
+  Enter: focus the next search result
+  Ctrl+Enter: focus the previous one
 
 == TurnOffPlasticSCM ==
 Turn Off Plastic SCM for Unity
@@ -7094,7 +7268,7 @@ Finished downloading. Ready to install.
 Restart now to upgrade to version {0}
 
 == RestartAndUpgradeButton ==
-Restart && upgrade
+Restart and Upgrade
 
 == ItemDeletedDialogTitle ==
 Could not show item
@@ -7107,3 +7281,18 @@ The item for this comment cannot be shown as it has been deleted.
 
 == CannotConnectToWebadmin ==
 Cannot connect to the webadmin server
+
+== MergeDiagramButton ==
+Merge diagram
+
+== GoToButton ==
+Go to {0}
+
+== PlusMore ==
++{0} more
+
+== CheckoutChangesetComment ==
+The selected changeset represents the pending changes in your workspace. It's not checked in into the repository yet.
+
+== BranchesListView ==
+Branches List View

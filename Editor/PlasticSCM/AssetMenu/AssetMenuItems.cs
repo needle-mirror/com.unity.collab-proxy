@@ -16,17 +16,16 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
     {
         static AssetMenuItems()
         {
-            sPlasticAPI = new PlasticAPI();
+            CooldownWindowDelayer cooldownInitializeAction = new CooldownWindowDelayer(
+                DelayedInitialization, UnityConstants.ASSET_MENU_DELAYED_INITIALIZE_INTERVAL);
 
-            BackgroundWorker backgroundWorker = new BackgroundWorker();
-            backgroundWorker.DoWork += new DoWorkEventHandler(BackgroundWorker_DoWork);
-            backgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorker_CompletedWork);
-            backgroundWorker.RunWorkerAsync();
+            cooldownInitializeAction.Ping();
         }
 
-        static void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
+        static void DelayedInitialization()
+        { 
             PlasticApp.InitializeIfNeeded();
+            Enable();
         }
 
         static void BackgroundWorker_CompletedWork(object sender, RunWorkerCompletedEventArgs e)
@@ -63,7 +62,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         {
             RemoveMenuItems();
         }
-
 
         static void AddMenuItems()
         {

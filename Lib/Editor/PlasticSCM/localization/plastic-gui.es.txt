@@ -1,3 +1,27 @@
+== Attribute ==
+Atributo
+
+== Attributes ==
+Atributos
+
+== Object ==
+Objeto
+
+== Objects ==
+Objetos
+
+== Item ==
+Ítem
+
+== Items ==
+Ítems
+
+== File ==
+Fichero
+
+== Directories ==
+Directorios
+
 == Branch ==
 Branch
 
@@ -363,6 +387,9 @@ Added and private - {0} of {1} items selected
 
 == DeleteConfirmationMessage ==
 Está a punto de eliminar
+
+== DeleteOthersMessage ==
+...y {0} más.
 
 == DeletedItemsSelectedSingular ==
 Deleted items - {0} of 1 item selected
@@ -2651,7 +2678,7 @@ No matches found
 Container folder
 
 == CheckinComment ==
-Introduce your checkin comment...
+Your checkin comment...
 
 == BrowseForFolderTitle ==
 Browse for folder
@@ -5867,6 +5894,12 @@ Ficheros que solo necesitan actualización ({0} de 1 item)
 == MergeChangesMadeInSourceOfMergeForGluonPlural ==
 Ficheros que solo necesitan actualización ({0} de {1} items)
 
+== MergeChangesMadeInSourceOfMergeOverviewSingular ==
+1 changed file updated ({1})
+
+== MergeChangesMadeInSourceOfMergeOverviewPlural ==
+{0} changed files updated ({1})
+
 == MergeMovesToApplySingular ==
 Movidos a aplicar (1 item)
 
@@ -5897,6 +5930,12 @@ Borrados a aplicar ({0} de 1 item)
 == MergeDeletesToApplyForGluonPlural ==
 Borrados a aplicar ({0} de {1} items)
 
+== MergeDeletesToApplyOverviewSingular ==
+1 file deleted ({1})
+
+== MergeDeletesToApplyOverviewPlural ==
+{0} files deleted ({1})
+
 == MergeDeletesToApplyRemark ==
 Borrado en origen
 
@@ -5914,6 +5953,12 @@ Items nuevos a descargar ({0} de 1 item)
 
 == MergeNewItemsToDownloadForGluonPlural ==
 Items nuevos a descargar ({0} de {1} items)
+
+== MergeNewItemsToDownloadOverviewSingular ==
+1 file added ({1})
+
+== MergeNewItemsToDownloadOverviewPlural ==
+{0} files added ({1})
 
 == MergeNewItemsToDownloadRemark ==
 Añadido en origen
@@ -6191,6 +6236,12 @@ Autor
 
 == PrivacyStatementText ==
 Controlador: Unity Technologies ApS. Finalidad del tratamiento: Crear su cuenta y prestar los servicios solicitados. Puede ejercer sus derechos de acceso, rectificación, borrado y otros derechos de protección de datos como se describe en la Política de privacidad de Unity. para obtener información adicional, consulte la {0}
+
+== PrivacyStatementTextFirstLine ==
+Controlador: Unity Technologies ApS. Finalidad del tratamiento: Crear su cuenta y prestar los servicios solicitados. Puede ejercer sus derechos de acceso, rectificación, borrado y otros derechos de protección de datos como se describe en la Política de privacidad de Unity.
+
+== PrivacyStatementTextSecondLine ==
+Para obtener información adicional, consulte la {0}
 
 == PrivacyStatement ==
 Política de privacidad de Unity
@@ -6592,10 +6643,10 @@ New
 How do you prefer to work?
 
 == WorkPreferenceAnswerPlastic ==
-I need branching, merging and the ability to push/pull (Plastic workspace)
+I need branching, merging, and the ability to push/pull (Plastic workspace)
 
 == WorkPreferenceAnswerGluon ==
-I simply need to checkin my work (Gluon workspace)
+I only need to checkin my work (Gluon workspace)
 
 == CreateWorkspace ==
 Create workspace
@@ -6880,13 +6931,13 @@ Disponible
 No disponible
 
 == PlasticOpenShortcutForWindows ==
-Alt+O
+Ctrl+O
 
 == PlasticOpenShortcutForMacOS ==
 Cmd+O
 
 == PlasticOpenShortcutForLinux ==
-Alt+O
+Ctrl+O
 
 == PlasticOpenInNewWindowShortcutForWindows ==
 Shift+O
@@ -6898,31 +6949,31 @@ Cmd+Shift+O
 Shift+O
 
 == PlasticNewShortcutForWindows ==
-Alt+N
+Ctrl+N
 
 == PlasticNewShortcutForMacOS ==
 Cmd+N
 
 == PlasticNewShortcutForLinux ==
-Alt+N
+Ctrl+N
 
 == PlasticNewWorkspaceShortcutForWindows ==
-Alt+W
+Ctrl+W
 
 == PlasticNewWorkspaceShortcutForMacOS ==
 Cmd+W
 
 == PlasticNewWorkspaceShortcutForLinux ==
-Alt+W
+Ctrl+W
 
 == PlasticNewSyncViewShortcutForWindows ==
-Alt+C
+Ctrl+C
 
 == PlasticNewSyncViewShortcutForMacOS ==
 Cmd+C
 
 == PlasticNewSyncViewShortcutForLinux ==
-Alt+C
+Ctrl+C
 
 == PlasticRenameShortcutForWindows ==
 F2
@@ -6943,68 +6994,67 @@ Cmd+Delete
 Delete
 
 == PlasticPermissionsShortcutForWindows ==
-Alt+P
+Ctrl+P
 
 == PlasticPermissionsShortcutForMacOS ==
 Cmd+P
 
 == PlasticPermissionsShortcutForLinux ==
-Alt+P
+Ctrl+P
 
 == PlasticMergeShortcutForWindows ==
-Alt+M
+Ctrl+M
 
 == PlasticMergeShortcutForMacOS ==
 Cmd+M
 
 == PlasticMergeShortcutForLinux ==
-Alt+M
+Ctrl+M
 
 == PlasticDiffShortcutForWindows ==
-Alt+D
+Ctrl+D
 
 == PlasticDiffShortcutForMacOS ==
 Cmd+D
 
 == PlasticDiffShortcutForLinux ==
-Alt+D
+Ctrl+D
 
 == PlasticApplyShortcutForWindows ==
-Alt+A
+Ctrl+A
 
 == PlasticApplyShortcutForMacOS ==
 Cmd+A
 
 == PlasticApplyShortcutForLinux ==
-Alt+A
+Ctrl+A
 
 == PlasticSwitchShortcutForWindows ==
-Alt+W
+Ctrl+W
 
 == PlasticSwitchShortcutForMacOS ==
 Cmd+W
 
 == PlasticSwitchShortcutForLinux ==
-Alt+W
+Ctrl+W
 
 == PlasticBranchShortcutForWindows ==
-Alt+R
+Ctrl+R
 
 == PlasticBranchShortcutForMacOS ==
 Cmd+R
 
 == PlasticBranchShortcutForLinux ==
-Alt+R
-
+Ctrl+R
 
 == PlasticLabelShortcutForWindows ==
-Alt+E
+Ctrl+E
 
 == PlasticLabelShortcutForMacOS ==
 Cmd+E
 
 == PlasticLabelShortcutForLinux ==
-Alt+E
+Ctrl+E
 
 == PlasticSaveShortcutForWindows ==
 Ctrl+S
@@ -7032,6 +7082,129 @@ Cmd+H
 
 == PlasticHistoryShortcutForLinux ==
 Ctrl+H
+
+== PlasticCheckinShortcutForWindows ==
+Ctrl+I
+
+== PlasticCheckinShortcutForMacOS ==
+Cmd+I
+
+== PlasticCheckinShortcutForLinux ==
+Ctrl+I
+
+== PlasticCheckoutShortcutForWindows ==
+Shift+Ctrl+O
+
+== PlasticCheckoutShortcutForMacOS ==
+Shift+Cmd+O
+
+== PlasticCheckoutShortcutForLinux ==
+Shift+Ctrl+O
+
+== PlasticUndoShortcutForWindows ==
+Shift+Ctrl+U
+
+== PlasticUndoShortcutForMacOS ==
+Shift+Cmd+U
+
+== PlasticUndoShortcutForLinux ==
+Shift+Ctrl+U
+
+== PlasticCutShortcutForWindows ==
+Ctrl+X
+
+== PlasticCutShortcutForMacOS ==
+Cmd+X
+
+== PlasticCutShortcutForLinux ==
+Ctrl+X
+
+== PlasticPasteShortcutForWindows ==
+Ctrl+V
+
+== PlasticPasteShortcutForMacOS ==
+Cmd+V
+
+== PlasticPasteShortcutForLinux ==
+Ctrl+V
+
+== PlasticBinTypeShortcutForWindows ==
+Shift+Ctrl+B
+
+== PlasticBinTypeShortcutForMacOS ==
+Shift+Cmd+B
+
+== PlasticBinTypeShortcutForLinux ==
+Shift+Ctrl+B
+
+== PlasticTxtTypeShortcutForWindows ==
+Shift+Ctrl+T
+
+== PlasticTxtTypeShortcutForMacOS ==
+Shift+Cmd+T
+
+== PlasticTxtTypeShortcutForLinux ==
+Shift+Ctrl+T
+
+== PlasticNewFileShortcutForWindows ==
+Shift+Ctrl+N
+
+== PlasticNewFileShortcutForMacOS ==
+Shift+Cmd+N
+
+== PlasticNewFileShortcutForLinux ==
+Shift+Ctrl+N
+
+== PlasticNewDirectoryShortcutForWindows ==
+Shift+Ctrl+D
+
+== PlasticNewDirectoryShortcutForMacOS ==
+Shift+Cmd+D
+
+== PlasticNewDirectoryShortcutForLinux ==
+Shift+Ctrl+D
+
+== PlasticAddShortcutForWindows ==
+Shift+Ctrl+A
+
+== PlasticAddShortcutForMacOS ==
+Shift+Cmd+A
+
+== PlasticAddShortcutForLinux ==
+Shift+Ctrl+A
+
+== PlasticAddRecursiveShortcutForWindows ==
+Shift+Ctrl+R
+
+== PlasticAddRecursiveShortcutForMacOS ==
+Shift+Cmd+R
+
+== PlasticAddRecursiveShortcutForLinux ==
+Shift+Ctrl+R
+
+== PlasticSearchShortcutForWindows ==
+Ctrl+F
+
+== PlasticSearchShortcutForMacOS ==
+Cmd+F
+
+== PlasticSearchShortcutForLinux ==
+Ctrl+F
+
+== BranchExplorerSearchFieldShortcutsTooltipForWindows ==
+Keyboard shortcuts:
+  Enter: focus the next search result
+  Ctrl+Enter: focus the previous one
+
+== BranchExplorerSearchFieldShortcutsTooltipForMacOS ==
+Keyboard shortcuts:
+  Enter: focus the next search result
+  Cmd+Enter: focus the previous one
+
+== BranchExplorerSearchFieldShortcutsTooltipForLinux ==
+Keyboard shortcuts:
+  Enter: focus the next search result
+  Ctrl+Enter: focus the previous one
 
 == TurnOffPlasticSCM ==
 Turn Off Plastic SCM for Unity
@@ -7085,7 +7258,7 @@ Descarga completada. Listo para instalar.
 Reinicia ahora para actualizar a la versión {0}
 
 == RestartAndUpgradeButton ==
-Reiniciar && actualizar
+Reiniciar y Actualizar
 
 == ItemDeletedDialogTitle ==
 No se puede mostrar el item
@@ -7098,3 +7271,18 @@ El item de este comentario no se puede mostrar porque ha sido eliminado.
 
 == CannotConnectToWebadmin ==
 No se pudo conectar al servidor webadmin
+
+== MergeDiagramButton ==
+Diagrama de merge
+
+== GoToButton ==
+Ir a {0}
+
+== PlusMore ==
++{0} más
+
+== CheckoutChangesetComment ==
+El changeset seleccionado representa los cambios en su workspace, que todavía no es está protegido en el repositorio.
+
+== BranchesListView ==
+Branches List View

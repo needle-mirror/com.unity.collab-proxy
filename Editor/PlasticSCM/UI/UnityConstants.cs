@@ -70,6 +70,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const double SELECTION_DELAYED_INPUT_ACTION_INTERVAL = 0.25;
         internal const double AUTO_REFRESH_DELAYED_INTERVAL = 0.25;
         internal const double AUTO_REFRESH_PENDING_CHANGES_DELAYED_INTERVAL = 0.1;
+        internal const double ASSET_MENU_DELAYED_INITIALIZE_INTERVAL = 0.25;
 
         internal const string PENDING_CHANGES_TABLE_SETTINGS_NAME = "{0}_PendingChangesTreeV2_{1}";
         internal const string GLUON_INCOMING_CHANGES_TABLE_SETTINGS_NAME = "{0}_GluonIncomingChangesTree_{1}";
@@ -82,6 +83,11 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const string CHANGESETS_DATE_FILTER_SETTING_NAME = "{0}_ChangesetsDateFilter_{1}";
         internal const string CHANGESETS_SHOW_CHANGES_SETTING_NAME = "{0}_ShowChanges_{1}";
         internal const string HISTORY_TABLE_SETTINGS_NAME = "{0}_HistoryList_{1}";
+        internal const string BRANCHES_TABLE_SETTINGS_NAME = "{0}_BranchesList_{1}";
+        internal const string BRANCHES_DATE_FILTER_SETTING_NAME = "{0}_BranchesDateFilter_{1}";
+
+        internal const string SHOW_BRANCHES_VIEW_KEY_NAME = "showbranchesviewkey";
+
 
         internal static class ChangesetsColumns
         {
@@ -96,6 +102,22 @@ namespace Unity.PlasticSCM.Editor.UI
             internal const float BRANCH_WIDTH = 160f;
             internal const float BRANCH_MIN_WIDTH = 90f;
             internal const float REPOSITORY_WIDTH = 210f;
+            internal const float REPOSITORY_MIN_WIDTH = 90f;
+            internal const float GUID_WIDTH = 270f;
+            internal const float GUID_MIN_WIDTH = 100f;
+        }
+
+        internal static class BranchesColumns
+        {
+            internal const float BRANCHES_NAME_WIDTH = 180f;
+            internal const float BRANCHES_NAME_MIN_WIDTH = 70f;
+            internal const float CREATION_DATE_WIDTH = 80f;
+            internal const float CREATION_DATE_MIN_WIDTH = 60f;
+            internal const float CREATEDBY_WIDTH = 200f;
+            internal const float CREATEDBY_MIN_WIDTH = 110f;
+            internal const float COMMENT_WIDTH = 300f;
+            internal const float COMMENT_MIN_WIDTH = 100f;
+            internal const float REPOSITORY_WIDTH = 180f;
             internal const float REPOSITORY_MIN_WIDTH = 90f;
             internal const float GUID_WIDTH = 270f;
             internal const float GUID_MIN_WIDTH = 100f;

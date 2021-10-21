@@ -1,10 +1,12 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
+using Codice.Client.BaseCommands.EventTracking;
+using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.IncomingChanges;
-using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.Tool;
+using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 {
@@ -23,7 +25,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         {
             mIncomingChangesViewMenuOperations = incomingChangesViewMenuOperations;
             mIncomingChangesMetaMenuOperations = incomingChangesMetaMenuOperations;
-
+            
             BuildComponents();
         }
 
@@ -38,9 +40,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
         void MergeSelectedFilesMenuItem_Click()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(false))
-                return;
-
             mIncomingChangesViewMenuOperations.MergeContributors();
         }
 

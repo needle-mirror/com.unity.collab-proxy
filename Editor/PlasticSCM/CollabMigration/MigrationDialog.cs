@@ -15,6 +15,7 @@ using Unity.PlasticSCM.Editor.ProjectDownloader;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.WebApi;
+using PlasticGui.WorkspaceWindow;
 
 namespace Unity.PlasticSCM.Editor.CollabMigration
 {
@@ -49,7 +50,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
 
             DoButtonsArea();
 
-            mProgressControls.ForcedUpdateProgress(this);
+            mProgressControls.UpdateDeterminateProgress(this);
         }
 
         internal static bool Show(
@@ -70,7 +71,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
                 changesetId,
                 branchId,
                 afterWorkspaceMigratedAction,
-                new ProgressControlsForDialogs());
+                new ProgressControlsForMigration());
 
             return dialog.RunModal(parentWindow) == ResponseType.Ok;
         }
@@ -101,15 +102,14 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
 
             GUILayout.Space(20);
 
-            Paragraph("Your Unity project belongs to a Collaborate repository which has been "
-                +"upgraded to Plastic SCM free of charge by your administrator. Your local "
-                +"workspace will now be converted to a Plastic SCM workspace. Select 'Migrate' "
-                +"to start the conversion process. This process may take a few minutes.");
+            Paragraph("Your Unity project has been upgraded (from Collaborate) to Plastic SCM free" +
+                " of charge by your administrator. Your local workspace will now be converted to a" +
+                " Plastic SCM workspace in just a few minutes. Select “Migrate” to start the conversion process.");
 
-            DrawProgressForDialogs.For(
+            DrawProgressForMigration.For(
                mProgressControls.ProgressData);
 
-            GUILayout.Space(10);
+            GUILayout.Space(40);
 
             GUILayout.EndVertical();
         }
@@ -120,7 +120,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
             using (new EditorGUILayout.HorizontalScope())
             {
                 GUILayout.FlexibleSpace();
-    
+
                 if (Application.platform == RuntimePlatform.WindowsEditor)
                 {
                     DoOkButton();
@@ -146,7 +146,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
 
         void DoCloseButton()
         {
-            GUI.enabled = !mProgressControls.ProgressData.IsWaitingAsyncResult;
+            GUI.enabled = !mProgressControls.ProgressData.IsOperationRunning;
 
             if (NormalButton(PlasticLocalization.GetString(
                     PlasticLocalization.Name.CloseButton)))
@@ -168,7 +168,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
 
         void DoMigrateButton()
         {
-            GUI.enabled = !mProgressControls.ProgressData.IsWaitingAsyncResult;
+            GUI.enabled = !mProgressControls.ProgressData.IsOperationRunning;
 
             if (NormalButton("Migrate"))
             {
@@ -190,6 +190,30 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
             GUI.enabled = true;
         }
 
+        static void UpdateProgress(string wkPath,
+            CreateWorkspaceFromCollab.Progress progress,
+            ProgressControlsForMigration progressControls,
+            BuildProgressSpeedAndRemainingTime.ProgressData progressData)
+        {
+            string header = MigrationProgressRender.FixNotificationPath(
+                wkPath, progress.CurrentFile);
+
+            string message = MigrationProgressRender.GetProgressString(
+                progress,
+                progressData,
+                DateTime.Now,
+                0.05,
+                "Calculating...",
+                "Converted {0} of {1}bytes ({2} of 1 file){4}",
+                "Converted {0} of {1}bytes ({2} of {3} files {4})",
+                "remaining");
+
+            float percent = GetProgressBarPercent.ForTransfer(
+                progress.ProcessedSize, progress.TotalSize) / 100f;
+
+            progressControls.ShowProgress(header, message, percent);
+        }
+
         void LaunchMigration(
             string unityAccessToken,
             string projectPath,
@@ -198,16 +222,18 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
             long changesetId,
             long branchId,
             Action afterWorkspaceMigratedAction,
-            IProgressControls progressControls)
+            ProgressControlsForMigration progressControls)
         {
             string serverName = string.Format(
                 "{0}@cloud", organizationName);
 
-            progressControls.ShowProgress(
-                "Migrating project to Plastic SCM...");
-
             TokenExchangeResponse tokenExchangeResponse = null;
             WorkspaceInfo workspaceInfo = null;
+
+            CreateWorkspaceFromCollab.Progress progress = new CreateWorkspaceFromCollab.Progress();
+
+            BuildProgressSpeedAndRemainingTime.ProgressData progressData =
+                new BuildProgressSpeedAndRemainingTime.ProgressData(DateTime.Now);
 
             IThreadWaiter waiter = ThreadWaiter.GetWaiter(10);
             waiter.Execute(
@@ -246,7 +272,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
                 workspaceInfo = CreateWorkspaceFromCollab.Create(
                     projectPath, repInfo.Name, repInfo,
                     changesetId, branchId,
-                    new CreateWorkspaceFromCollab.Progress());
+                    progress);
             },
             /*afterOperationDelegate*/
             delegate
@@ -271,21 +297,26 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
                     workspaceInfo == null)
                 {
                     progressControls.ShowError(
-                        "Failed to migrate the project to Plastic SCM");
+                        "Failed to convert your workspace to Plastic SCM");
                     return;
                 }
 
                 progressControls.ShowSuccess(
-                    "The project migration to Plastic SCM is completed successfully");
+                    "Your workspace has been successfully converted to Plastic SCM");
 
                 mIsMigrationCompleted = true;
 
                 afterWorkspaceMigratedAction();
+            },
+            /*timerTickDelegate*/
+            delegate
+            {
+                UpdateProgress(projectPath, progress, progressControls, progressData);
             });
         }
 
         static void DisplayException(
-            IProgressControls progressControls,
+            ProgressControlsForMigration progressControls,
             Exception ex)
         {
             ExceptionsHandler.LogException(
@@ -303,7 +334,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
             long changesetId,
             long branchId,
             Action afterWorkspaceMigratedAction,
-            ProgressControlsForDialogs progressControls)
+            ProgressControlsForMigration progressControls)
         {
             var instance = CreateInstance<MigrationDialog>();
             instance.IsResizable = false;
@@ -321,7 +352,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
 
         bool mIsMigrationCompleted;
 
-        ProgressControlsForDialogs mProgressControls;
+        ProgressControlsForMigration mProgressControls;
         Action mAfterWorkspaceMigratedAction;
         long mChangesetId;
         long mBranchId;

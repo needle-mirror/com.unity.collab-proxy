@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
+using Codice.Client.BaseCommands.EventTracking;
 using Codice.CM.Common;
 using Codice.Client.Common;
 
@@ -18,11 +19,11 @@ using GluonRevertOperation = GluonGui.WorkspaceWindow.Views.Details.History.Reve
 using HistoryDescriptor = GluonGui.WorkspaceWindow.Views.Details.History.HistoryDescriptor;
 
 using Unity.PlasticSCM.Editor.AssetUtils;
+using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.Changesets;
-using Unity.PlasticSCM.Editor.Tool;
 
 namespace Unity.PlasticSCM.Editor.Views.History
 {
@@ -201,7 +202,12 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         void IHistoryViewMenuOperations.DiffWithPrevious()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+            if (LaunchTool.ShowDownloadPlasticExeWindow(
+                mRepSpec,
+                mIsGluonMode,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffRevision,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromDiffRevision,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromDiffRevision))
                 return;
 
             HistoryRevision revision = HistorySelection.
@@ -222,7 +228,12 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         void IHistoryViewMenuOperations.DiffSelectedRevisions()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+            if(LaunchTool.ShowDownloadPlasticExeWindow(
+                mRepSpec,
+                mIsGluonMode,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffSelectedRevisions,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromDiffSelectedRevisions,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromDiffSelectedRevisions))
                 return;
 
             List<HistoryRevision> revisions = HistorySelection.
@@ -245,6 +256,14 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         void IHistoryViewMenuOperations.DiffChangeset()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(
+               mRepSpec,
+               mIsGluonMode,
+               TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffChangeset,
+               TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromDiffChangeset,
+               TrackFeatureUseEvent.Features.CancelPlasticInstallationFromDiffChangeset))
+                return;
+
             HistoryRevision revision = HistorySelection.
                 GetSelectedHistoryRevision(mHistoryListView);
 
@@ -366,7 +385,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 wkInfo.ClientPath,
                 repSpec,
                 headerState,
-                new HistoryListViewMenu(this, this, mIsGluonMode),
+                new HistoryListViewMenu(this, this),
                 HistoryListHeaderState.GetColumnNames());
 
             mHistoryListView.Reload();

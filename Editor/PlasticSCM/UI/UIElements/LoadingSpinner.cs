@@ -11,14 +11,15 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
             mStarted = false;
 
             // add child elements to set up centered spinner rotation
-            VisualElement spinner = new VisualElement();
-            Add(spinner);
+            mSpinner = new VisualElement();
+            Add(mSpinner);
 
-            spinner.style.backgroundImage = Images.GetImage(Images.Name.Loading);
-            spinner.style.width = 16;
-            spinner.style.height = 16;
-            spinner.style.left = -8;
-            spinner.style.top = -8;
+            mSpinner.style.backgroundImage = Images.GetImage(Images.Name.Loading);
+            mSpinner.style.position = Position.Absolute;
+            mSpinner.style.width = 16;
+            mSpinner.style.height = 16;
+            mSpinner.style.left = -8;
+            mSpinner.style.top = -8;
 
             style.position = Position.Relative;
             style.width = 16;
@@ -61,7 +62,12 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
             double currentTime = EditorApplication.timeSinceStartup;
             double deltaTime = currentTime - mLastRotationTime;
 
+#if UNITY_2021_2_OR_NEWER
+            mSpinner.transform.rotation = Quaternion.Euler(0, 0, mRotation);
+#else
             transform.rotation = Quaternion.Euler(0, 0, mRotation);
+#endif
+
             mRotation += (int)(ROTATION_SPEED * deltaTime);
             mRotation = mRotation % 360;
             if (mRotation < 0) mRotation += 360;
@@ -72,6 +78,7 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
         int mRotation;
         double mLastRotationTime;
         bool mStarted;
+        VisualElement mSpinner;
 
         const int ROTATION_SPEED = 360; // Euler degrees per second
     }

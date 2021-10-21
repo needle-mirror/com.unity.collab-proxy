@@ -1,6 +1,8 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
+using Codice.Client.BaseCommands.EventTracking;
+using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Diff;
 using Unity.PlasticSCM.Editor.UI;
@@ -19,13 +21,10 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         internal DiffTreeViewMenu(
             IDiffTreeViewMenuOperations operations,
-            IMetaMenuOperations metaMenuOperations,
-            bool isGluonMode)
+            IMetaMenuOperations metaMenuOperations)
         {
             mOperations = operations;
             mMetaMenuOperations = metaMenuOperations;
-            mIsGluonMode = isGluonMode;
-
             BuildComponents();
         }
 
@@ -54,7 +53,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             if (!operations.HasFlag(operationToExecute))
                 return false;
 
-            ProcessMenuOperation(operationToExecute, mOperations, mIsGluonMode);
+            ProcessMenuOperation(operationToExecute);
             return true;
         }
 
@@ -70,7 +69,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void HistoryMenuItem_Click()
         {
-            mOperations.History();
+             mOperations.History();
         }
 
         void HistoryMetaMenuItem_Click()
@@ -222,24 +221,17 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                 PlasticLocalization.GetString(PlasticLocalization.Name.UndeleteRevisionPath);
         }
 
-        static void ProcessMenuOperation(
-            DiffTreeViewMenuOperations operationToExecute,
-            IDiffTreeViewMenuOperations operations,
-            bool isGluonMode)
+        void ProcessMenuOperation(DiffTreeViewMenuOperations operationToExecute)
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(isGluonMode))
-                return;
-
             if (operationToExecute == DiffTreeViewMenuOperations.Diff)
             {
-                operations.Diff();
+                DiffMenuItem_Click();
                 return;
             }
 
             if (operationToExecute == DiffTreeViewMenuOperations.History)
             {
-                operations.History();
-                return;
+                HistoryMenuItem_Click();
             }
         }
 
@@ -285,6 +277,5 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         readonly IDiffTreeViewMenuOperations mOperations;
         readonly IMetaMenuOperations mMetaMenuOperations;
-        readonly bool mIsGluonMode;
-    }
+     }
 }

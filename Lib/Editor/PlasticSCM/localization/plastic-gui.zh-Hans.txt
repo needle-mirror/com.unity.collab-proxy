@@ -498,9 +498,9 @@ Checkin Anyway
 
 == CheckinAutoUpdateMergeRequestMessage ==
 当您在工作区中开始您自己的更改后，在您正在处理的分支中出现了新更改。您需要先将这些更改导入工作区，然后再签入您的更改。
-      
+
 由于分支中的更改不会与工作区中的更改发生冲突，因此您可以在签入之前直接更新工作区。
-      
+
 是否要立即更新工作区并签入更改？
 
 == UpdateWorkspaceMergeRequest ==
@@ -529,7 +529,7 @@ Checkin Anyway
 == CouldNotGetOrganizationNameFromCredentials ==
 凭据无效。无法获取组织名称
 
-== CouldNotGetOrganizationName == 
+== CouldNotGetOrganizationName ==
 无法从云服务器获取组织名称。您的凭据可能是错误的。请再次运行配置工具以输入新的凭据 ('{0} --configure')
 
 == RepositoryServerIsNotAvailable ==
@@ -2778,7 +2778,7 @@ Plastic SCM 内置差异比较和合并工具 (Xmerge) 的首选项：
 == DiffToolsCommandHelp ==
 调用外部差异比较工具时，可使用以下命令行参数。
             必须确保指定的文件具有要比较的实际修订内容。
-    
+
             @sourcefile:文件的完整路径，该文件的内容将显示在左侧面板中。
             @destinationfile:文件的完整路径，该文件的内容将显示在右侧面板中。
 
@@ -2800,7 +2800,7 @@ Plastic SCM 内置差异比较和合并工具 (Xmerge) 的首选项：
 
 == MergeToolsCommandHelp ==
 在命令行中调用外部合并工具时，可使用以下变量作为参数：
-  
+
             @sourcefile:源合并文件的完整路径。
             @destinationfile:目标合并文件的路径。
             @basefile:共同上级合并文件的路径。
@@ -3855,7 +3855,7 @@ Mergetool 用法
                     autosave:-as | --autosave
                     resultFile:{-r | --result}=<filename>
                     mergeType:{-m | --mergeresolutiontype}={onlyone | onlysrc | onlydst | try | forced}
-        
+
 
                 generalOptions:[<defaultEncoding>] [<comparisonMethod>] [<resultEncoding>]
 
@@ -4719,6 +4719,9 @@ Cloud 存储库
 == UserProfileWrongAuthMode ==
 只能使用 LDAP 或用户/密码身份验证来配置用户配置文件。
 
+== UserProfileCloudServer ==
+The user profile can't be configured for cloud servers.
+
 == LoadingUserProfile ==
 正在加载用户配置文件...
 
@@ -5039,7 +5042,7 @@ Plastic 会观察工作区中是否有更改以加快操作速度。这种情况
 == EOLMethod ==
 忽略行尾
 
-== WhitespacesMethod == 
+== WhitespacesMethod ==
 忽略空格
 
 == EOLWhitespacesMethod ==
@@ -5101,7 +5104,7 @@ Plastic 会观察工作区中是否有更改以加快操作速度。这种情况
 == ExecutableOpenFileDialogFilterNoWin ==
 所有文件 (*.*)|*.*
 
-== ValidatePreviewTypeName == 
+== ValidatePreviewTypeName ==
 请键入名称
 
 == ValidatePreviewAddExtension ==
@@ -6070,6 +6073,9 @@ https://www.plasticscm.com/download/help/locking
 == UserChooserDialogTitle ==
 请从以下列表中选择一个用户或组：
 
+== SelectUserGroupDialogTitle ==
+Select user or group
+
 == NoUserSelectedErrorMessage ==
 从列表中选择一个用户
 
@@ -6331,7 +6337,7 @@ Do not show this message again
 == RetrievingRepositoryServerInfoProgress ==
 正在检索存储库服务器信息...
 
-== CalculatingPermissionsInfo == 
+== CalculatingPermissionsInfo ==
 正在计算权限信息...
 
 == RetrievingSecuredPathsProgress ==
@@ -6367,6 +6373,9 @@ Do not show this message again
 == MainWindowTitleForLinux ==
 Plastic SCM - 工作区：{0}
 
+== MainWindowTitleForAvalonia ==
+工作区：{0} - Plastic SCM
+
 == GluonFilePlasticLinkText ==
 获取链接 - 复制此文件的链接，以便与他人共享
 
@@ -6392,7 +6401,7 @@ Plastic SCM - 工作区：{0}
 使用浏览器完成登录。
 
 == Or ==
-或 
+或
 
 == OrganizationNameWatermark ==
 您的组织名称

@@ -1,6 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
+using Codice.Client.BaseCommands.EventTracking;
 using Codice.CM.Common;
 using PlasticGui.WorkspaceWindow.QueryViews.Changesets;
 using PlasticGui;
@@ -17,14 +18,16 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         }
 
         internal ChangesetsViewMenu(
+            WorkspaceInfo wkInfo,
             IChangesetMenuOperations changesetMenuOperations,
             IMenuOperations menuOperations,
             bool isGluonMode)
         {
+            mWkInfo = wkInfo;
             mChangesetMenuOperations = changesetMenuOperations;
             mMenuOperations = menuOperations;
             mIsGluonMode = isGluonMode;
-
+            
             BuildComponents();
         }
 
@@ -39,7 +42,12 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         void DiffChangesetMenuItem_Click()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+            if (LaunchTool.ShowDownloadPlasticExeWindow(
+                   mWkInfo,
+                   mIsGluonMode,
+                   TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffChangeset,
+                   TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromDiffChangeset,
+                   TrackFeatureUseEvent.Features.CancelPlasticInstallationFromDiffChangeset))
                 return;
 
             mChangesetMenuOperations.DiffChangeset();
@@ -47,7 +55,12 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         void DiffSelectedChangesetsMenuItem_Click()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+            if (LaunchTool.ShowDownloadPlasticExeWindow(
+                mWkInfo,
+                mIsGluonMode,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffSelectedChangesets,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromDiffSelectedChangesets,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromDiffSelectedChangesets))
                 return;
 
             mChangesetMenuOperations.DiffSelectedChangesets();
@@ -199,6 +212,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         GUIContent mDiffSelectedChangesetsMenuItemContent;
         GUIContent mDiffBranchMenuItemContent;
 
+        readonly WorkspaceInfo mWkInfo;
         readonly IChangesetMenuOperations mChangesetMenuOperations;
         readonly IMenuOperations mMenuOperations;
         readonly bool mIsGluonMode;

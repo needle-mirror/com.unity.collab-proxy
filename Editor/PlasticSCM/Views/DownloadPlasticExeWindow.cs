@@ -2,23 +2,35 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
+using Codice.Client.BaseCommands.EventTracking;
+using Codice.Client.Common;
 using Codice.CM.Common;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI.UIElements;
 using Unity.PlasticSCM.Editor.Views.Welcome;
-using Codice.Client.Common;
 using Unity.PlasticSCM.Editor.Tool;
 
 namespace Unity.PlasticSCM.Editor.Views
 {
     internal class DownloadPlasticExeWindow :
-        EditorWindow
+        EditorWindow,
+        DownloadAndInstallOperation.INotify
     {
-        internal static void ShowWindow(bool isGluonMode)
-        {
-            sIsGluonMode = isGluonMode;
+        internal bool IsPlasticInstalling { get { return mIsPlasticInstalling; } }
 
+        internal static void ShowWindow(
+            RepositorySpec repSpec,
+            bool isGluonMode,
+            string installCloudFrom,
+            string installEnterpriseFrom,
+            string cancelInstallFrom)
+        {
             DownloadPlasticExeWindow window = GetWindow<DownloadPlasticExeWindow>();
+            window.mRepSpec = repSpec;
+            window.mIsGluonMode = isGluonMode;
+            window.mInstallCloudFrom = installCloudFrom;
+            window.mInstallEnterpriseFrom = installEnterpriseFrom;
+            window.mCancelInstallFrom = cancelInstallFrom;
 
             window.titleContent = new GUIContent(
                 PlasticLocalization.GetString(PlasticLocalization.Name.PlasticSCM));
@@ -29,6 +41,15 @@ namespace Unity.PlasticSCM.Editor.Views
                 window.minSize = window.maxSize = new Vector2(700, 230);
 
             window.Show();
+        }
+        void DownloadAndInstallOperation.INotify.InstallationStarted()
+        {
+            mIsPlasticInstalling = true;
+        }
+
+        void DownloadAndInstallOperation.INotify.InstallationFinished()
+        {
+            mIsPlasticInstalling = false;
         }
 
         void OnEnable()
@@ -53,24 +74,33 @@ namespace Unity.PlasticSCM.Editor.Views
 
         void DownloadCloudEditionButton_Clicked()
         {
+            TrackFeatureUseEvent.For(mRepSpec, mInstallCloudFrom);
+
             DownloadAndInstallOperation.Run(
                 Edition.Cloud,
                 mInstallerFile,
-                mProgressControls);
+                mProgressControls,
+                this);
 
             EditorApplication.update += CheckForPlasticExe;
         }
 
         void DownloadEnterpriseEditionButton_Clicked()
         {
+            TrackFeatureUseEvent.For(mRepSpec, mInstallEnterpriseFrom);
+
             DownloadAndInstallOperation.Run(
                 Edition.Enterprise,
                 mInstallerFile,
-                mProgressControls);
+                mProgressControls,
+                this);
         }
 
         void CancelButton_Clicked()
         {
+            if (!IsExeAvailable.ForMode(mIsGluonMode))
+                TrackFeatureUseEvent.For(mRepSpec, mCancelInstallFrom);
+
             Close();
         }
 
@@ -80,7 +110,7 @@ namespace Unity.PlasticSCM.Editor.Views
             // we do not want to say install is done too early
             // when progress control finishes, cancel button will be enabled
             // then we can check for exe existing
-            if (mCancelButton.enabledSelf && IsExeAvailable.ForMode(sIsGluonMode))
+            if (mCancelButton.enabledSelf && IsExeAvailable.ForMode(mIsGluonMode))
             {
                 mMessageLabel.text = "Plastic SCM installed. You can now use the feature.";
                 mCancelButton.text =
@@ -147,9 +177,15 @@ namespace Unity.PlasticSCM.Editor.Views
             rootVisualElement.LoadStyle(typeof(DownloadPlasticExeWindow).Name);
         }
 
-        static bool sIsGluonMode;
+        bool mIsGluonMode;
+        string mInstallCloudFrom;
+        string mInstallEnterpriseFrom;
+        string mCancelInstallFrom;
+        RepositorySpec mRepSpec;
 
         string mInstallerFile;
+        
+        bool mIsPlasticInstalling = false;
 
         Label mRequireMessageLabel;
         Label mMessageLabel;

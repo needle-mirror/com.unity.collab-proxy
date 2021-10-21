@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
+using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Commands;
 using Codice.Client.Common;
 using Codice.Client.Common.Threading;
@@ -15,7 +16,6 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.Views.Diff.Dialogs;
 using Unity.PlasticSCM.Editor.Tool;
-using Codice.Client.BaseCommands.EventTracking;
 
 namespace Unity.PlasticSCM.Editor.Views.Diff
 {
@@ -105,7 +105,12 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void IDiffTreeViewMenuOperations.Diff()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+            if(LaunchTool.ShowDownloadPlasticExeWindow(
+                mWkInfo,
+                mIsGluonMode,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffRevision,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromDiffRevision,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromDiffRevision))
                 return;
 
             ClientDiffInfo clientDiffInfo =
@@ -121,6 +126,14 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void IDiffTreeViewMenuOperations.History()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(
+                mWkInfo,
+                mIsGluonMode,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromShowHistory,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromShowHistory,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromShowHistory))
+                return;
+
             ClientDiffInfo clientDiffInfo =
                 DiffSelection.GetSelectedDiff(mDiffTreeView);
 
@@ -173,7 +186,12 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void DiffTreeViewMenu.IMetaMenuOperations.DiffMeta()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(mIsGluonMode))
+            if (LaunchTool.ShowDownloadPlasticExeWindow(
+                mWkInfo,
+                mIsGluonMode,
+                TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffRevision,
+                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromDiffRevision,
+                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromDiffRevision))
                 return;
 
             ClientDiffInfo clientDiffInfo =
@@ -202,6 +220,14 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void DiffTreeViewMenu.IMetaMenuOperations.HistoryMeta()
         {
+            if (LaunchTool.ShowDownloadPlasticExeWindow(
+               mWkInfo,
+               mIsGluonMode,
+               TrackFeatureUseEvent.Features.InstallPlasticCloudFromShowHistory,
+               TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromShowHistory,
+               TrackFeatureUseEvent.Features.CancelPlasticInstallationFromShowHistory))
+                return;
+
             ClientDiffInfo clientDiffInfo =
                 DiffSelection.GetSelectedDiff(mDiffTreeView);
 
@@ -426,8 +452,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             mSearchField = new SearchField();
             mSearchField.downOrUpArrowKeyPressed += SearchField_OnDownOrUpArrowKeyPressed;
 
-            mDiffTreeView = new DiffTreeView(
-                new DiffTreeViewMenu(this, this, mIsGluonMode));
+            mDiffTreeView = new DiffTreeView(new DiffTreeViewMenu(this, this));
             mDiffTreeView.Reload();
         }
 

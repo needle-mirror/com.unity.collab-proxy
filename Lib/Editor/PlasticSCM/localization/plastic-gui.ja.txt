@@ -498,9 +498,9 @@ Checkin Anyway
 
 == CheckinAutoUpdateMergeRequestMessage ==
 ワークスペース内で独自の変更を開始した後に、操作しているブランチに新しい変更が出現しました。変更をチェックインする前に、これらの変更をワークスペースに取り込む必要があります。
-      
+
 ブランチ内の変更はワークスペース内の変更と競合しないため、チェックインする前にワークスペースを単純に更新できます。
-      
+
 ワークスペースを更新し、変更を今すぐチェックインしますか?
 
 == UpdateWorkspaceMergeRequest ==
@@ -529,7 +529,7 @@ Checkin Anyway
 == CouldNotGetOrganizationNameFromCredentials ==
 資格情報が無効です。組織名を取得できませんでした
 
-== CouldNotGetOrganizationName == 
+== CouldNotGetOrganizationName ==
 Cloud サーバーから組織名を取得できません。資格情報が間違っている可能性があります。設定ツールをもう一度実行して、新しい資格情報を入力してください (「{0} --configure」)
 
 == RepositoryServerIsNotAvailable ==
@@ -2778,7 +2778,7 @@ Unix ライクなファイルシステムにのみ適用されます
 == DiffToolsCommandHelp ==
 外部の差分ツールを呼び出す際には、次のコマンドラインパラメーターを使用できます。
             指定されたファイルに比較対象のリビジョンのコンテンツがあるかどうかは、ユーザーが確認する必要があります。
-    
+
             @sourcefile:左側のパネルにコンテンツが表示されるファイルのフルパス。
             @destinationfile:右側のパネルにコンテンツが表示されるファイルのフルパス。
 
@@ -2800,7 +2800,7 @@ Unix ライクなファイルシステムにのみ適用されます
 
 == MergeToolsCommandHelp ==
 コマンドラインで外部のマージツールを呼び出す際には、次の変数を引数として使用できます:
-  
+
             @sourcefile:ソースマージファイルのフルパス。
             @destinationfile:同期先マージファイルのパス。
             @basefile:共通祖先マージファイルのパス。
@@ -3855,7 +3855,7 @@ Mergetool の使用方法
                     autosave:-as | --autosave
                     resultFile:{-r | --result}=<filename>
                     mergeType:{-m | --mergeresolutiontype}={onlyone | onlysrc | onlydst | try | forced}
-        
+
 
                 generalOptions:[<defaultEncoding>] [<comparisonMethod>] [<resultEncoding>]
 
@@ -4719,6 +4719,9 @@ SSL を使用
 == UserProfileWrongAuthMode ==
 ユーザープロファイルは、LDAP またはユーザー/パスワード認証を使用してのみ設定できます。
 
+== UserProfileCloudServer ==
+The user profile can't be configured for cloud servers.
+
 == LoadingUserProfile ==
 ユーザープロファイルをロードしています...
 
@@ -5039,7 +5042,7 @@ Plastic Cloud への接続に使用するユーザー名とパスワード (plas
 == EOLMethod ==
 EOL を無視
 
-== WhitespacesMethod == 
+== WhitespacesMethod ==
 空白を無視
 
 == EOLWhitespacesMethod ==
@@ -5101,7 +5104,7 @@ EOL と空白を無視
 == ExecutableOpenFileDialogFilterNoWin ==
 すべてのファイル (*.*)|*.*
 
-== ValidatePreviewTypeName == 
+== ValidatePreviewTypeName ==
 名前を入力してください
 
 == ValidatePreviewAddExtension ==
@@ -6070,6 +6073,9 @@ Xlink されたファイルに対するレビューのコメントはまだサ�
 == UserChooserDialogTitle ==
 下のリストからユーザーまたはグループを選択してください:
 
+== SelectUserGroupDialogTitle ==
+Select user or group
+
 == NoUserSelectedErrorMessage ==
 リストからユーザーを選択してください
 
@@ -6331,7 +6337,7 @@ Do not show this message again
 == RetrievingRepositoryServerInfoProgress ==
 リポジトリサーバー情報を取得しています...
 
-== CalculatingPermissionsInfo == 
+== CalculatingPermissionsInfo ==
 権限情報を計算しています...
 
 == RetrievingSecuredPathsProgress ==
@@ -6366,6 +6372,9 @@ Do not show this message again
 
 == MainWindowTitleForLinux ==
 Plastic SCM - ワークスペース:{0}
+
+== MainWindowTitleForAvalonia ==
+ワークスペース:{0} - Plastic SCM
 
 == GluonFilePlasticLinkText ==
 リンクを取得 - このファイルへのリンクをコピーし、他のユーザーと簡単に共有できます

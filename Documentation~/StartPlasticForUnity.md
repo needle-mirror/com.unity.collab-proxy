@@ -1,4 +1,4 @@
-# Getting started with Plastic SCM for Unity (beta)
+# Getting started with Plastic SCM for Unity
 
 **Note**: Plastic SCM for Unity is available via the Version Control package in the Unity Package Manager.
 

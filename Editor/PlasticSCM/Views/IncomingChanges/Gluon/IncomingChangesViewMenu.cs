@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
+using Codice.Client.BaseCommands.EventTracking;
+using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.Gluon.WorkspaceWindow.Views.IncomingChanges;
-using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.Tool;
+using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 {
@@ -18,9 +20,11 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         }
 
         internal IncomingChangesViewMenu(
+            WorkspaceInfo wkInfo,
             IIncomingChangesViewMenuOperations incomingChangesViewMenuOperations,
             IMetaMenuOperations incomingChangesMetaMenuOperations)
         {
+            mWkInfo = wkInfo;
             mIncomingChangesViewMenuOperations = incomingChangesViewMenuOperations;
             mIncomingChangesMetaMenuOperations = incomingChangesMetaMenuOperations;
 
@@ -38,9 +42,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         void MergeSelectedFilesMenuItem_Click()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(false))
-                return;
-
             mIncomingChangesViewMenuOperations.MergeContributors();
         }
 
@@ -215,6 +216,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         GUIContent mDiffMetaYoursWithIncomingMenuItemContent;
         GUIContent mDiffMetaIncomingChangesMenuItemContent;
 
+        readonly WorkspaceInfo mWkInfo;
         readonly IIncomingChangesViewMenuOperations mIncomingChangesViewMenuOperations;
         readonly IMetaMenuOperations mIncomingChangesMetaMenuOperations;
     }

@@ -16,35 +16,6 @@ namespace Unity.PlasticSCM.Editor.WebApi
     {
         internal static class PlasticScm
         {
-            internal static UnityPackageBetaEnrollResponse IsBetaEnabled(string bearerToken)
-            {
-                Uri endpoint = mWebApiUris.GetFullUri(IsBetaEnabledEndpoint);
-
-                try
-                {
-                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(endpoint);
-                    request.Method = "GET";
-                    request.ContentType = "application/json";
-                    request.Headers.Add(
-                        HttpRequestHeader.Authorization,
-                        string.Format("Bearer {0}", bearerToken));
-
-                    return GetResponse<UnityPackageBetaEnrollResponse>(request);
-                }
-                catch (Exception ex)
-                {
-                    mLog.ErrorFormat(
-                        "Unable to retrieve is beta enabled '{0}': {1}",
-                        endpoint.ToString(), ex.Message);
-
-                    mLog.DebugFormat(
-                        "StackTrace:{0}{1}",
-                        Environment.NewLine, ex.StackTrace);
-
-                    return null;
-                }
-            }
-
             internal static TokenExchangeResponse TokenExchange(string unityAccessToken)
             {
                 Uri endpoint = mWebApiUris.GetFullUri(

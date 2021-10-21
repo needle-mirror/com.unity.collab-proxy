@@ -33,6 +33,9 @@ namespace Unity.PlasticSCM.Editor.UI
             internal static Color Red = new Color(194f / 255, 51f / 255, 62f / 255);
             internal static Color Warning = new Color(255f / 255, 255f / 255, 176f / 255);
             internal static Color Splitter = new Color(100f / 255, 100f / 255, 100f / 255);
+            internal static Color BarBorder = EditorGUIUtility.isProSkin ?
+                (Color)new Color32(35, 35, 35, 255) :
+                (Color)new Color32(153, 153, 153, 255);
 #if UNITY_2019
             internal static Color InspectorHeaderBackground = (EditorGUIUtility.isProSkin) ?
                 new Color(60f / 255, 60f / 255, 60f / 255) :
@@ -338,7 +341,7 @@ namespace Unity.PlasticSCM.Editor.UI
             internal static readonly LazyStyle PendingConflictsLabel = new LazyStyle(() =>
             {
                 var style = new GUIStyle(EditorStyles.label);
-                style.fontSize = 10;
+                style.fontSize = 11;
                 style.fontStyle = FontStyle.Bold;
                 return style;
             });
@@ -360,7 +363,8 @@ namespace Unity.PlasticSCM.Editor.UI
             internal static readonly LazyStyle ChangesToApplySummaryLabel = new LazyStyle(() =>
             {
                 var style = new GUIStyle(EditorStyles.label);
-                style.fontSize = 10;
+                style.fontSize = 11;
+                style.padding.top = 2;
                 return style;
             });
 
@@ -368,10 +372,18 @@ namespace Unity.PlasticSCM.Editor.UI
                 = new LazyStyle(() =>
             {
                 var style = new GUIStyle(EditorStyles.label);
-                style.fontSize = 10;
+                style.fontSize = 11;
 #if !UNITY_2019_1_OR_NEWER
                 style.margin = new RectOffset(0, 0, 0, 0);
 #endif
+                return style;
+            });
+
+            internal static readonly LazyStyle ActionToolbar = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.toolbar);
+                style.fixedHeight = 50f;
+                style.padding = new RectOffset(5, 5, 5, 5);
                 return style;
             });
         }

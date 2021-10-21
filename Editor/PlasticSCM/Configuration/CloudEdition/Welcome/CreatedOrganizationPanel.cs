@@ -39,6 +39,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         void ContinueButton_Clicked()
         {
+            mParentWindow.JoinOrganizationAndWelcomePage(mOrganizationName);
             mParentWindow.Close();
         }
 
