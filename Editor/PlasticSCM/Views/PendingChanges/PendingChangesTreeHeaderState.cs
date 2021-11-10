@@ -140,49 +140,56 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                         width = 800,
                         headerContent = new GUIContent(
                             GetColumnName(PendingChangesTreeColumn.Item)),
-                        minWidth = 200
+                        minWidth = 200,
+                        sortingArrowAlignment = TextAlignment.Right
                     },
                     new Column()
                     {
                         width = 200,
                         headerContent = new GUIContent(
                             GetColumnName(PendingChangesTreeColumn.Status)),
-                        minWidth = 80
+                        minWidth = 80,
+                        sortingArrowAlignment = TextAlignment.Right
                     },
                     new Column()
                     {
                         width = 80,
                         headerContent = new GUIContent(
                             GetColumnName(PendingChangesTreeColumn.Size)),
-                        minWidth = 45
+                        minWidth = 45,
+                        sortingArrowAlignment = TextAlignment.Right
                     },
                     new Column()
                     {
                         width = 70,
                         headerContent = new GUIContent(
                             GetColumnName(PendingChangesTreeColumn.Extension)),
-                        minWidth = 50
+                        minWidth = 50,
+                        sortingArrowAlignment = TextAlignment.Right
                     },
                     new Column()
                     {
                         width = 60,
                         headerContent = new GUIContent(
                             GetColumnName(PendingChangesTreeColumn.Type)),
-                        minWidth = 45
+                        minWidth = 45,
+                        sortingArrowAlignment = TextAlignment.Right
                     },
                     new Column()
                     {
                         width = 330,
                         headerContent = new GUIContent(
                             GetColumnName(PendingChangesTreeColumn.DateModififed)),
-                        minWidth = 100
+                        minWidth = 100,
+                        sortingArrowAlignment = TextAlignment.Right
                     },
                     new Column()
                     {
                         width = 210,
                         headerContent = new GUIContent(
                             GetColumnName(PendingChangesTreeColumn.Repository)),
-                        minWidth = 90
+                        minWidth = 90,
+                        sortingArrowAlignment = TextAlignment.Right
                     }
                 };
         }

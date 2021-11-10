@@ -1570,7 +1570,12 @@ Go to working changeset
 Only relevant
 
 == OnlyRelevantTooltip ==
-Show only relevant changesets
+Mostrar sólo los changesets que definen la estructura del diagrama:
+ - el primero y último de una rama
+ - el padre de una rama
+ - el origen y destino de un merge
+ - aquellos que están etiquetados
+ - el changeset actual
 
 == ResolutionMethodColumn ==
 Resolution method
@@ -2766,6 +2771,9 @@ Miscellaneous
 Update and Checkin operations set files as read-only
 
 == CompareChangedFilesContents ==
+Check content (hash) when the file timestamp is modified to set it as "Changed"
+
+== CompareChangedFilesContentsForMac ==
 Check content (hash) when the file timestamp is modified
 to set it as "Changed"
 
@@ -5434,8 +5442,8 @@ Inicia sesión con Unity ID
 == SignInWithEmail ==
 Inicia sesión con Email
 
-== SignInWithOkta ==
-Inicia sesión con Okta
+== SignInWith ==
+Inicia sesión con {0}
 
 == SignInWithSSO ==
 Inicia sesión con SSO
@@ -7191,6 +7199,15 @@ Cmd+F
 == PlasticSearchShortcutForLinux ==
 Ctrl+F
 
+== PlasticRefreshShortcutForWindows ==
+F5
+
+== PlasticRefreshShortcutForMacOS ==
+Cmd+R
+
+== PlasticRefreshShortcutForLinux ==
+F5
+
 == BranchExplorerSearchFieldShortcutsTooltipForWindows ==
 Keyboard shortcuts:
   Enter: focus the next search result
@@ -7284,5 +7301,14 @@ Ir a {0}
 == CheckoutChangesetComment ==
 El changeset seleccionado representa los cambios en su workspace, que todavía no es está protegido en el repositorio.
 
-== BranchesListView ==
-Branches List View
+== NoIncomingChanges ==
+No incoming changes
+
+== WorkspaceIsUpToDate ==
+Workspace is up to date
+
+== NoPendingChanges ==
+No pending changes
+
+== CheckinCompleted ==
+Checkin successfully completed

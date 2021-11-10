@@ -28,7 +28,8 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
             result = CalculateStatus(
                 fullPath,
                 mWkInfo.ClientPath,
-                FilterManager.Get().GetIgnoredFilter());
+                FilterManager.Get().GetIgnoredFilter(),
+                FilterManager.Get().GetHiddenChangesFilter());
 
             mStatusByPathCache.Add(fullPath, result);
 
@@ -45,7 +46,8 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
         static AssetStatus CalculateStatus(
             string fullPath,
             string wkPath,
-            IgnoredFilesFilter ignoredFilter)
+            IgnoredFilesFilter ignoredFilter,
+            HiddenChangesFilesFilter hiddenChangesFilter)
         {
             if (!IsOnWorkspace(fullPath, wkPath))
                 return AssetStatus.None;
@@ -66,6 +68,9 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
             if (CheckWorkspaceTreeNodeStatus.IsCheckedOut(treeNode) &&
                 !CheckWorkspaceTreeNodeStatus.IsDirectory(treeNode))
                 result |= AssetStatus.Checkout;
+
+            if (hiddenChangesFilter.IsHiddenChanged(fullPath))
+                result |= AssetStatus.HiddenChanged;
 
             return result;
         }

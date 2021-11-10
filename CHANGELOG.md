@@ -1,6 +1,31 @@
 # Changelog
 All notable changes to this package will be documented in this file.
 
+## [1.15.4] - 2021-11-10
+
+Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!
+If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
+Removing a previously added Plastic SCM Asset Store Plug-In:
+- Select the PlasticSCM folder in the Assets\Plugins folder on the Project tab, then click Edit > Delete
+- Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
+
+### Added
+- Add option to "Add to ignore file" in context menu in the project view
+- Added empty state message for Pending Changes tab
+- Added success state message for Pending Changes tab
+- Added metrics for Branches tab functionalities
+
+### Changed
+- Removed pinstriping in the Gluon Incoming Changes window
+- Removed the “Nothing to download” bar from the Incoming Changes window when there are no items to download
+- Changed the default metadata columns shown in the Incoming Changes screen
+- Updated the alignment of sorting arrows to the right of the column
+
+### Fixed
+- Fixed UI overlays in Project view missing on changed assets when force checkout is disabled
+- Fixed console error when selecting object in Scene view hierarchy or creating a new asset
+- Fixed NullReferenceException after closing the Plastic SCM window
+
 ## [1.15.1] - 2021-10-21
 
 Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!

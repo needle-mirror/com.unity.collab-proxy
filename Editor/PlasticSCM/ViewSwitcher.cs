@@ -44,9 +44,10 @@ namespace Unity.PlasticSCM.Editor
             PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges,
             NewIncomingChangesUpdater developerNewIncomingChangesUpdater,
             GluonNewIncomingChangesUpdater gluonNewIncomingChangesUpdater,
-            IIncomingChangesNotificationPanel incomingChangesNotificationPanel,
+            IIncomingChangesNotifier incomingChangesNotifier,
             IAssetStatusCache assetStatusCache,
             NotificationDrawer notificationDrawer,
+            StatusBar statusBar,
             EditorWindow parentWindow)
         {
             mWkInfo = wkInfo;
@@ -55,9 +56,10 @@ namespace Unity.PlasticSCM.Editor
             mPendingChanges = pendingChanges;
             mDeveloperNewIncomingChangesUpdater = developerNewIncomingChangesUpdater;
             mGluonNewIncomingChangesUpdater = gluonNewIncomingChangesUpdater;
-            mIncomingChangesNotificationPanel = incomingChangesNotificationPanel;
+            mIncomingChangesNotifier = incomingChangesNotifier;
             mAssetStatusCache = assetStatusCache;
             mNotificationDrawer = notificationDrawer;
+            mStatusBar = statusBar;
             mParentWindow = parentWindow;
 
             mPendingChangesTabButton = new TabButton();
@@ -389,11 +391,12 @@ namespace Unity.PlasticSCM.Editor
                     this,
                     this,
                     this,
+                    this,
                     mPendingChanges,
                     mDeveloperNewIncomingChangesUpdater,
                     mGluonNewIncomingChangesUpdater,
                     mAssetStatusCache,
-                    mNotificationDrawer,
+                    mStatusBar,
                     mParentWindow);
 
                 mViewHost.AddRefreshableView(
@@ -425,7 +428,7 @@ namespace Unity.PlasticSCM.Editor
                         mViewHost,
                         mWorkspaceWindow,
                         mGluonNewIncomingChangesUpdater,
-                        (Gluon.IncomingChangesNotificationPanel)mIncomingChangesNotificationPanel,
+                        (Gluon.IncomingChangesNotifier)mIncomingChangesNotifier,
                         mParentWindow) as IIncomingChangesTab :
                     new Views.IncomingChanges.Developer.IncomingChangesTab(
                         mWkInfo,
@@ -733,8 +736,9 @@ namespace Unity.PlasticSCM.Editor
 
         readonly EditorWindow mParentWindow;
         readonly NotificationDrawer mNotificationDrawer;
+        readonly StatusBar mStatusBar;
         readonly IAssetStatusCache mAssetStatusCache;
-        readonly IIncomingChangesNotificationPanel mIncomingChangesNotificationPanel;
+        readonly IIncomingChangesNotifier mIncomingChangesNotifier;
         readonly GluonNewIncomingChangesUpdater mGluonNewIncomingChangesUpdater;
         readonly NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
         readonly PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges mPendingChanges;

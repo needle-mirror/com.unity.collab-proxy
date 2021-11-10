@@ -227,6 +227,18 @@ namespace Unity.PlasticSCM.Editor.UI
                 style.fontStyle = FontStyle.Bold;
                 return style;
             });
+
+            internal static readonly LazyStyle StatusLabel = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.label);
+                style.alignment = TextAnchor.MiddleCenter;
+                style.fontSize = 14;
+                style.padding = new RectOffset(
+                    0, 0, 
+                    UnityConstants.TREEVIEW_STATUS_CONTENT_PADDING, UnityConstants.TREEVIEW_STATUS_CONTENT_PADDING);
+                style.stretchWidth = false;
+                return style;
+            });
         }
 
         public static class Inspector
@@ -248,20 +260,6 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal static class PlasticWindow
         {
-            internal static readonly LazyStyle StatusBarLabel = new LazyStyle(() =>
-            {
-                var style = new GUIStyle(EditorStyles.label);
-                return style;
-            });
-
-            internal static readonly LazyStyle StatusBarIcon = new LazyStyle(() =>
-            {
-                var style = new GUIStyle(EditorStyles.label);
-                style.padding.left = 0;
-                style.padding.right = 0;
-                return style;
-            });
-
             internal static readonly LazyStyle TabButton = new LazyStyle(() =>
             {
                 GUIStyle result = new GUIStyle(EditorStyles.label);
@@ -278,6 +276,37 @@ namespace Unity.PlasticSCM.Editor.UI
                 return CreateUnderlineStyle(
                     Colors.TabUnderline,
                     UnityConstants.ACTIVE_TAB_UNDERLINE_HEIGHT);
+            });
+        }
+
+        internal static class StatusBar
+        {
+            internal static readonly LazyStyle Icon = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.label);
+                style.padding.left = 0;
+                style.padding.right = 0;
+                return style;
+            });
+
+            internal static readonly LazyStyle Label = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.label);
+                return style;
+            });
+
+            internal static readonly LazyStyle NotificationLabel = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.label);
+                style.fontStyle = FontStyle.Bold;
+                return style;
+            });
+
+            internal static readonly LazyStyle Button = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.miniButtonLeft);
+                style.fixedWidth = 60;
+                return style;
             });
         }
 

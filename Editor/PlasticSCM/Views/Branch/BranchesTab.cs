@@ -1,24 +1,23 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System;
+﻿using System;
+using System.Collections.Generic;
 
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 using Codice.CM.Common;
+using Codice.Client.BaseCommands.EventTracking;
+using Codice.Client.Common.Threading;
 
 using PlasticGui;
-
-using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.Progress;
-using Unity.PlasticSCM.Editor.UI.Tree;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.QueryViews;
 using PlasticGui.WorkspaceWindow.QueryViews.Branches;
 using PlasticGui.WorkspaceWindow.Update;
-using Codice.Client.Common.Threading;
 using Unity.PlasticSCM.Editor.AssetUtils;
+using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.UI.Progress;
+using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.Branches.Dialogs;
 using Unity.PlasticSCM.Editor.Views.Changesets;
 
@@ -330,7 +329,12 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 repSpec,
                 branchInfo);
 
-            mBranchOperations.CreateBranch(branchCreationData);
+            mBranchOperations.CreateBranch(branchCreationData, () =>
+            {
+                TrackFeatureUseEvent.For(
+                    repSpec,
+                    TrackFeatureUseEvent.Features.CreateBranch);
+            });
         }
 
         void IBranchMenuOperations.SwitchToBranch()
@@ -341,7 +345,13 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             mBranchOperations.SwitchToBranch(
                 repSpec,
                 branchInfo,
-                RefreshAsset.UnityAssetDatabase);
+                () =>
+                {
+                    TrackFeatureUseEvent.For(
+                        repSpec,
+                        TrackFeatureUseEvent.Features.SwitchBranch);
+                    RefreshAsset.UnityAssetDatabase();
+                });
         }
 
         void IBranchMenuOperations.MergeBranch() { }
@@ -374,15 +384,26 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 branchInfo,
                 mParentWindow);
 
-            mBranchOperations.RenameBranch(branchRenameData);
+            mBranchOperations.RenameBranch(branchRenameData, () =>
+            {
+                TrackFeatureUseEvent.For(
+                    repSpec,
+                    TrackFeatureUseEvent.Features.RenameBranch);
+            });
         }
 
         void IBranchMenuOperations.DeleteBranch()
         {
+            RepositorySpec repSpec = BranchesSelection.GetSelectedRepository(mBranchesListView);
             List<RepositorySpec> repositories = BranchesSelection.GetSelectedRepositories(mBranchesListView);
             List<BranchInfo> branchesToDelete = BranchesSelection.GetSelectedBranches(mBranchesListView);
 
-            mBranchOperations.DeleteBranch(repositories, branchesToDelete);
+            mBranchOperations.DeleteBranch(repositories, branchesToDelete, () =>
+            {
+                TrackFeatureUseEvent.For(
+                    repSpec,
+                    TrackFeatureUseEvent.Features.DeleteBranch);
+            });
         }
 
         void IBranchMenuOperations.CreateCodeReview() { }

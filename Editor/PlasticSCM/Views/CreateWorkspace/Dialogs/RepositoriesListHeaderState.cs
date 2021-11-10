@@ -65,6 +65,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                             GetColumnName(RepositoriesListColumn.Name)),
                         minWidth = 200,
                         allowToggleVisibility = false,
+                        sortingArrowAlignment = TextAlignment.Right
                     },
                     new Column()
                     {
@@ -73,6 +74,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                             GetColumnName(RepositoriesListColumn.Server)),
                         minWidth = 200,
                         allowToggleVisibility = false,
+                        sortingArrowAlignment = TextAlignment.Right
                     }
                 };
         }

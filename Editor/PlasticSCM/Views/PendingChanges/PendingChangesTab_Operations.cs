@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using Codice.Client.BaseCommands;
 using Codice.Client.BaseCommands.EventTracking;
@@ -97,7 +98,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 dependenciesCandidates,
                 CommentText,
                 keepItemsLocked,
-                RefreshAsset.UnityAssetDatabase);
+                EndCheckin);
         }
 
         void Checkin()
@@ -199,9 +200,32 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         void EndCheckin()
         {
-            // TODO: Localization
-            mNotificationDrawer.Notify("Checkin successfully completed", UnityEditor.MessageType.None, Images.Name.StepOk);
+            ShowCheckinSuccess();
+
             RefreshAsset.UnityAssetDatabase();
+        }
+
+        void ShowCheckinSuccess()
+        {
+            bool isTreeViewEmpty = mPendingChangesTreeView.GetSelectedItemCount() ==
+                mPendingChangesTreeView.GetTotalItemCount();
+
+            if (isTreeViewEmpty)
+            {
+                mIsCheckedInSuccessful = true;
+                mClearCheckinSuccessAction.Ping();
+                return;
+            }
+
+            mStatusBar.Notify(
+                PlasticLocalization.GetString(PlasticLocalization.Name.CheckinCompleted), 
+                UnityEditor.MessageType.None, 
+                Images.Name.StepOk);
+        }
+
+        void ClearCheckinSuccess()
+        {
+            mIsCheckedInSuccessful = false;
         }
 
         static bool CheckEmptyOperation(List<ChangeInfo> elements)

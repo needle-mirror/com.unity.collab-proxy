@@ -17,6 +17,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
         DeletedOnServer = 1 << 9,
         Locked          = 1 << 10,
         LockedRemote    = 1 << 11,
+        HiddenChanged   = 1 << 12,
     }
 
     internal class LockStatusData
@@ -38,6 +39,16 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
 
     internal class ClassifyAssetStatus
     {
+        internal static bool IsPrivate(AssetStatus status)
+        {
+            return ContainsAny(status, AssetStatus.Private);
+        }
+
+        internal static bool IsIgnored(AssetStatus status)
+        {
+            return ContainsAny(status, AssetStatus.Ignored);
+        }
+
         internal static bool IsControlled(AssetStatus status)
         {
             return ContainsAny(status, AssetStatus.Controlled);
@@ -61,6 +72,11 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
         internal static bool IsCheckedOut(AssetStatus status)
         {
             return ContainsAny(status, AssetStatus.Checkout);
+        }
+
+        internal static bool IsHiddenChanged(AssetStatus status)
+        {
+            return ContainsAny(status, AssetStatus.HiddenChanged);
         }
 
         static bool ContainsAny(AssetStatus status, AssetStatus matchTo)

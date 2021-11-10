@@ -5336,8 +5336,8 @@ Unity ID로 로그인
 == SignInWithEmail ==
 이메일로 로그인
 
-== SignInWithOkta ==
-Okta로 로그인
+== SignInWith ==
+{0}로 로그인
 
 == SignInWithSSO ==
 SSO로 로그인

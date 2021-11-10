@@ -76,27 +76,31 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                             GetColumnName(IncomingChangesTreeColumn.Path)),
                         minWidth = 200,
                         allowToggleVisibility = false,
+                        sortingArrowAlignment = TextAlignment.Right
                     },
                     new Column()
                     {
                         width = 150,
                         headerContent = new GUIContent(
                             GetColumnName(IncomingChangesTreeColumn.LastEditedBy)),
-                        minWidth = 80
+                        minWidth = 80,
+                        sortingArrowAlignment = TextAlignment.Right
                     },
                     new Column()
                     {
                         width = 80,
                         headerContent = new GUIContent(
                             GetColumnName(IncomingChangesTreeColumn.Size)),
-                        minWidth = 45
+                        minWidth = 45,
+                        sortingArrowAlignment = TextAlignment.Right
                     },
                     new Column()
                     {
                         width = 260,
                         headerContent = new GUIContent(
                             GetColumnName(IncomingChangesTreeColumn.DateModififed)),
-                        minWidth = 100
+                        minWidth = 100,
+                        sortingArrowAlignment = TextAlignment.Right
                     }
                 };
         }

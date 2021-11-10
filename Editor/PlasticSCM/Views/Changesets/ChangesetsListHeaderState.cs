@@ -79,28 +79,32 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                     minWidth = UnityConstants.ChangesetsColumns.CHANGESET_NUMBER_MIN_WIDTH,
                     headerContent = new GUIContent(
                         GetColumnName(ChangesetsListColumn.Name)),
-                    allowToggleVisibility = false
+                    allowToggleVisibility = false,
+                    sortingArrowAlignment = TextAlignment.Right
                 },
                 new Column()
                 {
                     width = UnityConstants.ChangesetsColumns.CREATION_DATE_WIDTH,
                     minWidth = UnityConstants.ChangesetsColumns.CREATION_DATE_MIN_WIDTH,
                     headerContent = new GUIContent(
-                        GetColumnName(ChangesetsListColumn.CreationDate))
+                        GetColumnName(ChangesetsListColumn.CreationDate)),
+                    sortingArrowAlignment = TextAlignment.Right
                 },
                 new Column()
                 {
                     width = UnityConstants.ChangesetsColumns.CREATED_BY_WIDTH,
                     minWidth = UnityConstants.ChangesetsColumns.CREATED_BY_MIN_WIDTH,
                     headerContent = new GUIContent(
-                        GetColumnName(ChangesetsListColumn.CreatedBy))
+                        GetColumnName(ChangesetsListColumn.CreatedBy)),
+                    sortingArrowAlignment = TextAlignment.Right
                 },
                 new Column()
                 {
                     width = UnityConstants.ChangesetsColumns.COMMENT_WIDTH,
                     minWidth = UnityConstants.ChangesetsColumns.COMMENT_MIN_WIDTH,
                     headerContent = new GUIContent(
-                        GetColumnName(ChangesetsListColumn.Comment))
+                        GetColumnName(ChangesetsListColumn.Comment)),
+                    sortingArrowAlignment = TextAlignment.Right
                 }
             };
         }

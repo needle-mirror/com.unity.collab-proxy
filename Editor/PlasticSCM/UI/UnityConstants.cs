@@ -18,8 +18,15 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const float TREEVIEW_CHECKBOX_SIZE = 17f;
         internal const float TREEVIEW_BASE_INDENT = 16f;
         internal const float TREEVIEW_ROW_WIDTH_OFFSET = 24f;
+        internal const int TREEVIEW_STATUS_ICON_SIZE = 16;
+        internal const int TREEVIEW_STATUS_CONTENT_PADDING = 4;
+        internal const int TREEVIEW_STATUS_CONTENT_OFFSET = 2;
         internal const float FIRST_COLUMN_WITHOUT_ICON_INDENT = 5f;
         internal const int PENDING_CHANGES_FONT_SIZE = 12;
+
+        internal const int STATUS_BAR_HEIGHT = 24;
+        internal const int STATUS_BAR_ICON_SIZE = 16;
+        internal const int STATUS_BAR_NOTIFICATION_SPACING = 8;
 
 #if UNITY_2019_1_OR_NEWER
         internal const float DROPDOWN_ICON_Y_OFFSET = 2f;
@@ -71,12 +78,14 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const double AUTO_REFRESH_DELAYED_INTERVAL = 0.25;
         internal const double AUTO_REFRESH_PENDING_CHANGES_DELAYED_INTERVAL = 0.1;
         internal const double ASSET_MENU_DELAYED_INITIALIZE_INTERVAL = 0.25;
+        
+        internal const double NOTIFICATION_CLEAR_INTERVAL = 5;
 
         internal const string PENDING_CHANGES_TABLE_SETTINGS_NAME = "{0}_PendingChangesTreeV2_{1}";
         internal const string GLUON_INCOMING_CHANGES_TABLE_SETTINGS_NAME = "{0}_GluonIncomingChangesTree_{1}";
         internal const string GLUON_INCOMING_ERRORS_TABLE_SETTINGS_NAME = "{0}_GluonIncomingErrorsList_{1}";
         internal const string GLUON_UPDATE_REPORT_TABLE_SETTINGS_NAME = "{0}_GluonUpdateReportList_{1}";
-        internal const string DEVELOPER_INCOMING_CHANGES_TABLE_SETTINGS_NAME = "{0}_DeveloperIncomingChangesTree_{1}";
+        internal const string DEVELOPER_INCOMING_CHANGES_TABLE_SETTINGS_NAME = "{0}_DeveloperIncomingChangesTreeV2_{1}";
         internal const string DEVELOPER_UPDATE_REPORT_TABLE_SETTINGS_NAME = "{0}_DeveloperUpdateReportList_{1}";
         internal const string REPOSITORIES_TABLE_SETTINGS_NAME = "{0}_RepositoriesList_{1}";
         internal const string CHANGESETS_TABLE_SETTINGS_NAME = "{0}_ChangesetsList_{1}";

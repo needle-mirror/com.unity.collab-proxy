@@ -2,12 +2,12 @@
 using UnityEngine;
 
 using Codice.CM.Common;
+using Codice.Client.BaseCommands.EventTracking;
 using PlasticGui;
+using PlasticGui.WorkspaceWindow.Items;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.Inspector;
 using Unity.PlasticSCM.Editor.UI;
-using System.ComponentModel;
-using Codice.Client.BaseCommands.EventTracking;
 
 namespace Unity.PlasticSCM.Editor.AssetMenu
 {
@@ -28,10 +28,10 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             Enable();
         }
 
-        static void BackgroundWorker_CompletedWork(object sender, RunWorkerCompletedEventArgs e)
+        internal static void Dispose()
         {
-            PlasticApp.RegisterClientHandlersIfNeeded();
-            Enable();
+            if (sAssetSelection != null)
+                sAssetSelection.Dispose();
         }
 
         // TODO: do this after calling plastic workspace
@@ -48,11 +48,16 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 return;
 
             sOperations = new AssetMenuRoutingOperations();
+
             sAssetStatusCache = new AssetStatusCache(
                 wkInfo,
                 sPlasticAPI.IsGluonWorkspace(wkInfo),
                 RepaintProjectWindow);
-            sAssetSelection = new InspectorAssetSelection();
+            sAssetSelection = new InspectorAssetSelection(UpdateFilterMenuItems);
+            sFilterMenuBuilder = new AssetFilesFilterPatternsMenuBuilder(
+                sOperations,
+                IGNORE_MENU_ITEMS_PRIORITY,
+                HIDDEN_MENU_ITEMS_PRIORITY);
 
             AddMenuItems();
         }
@@ -91,6 +96,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 GetPlasticMenuItemName(PlasticLocalization.Name.UndoPlasticMenu),
                 UNDO_MENU_ITEM_PRIORITY,
                 Undo, ValidateUndo);
+
+            UpdateFilterMenuItems();
+
             HandleMenuItem.AddMenuItem(
                 GetPlasticMenuItemName(PlasticLocalization.Name.DiffPlasticMenu),
                 GetPlasticShortcut.ForAssetDiff(),
@@ -105,6 +113,14 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             HandleMenuItem.UpdateAllMenus();
         }
 
+        static void UpdateFilterMenuItems()
+        {
+            SelectedPathsGroupInfo info = AssetsSelection.GetSelectedPathsGroupInfo(
+                ((AssetOperations.IAssetSelection)sAssetSelection).GetSelectedAssets(),
+                sAssetStatusCache);
+            sFilterMenuBuilder.UpdateMenuItems(FilterMenuUpdater.GetMenuActions(info));
+        }
+
         static string GetPlasticMenuItemName(PlasticLocalization.Name name)
         {
             return string.Format("{0}/{1}",
@@ -116,7 +132,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         {
             ShowWindow.Plastic();
 
-            sOperations.ShowPendingChanges();
+            ((IAssetMenuOperations)sOperations).ShowPendingChanges();
         }
 
         static bool ValidatePendingChanges()
@@ -126,7 +142,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         static void Add()
         {
-            sOperations.Add();
+            ((IAssetMenuOperations)sOperations).Add();
         }
 
         static bool ValidateAdd()
@@ -136,7 +152,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         static void Checkout()
         {
-            sOperations.Checkout();
+            ((IAssetMenuOperations)sOperations).Checkout();
         }
 
         static bool ValidateCheckout()
@@ -157,7 +173,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                     TrackFeatureUseEvent.Features.ContextMenuCheckinOption);
             }
 
-            sOperations.Checkin();
+            ((IAssetMenuOperations)sOperations).Checkin();
         }
 
         static bool ValidateCheckin()
@@ -167,7 +183,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         static void Undo()
         {
-            sOperations.Undo();
+            ((IAssetMenuOperations)sOperations).Undo();
         }
 
         static bool ValidateUndo()
@@ -177,7 +193,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         static void Diff()
         {
-            sOperations.ShowDiff();
+            ((IAssetMenuOperations)sOperations).ShowDiff();
         }
 
         static bool ValidateDiff()
@@ -189,7 +205,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         {
             ShowWindow.Plastic();
 
-            sOperations.ShowHistory();
+            ((IAssetMenuOperations)sOperations).ShowHistory();
         }
 
         static bool ValidateHistory()
@@ -204,7 +220,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
             SelectedAssetGroupInfo selectedGroupInfo = SelectedAssetGroupInfo.
                 BuildFromAssetList(
-                    sAssetSelection.GetSelectedAssets(),
+                    ((AssetOperations.IAssetSelection)sAssetSelection).GetSelectedAssets(),
                     sAssetStatusCache);
 
             AssetMenuOperations operations = AssetMenuUpdater.
@@ -225,6 +241,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         static void RemoveMenuItems()
         {
+            sFilterMenuBuilder.RemoveMenuItems();
+
             HandleMenuItem.RemoveMenuItem(
                 PlasticLocalization.GetString(PlasticLocalization.Name.PrefixPlasticMenu));
 
@@ -232,9 +250,10 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         }
 
         static PlasticAPI sPlasticAPI;
-        static IAssetMenuOperations sOperations;
+        static AssetMenuRoutingOperations sOperations;
         static IAssetStatusCache sAssetStatusCache;
-        static AssetOperations.IAssetSelection sAssetSelection;
+        static InspectorAssetSelection sAssetSelection;
+        static AssetFilesFilterPatternsMenuBuilder sFilterMenuBuilder;
 
         const int BASE_MENU_ITEM_PRIORITY = 19; // Puts Plastic SCM right below Create menu
 
@@ -244,7 +263,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         const int CHECKOUT_MENU_ITEM_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 12;
         const int CHECKIN_MENU_ITEM_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 13;
         const int UNDO_MENU_ITEM_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 14;
-        const int DIFF_MENU_ITEM_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 25;
-        const int HISTORY_MENU_ITEM_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 26;
+        const int IGNORE_MENU_ITEMS_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 25;
+        const int HIDDEN_MENU_ITEMS_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 26;
+        const int DIFF_MENU_ITEM_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 37;
+        const int HISTORY_MENU_ITEM_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 38;
     }
 }

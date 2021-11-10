@@ -47,8 +47,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 }
 
                 headerRect.x = checkRect.xMax;
+                headerRect.xMax = column.width;
             }
-
             base.ColumnHeaderGUI(column, headerRect, columnIndex);
         }
 

@@ -53,7 +53,8 @@ namespace Unity.PlasticSCM.Editor.Gluon.UpdateReport
                             GetColumnName(UpdateReportListColumn.Path)),
                         minWidth = 200,
                         allowToggleVisibility = false,
-                        canSort = false
+                        canSort = false,
+                        sortingArrowAlignment = TextAlignment.Right
                     }
                 };
         }

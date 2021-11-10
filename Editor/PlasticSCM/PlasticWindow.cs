@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
+using Codice.Client.BaseCommands;
 using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Common;
 using Codice.Client.Common.Connection;
@@ -90,13 +91,24 @@ namespace Unity.PlasticSCM.Editor
             titleContent = new GUIContent(title, mPlasticWindowIcon);
         }
 
-        internal void SetNotificationStatus(PlasticNotification.Status status)
+        internal void SetNotificationStatus(
+            PlasticNotification.Status status,
+            string infoText,
+            string actionText)
         {
             if (status == mNotificationStatus) return;
 
             mNotificationStatus = status;
             SetupWindowTitle();
             OnNotificationUpdated.Invoke();
+
+            if (mViewSwitcher != null)
+            {
+                mViewSwitcher.PendingChangesTab.SetNotificationStatus(
+                    status,
+                    infoText,
+                    actionText);
+            }
         }
 
         internal void DisableCollabIfEnabledWhenLoaded()
@@ -106,37 +118,46 @@ namespace Unity.PlasticSCM.Editor
 
         internal void ShowPendingChanges()
         {
-            mAssetOperations.ShowPendingChanges();
+            ((IAssetMenuOperations)mAssetOperations).ShowPendingChanges();
         }
 
         internal void Add()
         {
-            mAssetOperations.Add();
+            ((IAssetMenuOperations)mAssetOperations).Add();
         }
 
         internal void Checkout()
         {
-            mAssetOperations.Checkout();
+            ((IAssetMenuOperations)mAssetOperations).Checkout();
         }
 
         internal void Checkin()
         {
-            mAssetOperations.Checkin();
+            ((IAssetMenuOperations)mAssetOperations).Checkin();
         }
 
         internal void Undo()
         {
-            mAssetOperations.Undo();
+            ((IAssetMenuOperations)mAssetOperations).Undo();
         }
 
         internal void ShowDiff()
         {
-            mAssetOperations.ShowDiff();
+            ((IAssetMenuOperations)mAssetOperations).ShowDiff();
         }
 
         internal void ShowHistory()
         {
-            mAssetOperations.ShowHistory();
+            ((IAssetMenuOperations)mAssetOperations).ShowHistory();
+        }
+
+        internal void AddFilesFilterPatterns(
+            FilterTypes type, 
+            FilterActions action, 
+            FilterOperationType operation)
+        {
+            ((IAssetFilesFilterPatternsMenuOperations)mAssetOperations)
+                .AddFilesFilterPatterns(type, action, operation);
         }
  
         void PlasticGui.WorkspaceWindow.CheckIncomingChanges.IAutoRefreshIncomingChangesView.IfVisible()
@@ -348,13 +369,13 @@ namespace Unity.PlasticSCM.Editor
 
                 mNotificationDrawer.DoDrawer();
 
-                DrawStatusBar.For(
+                mStatusBar.OnGUI(
                     mWkInfo,
                     mWorkspaceWindow,
                     mViewSwitcher,
                     mViewSwitcher,
-                    mIsGluonMode,
-                    mIncomingChangesNotificationPanel);
+                    mIncomingChangesNotifier,
+                    mIsGluonMode);
             }
             catch (Exception ex)
             {
@@ -466,9 +487,10 @@ namespace Unity.PlasticSCM.Editor
                     pendingChanges,
                     mDeveloperNewIncomingChangesUpdater,
                     mGluonNewIncomingChangesUpdater,
-                    mIncomingChangesNotificationPanel,
+                    mIncomingChangesNotifier,
                     assetStatusCache,
                     mNotificationDrawer,
+                    mStatusBar,
                     this);
 
                 mCooldownAutoRefreshPendingChangesAction = new CooldownWindowDelayer(
@@ -551,24 +573,24 @@ namespace Unity.PlasticSCM.Editor
         {
             if (bIsGluonMode)
             {
-                Gluon.IncomingChangesNotificationPanel gluonPanel =
-                    new Gluon.IncomingChangesNotificationPanel(this);
+                Gluon.IncomingChangesNotifier gluonNotifier =
+                    new Gluon.IncomingChangesNotifier(this);
                 mGluonNewIncomingChangesUpdater =
                     NewIncomingChanges.BuildUpdaterForGluon(
                         wkInfo,
                         this,
-                        gluonPanel,
+                        gluonNotifier,
                         new GluonCheckIncomingChanges.CalculateIncomingChanges());
-                mIncomingChangesNotificationPanel = gluonPanel;
+                mIncomingChangesNotifier = gluonNotifier;
                 return;
             }
 
-            Developer.IncomingChangesNotificationPanel developerPanel =
-                new Developer.IncomingChangesNotificationPanel(this);
+            Developer.IncomingChangesNotifier developerNotifier =
+                new Developer.IncomingChangesNotifier(this);
             mDeveloperNewIncomingChangesUpdater =
                 NewIncomingChanges.BuildUpdaterForDeveloper(
-                    wkInfo, this, developerPanel);
-            mIncomingChangesNotificationPanel = developerPanel;
+                    wkInfo, this, developerNotifier);
+            mIncomingChangesNotifier = developerNotifier;
         }
 
         void OnApplicationActivated()
@@ -974,6 +996,8 @@ namespace Unity.PlasticSCM.Editor
 
             DrawAssetOverlay.Dispose();
 
+            AssetMenuItems.Dispose();
+
             if (window.mEventSenderScheduler != null)
             {
                 window.mPingEventLoop.Stop();
@@ -1045,7 +1069,8 @@ namespace Unity.PlasticSCM.Editor
             result.mException = window.mException;
             result.mLastUpdateTime = window.mLastUpdateTime;
             result.mIsGluonMode = window.mIsGluonMode;
-            result.mIncomingChangesNotificationPanel = window.mIncomingChangesNotificationPanel;
+            result.mIncomingChangesNotifier = window.mIncomingChangesNotifier;
+            result.mStatusBar = window.mStatusBar;
             result.mWelcomeView = window.mWelcomeView;
             result.mPlasticAPI = window.mPlasticAPI;
             result.mEventSenderScheduler = window.mEventSenderScheduler;
@@ -1114,7 +1139,7 @@ namespace Unity.PlasticSCM.Editor
 
         Exception mException;
 
-        internal IIncomingChangesNotificationPanel mIncomingChangesNotificationPanel;
+        internal IIncomingChangesNotifier mIncomingChangesNotifier;
 
         double mLastUpdateTime = 0f;
 
@@ -1122,6 +1147,7 @@ namespace Unity.PlasticSCM.Editor
         internal ViewSwitcher mViewSwitcher;
         WelcomeView mWelcomeView;
         internal NotificationDrawer mNotificationDrawer = new NotificationDrawer();
+        StatusBar mStatusBar = new StatusBar();
 
         PlasticGui.WorkspaceWindow.NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
         GluonNewIncomingChangesUpdater mGluonNewIncomingChangesUpdater;
@@ -1135,7 +1161,7 @@ namespace Unity.PlasticSCM.Editor
         static PlasticWebRestApi mPlasticWebRestApi;
         EventSenderScheduler mEventSenderScheduler;
         PingEventLoop mPingEventLoop;
-        IAssetMenuOperations mAssetOperations;
+        AssetOperations mAssetOperations;
 
         PlasticNotification.Status mNotificationStatus = PlasticNotification.Status.None;
         static Texture mPlasticWindowIcon;

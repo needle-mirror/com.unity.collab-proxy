@@ -5348,8 +5348,8 @@ Unity ID でサインイン
 == SignInWithEmail ==
 メールアドレスでサインイン
 
-== SignInWithOkta ==
-Okta でサインイン
+== SignInWith ==
+{0} でサインイン
 
 == SignInWithSSO ==
 SSO でサインイン
