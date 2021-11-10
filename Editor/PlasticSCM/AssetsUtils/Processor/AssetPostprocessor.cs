@@ -27,6 +27,12 @@
             }
 
             PlasticAssetsProcessor.AddToSourceControl(importedAssets);
+
+            if (AssetModificationProcessor.ModifiedAssets == null)
+                return;
+
+            PlasticAssetsProcessor.CheckoutOnSourceControl(AssetModificationProcessor.ModifiedAssets);
+            AssetModificationProcessor.ModifiedAssets = null;
         }
     }
 }

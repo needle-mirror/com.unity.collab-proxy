@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.VersionControl;
 
+using Codice.Client.BaseCommands;
+
 using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Commands;
 using Codice.Client.Commands.WkTree;
@@ -21,6 +23,7 @@ using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs;
 
 using GluonCheckoutOperation = GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer.Operations.CheckoutOperation;
 using GluonUndoCheckoutOperation = GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer.Operations.UndoCheckoutOperation;
@@ -28,7 +31,9 @@ using GluonAddoperation = GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explo
 
 namespace Unity.PlasticSCM.Editor.AssetMenu
 {
-    internal class AssetOperations : IAssetMenuOperations
+    internal class AssetOperations :
+        IAssetMenuOperations,
+        IAssetFilesFilterPatternsMenuOperations
     {
         internal interface IAssetSelection
         {
@@ -248,6 +253,28 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 node.RevInfo.ItemId,
                 selectedPath,
                 selectedAsset.isFolder);
+        }
+
+        void IAssetFilesFilterPatternsMenuOperations.AddFilesFilterPatterns(
+            FilterTypes type, 
+            FilterActions action, 
+            FilterOperationType operation)
+        {
+            List<string> selectedPaths = AssetsSelection.GetSelectedPaths(
+                mAssetSelection.GetSelectedAssets());
+
+            string[] rules = FilterRulesGenerator.GenerateRules(
+                selectedPaths, mWkInfo.ClientPath, action, operation);
+
+            bool isApplicableToAllWorkspaces = !mIsGluonMode;
+            bool isAddOperation = operation == FilterOperationType.Add;
+
+            FilterRulesConfirmationData filterRulesConfirmationData = 
+                FilterRulesConfirmationDialog.AskForConfirmation(
+                    rules, isAddOperation, isApplicableToAllWorkspaces, mParentWindow);
+
+            AddFilesFilterPatternsOperation.Run(
+                mWkInfo, mWorkspaceWindow, type, operation, filterRulesConfirmationData);
         }
 
         static string GetSymbolicName(string selectedPath)

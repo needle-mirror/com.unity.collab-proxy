@@ -79,34 +79,39 @@ namespace Unity.PlasticSCM.Editor.Views.History
                         headerContent = new GUIContent(
                             GetColumnName(HistoryListColumn.Changeset)),
                         minWidth = 50,
+                        sortingArrowAlignment = TextAlignment.Right
                     },
                     new Column()
                     {
                         width = 250,
                         headerContent = new GUIContent(
                             GetColumnName(HistoryListColumn.CreationDate)),
-                        minWidth = 100
+                        minWidth = 100,
+                        sortingArrowAlignment = TextAlignment.Right
                     },
                     new Column()
                     {
                         width = 250,
                         headerContent = new GUIContent(
                             GetColumnName(HistoryListColumn.CreatedBy)),
-                        minWidth = 100
+                        minWidth = 100,
+                        sortingArrowAlignment = TextAlignment.Right
                     },
                     new Column()
                     {
                         width = 400,
                         headerContent = new GUIContent(
                             GetColumnName(HistoryListColumn.Comment)),
-                        minWidth = 100
+                        minWidth = 100,
+                        sortingArrowAlignment = TextAlignment.Right
                     },
                     new Column()
                     {
                         width = 200,
                         headerContent = new GUIContent(
                             GetColumnName(HistoryListColumn.Branch)),
-                        minWidth = 100
+                        minWidth = 100,
+                        sortingArrowAlignment = TextAlignment.Right
                     },
                 };
         }

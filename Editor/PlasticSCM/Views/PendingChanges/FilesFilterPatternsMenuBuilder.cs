@@ -4,6 +4,7 @@ using UnityEngine;
 using Codice.Client.BaseCommands;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Items;
+using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
@@ -172,7 +173,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         static string GetSubMenuText(string menuName, string subMenuName)
         {
-            return string.Format("{0}/{1}", menuName, subMenuName.Replace('/', '\\'));
+            return UnityMenuItem.GetText(
+                menuName,
+                UnityMenuItem.EscapedText(subMenuName));
         }
 
         GUIContent mIgnoredSubmenuItem;

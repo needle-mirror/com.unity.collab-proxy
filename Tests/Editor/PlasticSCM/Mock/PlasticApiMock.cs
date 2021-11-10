@@ -549,11 +549,6 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
             throw new NotImplementedException();
         }
 
-        string IPlasticAPI.GetUserName(SEID owner)
-        {
-            throw new NotImplementedException();
-        }
-
         string IPlasticAPI.GetUserName(string server, SEID owner)
         {
             throw new NotImplementedException();

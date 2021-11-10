@@ -1,8 +1,11 @@
 ﻿using UnityEditor;
+using Codice.Client.BaseCommands;
 
 namespace Unity.PlasticSCM.Editor.AssetMenu
 {
-    internal class AssetMenuRoutingOperations: IAssetMenuOperations
+    internal class AssetMenuRoutingOperations :
+        IAssetMenuOperations,
+        IAssetFilesFilterPatternsMenuOperations
     {
         void IAssetMenuOperations.ShowPendingChanges()
         {
@@ -44,6 +47,15 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         {
             PlasticWindow plasticWindow = EditorWindow.GetWindow<PlasticWindow>();
             plasticWindow.ShowHistory();
+        }
+
+        void IAssetFilesFilterPatternsMenuOperations.AddFilesFilterPatterns(
+            FilterTypes type, 
+            FilterActions action, 
+            FilterOperationType operation)
+        {
+            PlasticWindow plasticWindow = EditorWindow.GetWindow<PlasticWindow>();
+            plasticWindow.AddFilesFilterPatterns(type, action, operation);
         }
     }
 }

@@ -34,7 +34,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
             customFoldoutYOffset = UnityConstants.TREEVIEW_FOLDOUT_Y_OFFSET;
             rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = true;
         }
 
         public override IList<TreeViewItem> GetRows()

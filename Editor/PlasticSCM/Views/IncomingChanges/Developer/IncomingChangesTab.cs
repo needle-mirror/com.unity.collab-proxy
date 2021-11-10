@@ -108,7 +108,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
             DoConflictsTree(
                 mIncomingChangesTreeView,
-                mIsOperationRunning);
+                mIsOperationRunning,
+                mHasNothingToDownload);
 
             List<MergeChangeInfo> selectedIncomingChanges =
                 mIncomingChangesTreeView.GetSelectedIncomingChanges();
@@ -125,6 +126,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
             DoActionsToolbar(
                 mIsMessageLabelVisible,
+                mHasNothingToDownload,
                 mIsErrorMessageLabelVisible,
                 mIsProcessMergesButtonVisible,
                 mIsCancelMergesButtonVisible,
@@ -256,6 +258,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
             mMessageLabelText = message;
             mIsMessageLabelVisible = true;
+            mHasNothingToDownload = message == PlasticLocalization.GetString(
+                PlasticLocalization.Name.MergeNothingToDownloadForIncomingView);
         }
 
         string MergeViewLogic.IMergeView.GetComments(out bool bCancel)
@@ -459,6 +463,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         {
             mMessageLabelText = string.Empty;
             mIsMessageLabelVisible = false;
+            mHasNothingToDownload = false;
 
             mErrorMessageLabelText = string.Empty;
             mIsErrorMessageLabelVisible = false;
@@ -557,8 +562,32 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 renameValue));
         }
 
+        static void DoConflictsTree(
+            IncomingChangesTreeView incomingChangesTreeView,
+            bool isOperationRunning,
+            bool hasNothingToDownload)
+        {
+            GUI.enabled = !isOperationRunning;
+
+            Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
+
+            incomingChangesTreeView.OnGUI(rect);
+
+            if (hasNothingToDownload)
+            {
+                DrawTreeViewEmptyState.For(
+                    rect,
+                    PlasticLocalization.GetString(PlasticLocalization.Name.NoIncomingChanges),
+                    PlasticLocalization.GetString(PlasticLocalization.Name.WorkspaceIsUpToDate),
+                    Images.Name.StepOk);
+            }
+
+            GUI.enabled = true;
+        }
+
         void DoActionsToolbar(
             bool isMessageLabelVisible,
+            bool hasNothingToDownload,
             bool isErrorMessageLabelVisible,
             bool isProcessMergesButtonVisible,
             bool isCancelMergesButtonVisible,
@@ -581,18 +610,10 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
             if (!isOperationRunning)
             {
-                if (isMessageLabelVisible)
-                {
-                    DoInfoMessage(mMessageLabelText);
-                }
-                else if (isErrorMessageLabelVisible)
-                {
-                    DoErrorMessage(mErrorMessageLabelText);
-                }
-                else
-                {
-                    DoChangesOverview();
-                }
+                DoActionsToolbarMessage(
+                    isMessageLabelVisible,
+                    hasNothingToDownload,
+                    isErrorMessageLabelVisible);
 
                 if (isProcessMergesButtonVisible)
                 {
@@ -632,17 +653,35 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             EditorGUILayout.EndVertical();
         }
 
-        static void DoConflictsTree(
-            IncomingChangesTreeView incomingChangesTreeView,
-            bool isOperationRunning)
+        void DoActionsToolbarMessage(
+            bool isMessageLabelVisible,
+            bool hasNothingToDownload,
+            bool isErrorMessageLabelVisible)
         {
-            GUI.enabled = !isOperationRunning;
+            if (isMessageLabelVisible)
+            {
+                string message = mMessageLabelText;
 
-            Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
+                if (hasNothingToDownload)
+                {
+                    message = string.Format(
+                        "{0}. {1}.",
+                        PlasticLocalization.GetString(PlasticLocalization.Name.NoIncomingChanges),
+                        PlasticLocalization.GetString(PlasticLocalization.Name.WorkspaceIsUpToDate));
+                }
 
-            incomingChangesTreeView.OnGUI(rect);
+                DoInfoMessage(message);
+            }
+            
+            if (isErrorMessageLabelVisible)
+            {
+                DoErrorMessage(mErrorMessageLabelText);
+            }
 
-            GUI.enabled = true;
+            if (!isMessageLabelVisible && !isErrorMessageLabelVisible)
+            {
+                DoChangesOverview();
+            }
         }
 
         void DoChangesOverview()
@@ -716,78 +755,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             GUILayout.Space(5);
 
             EditorGUILayout.EndHorizontal();
-        }
-
-        static void DoConflictsHeader(
-            MergeTreeResult conflicts,
-            MergeSolvedFileConflicts solvedFileConflicts,
-            MountPointWithPath mount)
-        {
-            if (conflicts == null || mount == null)
-                return;
-
-            EditorGUILayout.BeginHorizontal();
-
-            DoDirectoryConflictsHeader(conflicts);
-            DoFileConflictsHeader(
-                conflicts,
-                solvedFileConflicts,
-                mount);
-
-            EditorGUILayout.EndHorizontal();
-        }
-
-        static void DoDirectoryConflictsHeader(MergeTreeResult conflicts)
-        {
-            int directoryConflictsCount =
-                MergeTreeResultParser.GetDirectoryConflictsCount(conflicts);
-            int pendingDirectoryConflictsCount =
-                MergeTreeResultParser.GetUnsolvedDirectoryConflictsCount(
-                    conflicts);
-
-            if (directoryConflictsCount == 0)
-                return;
-
-            GUIStyle pendingDirectoryConflictsOfTotalStyle =
-                pendingDirectoryConflictsCount > 0 ?
-                UnityStyles.IncomingChangesTab.RedPendingConflictsOfTotalLabel :
-                UnityStyles.IncomingChangesTab.GreenPendingConflictsOfTotalLabel;
-
-            GUILayout.Label(
-                string.Format("{0}/{1}", pendingDirectoryConflictsCount, directoryConflictsCount),
-                pendingDirectoryConflictsOfTotalStyle);
-
-            GUILayout.Label(
-                MergeViewTexts.GetDirectoryConflictsUnsolvedCaption(directoryConflictsCount),
-                UnityStyles.IncomingChangesTab.PendingConflictsLabel);
-        }
-
-        static void DoFileConflictsHeader(
-            MergeTreeResult conflicts,
-            MergeSolvedFileConflicts solvedFileConflicts,
-            MountPointWithPath mount)
-        {
-            int fileConflictsCount = MergeTreeResultParser.GetFileConflictsCount(conflicts);
-            int pendingFileConflictsCount = MergeTreeResultParser.GetUnsolvedFileConflictsCount(
-                conflicts, mount.Id, solvedFileConflicts);
-
-            GUIStyle pendingFileConflictsOfTotalStyle =
-                pendingFileConflictsCount > 0 ?
-                UnityStyles.IncomingChangesTab.RedPendingConflictsOfTotalLabel :
-                UnityStyles.IncomingChangesTab.GreenPendingConflictsOfTotalLabel;
-
-            GUILayout.Label(
-                string.Format("{0}/{1}", pendingFileConflictsCount, fileConflictsCount),
-                pendingFileConflictsOfTotalStyle);
-
-            GUILayout.Label(
-                MergeViewTexts.GetFileConflictsCaption(fileConflictsCount, true),
-                UnityStyles.IncomingChangesTab.PendingConflictsLabel);
-
-            GUILayout.Label(
-                MergeViewTexts.GetChangesToApplyCaption(
-                    MergeTreeResultParser.GetChangesToApplySummary(conflicts)),
-                UnityStyles.IncomingChangesTab.ChangesToApplySummaryLabel);
         }
 
         static void AfterProcessMerges()
@@ -995,6 +962,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         bool mIsCancelMergesButtonVisible;
         bool mIsMessageLabelVisible;
         bool mIsErrorMessageLabelVisible;
+        bool mHasNothingToDownload;
 
         bool mIsProcessMergesButtonEnabled;
         bool mIsCancelMergesButtonEnabled;

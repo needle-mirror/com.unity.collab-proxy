@@ -117,7 +117,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 mChangesToApplySummaryLabelText,
                 mMessageLabelText,
                 mIsMessageLabelVisible,
-                mProgressControls.IsOperationRunning());
+                mProgressControls.IsOperationRunning(),
+                mHasNothingToDownload);
 
             DoErrorsArea(
                 mErrorsListView,
@@ -196,12 +197,15 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
             mMessageLabelText = message;
             mIsMessageLabelVisible = true;
+            mHasNothingToDownload = message == PlasticLocalization.GetString(
+                PlasticLocalization.Name.MergeNothingToDownloadForIncomingView);
         }
 
         void IncomingChangesViewLogic.IIncomingChangesView.HideMessage()
         {
             mMessageLabelText = string.Empty;
             mIsMessageLabelVisible = false;
+            mHasNothingToDownload = false;
 
             mErrorMessageLabelText = string.Empty;
             mIsErrorMessageLabelVisible = false;
@@ -458,7 +462,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             string changesToApplySummaryLabelText,
             string messageLabelText,
             bool isMessageLabelVisible,
-            bool isOperationRunning)
+            bool isOperationRunning,
+            bool hasNothingToDownload)
         {
             EditorGUILayout.BeginVertical();
 
@@ -468,10 +473,23 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
             DoIncomingChangesTreeViewArea(
                 incomingChangesTreeView,
-                isOperationRunning);
+                isOperationRunning,
+                hasNothingToDownload);
 
             if (isMessageLabelVisible)
-                DoInfoMessageArea(messageLabelText);
+            {
+                string message = messageLabelText;
+
+                if (hasNothingToDownload)
+                {
+                    message = string.Format(
+                        "{0}. {1}.",
+                        PlasticLocalization.GetString(PlasticLocalization.Name.NoIncomingChanges),
+                        PlasticLocalization.GetString(PlasticLocalization.Name.WorkspaceIsUpToDate));
+                }
+
+                DoInfoMessageArea(message);
+            }
 
             EditorGUILayout.EndVertical();
         }
@@ -582,13 +600,23 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         static void DoIncomingChangesTreeViewArea(
             IncomingChangesTreeView incomingChangesTreeView,
-            bool isOperationRunning)
+            bool isOperationRunning,
+            bool hasNothingToDownload)
         {
             GUI.enabled = !isOperationRunning;
 
             Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
 
             incomingChangesTreeView.OnGUI(rect);
+
+            if (hasNothingToDownload)
+            {
+                DrawTreeViewEmptyState.For(
+                    rect,
+                    PlasticLocalization.GetString(PlasticLocalization.Name.NoIncomingChanges),
+                    PlasticLocalization.GetString(PlasticLocalization.Name.WorkspaceIsUpToDate),
+                    Images.Name.StepOk);
+            }
 
             GUI.enabled = true;
         }
@@ -706,6 +734,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         string mProcessMergesButtonText;
         string mMessageLabelText;
         string mErrorMessageLabelText;
+        bool mHasNothingToDownload;
 
         PendingConflictsLabelData mPendingConflictsLabelData;
         string mChangesToApplySummaryLabelText;

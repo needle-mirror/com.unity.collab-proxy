@@ -9,6 +9,12 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
     {
         internal static bool IsEnabled { get; set; }
         internal static bool ForceCheckout { get; set; }
+        
+        /*We need to do a checkout, verifying that the content/date or size has changed. In order
+          to do this checkout we need the changes to have reached the disk. That's why we save the
+          changed files in this array, and when they are reloaded in 
+        AssetPostprocessor.OnPostprocessAllAssets we process them. */
+        internal static string[] ModifiedAssets { get; set; }
 
         internal static void RegisterAssetStatusCache(
             IAssetStatusCache assetStatusCache)
@@ -21,7 +27,8 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             if (!IsEnabled)
                 return paths;
 
-            PlasticAssetsProcessor.CheckoutOnSourceControl(paths);
+            ModifiedAssets = (string[])paths.Clone();
+
             return paths;
         }
 

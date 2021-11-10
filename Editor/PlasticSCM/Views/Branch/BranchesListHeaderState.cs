@@ -82,7 +82,8 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                     minWidth = UnityConstants.BranchesColumns.BRANCHES_NAME_MIN_WIDTH,
                     headerContent = new GUIContent(
                         GetColumnName(BranchesListColumn.Name)),
-                    allowToggleVisibility = false
+                    allowToggleVisibility = false,
+                    sortingArrowAlignment = TextAlignment.Right
                 },
                  new Column()
                 {
@@ -90,28 +91,32 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                     minWidth = UnityConstants.BranchesColumns.REPOSITORY_MIN_WIDTH,
                     headerContent = new GUIContent(
                         GetColumnName(BranchesListColumn.Repository)),
-                    allowToggleVisibility = true
+                    allowToggleVisibility = true,
+                    sortingArrowAlignment = TextAlignment.Right
                 },
                 new Column()
                 {
                     width = UnityConstants.BranchesColumns.CREATEDBY_WIDTH,
                     minWidth = UnityConstants.BranchesColumns.CREATEDBY_MIN_WIDTH,
                     headerContent = new GUIContent(
-                        GetColumnName(BranchesListColumn.CreatedBy))
+                        GetColumnName(BranchesListColumn.CreatedBy)),
+                    sortingArrowAlignment = TextAlignment.Right
                 },
                 new Column()
                 {
                     width = UnityConstants.BranchesColumns.CREATION_DATE_WIDTH,
                     minWidth = UnityConstants.BranchesColumns.CREATION_DATE_MIN_WIDTH,
                     headerContent = new GUIContent(
-                        GetColumnName(BranchesListColumn.CreationDate))
+                        GetColumnName(BranchesListColumn.CreationDate)),
+                    sortingArrowAlignment = TextAlignment.Right
                 },
                 new Column()
                 {
                     width = UnityConstants.BranchesColumns.COMMENT_WIDTH,
                     minWidth = UnityConstants.BranchesColumns.COMMENT_MIN_WIDTH,
                     headerContent = new GUIContent(
-                        GetColumnName(BranchesListColumn.Comment))
+                        GetColumnName(BranchesListColumn.Comment)),
+                    sortingArrowAlignment = TextAlignment.Right
                 }
             };
         }

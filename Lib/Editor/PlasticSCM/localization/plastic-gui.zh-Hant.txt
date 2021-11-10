@@ -5348,8 +5348,8 @@ Gluon
 == SignInWithEmail ==
 使用電子郵件登入
 
-== SignInWithOkta ==
-使用 Okta 登入
+== SignInWith ==
+使用 {0} 登入
 
 == SignInWithSSO ==
 使用 SSO 登入

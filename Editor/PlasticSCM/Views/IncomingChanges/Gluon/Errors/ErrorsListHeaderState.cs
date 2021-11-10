@@ -59,7 +59,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon.Errors
                             GetColumnName(ErrorsListColumn.Path)),
                         minWidth = 200,
                         allowToggleVisibility = false,
-                        canSort = false
+                        canSort = false,
+                        sortingArrowAlignment = TextAlignment.Right
                     },
                     new Column()
                     {
@@ -67,7 +68,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon.Errors
                         headerContent = new GUIContent(
                             GetColumnName(ErrorsListColumn.Reason)),
                         minWidth = 200,
-                        canSort = false
+                        canSort = false,
+                        sortingArrowAlignment = TextAlignment.Right
                     }
                 };
         }

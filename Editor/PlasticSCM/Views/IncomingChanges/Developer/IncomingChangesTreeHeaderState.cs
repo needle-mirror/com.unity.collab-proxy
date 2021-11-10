@@ -24,7 +24,12 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
     {
         internal static IncomingChangesTreeHeaderState GetDefault()
         {
-            return new IncomingChangesTreeHeaderState(BuildColumns());
+            IncomingChangesTreeHeaderState headerState =
+                new IncomingChangesTreeHeaderState(BuildColumns());
+
+            headerState.visibleColumns = GetDefaultVisibleColumns();
+
+            return headerState;
         }
 
         internal static List<string> GetColumnNames()
@@ -73,6 +78,16 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         {
         }
 
+        static int[] GetDefaultVisibleColumns()
+        {
+            List<int> result = new List<int>();
+            result.Add((int)IncomingChangesTreeColumn.Path);
+            result.Add((int)IncomingChangesTreeColumn.Size);
+            result.Add((int)IncomingChangesTreeColumn.Author);
+            result.Add((int)IncomingChangesTreeColumn.DateModififed);
+            return result.ToArray();
+        }
+
         static Column[] BuildColumns()
         {
             return new Column[]
@@ -84,41 +99,47 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                         GetColumnName(IncomingChangesTreeColumn.Path)),
                     minWidth = 200,
                     allowToggleVisibility = false,
+                    sortingArrowAlignment = TextAlignment.Right
                 },
                 new Column()
                 {
                     width = 150,
                     headerContent = new GUIContent(
                         GetColumnName(IncomingChangesTreeColumn.Size)),
-                    minWidth = 45
+                    minWidth = 45,
+                    sortingArrowAlignment = TextAlignment.Right
                 },
                 new Column()
                 {
                     width = 150,
                     headerContent = new GUIContent(
                         GetColumnName(IncomingChangesTreeColumn.Author)),
-                    minWidth = 80
+                    minWidth = 80,
+                    sortingArrowAlignment = TextAlignment.Right
                 },
                 new Column()
                 {
                     width = 200,
                     headerContent = new GUIContent(
                         GetColumnName(IncomingChangesTreeColumn.Details)),
-                    minWidth = 100
+                    minWidth = 100,
+                    sortingArrowAlignment = TextAlignment.Right
                 },
                 new Column()
                 {
                     width = 250,
                     headerContent = new GUIContent(
                         GetColumnName(IncomingChangesTreeColumn.Resolution)),
-                    minWidth = 120
+                    minWidth = 120,
+                    sortingArrowAlignment = TextAlignment.Right
                 },
                 new Column()
                 {
                     width = 330,
                     headerContent = new GUIContent(
                         GetColumnName(IncomingChangesTreeColumn.DateModififed)),
-                    minWidth = 100
+                    minWidth = 100,
+                    sortingArrowAlignment = TextAlignment.Right
                 }
             };
         }
