@@ -445,17 +445,8 @@ GUID
 == NoItemsAreSelected ==
 未選取任何項目。請使用項目的核取方塊來選取項目。如果您有選取項目，也會發生此情形，但全部都可忽略。
 
-== EmptyCommentsDialogTitle ==
-Empty Checkin Message
-
-== EmptyCommentsDialogContent ==
-Checkin comment is blank. Writing a comment is recommended.
-
 == EmptyComments ==
 註解欄位是空的。請不要忘記先新增簽入註解後，再建立新的變更集。
-
-== CheckinAnyway ==
-Checkin Anyway
 
 == RepositoryNameLabel ==
 新儲存庫的名稱:
@@ -4915,6 +4906,18 @@ Plastic 會監看進行變更的工作區，加快作業速度。這會免除進
 
 == PendingChangesINotifyDisabledExplanation ==
 當可以利用 inotify 為主的偵測系統功能時，暫止的變更效能就會大幅改善。請查看下列指示進行啟用:{0}，並重新啟動 GUI
+
+== ProjectSettingsGeneral ==
+General
+
+== ProjectSettingsFileChange ==
+File Change Settings
+
+== ProjectSettingsFileVisibility ==
+File Visibility Settings
+
+== ProjectSettingsMoveAndRename ==
+File Move and Rename Detection
 
 == MergeToMergeNeededExplanation ==
 合併目標作業執行時，合併目標作業目的地中隨即新建變更集，並接著建立一個以上的前端。執行新的合併 (或合併目標) 作業時，請考慮整合這些前端。受影響的分支:

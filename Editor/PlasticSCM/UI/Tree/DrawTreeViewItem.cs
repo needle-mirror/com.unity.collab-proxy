@@ -72,7 +72,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             float rowHeight,
             int depth,
             Texture icon,
-            GetChangesOverlayIcon.Data overlayIconData,
+            Texture overlayIcon,
             string label,
             bool isSelected,
             bool isFocused,
@@ -85,8 +85,8 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             rect.width -= indent;
 
             rect = DrawIconLeft(
-                rect, rowHeight, icon, overlayIconData);
-
+               rect, rowHeight, icon, overlayIcon);
+                  
             if (isSecondaryLabel)
             {
                 ForSecondaryLabel(rect, label, isSelected, isFocused, isBoldText);
@@ -101,7 +101,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             float rowHeight,
             int depth,
             Texture icon,
-            GetChangesOverlayIcon.Data overlayIconData,
+            Texture overlayIcon,
             string label,
             bool isSelected,
             bool isFocused,
@@ -121,7 +121,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             rect.width -= checkRect.width;
 
             rect = DrawIconLeft(
-                rect, rowHeight, icon, overlayIconData);
+                rect, rowHeight, icon, overlayIcon);
 
             if (isHighlighted)
                 TreeView.DefaultGUI.BoldLabel(rect, label, isSelected, isFocused);
@@ -131,11 +131,11 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             return isChecked;
         }
 
-        static Rect DrawIconLeft(
+        internal static Rect DrawIconLeft(
             Rect rect,
             float rowHeight,
             Texture icon,
-            GetChangesOverlayIcon.Data overlayIconData)
+            Texture overlayIcon)
         {
             if (icon == null)
                 return rect;
@@ -146,15 +146,12 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 
             EditorGUI.LabelField(iconRect, new GUIContent(icon), UnityStyles.Tree.IconStyle);
 
-            if (overlayIconData != null && overlayIconData.Texture != null)
+            if (overlayIcon != null)
             {
-                Rect overlayIconRect = new Rect(
-                    iconRect.x + overlayIconData.XOffset,
-                    iconRect.y + overlayIconData.YOffset,
-                    overlayIconData.Size, overlayIconData.Size);
+                Rect overlayIconRect = OverlayRect.GetRightBottonRect(iconRect);
 
                 GUI.DrawTexture(
-                    overlayIconRect, overlayIconData.Texture,
+                    overlayIconRect, overlayIcon,
                     ScaleMode.ScaleToFit);
             }
 

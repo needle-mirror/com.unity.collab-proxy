@@ -61,7 +61,8 @@ namespace Unity.PlasticSCM.Editor.UI
             ButtonSsoSignInEmail,
             ButtonSsoSignInGoogle,
             IconBranch,
-            IconUndo
+            IconUndo,
+            Refresh
         }
 
         internal static Texture2D GetHelpImage(HelpImage image)
@@ -272,7 +273,10 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal static Texture GetRefreshIcon()
         {
-            return EditorGUIUtility.IconContent("refresh").image;
+            if (mRefreshIcon == null)
+                mRefreshIcon= GetImage(Name.Refresh);
+
+            return mRefreshIcon;
         }
 
         internal static Texture GetSettingsIcon()
@@ -349,10 +353,60 @@ namespace Unity.PlasticSCM.Editor.UI
         {
             Texture result = AssetDatabase.GetCachedIcon(relativePath);
 
-            if (result == null)
-                return GetFileIcon();
+            if (result != null)
+                return result;
 
-            return result;
+            result = GetFileIconFromKnownExtension(relativePath);
+
+            if (result != null)
+                return result;
+
+            return GetFileIcon();
+        }
+
+        static Texture GetFileIconFromKnownExtension(string relativePath)
+        {
+            if (relativePath.EndsWith(UnityConstants.TREEVIEW_META_LABEL))
+            {
+                relativePath = relativePath.Substring(0,
+                    relativePath.Length- UnityConstants.TREEVIEW_META_LABEL.Length);
+            }
+
+            string extension = Path.GetExtension(relativePath).ToLower();
+
+            if (extension.Equals(".cs"))
+                return EditorGUIUtility.IconContent("cs Script Icon").image;
+
+            if (extension.Equals(".png") || extension.Equals(".jpg")
+             || extension.Equals(".jpeg") || extension.Equals(".gif")
+             || extension.Equals(".tga") || extension.Equals(".bmp")
+             || extension.Equals(".tif") || extension.Equals(".tiff"))
+                return EditorGUIUtility.IconContent("d_Texture Icon").image;
+
+            if (extension.Equals(".mat"))
+                return AssetPreview.GetMiniTypeThumbnail(typeof(UnityEngine.Material));
+
+            if (extension.Equals(".fbx") || extension.Equals(".ma")
+             || extension.Equals(".mb") || extension.Equals(".blend")
+             || extension.Equals(".max") )
+                return AssetPreview.GetMiniTypeThumbnail(typeof(UnityEngine.GameObject));
+
+            if (extension.Equals(".wav") || extension.Equals(".mp3"))
+                return AssetPreview.GetMiniTypeThumbnail(typeof(UnityEngine.AudioClip));
+
+            if (extension.Equals(".anim"))
+                return AssetPreview.GetMiniTypeThumbnail(typeof(UnityEngine.Animation));
+
+            if (extension.Equals(".animator"))
+                return AssetPreview.GetMiniTypeThumbnail(typeof(UnityEngine.Animator));
+
+            if (extension.Equals(".shader"))
+                return EditorGUIUtility.IconContent("d_Shader Icon").image;
+
+            if (extension.Equals(".asset") && relativePath.StartsWith("ProjectSettings\\"))
+                return EditorGUIUtility.IconContent("EditorSettings Icon").image;
+
+            return null;
         }
 
         static string GetImageFileRelativePath(string imageFileName)

@@ -4,18 +4,20 @@ using UnityEditor;
 using UnityEngine;
 
 using Codice.Client.BaseCommands;
+using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.BaseCommands.Sync;
 using Codice.Client.Common;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.LogWrapper;
+using CodiceApp.EventTracking;
 using PlasticGui;
+using PlasticGui.WorkspaceWindow;
 using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
 using Unity.PlasticSCM.Editor.ProjectDownloader;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.WebApi;
-using PlasticGui.WorkspaceWindow;
 
 namespace Unity.PlasticSCM.Editor.CollabMigration
 {
@@ -57,6 +59,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
             EditorWindow parentWindow,
             string unityAccessToken,
             string projectPath,
+            string user,
             string organizationName,
             RepId repId,
             long changesetId,
@@ -66,6 +69,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
             MigrationDialog dialog = Create(
                 unityAccessToken,
                 projectPath,
+                user,
                 organizationName,
                 repId,
                 changesetId,
@@ -151,6 +155,15 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
             if (NormalButton(PlasticLocalization.GetString(
                     PlasticLocalization.Name.CloseButton)))
             {
+                if (mIsMigrationCompleted) 
+                    TrackFeatureUseEvent.For(
+                        PlasticGui.Plastic.API.GetRepositorySpec(mWorkspaceInfo),
+                        TrackFeatureUseEvent.Features.CloseDialogAfterWorkspaceMigration);
+                else 
+                    TrackFeatureUseEvent.For(
+                        GetEventCloudOrganizationInfo(),
+                        TrackFeatureUseEvent.Features.DoNotMigrateWorkspace);
+
                 CloseButtonAction();
             }
 
@@ -162,8 +175,22 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
             if (!NormalButton("Open Plastic SCM"))
                 return;
 
+            TrackFeatureUseEvent.For(
+                PlasticGui.Plastic.API.GetRepositorySpec(mWorkspaceInfo),
+                TrackFeatureUseEvent.Features.OpenPlasticAfterWorkspaceMigration);
+
             ((IPlasticDialogCloser)this).CloseDialog();
             ShowWindow.Plastic();
+        }
+
+        EventCloudOrganizationInfo GetEventCloudOrganizationInfo()
+        {
+            return new EventCloudOrganizationInfo()
+            {
+                Name = mOrganizationName,
+                ServerType = EventCloudOrganizationInfo.GetServerType(true),
+                User = mUser
+            };
         }
 
         void DoMigrateButton()
@@ -178,12 +205,22 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
                         PlasticLocalization.GetString(PlasticLocalization.Name.YesButton),
                         PlasticLocalization.GetString(PlasticLocalization.Name.NoButton)))
                 {
+                    TrackFeatureUseEvent.For(
+                        GetEventCloudOrganizationInfo(),
+                        TrackFeatureUseEvent.Features.MigrateWorkspace);
+
                     LaunchMigration(
                         mUnityAccessToken, mProjectPath,
                         mOrganizationName, mRepId,
                         mChangesetId, mBranchId,
                         mAfterWorkspaceMigratedAction,
                         mProgressControls);
+                }
+                else
+                {
+                    TrackFeatureUseEvent.For(
+                        GetEventCloudOrganizationInfo(),
+                        TrackFeatureUseEvent.Features.DoNotMigrateWorkspace);
                 }
             }
 
@@ -228,7 +265,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
                 "{0}@cloud", organizationName);
 
             TokenExchangeResponse tokenExchangeResponse = null;
-            WorkspaceInfo workspaceInfo = null;
+            mWorkspaceInfo = null;
 
             CreateWorkspaceFromCollab.Progress progress = new CreateWorkspaceFromCollab.Progress();
 
@@ -269,7 +306,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
 
                 repInfo.SetExplicitServer(serverName);
 
-                workspaceInfo = CreateWorkspaceFromCollab.Create(
+                mWorkspaceInfo = CreateWorkspaceFromCollab.Create(
                     projectPath, repInfo.Name, repInfo,
                     changesetId, branchId,
                     progress);
@@ -294,7 +331,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
                 }
 
                 if (tokenExchangeResponse.Error != null ||
-                    workspaceInfo == null)
+                    mWorkspaceInfo == null)
                 {
                     progressControls.ShowError(
                         "Failed to convert your workspace to Plastic SCM");
@@ -329,6 +366,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
         static MigrationDialog Create(
             string unityAccessToken,
             string projectPath,
+            string user,
             string organizationName,
             RepId repId,
             long changesetId,
@@ -340,6 +378,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
             instance.IsResizable = false;
             instance.mUnityAccessToken = unityAccessToken;
             instance.mProjectPath = projectPath;
+            instance.mUser = user;
             instance.mOrganizationName = organizationName;
             instance.mRepId = repId;
             instance.mChangesetId = changesetId;
@@ -358,8 +397,10 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
         long mBranchId;
         RepId mRepId;
         string mOrganizationName;
+        string mUser;
         string mProjectPath;
         string mUnityAccessToken;
+        WorkspaceInfo mWorkspaceInfo;
 
         static readonly ILog mLog = LogManager.GetLogger("MigrationDialog");
     }

@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using UnityEditor;
 using UnityEngine;
 
@@ -42,16 +39,15 @@ namespace Unity.PlasticSCM.Editor.UI
     {
         internal StatusBar()
         {
-            mNotificationClearAction = new CooldownWindowDelayer(
-                ClearNotification,
+            mCooldownNotificationClearAction = new CooldownWindowDelayer(
+                DelayedClearNotification,
                 UnityConstants.NOTIFICATION_CLEAR_INTERVAL);
         }
 
         internal void Notify(string message, MessageType type, Images.Name imageName)
         {
             mNotification = new Notification(message, type, imageName);
-            mHasNotification = true;
-            mNotificationClearAction.Ping();
+            mCooldownNotificationClearAction.Ping();
         }
 
         internal void OnGUI(
@@ -79,7 +75,7 @@ namespace Unity.PlasticSCM.Editor.UI
                     isGluonMode);
             }
 
-            if (mHasNotification)
+            if (mNotification != null)
                 DrawNotification(mNotification);
 
             GUILayout.FlexibleSpace();
@@ -218,9 +214,9 @@ namespace Unity.PlasticSCM.Editor.UI
                 workspaceInfo, mergeViewLauncher);
         }
 
-        void ClearNotification()
+        void DelayedClearNotification()
         {
-            mHasNotification = false;
+            mNotification = null;
         }
 
         GUIStyle GetBarStyle()
@@ -238,26 +234,25 @@ namespace Unity.PlasticSCM.Editor.UI
             return mBarStyle;
         }
 
-        struct Notification
+        class Notification
         {
             internal string Message { get; private set; }
             internal MessageType MessageType { get; private set; }
             internal Images.Name ImageName { get; private set; }
 
-            internal Notification(string message, MessageType messageType, Images.Name imageName) : this()
+            internal Notification(string message, MessageType messageType, Images.Name imageName)
             {
-                this.Message = message;
-                this.MessageType = messageType;
-                this.ImageName = imageName;
+                Message = message;
+                MessageType = messageType;
+                ImageName = imageName;
             }
         }
 
         Texture2D mBarTexture;
         GUIStyle mBarStyle;
 
-        bool mHasNotification;
         Notification mNotification;
 
-        readonly CooldownWindowDelayer mNotificationClearAction;
+        readonly CooldownWindowDelayer mCooldownNotificationClearAction;
     }
 }

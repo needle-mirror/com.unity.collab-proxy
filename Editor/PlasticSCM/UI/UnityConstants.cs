@@ -23,6 +23,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const int TREEVIEW_STATUS_CONTENT_OFFSET = 2;
         internal const float FIRST_COLUMN_WITHOUT_ICON_INDENT = 5f;
         internal const int PENDING_CHANGES_FONT_SIZE = 12;
+        internal const int OVERLAY_STATUS_ICON_SIZE = 16;
 
         internal const int STATUS_BAR_HEIGHT = 24;
         internal const int STATUS_BAR_ICON_SIZE = 16;
@@ -31,8 +32,7 @@ namespace Unity.PlasticSCM.Editor.UI
 #if UNITY_2019_1_OR_NEWER
         internal const float DROPDOWN_ICON_Y_OFFSET = 2f;
         internal const float TREEVIEW_FOLDOUT_Y_OFFSET = 0f;
-        internal const float TREEVIEW_ROW_HEIGHT = 21f;
-        internal const float TREEVIEW_PENDING_CHANGES_ROW_HEIGHT = 24f;
+        internal const float TREEVIEW_ROW_HEIGHT = 24f;
         internal const float TREEVIEW_HEADER_CHECKBOX_Y_OFFSET = 0f;
         internal const float TREEVIEW_CHECKBOX_Y_OFFSET = 0f;
         internal static float DIR_CONFLICT_VALIDATION_WARNING_LABEL_HEIGHT = 21f;
@@ -66,6 +66,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal const string PLASTIC_WINDOW_TITLE = "Plastic SCM";
         internal const string LOGIN_WINDOW_TITLE = "Sign in to Plastic SCM";
+        internal const string PROJECT_SETTINGS_MENU_TITLE = "Project/Version Control/Plastic SCM";
         internal const float PLASTIC_WINDOW_MIN_SIZE_WIDTH = 600f;
         internal const float PLASTIC_WINDOW_MIN_SIZE_HEIGHT = 350f;
         internal const float PLASTIC_WINDOW_COMMENT_SECTION_HEIGHT = 55f;

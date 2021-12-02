@@ -12,6 +12,12 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
     [InitializeOnLoad]
     internal static class CloudProjectDownloader
     {
+        internal const string IS_PROJECT_DOWNLOADER_ALREADY_EXECUTED_KEY =
+            "PlasticSCM.ProjectDownloader.IsAlreadyExecuted";
+
+        internal const string SHOULD_PROJECT_BE_DOWNLOADED_KEY =
+            "PlasticSCM.ProjectDownloader.ShouldProjectBeDownloaded";
+
         static CloudProjectDownloader()
         {
             EditorApplication.update += RunOnceWhenAccessTokenIsInitialized;
@@ -35,10 +41,10 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
                 return;
             }
 
+            DownloadRepository(unityAccessToken);
+
             SessionState.SetBool(
                 IS_PROJECT_DOWNLOADER_ALREADY_EXECUTED_KEY, true);
-
-            DownloadRepository(unityAccessToken);
         }
 
         internal static void DownloadRepository(string unityAccessToken)
@@ -60,7 +66,12 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
             if (string.IsNullOrEmpty(projectPath) ||
                 string.IsNullOrEmpty(cloudRepository) ||
                 string.IsNullOrEmpty(cloudOrganization))
+            {
                 return;
+            }
+
+            SessionState.SetBool(
+                SHOULD_PROJECT_BE_DOWNLOADED_KEY, true);
 
             PlasticApp.InitializeIfNeeded();
 
@@ -73,9 +84,6 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
                 Path.GetFullPath(projectPath),
                 unityAccessToken);
         }
-  
-        const string IS_PROJECT_DOWNLOADER_ALREADY_EXECUTED_KEY =
-            "PlasticSCM.ProjectDownloader.IsAlreadyExecuted";
 
         static readonly ILog mLog = LogManager.GetLogger("ProjectDownloader");
     }

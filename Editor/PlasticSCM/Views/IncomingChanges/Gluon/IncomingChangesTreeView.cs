@@ -242,6 +242,36 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             return result;
         }
 
+        internal int GetCheckedItemCount()
+        {
+            List<IncomingChangeCategory> categories = mIncomingChangesTree.GetNodes();
+
+            if (categories == null)
+                return 0;
+
+            int checkedCount = 0;
+            foreach (IncomingChangeCategory category in categories)
+            {
+                checkedCount += category.GetCheckedChangesCount();
+            }
+            return checkedCount;
+        }
+
+        internal int GetTotalItemCount()
+        {
+            List<IncomingChangeCategory> categories = mIncomingChangesTree.GetNodes();
+
+            if (categories == null)
+                return 0;
+
+            int totalCount = 0;
+            foreach (IncomingChangeCategory category in categories)
+            {
+                totalCount += category.GetChildrenCount();
+            }
+            return totalCount;
+        }
+
         void SortingChanged(MultiColumnHeader multiColumnHeader)
         {
             Sort();
@@ -464,7 +494,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                     label = string.Concat(label, UnityConstants.TREEVIEW_META_LABEL);
 
                 Texture icon = GetIcon(wkPath, incomingChange);
-                GetChangesOverlayIcon.Data overlayIconData =
+                Texture overlayIcon =
                     GetChangesOverlayIcon.ForGluonIncomingChange(
                         incomingChange, isSolvedConflict);
 
@@ -472,7 +502,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
                 bool isChecked = DrawTreeViewItem.ForCheckableItemCell(
                     rect, rowHeight, item.depth,
-                    icon, overlayIconData, label,
+                    icon, overlayIcon, label,
                     isSelected, isFocused, isCurrentConflict,
                     wasChecked);
 

@@ -48,7 +48,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             multiColumnHeader.sortingChanged += SortingChanged;
 
             customFoldoutYOffset = UnityConstants.TREEVIEW_FOLDOUT_Y_OFFSET;
-            rowHeight = UnityConstants.TREEVIEW_PENDING_CHANGES_ROW_HEIGHT;
+            rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
             showAlternatingRowBackgrounds = false;
 
             mCooldownFilterAction = new CooldownWindowDelayer(
@@ -470,7 +470,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             }
         }
 
-        internal int GetSelectedItemCount()
+        internal int GetCheckedItemCount()
         {
             List<PendingChangeCategory> categories = mPendingChangesTree.GetNodes();
 
@@ -687,7 +687,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                     isGluonMode, assetStatusCache,
                     changeInfo.ChangeInfo.GetFullPath());
 
-                GetChangesOverlayIcon.Data overlayIconData =
+                Texture overlayIcon =
                     GetChangesOverlayIcon.ForPendingChange(
                         changeInfo.ChangeInfo, isConflicted);
 
@@ -695,7 +695,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
                 bool isChecked = DrawTreeViewItem.ForCheckableItemCell(
                     rect, rowHeight, item.depth,
-                    icon, overlayIconData, label,
+                    icon, overlayIcon, label,
                     isSelected, isFocused, false,
                     wasChecked);
 

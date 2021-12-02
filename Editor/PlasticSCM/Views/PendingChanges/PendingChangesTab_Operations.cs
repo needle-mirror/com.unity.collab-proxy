@@ -207,13 +207,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         void ShowCheckinSuccess()
         {
-            bool isTreeViewEmpty = mPendingChangesTreeView.GetSelectedItemCount() ==
+            bool isTreeViewEmpty = mPendingChangesTreeView.GetCheckedItemCount() ==
                 mPendingChangesTreeView.GetTotalItemCount();
 
             if (isTreeViewEmpty)
             {
                 mIsCheckedInSuccessful = true;
-                mClearCheckinSuccessAction.Ping();
+                mCooldownClearCheckinSuccessAction.Ping();
                 return;
             }
 
@@ -223,7 +223,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 Images.Name.StepOk);
         }
 
-        void ClearCheckinSuccess()
+        void DelayedClearCheckinSuccess()
         {
             mIsCheckedInSuccessful = false;
         }

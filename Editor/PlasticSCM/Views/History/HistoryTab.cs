@@ -181,6 +181,10 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         void IHistoryViewMenuOperations.SaveRevisionAs()
         {
+            TrackFeatureUseEvent.For(
+                PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                TrackFeatureUseEvent.Features.SaveRevisionFromFileHistory);
+
             HistoryRevision revision = HistorySelection.
                 GetSelectedHistoryRevision(mHistoryListView);
 

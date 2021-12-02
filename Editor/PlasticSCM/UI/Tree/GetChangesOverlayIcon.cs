@@ -14,23 +14,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 {
     static class GetChangesOverlayIcon
     {
-        internal class Data
-        {
-            internal readonly Texture Texture;
-            internal readonly float XOffset;
-            internal readonly float YOffset;
-            internal readonly float Size;
-
-            internal Data(Texture texture, float xOffset, float yOffset, float size)
-            {
-                Texture = texture;
-                XOffset = xOffset;
-                YOffset = yOffset;
-                Size = size;
-            }
-        }
-
-        internal static Data ForPlasticIncomingChange(
+        internal static Texture ForPlasticIncomingChange(
             MergeChangeInfo incomingChange,
             bool isSolvedConflict)
         {
@@ -39,18 +23,21 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                 return ForConflict(isSolvedConflict);
 
             if (incomingChange.IsXLink())
-                return BuildData.ForXLink();
+                return ForXLink();
 
             if (incomingChange.CategoryType == MergeChangesCategory.Type.Deleted)
-                return BuildData.ForDeletedOnServer();
+                return ForDeletedOnServer();
 
             if (incomingChange.CategoryType == MergeChangesCategory.Type.Changed)
-                return BuildData.ForOutOfDate();
+                return ForOutOfDate();
+
+            if (incomingChange.CategoryType == MergeChangesCategory.Type.Added)
+                return ForAdded();
 
             return null;
         }
 
-        internal static Data ForGluonIncomingChange(
+        internal static Texture ForGluonIncomingChange(
             GluonIncomingChangeInfo incomingChange,
             bool isSolvedConflict)
         {
@@ -58,217 +45,105 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                 return ForConflict(isSolvedConflict);
 
             if (incomingChange.IsXLink())
-                return BuildData.ForXLink();
+                return ForXLink();
 
             if (incomingChange.CategoryType == GluonIncomingChangeCategory.Type.Deleted)
-                return BuildData.ForDeletedOnServer();
+                return ForDeletedOnServer();
 
             if (incomingChange.CategoryType == GluonIncomingChangeCategory.Type.Changed)
-                return BuildData.ForOutOfDate();
+                return ForOutOfDate();
+
+            if (incomingChange.CategoryType == GluonIncomingChangeCategory.Type.Added)
+                return ForAdded();
 
             return null;
         }
 
-        internal static Data ForPendingChange(
+        internal static Texture ForPendingChange(
             ChangeInfo changeInfo,
             bool isConflict)
         {
             if (isConflict)
-                return BuildData.ForConflicted();
+                return ForConflicted();
 
             ItemIconImageType type = ChangeInfoView.
                 GetIconImageType(changeInfo);
 
             if (ChangeTypesOperator.AreAllSet(
                     changeInfo.ChangeTypes, ChangeTypes.Added))
-                return BuildData.ForAdded();
+                return ForAdded();
 
             switch (type)
             {
                 case ItemIconImageType.Ignored:
-                    return BuildData.ForIgnored();
+                    return ForIgnored();
                 case ItemIconImageType.Private:
-                    return BuildData.ForPrivated();
+                    return ForPrivated();
                 case ItemIconImageType.Deleted:
-                    return BuildData.ForDeleted();
+                    return ForDeleted();
                 case ItemIconImageType.CheckedOut:
-                    return BuildData.ForCheckedOut();
+                    return ForCheckedOut();
                 default:
                     return null;
             }
         }
 
-        internal static Data ForAssetStatus(AssetStatus status)
-        {
-            switch (status)
-            {
-                case AssetStatus.Ignored:
-                    return BuildData.ForIgnored();
-                case AssetStatus.Private:
-                    return BuildData.ForPrivated();
-                case AssetStatus.Added:
-                    return BuildData.ForAdded();
-                case AssetStatus.Checkout:
-                    return BuildData.ForCheckedOut();
-                case AssetStatus.OutOfDate:
-                    return BuildData.ForOutOfDate();
-                case AssetStatus.Conflicted:
-                    return BuildData.ForConflicted();
-                case AssetStatus.DeletedOnServer:
-                    return BuildData.ForDeletedOnServer();
-                case AssetStatus.Locked:
-                    return BuildData.ForLocked();
-                case AssetStatus.LockedRemote:
-                    return BuildData.ForLockedRemote();
-            }
-
-            return null;
-        }
-
-        static Data ForConflict(bool isResolved)
+        static Texture ForConflict(bool isResolved)
         {
             if (isResolved)
-                return BuildData.ForConflictResolved();
+                return ForConflictResolved();
 
-            return BuildData.ForConflicted();
+            return ForConflicted();
         }
 
-        static class BuildData
+        static Texture ForXLink()
         {
-            internal static Data ForOk()
-            {
-                return new Data(
-                    Images.GetImage(Images.Name.Ok),
-                    4f, 4f, SIZE);
-            }
+            return Images.GetImage(Images.Name.XLink);
+        }
 
-            internal static Data ForXLink()
-            {
-                return new Data(
-                    Images.GetImage(Images.Name.XLink),
-                    2f, 3f, SIZE);
-            }
+        static Texture ForIgnored()
+        {
+            return Images.GetIgnoredOverlayIcon();
+        }
 
-            internal static Data ForIgnored()
-            {
-                return new Data(
-                    Images.GetIgnoredOverlayIcon(),
-                    GetLeftXOffset(),
-                    GetBottomYOffset(),
-                    SIZE);
-            }
+        static Texture ForPrivated()
+        {
+            return Images.GetPrivatedOverlayIcon();
+        }
 
-            internal static Data ForPrivated()
-            {
-                return new Data(
-                    Images.GetPrivatedOverlayIcon(),
-                    GetLeftXOffset(),
-                    GetBottomYOffset(),
-                    SIZE);
-            }
+        static Texture ForAdded()
+        {
+            return Images.GetAddedOverlayIcon();
+        }
 
-            internal static Data ForAdded()
-            {
-                return new Data(
-                    Images.GetAddedOverlayIcon(),
-                    GetLeftXOffset(),
-                    GetTopYOffset(),
-                    SIZE);
-            }
+        static Texture ForDeleted()
+        {
+            return Images.GetDeletedLocalOverlayIcon();
+        }
 
-            internal static Data ForDeleted()
-            {
-                return new Data(
-                    Images.GetDeletedLocalOverlayIcon(),
-                    GetLeftXOffset(),
-                    GetTopYOffset(),
-                    SIZE);
-            }
+        static Texture ForCheckedOut()
+        {
+            return Images.GetCheckedOutOverlayIcon();
+        }
 
-            internal static Data ForCheckedOut()
-            {
-                return new Data(
-                    Images.GetCheckedOutOverlayIcon(),
-                    GetLeftXOffset(),
-                    GetTopYOffset(),
-                    SIZE);
-            }
+        static Texture ForDeletedOnServer()
+        {
+            return Images.GetDeletedRemoteOverlayIcon();
+        }
 
-            internal static Data ForDeletedOnServer()
-            {
-                return new Data(
-                    Images.GetDeletedRemoteOverlayIcon(),
-                    GetLeftXOffset(),
-                    GetTopYOffset(),
-                    SIZE);
-            }
+        static Texture ForOutOfDate()
+        {
+            return Images.GetOutOfSyncOverlayIcon();
+        }
 
-            internal static Data ForOutOfDate()
-            {
-                return new Data(
-                    Images.GetOutOfSyncOverlayIcon(),
-                    GetRightXOffset(),
-                    GetBottomYOffset(),
-                    SIZE);
-            }
+        static Texture ForConflicted()
+        {
+            return Images.GetConflictedOverlayIcon();
+        }
 
-            internal static Data ForLocked()
-            {
-                return new Data(
-                    Images.GetLockedLocalOverlayIcon(),
-                    GetLeftXOffset(),
-                    GetTopYOffset(),
-                    SIZE);
-            }
-
-            internal static Data ForLockedRemote()
-            {
-                return new Data(
-                    Images.GetLockedRemoteOverlayIcon(),
-                    GetRightXOffset(),
-                    GetTopYOffset(),
-                    SIZE);
-            }
-
-            static float GetLeftXOffset()
-            {
-                return -4f;
-            }
-
-            internal static Data ForConflicted()
-            {
-                return new Data(
-                    Images.GetConflictedOverlayIcon(),
-                    GetLeftXOffset(),
-                    GetBottomYOffset(),
-                    SIZE);
-            }
-
-            internal static Data ForConflictResolved()
-            {
-                return new Data(
-                    Images.GetConflictResolvedOverlayIcon(),
-                    GetLeftXOffset(),
-                    GetBottomYOffset(),
-                    SIZE);
-            }
-
-            static float GetRightXOffset()
-            {
-                return 8f;
-            }
-
-            static float GetBottomYOffset()
-            {
-                return UnityConstants.TREEVIEW_ROW_HEIGHT - SIZE + 2f;
-            }
-
-            static float GetTopYOffset()
-            {
-                return -1f;
-            }
-
-            const float SIZE = 16f;
+        static Texture ForConflictResolved()
+        {
+            return Images.GetConflictResolvedOverlayIcon();
         }
     }
 }

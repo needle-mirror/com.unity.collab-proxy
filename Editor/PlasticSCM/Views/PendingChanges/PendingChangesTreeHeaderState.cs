@@ -98,10 +98,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             {
                 string columnStatus = string.Format(
                     PlasticLocalization.GetString(PlasticLocalization.Name.ItemsSelected),
-                    treeView.GetSelectedItemCount(),
+                    treeView.GetCheckedItemCount(),
                     totalItemCount);
 
-                itemColumn.headerContent.text = string.Format("{0} {1}", columnName, columnStatus);
+                itemColumn.headerContent.text = string.Format("{0}  {1}", columnName, columnStatus);
             }
             else
             {

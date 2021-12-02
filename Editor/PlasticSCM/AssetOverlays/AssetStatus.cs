@@ -54,9 +54,24 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             return ContainsAny(status, AssetStatus.Controlled);
         }
 
+        internal static bool IsLocked(AssetStatus status)
+        {
+            return ContainsAny(status, AssetStatus.Locked);
+        }
+
         internal static bool IsLockedRemote(AssetStatus status)
         {
             return ContainsAny(status, AssetStatus.LockedRemote);
+        }
+
+        internal static bool IsOutOfDate(AssetStatus status)
+        {
+            return ContainsAny(status, AssetStatus.OutOfDate);
+        }
+
+        internal static bool IsDeletedOnServer(AssetStatus status)
+        {
+            return ContainsAny(status, AssetStatus.DeletedOnServer);
         }
 
         internal static bool IsConflicted(AssetStatus status)

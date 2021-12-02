@@ -28,7 +28,7 @@ Use the **Changesets** tab to view all changes made to your project as they occu
 
 ![Changesets tab](images/ProjectHistory.png)
 
-Double-click any file in a changeset to go to the **File History** tab, and display every changeset. In the **File History view**, right-click on a change and select **Save the revision as…** to restore the file's former state. This is useful if you had previously deleted some logic that you now need.
+Double-click any file in a changeset to go to the **File History** tab, and display every changeset. In the **File History view**, right-click on a change and click **Save the revision as…** to restore the file's former state. This is useful if you had previously deleted some logic that you now need.
 
 ![File history view](images/FileHistory.png)
 

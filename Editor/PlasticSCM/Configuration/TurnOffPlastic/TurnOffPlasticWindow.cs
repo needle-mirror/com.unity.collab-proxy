@@ -107,7 +107,7 @@ internal class TurnOffPlasticWindow : EditorWindow
             WorkspaceInfo workspaceInfo =
                        FindWorkspace.InfoForApplicationPath(
                        Application.dataPath,
-                       mPlasticWindow.PlasticApiForTesting);
+                       PlasticWindow.PlasticApi);
             Plastic.API.RemoveWorkspace(workspaceInfo);
             mProgress = 4;
             return;

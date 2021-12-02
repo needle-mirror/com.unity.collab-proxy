@@ -46,13 +46,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
     internal partial class PendingChangesTab :
         IRefreshableView,
+        PlasticProjectSettingsProvider.IAutoRefreshView,
         IPendingChangesView,
         CheckinUIOperation.ICheckinView,
         PendingChangesViewMenu.IMetaMenuOperations,
         IPendingChangesMenuOperations,
         IOpenMenuOperations,
-        IFilesFilterPatternsMenuOperations,
-        PendingChangesOptionsDialog.IAutorefreshView
+        IFilesFilterPatternsMenuOperations
     {
         internal IProgressControls ProgressControlsForTesting { get { return mProgressControls; } }
         internal HelpPanel HelpPanelForTesting { get { return mHelpPanel; } }
@@ -76,7 +76,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             WorkspaceWindow workspaceWindow,
             IViewSwitcher switcher,
             IMergeViewLauncher mergeViewLauncher,
-            IGluonViewSwitcher gluonViewSwitcher,
             IHistoryViewLauncher historyViewLauncher,
             PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges,
             NewIncomingChangesUpdater developerNewIncomingChangesUpdater,
@@ -89,7 +88,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mViewHost = viewHost;
             mIsGluonMode = isGluonMode;
             mWorkspaceWindow = workspaceWindow;
-            mGluonViewSwitcher = gluonViewSwitcher;
             mHistoryViewLauncher = historyViewLauncher;
             mPendingChanges = pendingChanges;
             mDeveloperNewIncomingChangesUpdater = developerNewIncomingChangesUpdater;
@@ -98,7 +96,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mStatusBar = statusBar;
             mParentWindow = parentWindow;
             mGuiMessage = new UnityPlasticGuiMessage(parentWindow);
-            mMergeViewLauncher = mergeViewLauncher;
             mCheckedStateManager = new CheckedStateManager();
 
             mNewChangesInWk = NewChangesInWk.Build(
@@ -113,8 +110,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             mProgressControls = new ProgressControlsForViews();
 
-            mClearCheckinSuccessAction = new CooldownWindowDelayer(
-                ClearCheckinSuccess,
+            mCooldownClearCheckinSuccessAction = new CooldownWindowDelayer(
+                DelayedClearCheckinSuccess,
                 UnityConstants.NOTIFICATION_CLEAR_INTERVAL);
 
             workspaceWindow.RegisterPendingChangesProgressControls(mProgressControls);
@@ -206,14 +203,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             DoChangesArea(
                 mWkInfo,
                 mPendingChangesTreeView,
-                mMergeViewLauncher,
-                mGluonViewSwitcher,
                 mProgressControls.IsOperationRunning(),
                 mIsGluonMode,
-                mIsCheckedInSuccessful,
-                mNotificationStatus,
-                mNotificationInfoText,
-                mNotificationActionText);
+                mIsCheckedInSuccessful);
 
             // Border
             Rect result = GUILayoutUtility.GetRect(mParentWindow.position.width, 1);
@@ -240,16 +232,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 UnityConstants.SEARCH_FIELD_WIDTH);
         }
 
-        internal void SetNotificationStatus(
-            PlasticNotification.Status status,
-            string infoText,
-            string actionText)
-        {
-            mNotificationStatus = status;
-            mNotificationInfoText = infoText;
-            mNotificationActionText = actionText;
-        }
-
         void IPendingChangesView.ClearComments()
         {
             ClearComments();
@@ -269,6 +251,21 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 mGluonNewIncomingChangesUpdater.Update(DateTime.Now);
 
             FillPendingChanges(mNewChangesInWk);
+        }
+
+        void PlasticProjectSettingsProvider.IAutoRefreshView.DisableAutoRefresh()
+        {
+            mIsAutoRefreshDisabled = true;
+        }
+
+        void PlasticProjectSettingsProvider.IAutoRefreshView.EnableAutoRefresh()
+        {
+            mIsAutoRefreshDisabled = false;
+        }
+
+        void PlasticProjectSettingsProvider.IAutoRefreshView.ForceRefresh()
+        {
+            ((IRefreshableView)this).Refresh();
         }
 
         void IPendingChangesView.ClearChangesToCheck(List<string> changes)
@@ -314,11 +311,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         {
         }
 
-        void PendingChangesOptionsDialog.IAutorefreshView.DisableAutorefresh()
-        {
-            mIsAutoRefreshDisabled = true;
-        }
-
         void CheckinUIOperation.ICheckinView.CollapseWarningMessagePanel()
         {
             mGluonWarningMessage = string.Empty;
@@ -331,11 +323,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mGluonWarningMessage = text;
 
             mParentWindow.Repaint();
-        }
-
-        void PendingChangesOptionsDialog.IAutorefreshView.EnableAutorefresh()
-        {
-            mIsAutoRefreshDisabled = false;
         }
 
         void CheckinUIOperation.ICheckinView.ClearComments()
@@ -855,14 +842,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         static void DoChangesArea(
             WorkspaceInfo wkInfo,
             PendingChangesTreeView changesTreeView,
-            IMergeViewLauncher mergeViewLauncher,
-            IGluonViewSwitcher gluonViewSwitcher,
             bool isOperationRunning,
             bool isGluonMode,
-            bool isCheckedInSuccessful,
-            PlasticNotification.Status notificationStatus,
-            string notificationInfoText,
-            string notificationActionText)
+            bool isCheckedInSuccessful)
         {
             GUI.enabled = !isOperationRunning;
 
@@ -874,15 +856,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             {
                 DrawEmptyState(
                     rect,
-                    isCheckedInSuccessful,
-                    notificationStatus,
-                    notificationInfoText,
-                    notificationActionText,
-                    () => OpenIncomingChangesTab(
-                        wkInfo,
-                        mergeViewLauncher,
-                        gluonViewSwitcher,
-                        isGluonMode));
+                    isCheckedInSuccessful);
             }
 
             GUI.enabled = true;
@@ -890,11 +864,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         static void DrawEmptyState(
             Rect rect,
-            bool isCheckedInSuccessful,
-            PlasticNotification.Status notificationStatus,
-            string notificationInfoText,
-            string notificationActionText,
-            Action notificationAction)
+            bool isCheckedInSuccessful)
         {
             if (isCheckedInSuccessful)
             {
@@ -905,40 +875,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return;
             }
 
-            if (notificationStatus != PlasticNotification.Status.None)
-            {
-                DrawTreeViewEmptyState.For(
-                    rect,
-                    PlasticLocalization.GetString(PlasticLocalization.Name.NoPendingChanges),
-                    notificationInfoText,
-                    notificationActionText,
-                    Images.Name.IconOutOfSync,
-                    notificationAction);
-                return;
-            }
-
             DrawTreeViewEmptyState.For(
                 rect,
                 PlasticLocalization.GetString(PlasticLocalization.Name.NoPendingChanges));
-        }
-
-        static void OpenIncomingChangesTab(
-            WorkspaceInfo wkInfo,
-            IMergeViewLauncher mergeViewLauncher,
-            IGluonViewSwitcher gluonViewSwitcher,
-            bool isGluonMode)
-        {
-            if (isGluonMode)
-            {
-                GluonShowIncomingChanges.FromNotificationBar(
-                    wkInfo,
-                    gluonViewSwitcher);
-                return;
-            }
-
-            ShowIncomingChanges.FromNotificationBar(
-                wkInfo,
-                mergeViewLauncher);
         }
 
         bool HasPendingMergeLinks()
@@ -1024,10 +963,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         string mGluonWarningMessage;
         bool mIsCheckedInSuccessful;
 
-        PlasticNotification.Status mNotificationStatus;
-        string mNotificationInfoText;
-        string mNotificationActionText;
-
         IDictionary<MountPoint, IList<PendingMergeLink>> mPendingMergeLinks;
 
         SearchField mSearchField;
@@ -1037,8 +972,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         readonly ProgressControlsForViews mProgressControls;
         readonly EditorWindow mParentWindow;
         readonly StatusBar mStatusBar;
+        readonly CooldownWindowDelayer mCooldownClearCheckinSuccessAction;
         readonly IAssetStatusCache mAssetStatusCache;
-        readonly CooldownWindowDelayer mClearCheckinSuccessAction;
 
         readonly PendingChangesOperations mPendingChangesOperations;
         readonly CheckedStateManager mCheckedStateManager;
@@ -1046,13 +981,11 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         readonly NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
         readonly GluonNewIncomingChangesUpdater mGluonNewIncomingChangesUpdater;
         readonly bool mIsGluonMode;
-        readonly IGluonViewSwitcher mGluonViewSwitcher;
         readonly IHistoryViewLauncher mHistoryViewLauncher;
         readonly PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges mPendingChanges;
         readonly WorkspaceWindow mWorkspaceWindow;
         readonly ViewHost mViewHost;
         readonly WorkspaceInfo mWkInfo;
-        readonly IMergeViewLauncher mMergeViewLauncher;
 
         static readonly ILog mLog = LogManager.GetLogger("PendingChangesTab");
     }

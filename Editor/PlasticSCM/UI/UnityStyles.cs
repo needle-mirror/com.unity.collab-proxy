@@ -371,6 +371,7 @@ namespace Unity.PlasticSCM.Editor.UI
             {
                 var style = new GUIStyle(EditorStyles.label);
                 style.fontSize = 11;
+                style.padding.top = 2;
                 style.fontStyle = FontStyle.Bold;
                 return style;
             });
@@ -405,14 +406,6 @@ namespace Unity.PlasticSCM.Editor.UI
 #if !UNITY_2019_1_OR_NEWER
                 style.margin = new RectOffset(0, 0, 0, 0);
 #endif
-                return style;
-            });
-
-            internal static readonly LazyStyle ActionToolbar = new LazyStyle(() =>
-            {
-                var style = new GUIStyle(EditorStyles.toolbar);
-                style.fixedHeight = 50f;
-                style.padding = new RectOffset(5, 5, 5, 5);
                 return style;
             });
         }
@@ -540,6 +533,14 @@ namespace Unity.PlasticSCM.Editor.UI
                 return style;
             });
         }
+
+        internal static readonly LazyStyle ActionToolbar = new LazyStyle(() =>
+        {
+            var style = new GUIStyle(EditorStyles.toolbar);
+            style.fixedHeight = 40f;
+            style.padding = new RectOffset(5, 5, 5, 5);
+            return style;
+        });
 
         internal static readonly LazyStyle SplitterIndicator = new LazyStyle(() =>
         {

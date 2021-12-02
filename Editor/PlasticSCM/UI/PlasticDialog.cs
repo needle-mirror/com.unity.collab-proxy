@@ -161,27 +161,7 @@ namespace Unity.PlasticSCM.Editor.UI
             string url, string formattedExplanation,
             GUIStyle textblockStyle)
         {
-            string explanation = string.Format(
-                formattedExplanation, "");
-
-            GUILayout.Label(explanation, textblockStyle);
-
-            if (explanation == formattedExplanation)
-                return;
-
-            string coloredUrl = string.Format(
-                "<color=\"{0}\">{1}</color>",
-                UnityStyles.HexColors.LINK_COLOR,
-                url);
-
-            float linkWidth =
-                textblockStyle.CalcSize(new GUIContent(url)).x;
-
-            if (GUILayout.Button(coloredUrl, textblockStyle, GUILayout.Width(linkWidth)))
-                Application.OpenURL(url);
-
-            EditorGUIUtility.AddCursorRect(
-                GUILayoutUtility.GetLastRect(), MouseCursor.Link);
+            DrawTextBlockWithEndLink.For(url, formattedExplanation, textblockStyle);
         }
 
         protected static void Title(string text)

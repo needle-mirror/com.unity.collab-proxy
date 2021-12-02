@@ -46,7 +46,6 @@ namespace Unity.PlasticSCM.Editor
             GluonNewIncomingChangesUpdater gluonNewIncomingChangesUpdater,
             IIncomingChangesNotifier incomingChangesNotifier,
             IAssetStatusCache assetStatusCache,
-            NotificationDrawer notificationDrawer,
             StatusBar statusBar,
             EditorWindow parentWindow)
         {
@@ -58,7 +57,6 @@ namespace Unity.PlasticSCM.Editor
             mGluonNewIncomingChangesUpdater = gluonNewIncomingChangesUpdater;
             mIncomingChangesNotifier = incomingChangesNotifier;
             mAssetStatusCache = assetStatusCache;
-            mNotificationDrawer = notificationDrawer;
             mStatusBar = statusBar;
             mParentWindow = parentWindow;
 
@@ -391,7 +389,6 @@ namespace Unity.PlasticSCM.Editor
                     this,
                     this,
                     this,
-                    this,
                     mPendingChanges,
                     mDeveloperNewIncomingChangesUpdater,
                     mGluonNewIncomingChangesUpdater,
@@ -429,6 +426,7 @@ namespace Unity.PlasticSCM.Editor
                         mWorkspaceWindow,
                         mGluonNewIncomingChangesUpdater,
                         (Gluon.IncomingChangesNotifier)mIncomingChangesNotifier,
+                        mStatusBar,
                         mParentWindow) as IIncomingChangesTab :
                     new Views.IncomingChanges.Developer.IncomingChangesTab(
                         mWkInfo,
@@ -735,7 +733,6 @@ namespace Unity.PlasticSCM.Editor
         WorkspaceWindow mWorkspaceWindow;
 
         readonly EditorWindow mParentWindow;
-        readonly NotificationDrawer mNotificationDrawer;
         readonly StatusBar mStatusBar;
         readonly IAssetStatusCache mAssetStatusCache;
         readonly IIncomingChangesNotifier mIncomingChangesNotifier;

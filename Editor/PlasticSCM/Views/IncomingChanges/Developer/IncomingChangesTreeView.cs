@@ -424,7 +424,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
                 Texture icon = GetIcon(wkPath, incomingChange);
 
-                GetChangesOverlayIcon.Data overlayIconData =
+                Texture overlayIcon =
                     GetChangesOverlayIcon.ForPlasticIncomingChange(
                         incomingChange, isSolvedConflict);
 
@@ -433,7 +433,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     rowHeight,
                     item.depth,
                     icon,
-                    overlayIconData,
+                    overlayIcon,
                     label,
                     isSelected,
                     isFocused,

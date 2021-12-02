@@ -1,24 +1,22 @@
 ﻿using System;
-using System.IO;
 using System.Threading;
 
 using UnityEditor;
-using UnityEngine;
 
 using Codice.Client.BaseCommands;
 using Codice.Client.Commands;
 using Codice.Client.Common;
 using Codice.CM.Common;
 using Codice.LogWrapper;
-using Codice.Utils;
 using PlasticGui;
 using PlasticGui.WebApi;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.Update;
 using Unity.PlasticSCM.Editor.AssetUtils;
-using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
+using Unity.PlasticSCM.Editor.WebApi;
+using Unity.PlasticSCM.Editor.AssetMenu;
 
 namespace Unity.PlasticSCM.Editor.ProjectDownloader
 {
@@ -70,6 +68,7 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
 
                 if (!mOperationFailed)
                 {
+                    AssetMenuItems.Enable();
                     ShowWindow.PlasticAfterDownloadingProject();
                 }
             }
@@ -81,6 +80,15 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
 
             try
             {
+                if (FindWorkspace.HasWorkspace(parameters.ProjectPath))
+                {
+                    // each domain reload, the package is reloaded.
+                    // way need to check if we already downloaded it
+                    return;
+                }
+
+                mDisplayProgress = true;
+
                 IPlasticWebRestApi restApi = new PlasticWebRestApi();
                 string defaultCloudAlias = restApi.GetDefaultCloudAlias();
 
@@ -100,15 +108,30 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
                         repSpec.Server,
                         parameters.ProjectPath);
                 }
+                
+                TokenExchangeResponse tokenExchangeResponse = WebRestApiClient.
+                    PlasticScm.TokenExchange(parameters.AccessToken);
 
-                if (WorkspaceExists(parameters.ProjectPath))
+                if (tokenExchangeResponse.Error != null)
                 {
-                    // each domain reload, the package is reloaded.
-                    // way need to check if we already downloaded it
+                    mOperationFailed = true;
+
+                    UnityEngine.Debug.LogErrorFormat(
+                        PlasticLocalization.GetString(PlasticLocalization.Name.ErrorDownloadingCloudProject),
+                        string.Format("Unable to get TokenExchangeResponse: {0} [code {1}]",
+                            tokenExchangeResponse.Error.Message,
+                            tokenExchangeResponse.Error.ErrorCode));
                     return;
                 }
 
-                mDisplayProgress = true;
+                CloudEditionWelcomeWindow.JoinCloudServer(
+                    repSpec.Server,
+                    tokenExchangeResponse.User,
+                    tokenExchangeResponse.AccessToken);
+
+                ClientConfigData clientConfigData = ClientConfig.Get().GetClientConfigData();
+                clientConfigData.WorkspaceServer = repSpec.Server;
+                ClientConfig.Get().Save(clientConfigData);
 
                 WorkspaceInfo wkInfo = CreateWorkspace(
                     repSpec, parameters.ProjectPath);
@@ -116,19 +139,7 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
                 mLog.DebugFormat("Created workspace {0} on {1}",
                     wkInfo.Name,
                     wkInfo.ClientPath);
-
-                AutoLogin autoLogin = new AutoLogin();
-                autoLogin.ExchangeTokens(parameters.AccessToken);
-
-                CloudEditionWelcomeWindow.JoinCloudServer(
-                    parameters.CloudOrganization,
-                    autoLogin.UserName,
-                    autoLogin.AccessToken);
-
-                ClientConfigData clientConfigData = ClientConfig.Get().GetClientConfigData();
-                clientConfigData.WorkspaceServer = parameters.CloudOrganization;
-                ClientConfig.Get().Save(clientConfigData);
-
+               
                 PlasticGui.Plastic.API.Update(
                     wkInfo.ClientPath,
                     UpdateFlags.None,
@@ -208,11 +219,6 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
             mLog.DebugFormat(
                 "StackTrace:{0}{1}",
                 Environment.NewLine, ex.StackTrace);
-        }
-
-        static bool WorkspaceExists(string projectPath)
-        {
-            return PlasticGui.Plastic.API.GetWorkspaceFromPath(projectPath) != null;
         }
 
         class DownloadRepositoryParameters

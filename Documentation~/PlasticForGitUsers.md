@@ -3,7 +3,7 @@
 
 | **GIT**| **Plastic**| **Explanation**|
 |:--|:--|:--|
-| To Commit| To Checkin| To Checkin is to submit changes to the repo.|
+| To Commit| To Check in| To Check in is to submit changes to the repo.|
 | Commit| Changeset| Each new change on the history of the repo, grouping several individual file and directory changes.|
 | Master| Main| When you create a repo in Plastic, there's always an "empty" branch. Plastic calls it Main.|
 | To checkout  | To update| Downloading content to the workspace (working copy). This is called "update" because in Plastic, "checkout" has a different meaning.|
