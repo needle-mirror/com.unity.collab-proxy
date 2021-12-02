@@ -37,51 +37,43 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             mRepaintProjectWindow();
         }
 
-        internal static AssetStatus GetStatusesToDraw(AssetStatus status)
+        internal static string GetStatusString(AssetStatus assetStatus)
         {
-            if (status.HasFlag(AssetStatus.Checkout) &&
-                status.HasFlag(AssetStatus.Locked))
-                return status & ~AssetStatus.Checkout;
+            if (ClassifyAssetStatus.IsPrivate(assetStatus))
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.Private);
 
-            if (status.HasFlag(AssetStatus.DeletedOnServer) &&
-                status.HasFlag(AssetStatus.LockedRemote))
-                return status & ~AssetStatus.LockedRemote;
+            if (ClassifyAssetStatus.IsIgnored(assetStatus))
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.StatusIgnored);
 
-            return status;
-        }
+            if (ClassifyAssetStatus.IsAdded(assetStatus))
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.StatusAdded);
 
-        internal static string GetStatusString(AssetStatus statusValue)
-        {
-            switch (statusValue)
-            {
-                case AssetStatus.Private:
-                    return PlasticLocalization.GetString(
-                        PlasticLocalization.Name.Private);
-                case AssetStatus.Ignored:
-                    return PlasticLocalization.GetString(
-                        PlasticLocalization.Name.StatusIgnored);
-                case AssetStatus.Added:
-                    return PlasticLocalization.GetString(
-                        PlasticLocalization.Name.StatusAdded);
-                case AssetStatus.Checkout:
-                    return PlasticLocalization.GetString(
-                        PlasticLocalization.Name.StatusCheckout);
-                case AssetStatus.OutOfDate:
-                    return PlasticLocalization.GetString(
-                        PlasticLocalization.Name.StatusOutOfDate);
-                case AssetStatus.Conflicted:
-                    return PlasticLocalization.GetString(
-                        PlasticLocalization.Name.StatusConflicted);
-                case AssetStatus.DeletedOnServer:
-                    return PlasticLocalization.GetString(
-                        PlasticLocalization.Name.StatusDeletedOnServer);
-                case AssetStatus.Locked:
-                    return PlasticLocalization.GetString(
-                        PlasticLocalization.Name.StatusLockedMe);
-                case AssetStatus.LockedRemote:
-                    return PlasticLocalization.GetString(
-                        PlasticLocalization.Name.StatusLockedRemote);
-            }
+            if (ClassifyAssetStatus.IsConflicted(assetStatus))
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.StatusConflicted);
+
+            if (ClassifyAssetStatus.IsDeletedOnServer(assetStatus))
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.StatusDeletedOnServer);
+
+            if (ClassifyAssetStatus.IsLockedRemote(assetStatus))
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.StatusLockedRemote);
+
+            if (ClassifyAssetStatus.IsOutOfDate(assetStatus))
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.StatusOutOfDate);
+
+            if (ClassifyAssetStatus.IsLocked(assetStatus))
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.StatusLockedMe);
+
+            if (ClassifyAssetStatus.IsCheckedOut(assetStatus))
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.StatusCheckout);
 
             return string.Empty;
         }
@@ -132,31 +124,21 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             if (Event.current.type != EventType.Repaint)
                 return;
 
-            AssetStatus statusesToDraw = GetStatusesToDraw(
-                mAssetStatusCache.GetStatusForGuid(guid));
+            AssetStatus assetStatus = mAssetStatusCache.GetStatusForGuid(guid);
 
-            foreach (AssetStatus status in Enum.GetValues(typeof(AssetStatus)))
-            {
-                if (status == AssetStatus.None)
-                    continue;
+            LockStatusData lockStatusData =
+                ClassifyAssetStatus.IsLockedRemote(assetStatus) ?
+                mAssetStatusCache.GetLockStatusData(guid) :
+                null;
 
-                if (!statusesToDraw.HasFlag(status))
-                    continue;
+            string tooltipText = GetTooltipText(
+                assetStatus,
+                lockStatusData);
 
-                LockStatusData lockStatusData =
-                    ClassifyAssetStatus.IsLockedRemote(status) ?
-                        mAssetStatusCache.GetLockStatusData(guid) :
-                        null;
-
-                string tooltipText = GetTooltipText(
-                    status,
-                    lockStatusData);
-
-                DrawOverlayIcon.ForStatus(
-                    selectionRect,
-                    status,
-                    tooltipText);
-            }
+            DrawOverlayIcon.ForStatus(
+                selectionRect,
+                assetStatus,
+                tooltipText);
         }
 
         internal static class DrawOverlayIcon
@@ -171,8 +153,8 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
                 if (overlayIcon == null)
                     return;
 
-                Rect overlayRect = GetOverlayRect(
-                    selectionRect, overlayIcon, status);
+                Rect overlayRect = OverlayRect.GetRightBottonRect(
+                    selectionRect);
 
                 GUI.DrawTexture(
                     overlayRect, overlayIcon, ScaleMode.ScaleToFit);
@@ -182,29 +164,34 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
                 GUI.Label(tooltipRect, new GUIContent(string.Empty, tooltipText));
             }
 
-            internal static Texture GetOverlayIcon(AssetStatus status)
+            internal static Texture GetOverlayIcon(AssetStatus assetStatus)
             {
-                switch (status)
-                {
-                    case AssetStatus.Ignored:
-                        return Images.GetIgnoredOverlayIcon();
-                    case AssetStatus.Private:
-                        return Images.GetPrivatedOverlayIcon();
-                    case AssetStatus.Added:
-                        return Images.GetAddedOverlayIcon();
-                    case AssetStatus.Checkout:
-                        return Images.GetCheckedOutOverlayIcon();
-                    case AssetStatus.OutOfDate:
-                        return Images.GetOutOfSyncOverlayIcon();
-                    case AssetStatus.Conflicted:
-                        return Images.GetConflictedOverlayIcon();
-                    case AssetStatus.DeletedOnServer:
-                        return Images.GetDeletedRemoteOverlayIcon();
-                    case AssetStatus.Locked:
-                        return Images.GetLockedLocalOverlayIcon();
-                    case AssetStatus.LockedRemote:
-                        return Images.GetLockedRemoteOverlayIcon();
-                }
+                if (ClassifyAssetStatus.IsPrivate(assetStatus))
+                    return Images.GetPrivatedOverlayIcon();
+
+                if (ClassifyAssetStatus.IsIgnored(assetStatus))
+                    return Images.GetIgnoredOverlayIcon();
+
+                if (ClassifyAssetStatus.IsAdded(assetStatus))
+                    return Images.GetAddedOverlayIcon();
+
+                if (ClassifyAssetStatus.IsConflicted(assetStatus))
+                    return Images.GetConflictedOverlayIcon();
+
+                if (ClassifyAssetStatus.IsDeletedOnServer(assetStatus))
+                    return Images.GetDeletedRemoteOverlayIcon();
+
+                if (ClassifyAssetStatus.IsLockedRemote(assetStatus))
+                    return Images.GetLockedRemoteOverlayIcon();
+
+                if (ClassifyAssetStatus.IsOutOfDate(assetStatus))
+                    return Images.GetOutOfSyncOverlayIcon();
+
+                if (ClassifyAssetStatus.IsLocked(assetStatus))
+                    return Images.GetLockedLocalOverlayIcon();
+
+                if (ClassifyAssetStatus.IsCheckedOut(assetStatus))
+                    return Images.GetCheckedOutOverlayIcon();
 
                 return null;
             }
@@ -218,21 +205,6 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
                     rect.height + 2f * height);
             }
 
-            static Rect GetOverlayRect(
-                Rect selectionRect,
-                Texture overlayIcon,
-                AssetStatus status)
-            {
-                OverlayAlignment alignment = GetIconPosition(status);
-
-                if (selectionRect.width > selectionRect.height)
-                    return GetOverlayRectForSmallestSize(
-                        selectionRect, overlayIcon, alignment);
-
-                return GetOverlayRectForOtherSizes(
-                    selectionRect, overlayIcon, alignment);
-            }
-
             static Rect GetTooltipRect(
                 Rect selectionRect,
                 Rect overlayRect)
@@ -244,81 +216,10 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
 
                 return Inflate(overlayRect, 3f, 3f);
             }
-
-            static Rect GetOverlayRectForSmallestSize(
-                Rect selectionRect,
-                Texture overlayIcon,
-                OverlayAlignment alignment)
-            {
-                float xOffset = IsLeftAligned(alignment) ? -5f : 5f;
-                float yOffset = IsTopAligned(alignment) ? -4f : 4f;
-
-                return new Rect(
-                    selectionRect.x + xOffset,
-                    selectionRect.y + yOffset,
-                    OVERLAY_ICON_SIZE,
-                    OVERLAY_ICON_SIZE);
-            }
-
-            static Rect GetOverlayRectForOtherSizes(
-                Rect selectionRect,
-                Texture overlayIcon,
-                OverlayAlignment alignment)
-            {
-                float xOffset = IsLeftAligned(alignment) ?
-                    0f : selectionRect.width - overlayIcon.width;
-
-                float yOffset = IsTopAligned(alignment) ?
-                    0f : selectionRect.height - overlayIcon.height;
-
-                return new Rect(
-                    selectionRect.x + xOffset,
-                    selectionRect.y + yOffset,
-                    OVERLAY_ICON_SIZE,
-                    OVERLAY_ICON_SIZE);
-            }
-
-            static OverlayAlignment GetIconPosition(AssetStatus status)
-            {
-                if (status == AssetStatus.Checkout ||
-                    status == AssetStatus.Locked)
-                    return OverlayAlignment.TopLeft;
-
-                if (status == AssetStatus.DeletedOnServer ||
-                    status == AssetStatus.LockedRemote)
-                    return OverlayAlignment.TopRight;
-
-                if (status == AssetStatus.OutOfDate)
-                    return OverlayAlignment.BottomRight;
-
-                return OverlayAlignment.BottomLeft;
-            }
-
-            static bool IsLeftAligned(OverlayAlignment alignment)
-            {
-                return alignment == OverlayAlignment.BottomLeft ||
-                       alignment == OverlayAlignment.TopLeft;
-            }
-
-            static bool IsTopAligned(OverlayAlignment alignment)
-            {
-                return alignment == OverlayAlignment.TopLeft ||
-                       alignment == OverlayAlignment.TopRight;
-            }
-
-            enum OverlayAlignment
-            {
-                TopLeft,
-                BottomLeft,
-                TopRight,
-                BottomRight
-            }
         }
 
         static IAssetStatusCache mAssetStatusCache;
         static Action mRepaintProjectWindow;
-
-        const float OVERLAY_ICON_SIZE = 16f;
     }
 }
 

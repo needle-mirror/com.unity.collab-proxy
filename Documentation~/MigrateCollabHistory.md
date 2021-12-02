@@ -1,4 +1,4 @@
-# Migrating from Collaborate without moving the history
+# Upgrade from Collaborate without moving the history
 
 
 If you're planning to lose all Collaborate history and just wish to move your project to Plastic as is, complete the following steps:

@@ -39,6 +39,7 @@ using GluonCheckIncomingChanges = PlasticGui.Gluon.WorkspaceWindow.CheckIncoming
 using GluonNewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncomingChangesUpdater;
 using EventTracking = PlasticGui.EventTracking.EventTracking;
 using processor = Unity.PlasticSCM.Editor.AssetUtils.Processor;
+using Unity.PlasticSCM.Editor.Views.PendingChanges;
 
 namespace Unity.PlasticSCM.Editor
 {
@@ -52,7 +53,15 @@ namespace Unity.PlasticSCM.Editor
     {
         internal WorkspaceWindow WorkspaceWindowForTesting { get { return mWorkspaceWindow; } }
         internal ViewSwitcher ViewSwitcherForTesting { get { return mViewSwitcher; } }
-        internal IPlasticAPI PlasticApiForTesting { get { return mPlasticAPI; } }
+        internal static IPlasticAPI PlasticApi 
+        {
+            get
+            {
+                if (mPlasticAPI == null)
+                    mPlasticAPI = new PlasticAPI();
+                return mPlasticAPI;
+            }
+        }
         internal IPlasticWebRestApi PlasticWebRestApiForTesting { get { return mPlasticWebRestApi; } }
         internal CmConnection CmConnectionForTesting { get { return CmConnection.Get(); } }
 
@@ -64,9 +73,9 @@ namespace Unity.PlasticSCM.Editor
         /// <summary>
         /// Open the Plastic SCM window.
         /// </summary>
-        public static void Open()
+        public static PlasticWindow Open()
         {
-            ShowWindow.Plastic();
+            return ShowWindow.Plastic();
         }
 
         /// <summary>
@@ -101,14 +110,6 @@ namespace Unity.PlasticSCM.Editor
             mNotificationStatus = status;
             SetupWindowTitle();
             OnNotificationUpdated.Invoke();
-
-            if (mViewSwitcher != null)
-            {
-                mViewSwitcher.PendingChangesTab.SetNotificationStatus(
-                    status,
-                    infoText,
-                    actionText);
-            }
         }
 
         internal void DisableCollabIfEnabledWhenLoaded()
@@ -217,7 +218,8 @@ namespace Unity.PlasticSCM.Editor
             ClientEncryptionServiceProvider.SetEncryptionPasswordProvider(
                 new MissingEncryptionPasswordPromptHandler(this));
 
-            mPlasticAPI = new PlasticAPI();
+            if (mPlasticAPI == null)
+                mPlasticAPI = new PlasticAPI();
             mPlasticWebRestApi = new PlasticWebRestApi();
 
             mEventSenderScheduler = EventTracking.Configure(
@@ -367,8 +369,6 @@ namespace Unity.PlasticSCM.Editor
                         mWorkspaceWindow, mWorkspaceWindow.Progress,
                         position.width);
 
-                mNotificationDrawer.DoDrawer();
-
                 mStatusBar.OnGUI(
                     mWkInfo,
                     mWorkspaceWindow,
@@ -489,7 +489,6 @@ namespace Unity.PlasticSCM.Editor
                     mGluonNewIncomingChangesUpdater,
                     mIncomingChangesNotifier,
                     assetStatusCache,
-                    mNotificationDrawer,
                     mStatusBar,
                     this);
 
@@ -789,7 +788,7 @@ namespace Unity.PlasticSCM.Editor
                     PlasticLocalization.GetString(
                 PlasticLocalization.Name.Options)),
                 false,
-                () => PendingChangesOptionsDialog.ChangeOptions(wkInfo, PlasticAssetsProcessor.mPendingChangesTab, plasticWindow));
+                () => SettingsService.OpenProjectSettings(UnityConstants.PROJECT_SETTINGS_MENU_TITLE));
 
             // If the user has the simplified UI key of type .txt in the Assets folder
             // TODO: Remove when Simplified UI is complete
@@ -1072,10 +1071,14 @@ namespace Unity.PlasticSCM.Editor
             result.mIncomingChangesNotifier = window.mIncomingChangesNotifier;
             result.mStatusBar = window.mStatusBar;
             result.mWelcomeView = window.mWelcomeView;
-            result.mPlasticAPI = window.mPlasticAPI;
             result.mEventSenderScheduler = window.mEventSenderScheduler;
             result.mPingEventLoop = window.mPingEventLoop;
             return result;
+        }
+
+        internal PlasticProjectSettingsProvider.IAutoRefreshView GetPendingChangesView()
+        {
+            return mViewSwitcher != null ? mViewSwitcher.PendingChangesTab : null;
         }
 
         static class Reload
@@ -1146,7 +1149,6 @@ namespace Unity.PlasticSCM.Editor
         CooldownWindowDelayer mCooldownAutoRefreshPendingChangesAction;
         internal ViewSwitcher mViewSwitcher;
         WelcomeView mWelcomeView;
-        internal NotificationDrawer mNotificationDrawer = new NotificationDrawer();
         StatusBar mStatusBar = new StatusBar();
 
         PlasticGui.WorkspaceWindow.NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
@@ -1157,7 +1159,7 @@ namespace Unity.PlasticSCM.Editor
         bool mIsGluonMode;
         bool mDisableCollabIfEnabledWhenLoaded;
 
-        PlasticAPI mPlasticAPI;
+        static PlasticAPI mPlasticAPI;
         static PlasticWebRestApi mPlasticWebRestApi;
         EventSenderScheduler mEventSenderScheduler;
         PingEventLoop mPingEventLoop;

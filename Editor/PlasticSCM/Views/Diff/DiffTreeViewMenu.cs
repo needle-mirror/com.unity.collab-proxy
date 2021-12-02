@@ -57,6 +57,11 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             return true;
         }
 
+        void SaveRevisionAsMenuItem_Click()
+        {
+            mOperations.SaveRevisionAs();
+        }
+
         void DiffMenuItem_Click()
         {
             mOperations.Diff();
@@ -108,6 +113,9 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             bool isMultipleSelection = groupInfo.SelectedItemsCount > 1;
             bool selectionHasMeta = mMetaMenuOperations.SelectionHasMeta();
+
+            if (operations.HasFlag(DiffTreeViewMenuOperations.SaveAs))
+                menu.AddItem(mSaveRevisionAsMenuItemContent, false, SaveRevisionAsMenuItem_Click);
 
             if (operations.HasFlag(DiffTreeViewMenuOperations.Diff))
                 menu.AddItem(mDiffMenuItemContent, false, DiffMenuItem_Click);
@@ -223,6 +231,12 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void ProcessMenuOperation(DiffTreeViewMenuOperations operationToExecute)
         {
+            if (operationToExecute == DiffTreeViewMenuOperations.SaveAs)
+            {
+                SaveRevisionAsMenuItem_Click();
+                return;
+            }
+
             if (operationToExecute == DiffTreeViewMenuOperations.Diff)
             {
                 DiffMenuItem_Click();
@@ -248,6 +262,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void BuildComponents()
         {
+            mSaveRevisionAsMenuItemContent = new GUIContent(
+                    PlasticLocalization.GetString(PlasticLocalization.Name.DiffMenuItemSaveRevisionAs));
             mDiffMenuItemContent = new GUIContent(
                 string.Format("{0} {1}",
                     PlasticLocalization.GetString(PlasticLocalization.Name.DiffMenuItem),
@@ -267,6 +283,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         GUIContent mNoActionMenuItemContent;
 
+        GUIContent mSaveRevisionAsMenuItemContent;
         GUIContent mDiffMenuItemContent;
         GUIContent mDiffMetaMenuItemContent;
         GUIContent mViewHistoryMenuItemContent;

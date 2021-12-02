@@ -1,4 +1,4 @@
-# Migration from Collaborate to Plastic SCM
+# Upgrade from Collaborate to Plastic SCM
 
 To migrate your Collab projects to Plastic SCM:
 
@@ -7,8 +7,8 @@ To migrate your Collab projects to Plastic SCM:
 3. Complete the process to migrate every Collab project in a Unity org.
 4. Wait until you receive an email from Plastic SCM that the migration process has finished.
 5. Re-open the same Collab project in Unity.
-6. The Migration guide will pop up, guiding you through the process of converting your local instance of their Collab project into a local instance of their Plastic workspace.
-7. Once it finishes, you can continue working on your project, using the Plastic SCM window to checkin your changes.
+6. The Migration guide will pop up, guiding you through the process of converting your local instance of your Collab project into a local instance of your Plastic workspace.
+7. Once it finishes, you can continue working on your project, using the Plastic SCM window to check in your changes.
 
  **Videos**
 

@@ -10,6 +10,7 @@ using Codice.CM.WorkspaceServer;
 using Codice.LogWrapper;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.WebApi;
+using Unity.PlasticSCM.Editor.ProjectDownloader;
 
 namespace Unity.PlasticSCM.Editor.CollabMigration
 {
@@ -34,19 +35,44 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
             if (!SetupCloudProjectId.HasCloudProjectId())
                 return;
 
+            if (!SessionState.GetBool(
+                   CloudProjectDownloader.IS_PROJECT_DOWNLOADER_ALREADY_EXECUTED_KEY, false))
+                return;
+
             EditorApplication.update -= RunOnceWhenAccessTokenAndProjectIdAreInitialized;
 
-            if (!CollabPlugin.IsEnabled())
+            if (!ShouldProjectBeMigrated())
             {
                 SessionState.SetInt(
                     IS_PROJECT_MIGRATED_ALREADY_CALCULATED_KEY,
                     MIGRATED_NOTHING_TO_DO);
                 return;
             }
- 
+
             Execute(
                 CloudProjectSettings.accessToken,
                 SetupCloudProjectId.GetCloudProjectId());
+        }
+
+        static bool ShouldProjectBeMigrated()
+        {
+            if (SessionState.GetBool(
+                    CloudProjectDownloader.SHOULD_PROJECT_BE_DOWNLOADED_KEY, false))
+            {
+                return false;
+            }
+
+            if (!CollabPlugin.IsEnabled())
+            {
+                return false;
+            }
+
+            if (FindWorkspace.HasWorkspace(Application.dataPath))
+            {
+                return false;
+            }
+ 
+            return true;
         }
 
         static void Execute(
@@ -160,6 +186,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
                     null,
                     unityAccessToken,
                     projectPath,
+                    isMigratedResponse.Credentials.Email,
                     isMigratedResponse.PlasticCloudOrganizationName,
                     new RepId(
                         changesetResponse.RepId,

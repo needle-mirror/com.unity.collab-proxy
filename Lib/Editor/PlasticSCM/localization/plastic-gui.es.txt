@@ -476,10 +476,10 @@ Annotate
 No items are selected. Use items' checkboxes to select them. This can also occur if you have selected items, but they are all ignored.
 
 == EmptyCommentsDialogTitle ==
-Empty Checkin Message
+Empty Checkin Comment Field
 
 == EmptyCommentsDialogContent ==
-Checkin comment is blank. Writing a comment is recommended.
+The checkin comment field is blank. Writing a comment is recommended.
 
 == EmptyComments ==
 The comment field is empty. Don't forget to add a checkin comment before creating a new changeset.
@@ -4207,7 +4207,7 @@ Can't create sync view
 Can't retrieve your cloud organization
 
 == SyncViewNameAlreadyExists ==
-Sync view {0} already exist
+Sync view {0} already exists
 
 == StartANewProject ==
 Start a new project
@@ -4536,7 +4536,7 @@ There aren't any diff tools defined in the client configuration file
 File properties
 
 == FileHistory ==
-File history
+File History
 
 == Comment ==
 Comment
@@ -4962,6 +4962,18 @@ Plastic monitoriza el workspace en busca de cambios para acelerar la operación.
 
 == PendingChangesINotifyDisabledExplanation ==
 El rendimiento de la vista de cambios pendientes mejora mucho cuando puede aprovechar el sistema de detección basado en inotify. Compruebe las siguientes instrucciones para habilitarlo: {0} y reinicie la GUI
+
+== ProjectSettingsGeneral ==
+General
+
+== ProjectSettingsFileChange ==
+File Change Settings
+
+== ProjectSettingsFileVisibility ==
+File Visibility Settings
+
+== ProjectSettingsMoveAndRename ==
+File Move and Rename Detection
 
 == MergeToMergeNeededExplanation ==
 Durante la operación de merge-to, otro usuario ha creado nuevos changesets en el destino de la operación de merge-to, creando múltiples 'heads'. Considere unificarlas realizando una nueva operación de merge (o merge-to). Ramas afectadas:
@@ -6144,7 +6156,7 @@ Es necesario actualizar el workspace.
 Aviso
 
 == IncomingChangesViewTitle ==
-Incoming changes
+Incoming Changes
 
 == Reason ==
 Razón
@@ -6503,8 +6515,8 @@ Copiar link para compartir la revisión
 == MainWindowTitleForLinux ==
 Plastic SCM - wk: {0}
 
-== MainWindowTitleForAvalonia ==
-wk: {0} - Plastic SCM
+== WorkspaceWindowtitleForPlasticX ==
+Workspace: {0}
 
 == GluonFilePlasticLinkText ==
 Copiar link - obtén un link a este fichero para que puedas compartirlo fácilmente con otros
@@ -6706,6 +6718,9 @@ Undelete revision to specified path...
 
 == DiffMenuItem ==
 Diff
+
+== DiffMenuItemSaveRevisionAs ==
+Save this revision as...
 
 == DiffMetaMenuItem ==
 Diff .meta
@@ -7208,6 +7223,96 @@ Cmd+R
 == PlasticRefreshShortcutForLinux ==
 F5
 
+== PlasticShowItemsViewShortcutForMacOS ==
+Alt+Cmd+E
+
+== PlasticShowPendingChangesViewShortcutForMacOS ==
+Alt+Cmd+P
+
+== PlasticShowBranchExplorerViewShortcutForMacOS ==
+Alt+Cmd+X
+
+== PlasticShowChangesetsViewShortcutForMacOS ==
+Alt+Cmd+C
+
+== PlasticShowBranchesViewShortcutForMacOS ==
+Alt+Cmd+B
+
+== PlasticShowLabelsViewShortcutForMacOS ==
+Alt+Cmd+L
+
+== PlasticShowAttributesViewShortcutForMacOS ==
+Alt+Cmd+A
+
+== PlasticShowReviewsViewShortcutForMacOS ==
+Alt+Cmd+V
+
+== PlasticShowSyncViewShortcutForMacOS ==
+Alt+Cmd+S
+
+== PlasticShowRepositoriesViewShortcutForMacOS ==
+Alt+Cmd+R
+
+== PlasticShowWorkspacesViewShortcutForMacOS ==
+Alt+Cmd+W
+
+== PlasticCheckinActionShortcutForMacOS ==
+Shift+Cmd+I
+
+== PlasticMergeActionShortcutForMacOS ==
+Shift+Cmd+M
+
+== PlasticSwitchToActionShortcutForMacOS ==
+Shift+Cmd+W
+
+== PlasticSwitchWorkspaceActionShortcutForMacOS ==
+Shift+Cmd+T
+
+== PlasticNewFileActionShortcutForMacOS ==
+Shift+Cmd+N
+
+== PlasticNewDirectoryActionShortcutForMacOS ==
+Shift+Cmd+D
+
+== PlasticSaveActionShortcutForMacOS ==
+Cmd+S
+
+== PlasticCloseActionShortcutForMacOS ==
+Cmd+W
+
+== PlasticUndoActionShortcutForMacOS ==
+Cmd+Z
+
+== PlasticRedoActionShortcutForMacOS ==
+Shift+Cmd+Z
+
+== PlasticCutActionShortcutForMacOS ==
+Cmd+X
+
+== PlasticCopyActionShortcutForMacOS ==
+Cmd+C
+
+== PlasticPasteActionShortcutForMacOS ==
+Cmd+V
+
+== PlasticSelectAllActionShortcutForMacOS ==
+Cmd+A
+
+== PlasticFindActionShortcutForMacOS ==
+Cmd+F
+
+== PlasticFindNextActionShortcutForMacOS ==
+Cmd+G
+
+== PlasticFindPreviousActionShortcutForMacOS ==
+Shift+Cmd+G
+
+== PlasticUseSelectionActionShortcutForMacOS ==
+Cmd+E
+
+== PlasticJumpToSelectionActionShortcutForMacOS ==
+Cmd+J
+
 == BranchExplorerSearchFieldShortcutsTooltipForWindows ==
 Keyboard shortcuts:
   Enter: focus the next search result
@@ -7248,10 +7353,10 @@ Cleaning the settings
 Deleting the workspace
 
 == DisableForcedCheckout ==
-Disable Forced Checkout of Unity Assets
+Disable Manual Checkout for Unity Assets
 
 == EnableForcedCheckout ==
-Enable Forced Checkout of Unity Assets
+Enable Manual Checkout for Unity Assets
 
 == StatusBarReady ==
 Ready
@@ -7305,10 +7410,115 @@ El changeset seleccionado representa los cambios en su workspace, que todavía n
 No incoming changes
 
 == WorkspaceIsUpToDate ==
-Workspace is up to date
+Workspace is up to date.
 
 == NoPendingChanges ==
 No pending changes
 
+== Theme ==
+Tema
+
+== LightTheme ==
+Tema claro
+
+== DarkTheme ==
+Tema oscuro
+
 == CheckinCompleted ==
 Checkin successfully completed
+
+== WorkspaceUpdateCompleted ==
+Workspace successfully updated
+
+== MainMenuView ==
+View
+
+== MainMenuActions ==
+Actions
+
+== MainMenuWindow ==
+Window
+
+== ActionsMenuCheckin ==
+Checkin
+
+== ActionsMenuMerge ==
+Merge
+
+== ActionsMenuCreateBranch ==
+Create Branch
+
+== ActionsMenuCreateLabel ==
+Create Label
+
+== ActionsMenuSwitchTo ==
+Switch To
+
+== ActionsMenuCreateRepository ==
+Create Repository
+
+== ActionsMenuCreateWorkspace ==
+Create Workspace
+
+== ActionsMenuSwitchWorkspace ==
+Switch Workspace
+
+== ActionsMenuRefresh ==
+Refresh
+
+== MainMenuFile ==
+File
+
+== FileMenuNewFile ==
+New File
+
+== FileMenuNewDirectory ==
+New Directory
+
+== FileMenuSave ==
+Save
+
+== FileMenuClose ==
+Close
+
+== MainMenuEdit ==
+Edit
+
+== EditMenuUndo ==
+Undo
+
+== EditMenuRedo ==
+Redo
+
+== EditMenuFind ==
+Find
+
+== EditMenuFindFind ==
+Find…
+
+== EditMenuFindFindNext ==
+Find Next
+
+== EditMenuFindFindPrevious ==
+Find Previous
+
+== EditMenuFindUseSelection ==
+Use Selection for Find
+
+== EditMenuFindJumpToSelection ==
+Jump to Selection
+
+== EditMenuCut ==
+Cut
+
+== EditMenuCopy ==
+Copy
+
+== EditMenuPaste ==
+Paste
+
+== EditMenuDelete ==
+Delete
+
+== EditMenuSelectAll ==
+Select All

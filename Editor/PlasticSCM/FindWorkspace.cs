@@ -7,6 +7,13 @@ namespace Unity.PlasticSCM.Editor
 {
     internal static class FindWorkspace
     {
+        internal static bool HasWorkspace(string path)
+        {
+            string wkPath = PathForApplicationPath(path);
+
+           return !string.IsNullOrEmpty(wkPath);
+        }
+
         internal static string PathForApplicationPath(string path)
         {
             try

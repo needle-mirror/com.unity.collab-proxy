@@ -14,6 +14,7 @@ using PlasticGui;
 using PlasticGui.Gluon.WorkspaceWindow;
 using PlasticGui.Gluon.WorkspaceWindow.Views.IncomingChanges;
 using PlasticGui.WorkspaceWindow.Diff;
+using PlasticGui.WorkspaceWindow.Merge;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
@@ -36,15 +37,21 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             WorkspaceWindow workspaceWindow,
             NewIncomingChangesUpdater newIncomingChangesUpdater,
             CheckIncomingChanges.IUpdateIncomingChanges updateIncomingChanges,
+            StatusBar statusBar,
             EditorWindow parentWindow)
         {
             mWkInfo = wkInfo;
             mNewIncomingChangesUpdater = newIncomingChangesUpdater;
             mParentWindow = parentWindow;
+            mStatusBar = statusBar;
 
             BuildComponents();
 
             mProgressControls = new ProgressControlsForViews();
+
+            mCooldownClearUpdateSuccessAction = new CooldownWindowDelayer(
+                DelayedClearUpdateSuccess,
+                UnityConstants.NOTIFICATION_CLEAR_INTERVAL);
 
             mErrorsSplitterState = PlasticSplitterGUILayout.InitSplitterState(
                 new float[] { 0.75f, 0.25f },
@@ -96,16 +103,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         void IIncomingChangesTab.OnGUI()
         {
-            DoActionsToolbar(
-                mIsProcessMergesButtonVisible,
-                mIsCancelMergesButtonVisible,
-                mIsProcessMergesButtonEnabled,
-                mIsCancelMergesButtonEnabled,
-                mProcessMergesButtonText,
-                mIncomingChangesViewLogic,
-                mIncomingChangesTreeView,
-                mProgressControls);
-
             bool splitterNeeded = mIsErrorsListVisible;
 
             if (splitterNeeded)
@@ -113,22 +110,55 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
             DoIncomingChangesArea(
                 mIncomingChangesTreeView,
-                mPendingConflictsLabelData,
-                mChangesToApplySummaryLabelText,
-                mMessageLabelText,
-                mIsMessageLabelVisible,
                 mProgressControls.IsOperationRunning(),
-                mHasNothingToDownload);
+                mHasNothingToDownload,
+                mIsUpdateSuccessful);
 
             DoErrorsArea(
                 mErrorsListView,
                 mErrorDetailsSplitterState,
-                mErrorMessageLabelText,
-                mIsErrorsListVisible,
-                mIsErrorMessageLabelVisible);
+                mIsErrorsListVisible);
 
             if (splitterNeeded)
                 PlasticSplitterGUILayout.EndVerticalSplit();
+
+            DrawActionToolbar.Begin(mParentWindow);
+
+            if (!mProgressControls.IsOperationRunning())
+            {
+                DoActionToolbarMessage(
+                    mIsMessageLabelVisible,
+                    mMessageLabelText,
+                    mHasNothingToDownload,
+                    mIsErrorMessageLabelVisible,
+                    mErrorMessageLabelText,
+                    mFileConflictCount,
+                    mChangesSummary);
+
+                if (mIsProcessMergesButtonVisible)
+                {
+                    DoProcessMergesButton(
+                        mIsProcessMergesButtonEnabled,
+                        mProcessMergesButtonText,
+                        mIncomingChangesViewLogic,
+                        mIncomingChangesTreeView,
+                        AfterProcessMerges);
+                }
+
+                if (mIsCancelMergesButtonVisible)
+                {
+                    mIsCancelMergesButtonEnabled = DoCancelMergesButton(
+                        mIsCancelMergesButtonEnabled,
+                        mIncomingChangesViewLogic);
+                }
+            }
+            else
+            {
+                DrawProgressForViews.ForIndeterminateProgress(
+                    mProgressControls.ProgressData);
+            }
+
+            DrawActionToolbar.End();
 
             if (mProgressControls.HasNotification())
             {
@@ -162,19 +192,18 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             ((IncomingChangesViewLogic.IIncomingChangesView)this).
                 UpdatePendingConflictsLabel(conflictsLabelData);
 
-            mChangesToApplySummaryLabelText = changesToApplySummaryText;
-
             UpdateIncomingChangesTree(mIncomingChangesTreeView, tree);
 
             UpdateErrorsList(mErrorsListView, errorMessages);
 
             mIsErrorsListVisible = errorMessages.Count > 0;
+
+            UpdateOverview(tree, conflictsLabelData);
         }
 
         void IncomingChangesViewLogic.IIncomingChangesView.UpdatePendingConflictsLabel(
             PendingConflictsLabelData data)
         {
-            mPendingConflictsLabelData = data;
         }
 
         void IncomingChangesViewLogic.IIncomingChangesView.UpdateSolvedFileConflicts(
@@ -249,7 +278,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             mIncomingChangesViewLogic.ProcessMergesForConflicts(
                 MergeContributorType.MergeContributors,
                 fileConflicts,
-                RefreshAsset.UnityAssetDatabase);
+                AfterProcessMerges);
         }
 
         void IIncomingChangesViewMenuOperations.MergeKeepingSourceChanges()
@@ -260,7 +289,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             mIncomingChangesViewLogic.ProcessMergesForConflicts(
                 MergeContributorType.KeepSource,
                 fileConflicts,
-                RefreshAsset.UnityAssetDatabase);
+                AfterProcessMerges);
         }
 
         void IIncomingChangesViewMenuOperations.MergeKeepingWorkspaceChanges()
@@ -271,7 +300,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             mIncomingChangesViewLogic.ProcessMergesForConflicts(
                 MergeContributorType.KeepDestination,
                 fileConflicts,
-                RefreshAsset.UnityAssetDatabase);
+                AfterProcessMerges);
         }
 
         void IIncomingChangesViewMenuOperations.DiffIncomingChanges()
@@ -414,82 +443,73 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             mIsProcessMergesButtonVisible = true;
         }
 
-        void DoActionsToolbar(
-            bool isProcessMergesButtonVisible,
-            bool isCancelMergesButtonVisible,
-            bool isProcessMergesButtonEnabled,
-            bool isCancelMergesButtonEnabled,
-            string processMergesButtonText,
-            IncomingChangesViewLogic incomingChangesViewLogic,
-            IncomingChangesTreeView incomingChangesTreeView,
-            ProgressControlsForViews progressControls)
-        {
-            GUIStyle guiStyle = new GUIStyle();
-            guiStyle.margin = new RectOffset(5, 5, 5, 5);
-
-            EditorGUILayout.BeginHorizontal(guiStyle);
-
-            if (isProcessMergesButtonVisible)
-            {
-                DoProcessMergesButton(
-                    isProcessMergesButtonEnabled,
-                    processMergesButtonText,
-                    incomingChangesViewLogic,
-                    incomingChangesTreeView);
-            }
-
-            if (isCancelMergesButtonVisible)
-            {
-                DoCancelMergesButton(
-                    isCancelMergesButtonEnabled,
-                    incomingChangesViewLogic);
-            }
-
-            if (progressControls.IsOperationRunning())
-            {
-                DrawProgressForViews.ForIndeterminateProgress(
-                    progressControls.ProgressData);
-            }
-
-            GUILayout.FlexibleSpace();
-
-            EditorGUILayout.EndHorizontal();
-        }
-
-        static void DoIncomingChangesArea(
-            IncomingChangesTreeView incomingChangesTreeView,
-            PendingConflictsLabelData pendingConflictsLabelData,
-            string changesToApplySummaryLabelText,
-            string messageLabelText,
+        static void DoActionToolbarMessage(
             bool isMessageLabelVisible,
-            bool isOperationRunning,
-            bool hasNothingToDownload)
+            string messageLabelText,
+            bool hasNothingToDownload,
+            bool isErrorMessageLabelVisible,
+            string errorMessageLabelText,
+            int fileConflictCount,
+            MergeViewTexts.ChangesToApplySummary changesSummary)
         {
-            EditorGUILayout.BeginVertical();
-
-            DoPendingConflictsAndChangesToApplyLabel(
-                pendingConflictsLabelData,
-                changesToApplySummaryLabelText);
-
-            DoIncomingChangesTreeViewArea(
-                incomingChangesTreeView,
-                isOperationRunning,
-                hasNothingToDownload);
-
             if (isMessageLabelVisible)
             {
                 string message = messageLabelText;
 
                 if (hasNothingToDownload)
                 {
-                    message = string.Format(
-                        "{0}. {1}.",
-                        PlasticLocalization.GetString(PlasticLocalization.Name.NoIncomingChanges),
-                        PlasticLocalization.GetString(PlasticLocalization.Name.WorkspaceIsUpToDate));
+                    message = PlasticLocalization.GetString(
+                        PlasticLocalization.Name.WorkspaceIsUpToDate);
                 }
 
-                DoInfoMessageArea(message);
+                DoInfoMessage(message);
             }
+            
+            if (isErrorMessageLabelVisible)
+            {
+                DoErrorMessage(errorMessageLabelText);
+            }
+
+            if (!isMessageLabelVisible && !isErrorMessageLabelVisible)
+            {
+                DrawIncomingChangesOverview.For(
+                    0,
+                    fileConflictCount,
+                    changesSummary);
+            }
+        }
+
+        static void DoInfoMessage(string message)
+        {
+            EditorGUILayout.BeginHorizontal();
+
+            GUILayout.Label(message, UnityStyles.IncomingChangesTab.ChangesToApplySummaryLabel);
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        static void DoErrorMessage(string message)
+        {
+            EditorGUILayout.BeginHorizontal();
+
+            GUILayout.Label(message, UnityStyles.IncomingChangesTab.RedPendingConflictsOfTotalLabel);
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        static void DoIncomingChangesArea(
+            IncomingChangesTreeView incomingChangesTreeView,
+            bool isOperationRunning,
+            bool hasNothingToDownload,
+            bool isUpdateSuccessful)
+        {
+            EditorGUILayout.BeginVertical();
+
+            DoIncomingChangesTreeViewArea(
+                incomingChangesTreeView,
+                isOperationRunning,
+                hasNothingToDownload,
+                isUpdateSuccessful);
 
             EditorGUILayout.EndVertical();
         }
@@ -498,7 +518,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             bool isEnabled,
             string processMergesButtonText,
             IncomingChangesViewLogic incomingChangesViewLogic,
-            IncomingChangesTreeView incomingChangesTreeView)
+            IncomingChangesTreeView incomingChangesTreeView,
+            Action afterProcessMergesAction)
         {
             GUI.enabled = isEnabled;
 
@@ -514,16 +535,18 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
                 incomingChangesViewLogic.ProcessMergesForItems(
                     incomingChanges,
-                    RefreshAsset.UnityAssetDatabase);
+                    afterProcessMergesAction);
             }
 
             GUI.enabled = true;
         }
 
-        void DoCancelMergesButton(
+        static bool DoCancelMergesButton(
             bool isEnabled,
             IncomingChangesViewLogic incomingChangesViewLogic)
         {
+            bool shouldCancelMergesButtonEnabled = true;
+
             GUI.enabled = isEnabled;
 
             if (DrawActionButton.For(PlasticLocalization.GetString(
@@ -531,18 +554,18 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             {
                 incomingChangesViewLogic.Cancel();
 
-                mIsCancelMergesButtonEnabled = false;
+                shouldCancelMergesButtonEnabled = false;
             }
 
             GUI.enabled = true;
+
+            return shouldCancelMergesButtonEnabled;
         }
 
         void DoErrorsArea(
             ErrorsListView errorsListView,
             object splitterState,
-            string errorMessageLabelText,
-            bool isErrorsListVisible,
-            bool isErrorMessageLabelVisible)
+            bool isErrorsListVisible)
         {
             EditorGUILayout.BeginVertical();
 
@@ -552,40 +575,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 DoErrorsListArea(errorsListView, splitterState);
             }
 
-            if (isErrorMessageLabelVisible)
-                DoErrorMessageArea(errorMessageLabelText);
-
             EditorGUILayout.EndVertical();
-        }
-
-        static void DoPendingConflictsAndChangesToApplyLabel(
-            PendingConflictsLabelData pendingConflictsLabelData,
-            string changesToApplySummaryLabelText)
-        {
-            EditorGUILayout.BeginHorizontal();
-
-            GUIStyle pendingConflictsOfTotalStyle =
-                pendingConflictsLabelData.HasPendingConflicts ?
-                UnityStyles.IncomingChangesTab.RedPendingConflictsOfTotalLabel :
-                UnityStyles.IncomingChangesTab.GreenPendingConflictsOfTotalLabel;
-
-            GUILayout.Label(
-                pendingConflictsLabelData.PendingConflictsOfTotalText,
-                pendingConflictsOfTotalStyle);
-
-            GUILayout.Label(
-                pendingConflictsLabelData.PendingConflictsLabelText,
-                UnityStyles.IncomingChangesTab.PendingConflictsLabel);
-
-            GUILayout.Space(5);
-
-            GUILayout.Label(
-                changesToApplySummaryLabelText,
-                UnityStyles.IncomingChangesTab.ChangesToApplySummaryLabel);
-
-            GUILayout.FlexibleSpace();
-
-            EditorGUILayout.EndHorizontal();
         }
 
         static void UpdateIncomingChangesTree(
@@ -601,7 +591,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         static void DoIncomingChangesTreeViewArea(
             IncomingChangesTreeView incomingChangesTreeView,
             bool isOperationRunning,
-            bool hasNothingToDownload)
+            bool hasNothingToDownload,
+            bool isUpdateSuccessful)
         {
             GUI.enabled = !isOperationRunning;
 
@@ -610,15 +601,28 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             incomingChangesTreeView.OnGUI(rect);
 
             if (hasNothingToDownload)
+                DrawEmptyState(rect, isUpdateSuccessful);
+
+            GUI.enabled = true;
+        }
+
+        static void DrawEmptyState(
+            Rect rect,
+            bool isUpdateSuccessful)
+        {
+            if (isUpdateSuccessful)
             {
                 DrawTreeViewEmptyState.For(
                     rect,
-                    PlasticLocalization.GetString(PlasticLocalization.Name.NoIncomingChanges),
-                    PlasticLocalization.GetString(PlasticLocalization.Name.WorkspaceIsUpToDate),
+                    PlasticLocalization.GetString(PlasticLocalization.Name.WorkspaceUpdateCompleted),
                     Images.Name.StepOk);
+
+                return;
             }
 
-            GUI.enabled = true;
+            DrawTreeViewEmptyState.For(
+                rect,
+                PlasticLocalization.GetString(PlasticLocalization.Name.NoIncomingChanges));
         }
 
         void DoErrorsListArea(
@@ -636,15 +640,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 errorsListView, splitterState);
 
             EditorGUILayout.EndVertical();
-        }
-
-        static void DoErrorMessageArea(string message)
-        {
-            EditorGUILayout.BeginHorizontal();
-
-            EditorGUILayout.HelpBox(message, MessageType.Error);
-
-            EditorGUILayout.EndHorizontal();
         }
 
         void DoErrorsListSplitViewArea(
@@ -687,13 +682,39 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             GUILayout.EndScrollView();
         }
 
-        static void DoInfoMessageArea(string message)
+        void AfterProcessMerges()
         {
-            EditorGUILayout.BeginHorizontal();
+            RefreshAsset.UnityAssetDatabase();
 
-            EditorGUILayout.HelpBox(message, MessageType.Info);
+            bool isTreeViewEmpty = mIncomingChangesTreeView.GetCheckedItemCount() ==
+                mIncomingChangesTreeView.GetTotalItemCount();
 
-            EditorGUILayout.EndHorizontal();
+            if (isTreeViewEmpty)
+            {
+                mIsUpdateSuccessful = true;
+                mCooldownClearUpdateSuccessAction.Ping();
+                return;
+            }
+
+            mStatusBar.Notify(
+                PlasticLocalization.GetString(PlasticLocalization.Name.WorkspaceUpdateCompleted),
+                MessageType.None,
+                Images.Name.StepOk);
+        }
+
+        void UpdateOverview(
+            IncomingChangesTree incomingChangesTree,
+            PendingConflictsLabelData conflictsLabelData)
+        {
+            mChangesSummary = BuildFilesSummaryData.
+                GetChangesToApplySummary(incomingChangesTree);
+
+            mFileConflictCount = conflictsLabelData.PendingConflictsCount;
+        }
+
+        void DelayedClearUpdateSuccess()
+        {
+            mIsUpdateSuccessful = false;
         }
 
         void BuildComponents()
@@ -735,21 +756,24 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         string mMessageLabelText;
         string mErrorMessageLabelText;
         bool mHasNothingToDownload;
-
-        PendingConflictsLabelData mPendingConflictsLabelData;
-        string mChangesToApplySummaryLabelText;
+        bool mIsUpdateSuccessful;
 
         IncomingChangesTreeView mIncomingChangesTreeView;
         ErrorsListView mErrorsListView;
+
+        int mFileConflictCount;
+        MergeViewTexts.ChangesToApplySummary mChangesSummary;
 
         object mErrorsSplitterState;
         object mErrorDetailsSplitterState;
 
         readonly ProgressControlsForViews mProgressControls;
+        readonly CooldownWindowDelayer mCooldownClearUpdateSuccessAction;
         Vector2 mErrorDetailsScrollPosition;
 
         readonly IncomingChangesViewLogic mIncomingChangesViewLogic;
         readonly EditorWindow mParentWindow;
+        readonly StatusBar mStatusBar;
         readonly NewIncomingChangesUpdater mNewIncomingChangesUpdater;
         readonly WorkspaceInfo mWkInfo;
     }

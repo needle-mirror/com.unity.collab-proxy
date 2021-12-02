@@ -1,14 +1,15 @@
-﻿using PlasticGui;
-using System;
-using System.IO;
+﻿using System.IO;
+
+using UnityEditor;
+using UnityEditor.VersionControl;
+using UnityEngine;
+
 using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
-using UnityEditor;
-using UnityEditor.VersionControl;
-using UnityEngine;
+using PlasticGui;
 
 namespace Unity.PlasticSCM.Editor.Inspector
 {
@@ -75,9 +76,13 @@ namespace Unity.PlasticSCM.Editor.Inspector
                 DrawBackRectangle(guiEnabledBck);
 
                 GUILayout.BeginHorizontal();
-                DrawStatusLabels(assetStatus, lockStatusData);
+                
+                DrawStatusLabel(assetStatus, lockStatusData);
+                
                 GUILayout.FlexibleSpace();
+
                 DrawButtons(assetList, assetOperations);
+
                 GUILayout.EndHorizontal();
             }
             finally
@@ -130,32 +135,41 @@ namespace Unity.PlasticSCM.Editor.Inspector
                 DoUndoButton();
         }
 
-        static void DrawStatusLabels(
+        static void DrawStatusLabel(
             AssetsOverlays.AssetStatus assetStatus,
             LockStatusData lockStatusData)
         {
-            AssetsOverlays.AssetStatus statusesToDraw = DrawAssetOverlay.GetStatusesToDraw(assetStatus);
+            Texture overlayIcon = DrawAssetOverlay.DrawOverlayIcon.
+                GetOverlayIcon(assetStatus);
 
-            foreach (AssetsOverlays.AssetStatus status in Enum.GetValues(typeof(AssetsOverlays.AssetStatus)))
-            {
-                if (status == AssetsOverlays.AssetStatus.None)
-                    continue;
+            if (overlayIcon == null)
+                return;
 
-                if (!statusesToDraw.HasFlag(status))
-                    continue;
+            string statusText = DrawAssetOverlay.
+                GetStatusString(assetStatus);
 
-                string label = string.Format("{0}",
-                    DrawAssetOverlay.GetStatusString(status));
+            string tooltipText = DrawAssetOverlay.GetTooltipText(
+                assetStatus, lockStatusData);
 
-                Texture icon = DrawAssetOverlay.DrawOverlayIcon.GetOverlayIcon(
-                    status);
+            Rect selectionRect = GUILayoutUtility.GetRect(
+                new GUIContent(statusText + EXTRA_SPACE, overlayIcon),
+                GUIStyle.none);
 
-                string tooltipText = DrawAssetOverlay.GetTooltipText(
-                    status, lockStatusData);
+            selectionRect.height = UnityConstants.OVERLAY_STATUS_ICON_SIZE;
 
-                GUILayout.Label(new GUIContent(
-                    label, icon, tooltipText), GUILayout.Height(18));
-            }
+            Rect overlayRect = OverlayRect.GetCenteredRect(selectionRect);
+
+            GUI.DrawTexture(
+                overlayRect,
+                overlayIcon,
+                ScaleMode.ScaleToFit);
+
+            selectionRect.x += UnityConstants.OVERLAY_STATUS_ICON_SIZE;
+            selectionRect.width -= UnityConstants.OVERLAY_STATUS_ICON_SIZE;
+
+            GUI.Label(
+                selectionRect,
+                new GUIContent(statusText, tooltipText));
         }
 
         static void DoAddButton()
@@ -200,5 +214,6 @@ namespace Unity.PlasticSCM.Editor.Inspector
         static IAssetStatusCache mStatusCache;
         static AssetOperations.IAssetSelection mAssetsSelection;
         static bool mIsEnabled;
+        const string EXTRA_SPACE = "    ";
     }
 }

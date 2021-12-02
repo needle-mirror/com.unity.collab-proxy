@@ -445,17 +445,8 @@ GUID
 == NoItemsAreSelected ==
 未选择项。请使用项的复选框来选择相应的项。如果您选择了项，但这些项全被忽略，也会发生这种情况。
 
-== EmptyCommentsDialogTitle ==
-Empty Checkin Message
-
-== EmptyCommentsDialogContent ==
-Checkin comment is blank. Writing a comment is recommended.
-
 == EmptyComments ==
 注释字段为空。创建新的变更集之前，请不要忘记添加签入注释。
-
-== CheckinAnyway ==
-Checkin Anyway
 
 == RepositoryNameLabel ==
 新存储库的名称：
@@ -4915,6 +4906,18 @@ Plastic 会观察工作区中是否有更改以加快操作速度。这种情况
 
 == PendingChangesINotifyDisabledExplanation ==
 当可以利用基于 inotify 的检测系统时，待定更改性能会大幅提高。请查看以下说明以启用该功能：{0} 并重新启动 GUI
+
+== ProjectSettingsGeneral ==
+General
+
+== ProjectSettingsFileChange ==
+File Change Settings
+
+== ProjectSettingsFileVisibility ==
+File Visibility Settings
+
+== ProjectSettingsMoveAndRename ==
+File Move and Rename Detection
 
 == MergeToMergeNeededExplanation ==
 在运行“合并到”操作期间，在“合并到”操作的目标位置创建了新的变更集，从而创建了多个头部。请考虑通过运行新的合并（或“合并到”）操作来进行统一。受影响的分支：

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -10,12 +11,15 @@ using Codice.Client.Common;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using PlasticGui;
+using PlasticGui.WorkspaceWindow;
+using PlasticGui.WorkspaceWindow.BrowseRepository;
 using PlasticGui.WorkspaceWindow.Diff;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
-using Unity.PlasticSCM.Editor.Views.Diff.Dialogs;
 using Unity.PlasticSCM.Editor.Tool;
+using Unity.PlasticSCM.Editor.Views.Diff.Dialogs;
+using Unity.PlasticSCM.Editor.Views.History;
 
 namespace Unity.PlasticSCM.Editor.Views.Diff
 {
@@ -95,6 +99,34 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             }
 
             EditorGUILayout.EndVertical();
+        }
+
+        void IDiffTreeViewMenuOperations.SaveRevisionAs()
+        {
+            TrackFeatureUseEvent.For(
+                PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                TrackFeatureUseEvent.Features.SaveRevisionFromDiff);
+
+            ClientDiffInfo clientDiffInfo =
+                DiffSelection.GetSelectedDiff(mDiffTreeView);
+            RepositorySpec repSpec = clientDiffInfo.DiffWithMount.Mount.RepSpec;
+            RevisionInfo revision = clientDiffInfo.DiffWithMount.Difference.RevInfo;
+
+            string defaultFileName = DefaultRevisionName.Get(
+                Path.GetFileName(clientDiffInfo.DiffWithMount.Difference.Path), revision.Changeset);
+            string destinationPath = SaveAction.GetDestinationPath(
+                mWkInfo.ClientPath,
+                clientDiffInfo.DiffWithMount.Difference.Path,
+                defaultFileName);
+
+            if (string.IsNullOrEmpty(destinationPath))
+                return;
+
+            SaveRevisionOperation.SaveRevision(
+                repSpec,
+                destinationPath,
+                revision,
+                mProgressControls);
         }
 
         SelectedDiffsGroupInfo IDiffTreeViewMenuOperations.GetSelectedDiffsGroupInfo()

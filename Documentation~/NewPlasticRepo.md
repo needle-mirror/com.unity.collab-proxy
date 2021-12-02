@@ -9,7 +9,7 @@ You can walk through a straightforward onboarding wizard when creating a reposit
 * Automatically do the first check-in so that your repository is in sync with your local changes.
 
 1. Open your Unity project.
-2. To access the Plastic SCM window in the Unity Editor, select **Window** &gt; **Plastic SCM**:
+2. To access the Plastic SCM window in the Unity Editor, click **Window** &gt; **Plastic SCM**:
    ![Plastic SCM window](images/AccessingPlastic.png)
 
 3. In the Plastic SCM onboarding window, complete the steps to continue:

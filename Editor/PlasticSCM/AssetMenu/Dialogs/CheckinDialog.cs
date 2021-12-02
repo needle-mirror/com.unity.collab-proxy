@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+
+using UnityEditor;
+using UnityEngine;
+
 using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Common;
 using Codice.CM.Common;
@@ -14,9 +18,6 @@ using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
-
-using UnityEditor;
-using UnityEngine;
 
 namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
 {
@@ -119,8 +120,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                     continue;
 
                 Texture fileIcon = Directory.Exists(path) ?
-                        Images.GetDirectoryIcon() :
-                        Images.GetFileIcon(path);
+                    Images.GetDirectoryIcon() :
+                    Images.GetFileIcon(path);
 
                 string label = WorkspacePath.GetWorkspaceRelativePath(
                     wkInfo.ClientPath, path);
@@ -128,55 +129,33 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 if (metaCache.HasMeta(path))
                     label = string.Concat(label, UnityConstants.TREEVIEW_META_LABEL);
 
-                GUIContent content = new GUIContent(
-                     label, fileIcon);
+                AssetsOverlays.AssetStatus assetStatus = 
+                    assetStatusCache.GetStatusForPath(path);
 
-                GUILayout.Label(
-                    content,
-                    GUILayout.Height(UnityConstants.TREEVIEW_ROW_HEIGHT));
+                Rect selectionRect = EditorGUILayout.GetControlRect();
 
-                Rect iconRect = GUILayoutUtility.GetLastRect();
-
-                DoStatusOverlays(
-                    iconRect,
-                    assetStatusCache,
-                    path);
+                DoListViewItem(selectionRect, fileIcon, label, assetStatus);
             }
 
             GUILayout.EndScrollView();
         }
 
-        static void DoStatusOverlays(
-            Rect iconRect,
-            IAssetStatusCache assetStatusCache,
-            string path)
+        void DoListViewItem(
+            Rect itemRect,
+            Texture fileIcon,
+            string label,
+            AssetsOverlays.AssetStatus statusToDraw)
         {
-            AssetsOverlays.AssetStatus statusesToDraw = DrawAssetOverlay.GetStatusesToDraw(
-                assetStatusCache.GetStatusForPath(path));
+            Texture overlayIcon = DrawAssetOverlay.DrawOverlayIcon.
+                GetOverlayIcon(statusToDraw);
 
-            foreach (AssetsOverlays.AssetStatus status in Enum.GetValues(typeof(AssetsOverlays.AssetStatus)))
-            {
-                if (status == AssetsOverlays.AssetStatus.None)
-                    continue;
+            itemRect = DrawTreeViewItem.DrawIconLeft(
+                itemRect,
+                UnityConstants.TREEVIEW_ROW_HEIGHT,
+                fileIcon,
+                overlayIcon);
 
-                if (!statusesToDraw.HasFlag(status))
-                    continue;
-
-                GetChangesOverlayIcon.Data overlayIconData =
-                    GetChangesOverlayIcon.ForAssetStatus(status);
-
-                if (overlayIconData != null)
-                {
-                    Rect overlayIconRect = new Rect(
-                        iconRect.x + overlayIconData.XOffset,
-                        iconRect.y + overlayIconData.YOffset,
-                        overlayIconData.Size, overlayIconData.Size);
-
-                    GUI.DrawTexture(
-                        overlayIconRect, overlayIconData.Texture,
-                        ScaleMode.ScaleToFit);
-                }
-            }
+            GUI.Label(itemRect, label);
         }
 
         void DoButtonsArea()

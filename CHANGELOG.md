@@ -1,6 +1,35 @@
 # Changelog
 All notable changes to this package will be documented in this file.
 
+## [1.15.7] - 2021-12-02
+
+Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!
+If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
+Removing a previously added Plastic SCM Asset Store Plug-In:
+- Select the PlasticSCM folder in the Assets\Plugins folder on the Project tab, then click Edit > Delete
+- Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
+
+### Added
+- Added option to "Save Revision as" to the context menu in the changesets view
+- Added incoming changes overview bar for Gluon workspace
+
+### Changed
+- Moved Plastic Package settings to the Unity Project Settings window
+- Refined styling for Updating Workplace success state
+- Updated texts for empty state and overview bar
+- Removed Incoming Changes notification from empty state
+- Updated the text for Forced Checkout option
+- Refined the status overlay icons
+- Updated the refresh icon on the toolbar
+- Updated the texts for empty checkin message dialog
+
+### Fixed
+- Fixed capitalization of Pending Changes and File History tab names
+- Fixed the amount of spacing after the Item column title in the Pending Changes tab
+- Removed pin striping from line items in File History tab
+- Fixed project view context menu and icons missing after Collaborate project migration
+- Fixed migrated projects not downloading correctly from Unity Hub
+
 ## [1.15.4] - 2021-11-10
 
 Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!

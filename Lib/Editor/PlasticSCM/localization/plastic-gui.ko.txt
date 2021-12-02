@@ -445,17 +445,8 @@ GUID
 == NoItemsAreSelected ==
 선택한 항목이 없습니다. 항목의 체크박스를 사용하여 선택하십시오. 선택한 항목이 모두 무시 항목인 경우에도 이러한 현상이 발생할 수 있습니다.
 
-== EmptyCommentsDialogTitle ==
-Empty Checkin Message
-
-== EmptyCommentsDialogContent ==
-Checkin comment is blank. Writing a comment is recommended.
-
 == EmptyComments ==
 코멘트 필드가 비어 있습니다. 새 체인지 세트를 생성하기 전에 반드시 체크인 코멘트를 추가하십시오.
-
-== CheckinAnyway ==
-Checkin Anyway
 
 == RepositoryNameLabel ==
 새 리포지토리 이름:
@@ -4903,6 +4894,18 @@ Plastic에서는 작업 속도를 높이기 위해 워크스페이스에서 변�
 
 == PendingChangesINotifyDisabledExplanation ==
 대기 중인 변경사항 성능은 inotify 기반 감지 시스템을 활용할 수 있을 때 크게 향상됩니다. 활성화하려면 {0} 지침을 확인하고 GUI를 다시 시작하십시오
+
+== ProjectSettingsGeneral ==
+General
+
+== ProjectSettingsFileChange ==
+File Change Settings
+
+== ProjectSettingsFileVisibility ==
+File Visibility Settings
+
+== ProjectSettingsMoveAndRename ==
+File Move and Rename Detection
 
 == MergeToMergeNeededExplanation ==
 대상에 병합 작업이 실행 중일 때 대상에 병합 작업의 대상에 새 체인지 세트가 생성되어 둘 이상의 헤드가 생성되었습니다. 새 병합(또는 대상에 병합) 작업을 실행하여 통합하는 방법을 고려하십시오. 영향을 받는 브랜치:

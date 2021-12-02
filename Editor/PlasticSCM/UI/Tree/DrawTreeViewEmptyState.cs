@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using UnityEditor;
 
 namespace Unity.PlasticSCM.Editor.UI.Tree
 {
@@ -44,70 +42,6 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             GUI.EndGroup();
         }
 
-        internal static void For(
-            Rect rect,
-            string topText,
-            string bottomText,
-            Images.Name iconName)
-        {
-            GUIContent topContent = new GUIContent(topText);
-            Vector2 topSize = GetContentSize(topContent);
-
-            GUIContent bottomContent = new GUIContent(bottomText);
-            Vector2 bottomSize = GetContentSize(bottomContent);
-
-            GUI.BeginGroup(rect);
-
-            DrawLabel(
-                topContent,
-                topSize,
-                (rect.width - topSize.x) / 2,
-                (rect.height - topSize.y) / 2);
-
-            DrawLabelWithIcon(
-                bottomContent,
-                bottomSize,
-                (rect.width - bottomSize.x) / 2,
-                (rect.height + bottomSize.y) / 2,
-                iconName);
-
-            GUI.EndGroup();
-        }
-
-        internal static void For(
-            Rect rect,
-            string topText,
-            string bottomText,
-            string buttonText,
-            Images.Name iconName,
-            Action buttonClickedAction)
-        {
-            GUIContent topContent = new GUIContent(topText);
-            Vector2 topSize = GetContentSize(topContent);
-
-            GUIContent bottomContent = new GUIContent(bottomText);
-            Vector2 bottomSize = GetContentSize(bottomContent);
-
-            GUI.BeginGroup(rect);
-
-            DrawLabel(
-                topContent,
-                topSize,
-                (rect.width - topSize.x) / 2,
-                (rect.height - topSize.y) / 2);
-
-            DrawLabelWithIconAndButton(
-                bottomContent,
-                bottomSize,
-                (rect.width - bottomSize.x) / 2,
-                (rect.height + bottomSize.y) / 2,
-                iconName,
-                buttonText,
-                buttonClickedAction);
-
-            GUI.EndGroup();
-        }
-
         static void DrawLabel(
             GUIContent content,
             Vector2 contentSize,
@@ -138,51 +72,11 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                 Images.GetImage(iconName),
                 ScaleMode.ScaleToFit);
 
-            GUI.Label(
-                new Rect(contentOffsetX, offsetY, contentSize.x, contentSize.y),
+            DrawLabel(
                 content,
-                UnityStyles.Tree.StatusLabel
-            );
-        }
-
-        static void DrawLabelWithIconAndButton(
-            GUIContent content,
-            Vector2 contentSize,
-            float offsetX,
-            float offsetY,
-            Images.Name iconName,
-            string buttonText,
-            Action buttonClickedAction)
-        {
-            int iconSize = UnityConstants.TREEVIEW_STATUS_ICON_SIZE;
-            int padding = UnityConstants.TREEVIEW_STATUS_CONTENT_PADDING;
-
-            GUIContent button = new GUIContent(buttonText);
-            Vector2 buttonSize = EditorStyles.miniButton.CalcSize(button);
-
-            float iconOffsetX = offsetX - iconSize + padding - buttonSize.x / 2;
-            float contentOffsetX = offsetX + iconSize - padding - buttonSize.x / 2;
-            float buttonOffsetX = contentOffsetX + contentSize.x + 2 * padding;
-
-            GUI.DrawTexture(
-                new Rect(iconOffsetX, offsetY + padding, iconSize, iconSize),
-                Images.GetImage(iconName),
-                ScaleMode.ScaleToFit);
-
-            GUI.Label(
-                new Rect(contentOffsetX, offsetY, contentSize.x, contentSize.y),
-                content,
-                UnityStyles.Tree.StatusLabel
-            );
-
-            if (GUI.Button(
-                new Rect(buttonOffsetX, offsetY + padding, buttonSize.x, buttonSize.y),
-                button,
-                EditorStyles.miniButton))
-            {
-                if (buttonClickedAction != null)
-                    buttonClickedAction();
-            }
+                contentSize,
+                contentOffsetX,
+                offsetY);
         }
 
         static Vector2 GetContentSize(GUIContent content)
