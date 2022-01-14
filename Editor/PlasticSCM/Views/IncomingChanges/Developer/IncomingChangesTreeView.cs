@@ -80,11 +80,24 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             mMenu.Popup();
             Repaint();
         }
+        protected override void BeforeRowsGUI()
+        {
+            int firstRowVisible;
+            int lastRowVisible;
+            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
+
+            GUI.DrawTexture(new Rect(0,
+                 firstRowVisible * rowHeight,
+                 GetRowRect(0).width,
+                 (lastRowVisible * rowHeight) + 1000),
+                 Images.GetTreeviewBackgroundTexture());
+
+            DrawTreeViewItem.InitializeStyles();
+            base.BeforeRowsGUI();
+        }
 
         protected override void RowGUI(RowGUIArgs args)
         {
-            DrawTreeViewItem.InitializeStyles();
-
             if (args.item is ChangeCategoryTreeViewItem)
             {
                 ChangeCategoryTreeViewItem categoryItem =
@@ -362,6 +375,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 item.depth,
                 icon,
                 label,
+                null,
                 isSelected,
                 isFocused);
 
@@ -445,6 +459,17 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
             if (column == IncomingChangesTreeColumn.Size)
             {
+                // If there is a meta file, add the meta file to the file size so that it is consistent 
+                // with the Incoming Changes overview
+                if (incomingChangesTree.HasMeta(item.ChangeInfo))
+                {
+                    MergeChangeInfo metaFileInfo = incomingChangesTree.GetMetaChange(incomingChange);
+                    long metaFileSize = metaFileInfo.GetSize();
+                    long fileSize = incomingChange.GetSize();
+
+                    label = SizeConverter.ConvertToSizeString(fileSize + metaFileSize);
+                }
+
                 DrawTreeViewItem.ForSecondaryLabelRightAligned(
                     rect, label, isSelected, isFocused, isCurrentConflict);
                 return;

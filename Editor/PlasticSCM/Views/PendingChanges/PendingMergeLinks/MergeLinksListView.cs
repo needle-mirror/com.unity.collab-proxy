@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using UnityEditor.IMGUI.Controls;
+using UnityEngine;
 
 using Codice.Client.Commands;
 using Codice.Client.Common;
@@ -8,6 +9,7 @@ using Codice.CM.Common;
 using Codice.CM.Common.Merge;
 using PlasticGui.WorkspaceWindow.PendingChanges;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.UI.Tree;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges.PendingMergeLinks
 {
@@ -25,7 +27,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.PendingMergeLinks
             : base(new TreeViewState())
         {
             rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = true;
+            showAlternatingRowBackgrounds = false;
         }
 
         public override IList<TreeViewItem> GetRows()
@@ -48,6 +50,22 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.PendingMergeLinks
             IDictionary<MountPoint, IList<PendingMergeLink>> pendingMergeLinks)
         {
             mMergeLinks = BuildMountPendingMergeLink(pendingMergeLinks);
+        }
+
+        protected override void BeforeRowsGUI()
+        {
+            int firstRowVisible;
+            int lastRowVisible;
+            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
+
+            GUI.DrawTexture(new Rect(0,
+                firstRowVisible * rowHeight,
+                GetRowRect(0).width,
+                (lastRowVisible * rowHeight) + 500),
+                Images.GetTreeviewBackgroundTexture());
+
+            DrawTreeViewItem.InitializeStyles();
+            base.BeforeRowsGUI();
         }
 
         static void RegenerateRows(

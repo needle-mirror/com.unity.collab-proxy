@@ -21,6 +21,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             int depth,
             Texture icon,
             string label,
+            string infoLabel,
             bool isSelected,
             bool isFocused)
         {
@@ -31,6 +32,9 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 
             rowRect = DrawIconLeft(rowRect, rowHeight, icon, null);
             TreeView.DefaultGUI.Label(rowRect, label, isSelected, isFocused);
+
+            if (!string.IsNullOrEmpty(infoLabel))
+                DrawInfolabel(rowRect, label, infoLabel);
         }
 
         internal static bool ForCheckableCategoryItem(
@@ -39,6 +43,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             int depth,
             Texture icon,
             string label,
+            string infoLabel,
             bool isSelected,
             bool isFocused,
             bool wasChecked,
@@ -61,8 +66,11 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             rowRect.width -= checkRect.width;
 
             rowRect = DrawIconLeft(rowRect, rowHeight, icon, null);
-
+          
             TreeView.DefaultGUI.Label(rowRect, label, isSelected, isFocused);
+
+            if (!string.IsNullOrEmpty(infoLabel))
+                DrawInfolabel(rowRect, label, infoLabel);
 
             return isChecked;
         }
@@ -159,6 +167,19 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             rect.width -= iconRect.width;
 
             return rect;
+        }
+
+        static void DrawInfolabel(
+            Rect rect,
+            string label,
+            string infoLabel)
+        {
+            Vector2 labelSize = ((GUIStyle)UnityStyles.Tree.Label)
+                .CalcSize(new GUIContent(label));
+
+            rect.x += labelSize.x;
+
+            GUI.Label(rect, infoLabel, UnityStyles.Tree.InfoLabel);
         }
 
         static Rect GetCheckboxRect(Rect rect, float rowHeight)

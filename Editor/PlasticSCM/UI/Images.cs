@@ -36,7 +36,7 @@ namespace Unity.PlasticSCM.Editor.UI
             IgnoredOverlay,
             IconConflicted,
             IconMergeConflict,
-            IconMergeConflictOverlay,
+            IconConflictedOverlay,
             IconConflictResolvedOverlay,
             IconLockedLocalOverlay,
             IconLockedRemoteOverlay,
@@ -45,6 +45,8 @@ namespace Unity.PlasticSCM.Editor.UI
             IconMergeCategory,
             XLink,
             Ok,
+            SecondaryTabClose,
+            SecondaryTabCloseHover,
             NotOnDisk,
             IconRepository,
             IconPlasticView,
@@ -194,7 +196,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetConflictedOverlayIcon()
         {
             if (mConflictedOverlayIcon == null)
-                mConflictedOverlayIcon = GetImage(Name.IconMergeConflictOverlay);
+                mConflictedOverlayIcon = GetImage(Name.IconConflictedOverlay);
 
             return mConflictedOverlayIcon;
         }
@@ -290,7 +292,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetCloseIcon()
         {
             if (mCloseIcon == null)
-                mCloseIcon = EditorGUIUtility.FindTexture("winbtn_win_close");
+                mCloseIcon = GetImage(Name.SecondaryTabClose);
 
             return mCloseIcon;
         }
@@ -298,7 +300,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetClickedCloseIcon()
         {
             if (mClickedCloseIcon == null)
-                mClickedCloseIcon = EditorGUIUtility.FindTexture("winbtn_win_close_a");
+                mClickedCloseIcon = GetImage(Name.SecondaryTabCloseHover);
 
             return mClickedCloseIcon;
         }
@@ -306,7 +308,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetHoveredCloseIcon()
         {
             if (mHoveredCloseIcon == null)
-                mHoveredCloseIcon = EditorGUIUtility.FindTexture("winbtn_win_close_h");
+                mHoveredCloseIcon = GetImage(Name.SecondaryTabCloseHover);
 
             return mHoveredCloseIcon;
         }
@@ -337,16 +339,46 @@ namespace Unity.PlasticSCM.Editor.UI
             return mLinkUnderlineImage;
         }
 
+        internal static Texture2D GetTreeviewBackgroundTexture()
+        {
+            if (mTreeviewBackgroundTexture == null)
+                mTreeviewBackgroundTexture = GetTextureFromColor(UnityStyles.Colors.TreeViewBackground);
+
+            return mTreeviewBackgroundTexture;
+        }
+
+        internal static Texture2D GetCommentBackgroundTexture()
+        {
+            if (mCommentBackground == null)
+                mCommentBackground = GetTextureFromColor(UnityStyles.Colors.CommentsBackground);
+
+            return mCommentBackground;
+        }
+
+        internal static Texture2D GetColumnsBackgroundTexture()
+        {
+            if (mColumnsBackgroundTexture == null)
+                mColumnsBackgroundTexture = GetTextureFromColor(UnityStyles.Colors.ColumnsBackground);
+
+            return mColumnsBackgroundTexture;
+        }
+
         static Texture2D GetEmptyImage()
         {
             if (mEmptyImage == null)
-            {
-                mEmptyImage = new Texture2D(1, 1);
-                mEmptyImage.SetPixel(0, 0, Color.clear);
-                mEmptyImage.Apply();
-            }
+                mEmptyImage = GetTextureFromColor(Color.clear);
 
             return mEmptyImage;
+        }
+
+        static Texture2D GetTextureFromColor(Color color)
+        {
+            Texture2D texture = new Texture2D(1, 1);
+
+            texture.SetPixel(0, 0, color);
+            texture.Apply();
+
+            return texture;
         }
 
         static Texture GetFileIconFromRelativePath(string relativePath)
@@ -469,6 +501,10 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mEmptyImage;
 
         static Texture mPopupIcon;
+
+        static Texture2D mTreeviewBackgroundTexture;
+        static Texture2D mColumnsBackgroundTexture;
+        static Texture2D mCommentBackground;
 
         static readonly ILog mLog = LogManager.GetLogger("Images");
     }

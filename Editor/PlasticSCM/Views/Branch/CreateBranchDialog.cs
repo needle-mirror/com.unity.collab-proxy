@@ -16,7 +16,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             get
             {
                 var baseRect = base.DefaultRect;
-                return new Rect(baseRect.x, baseRect.y, 710, 380);
+                return new Rect(baseRect.x, baseRect.y, 710, 290);
             }
         }
 
@@ -30,11 +30,6 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             DoTitleArea();
 
             DoFieldsArea();
-
-            DrawProgressForDialogs.For(
-               mProgressControls.ProgressData);
-
-            GUILayout.Space(10);
 
             DoButtonsArea();
         }
@@ -69,8 +64,6 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             Paragraph(string.Format("{0} {1}", PlasticLocalization.GetString(
                 PlasticLocalization.Name.CreateChildBranchExplanation), mExplanation));
 
-            GUILayout.Space(20);
-
             GUILayout.EndVertical();
         }
 
@@ -102,11 +95,11 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 GUILayout.Space(5);
             }
 
-            GUILayout.Space(20);
+            GUILayout.Space(5);
 
             mSwitchToBranch = GUILayout.Toggle(mSwitchToBranch, PlasticLocalization.GetString(PlasticLocalization.Name.SwitchToBranchCheckButton));
 
-            GUILayout.Space(10);
+            GUILayout.Space(5);
 
             GUILayout.EndVertical();
         }
@@ -115,6 +108,11 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         {
             using (new EditorGUILayout.HorizontalScope())
             {
+                GUILayout.Space(10);
+
+                DrawProgressForDialogs.For(
+                   mProgressControls.ProgressData);
+                
                 GUILayout.FlexibleSpace();
                 DoCreateButton();
                 DoCancelButton();

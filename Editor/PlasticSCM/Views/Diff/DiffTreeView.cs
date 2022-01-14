@@ -98,14 +98,23 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         protected override void BeforeRowsGUI()
         {
+            int firstRowVisible;
+            int lastRowVisible;
+            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
+
+            GUI.DrawTexture(new Rect(0,
+                firstRowVisible * rowHeight,
+                GetRowRect(0).width + 500,
+                (lastRowVisible * rowHeight) + 1500),
+                Images.GetTreeviewBackgroundTexture());
+
+            DrawTreeViewItem.InitializeStyles();
             mLargestRowWidth = 0;
             base.BeforeRowsGUI();
         }
 
         protected override void RowGUI(RowGUIArgs args)
         {
-            DrawTreeViewItem.InitializeStyles();
-
             if (args.item is MergeCategoryTreeViewItem)
             {
                 MergeCategoryTreeViewItemGUI(
@@ -157,7 +166,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         {
             if (mHorizontalColumn != null)
                 mHorizontalColumn.width = mLargestRowWidth;
-            
+
             base.AfterRowsGUI();
         }
 
@@ -421,13 +430,16 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             bool isFocused)
         {
             Texture icon = Images.GetImage(Images.Name.IconMergeCategory);
-            string label = item.Category.GetHeaderText();
+            string label = item.Category.CategoryName;
+            string infoLabel = item.Category.GetChildrenCountText();
 
             DrawTreeViewItem.ForCategoryItem(
                 rowRect,
                 rowHeight,
                 item.depth,
-                icon, label,
+                icon,
+                label,
+                infoLabel,
                 isSelected,
                 isFocused);
         }
@@ -440,13 +452,16 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             bool isFocused)
         {
             Texture icon = GetChangeCategoryIcon(item.Category);
-            string label = item.Category.GetHeaderText();
+            string label = item.Category.CategoryName;
+            string infoLabel = item.Category.GetChildrenCountText();
 
             DrawTreeViewItem.ForCategoryItem(
                 rowRect,
                 rowHeight,
                 item.depth,
-                icon, label,
+                icon,
+                label,
+                infoLabel,
                 isSelected,
                 isFocused);
         }

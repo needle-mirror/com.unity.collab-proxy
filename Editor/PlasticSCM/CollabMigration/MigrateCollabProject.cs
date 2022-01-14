@@ -41,7 +41,12 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
 
             EditorApplication.update -= RunOnceWhenAccessTokenAndProjectIdAreInitialized;
 
-            if (!ShouldProjectBeMigrated())
+            string projectPath = ProjectPath.FromApplicationDataPath(
+                Application.dataPath);
+
+            string projectGuid = SetupCloudProjectId.GetCloudProjectId();
+
+            if (!ShouldProjectBeMigrated(projectPath, projectGuid))
             {
                 SessionState.SetInt(
                     IS_PROJECT_MIGRATED_ALREADY_CALCULATED_KEY,
@@ -51,10 +56,13 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
 
             Execute(
                 CloudProjectSettings.accessToken,
-                SetupCloudProjectId.GetCloudProjectId());
+                projectPath,
+                projectGuid);
         }
 
-        static bool ShouldProjectBeMigrated()
+        static bool ShouldProjectBeMigrated(
+            string projectPath,
+            string projectGuid)
         {
             if (SessionState.GetBool(
                     CloudProjectDownloader.SHOULD_PROJECT_BE_DOWNLOADED_KEY, false))
@@ -62,7 +70,10 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
                 return false;
             }
 
-            if (!CollabPlugin.IsEnabled())
+            string collabPath = GetCollabSnapshotFile(
+                projectPath, projectGuid);
+
+            if (!File.Exists(collabPath))
             {
                 return false;
             }
@@ -77,12 +88,10 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
 
         static void Execute(
             string unityAccessToken,
+            string projectPath,
             string projectGuid)
         {
-            string projectPath = ProjectPath.FromApplicationDataPath(
-                Application.dataPath);
-
-            string headCommitSha = GetCollabHeadCommitSha(projectGuid, projectPath);
+            string headCommitSha = GetCollabHeadCommitSha(projectPath, projectGuid);
 
             if (string.IsNullOrEmpty(headCommitSha))
                 return;
@@ -210,9 +219,12 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
                 ProjectPath.FromApplicationDataPath(Application.dataPath));
         }
 
-        static string GetCollabHeadCommitSha(string guid, string path)
+        static string GetCollabHeadCommitSha(
+            string projectPath,
+            string projectGuid)
         {
-            string collabPath = path + "/Library/Collab/CollabSnapshot_" + guid + ".txt";
+            string collabPath = GetCollabSnapshotFile(
+                projectPath, projectGuid);
 
             if (!File.Exists(collabPath))
                 return null;
@@ -233,6 +245,13 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
                 StringSplitOptions.None);
 
             return chunks[1].Substring(3, 40);
+        }
+
+        static string GetCollabSnapshotFile(
+            string projectPath,
+            string projectGuid)
+        {
+            return projectPath + "/Library/Collab/CollabSnapshot_" + projectGuid + ".txt";
         }
 
         const string IS_PROJECT_MIGRATED_ALREADY_CALCULATED_KEY =

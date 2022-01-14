@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this package will be documented in this file.
 
-## [1.14.7] - 2021-12-02
+## [1.14.9] - 2022-01-14
 
 Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!
 If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
@@ -22,6 +22,12 @@ Removing a previously added Plastic SCM Asset Store Plug-In:
 - Refined the status overlay icons
 - Updated the refresh icon on the toolbar
 - Updated the texts for empty checkin message dialog
+- Updated the styling for number of items in category for pending changes view
+- Updated the styling for number of items in category for changesets view
+- Updated the styling for tabs close button
+- Updated the color in different sections of the plugin
+- Reduced dialog padding for the "Create Branch" dialog
+- Updated the display overlay icons to show even if PlasticSCM window is closed
 
 ### Fixed
 - Fixed capitalization of Pending Changes and File History tab names
@@ -29,6 +35,11 @@ Removing a previously added Plastic SCM Asset Store Plug-In:
 - Removed pin striping from line items in File History tab
 - Fixed project view context menu and icons missing after Collaborate project migration
 - Fixed migrated projects not downloading correctly from Unity Hub
+- Fixed size info in incoming changes view does not match actual changes size
+- Fixed checkin and checkout options not respecting inspector locked status
+- Fixed buttons in inspector view displayed even when Plastic window is closed
+- Fixed icon incorrect sizes
+- Fixed errors on create branch dialog
 
 ## [1.14.4] - 2021-11-10
 

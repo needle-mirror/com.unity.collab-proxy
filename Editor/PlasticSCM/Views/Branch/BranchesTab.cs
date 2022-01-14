@@ -329,12 +329,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 repSpec,
                 branchInfo);
 
-            mBranchOperations.CreateBranch(branchCreationData, () =>
-            {
-                TrackFeatureUseEvent.For(
-                    repSpec,
-                    TrackFeatureUseEvent.Features.CreateBranch);
-            });
+            mBranchOperations.CreateBranch(branchCreationData);
         }
 
         void IBranchMenuOperations.SwitchToBranch()
@@ -345,13 +340,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             mBranchOperations.SwitchToBranch(
                 repSpec,
                 branchInfo,
-                () =>
-                {
-                    TrackFeatureUseEvent.For(
-                        repSpec,
-                        TrackFeatureUseEvent.Features.SwitchBranch);
-                    RefreshAsset.UnityAssetDatabase();
-                });
+                RefreshAsset.UnityAssetDatabase);
         }
 
         void IBranchMenuOperations.MergeBranch() { }
@@ -384,12 +373,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 branchInfo,
                 mParentWindow);
 
-            mBranchOperations.RenameBranch(branchRenameData, () =>
-            {
-                TrackFeatureUseEvent.For(
-                    repSpec,
-                    TrackFeatureUseEvent.Features.RenameBranch);
-            });
+            mBranchOperations.RenameBranch(branchRenameData);
         }
 
         void IBranchMenuOperations.DeleteBranch()
@@ -398,12 +382,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             List<RepositorySpec> repositories = BranchesSelection.GetSelectedRepositories(mBranchesListView);
             List<BranchInfo> branchesToDelete = BranchesSelection.GetSelectedBranches(mBranchesListView);
 
-            mBranchOperations.DeleteBranch(repositories, branchesToDelete, () =>
-            {
-                TrackFeatureUseEvent.For(
-                    repSpec,
-                    TrackFeatureUseEvent.Features.DeleteBranch);
-            });
+            mBranchOperations.DeleteBranch(repositories, branchesToDelete);
         }
 
         void IBranchMenuOperations.CreateCodeReview() { }

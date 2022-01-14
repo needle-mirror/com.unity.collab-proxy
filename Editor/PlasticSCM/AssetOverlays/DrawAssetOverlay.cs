@@ -6,16 +6,21 @@ using UnityEngine;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.UI;
+using Codice.CM.Common;
 
 namespace Unity.PlasticSCM.Editor.AssetsOverlays
 {
     internal static class DrawAssetOverlay
     {
         internal static void Initialize(
-            IAssetStatusCache cache,
+            PlasticAPI plasticAPI,
+            IAssetStatusCache assetStatusCache,
             Action repaintProjectWindow)
         {
-            mAssetStatusCache = cache;
+            sPlasticAPI = plasticAPI;
+
+            mAssetStatusCache = assetStatusCache;
+
             mRepaintProjectWindow = repaintProjectWindow;
 
             EditorApplication.projectWindowItemOnGUI += OnProjectWindowItemGUI;
@@ -218,6 +223,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             }
         }
 
+        static PlasticAPI sPlasticAPI;
         static IAssetStatusCache mAssetStatusCache;
         static Action mRepaintProjectWindow;
     }

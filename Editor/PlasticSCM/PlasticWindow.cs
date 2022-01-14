@@ -40,6 +40,7 @@ using GluonNewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncom
 using EventTracking = PlasticGui.EventTracking.EventTracking;
 using processor = Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.Views.PendingChanges;
+using PlasticGui.WorkspaceWindow.Topbar;
 
 namespace Unity.PlasticSCM.Editor
 {
@@ -456,11 +457,9 @@ namespace Unity.PlasticSCM.Editor
 
                 mIsGluonMode = mPlasticAPI.IsGluonWorkspace(mWkInfo);
 
-                IAssetStatusCache assetStatusCache =
-                    new AssetStatusCache(
-                        mWkInfo,
-                        mIsGluonMode,
-                        RepaintProjectWindow);
+                IAssetStatusCache assetStatusCache = AssetStatusCacheProvider.Get(mWkInfo,
+                    mIsGluonMode,
+                    ProjectWindow.Repaint);
 
                 AssetsProcessors.Enable(
                     mPlasticAPI,
@@ -509,26 +508,8 @@ namespace Unity.PlasticSCM.Editor
 
                 UnityStyles.Initialize(Repaint);
 
-                AssetOperations.IAssetSelection inspectorAssetSelection =
-                    new InspectorAssetSelection();
-
                 AssetOperations.IAssetSelection projectViewAssetSelection =
                     new ProjectViewAssetSelection();
-
-                AssetOperations inspectorAssetOperations =
-                    new AssetOperations(
-                        mWkInfo,
-                        mWorkspaceWindow,
-                        mViewSwitcher,
-                        mViewSwitcher,
-                        viewHost,
-                        mDeveloperNewIncomingChangesUpdater,
-                        assetStatusCache,
-                        mViewSwitcher,
-                        mViewSwitcher,
-                        this,
-                        inspectorAssetSelection,
-                        mIsGluonMode);
 
                 mAssetOperations =
                     new AssetOperations(
@@ -545,14 +526,22 @@ namespace Unity.PlasticSCM.Editor
                         projectViewAssetSelection,
                         mIsGluonMode);
 
-                DrawInspectorOperations.Enable(
-                    inspectorAssetOperations,
-                    assetStatusCache,
-                    inspectorAssetSelection);
+                DrawInspectorOperations.BuildOperations(
+                    mWkInfo,
+                    mWorkspaceWindow,
+                    mViewSwitcher,
+                    mViewSwitcher,
+                    viewHost,
+                    mDeveloperNewIncomingChangesUpdater,
+                    mViewSwitcher,
+                    mViewSwitcher,
+                    this,
+                    mIsGluonMode);
 
                 DrawAssetOverlay.Initialize(
+                    mPlasticAPI,
                     assetStatusCache,
-                    RepaintProjectWindow);
+                    ProjectWindow.Repaint);
 
                 mLastUpdateTime = EditorApplication.timeSinceStartup;
 
@@ -779,7 +768,7 @@ namespace Unity.PlasticSCM.Editor
                        PlasticLocalization.Name.InviteMembers)),
                 false,
                InviteMemberButton_clicked,
-               null);
+               wkInfo);
 
             menu.AddSeparator("");
 
@@ -904,7 +893,13 @@ namespace Unity.PlasticSCM.Editor
 
         static void InviteMemberButton_clicked(object obj)
         {
-            Application.OpenURL("https://www.plasticscm.com/dashboard/cloud/unity_cloud/users-and-groups");
+            WorkspaceInfo wkInfo = (WorkspaceInfo)obj;
+            string server = PlasticGui.Plastic.API.GetRepositorySpec(wkInfo).Server;
+            string organizationName = ServerOrganizationParser.GetOrganizationFromServer(server);
+
+            Application.OpenURL("https://www.plasticscm.com/dashboard/cloud/"+
+                organizationName +
+                "/users-and-groups");
         }
 
         static void TrySimplifiedUIButton_Clicked(object obj)
@@ -991,10 +986,6 @@ namespace Unity.PlasticSCM.Editor
 
             PlasticApp.Dispose();
 
-            DrawInspectorOperations.Disable();
-
-            DrawAssetOverlay.Dispose();
-
             AssetMenuItems.Dispose();
 
             if (window.mEventSenderScheduler != null)
@@ -1033,16 +1024,6 @@ namespace Unity.PlasticSCM.Editor
                 return true;
 
             return false;
-        }
-
-        static void RepaintProjectWindow()
-        {
-            EditorWindow projectWindow = FindEditorWindow.ProjectWindow();
-
-            if (projectWindow == null)
-                return;
-
-            projectWindow.Repaint();
         }
 
         static void DisableCollabIfEnabled(string projectPath)

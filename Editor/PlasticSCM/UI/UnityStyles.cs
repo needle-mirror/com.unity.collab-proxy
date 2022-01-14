@@ -60,6 +60,18 @@ namespace Unity.PlasticSCM.Editor.UI
             internal static Color BackgroundBar = (EditorGUIUtility.isProSkin) ? 
                 new Color(35f / 255, 35f / 255, 35f / 255) :
                 new Color(160f / 255, 160f / 255, 160f / 255);
+
+            internal static Color TreeViewBackground = (EditorGUIUtility.isProSkin) ?
+               new Color(48f / 255, 48f / 255, 48f / 255) :
+               new Color(194f / 255, 194f / 255, 194f / 255);
+
+            internal static Color CommentsBackground = (EditorGUIUtility.isProSkin) ?
+               new Color(60f / 255, 60f / 255, 60f / 255) :
+               new Color(160f / 255, 160f / 255, 160f / 255);
+
+            internal static Color ColumnsBackground = (EditorGUIUtility.isProSkin) ?
+              new Color(56f / 255, 56f / 255, 56f / 255) :
+              new Color(221f / 255, 221f / 255, 221f / 255);
         }
 
         internal static class HexColors
@@ -69,7 +81,6 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal static class Dialog
         {
-
             internal static readonly LazyStyle MessageTitle = new LazyStyle(() =>
             {
                 var style = new GUIStyle(EditorStyles.boldLabel);
@@ -171,6 +182,12 @@ namespace Unity.PlasticSCM.Editor.UI
                 return style;
             });
 
+            internal static readonly LazyStyle InfoLabel = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(MultiColumnHeader.DefaultStyles.columnHeader);
+                return style;
+            });
+
             internal static readonly LazyStyle SecondaryBoldLabel = new LazyStyle(() =>
             {
                 var style = new GUIStyle(SecondaryLabel);
@@ -237,6 +254,13 @@ namespace Unity.PlasticSCM.Editor.UI
                     0, 0, 
                     UnityConstants.TREEVIEW_STATUS_CONTENT_PADDING, UnityConstants.TREEVIEW_STATUS_CONTENT_PADDING);
                 style.stretchWidth = false;
+                return style;
+            });
+
+            internal static readonly LazyStyle Columns = new LazyStyle(() =>
+            {
+                var style = new GUIStyle();
+                style.normal.background = Images.GetColumnsBackgroundTexture();
                 return style;
             });
         }
@@ -363,6 +387,15 @@ namespace Unity.PlasticSCM.Editor.UI
 #endif
                 return style;
             });
+
+            internal static readonly LazyStyle Comment = new LazyStyle(() =>
+            {
+                var style = new GUIStyle();
+                style.normal.background = Images.GetCommentBackgroundTexture();
+                return style;
+            });
+
+            internal static readonly GUIStyle DefaultMultiColumHeader = MultiColumnHeader.DefaultStyles.background;
         }
 
         internal static class IncomingChangesTab
@@ -569,7 +602,12 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal static readonly LazyStyle TextFieldWithWrapping = new LazyStyle(() =>
         {
-            var style = new GUIStyle(EditorStyles.textField);
+            var style = new GUIStyle(GetEditorSkin().textArea);
+            style.normal = new GUIStyleState() {
+                textColor = GetEditorSkin().textArea.normal.textColor,
+                background = Images.GetTreeviewBackgroundTexture()
+            };
+                
             style.wordWrap = true;
             return style;
         });

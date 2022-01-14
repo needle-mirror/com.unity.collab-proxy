@@ -349,29 +349,23 @@ GUID
 == ItemsSelected ==
 ({0}/{1} selected)
 
-== ChangedItemsSelectedSingular ==
-已變更項目 - 已選取 {0} 個項目，共 1 個
+== ItemsSelectedSingular ==
+已選取 {0} 個項目，共 1 個
 
-== ChangedItemsSelectedPlural ==
-已變更項目 - 已選取 {0} 個項目，共 {1} 個
+== ItemsSelectedPlural ==
+已選取 {0} 個項目，共 {1} 個
 
-== AddedPrivateItemsSelectedSingular ==
-已新增，而且已選取私人檔案 - {0} 個項目，共 1 個
+== ChangedItemsCategory ==
+已變更項目
 
-== AddedPrivateItemsSelectedPlural ==
-已新增，而且已選取私人檔案 - {0} 個項目，共 {1} 個
+== AddedPrivateItemsCategory ==
+已新增，而且已選取私人檔案
 
-== DeletedItemsSelectedSingular ==
-已刪除項目 - 已選取 {0} 個項目，共 1 個
+== DeletedItemsCategory ==
+已刪除項目
 
-== DeletedItemsSelectedPlural ==
-已刪除項目 - 已選取 {0} 個項目，共 {1} 個
-
-== MovedItemsSelectedSingular ==
-已移動項目 - 已選取 {0} 個項目，共 1 個
-
-== MovedItemsSelectedPlural ==
-已移動項目 - 已選取 {0} 個項目，共 {1} 個
+== MovedItemsCategory ==
+已移動項目
 
 == DeletingObjectsSingular ==
 正在刪除 1 個物件
@@ -1210,77 +1204,47 @@ GUID
 == SimilarityColumn ==
 相似性
 
-== MergeCategoryNameSingular ==
-已從 {0} 合併:1 個項目
+== DiffCategoryHeaderSingular ==
+{0}: 1 個項目
 
-== MergeCategoryNamePlural ==
-已從 {0} 合併:{{0}} 個項目
+== DiffCategoryHeaderPlural ==
+{0}: {1}個項目
 
-== AddedMergeDiffSingular ==
-已新增 (檔案已在合併來源中新增):1 個項目
+== MergeDiffCategory ==
+已從 {0} 合併
 
-== AddedMergeDiffPlural ==
-已新增 (檔案已在合併來源中新增):{0}個項目
+== AddedMergeDiffCategory ==
+已新增 (檔案已在合併來源中新增)
 
-== DeletedMergeDiffSingular ==
-已刪除 (檔案已在合併來源中刪除):1 個項目
+== DeletedMergeDiffCategory ==
+已刪除 (檔案已在合併來源中刪除)
 
-== DeletedMergeDiffPlural ==
-已刪除 (檔案已在合併來源中刪除):{0}個項目
+== MergedMergeDiffCategory ==
+已合併 (檔案已在合併來源、合併目的地中變更)
 
-== MergedMergeDiffSingular ==
-已合併 (檔案已在合併來源、合併目的地中變更):1 個項目
+== MovedMergeDiffCategory ==
+已移動 (檔案已在合併來源中移動)
 
-== MergedMergeDiffPlural ==
-已合併 (檔案已在合併來源、合併目的地中變更):{0} 個項目
+== ReplacedMergeDiffCategory ==
+已變更 (檔案已在合併來源中變更)
 
-== MovedMergeDiffSingular ==
-已移動 (檔案已在合併來源中移動):1 個項目
+== AddedDiffCategory ==
+已新增
 
-== MovedMergeDiffPlural ==
-已移動 (檔案已在合併來源中移動):{0} 個項目
+== ChangedDiffCategory ==
+已變更
 
-== ReplacedMergeDiffSingular ==
-已變更 (檔案已在合併來源中變更):1 個項目
+== DeletedDiffCategory ==
+已刪除
 
-== ReplacedMergeDiffPlural ==
-已變更 (檔案已在合併來源中變更):{0} 個項目
+== MovedDiffCategory ==
+已移動
 
-== AddedDiffSingular ==
-已新增:1 個項目
+== MergedDiffCategory ==
+已合併
 
-== AddedDiffPlural ==
-已新增:{0} 個項目
-
-== ChangedDiffSingular ==
-已變更:1 個項目
-
-== ChangedDiffPlural ==
-已變更:{0} 個項目
-
-== DeletedDiffSingular ==
-已刪除:1 個項目
-
-== DeletedDiffPlural ==
-已刪除:{0} 個項目
-
-== MovedDiffSingular ==
-已移動:1 個項目
-
-== MovedDiffPlural ==
-已移動:{0} 個項目
-
-== MergedDiffSingular ==
-已合併:1 個項目
-
-== MergedDiffPlural ==
-已合併:{0} 個項目
-
-== FSProtectionDiffSingular ==
-僅檔案系統權限已變更:1 個項目
-
-== FSProtectionDiffPlural ==
-僅檔案系統權限已變更:{0} 個項目
+== FSProtectionDiffCategory ==
+僅檔案系統權限已變更
 
 == Source ==
 來源:
@@ -1594,7 +1558,7 @@ Gluon - 工作區:{0} - {1}
 正在建立工作區 {0}...
 
 == WaitingForDynamicWorkspaceToBeMounted ==
-正在等待掛載動態工作區 {0} ...
+正在等待掛載動態工作區 {0}...
 
 == CreatingBranch ==
 正在建立分支 {0}...

@@ -370,38 +370,35 @@ Guid
 == CommentColumn ==
 Comment
 
+== ItemsCount ==
+({0})
+
 == ItemsSelected ==
 ({0}/{1} selected)
 
-== ChangedItemsSelectedSingular ==
-Changed items - {0} of 1 item selected
+== ItemsSelectedSingular ==
+{0} of 1 item selected
 
-== ChangedItemsSelectedPlural ==
-Changed items - {0} of {1} items selected
+== ItemsSelectedPlural ==
+{0} of {1} items selected
 
-== AddedPrivateItemsSelectedSingular ==
-Added and private - {0} of 1 item selected
+== ChangedItemsCategory ==
+Changed items
 
-== AddedPrivateItemsSelectedPlural ==
-Added and private - {0} of {1} items selected
+== AddedPrivateItemsCategory ==
+Added and private
+
+== DeletedItemsCategory ==
+Deleted items
+
+== MovedItemsCategory ==
+Moved items
 
 == DeleteConfirmationMessage ==
 Está a punto de eliminar
 
 == DeleteOthersMessage ==
 ...y {0} más.
-
-== DeletedItemsSelectedSingular ==
-Deleted items - {0} of 1 item selected
-
-== DeletedItemsSelectedPlural ==
-Deleted items - {0} of {1} items selected
-
-== MovedItemsSelectedSingular ==
-Moved items - {0} of 1 item selected
-
-== MovedItemsSelectedPlural ==
-Moved items - {0} of {1} items selected
 
 == DeletingObjectsSingular ==
 Deleting 1 object
@@ -1240,77 +1237,47 @@ Destination path
 == SimilarityColumn ==
 Similarity
 
-== MergeCategoryNameSingular ==
-Merged from {0}: 1 item
+== DiffCategoryHeaderSingular ==
+{0}: 1 item
 
-== MergeCategoryNamePlural ==
-Merged from {0}: {{0}} items
+== DiffCategoryHeaderPlural ==
+{0}: {1} items
 
-== AddedMergeDiffSingular ==
-Added (files added in the merge source): 1 item
+== MergeDiffCategory ==
+Merged from {0}
 
-== AddedMergeDiffPlural ==
-Added (files added in the merge source): {0} items
+== AddedMergeDiffCategory ==
+Added (files added in the merge source)
 
-== DeletedMergeDiffSingular ==
-Deleted (files deleted in the merge source): 1 item
+== DeletedMergeDiffCategory ==
+Deleted (files deleted in the merge source)
 
-== DeletedMergeDiffPlural ==
-Deleted (files deleted in the merge source): {0} items
+== MergedMergeDiffCategory ==
+Merged (files changed in the merge source and in the merge destination)
 
-== MergedMergeDiffSingular ==
-Merged (files changed in the merge source and in the merge destination): 1 item
+== MovedMergeDiffCategory ==
+Moved (files moved in the merge source)
 
-== MergedMergeDiffPlural ==
-Merged (files changed in the merge source and in the merge destination): {0} items
+== ReplacedMergeDiffCategory ==
+Changed (files changed in the merge source)
 
-== MovedMergeDiffSingular ==
-Moved (files moved in the merge source): 1 item
+== AddedDiffCategory ==
+Added
 
-== MovedMergeDiffPlural ==
-Moved (files moved in the merge source): {0} items
+== ChangedDiffCategory ==
+Changed
 
-== ReplacedMergeDiffSingular ==
-Changed (files changed in the merge source): 1 item
+== DeletedDiffCategory ==
+Deleted
 
-== ReplacedMergeDiffPlural ==
-Changed (files changed in the merge source): {0} items
+== MovedDiffCategory ==
+Moved
 
-== AddedDiffSingular ==
-Added: 1 item
+== MergedDiffCategory ==
+Merged
 
-== AddedDiffPlural ==
-Added: {0} items
-
-== ChangedDiffSingular ==
-Changed: 1 item
-
-== ChangedDiffPlural ==
-Changed: {0} items
-
-== DeletedDiffSingular ==
-Deleted: 1 item
-
-== DeletedDiffPlural ==
-Deleted: {0} items
-
-== MovedDiffSingular ==
-Moved: 1 item
-
-== MovedDiffPlural ==
-Moved: {0} items
-
-== MergedDiffSingular ==
-Merged: 1 item
-
-== MergedDiffPlural ==
-Merged: {0} items
-
-== FSProtectionDiffSingular ==
-Only filesystem permissions changed: 1 item
-
-== FSProtectionDiffPlural ==
-Only filesystem permissions changed: {0} items
+== FSProtectionDiffCategory ==
+Only filesystem permissions changed
 
 == Source ==
 Source/theirs:
@@ -1632,7 +1599,7 @@ Creating repository {0}...
 Creating workspace {0}...
 
 == WaitingForDynamicWorkspaceToBeMounted ==
-Waiting to mount dynamic workspace {0} ...
+Waiting to mount dynamic workspace {0}...
 
 == CreatingBranch ==
 Creating branch {0}...
@@ -7313,6 +7280,9 @@ Cmd+E
 == PlasticJumpToSelectionActionShortcutForMacOS ==
 Cmd+J
 
+== PlasticPreferencesShortcutForMacOS ==
+Cmd+,
+
 == BranchExplorerSearchFieldShortcutsTooltipForWindows ==
 Keyboard shortcuts:
   Enter: focus the next search result
@@ -7522,3 +7492,39 @@ Delete
 
 == EditMenuSelectAll ==
 Select All
+
+== SavingComment ==
+Guardando comentario...
+
+== DeletingComment ==
+Eliminando comentario...
+
+== AppMenuAbout ==
+About PlasticX SCM
+
+== AppMenuPreferences ==
+Preferences…
+
+== AppMenuPlasticWebsite ==
+Plastic SCM Website…
+
+== AppMenuSemanticMergeWebsite ==
+SemanticMerge Website…
+
+== NoComment ==
+No se ha establecido comentario
+
+== CannotGetComment ==
+No se puede obtener el comentario
+
+== CopyFullObjectSpec ==
+Copiar especificación de objeto completa al portapapeles
+
+== CopiedToClipboard ==
+¡Copiado!
+
+== OpenOrCreateWorkspace ==
+Abrir o crear otro workspace...
+
+== ViewRepositories ==
+Ver repositorios...

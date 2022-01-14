@@ -444,6 +444,11 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
             throw new NotImplementedException();
         }
 
+        MarkerInfo IPlasticAPI.GetMarkerInfoByName(RepositorySpec repSpec, string markerName)
+        {
+            throw new NotImplementedException();
+        }
+
         Guid IPlasticAPI.GetObjectGuid(RepositorySpec repSpec, long objectId)
         {
             throw new NotImplementedException();
@@ -580,6 +585,11 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
         }
 
         WorkspaceInfo IPlasticAPI.GetWorkspaceFromPath(string wkPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        WorkspaceInfo IPlasticAPI.GetWorkspaceFromId(Guid guid)
         {
             throw new NotImplementedException();
         }

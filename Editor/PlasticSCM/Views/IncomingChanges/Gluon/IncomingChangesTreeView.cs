@@ -34,6 +34,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
             customFoldoutYOffset = UnityConstants.TREEVIEW_FOLDOUT_Y_OFFSET;
             rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
+            showAlternatingRowBackgrounds = false;
         }
 
         public override IList<TreeViewItem> GetRows()
@@ -77,11 +78,24 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             mMenu.Popup();
             Repaint();
         }
+        protected override void BeforeRowsGUI()
+        {
+            int firstRowVisible;
+            int lastRowVisible;
+            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
+
+            GUI.DrawTexture(new Rect(0,
+                firstRowVisible * rowHeight,
+                GetRowRect(0).width,
+                (lastRowVisible * rowHeight) + 1000),
+                Images.GetTreeviewBackgroundTexture());
+
+            DrawTreeViewItem.InitializeStyles();
+            base.BeforeRowsGUI();
+        }
 
         protected override void RowGUI(RowGUIArgs args)
         {
-            DrawTreeViewItem.InitializeStyles();
-
             if (args.item is ChangeCategoryTreeViewItem)
             {
                 CategoryTreeViewItemGUI(
@@ -416,8 +430,16 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 item.Category, solvedConflictsCount, isSelected);
 
             bool isChecked = DrawTreeViewItem.ForCheckableCategoryItem(
-                rowRect, rowHeight, item.depth, icon, label,
-                isSelected, isFocused, wasChecked, hadCheckedChildren);
+                rowRect,
+                rowHeight,
+                item.depth,
+                icon,
+                label,
+                null,
+                isSelected,
+                isFocused,
+                wasChecked,
+                hadCheckedChildren);
 
             DefaultStyles.label = UnityStyles.Tree.Label;
 
@@ -519,6 +541,17 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
             if (column == IncomingChangesTreeColumn.Size)
             {
+                // If there is a meta file, add the meta file to the file size so that it is consistent 
+                // with the Incoming Changes overview
+                if (incomingChangesTree.HasMeta(item.ChangeInfo))
+                {
+                    IncomingChangeInfo metaFileInfo = incomingChangesTree.GetMetaChange(incomingChange);
+                    long metaFileSize = metaFileInfo.GetSize();
+                    long fileSize = incomingChange.GetSize();
+
+                    label = SizeConverter.ConvertToSizeString(fileSize + metaFileSize);
+                }
+
                 DrawTreeViewItem.ForSecondaryLabelRightAligned(
                     rect, label, isSelected, isFocused, isCurrentConflict);
                 return;

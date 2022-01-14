@@ -28,7 +28,7 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
             multiColumnHeader.canSort = false;
 
             rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = true;
+            showAlternatingRowBackgrounds = false;
         }
 
         internal List<ReportLine> GetCheckedLines()
@@ -106,6 +106,22 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
                 this, mReportLines, rootItem, mRows);
 
             return mRows;
+        }
+
+        protected override void BeforeRowsGUI()
+        {
+            int firstRowVisible;
+            int lastRowVisible;
+            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
+
+            GUI.DrawTexture(new Rect(0,
+                firstRowVisible * rowHeight,
+                GetRowRect(0).width + 500,
+                (lastRowVisible * rowHeight) + 1000),
+                Images.GetTreeviewBackgroundTexture());
+
+            DrawTreeViewItem.InitializeStyles();
+            base.BeforeRowsGUI();
         }
 
         protected override void RowGUI(RowGUIArgs args)

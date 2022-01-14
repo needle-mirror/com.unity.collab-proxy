@@ -349,29 +349,23 @@ GUID
 == ItemsSelected ==
 ({0}/{1} selected)
 
-== ChangedItemsSelectedSingular ==
-已更改项 - 已选择 {0} / 1 项
+== ItemsSelectedSingular ==
+已选择 {0} / 1 项
 
-== ChangedItemsSelectedPlural ==
-已更改项 - 已选择 {0} / {1} 项
+== ItemsSelectedPlural ==
+已选择 {0} / {1} 项
 
-== AddedPrivateItemsSelectedSingular ==
-已添加和私有项 - 已选择 {0} / 1 项
+== ChangedItemsCategory ==
+已更改项
 
-== AddedPrivateItemsSelectedPlural ==
-已添加和私有项 - 已选择 {0} / {1} 项
+== AddedPrivateItemsCategory ==
+已添加和私有项
 
-== DeletedItemsSelectedSingular ==
-已删除项 - 已选择 {0} / 1 项
+== DeletedItemsCategory ==
+已删除项
 
-== DeletedItemsSelectedPlural ==
-已删除项 - 已选择 {0} / {1} 项
-
-== MovedItemsSelectedSingular ==
-已移动项 - 已选择 {0} / 1 项
-
-== MovedItemsSelectedPlural ==
-已移动项 - 已选择 {0} / {1} 项
+== MovedItemsCategory ==
+已移动项
 
 == DeletingObjectsSingular ==
 删除 1 个对象
@@ -1210,77 +1204,47 @@ GUID
 == SimilarityColumn ==
 相似度
 
-== MergeCategoryNameSingular ==
-已从 {0} 合并：1 项
+== DiffCategoryHeaderSingular ==
+{0}: 1 项
 
-== MergeCategoryNamePlural ==
-已从 {0} 合并：{{0}} 项
+== DiffCategoryHeaderPlural ==
+{0}: {1} 项
 
-== AddedMergeDiffSingular ==
-已添加（在合并源中添加的文件）：1 项
+== MergeDiffCategory ==
+已从 {0} 合并
 
-== AddedMergeDiffPlural ==
-已添加（在合并源中添加的文件）：{0} 项
+== AddedMergeDiffCategory ==
+已添加（在合并源中添加的文件）
 
-== DeletedMergeDiffSingular ==
-已删除（在合并源中删除的文件）：1 项
+== DeletedMergeDiffCategory ==
+已删除（在合并源中删除的文件）
 
-== DeletedMergeDiffPlural ==
-已删除（在合并源中删除的文件）：{0} 项
+== MergedMergeDiffCategory ==
+已合并（在合并源中和合并目标中更改的文件）
 
-== MergedMergeDiffSingular ==
-已合并（在合并源中和合并目标中更改的文件）：1 项
+== MovedMergeDiffCategory ==
+已移动（在合并源中移动的文件）
 
-== MergedMergeDiffPlural ==
-已合并（在合并源中和合并目标中更改的文件）：{0} 项
+== ReplacedMergeDiffCategory ==
+已更改（在合并源中更改的文件）
 
-== MovedMergeDiffSingular ==
-已移动（在合并源中移动的文件）：1 项
+== AddedDiffCategory ==
+已添加
 
-== MovedMergeDiffPlural ==
-已移动（在合并源中移动的文件）：{0} 项
+== ChangedDiffCategory ==
+已更改
 
-== ReplacedMergeDiffSingular ==
-已更改（在合并源中更改的文件）：1 项
+== DeletedDiffCategory ==
+已删除
 
-== ReplacedMergeDiffPlural ==
-已更改（在合并源中更改的文件）：{0} 项
+== MovedDiffCategory ==
+已移动
 
-== AddedDiffSingular ==
-已添加：1 项
+== MergedDiffCategory ==
+已合并
 
-== AddedDiffPlural ==
-已添加：{0} 项
-
-== ChangedDiffSingular ==
-已更改：1 项
-
-== ChangedDiffPlural ==
-已更改：{0} 项
-
-== DeletedDiffSingular ==
-已删除：1 项
-
-== DeletedDiffPlural ==
-已删除：{0} 项
-
-== MovedDiffSingular ==
-已移动：1 项
-
-== MovedDiffPlural ==
-已移动：{0} 项
-
-== MergedDiffSingular ==
-已合并：1 项
-
-== MergedDiffPlural ==
-已合并：{0} 项
-
-== FSProtectionDiffSingular ==
-仅更改了文件系统权限：1 项
-
-== FSProtectionDiffPlural ==
-仅更改了文件系统权限：{0} 项
+== FSProtectionDiffCategory ==
+仅更改了文件系统权限
 
 == Source ==
 源：
