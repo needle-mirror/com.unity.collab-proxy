@@ -33,7 +33,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             mColumnComparers = RepositoriesTableDefinition.BuildColumnComparers();
 
             rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = true;
+            showAlternatingRowBackgrounds = false;
         }
 
         public override IList<TreeViewItem> GetRows()
@@ -71,6 +71,22 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             mDoubleClickAction();
         }
 
+        protected override void BeforeRowsGUI()
+        {
+            int firstRowVisible;
+            int lastRowVisible;
+            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
+
+            GUI.DrawTexture(new Rect(0,
+                firstRowVisible * rowHeight,
+                GetRowRect(0).width,
+                (lastRowVisible * rowHeight) + 1000),
+                Images.GetTreeviewBackgroundTexture());
+
+            DrawTreeViewItem.InitializeStyles();
+            base.BeforeRowsGUI();
+        }
+
         protected override void RowGUI(RowGUIArgs args)
         {
             if (args.item is RepositoryListViewItem)
@@ -97,7 +113,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
         }
 
         void IPlasticTable<RepositoryInfo>.Fill(
-            List<RepositoryInfo> entries,
+            IList<RepositoryInfo> entries,
             List<RepositoryInfo> entriesToSelect,
             string currentFilter)
         {
@@ -125,7 +141,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             IComparer<RepositoryInfo> comparer = mColumnComparers[
                 mColumnNames[sortedColumnIdx]];
 
-            mRepositories.Sort(new SortOrderComparer<RepositoryInfo>(
+            ((List<RepositoryInfo>)mRepositories).Sort(new SortOrderComparer<RepositoryInfo>(
                 comparer, sortAscending));
         }
 
@@ -138,7 +154,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
 
         static void RegenerateRows(
             RepositoriesListView listView,
-            IList repositories,
+            IList<RepositoryInfo> repositories,
             TreeViewItem rootItem,
             List<TreeViewItem> rows)
         {
@@ -226,8 +242,8 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
 
         List<TreeViewItem> mRows = new List<TreeViewItem>();
 
-        List<RepositoryInfo> mUnfilteredRepositories = new List<RepositoryInfo>();
-        List<RepositoryInfo> mRepositories = new List<RepositoryInfo>();
+        IList<RepositoryInfo> mUnfilteredRepositories = new List<RepositoryInfo>();
+        IList<RepositoryInfo> mRepositories = new List<RepositoryInfo>();
 
         readonly Dictionary<string, IComparer<RepositoryInfo>> mColumnComparers;
         readonly List<string> mColumnNames;

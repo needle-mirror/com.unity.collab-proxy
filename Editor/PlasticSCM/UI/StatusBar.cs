@@ -4,7 +4,7 @@ using UnityEngine;
 using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.Gluon;
-using PlasticGui.WorkspaceWindow;
+using PlasticGui.WorkspaceWindow.Topbar;
 using PlasticGui.WorkspaceWindow.PendingChanges;
 
 using GluonShowIncomingChanges = PlasticGui.Gluon.WorkspaceWindow.ShowIncomingChanges;

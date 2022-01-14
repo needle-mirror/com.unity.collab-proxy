@@ -197,8 +197,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             DoActionsToolbar(
                 mWkInfo,
                 mIsGluonMode,
-                mProgressControls,
-                mParentWindow);
+                mProgressControls);
 
             DoChangesArea(
                 mWkInfo,
@@ -677,7 +676,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         void DoCommentsSection()
         {
-            EditorGUILayout.BeginVertical();
+            EditorGUILayout.BeginVertical(UnityStyles.PendingChangesTab.Comment);
             EditorGUILayout.Space(10);
 
             EditorGUILayout.BeginHorizontal();
@@ -823,8 +822,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         void DoActionsToolbar(
             WorkspaceInfo workspaceInfo,
             bool isGluonMode,
-            ProgressControlsForViews progressControls,
-            EditorWindow editorWindow)
+            ProgressControlsForViews progressControls)
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
@@ -849,7 +847,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             GUI.enabled = !isOperationRunning;
 
             Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
-
             changesTreeView.OnGUI(rect);
 
             if (changesTreeView.GetTotalItemCount() == 0)

@@ -349,29 +349,23 @@ GUID
 == ItemsSelected ==
 ({0}/{1} selected)
 
-== ChangedItemsSelectedSingular ==
-변경된 항목 - {0}/1개 항목 선택됨
+== ItemsSelectedSingular ==
+{0}/1개 항목 선택됨
 
-== ChangedItemsSelectedPlural ==
-변경된 항목 - {0}/{1}개 항목 선택됨
+== ItemsSelectedPlural ==
+{0}/{1}개 항목 선택됨
 
-== AddedPrivateItemsSelectedSingular ==
-추가된 비공개 항목 - {0}/1개 항목 선택됨
+== ChangedItemsCategory ==
+변경된 항목
 
-== AddedPrivateItemsSelectedPlural ==
-추가된 비공개 항목 - {0}/{1}개 항목 선택됨
+== AddedPrivateItemsCategory ==
+추가된 비공개 항목
 
-== DeletedItemsSelectedSingular ==
-삭제된 항목 - {0}/1개 항목 선택됨
+== DeletedItemsCategory ==
+삭제된 항목
 
-== DeletedItemsSelectedPlural ==
-삭제된 항목 - {0}/{1}개 항목 선택됨
-
-== MovedItemsSelectedSingular ==
-이동된 항목 - {0}/1개 항목 선택됨
-
-== MovedItemsSelectedPlural ==
-이동된 항목 - {0}/{1}개 항목 선택됨
+== MovedItemsCategory ==
+이동된 항목
 
 == DeletingObjectsSingular ==
 1개 객체 삭제 중
@@ -1210,77 +1204,47 @@ Xlink 편집...
 == SimilarityColumn ==
 유사도
 
-== MergeCategoryNameSingular ==
-{0}에서 병합됨: 1개 항목
+== DiffCategoryHeaderSingular ==
+{0}: 1개 항목
 
-== MergeCategoryNamePlural ==
-{0}에서 병합됨: {{0}}개 항목
+== DiffCategoryHeaderPlural ==
+{0}: {1}개 항목
 
-== AddedMergeDiffSingular ==
-추가됨(병합 소스에서 파일 추가됨): 1개 항목
+== MergeDiffCategory ==
+{0}에서 병합됨
 
-== AddedMergeDiffPlural ==
-추가됨(병합 소스에서 파일 추가됨): {0}개 항목
+== AddedMergeDiffCategory ==
+추가됨(병합 소스에서 파일 추가됨)
 
-== DeletedMergeDiffSingular ==
-삭제됨(병합 소스에서 파일 삭제됨): 1개 항목
+== DeletedMergeDiffCategory ==
+삭제됨(병합 소스에서 파일 삭제됨)
 
-== DeletedMergeDiffPlural ==
-삭제됨(병합 소스에서 파일 삭제됨): {0}개 항목
+== MergedMergeDiffCategory ==
+병합됨(병합 소스 및 병합 대상에서 파일 변경됨)
 
-== MergedMergeDiffSingular ==
-병합됨(병합 소스 및 병합 대상에서 파일 변경됨): 1개 항목
+== MovedMergeDiffCategory ==
+이동됨(병합 소스에서 파일 이동됨)
 
-== MergedMergeDiffPlural ==
-병합됨(병합 소스 및 병합 대상에서 파일 변경됨): {0}개 항목
+== ReplacedMergeDiffCategory ==
+변경됨(병합 소스에서 파일 변경됨)
 
-== MovedMergeDiffSingular ==
-이동됨(병합 소스에서 파일 이동됨): 1개 항목
+== AddedDiffCategory ==
+추가됨
 
-== MovedMergeDiffPlural ==
-이동됨(병합 소스에서 파일 이동됨): {0}개 항목
+== ChangedDiffCategory ==
+변경됨
 
-== ReplacedMergeDiffSingular ==
-변경됨(병합 소스에서 파일 변경됨): 1개 항목
+== DeletedDiffCategory ==
+삭제됨
 
-== ReplacedMergeDiffPlural ==
-변경됨(병합 소스에서 파일 변경됨): {0}개 항목
+== MovedDiffCategory ==
+이동됨
 
-== AddedDiffSingular ==
-추가됨: 1개 항목
+== MergedDiffCategory ==
+병합됨
 
-== AddedDiffPlural ==
-추가됨: {0}개 항목
-
-== ChangedDiffSingular ==
-변경됨: 1개 항목
-
-== ChangedDiffPlural ==
-변경됨: {0}개 항목
-
-== DeletedDiffSingular ==
-삭제됨: 1개 항목
-
-== DeletedDiffPlural ==
-삭제됨: {0}개 항목
-
-== MovedDiffSingular ==
-이동됨: 1개 항목
-
-== MovedDiffPlural ==
-이동됨: {0}개 항목
-
-== MergedDiffSingular ==
-병합됨: 1개 항목
-
-== MergedDiffPlural ==
-병합됨: {0}개 항목
-
-== FSProtectionDiffSingular ==
-파일 시스템 권한만 변경됨: 1개 항목
-
-== FSProtectionDiffPlural ==
-파일 시스템 권한만 변경됨: {0}개 항목
+== FSProtectionDiffCategory ==
+파일 시스템 권한만 변경됨
 
 == Source ==
 소스:
@@ -1594,7 +1558,7 @@ Gluon - 워크스페이스: {0} - {1}
 {0} 워크스페이스 생성 중...
 
 == WaitingForDynamicWorkspaceToBeMounted ==
-{0} 동적 워크스페이스 마운트를 기다리는 중 ...
+{0} 동적 워크스페이스 마운트를 기다리는 중...
 
 == CreatingBranch ==
 {0} 브랜치 생성 중...

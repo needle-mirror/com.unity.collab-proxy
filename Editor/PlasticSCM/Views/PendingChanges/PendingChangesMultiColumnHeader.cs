@@ -6,6 +6,7 @@ using UnityEngine;
 
 using PlasticGui.WorkspaceWindow.PendingChanges;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.UI.Tree;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {

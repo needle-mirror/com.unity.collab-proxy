@@ -29,7 +29,7 @@ namespace Unity.PlasticSCM.Editor.Gluon.UpdateReport
             multiColumnHeader.canSort = false;
 
             rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = true;
+            showAlternatingRowBackgrounds = false;
         }
 
         public override IList<TreeViewItem> GetRows()
@@ -48,6 +48,22 @@ namespace Unity.PlasticSCM.Editor.Gluon.UpdateReport
                 this, mErrorMessages, rootItem, mRows);
 
             return mRows;
+        }
+
+        protected override void BeforeRowsGUI()
+        {
+            int firstRowVisible;
+            int lastRowVisible;
+            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
+
+            GUI.DrawTexture(new Rect(0,
+                firstRowVisible * rowHeight,
+                GetRowRect(0).width+500,
+                (lastRowVisible * rowHeight) + 1000),
+                Images.GetTreeviewBackgroundTexture());
+
+            DrawTreeViewItem.InitializeStyles();
+            base.BeforeRowsGUI();
         }
 
         protected override void RowGUI(RowGUIArgs args)

@@ -9,6 +9,7 @@ using Codice.CM.Common;
 using UnityEngine.UIElements;
 using Unity.PlasticSCM.Editor.UI.UIElements;
 using UnityEditor.UIElements;
+using Unity.PlasticSCM.Editor.Inspector;
 
 internal class TurnOffPlasticWindow : EditorWindow
 {
@@ -109,6 +110,7 @@ internal class TurnOffPlasticWindow : EditorWindow
                        Application.dataPath,
                        PlasticWindow.PlasticApi);
             Plastic.API.RemoveWorkspace(workspaceInfo);
+            DrawInspectorOperations.Disable();
             mProgress = 4;
             return;
         }

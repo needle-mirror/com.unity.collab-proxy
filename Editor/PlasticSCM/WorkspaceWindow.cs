@@ -15,6 +15,7 @@ using GluonGui;
 using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
+using PlasticGui.WorkspaceWindow.Topbar;
 using PlasticGui.WorkspaceWindow.Replication;
 using PlasticGui.WorkspaceWindow.Update;
 using Unity.PlasticSCM.Editor.AssetUtils;

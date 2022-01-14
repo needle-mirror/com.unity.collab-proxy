@@ -248,7 +248,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                 mCreateWorkspaceListener,
                 mParentWindow);
 
-            AssetMenuItems.Enable();
+            DelayedInitializeOnLoadHandler.DelayedInitialization();
         }
 
         static WorkspaceCreationData BuildCreationDataFromState(
@@ -318,7 +318,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                     if (!isEmptyRepository)
                     {
                         plasticWindow.RefreshWorkspaceUI();
-                        AssetMenu.AssetMenuItems.Enable();
+                        DelayedInitializeOnLoadHandler.DelayedInitialization();
                         return;
                     }
 

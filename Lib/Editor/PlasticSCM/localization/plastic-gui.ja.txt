@@ -349,29 +349,23 @@ GUID
 == ItemsSelected ==
 ({0}/{1} selected)
 
-== ChangedItemsSelectedSingular ==
-変更された項目 - 1 項目のうち {0} 個が選択されています
+== ItemsSelectedSingular ==
+1 項目のうち {0} 個が選択されています
 
-== ChangedItemsSelectedPlural ==
-変更された項目 - {1} 項目のうち {0} 個が選択されています
+== ItemsSelectedPlural ==
+{1} 項目のうち {0} 個が選択されています
 
-== AddedPrivateItemsSelectedSingular ==
-追加済みと非公開 - 1 項目のうち {0} 個が選択されています
+== ChangedItemsCategory ==
+変更された項目
 
-== AddedPrivateItemsSelectedPlural ==
-追加済みと非公開 - {1} 項目のうち {0} 個が選択されています
+== AddedPrivateItemsCategory ==
+追加済みと非公開
 
-== DeletedItemsSelectedSingular ==
-削除された項目 - 1 項目のうち {0} 個が選択されています
+== DeletedItemsCategory ==
+削除された項目
 
-== DeletedItemsSelectedPlural ==
-削除される項目 - {1} 項目のうち {0} 個が選択されています
-
-== MovedItemsSelectedSingular ==
-移動された項目 - 1 項目のうち {0} 個が選択されています
-
-== MovedItemsSelectedPlural ==
-移動された項目 - {1} 項目のうち {0} 個が選択されています
+== MovedItemsCategory ==
+移動された項目
 
 == DeletingObjectsSingular ==
 1 個のオブジェクトを削除しようとしています
@@ -1210,77 +1204,47 @@ Xlink を編集...
 == SimilarityColumn ==
 類似度
 
-== MergeCategoryNameSingular ==
-{0} からマージ済み:1 項目
+== DiffCategoryHeaderSingular ==
+{0}: 1 項目
 
-== MergeCategoryNamePlural ==
-{0} からマージ済み:{{0}} 項目
+== DiffCategoryHeaderPlural ==
+{0}: {1} 項目
 
-== AddedMergeDiffSingular ==
-追加済み (マージ元で追加されたファイル):1 項目
+== MergeDiffCategory ==
+{0} からマージ済み
 
-== AddedMergeDiffPlural ==
-追加済み (マージ元で追加されたファイル):{0} 項目
+== AddedMergeDiffCategory ==
+追加済み (マージ元で追加されたファイル)
 
-== DeletedMergeDiffSingular ==
-削除済み (マージ元で削除されたファイル):1 項目
+== DeletedMergeDiffCategory ==
+削除済み (マージ元で削除されたファイル)
 
-== DeletedMergeDiffPlural ==
-削除済み (マージ元で削除されたファイル):{0} 項目
+== MergedMergeDiffCategory ==
+マージ済み (マージ元とマージ先で変更されたファイル)
 
-== MergedMergeDiffSingular ==
-マージ済み (マージ元とマージ先で変更されたファイル):1 項目
+== MovedMergeDiffCategory ==
+移動済み (マージ元で移動されたファイル)
 
-== MergedMergeDiffPlural ==
-マージ済み (マージ元とマージ先で変更されたファイル):{0} 項目
+== ReplacedMergeDiffCategory ==
+変更済み (マージ元で変更されたファイル)
 
-== MovedMergeDiffSingular ==
-移動済み (マージ元で移動されたファイル):1 項目
+== AddedDiffCategory ==
+追加済み
 
-== MovedMergeDiffPlural ==
-移動済み (マージ元で移動されたファイル):{0} 項目
+== ChangedDiffCategory ==
+変更済み
 
-== ReplacedMergeDiffSingular ==
-変更済み (マージ元で変更されたファイル):1 項目
+== DeletedDiffCategory ==
+削除済み
 
-== ReplacedMergeDiffPlural ==
-変更済み (マージ元で変更されたファイル):{0} 項目
+== MovedDiffCategory ==
+移動済み
 
-== AddedDiffSingular ==
-追加済み:1 項目
+== MergedDiffCategory ==
+マージ済み
 
-== AddedDiffPlural ==
-追加済み:{0} 項目
-
-== ChangedDiffSingular ==
-変更済み:1 項目
-
-== ChangedDiffPlural ==
-変更済み:{0} 項目
-
-== DeletedDiffSingular ==
-削除済み:1 項目
-
-== DeletedDiffPlural ==
-削除済み:{0} 項目
-
-== MovedDiffSingular ==
-移動済み:1 項目
-
-== MovedDiffPlural ==
-移動済み:{0} 項目
-
-== MergedDiffSingular ==
-マージ済み:1 項目
-
-== MergedDiffPlural ==
-マージ済み:{0} 項目
-
-== FSProtectionDiffSingular ==
-ファイルシステムの権限のみ変更済み:1 項目
-
-== FSProtectionDiffPlural ==
-ファイルシステムの権限のみ変更済み:{0} 項目
+== FSProtectionDiffCategory ==
+ファイルシステムの権限のみ変更済み
 
 == Source ==
 ソース:

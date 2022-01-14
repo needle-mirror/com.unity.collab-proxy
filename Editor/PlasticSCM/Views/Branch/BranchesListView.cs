@@ -89,10 +89,24 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             base.OnGUI(rect);
         }
 
+        protected override void BeforeRowsGUI()
+        {
+            int firstRowVisible;
+            int lastRowVisible;
+            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
+
+            GUI.DrawTexture(new Rect(0,
+                firstRowVisible * rowHeight,
+                GetRowRect(0).width,
+                (lastRowVisible * rowHeight) + 1000),
+                Images.GetTreeviewBackgroundTexture());
+
+            DrawTreeViewItem.InitializeStyles();
+            base.BeforeRowsGUI();
+        }
+
         protected override void RowGUI(RowGUIArgs args)
         {
-            DrawTreeViewItem.InitializeStyles();
-
             if (args.item is BranchListViewItem)
             {
                 BranchListViewItem branchListViewItem = (BranchListViewItem)args.item;

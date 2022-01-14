@@ -39,6 +39,22 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon.Errors
             return mRows;
         }
 
+        protected override void BeforeRowsGUI()
+        {
+            int firstRowVisible;
+            int lastRowVisible;
+            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
+
+            GUI.DrawTexture(new Rect(0,
+                firstRowVisible * rowHeight,
+                GetRowRect(0).width,
+                (lastRowVisible * rowHeight) + 1000),
+                Images.GetTreeviewBackgroundTexture());
+
+            DrawTreeViewItem.InitializeStyles();
+            base.BeforeRowsGUI();
+        }
+
         protected override void RowGUI(RowGUIArgs args)
         {
             if (args.item is ErrorListViewItem)

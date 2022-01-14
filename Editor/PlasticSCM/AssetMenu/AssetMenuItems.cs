@@ -11,23 +11,8 @@ using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor.AssetMenu
 {
-    [InitializeOnLoad]
     internal class AssetMenuItems
     {
-        static AssetMenuItems()
-        {
-            CooldownWindowDelayer cooldownInitializeAction = new CooldownWindowDelayer(
-                DelayedInitialization, UnityConstants.ASSET_MENU_DELAYED_INITIALIZE_INTERVAL);
-
-            cooldownInitializeAction.Ping();
-        }
-
-        static void DelayedInitialization()
-        { 
-            PlasticApp.InitializeIfNeeded();
-            Enable();
-        }
-
         internal static void Dispose()
         {
             if (sAssetSelection != null)
@@ -35,25 +20,21 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         }
 
         // TODO: do this after calling plastic workspace
-        internal static void Enable()
+        internal static void Enable(
+            PlasticAPI plasticAPI,
+            WorkspaceInfo wkInfo)
         {
-            if (sPlasticAPI == null)
-                sPlasticAPI = new PlasticAPI();
-
-            WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
-                Application.dataPath,
-                sPlasticAPI);
-
-            if (wkInfo == null)
-                return;
+            sPlasticAPI = plasticAPI;
 
             sOperations = new AssetMenuRoutingOperations();
 
-            sAssetStatusCache = new AssetStatusCache(
+            sAssetStatusCache = AssetStatusCacheProvider.Get(
                 wkInfo,
                 sPlasticAPI.IsGluonWorkspace(wkInfo),
-                RepaintProjectWindow);
-            sAssetSelection = new InspectorAssetSelection(UpdateFilterMenuItems);
+                ProjectWindow.Repaint);
+
+            sAssetSelection = new ProjectViewAssetSelection(UpdateFilterMenuItems);
+
             sFilterMenuBuilder = new AssetFilesFilterPatternsMenuBuilder(
                 sOperations,
                 IGNORE_MENU_ITEMS_PRIORITY,
@@ -229,16 +210,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             return operations.HasFlag(operation);
         }
 
-        static void RepaintProjectWindow()
-        {
-            EditorWindow projectWindow = FindEditorWindow.ProjectWindow();
-
-            if (projectWindow == null)
-                return;
-
-            projectWindow.Repaint();
-        }
-
         static void RemoveMenuItems()
         {
             sFilterMenuBuilder.RemoveMenuItems();
@@ -252,7 +223,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         static PlasticAPI sPlasticAPI;
         static AssetMenuRoutingOperations sOperations;
         static IAssetStatusCache sAssetStatusCache;
-        static InspectorAssetSelection sAssetSelection;
+        static ProjectViewAssetSelection sAssetSelection;
         static AssetFilesFilterPatternsMenuBuilder sFilterMenuBuilder;
 
         const int BASE_MENU_ITEM_PRIORITY = 19; // Puts Plastic SCM right below Create menu
