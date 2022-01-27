@@ -7,11 +7,6 @@ namespace Unity.PlasticSCM.Editor.UI
 {
     internal class UnityPlasticGuiMessage : GuiMessage.IGuiMessage
     {
-        internal UnityPlasticGuiMessage(EditorWindow parentWindow)
-        {
-            mParentWindow = parentWindow;
-        }
-
         void GuiMessage.IGuiMessage.ShowMessage(
             string title,
             string message,
@@ -151,7 +146,5 @@ namespace Unity.PlasticSCM.Editor.UI
 
             return alertTypeText;
         }
-
-        EditorWindow mParentWindow;
     }
 }

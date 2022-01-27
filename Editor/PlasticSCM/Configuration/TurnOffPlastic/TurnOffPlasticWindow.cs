@@ -108,7 +108,7 @@ internal class TurnOffPlasticWindow : EditorWindow
             WorkspaceInfo workspaceInfo =
                        FindWorkspace.InfoForApplicationPath(
                        Application.dataPath,
-                       PlasticWindow.PlasticApi);
+                       PlasticApp.PlasticAPI);
             Plastic.API.RemoveWorkspace(workspaceInfo);
             DrawInspectorOperations.Disable();
             mProgress = 4;

@@ -379,6 +379,12 @@ Comment
 == ItemsCount ==
 ({0})
 
+== ItemsCountSingular ==
+(1 item)
+
+== ItemsCountPlural ==
+({0} items)
+
 == ItemsSelected ==
 ({0}/{1} selected)
 
@@ -4969,21 +4975,6 @@ Learn more
 == HelpActionNotFound ==
 Sorry we forgot to add the action :(
 
-== DaysAgo ==
-{0} days ago
-
-== HoursAgo ==
-{0} hours ago
-
-== MinutesAgo ==
-{0} minutes ago
-
-== SecondsAgo ==
-{0} seconds ago
-
-== JustNow ==
-Just now
-
 == RemovedLocallyStatus ==
 Removed locally
 
@@ -5831,11 +5822,8 @@ The list of changes is empty
 == EmptyQuestionList ==
 The list of questions is empty
 
-== MergeFileChangesInConflictSingular ==
-File changes in conflict, might require manual intervention (1 item)
-
-== MergeFileChangesInConflictPlural ==
-File changes in conflict, might require manual intervention ({0} items)
+== MergeFileChangesInConflictCategory ==
+File changes in conflict, might require manual intervention
 
 == FileConflictsExplanation ==
 File changes in conflict, might require manual intervention.
@@ -5843,23 +5831,14 @@ File changes in conflict, might require manual intervention.
 == FileConflictsExplanationForIncomingView ==
 Files to download that are in conflict with your changes.
 
-== ChangesWithDirectoryConflictsSingular ==
-Changes with directory structure conflicts (1 item)
+== ChangesWithDirectoryConflictsCategory ==
+Changes with directory structure conflicts
 
-== ChangesWithDirectoryConflictsPlural ==
-Changes with directory structure conflicts ({0} items)
+== MergeDiscardedConflictsCategory ==
+Conflicts that no longer apply and possible warnings
 
-== MergeDiscardedConflictsSingular ==
-Conflicts that no longer apply and possible warnings (1 item)
-
-== MergeDiscardedConflictsPlural ==
-Conflicts that no longer apply and possible warnings ({0} items)
-
-== MergeFileChangesInConflictForIncomingViewSingular ==
-Files to download that are in conflict with your changes (1 item)
-
-== MergeFileChangesInConflictForIncomingViewPlural ==
-Files to download that are in conflict with your changes ({0} items)
+== MergeFileChangesInConflictForIncomingViewCategory ==
+Files to download that are in conflict with your changes
 
 == MergeFileChangesInConflictForGluonSingular ==
 Files to download that are in conflict with your changes ({0} of 1 item)
@@ -5873,17 +5852,11 @@ Changes in both source and destination contributors
 == MergeFileChangesInConflictRemarkForIncomingView ==
 Requires merge
 
-== MergeChangesMadeInSourceOfMergeSingular ==
-Changes made in the source of the merge. No conflicts (1 item)
+== MergeChangesMadeInSourceOfMergeCategory ==
+Changes made in the source of the merge. No conflicts
 
-== MergeChangesMadeInSourceOfMergePlural ==
-Changes made in the source of the merge. No conflicts ({0} items)
-
-== MergeChangesMadeInSourceOfMergeForIncomingViewSingular ==
-Files that just need update (1 item)
-
-== MergeChangesMadeInSourceOfMergeForIncomingViewPlural ==
-Files that just need update ({0} items)
+== MergeChangesMadeInSourceOfMergeForIncomingViewCategory ==
+Files that just need update
 
 == MergeChangesMadeInSourceOfMergeForGluonSingular ==
 Files that just need update ({0} of 1 item)
@@ -5897,11 +5870,8 @@ Files that just need update ({0} of {1} items)
 == MergeChangesMadeInSourceOfMergeOverviewPlural ==
 {0} changed files updated ({1})
 
-== MergeMovesToApplySingular ==
-Moves to apply (1 item)
-
-== MergeMovesToApplyPlural ==
-Moves to apply ({0} items)
+== MergeMovesToApplyCategory ==
+Moves to apply
 
 == MergeMovesToApplyForGluonSingular ==
 Moves to apply ({0} of 1 item)
@@ -5915,11 +5885,8 @@ Moved on source to {0}
 == MergeMovesToApplyRemarkForIncomingView ==
 Will apply the move to your workspace
 
-== MergeDeletesToApplySingular ==
-Deletes to apply (1 item)
-
-== MergeDeletesToApplyPlural ==
-Deletes to apply ({0} items)
+== MergeDeletesToApplyCategory ==
+Deletes to apply
 
 == MergeDeletesToApplyForGluonSingular ==
 Deletes to apply ({0} of 1 item)
@@ -5939,11 +5906,8 @@ Deleted on source
 == MergeDeletesToApplyRemarkForIncomingView ==
 Will apply the delete to your workspace
 
-== MergeNewItemsToDownloadSingular ==
-New items to download (1 item)
-
-== MergeNewItemsToDownloadPlural ==
-New items to download ({0} items)
+== MergeNewItemsToDownloadCategory ==
+New items to download
 
 == MergeNewItemsToDownloadForGluonSingular ==
 New items to download ({0} of 1 item)
@@ -5963,11 +5927,8 @@ Added on source
 == MergeNewItemsToDownloadRemarkForIncomingView ==
 Will apply the add to your workspace
 
-== MergeFileSystemPermissionsChangesToApplySingular ==
-Filesystem permissions changes to apply (1 item)
-
-== MergeFileSystemPermissionsChangesToApplyPlural ==
-Filesystem permissions changes to apply ({0} items)
+== MergeFileSystemPermissionsChangesToApplyCategory ==
+Filesystem permissions changes to apply
 
 == MergeFileSystemPermissionsChangesToApplyRemark ==
 Changes in the filesystem permissions
@@ -7535,3 +7496,30 @@ Open or create other workspace...
 
 == ViewRepositories ==
 View repositories...
+
+== OpenPlasticLinkDialogTitle ==
+Open plastic link
+
+== OpenPlasticLinkDialogExplanation ==
+How do you want to open this link?
+
+== OpenLinkWithPlastic ==
+Plastic SCM (official release)
+
+== OpenLinkWithPlasticX ==
+Plastic X (alpha)
+
+== OpenPlasticLinkDialogLink ==
+[[https://forum.plasticscm.com/forum/41-announcements/|Click here to learn more about Plastic X]]
+
+== PreferenceOpenLinksWithPlasticX ==
+Open plastic links with Plastic X (alpha)
+
+== PreferenceOpenLinksWithPlastic ==
+Open plastic links with Plastic SCM
+
+== InviteMembersTitle ==
+Invite members
+
+== InviteMembersMessage ==
+You cannot invite members to the organization because you are not the administrator.

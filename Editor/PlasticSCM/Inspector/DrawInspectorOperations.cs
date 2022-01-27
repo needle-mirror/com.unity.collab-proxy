@@ -14,47 +14,16 @@ using Codice.CM.Common;
 
 namespace Unity.PlasticSCM.Editor.Inspector
 {
-    [InitializeOnLoad]
     static class DrawInspectorOperations
     {
-        static DrawInspectorOperations()
-        {
-            CooldownWindowDelayer cooldownInitializeAction = new CooldownWindowDelayer(
-                DelayedInitialization, UnityConstants.ASSET_MENU_DELAYED_INITIALIZE_INTERVAL);
-
-            cooldownInitializeAction.Ping();
-        }
-
-        static void DelayedInitialization()
-        {
-            PlasticApp.InitializeIfNeeded();
-            Enable();
-        }
-
         internal static void Enable()
         {
-            if (mIsEnabled)
+            if (sIsEnabled)
                 return;
             
-            if (sPlasticAPI == null)
-                sPlasticAPI = new PlasticAPI();
+            sIsEnabled = true;
 
-            WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
-                Application.dataPath,
-                sPlasticAPI);
-
-            if (wkInfo == null)
-                return;
-            mAssetSelection = new InspectorAssetSelection();
-
-            mStatusCache = AssetStatusCacheProvider.Get(
-                wkInfo,
-                sPlasticAPI.IsGluonWorkspace(wkInfo),
-                ProjectWindow.Repaint);
-
-            mAssetSelection = new InspectorAssetSelection();
-
-            mIsEnabled = true;
+            sAssetSelection = new InspectorAssetSelection();
 
             UnityEditor.Editor.finishedDefaultHeaderGUI +=
                 Editor_finishedDefaultHeaderGUI;
@@ -64,7 +33,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
 
         internal static void Disable()
         {
-            mIsEnabled = false;
+            sIsEnabled = false;
 
             UnityEditor.Editor.finishedDefaultHeaderGUI -=
                 Editor_finishedDefaultHeaderGUI;
@@ -84,32 +53,32 @@ namespace Unity.PlasticSCM.Editor.Inspector
             EditorWindow parentWindow,
             bool isGluonMode)
         {
-            if (!mIsEnabled)
+            if (!sIsEnabled)
                 Enable();
 
-            mOperations = new AssetOperations(
+            sOperations = new AssetOperations(
                 wkInfo,
                 workspaceWindow,
                 viewSwitcher,
                 historyViewLauncher,
                 viewHost,
                 incomingChangesUpdater,
-                mStatusCache,
+                PlasticPlugin.AssetStatusCache,
                 mergeViewLauncher,
                 gluonViewSwitcher,
                 parentWindow,
-                mAssetSelection,
+                sAssetSelection,
                 isGluonMode);
         }
 
         static void Editor_finishedDefaultHeaderGUI(UnityEditor.Editor inspector)
         {
-            if(!mIsEnabled)
+            if (!sIsEnabled)
                 return;
 
             WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
                 Application.dataPath,
-                sPlasticAPI);
+                PlasticApp.PlasticAPI);
 
             if (wkInfo == null)
             {
@@ -117,10 +86,10 @@ namespace Unity.PlasticSCM.Editor.Inspector
                 return;
             }
 
-            mAssetSelection.SetActiveInspector(inspector);
+            sAssetSelection.SetActiveInspector(inspector);
             
             AssetList assetList = ((AssetOperations.IAssetSelection)
-                mAssetSelection).GetSelectedAssets();
+                sAssetSelection).GetSelectedAssets();
 
             if (assetList.Count == 0 ||
                 string.IsNullOrEmpty(assetList[0].path))
@@ -130,13 +99,13 @@ namespace Unity.PlasticSCM.Editor.Inspector
 
             AssetsOverlays.AssetStatus assetStatus = (assetList.Count > 1) ?
                 AssetsOverlays.AssetStatus.None :
-                mStatusCache.GetStatusForPath(selectionFullPath);
+                PlasticPlugin.AssetStatusCache.GetStatusForPath(selectionFullPath);
 
-            LockStatusData lockStatusData = mStatusCache.GetLockStatusDataForPath(
+            LockStatusData lockStatusData = PlasticPlugin.AssetStatusCache.GetLockStatusDataForPath(
                 selectionFullPath);
 
             SelectedAssetGroupInfo selectedGroupInfo = SelectedAssetGroupInfo.
-                BuildFromAssetList(assetList, mStatusCache);
+                BuildFromAssetList(assetList, PlasticPlugin.AssetStatusCache);
 
             AssetMenuOperations assetOperations =
                 AssetMenuUpdater.GetAvailableMenuOperations(selectedGroupInfo);
@@ -249,9 +218,9 @@ namespace Unity.PlasticSCM.Editor.Inspector
             string buttonText = PlasticLocalization.GetString(PlasticLocalization.Name.AddButton);
             if (GUILayout.Button(string.Format("{0}", buttonText), EditorStyles.miniButton))
             {
-                if (mOperations == null)
+                if (sOperations == null)
                     EditorWindow.GetWindow<PlasticWindow>();
-                mOperations.Add();
+                sOperations.Add();
             }
         }
 
@@ -260,9 +229,9 @@ namespace Unity.PlasticSCM.Editor.Inspector
             string buttonText = PlasticLocalization.GetString(PlasticLocalization.Name.CheckoutButton);
             if (GUILayout.Button(string.Format("{0}", buttonText), EditorStyles.miniButton))
             {
-                if (mOperations == null)
+                if (sOperations == null)
                     EditorWindow.GetWindow<PlasticWindow>();
-                mOperations.Checkout();
+                sOperations.Checkout();
             }
         }
 
@@ -271,9 +240,9 @@ namespace Unity.PlasticSCM.Editor.Inspector
             string buttonText = PlasticLocalization.GetString(PlasticLocalization.Name.CheckinButton);
             if (GUILayout.Button(string.Format("{0}", buttonText), EditorStyles.miniButton))
             {
-                if (mOperations == null)
+                if (sOperations == null)
                     EditorWindow.GetWindow<PlasticWindow>();
-                mOperations.Checkin();
+                sOperations.Checkin();
                 EditorGUIUtility.ExitGUI();
             }
         }
@@ -283,19 +252,16 @@ namespace Unity.PlasticSCM.Editor.Inspector
             string buttonText = PlasticLocalization.GetString(PlasticLocalization.Name.UndoButton);
             if (GUILayout.Button(string.Format("{0}", buttonText), EditorStyles.miniButton))
             {
-                if (mOperations == null)
+                if (sOperations == null)
                     EditorWindow.GetWindow<PlasticWindow>();
-                mOperations.Undo();
+                sOperations.Undo();
                 EditorGUIUtility.ExitGUI();
             }
         }
 
-        static PlasticAPI sPlasticAPI;
-
-        static IAssetMenuOperations mOperations;
-        static IAssetStatusCache mStatusCache;
-        static InspectorAssetSelection mAssetSelection;
-        static bool mIsEnabled;
+        static IAssetMenuOperations sOperations;
+        static InspectorAssetSelection sAssetSelection;
+        static bool sIsEnabled;
         const string EXTRA_SPACE = "    ";
     }
 }

@@ -68,7 +68,7 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
 
                 if (!mOperationFailed)
                 {
-                    DelayedInitializeOnLoadHandler.DelayedInitialization();
+                    PlasticPlugin.Enable();
                     ShowWindow.PlasticAfterDownloadingProject();
                 }
             }

@@ -125,10 +125,48 @@ namespace Unity.PlasticSCM.Editor.WebApi
                 }
             }
 
+            internal static CurrentUserAdminCheckResponse IsUserAdmin(
+                string organizationName,
+                string authToken)
+            {
+                Uri endpoint = mWebApiUris.GetFullUri(
+                    IsUserAdminEnpoint,
+                    organizationName);
+
+                try
+                {
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(endpoint);
+                    request.Method = "GET";
+                    request.ContentType = "application/json";
+
+                    string authenticationToken = "Basic " + authToken;
+
+                    request.Headers.Add(
+                       HttpRequestHeader.Authorization, authenticationToken);
+
+                    return GetResponse<CurrentUserAdminCheckResponse>(request);
+                }
+                catch (Exception ex)
+                {
+                    mLog.ErrorFormat(
+                       "Unable to retrieve is user admin '{0}': {1}",
+                       endpoint.ToString(), ex.Message);
+
+                    mLog.DebugFormat(
+                        "StackTrace:{0}{1}",
+                        Environment.NewLine, ex.StackTrace);
+
+                    return new CurrentUserAdminCheckResponse
+                    {
+                        Error = BuildLoggedErrorFields(ex, endpoint)
+                    };
+                }
+            }
+
             const string IsBetaEnabledEndpoint = "api/unity-package/beta/is-enabled";
             const string TokenExchangeEndpoint = "api/oauth/unityid/exchange/{0}";
             const string IsCollabProjectMigratedEndpoint = "api/cloud/unity/projects/{0}/is-migrated";
-
+            const string IsUserAdminEnpoint  = "api/cloud/organizations/{0}/is-user-admin";
             static readonly PlasticWebApiUris mWebApiUris = PlasticWebApiUris.BuildDefault();
         }
 

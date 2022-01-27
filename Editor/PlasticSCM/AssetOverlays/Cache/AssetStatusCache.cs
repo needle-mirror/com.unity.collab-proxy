@@ -20,19 +20,18 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
     {
         internal AssetStatusCache(
             WorkspaceInfo wkInfo,
-            bool isGluonMode,
-            Action repaintProjectWindow)
+            bool isGluonMode)
         {
             mLocalStatusCache = new LocalStatusCache(wkInfo);
 
             mRemoteStatusCache = new RemoteStatusCache(
                 wkInfo,
                 isGluonMode,
-                repaintProjectWindow);
+                ProjectWindow.Repaint);
 
             mLockStatusCache = new LockStatusCache(
                 wkInfo,
-                repaintProjectWindow);
+                ProjectWindow.Repaint);
         }
 
         AssetStatus IAssetStatusCache.GetStatusForPath(string fullPath)

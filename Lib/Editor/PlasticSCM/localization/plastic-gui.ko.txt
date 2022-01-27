@@ -346,6 +346,15 @@ GUID
 == CommentColumn ==
 코멘트
 
+== ItemsCount ==
+({0})
+
+== ItemsCountSingular ==
+(1개 항목)
+
+== ItemsCountPlural ==
+({0}개 항목)
+
 == ItemsSelected ==
 ({0}/{1} selected)
 
@@ -4889,18 +4898,6 @@ File Move and Rename Detection
 == HelpActionNotFound ==
 작업을 추가하지 않았습니다.
 
-== DaysAgo ==
-{0}일 전
-
-== HoursAgo ==
-{0}시간 전
-
-== MinutesAgo ==
-{0}분 전
-
-== SecondsAgo ==
-{0}초 전
-
 == RemovedLocallyStatus ==
 로컬에서 제거됨
 
@@ -5700,11 +5697,8 @@ Xlink 파일에 대한 검토 코멘트가 아직 지원되지 않습니다
 == EmptyQuestionList ==
 질문 목록이 비어 있습니다
 
-== MergeFileChangesInConflictSingular ==
-충돌하는 파일 변경사항, 수동 개입이 필요할 수 있음(1개 항목)
-
-== MergeFileChangesInConflictPlural ==
-충돌하는 파일 변경사항, 수동 개입이 필요할 수 있음({0}개 항목)
+== MergeFileChangesInConflictCategory ==
+충돌하는 파일 변경사항, 수동 개입이 필요할 수 있음
 
 == FileConflictsExplanation ==
 충돌하는 파일 변경사항으로, 수동 개입이 필요할 수 있습니다.
@@ -5712,17 +5706,11 @@ Xlink 파일에 대한 검토 코멘트가 아직 지원되지 않습니다
 == FileConflictsExplanationForIncomingView ==
 변경사항과 충돌하는 다운로드할 파일입니다.
 
-== ChangesWithDirectoryConflictsSingular ==
-디렉터리 구조가 충돌하는 변경사항(1개 항목)
+== ChangesWithDirectoryConflictsCategory ==
+디렉터리 구조가 충돌하는 변경사항
 
-== ChangesWithDirectoryConflictsPlural ==
-디렉터리 구조가 충돌하는 변경사항({0}개 항목)
-
-== MergeFileChangesInConflictForIncomingViewSingular ==
-변경사항과 충돌하는 다운로드할 파일(1개 항목)
-
-== MergeFileChangesInConflictForIncomingViewPlural ==
-변경사항과 충돌하는 다운로드할 파일({0}개 항목)
+== MergeFileChangesInConflictForIncomingViewCategory ==
+변경사항과 충돌하는 다운로드할 파일
 
 == MergeFileChangesInConflictForGluonSingular ==
 변경사항과 충돌하는 다운로드할 파일({0}/1개 항목)
@@ -5736,17 +5724,11 @@ Xlink 파일에 대한 검토 코멘트가 아직 지원되지 않습니다
 == MergeFileChangesInConflictRemarkForIncomingView ==
 병합 필요
 
-== MergeChangesMadeInSourceOfMergeSingular ==
-병합 소스에서 적용된 변경사항입니다. 충돌 없음(1개 항목)
+== MergeChangesMadeInSourceOfMergeCategory ==
+병합 소스에서 적용된 변경사항입니다. 충돌 없음
 
-== MergeChangesMadeInSourceOfMergePlural ==
-병합 소스에서 적용된 변경사항입니다. 충돌 없음({0}개 항목)
-
-== MergeChangesMadeInSourceOfMergeForIncomingViewSingular ==
-업데이트가 필요한 파일(1개 항목)
-
-== MergeChangesMadeInSourceOfMergeForIncomingViewPlural ==
-업데이트가 필요한 파일({0}개 항목)
+== MergeChangesMadeInSourceOfMergeForIncomingViewCategory ==
+업데이트가 필요한 파일
 
 == MergeChangesMadeInSourceOfMergeForGluonSingular ==
 업데이트가 필요한 파일({0}/1개 항목)
@@ -5754,11 +5736,8 @@ Xlink 파일에 대한 검토 코멘트가 아직 지원되지 않습니다
 == MergeChangesMadeInSourceOfMergeForGluonPlural ==
 업데이트가 필요한 파일({0}/{1}개 항목)
 
-== MergeMovesToApplySingular ==
-적용할 이동(1개 항목)
-
-== MergeMovesToApplyPlural ==
-적용할 이동({0}개 항목)
+== MergeMovesToApplyCategory ==
+적용할 이동
 
 == MergeMovesToApplyForGluonSingular ==
 적용할 이동({0}/1개 항목)
@@ -5772,11 +5751,8 @@ Xlink 파일에 대한 검토 코멘트가 아직 지원되지 않습니다
 == MergeMovesToApplyRemarkForIncomingView ==
 워크스페이스에 이동 적용
 
-== MergeDeletesToApplySingular ==
-적용할 삭제(1개 항목)
-
-== MergeDeletesToApplyPlural ==
-적용할 삭제({0}개 항목)
+== MergeDeletesToApplyCategory ==
+적용할 삭제
 
 == MergeDeletesToApplyForGluonSingular ==
 적용할 삭제({0}/1개 항목)
@@ -5790,11 +5766,8 @@ Xlink 파일에 대한 검토 코멘트가 아직 지원되지 않습니다
 == MergeDeletesToApplyRemarkForIncomingView ==
 워크스페이스에 삭제 적용
 
-== MergeNewItemsToDownloadSingular ==
-다운로드할 새 항목(1개 항목)
-
-== MergeNewItemsToDownloadPlural ==
-다운로드할 새 항목({0}개 항목)
+== MergeNewItemsToDownloadCategory ==
+다운로드할 새 항목
 
 == MergeNewItemsToDownloadForGluonSingular ==
 다운로드할 새 항목({0}/1개 항목)
@@ -5808,11 +5781,8 @@ Xlink 파일에 대한 검토 코멘트가 아직 지원되지 않습니다
 == MergeNewItemsToDownloadRemarkForIncomingView ==
 워크스페이스에 추가 적용
 
-== MergeFileSystemPermissionsChangesToApplySingular ==
-적용할 파일 시스템 권한 변경사항(1개 항목)
-
-== MergeFileSystemPermissionsChangesToApplyPlural ==
-적용할 파일 시스템 권한 변경사항({0}개 항목)
+== MergeFileSystemPermissionsChangesToApplyCategory ==
+적용할 파일 시스템 권한 변경사항
 
 == MergeFileSystemPermissionsChangesToApplyRemark ==
 파일 시스템 권한의 변경사항

@@ -108,12 +108,16 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         {
             using (new EditorGUILayout.HorizontalScope())
             {
-                GUILayout.Space(10);
+                using (new EditorGUILayout.HorizontalScope(GUILayout.MinWidth(500)))
+                {
+                    GUILayout.Space(2);
+                    DrawProgressForDialogs.For(
+                        mProgressControls.ProgressData);
+                    GUILayout.Space(2);
+                }
 
-                DrawProgressForDialogs.For(
-                   mProgressControls.ProgressData);
-                
                 GUILayout.FlexibleSpace();
+
                 DoCreateButton();
                 DoCancelButton();
             }

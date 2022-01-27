@@ -14,10 +14,9 @@ using Unity.PlasticSCM.Editor.ProjectDownloader;
 
 namespace Unity.PlasticSCM.Editor.CollabMigration
 {
-    [InitializeOnLoad]
     public static class MigrateCollabProject 
     {
-        static MigrateCollabProject()
+        internal static void Initialize()
         {
             if (SessionState.GetInt(
                     IS_PROJECT_MIGRATED_ALREADY_CALCULATED_KEY,

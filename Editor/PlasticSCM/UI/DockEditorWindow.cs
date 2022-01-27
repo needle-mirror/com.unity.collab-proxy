@@ -5,7 +5,6 @@ using UnityEditor;
 
 namespace Unity.PlasticSCM.Editor.UI
 {
-    [InitializeOnLoad]
     internal static class DockEditorWindow
     {
         static DockEditorWindow()

@@ -362,7 +362,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             bool isFocused)
         {
             Texture icon = GetCategoryIcon(item.Category.CategoryType);
-            string label = item.Category.GetHeaderText();
+            string label = item.Category.GetCategoryName();
+            string infoLabel = item.Category.GetChildrenCountText();
 
             DefaultStyles.label = GetCategoryStyle(
                 item.Category,
@@ -375,7 +376,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 item.depth,
                 icon,
                 label,
-                null,
+                infoLabel,
                 isSelected,
                 isFocused);
 

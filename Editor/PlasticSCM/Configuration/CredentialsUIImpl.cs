@@ -10,11 +10,6 @@ namespace Unity.PlasticSCM.Editor.Configuration
 {
     internal class CredentialsUiImpl : AskCredentialsToUser.IGui
     {
-        internal CredentialsUiImpl(EditorWindow parentWindow)
-        {
-            mParentWindow = parentWindow;
-        }
-
         AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForCredentials(string servername)
         {
             AskCredentialsToUser.DialogData result = null;
@@ -22,7 +17,7 @@ namespace Unity.PlasticSCM.Editor.Configuration
             GUIActionRunner.RunGUIAction(delegate
             {
                 result = CredentialsDialog.RequestCredentials(
-                        servername, mParentWindow);
+                        servername, ParentWindow.Get());
             });
 
             return result;
@@ -63,10 +58,8 @@ namespace Unity.PlasticSCM.Editor.Configuration
             }
             else
             {
-                return SSOCredentialsDialog.RequestCredentials(cloudServer, mParentWindow);
+                return SSOCredentialsDialog.RequestCredentials(cloudServer, ParentWindow.Get());
             }
         }
-
-        EditorWindow mParentWindow;
     }
 }

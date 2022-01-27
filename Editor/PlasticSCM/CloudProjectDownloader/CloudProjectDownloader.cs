@@ -9,7 +9,6 @@ using Codice.LogWrapper;
 
 namespace Unity.PlasticSCM.Editor.ProjectDownloader
 {
-    [InitializeOnLoad]
     internal static class CloudProjectDownloader
     {
         internal const string IS_PROJECT_DOWNLOADER_ALREADY_EXECUTED_KEY =
@@ -18,7 +17,7 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
         internal const string SHOULD_PROJECT_BE_DOWNLOADED_KEY =
             "PlasticSCM.ProjectDownloader.ShouldProjectBeDownloaded";
 
-        static CloudProjectDownloader()
+        internal static void Initialize()
         {
             EditorApplication.update += RunOnceWhenAccessTokenIsInitialized;
         }

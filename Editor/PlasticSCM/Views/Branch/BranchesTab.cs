@@ -329,7 +329,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 repSpec,
                 branchInfo);
 
-            mBranchOperations.CreateBranch(branchCreationData);
+            mBranchOperations.CreateBranch(branchCreationData, RefreshAsset.UnityAssetDatabase);
         }
 
         void IBranchMenuOperations.SwitchToBranch()

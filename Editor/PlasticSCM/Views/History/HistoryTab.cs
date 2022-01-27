@@ -50,7 +50,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
             mParentWindow = parentWindow;
             mIsGluonMode = isGluonMode;
 
-            mGuiMessage = new UnityPlasticGuiMessage(parentWindow);
+            mGuiMessage = new UnityPlasticGuiMessage();
 
             BuildComponents(wkInfo, repSpec);
 

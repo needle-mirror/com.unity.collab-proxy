@@ -19,7 +19,6 @@ using PlasticGui.SwitcherWindow.Repositories;
 using PlasticGui.SwitcherWindow.Workspaces;
 using PlasticGui.WebApi;
 using Unity.PlasticSCM.Editor.UI.Progress;
-using Unity.PlasticSCM.Editor.AssetMenu;
 
 namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
 {
@@ -247,8 +246,6 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                 mProgressControls,
                 mCreateWorkspaceListener,
                 mParentWindow);
-
-            DelayedInitializeOnLoadHandler.DelayedInitialization();
         }
 
         static WorkspaceCreationData BuildCreationDataFromState(
@@ -318,7 +315,6 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                     if (!isEmptyRepository)
                     {
                         plasticWindow.RefreshWorkspaceUI();
-                        DelayedInitializeOnLoadHandler.DelayedInitialization();
                         return;
                     }
 

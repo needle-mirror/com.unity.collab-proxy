@@ -373,6 +373,12 @@ Comment
 == ItemsCount ==
 ({0})
 
+== ItemsCountSingular ==
+(1 item)
+
+== ItemsCountPlural ==
+({0} items)
+
 == ItemsSelected ==
 ({0}/{1} selected)
 
@@ -4960,21 +4966,6 @@ Saber más
 == HelpActionNotFound ==
 Lo siento, olvidamos añadir la acción :(
 
-== DaysAgo ==
-hace {0} días
-
-== HoursAgo ==
-hace {0} horas
-
-== MinutesAgo ==
-hace {0} minutos
-
-== SecondsAgo ==
-hace {0} segundos
-
-== JustNow ==
-Ahora mismo
-
 == RemovedLocallyStatus ==
 Borrado localmente
 
@@ -5821,11 +5812,8 @@ La lista de cambios solicitados esta vacia
 == EmptyQuestionList ==
 La lista de preguntas esta vacía
 
-== MergeFileChangesInConflictSingular ==
-Conflictos de fichero, que podrían requerir intervención manual (1 item)
-
-== MergeFileChangesInConflictPlural ==
-Conflictos de fichero, que podrían requerir intervención manual ({0} items)
+== MergeFileChangesInConflictCategory ==
+Conflictos de fichero, que podrían requerir intervención manual
 
 == FileConflictsExplanation ==
 Conflictos de fichero, que podrían requerir intervención manual.
@@ -5833,23 +5821,14 @@ Conflictos de fichero, que podrían requerir intervención manual.
 == FileConflictsExplanationForIncomingView ==
 Ficheros a descargar que están en conflicto con sus cambios.
 
-== ChangesWithDirectoryConflictsSingular ==
-Cambios con conflictos en la estructura de directorios (1 item)
+== ChangesWithDirectoryConflictsCategory ==
+Cambios con conflictos en la estructura de directorios
 
-== ChangesWithDirectoryConflictsPlural ==
-Cambios con conflictos en la estructura de directorios ({0} items)
+== MergeDiscardedConflictsCategory ==
+Conflictos que ya no se aplican y posibles advertencias
 
-== MergeDiscardedConflictsSingular ==
-Conflictos que ya no se aplican y posibles advertencias (1 item)
-
-== MergeDiscardedConflictsPlural ==
-Conflictos que ya no se aplican y posibles advertencias ({0} items)
-
-== MergeFileChangesInConflictForIncomingViewSingular ==
-Ficheros a descargar que están en conflicto con sus cambios (1 item)
-
-== MergeFileChangesInConflictForIncomingViewPlural ==
-Ficheros a descargar que están en conflicto con sus cambios ({0} items)
+== MergeFileChangesInConflictForIncomingViewCategory ==
+Ficheros a descargar que están en conflicto con sus cambios
 
 == MergeFileChangesInConflictForGluonSingular ==
 Ficheros a descargar que están en conflicto con sus cambios ({0} de 1 item)
@@ -5863,17 +5842,11 @@ Cambiado en origen y destino
 == MergeFileChangesInConflictRemarkForIncomingView ==
 Requiere merge
 
-== MergeChangesMadeInSourceOfMergeSingular ==
-Cambios en el origen del merge. No hay conflictos. (1 item)
+== MergeChangesMadeInSourceOfMergeCategory ==
+Cambios en el origen del merge. No hay conflictos.
 
-== MergeChangesMadeInSourceOfMergePlural ==
-Cambios en el origen del merge. No hay conflictos. ({0} items)
-
-== MergeChangesMadeInSourceOfMergeForIncomingViewSingular ==
-Ficheros que solo necesitan actualización (1 item)
-
-== MergeChangesMadeInSourceOfMergeForIncomingViewPlural ==
-Ficheros que solo necesitan actualización ({0} items)
+== MergeChangesMadeInSourceOfMergeForIncomingViewCategory ==
+Ficheros que solo necesitan actualización
 
 == MergeChangesMadeInSourceOfMergeForGluonSingular ==
 Ficheros que solo necesitan actualización ({0} de 1 item)
@@ -5887,11 +5860,8 @@ Ficheros que solo necesitan actualización ({0} de {1} items)
 == MergeChangesMadeInSourceOfMergeOverviewPlural ==
 {0} changed files updated ({1})
 
-== MergeMovesToApplySingular ==
-Movidos a aplicar (1 item)
-
-== MergeMovesToApplyPlural ==
-Movidos a aplicar ({0} items)
+== MergeMovesToApplyCategory ==
+Movidos a aplicar
 
 == MergeMovesToApplyForGluonSingular ==
 Movidos a aplicar ({0} de 1 item)
@@ -5905,11 +5875,8 @@ Movido en origen a {0}
 == MergeMovesToApplyRemarkForIncomingView ==
 Aplicará el movido a tu espacio de trabajo
 
-== MergeDeletesToApplySingular ==
-Borrados a aplicar (1 item)
-
-== MergeDeletesToApplyPlural ==
-Borrados a aplicar ({0} items)
+== MergeDeletesToApplyCategory ==
+Borrados a aplicar
 
 == MergeDeletesToApplyForGluonSingular ==
 Borrados a aplicar ({0} de 1 item)
@@ -5929,11 +5896,8 @@ Borrado en origen
 == MergeDeletesToApplyRemarkForIncomingView ==
 Aplicará el borrado a tu espacio de trabajo
 
-== MergeNewItemsToDownloadSingular ==
-Items nuevos a descargar (1 item)
-
-== MergeNewItemsToDownloadPlural ==
-Items nuevos a descargar ({0} items)
+== MergeNewItemsToDownloadCategory ==
+Items nuevos a descargar
 
 == MergeNewItemsToDownloadForGluonSingular ==
 Items nuevos a descargar ({0} de 1 item)
@@ -5953,11 +5917,8 @@ Añadido en origen
 == MergeNewItemsToDownloadRemarkForIncomingView ==
 Aplicará el añadido a tu espacio de trabajo
 
-== MergeFileSystemPermissionsChangesToApplySingular ==
-Cambios de permisos a aplicar (1 item)
-
-== MergeFileSystemPermissionsChangesToApplyPlural ==
-Cambios de permisos a aplicar ({0} items)
+== MergeFileSystemPermissionsChangesToApplyCategory ==
+Cambios de permisos a aplicar
 
 == MergeFileSystemPermissionsChangesToApplyRemark ==
 Cambios en los permisos del fichero
@@ -7528,3 +7489,30 @@ Abrir o crear otro workspace...
 
 == ViewRepositories ==
 Ver repositorios...
+
+== OpenPlasticLinkDialogTitle ==
+Abrir plastic link
+
+== OpenPlasticLinkDialogExplanation ==
+Cómo quieres abrir este link?
+
+== OpenLinkWithPlastic ==
+Plastic SCM (release oficial)
+
+== OpenLinkWithPlasticX ==
+Plastic X (alpha)
+
+== OpenPlasticLinkDialogLink ==
+[[https://forum.plasticscm.com/forum/41-announcements/|Haz click aquí para saber más sobre Plastic X]]
+
+== PreferenceOpenLinksWithPlasticX ==
+Abrir plastic links con Plastic X (alpha)
+
+== PreferenceOpenLinksWithPlastic ==
+Abrir plastic links con Plastic SCM
+
+== InviteMembersTitle ==
+Invite members
+
+== InviteMembersMessage ==
+You cannot invite members to the organization because you are not the administrator.

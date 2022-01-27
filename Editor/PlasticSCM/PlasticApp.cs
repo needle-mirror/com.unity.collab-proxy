@@ -5,15 +5,25 @@ using System.Linq;
 using UnityEngine;
 
 using Codice.Client.BaseCommands;
+using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Common;
+using Codice.Client.Common.Connection;
+using Codice.Client.Common.Encryption;
+using Codice.Client.Common.EventTracking;
 using Codice.Client.Common.FsNodeReaders;
+using Codice.Client.Common.FsNodeReaders.Watcher;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.CM.ConfigureHelper;
 using Codice.LogWrapper;
 using Codice.Utils;
+using CodiceApp.EventTracking;
+
 using PlasticGui;
+using PlasticGui.EventTracking;
+using PlasticGui.WebApi;
 using PlasticPipe.Certificates;
+using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Configuration;
 using Unity.PlasticSCM.Editor.UI;
 using MacUI;
@@ -22,12 +32,22 @@ namespace Unity.PlasticSCM.Editor
 {
     internal static class PlasticApp
     {
+        internal static PlasticAPI PlasticAPI { get; private set; }
+        internal static PlasticWebRestApi PlasticWebRestApi { get; private set; }
+
         internal static void InitializeIfNeeded()
         {
-            if (mIsInitialized)
+            if (sIsInitialized)
                 return;
 
+            sIsInitialized = true;
+
+            PlasticAPI = new PlasticAPI();
+            PlasticWebRestApi = new PlasticWebRestApi();
+
             ConfigureLogging();
+
+            GuiMessage.Initialize(new UnityPlasticGuiMessage());
 
             RegisterExceptionHandlers();
 
@@ -47,25 +67,75 @@ namespace Unity.PlasticSCM.Editor
             PlasticGuiConfig.SetConfigFile(
                 PlasticGuiConfig.UNITY_GUI_CONFIG_FILE);
 
-            mIsInitialized = true;
+            sEventSenderScheduler = EventTracking.Configure(
+                PlasticApp.PlasticWebRestApi,
+                AssetsPath.IsRunningAsUPMPackage() ?
+                    ApplicationIdentifier.UnityPackage : 
+                    ApplicationIdentifier.UnityAssetStorePlugin,
+                IdentifyEventPlatform.Get());
+
+            if (sEventSenderScheduler != null)
+            {
+                sPingEventLoop = new PingEventLoop();
+                sPingEventLoop.Start();
+                sPingEventLoop.SetUnityVersion(Application.unityVersion);
+
+                CollabPlugin.GetVersion(pluginVersion => sPingEventLoop.SetPluginVersion(pluginVersion));
+            }
+
+            PlasticMethodExceptionHandling.InitializeAskCredentialsUi(
+                new CredentialsUiImpl());
+            ClientEncryptionServiceProvider.SetEncryptionPasswordProvider(
+                new MissingEncryptionPasswordPromptHandler());
+        }
+
+        internal static void SetWorkspace(WorkspaceInfo wkInfo)
+        {
+            RegisterApplicationFocusHandlers();
+
+            if (sEventSenderScheduler == null)
+                return;
+
+            sPingEventLoop.SetWorkspace(wkInfo);
+            ((IPlasticWebRestApi)PlasticWebRestApi).SetToken(
+                CmConnection.Get().BuildWebApiTokenForCloudEditionDefaultUser());
         }
 
         // These two (ClientHandlers and ThreadWatier) need to be reinitialized if they have not been 
         // or else an error will be thrown and the Plastic context menu will not show up
         internal static void RegisterClientHandlersIfNeeded()
         {
-            if (mIsInitialized)
+            if (sIsInitialized)
                 return;
 
             ClientHandlers.Register();
             ThreadWaiter.Initialize(new UnityThreadWaiterBuilder());
 
-            mIsInitialized = true;
+            sIsInitialized = true;
         }
 
         internal static void Dispose()
         {
+            sIsInitialized = false;
+
             UnRegisterExceptionHandlers();
+
+            UnRegisterApplicationFocusHandlers();
+
+            if (sEventSenderScheduler != null)
+            {
+                sPingEventLoop.Stop();
+                sEventSenderScheduler.End();
+            }
+
+            WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
+                Application.dataPath,
+                PlasticAPI);
+
+            if (wkInfo == null)
+                return;
+
+            WorkspaceFsNodeReaderCachesCleaner.CleanWorkspaceFsNodeReader(wkInfo);
         }
 
         static void InitLocalization()
@@ -108,11 +178,25 @@ namespace Unity.PlasticSCM.Editor
             Application.logMessageReceivedThreaded += HandleLog;
         }
 
+        static void RegisterApplicationFocusHandlers()
+        {
+            EditorWindowFocus.OnApplicationActivated += EnableFsWatcher;
+
+            EditorWindowFocus.OnApplicationDeactivated += DisableFsWatcher;
+        }
+
         static void UnRegisterExceptionHandlers()
         {
             AppDomain.CurrentDomain.UnhandledException -= HandleUnhandledException;
 
             Application.logMessageReceivedThreaded -= HandleLog;
+        }
+
+        static void UnRegisterApplicationFocusHandlers()
+        {
+            EditorWindowFocus.OnApplicationActivated -= EnableFsWatcher;
+
+            EditorWindowFocus.OnApplicationDeactivated -= DisableFsWatcher;
         }
 
         static void HandleUnhandledException(object sender, UnhandledExceptionEventArgs args)
@@ -148,6 +232,16 @@ namespace Unity.PlasticSCM.Editor
             });
         }
 
+        static void EnableFsWatcher()
+        {
+            MonoFileSystemWatcher.IsEnabled = true;
+        }
+
+        static void DisableFsWatcher()
+        {
+            MonoFileSystemWatcher.IsEnabled = false;
+        }
+
         static void SetupFsWatcher()
         {
             if (!PlatformIdentifier.IsMac())
@@ -176,7 +270,10 @@ namespace Unity.PlasticSCM.Editor
             return ex is ExitGUIException;
         }
 
-        static bool mIsInitialized;
+        static bool sIsInitialized;
+
+        static EventSenderScheduler sEventSenderScheduler;
+        static PingEventLoop sPingEventLoop;
 
         static readonly ILog mLog = LogManager.GetLogger("PlasticApp");
     }

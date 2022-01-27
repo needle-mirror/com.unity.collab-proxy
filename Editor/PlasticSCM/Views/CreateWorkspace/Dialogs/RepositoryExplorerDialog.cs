@@ -19,7 +19,8 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
 {
     internal class RepositoryExplorerDialog :
         PlasticDialog,
-        KnownServersListOperations.IKnownServersList
+        KnownServersListOperations.IKnownServersList,
+        FillRepositoriesTable.IGetFilterText
     {
         protected override Rect DefaultRect
         {
@@ -39,7 +40,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                 plasticWebRestApi,
                 new ProgressControlsForDialogs(),
                 defaultServer,
-                new UnityPlasticGuiMessage(parentWindow));
+                new UnityPlasticGuiMessage());
 
             ResponseType dialogResult = dialog.RunModal(parentWindow);
 
@@ -121,7 +122,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                 null,
                 null,
                 null,
-                mRepositoriesListView.searchString,
+                this,
                 mState.Server,
                 false,
                 false,
@@ -134,6 +135,11 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             mState.AvailableServers = values;
 
             Refresh();
+        }
+
+        string FillRepositoriesTable.IGetFilterText.Get()
+        {
+            return mRepositoriesListView.searchString;
         }
 
         void OnServerSelected(object server)

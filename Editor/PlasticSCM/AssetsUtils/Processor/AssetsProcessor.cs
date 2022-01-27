@@ -1,17 +1,11 @@
-﻿using PlasticGui;
-
-using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
-
-namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
+﻿namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 {
     internal static class AssetsProcessors
     {
-        internal static void Enable(
-            IPlasticAPI plasticApi,
-            IAssetStatusCache assetStatusCache)
+        internal static void Enable()
         {
-            PlasticAssetsProcessor.RegisterPlasticAPI(plasticApi);
-            AssetModificationProcessor.RegisterAssetStatusCache(assetStatusCache);
+            PlasticAssetsProcessor.RegisterPlasticAPI(PlasticApp.PlasticAPI);
+            AssetModificationProcessor.RegisterAssetStatusCache(PlasticPlugin.AssetStatusCache);
 
             AssetPostprocessor.IsEnabled = true;
             AssetModificationProcessor.IsEnabled = true;

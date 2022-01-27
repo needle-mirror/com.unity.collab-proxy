@@ -66,7 +66,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             );
 
             mIncomingChangesViewLogic = new IncomingChangesViewLogic(
-                wkInfo, viewHost, this, new UnityPlasticGuiMessage(parentWindow),
+                wkInfo, viewHost, this, new UnityPlasticGuiMessage(),
                 mProgressControls, updateIncomingChanges,
                 workspaceWindow.GluonProgressOperationHandler, workspaceWindow,
                 new IncomingChangesViewLogic.ApplyWorkspaceLocalChanges(),
