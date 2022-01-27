@@ -8,7 +8,6 @@ using PlasticGui;
 
 namespace Unity.PlasticSCM.Editor.UI
 {
-    [InitializeOnLoad]
     internal abstract class PlasticDialog : EditorWindow, IPlasticDialogCloser
     {
         protected virtual Rect DefaultRect

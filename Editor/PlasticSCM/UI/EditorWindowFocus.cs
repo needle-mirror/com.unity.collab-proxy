@@ -5,7 +5,6 @@ using UnityEditorInternal;
 
 namespace Unity.PlasticSCM.Editor.UI
 {
-    [InitializeOnLoad]
     internal static class EditorWindowFocus
     {
         internal static event Action OnApplicationActivated;

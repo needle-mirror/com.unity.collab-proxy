@@ -67,7 +67,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             mIsGluonMode = isGluonMode;
             mParentWindow = parentWindow;
 
-            mGuiMessage = new UnityPlasticGuiMessage(parentWindow);
+            mGuiMessage = new UnityPlasticGuiMessage();
             mProgressControls = new EditorProgressControls(mGuiMessage);
 
         }

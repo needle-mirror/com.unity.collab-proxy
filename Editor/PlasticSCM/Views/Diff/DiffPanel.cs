@@ -41,7 +41,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             mViewSwitcher = viewSwitcher;
             mHistoryViewLauncher = historyViewLauncher;
             mParentWindow = parentWindow;
-            mGuiMessage = new UnityPlasticGuiMessage(parentWindow);
+            mGuiMessage = new UnityPlasticGuiMessage();
             mIsGluonMode = isGluonMode;
 
             BuildComponents();

@@ -6,10 +6,9 @@ using UnityEditor;
 
 namespace Unity.PlasticSCM.Editor.UI
 {
-    [InitializeOnLoad]
     internal static class EditorDispatcher
     {
-        static EditorDispatcher()
+        internal static void Initialize()
         {
             mMainThread = Thread.CurrentThread;
         }

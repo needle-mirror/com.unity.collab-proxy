@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 using UnityEditor;
 using UnityEngine;
@@ -131,18 +132,12 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal static Texture GetDropDownIcon()
         {
-            if (mPopupIcon == null)
-                mPopupIcon = EditorGUIUtility.IconContent("icon dropdown").image;
-
-            return mPopupIcon;
+            return GetIconFromEditorGUI("icon dropdown");
         }
 
         internal static Texture GetDirectoryIcon()
         {
-            if (mDirectoryIcon == null)
-                mDirectoryIcon = EditorGUIUtility.IconContent("Folder Icon").image;
-
-            return mDirectoryIcon;
+            return GetIconFromEditorGUI("Folder Icon");
         }
 
         internal static Texture GetPrivatedOverlayIcon()
@@ -235,58 +230,40 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal static Texture GetWarnIcon()
         {
-            if (mWarnIcon == null)
-                mWarnIcon = EditorGUIUtility.IconContent("console.warnicon.sml").image;
-
-            return mWarnIcon;
+            return GetIconFromEditorGUI("console.warnicon.sml");
         }
 
         internal static Texture GetInfoIcon()
         {
-            if (mInfoIcon == null)
-                mInfoIcon = EditorGUIUtility.IconContent("console.infoicon.sml").image;
-
-            return mInfoIcon;
+            return GetIconFromEditorGUI("console.infoicon.sml");
         }
 
         internal static Texture GetErrorDialogIcon()
         {
-            if (mErrorDialogIcon == null)
-                mErrorDialogIcon = EditorGUIUtility.IconContent("console.erroricon").image;
-
-            return mErrorDialogIcon;
+            return GetIconFromEditorGUI("console.erroricon");
         }
 
         internal static Texture GetWarnDialogIcon()
         {
-            if (mWarnDialogIcon == null)
-                mWarnDialogIcon = EditorGUIUtility.IconContent("console.warnicon").image;
-
-            return mWarnDialogIcon;
+            return GetIconFromEditorGUI("console.warnicon");
         }
 
         internal static Texture GetInfoDialogIcon()
         {
-            if (mInfoDialogIcon == null)
-                mInfoDialogIcon = EditorGUIUtility.IconContent("console.infoicon").image;
-
-            return mInfoDialogIcon;
+            return GetIconFromEditorGUI("console.infoicon");
         }
 
         internal static Texture GetRefreshIcon()
         {
             if (mRefreshIcon == null)
-                mRefreshIcon= GetImage(Name.Refresh);
+                mRefreshIcon = GetImage(Name.Refresh);
 
             return mRefreshIcon;
         }
 
         internal static Texture GetSettingsIcon()
         {
-            if (mSettingsIcon == null)
-                mSettingsIcon = EditorGUIUtility.IconContent("settings").image;
-
-            return mSettingsIcon;
+            return GetIconFromEditorGUI("settings");
         }
 
         internal static Texture GetCloseIcon()
@@ -319,7 +296,7 @@ namespace Unity.PlasticSCM.Editor.UI
                 mFileIcon = EditorGUIUtility.FindTexture("DefaultAsset Icon");
 
             if (mFileIcon == null)
-                mFileIcon = AssetPreview.GetMiniTypeThumbnail(typeof(DefaultAsset));
+                mFileIcon = GetIconFromAssetPreview(typeof(DefaultAsset));
 
             if (mFileIcon == null)
                 mFileIcon = GetEmptyImage();
@@ -407,38 +384,66 @@ namespace Unity.PlasticSCM.Editor.UI
             string extension = Path.GetExtension(relativePath).ToLower();
 
             if (extension.Equals(".cs"))
-                return EditorGUIUtility.IconContent("cs Script Icon").image;
+                return GetIconFromEditorGUI("cs Script Icon");
 
             if (extension.Equals(".png") || extension.Equals(".jpg")
              || extension.Equals(".jpeg") || extension.Equals(".gif")
              || extension.Equals(".tga") || extension.Equals(".bmp")
              || extension.Equals(".tif") || extension.Equals(".tiff"))
-                return EditorGUIUtility.IconContent("d_Texture Icon").image;
+                return GetIconFromEditorGUI("d_Texture Icon");
 
             if (extension.Equals(".mat"))
-                return AssetPreview.GetMiniTypeThumbnail(typeof(UnityEngine.Material));
+                return GetIconFromAssetPreview(typeof(UnityEngine.Material));
 
             if (extension.Equals(".fbx") || extension.Equals(".ma")
              || extension.Equals(".mb") || extension.Equals(".blend")
              || extension.Equals(".max") )
-                return AssetPreview.GetMiniTypeThumbnail(typeof(UnityEngine.GameObject));
+                return GetIconFromAssetPreview(typeof(UnityEngine.GameObject));
 
             if (extension.Equals(".wav") || extension.Equals(".mp3"))
-                return AssetPreview.GetMiniTypeThumbnail(typeof(UnityEngine.AudioClip));
+                return GetIconFromAssetPreview(typeof(UnityEngine.AudioClip));
 
             if (extension.Equals(".anim"))
-                return AssetPreview.GetMiniTypeThumbnail(typeof(UnityEngine.Animation));
+                return GetIconFromAssetPreview(typeof(UnityEngine.Animation));
 
             if (extension.Equals(".animator"))
-                return AssetPreview.GetMiniTypeThumbnail(typeof(UnityEngine.Animator));
+                return GetIconFromAssetPreview(typeof(UnityEngine.Animator));
 
             if (extension.Equals(".shader"))
-                return EditorGUIUtility.IconContent("d_Shader Icon").image;
+                return GetIconFromEditorGUI("d_Shader Icon");
 
             if (extension.Equals(".asset") && relativePath.StartsWith("ProjectSettings\\"))
-                return EditorGUIUtility.IconContent("EditorSettings Icon").image;
+                return GetIconFromEditorGUI("EditorSettings Icon");
 
             return null;
+        }
+
+        static Texture2D GetIconFromEditorGUI(string name)
+        {
+            Texture2D result;
+
+            if (mImagesFromEditorGUICache.TryGetValue(name, out result))
+                return result;
+
+            result = EditorGUIUtility.IconContent(name).image as Texture2D;
+
+            mImagesFromEditorGUICache.Add(name, result);
+
+            return result;
+        }
+
+        static Texture2D GetIconFromAssetPreview(System.Type type)
+        {
+            Texture2D result;
+
+            if (mImagesFromAssetPreviewCache.TryGetValue(type.ToString(), out result))
+                return result;
+
+            result = AssetPreview.GetMiniTypeThumbnail(type);
+
+            mImagesFromAssetPreviewCache.Add(type.ToString(), result);
+
+            return result;
         }
 
         static string GetImageFileRelativePath(string imageFileName)
@@ -461,14 +466,28 @@ namespace Unity.PlasticSCM.Editor.UI
 
         static Texture2D LoadTextureFromFile(string path)
         {
+            Texture2D result;
+
+            if (mImagesByPathCache.TryGetValue(path, out result))
+                return result;
+
             byte[] fileData = File.ReadAllBytes(path);
-            Texture2D result = new Texture2D(1, 1);
+            result = new Texture2D(1, 1);
             result.LoadImage(fileData); //auto-resizes the texture dimensions
+
+            mImagesByPathCache.Add(path, result);
+
             return result;
         }
 
+        static Dictionary<string, Texture2D> mImagesByPathCache =
+            new Dictionary<string, Texture2D>();
+        static Dictionary<string, Texture2D> mImagesFromEditorGUICache =
+            new Dictionary<string, Texture2D>();
+        static Dictionary<string, Texture2D> mImagesFromAssetPreviewCache =
+            new Dictionary<string, Texture2D>();
+
         static Texture mFileIcon;
-        static Texture mDirectoryIcon;
 
         static Texture mPrivatedOverlayIcon;
         static Texture mAddedOverlayIcon;
@@ -482,15 +501,7 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture mLockedRemoteOverlayIcon;
         static Texture mIgnoredverlayIcon;
 
-        static Texture mWarnIcon;
-        static Texture mInfoIcon;
-
-        static Texture mErrorDialogIcon;
-        static Texture mWarnDialogIcon;
-        static Texture mInfoDialogIcon;
-
         static Texture mRefreshIcon;
-        static Texture mSettingsIcon;
 
         static Texture mCloseIcon;
         static Texture mClickedCloseIcon;
@@ -499,8 +510,6 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mLinkUnderlineImage;
 
         static Texture2D mEmptyImage;
-
-        static Texture mPopupIcon;
 
         static Texture2D mTreeviewBackgroundTexture;
         static Texture2D mColumnsBackgroundTexture;

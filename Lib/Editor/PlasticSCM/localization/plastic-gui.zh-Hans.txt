@@ -346,6 +346,15 @@ GUID
 == CommentColumn ==
 注释
 
+== ItemsCount ==
+({0})
+
+== ItemsCountSingular ==
+(1 项)
+
+== ItemsCountPlural ==
+({0} 项)
+
 == ItemsSelected ==
 ({0}/{1} selected)
 
@@ -4901,18 +4910,6 @@ File Move and Rename Detection
 == HelpActionNotFound ==
 抱歉，我们忘记了添加该操作 :(
 
-== DaysAgo ==
-{0} 天前
-
-== HoursAgo ==
-{0} 小时前
-
-== MinutesAgo ==
-{0} 分钟前
-
-== SecondsAgo ==
-{0} 秒前
-
 == RemovedLocallyStatus ==
 已在本地删除
 
@@ -5712,11 +5709,8 @@ https://www.plasticscm.com/download/help/locking
 == EmptyQuestionList ==
 问题列表为空
 
-== MergeFileChangesInConflictSingular ==
-文件更改发生冲突，可能需要手动干预（1 项）
-
-== MergeFileChangesInConflictPlural ==
-文件更改发生冲突，可能需要手动干预（{0} 项）
+== MergeFileChangesInConflictCategory ==
+文件更改发生冲突，可能需要手动干预
 
 == FileConflictsExplanation ==
 文件更改发生冲突，可能需要手动干预。
@@ -5724,17 +5718,11 @@ https://www.plasticscm.com/download/help/locking
 == FileConflictsExplanationForIncomingView ==
 要下载的文件，与您的更改发生冲突。
 
-== ChangesWithDirectoryConflictsSingular ==
-有目录结构冲突的更改（1 项）
+== ChangesWithDirectoryConflictsCategory ==
+有目录结构冲突的更改
 
-== ChangesWithDirectoryConflictsPlural ==
-有目录结构冲突的更改（{0} 项）
-
-== MergeFileChangesInConflictForIncomingViewSingular ==
-要下载的文件，与您的更改发生冲突（1 项）
-
-== MergeFileChangesInConflictForIncomingViewPlural ==
-要下载的文件，与您的更改发生冲突（{0} 项）
+== MergeFileChangesInConflictForIncomingViewCategory ==
+要下载的文件，与您的更改发生冲突
 
 == MergeFileChangesInConflictForGluonSingular ==
 要下载的文件，与您的更改发生冲突（{0} / 1 项）
@@ -5748,17 +5736,11 @@ https://www.plasticscm.com/download/help/locking
 == MergeFileChangesInConflictRemarkForIncomingView ==
 需要合并
 
-== MergeChangesMadeInSourceOfMergeSingular ==
-在合并源中进行的更改。无冲突（1 项）
+== MergeChangesMadeInSourceOfMergeCategory ==
+在合并源中进行的更改。无冲突
 
-== MergeChangesMadeInSourceOfMergePlural ==
-在合并源中进行的更改。无冲突（{0} 项）
-
-== MergeChangesMadeInSourceOfMergeForIncomingViewSingular ==
-只需要更新的文件（1 项）
-
-== MergeChangesMadeInSourceOfMergeForIncomingViewPlural ==
-只需要更新的文件（{0} 项）
+== MergeChangesMadeInSourceOfMergeForIncomingViewCategory ==
+只需要更新的文件
 
 == MergeChangesMadeInSourceOfMergeForGluonSingular ==
 只需要更新的文件（{0} / 1 项）
@@ -5766,11 +5748,8 @@ https://www.plasticscm.com/download/help/locking
 == MergeChangesMadeInSourceOfMergeForGluonPlural ==
 只需要更新的文件（{0} / {1} 项）
 
-== MergeMovesToApplySingular ==
-要应用的移动（1 项）
-
-== MergeMovesToApplyPlural ==
-要应用的移动（{0} 项）
+== MergeMovesToApplyCategory ==
+要应用的移动
 
 == MergeMovesToApplyForGluonSingular ==
 要应用的移动（{0} / 1 项）
@@ -5784,11 +5763,8 @@ https://www.plasticscm.com/download/help/locking
 == MergeMovesToApplyRemarkForIncomingView ==
 将把移动应用于您的工作区
 
-== MergeDeletesToApplySingular ==
-要应用的删除（1 项）
-
-== MergeDeletesToApplyPlural ==
-要应用的删除（{0} 项）
+== MergeDeletesToApplyCategory ==
+要应用的删除
 
 == MergeDeletesToApplyForGluonSingular ==
 要应用的删除（{0} / 1 项）
@@ -5802,11 +5778,8 @@ https://www.plasticscm.com/download/help/locking
 == MergeDeletesToApplyRemarkForIncomingView ==
 将把删除应用于您的工作区
 
-== MergeNewItemsToDownloadSingular ==
-要下载的新项（1 项）
-
-== MergeNewItemsToDownloadPlural ==
-要下载的新项（{0} 项）
+== MergeNewItemsToDownloadCategory ==
+要下载的新项
 
 == MergeNewItemsToDownloadForGluonSingular ==
 要下载的新项（{0} / 1 项）
@@ -5820,11 +5793,8 @@ https://www.plasticscm.com/download/help/locking
 == MergeNewItemsToDownloadRemarkForIncomingView ==
 将把添加应用于您的工作区
 
-== MergeFileSystemPermissionsChangesToApplySingular ==
-要应用的文件系统权限更改（1 项）
-
-== MergeFileSystemPermissionsChangesToApplyPlural ==
-要应用的文件系统权限更改（{0} 项）
+== MergeFileSystemPermissionsChangesToApplyCategory ==
+要应用的文件系统权限更改
 
 == MergeFileSystemPermissionsChangesToApplyRemark ==
 文件系统权限更改

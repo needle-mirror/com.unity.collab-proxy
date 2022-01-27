@@ -309,6 +309,11 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
             throw new NotImplementedException();
         }
 
+        List<BranchInfo> IPlasticAPI.GetBranchInfos(RepositoryInfo repInfo, List<long> ids)
+        {
+            throw new NotImplementedException();
+        }
+
         Difference IPlasticAPI.GetChangedForMovedDifference(Difference diff)
         {
             throw new NotImplementedException();

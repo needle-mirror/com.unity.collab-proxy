@@ -9,11 +9,6 @@ namespace Unity.PlasticSCM.Editor.Configuration
     internal class MissingEncryptionPasswordPromptHandler :
         ClientEncryptionServiceProvider.IEncryptioPasswordProvider
     {
-        internal MissingEncryptionPasswordPromptHandler(EditorWindow parentWindow)
-        {
-            mParentWindow = parentWindow;
-        }
-
         string ClientEncryptionServiceProvider.IEncryptioPasswordProvider
             .GetEncryptionEncryptedPassword(string server)
         {
@@ -30,14 +25,12 @@ namespace Unity.PlasticSCM.Editor.Configuration
         string AskForEncryptionPassword(string server)
         {
             EncryptionConfigurationDialogData dialogData =
-                EncryptionConfigurationDialog.RequestEncryptionPassword(server, mParentWindow);
+                EncryptionConfigurationDialog.RequestEncryptionPassword(server, ParentWindow.Get());
 
             if (!dialogData.Result)
                 return null;
 
             return dialogData.EncryptedPassword;
         }
-
-        EditorWindow mParentWindow;
     }
 }

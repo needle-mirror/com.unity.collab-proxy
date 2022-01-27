@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace Unity.PlasticSCM.Editor.UI
 {
-    [InitializeOnLoad]
     internal static class RunModal
     {
         static RunModal()

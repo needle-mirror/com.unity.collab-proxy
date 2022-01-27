@@ -7,23 +7,15 @@ using UnityEngine;
 using Codice.Client.BaseCommands;
 using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Common;
-using Codice.Client.Common.Connection;
-using Codice.Client.Common.Encryption;
-using Codice.Client.Common.EventTracking;
 using Codice.Client.Common.FsNodeReaders;
 using Codice.Client.Common.FsNodeReaders.Watcher;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.LogWrapper;
-using CodiceApp.EventTracking;
 using GluonGui;
 using PlasticGui;
-using PlasticGui.WebApi;
 using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetUtils;
-using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
-using Unity.PlasticSCM.Editor.AssetsOverlays;
-using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.Configuration;
 using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
 using Unity.PlasticSCM.Editor.Inspector;
@@ -32,15 +24,13 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Avatar;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.Views.CreateWorkspace;
-using Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs;
 using Unity.PlasticSCM.Editor.Views.Welcome;
+using Unity.PlasticSCM.Editor.WebApi;
 
 using GluonCheckIncomingChanges = PlasticGui.Gluon.WorkspaceWindow.CheckIncomingChanges;
 using GluonNewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncomingChangesUpdater;
-using EventTracking = PlasticGui.EventTracking.EventTracking;
 using processor = Unity.PlasticSCM.Editor.AssetUtils.Processor;
-using Unity.PlasticSCM.Editor.Views.PendingChanges;
-using PlasticGui.WorkspaceWindow.Topbar;
+
 
 namespace Unity.PlasticSCM.Editor
 {
@@ -54,16 +44,6 @@ namespace Unity.PlasticSCM.Editor
     {
         internal WorkspaceWindow WorkspaceWindowForTesting { get { return mWorkspaceWindow; } }
         internal ViewSwitcher ViewSwitcherForTesting { get { return mViewSwitcher; } }
-        internal static IPlasticAPI PlasticApi 
-        {
-            get
-            {
-                if (mPlasticAPI == null)
-                    mPlasticAPI = new PlasticAPI();
-                return mPlasticAPI;
-            }
-        }
-        internal IPlasticWebRestApi PlasticWebRestApiForTesting { get { return mPlasticWebRestApi; } }
         internal CmConnection CmConnectionForTesting { get { return CmConnection.Get(); } }
 
         /// <summary>
@@ -161,7 +141,7 @@ namespace Unity.PlasticSCM.Editor
             ((IAssetFilesFilterPatternsMenuOperations)mAssetOperations)
                 .AddFilesFilterPatterns(type, action, operation);
         }
- 
+
         void PlasticGui.WorkspaceWindow.CheckIncomingChanges.IAutoRefreshIncomingChangesView.IfVisible()
         {
             mViewSwitcher.AutoRefreshIncomingChangesView();
@@ -178,6 +158,8 @@ namespace Unity.PlasticSCM.Editor
             mWkInfo = wkInfo;
             mIsGluonMode = isGluonMode;
             mWelcomeView = null;
+
+            PlasticPlugin.Enable();
 
             if (mIsGluonMode)
                 ConfigurePartialWorkspace.AsFullyChecked(mWkInfo);
@@ -196,7 +178,8 @@ namespace Unity.PlasticSCM.Editor
 
         void OnEnable()
         {
-            processor.AssetModificationProcessor.ForceCheckout = EditorPrefs.GetBool("forceCheckoutPlasticSCM"); 
+            PlasticPlugin.Enable();
+
             wantsMouseMove = true;
 
             if (mException != null)
@@ -208,51 +191,14 @@ namespace Unity.PlasticSCM.Editor
 
             SetupWindowTitle();
 
-            GuiMessage.Initialize(new UnityPlasticGuiMessage(this));
-
-            PlasticApp.InitializeIfNeeded();
-
             RegisterApplicationFocusHandlers(this);
-
-            PlasticMethodExceptionHandling.InitializeAskCredentialsUi(
-                new CredentialsUiImpl(this));
-            ClientEncryptionServiceProvider.SetEncryptionPasswordProvider(
-                new MissingEncryptionPasswordPromptHandler(this));
-
-            if (mPlasticAPI == null)
-                mPlasticAPI = new PlasticAPI();
-            mPlasticWebRestApi = new PlasticWebRestApi();
-
-            mEventSenderScheduler = EventTracking.Configure(
-                mPlasticWebRestApi,
-                AssetsPath.IsRunningAsUPMPackage() ?
-                 ApplicationIdentifier.UnityPackage : ApplicationIdentifier.UnityAssetStorePlugin,
-                IdentifyEventPlatform.Get());
-
-            if (mEventSenderScheduler != null)
-            {
-                mPingEventLoop = new PingEventLoop();
-                mPingEventLoop.Start();
-                mPingEventLoop.SetUnityVersion(Application.unityVersion);
-
-                CollabPlugin.GetVersion(pluginVersion => mPingEventLoop.SetPluginVersion(pluginVersion));
-            }
 
             InitializePlastic();
         }
 
         void OnDisable()
         {
-            EditorPrefs.SetBool("forceCheckoutPlasticSCM",
-                processor.AssetModificationProcessor.ForceCheckout);
-
-            AssetsProcessors.Disable();
-
-            if (mWkInfo != null)
-            {
-                MonoFileSystemWatcher.IsEnabled = false;
-                WorkspaceFsNodeReaderCachesCleaner.CleanWorkspaceFsNodeReader(mWkInfo);
-            }
+            MonoFileSystemWatcher.IsEnabled = false;
 
             if (mException != null)
                 return;
@@ -442,35 +388,18 @@ namespace Unity.PlasticSCM.Editor
                     return;
 
                 mWkInfo = FindWorkspace.InfoForApplicationPath(
-                    Application.dataPath, mPlasticAPI);
+                    Application.dataPath, PlasticApp.PlasticAPI);
 
                 if (mWkInfo == null)
-                {
                     return;
-                }
 
-                MonoFileSystemWatcher.IsEnabled = true;
+                PlasticPlugin.EnableForWorkspace();
 
-                SetupCloudProjectIdIfNeeded(mWkInfo, mPlasticAPI);
+                SetupCloudProjectIdIfNeeded(mWkInfo, PlasticApp.PlasticAPI);
 
                 DisableVCSIfEnabled(mWkInfo.ClientPath);
 
-                mIsGluonMode = mPlasticAPI.IsGluonWorkspace(mWkInfo);
-
-                IAssetStatusCache assetStatusCache = AssetStatusCacheProvider.Get(mWkInfo,
-                    mIsGluonMode,
-                    ProjectWindow.Repaint);
-
-                AssetsProcessors.Enable(
-                    mPlasticAPI,
-                    assetStatusCache);
-
-                if (mEventSenderScheduler != null)
-                {
-                    mPingEventLoop.SetWorkspace(mWkInfo);
-                    ((IPlasticWebRestApi)mPlasticWebRestApi).SetToken(
-                        CmConnection.Get().BuildWebApiTokenForCloudEditionDefaultUser());
-                }
+                mIsGluonMode = PlasticApp.PlasticAPI.IsGluonWorkspace(mWkInfo);
 
                 InitializeNewIncomingChanges(mWkInfo, mIsGluonMode);
 
@@ -487,7 +416,7 @@ namespace Unity.PlasticSCM.Editor
                     mDeveloperNewIncomingChangesUpdater,
                     mGluonNewIncomingChangesUpdater,
                     mIncomingChangesNotifier,
-                    assetStatusCache,
+                    PlasticPlugin.AssetStatusCache,
                     mStatusBar,
                     this);
 
@@ -519,7 +448,7 @@ namespace Unity.PlasticSCM.Editor
                         mViewSwitcher,
                         viewHost,
                         mDeveloperNewIncomingChangesUpdater,
-                        assetStatusCache,
+                        PlasticPlugin.AssetStatusCache,
                         mViewSwitcher,
                         mViewSwitcher,
                         this,
@@ -537,11 +466,6 @@ namespace Unity.PlasticSCM.Editor
                     mViewSwitcher,
                     this,
                     mIsGluonMode);
-
-                DrawAssetOverlay.Initialize(
-                    mPlasticAPI,
-                    assetStatusCache,
-                    ProjectWindow.Repaint);
 
                 mLastUpdateTime = EditorApplication.timeSinceStartup;
 
@@ -587,7 +511,7 @@ namespace Unity.PlasticSCM.Editor
                 return;
 
             Reload.IfWorkspaceConfigChanged(
-                mPlasticAPI, mWkInfo, mIsGluonMode,
+                PlasticApp.PlasticAPI, mWkInfo, mIsGluonMode,
                 ExecuteFullReload);
 
             if (mWkInfo == null)
@@ -655,9 +579,9 @@ namespace Unity.PlasticSCM.Editor
             mWelcomeView = new WelcomeView(
                 this,
                 this,
-                mPlasticAPI,
+                PlasticApp.PlasticAPI,
                 CmConnection.Get(),
-                mPlasticWebRestApi);
+                PlasticApp.PlasticWebRestApi);
 
             return mWelcomeView;
         }
@@ -760,15 +684,15 @@ namespace Unity.PlasticSCM.Editor
                false,
                () => LaunchTool.OpenGUIForMode(wkInfo, isGluonMode));
 
-            PlasticWindow plasticWindow = EditorWindow.GetWindow<PlasticWindow>();
-
-            menu.AddItem(
-                new GUIContent(
+            if (EditionToken.IsCloudEdition())
+            {
+                menu.AddItem(new GUIContent(
                     PlasticLocalization.GetString(
                        PlasticLocalization.Name.InviteMembers)),
                 false,
                InviteMemberButton_clicked,
                wkInfo);
+            }
 
             menu.AddSeparator("");
 
@@ -894,12 +818,61 @@ namespace Unity.PlasticSCM.Editor
         static void InviteMemberButton_clicked(object obj)
         {
             WorkspaceInfo wkInfo = (WorkspaceInfo)obj;
-            string server = PlasticGui.Plastic.API.GetRepositorySpec(wkInfo).Server;
-            string organizationName = ServerOrganizationParser.GetOrganizationFromServer(server);
+            CurrentUserAdminCheckResponse response = null;
 
-            Application.OpenURL("https://www.plasticscm.com/dashboard/cloud/"+
-                organizationName +
+            IThreadWaiter waiter = ThreadWaiter.GetWaiter(50);
+            waiter.Execute(
+                /*threadOperationDelegate*/
+                delegate
+                {
+                    RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(wkInfo);
+
+                    ServerProfile serverProfile =
+                        CmConnection.Get().GetProfileManager().GetProfileForServer(repSpec.Server) ??
+                        ClientConfig.Get().GetDefaultProfile();
+
+                    string authToken = CmConnection.Get()
+                        .BuildWebApiTokenForCloudEditionForProfileAndOrg(
+                        serverProfile);
+
+                    response = WebRestApiClient.PlasticScm.IsUserAdmin(
+                        ServerOrganizationParser.GetOrganizationFromServer(repSpec.Server),                        
+                        authToken);
+                },
+                /*afterOperationDelegate*/
+                delegate
+                {
+                    if (waiter.Exception != null)
+                    {
+                        ExceptionsHandler.LogException(
+                            "IsUserAdmin",
+                            waiter.Exception);
+                        return;
+                    }
+
+                   if (response.Error != null)
+                    {
+                        Debug.LogErrorFormat(
+                          "Error checking if the user is the organization admin: {0}",
+                          string.Format("Unable to get IsUserAdminResponse: {0} [code {1}]",
+                              response.Error.Message,
+                              response.Error.ErrorCode));
+
+                        return;
+                    }
+                  
+                    if (response.IsCurrentUserAdmin)
+                    {
+                        Application.OpenURL("https://www.plasticscm.com/dashboard/cloud/" +
+                            response.OrganizationName +
                 "/users-and-groups");
+                        return;
+        }
+
+                    GuiMessage.ShowInformation(
+                        PlasticLocalization.GetString(PlasticLocalization.Name.InviteMembersTitle),
+                        PlasticLocalization.GetString(PlasticLocalization.Name.InviteMembersMessage));
+                });
         }
 
         static void TrySimplifiedUIButton_Clicked(object obj)
@@ -911,13 +884,12 @@ namespace Unity.PlasticSCM.Editor
         {
             ShowWindow.Plastic();
             TurnOffPlasticWindow.ShowWindow();
+            PlasticPlugin.Disable();
         }
         static void ForceCheckout_Clicked(object obj)
         {
-            processor.AssetModificationProcessor.ForceCheckout = 
-                !processor.AssetModificationProcessor.ForceCheckout;
-            EditorPrefs.SetBool("forceCheckoutPlasticSCM",
-                processor.AssetModificationProcessor.ForceCheckout);
+            processor.AssetModificationProcessor.SetForceCheckoutOption(
+                !processor.AssetModificationProcessor.ForceCheckout);
         }
 
         static void SetupCloudProjectIdIfNeeded(
@@ -984,16 +956,6 @@ namespace Unity.PlasticSCM.Editor
         {
             UnRegisterApplicationFocusHandlers(window);
 
-            PlasticApp.Dispose();
-
-            AssetMenuItems.Dispose();
-
-            if (window.mEventSenderScheduler != null)
-            {
-                window.mPingEventLoop.Stop();
-                window.mEventSenderScheduler.End();
-            }
-
             DisposeNewIncomingChanges(window);
 
             AvatarImages.Dispose();
@@ -1052,8 +1014,6 @@ namespace Unity.PlasticSCM.Editor
             result.mIncomingChangesNotifier = window.mIncomingChangesNotifier;
             result.mStatusBar = window.mStatusBar;
             result.mWelcomeView = window.mWelcomeView;
-            result.mEventSenderScheduler = window.mEventSenderScheduler;
-            result.mPingEventLoop = window.mPingEventLoop;
             return result;
         }
 
@@ -1139,11 +1099,6 @@ namespace Unity.PlasticSCM.Editor
 
         bool mIsGluonMode;
         bool mDisableCollabIfEnabledWhenLoaded;
-
-        static PlasticAPI mPlasticAPI;
-        static PlasticWebRestApi mPlasticWebRestApi;
-        EventSenderScheduler mEventSenderScheduler;
-        PingEventLoop mPingEventLoop;
         AssetOperations mAssetOperations;
 
         PlasticNotification.Status mNotificationStatus = PlasticNotification.Status.None;

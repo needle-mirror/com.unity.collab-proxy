@@ -30,7 +30,7 @@ namespace Unity.PlasticSCM.Editor
             // Check if FSWatcher should be enabled
             WorkspaceInfo workspaceInfo = FindWorkspace.InfoForApplicationPath(
                         Application.dataPath,
-                        PlasticWindow.PlasticApi);
+                        PlasticApp.PlasticAPI);
             CheckFsWatcher(workspaceInfo);
 
             mInitialOptions = new PendingChangesOptions();

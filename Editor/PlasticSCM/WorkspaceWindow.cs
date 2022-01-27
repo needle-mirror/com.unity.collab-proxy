@@ -60,7 +60,7 @@ namespace Unity.PlasticSCM.Editor
             mMergeViewLauncher = mergeViewLauncher;
             mDeveloperNewIncomingChangesUpdater = developerNewIncomingChangesUpdater;
             mPlasticWindow = parentWindow;
-            mGuiMessage = new UnityPlasticGuiMessage(parentWindow);
+            mGuiMessage = new UnityPlasticGuiMessage();
 
             mDeveloperProgressOperationHandler = new Developer.ProgressOperationHandler(mWkInfo, this);
             mGluonProgressOperationHandler = new Gluon.ProgressOperationHandler(this);

@@ -346,6 +346,15 @@ GUID
 == CommentColumn ==
 コメント
 
+== ItemsCount ==
+({0})
+
+== ItemsCountSingular ==
+(1 項目)
+
+== ItemsCountPlural ==
+({0} 項目)
+
 == ItemsSelected ==
 ({0}/{1} selected)
 
@@ -4901,18 +4910,6 @@ File Move and Rename Detections
 == HelpActionNotFound ==
 申し訳ありませんが、次のアクションを追加し忘れました:(
 
-== DaysAgo ==
-{0} 日前
-
-== HoursAgo ==
-{0} 時間前
-
-== MinutesAgo ==
-{0} 分前
-
-== SecondsAgo ==
-{0} 秒前
-
 == RemovedLocallyStatus ==
 ローカルで削除済み
 
@@ -5712,11 +5709,8 @@ Xlink されたファイルに対するレビューのコメントはまだサ�
 == EmptyQuestionList ==
 質問のリストが空です
 
-== MergeFileChangesInConflictSingular ==
-ファイル変更に競合があり、手動介入が必要な可能性があります (1 項目)
-
-== MergeFileChangesInConflictPlural ==
-ファイル変更に競合があり、手動介入が必要な可能性があります ({0} 項目)
+== MergeFileChangesInConflictCategory ==
+ファイル変更に競合があり、手動介入が必要な可能性があります
 
 == FileConflictsExplanation ==
 ファイル変更に競合があり、手動介入が必要な可能性があります。
@@ -5724,17 +5718,11 @@ Xlink されたファイルに対するレビューのコメントはまだサ�
 == FileConflictsExplanationForIncomingView ==
 変更と競合しているダウンロード対象ファイル。
 
-== ChangesWithDirectoryConflictsSingular ==
-ディレクトリ構造の競合が発生している変更 (1 項目)
+== ChangesWithDirectoryConflictsCategory ==
+ディレクトリ構造の競合が発生している変更
 
-== ChangesWithDirectoryConflictsPlural ==
-ディレクトリ構造の競合が発生している変更 ({0} 項目)
-
-== MergeFileChangesInConflictForIncomingViewSingular ==
-変更と競合しているダウンロード対象ファイル (1 項目)
-
-== MergeFileChangesInConflictForIncomingViewPlural ==
-変更と競合しているダウンロード対象ファイル ({0} 項目)
+== MergeFileChangesInConflictForIncomingViewCategory ==
+変更と競合しているダウンロード対象ファイル
 
 == MergeFileChangesInConflictForGluonSingular ==
 変更と競合しているダウンロード対象ファイル ({0} 項目中 1 個)
@@ -5748,17 +5736,11 @@ Xlink されたファイルに対するレビューのコメントはまだサ�
 == MergeFileChangesInConflictRemarkForIncomingView ==
 マージが必要
 
-== MergeChangesMadeInSourceOfMergeSingular ==
-マージ元で行われた変更。競合なし (1 項目)
+== MergeChangesMadeInSourceOfMergeCategory ==
+マージ元で行われた変更。競合なし
 
-== MergeChangesMadeInSourceOfMergePlural ==
-マージ元で行われた変更。競合なし ({0} 項目)
-
-== MergeChangesMadeInSourceOfMergeForIncomingViewSingular ==
-更新が必要なファイル (1 項目)
-
-== MergeChangesMadeInSourceOfMergeForIncomingViewPlural ==
-更新が必要なファイル ({0} 項目)
+== MergeChangesMadeInSourceOfMergeForIncomingViewCategory ==
+更新が必要なファイル
 
 == MergeChangesMadeInSourceOfMergeForGluonSingular ==
 更新が必要なファイル (1 項目中 {0} 個)
@@ -5766,11 +5748,8 @@ Xlink されたファイルに対するレビューのコメントはまだサ�
 == MergeChangesMadeInSourceOfMergeForGluonPlural ==
 更新が必要なファイル ({1} 項目中 {0} 個)
 
-== MergeMovesToApplySingular ==
-適用する移動 (1 項目)
-
-== MergeMovesToApplyPlural ==
-適用する移動 ({0} 項目)
+== MergeMovesToApplyCategory ==
+適用する移動
 
 == MergeMovesToApplyForGluonSingular ==
 適用する移動 (1 項目中 {0} 個)
@@ -5784,11 +5763,8 @@ Xlink されたファイルに対するレビューのコメントはまだサ�
 == MergeMovesToApplyRemarkForIncomingView ==
 移動をワークスペースに適用します
 
-== MergeDeletesToApplySingular ==
-適用する削除 (1 項目)
-
-== MergeDeletesToApplyPlural ==
-適用する削除 ({0} 項目)
+== MergeDeletesToApplyCategory ==
+適用する削除
 
 == MergeDeletesToApplyForGluonSingular ==
 適用する削除 (1 項目中 {0} 個)
@@ -5802,11 +5778,8 @@ Xlink されたファイルに対するレビューのコメントはまだサ�
 == MergeDeletesToApplyRemarkForIncomingView ==
 削除をワークスペースに適用します
 
-== MergeNewItemsToDownloadSingular ==
-ダウンロードする新しい項目 (1 項目)
-
-== MergeNewItemsToDownloadPlural ==
-ダウンロードする新しい項目 ({0} 項目)
+== MergeNewItemsToDownloadCategory ==
+ダウンロードする新しい項目
 
 == MergeNewItemsToDownloadForGluonSingular ==
 ダウンロードする新しい項目 (1 項目中 {0} 個)
@@ -5820,11 +5793,8 @@ Xlink されたファイルに対するレビューのコメントはまだサ�
 == MergeNewItemsToDownloadRemarkForIncomingView ==
 追加をワークスペースに適用
 
-== MergeFileSystemPermissionsChangesToApplySingular ==
-適用するファイルシステムの権限の変更 (1 項目)
-
-== MergeFileSystemPermissionsChangesToApplyPlural ==
-適用するファイルシステムの権限の変更 ({0} 項目)
+== MergeFileSystemPermissionsChangesToApplyCategory ==
+適用するファイルシステムの権限の変更
 
 == MergeFileSystemPermissionsChangesToApplyRemark ==
 ファイルシステムの権限の変更

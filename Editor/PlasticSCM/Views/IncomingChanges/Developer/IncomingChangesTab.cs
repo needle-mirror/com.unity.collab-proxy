@@ -48,7 +48,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             mSwitcher = switcher;
             mNewIncomingChangesUpdater = newIncomingChangesUpdater;
             mParentWindow = parentWindow;
-            mGuiMessage = new UnityPlasticGuiMessage(parentWindow);
+            mGuiMessage = new UnityPlasticGuiMessage();
 
             BuildComponents(mWkInfo);
 

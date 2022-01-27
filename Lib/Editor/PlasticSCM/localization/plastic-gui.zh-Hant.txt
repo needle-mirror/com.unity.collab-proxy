@@ -346,6 +346,15 @@ GUID
 == CommentColumn ==
 註解
 
+== ItemsCount ==
+({0})
+
+== ItemsCountSingular ==
+(1 個項目)
+
+== ItemsCountPlural ==
+({0} 個項目)
+
 == ItemsSelected ==
 ({0}/{1} selected)
 
@@ -4901,18 +4910,6 @@ File Move and Rename Detection
 == HelpActionNotFound ==
 很抱歉，我們忘記加入這個動作 :(
 
-== DaysAgo ==
-{0} 天之前
-
-== HoursAgo ==
-{0} 小時之前
-
-== MinutesAgo ==
-{0} 分鐘之前
-
-== SecondsAgo ==
-{0} 秒鐘之前
-
 == RemovedLocallyStatus ==
 在本機移除
 
@@ -5712,11 +5709,8 @@ https://www.plasticscm.com/download/help/locking
 == EmptyQuestionList ==
 問題清單是空的
 
-== MergeFileChangesInConflictSingular ==
-檔案變更發生衝突，可能需要手動操作 (1 個項目)
-
-== MergeFileChangesInConflictPlural ==
-檔案變更發生衝突，可能需要手動操作 ({0} 個項目)
+== MergeFileChangesInConflictCategory ==
+檔案變更發生衝突，可能需要手動操作
 
 == FileConflictsExplanation ==
 檔案變更發生衝突，可能需要手動操作。
@@ -5724,17 +5718,11 @@ https://www.plasticscm.com/download/help/locking
 == FileConflictsExplanationForIncomingView ==
 要下載的檔案與您的變更存在衝突。
 
-== ChangesWithDirectoryConflictsSingular ==
-變更之間存在目錄結構衝突 (1 個項目)
+== ChangesWithDirectoryConflictsCategory ==
+變更之間存在目錄結構衝突
 
-== ChangesWithDirectoryConflictsPlural ==
-變更之間存在目錄結構衝突 ({0} 個項目)
-
-== MergeFileChangesInConflictForIncomingViewSingular ==
-要下載的檔案與您的變更存在衝突 (1 個項目)
-
-== MergeFileChangesInConflictForIncomingViewPlural ==
-要下載的檔案與您的變更存在衝突 ({0} 個項目)
+== MergeFileChangesInConflictForIncomingViewCategory ==
+要下載的檔案與您的變更存在衝突
 
 == MergeFileChangesInConflictForGluonSingular ==
 要下載的檔案與您的變更存在衝突 ({0} 個項目，共 1 個)
@@ -5748,17 +5736,11 @@ https://www.plasticscm.com/download/help/locking
 == MergeFileChangesInConflictRemarkForIncomingView ==
 需要合併
 
-== MergeChangesMadeInSourceOfMergeSingular ==
-在合併來源中所做的變更。沒有衝突 (1 個項目)
+== MergeChangesMadeInSourceOfMergeCategory ==
+在合併來源中所做的變更。沒有衝突
 
-== MergeChangesMadeInSourceOfMergePlural ==
-在合併來源中所做的變更。沒有衝突 ({0} 個項目)
-
-== MergeChangesMadeInSourceOfMergeForIncomingViewSingular ==
-只需要更新的檔案 (1 個項目)
-
-== MergeChangesMadeInSourceOfMergeForIncomingViewPlural ==
-只需要更新的檔案 ({0} 個項目)
+== MergeChangesMadeInSourceOfMergeForIncomingViewCategory ==
+只需要更新的檔案
 
 == MergeChangesMadeInSourceOfMergeForGluonSingular ==
 只需要更新的檔案 ({0} 個項目，共 1 個)
@@ -5766,11 +5748,8 @@ https://www.plasticscm.com/download/help/locking
 == MergeChangesMadeInSourceOfMergeForGluonPlural ==
 只需要更新的檔案 ({0} 個項目，共 {1} 個)
 
-== MergeMovesToApplySingular ==
-要套用的移動 (1 個項目)
-
-== MergeMovesToApplyPlural ==
-要套用的移動 ({0} 個項目)
+== MergeMovesToApplyCategory ==
+要套用的移動
 
 == MergeMovesToApplyForGluonSingular ==
 要套用的移動 ({0} 個項目，共 1 個)
@@ -5784,11 +5763,8 @@ https://www.plasticscm.com/download/help/locking
 == MergeMovesToApplyRemarkForIncomingView ==
 將套用移動至您的工作區
 
-== MergeDeletesToApplySingular ==
-要套用的刪除 (1 個項目)
-
-== MergeDeletesToApplyPlural ==
-要套用的刪除 ({0} 個項目)
+== MergeDeletesToApplyCategory ==
+要套用的刪除
 
 == MergeDeletesToApplyForGluonSingular ==
 要套用的刪除 ({0} 個項目，共 1 個)
@@ -5802,11 +5778,8 @@ https://www.plasticscm.com/download/help/locking
 == MergeDeletesToApplyRemarkForIncomingView ==
 將套用刪除至您的工作區
 
-== MergeNewItemsToDownloadSingular ==
-要下載的新項目 (1 個項目)
-
-== MergeNewItemsToDownloadPlural ==
-要下載的新項目 ({0} 個項目)
+== MergeNewItemsToDownloadCategory ==
+要下載的新項目
 
 == MergeNewItemsToDownloadForGluonSingular ==
 要下載的新項目 ({0} 個項目，共 1 個)
@@ -5820,11 +5793,8 @@ https://www.plasticscm.com/download/help/locking
 == MergeNewItemsToDownloadRemarkForIncomingView ==
 將套用新增至您的工作區
 
-== MergeFileSystemPermissionsChangesToApplySingular ==
-要套用的檔案系統權限變更 (1 個項目)
-
-== MergeFileSystemPermissionsChangesToApplyPlural ==
-要套用的檔案系統權限變更 ({0} 個項目)
+== MergeFileSystemPermissionsChangesToApplyCategory ==
+要套用的檔案系統權限變更
 
 == MergeFileSystemPermissionsChangesToApplyRemark ==
 檔案系統權限中的變更

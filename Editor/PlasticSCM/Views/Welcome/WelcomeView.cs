@@ -30,7 +30,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             mCmConnection = cmConnection;
             mPlasticWebRestApi = plasticWebRestApi;
 
-            mGuiMessage = new UnityPlasticGuiMessage(parentWindow);
+            mGuiMessage = new UnityPlasticGuiMessage();
             mConfigureProgress = new ProgressControlsForViews();
 
             mInstallerFile = GetInstallerTmpFileName.ForPlatform();

@@ -78,7 +78,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const double SELECTION_DELAYED_INPUT_ACTION_INTERVAL = 0.25;
         internal const double AUTO_REFRESH_DELAYED_INTERVAL = 0.25;
         internal const double AUTO_REFRESH_PENDING_CHANGES_DELAYED_INTERVAL = 0.1;
-        internal const double ASSET_MENU_DELAYED_INITIALIZE_INTERVAL = 0.25;
+        internal const double PLUGIN_DELAYED_INITIALIZE_INTERVAL = 0.25;
         
         internal const double NOTIFICATION_CLEAR_INTERVAL = 5;
 

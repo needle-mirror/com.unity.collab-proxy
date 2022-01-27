@@ -205,7 +205,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         internal void GetOrganizationList()
         {
             OAuthSignIn.GetOrganizationsFromAccessToken(
-                mPlasticWindow.PlasticWebRestApiForTesting,
+                PlasticApp.PlasticWebRestApi,
                 new Editor.UI.Progress.ProgressControlsForDialogs(),
                 this,
                 CloudProjectSettings.userName,
@@ -231,7 +231,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mPlasticWindow = GetPlasticWindow();
 
             CloudEditionWelcomeWindow.ShowWindow(
-                   mPlasticWindow.PlasticWebRestApiForTesting,
+                   PlasticApp.PlasticWebRestApi,
                    mPlasticWindow.CmConnectionForTesting,null, true);
 
             mCloudEditionWelcomeWindow = CloudEditionWelcomeWindow.GetWelcomeWindow();

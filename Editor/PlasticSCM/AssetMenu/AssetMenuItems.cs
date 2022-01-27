@@ -1,37 +1,23 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
 using Codice.CM.Common;
 using Codice.Client.BaseCommands.EventTracking;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Items;
-using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
-using Unity.PlasticSCM.Editor.Inspector;
 using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor.AssetMenu
 {
     internal class AssetMenuItems
     {
-        internal static void Dispose()
+        internal static void Enable()
         {
-            if (sAssetSelection != null)
-                sAssetSelection.Dispose();
-        }
+            if (sIsEnabled)
+                return;
 
-        // TODO: do this after calling plastic workspace
-        internal static void Enable(
-            PlasticAPI plasticAPI,
-            WorkspaceInfo wkInfo)
-        {
-            sPlasticAPI = plasticAPI;
+            sIsEnabled = true;
 
             sOperations = new AssetMenuRoutingOperations();
-
-            sAssetStatusCache = AssetStatusCacheProvider.Get(
-                wkInfo,
-                sPlasticAPI.IsGluonWorkspace(wkInfo),
-                ProjectWindow.Repaint);
 
             sAssetSelection = new ProjectViewAssetSelection(UpdateFilterMenuItems);
 
@@ -43,10 +29,14 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             AddMenuItems();
         }
 
-        // TODO: Call this from the delete plastic workspace window
         internal static void Disable()
         {
+            sIsEnabled = false;
+
             RemoveMenuItems();
+
+            if (sAssetSelection != null)
+                sAssetSelection.Dispose();
         }
 
         static void AddMenuItems()
@@ -98,7 +88,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         {
             SelectedPathsGroupInfo info = AssetsSelection.GetSelectedPathsGroupInfo(
                 ((AssetOperations.IAssetSelection)sAssetSelection).GetSelectedAssets(),
-                sAssetStatusCache);
+                PlasticPlugin.AssetStatusCache);
             sFilterMenuBuilder.UpdateMenuItems(FilterMenuUpdater.GetMenuActions(info));
         }
 
@@ -145,7 +135,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         {
             WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
                 Application.dataPath,
-                sPlasticAPI);
+                PlasticApp.PlasticAPI);
             
             if (wkInfo != null)
             {
@@ -202,7 +192,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             SelectedAssetGroupInfo selectedGroupInfo = SelectedAssetGroupInfo.
                 BuildFromAssetList(
                     ((AssetOperations.IAssetSelection)sAssetSelection).GetSelectedAssets(),
-                    sAssetStatusCache);
+                    PlasticPlugin.AssetStatusCache);
 
             AssetMenuOperations operations = AssetMenuUpdater.
                 GetAvailableMenuOperations(selectedGroupInfo);
@@ -220,11 +210,10 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             HandleMenuItem.UpdateAllMenus();
         }
 
-        static PlasticAPI sPlasticAPI;
         static AssetMenuRoutingOperations sOperations;
-        static IAssetStatusCache sAssetStatusCache;
         static ProjectViewAssetSelection sAssetSelection;
         static AssetFilesFilterPatternsMenuBuilder sFilterMenuBuilder;
+        static bool sIsEnabled;
 
         const int BASE_MENU_ITEM_PRIORITY = 19; // Puts Plastic SCM right below Create menu
 

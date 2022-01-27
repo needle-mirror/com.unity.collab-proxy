@@ -95,7 +95,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mAssetStatusCache = assetStatusCache;
             mStatusBar = statusBar;
             mParentWindow = parentWindow;
-            mGuiMessage = new UnityPlasticGuiMessage(parentWindow);
+            mGuiMessage = new UnityPlasticGuiMessage();
             mCheckedStateManager = new CheckedStateManager();
 
             mNewChangesInWk = NewChangesInWk.Build(
