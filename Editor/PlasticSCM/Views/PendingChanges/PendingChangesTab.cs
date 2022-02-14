@@ -730,7 +730,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 if(mHasPendingCheckinFromPreviousUpdate)
                 {
                     mHasPendingCheckinFromPreviousUpdate = false;
-                    CheckinChanges(wkInfo, isGluonMode);
+                    CheckinForMode(wkInfo, isGluonMode, mKeepItemsLocked);
                 }
 
                 else if (DrawActionButton.ForCommentSection(
@@ -742,7 +742,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                     if (!mIsEmptyCheckinCommentWarningNeeded &&
                         mPendingChanges.HasPendingChanges())
                     {
-                        CheckinChanges(wkInfo, isGluonMode);
+                        CheckinForMode(wkInfo, isGluonMode, mKeepItemsLocked);
                     }
                 }
 
@@ -777,13 +777,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             }
 
             EditorGUILayout.EndHorizontal();
-        }
-
-        void CheckinChanges(WorkspaceInfo wkInfo, bool isGluonMode)
-        {
-            CheckinForMode(wkInfo, isGluonMode, mKeepItemsLocked);
-
-            CommentText = string.Empty;
         }
 
         void UpdateChangesTree()

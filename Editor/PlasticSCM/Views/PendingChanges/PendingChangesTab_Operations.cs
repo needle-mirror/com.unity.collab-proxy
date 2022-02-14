@@ -127,7 +127,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 dependenciesCandidates,
                 CommentText,
                 null,
-                EndCheckin);
+                EndCheckin,
+                null);
         }
 
         void PartialUndo()
@@ -195,7 +196,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 changesToUndo,
                 dependenciesCandidates,
                 mPendingMergeLinks.Count,
-                RefreshAsset.UnityAssetDatabase);
+                RefreshAsset.UnityAssetDatabase,
+                null);
         }
 
         void EndCheckin()

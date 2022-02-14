@@ -64,7 +64,7 @@ namespace Unity.PlasticSCM.Editor
         /// </summary>
         public static Texture GetWindowIcon()
         {
-            return HasOpenInstances<PlasticWindow>() ?
+            return mIsWindowIconAvailable ?
                 mPlasticWindowIcon :
                 PlasticNotification.GetIcon(PlasticNotification.Status.None);
         }
@@ -72,6 +72,7 @@ namespace Unity.PlasticSCM.Editor
         internal void SetupWindowTitle()
         {
             mPlasticWindowIcon = PlasticNotification.GetIcon(mNotificationStatus);
+            mIsWindowIconAvailable = true;
 
             // The titleContent icon does not update unless we also update the title text
             // Temporarily doing it by adding space characters
@@ -198,6 +199,8 @@ namespace Unity.PlasticSCM.Editor
 
         void OnDisable()
         {
+            mIsWindowIconAvailable = false;
+
             MonoFileSystemWatcher.IsEnabled = false;
 
             if (mException != null)
@@ -1103,6 +1106,8 @@ namespace Unity.PlasticSCM.Editor
 
         PlasticNotification.Status mNotificationStatus = PlasticNotification.Status.None;
         static Texture mPlasticWindowIcon;
+        static bool mIsWindowIconAvailable;
+
         static readonly ILog mLog = LogManager.GetLogger("PlasticWindow");
     }
 }

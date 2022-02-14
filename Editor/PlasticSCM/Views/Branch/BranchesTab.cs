@@ -69,6 +69,16 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 mProgressControls.IsOperationRunning());
         }
 
+        internal void SetWorkingObjectInfo(WorkingObjectInfo homeInfo)
+        {
+            lock(mLock)
+            {
+                mLoadedBranchId = homeInfo.BranchInfo.BranchId;
+            }
+
+            mBranchesListView.SetLoadedBranchId(mLoadedBranchId);
+        }
+
         static void DoBranchesArea(
             BranchesListView branchesListView,
             bool isOperationRunning)
@@ -143,6 +153,12 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             waiter.Execute(
                 /*threadOperationDelegate*/ delegate
                 {
+                    long loadedBranchId = GetLoadedBranchId(wkInfo);
+                    lock(mLock)
+                    {
+                        mLoadedBranchId = loadedBranchId;
+                    }
+
                     queryResult = new ViewQueryResult(
                         PlasticGui.Plastic.API.FindQuery(wkInfo, query));
                 },
@@ -158,7 +174,8 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
                         UpdateBranchesList(
                             mBranchesListView,
-                            queryResult);
+                            queryResult,
+                            mLoadedBranchId);
 
                         int branchesCount = GetBranchesCount(queryResult);
 
@@ -178,12 +195,23 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 });
         }
 
+        static long GetLoadedBranchId(WorkspaceInfo wkInfo)
+        {
+            BranchInfo brInfo = PlasticGui.Plastic.API.GetWorkingBranch(wkInfo);
+
+            if (brInfo != null)
+                return brInfo.BranchId;
+
+            return -1;
+        }
+
         static void UpdateBranchesList(
              BranchesListView branchesListView,
-             ViewQueryResult queryResult)
+             ViewQueryResult queryResult,
+             long loadedBranchId)
         {
             branchesListView.BuildModel(
-                queryResult);
+                queryResult, loadedBranchId);
 
             branchesListView.Refilter();
 
@@ -396,6 +424,9 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         bool mShouldScrollToSelection;
         BranchesListView mBranchesListView;
         BranchOperations mBranchOperations;
+
+        long mLoadedBranchId = -1;
+        object mLock = new object();
 
         readonly WorkspaceInfo mWkInfo;
         readonly ProgressControlsForViews mProgressControls;

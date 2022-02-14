@@ -149,6 +149,19 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 mIsGluonMode);
         }
 
+        internal void SetWorkingObjectInfo(WorkingObjectInfo homeInfo)
+        {
+            if (mIsGluonMode)
+                return;
+
+            lock(mLock)
+            {
+                mLoadedChangesetId = homeInfo.ChangesetId;
+            }
+
+            mChangesetsListView.SetLoadedChangesetId(mLoadedChangesetId);
+        }
+
         void IChangesetMenuOperations.DiffWithAnotherChangeset() { }
         void IChangesetMenuOperations.CreateBranch() { }
         void IChangesetMenuOperations.LabelChangeset() { }
@@ -186,18 +199,20 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 PlasticLocalization.GetString(
                     PlasticLocalization.Name.LoadingChangesets));
 
-            long loadedChangesetId = -1;
             ViewQueryResult queryResult = null;
 
             IThreadWaiter waiter = ThreadWaiter.GetWaiter();
             waiter.Execute(
                 /*threadOperationDelegate*/ delegate
                 {
+                    long loadedChangesetId = GetLoadedChangesetId(
+                        wkInfo, mIsGluonMode);
+                    lock(mLock)
+                    {
+                        mLoadedChangesetId = loadedChangesetId;
+                    }
                     queryResult = new ViewQueryResult(
                         PlasticGui.Plastic.API.FindQuery(wkInfo, query));
-
-                    loadedChangesetId = GetLoadedChangesetId(
-                        wkInfo, mIsGluonMode);
                 },
                 /*afterOperationDelegate*/ delegate
                 {
@@ -212,7 +227,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                         UpdateChangesetsList(
                             mChangesetsListView,
                             queryResult,
-                            loadedChangesetId);
+                            mLoadedChangesetId);
 
                         int changesetsCount = GetChangesetsCount(queryResult);
 
@@ -468,6 +483,9 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         ChangesetsListView mChangesetsListView;
         DiffPanel mDiffPanel;
+
+        long mLoadedChangesetId = -1;
+        object mLock = new object();
 
         readonly bool mIsGluonMode;
 

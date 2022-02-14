@@ -42,6 +42,11 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             return mRows;
         }
 
+        internal void SetLoadedBranchId(long loadedBranchId)
+        {
+            mLoadedBranchId = loadedBranchId;
+        }
+
         protected override TreeViewItem BuildRoot()
         {
             return new TreeViewItem(0, -1, string.Empty);
@@ -125,11 +130,14 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             base.RowGUI(args);
         }
 
-        internal void BuildModel(ViewQueryResult queryResult)
+        internal void BuildModel(
+            ViewQueryResult queryResult,
+            long loadedBranchId)
         {
             mListViewItemIds.Clear();
 
             mQueryResult = queryResult;
+            mLoadedBranchId = loadedBranchId;
         }
 
         internal void Refilter()

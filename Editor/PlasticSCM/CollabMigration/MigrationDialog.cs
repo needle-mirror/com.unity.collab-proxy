@@ -6,18 +6,16 @@ using UnityEngine;
 using Codice.Client.BaseCommands;
 using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.BaseCommands.Sync;
-using Codice.Client.Common;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.LogWrapper;
 using CodiceApp.EventTracking;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
-using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
-using Unity.PlasticSCM.Editor.ProjectDownloader;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.WebApi;
+using Unity.PlasticSCM.Editor.Configuration;
 
 namespace Unity.PlasticSCM.Editor.CollabMigration
 {
@@ -277,32 +275,23 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
             /*threadOperationDelegate*/
             delegate
             {
-                // we just migrate a cloud project,
-                // so let's assume we're going to use Cloud Edition
-                SetupUnityEditionToken.CreateCloudEditionTokenIfNeeded();
-
-                if (!ClientConfig.IsConfigured())
-                {
-                    AutoConfigClientConf.FromUnityAccessToken(
-                        unityAccessToken, serverName, projectPath);
-                }
-
-                tokenExchangeResponse = WebRestApiClient.
-                    PlasticScm.TokenExchange(unityAccessToken);
+                tokenExchangeResponse = AutoConfig.PlasticCredentials(
+                    unityAccessToken,
+                    serverName,
+                    projectPath);
 
                 if (tokenExchangeResponse.Error != null)
+                {
                     return;
-
-                CloudEditionWelcomeWindow.JoinCloudServer(
-                    serverName,
-                    tokenExchangeResponse.User,
-                    tokenExchangeResponse.AccessToken);
+                }
 
                 RepositoryInfo repInfo = new BaseCommandsImpl().
                     GetRepositoryInfo(repId, serverName);
 
                 if (repInfo == null)
+                {
                     return;
+                }
 
                 repInfo.SetExplicitServer(serverName);
 
@@ -319,6 +308,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
                 if (waiter.Exception != null)
                 {
                     DisplayException(progressControls, waiter.Exception);
+                    TrackWorkspaceMigrationFinishedFailureEvent(mWorkspaceInfo);
                     return;
                 }
 
@@ -335,6 +325,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
                 {
                     progressControls.ShowError(
                         "Failed to convert your workspace to Plastic SCM");
+                    TrackWorkspaceMigrationFinishedFailureEvent(mWorkspaceInfo);
                     return;
                 }
 
@@ -342,6 +333,10 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
                     "Your workspace has been successfully converted to Plastic SCM");
 
                 mIsMigrationCompleted = true;
+
+                TrackFeatureUseEvent.For(
+                    PlasticGui.Plastic.API.GetRepositorySpec(mWorkspaceInfo),
+                    TrackFeatureUseEvent.Features.WorkspaceMigrationFinishedSuccess);
 
                 afterWorkspaceMigratedAction();
             },
@@ -352,6 +347,21 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
             });
         }
 
+        void TrackWorkspaceMigrationFinishedFailureEvent(WorkspaceInfo wkInfo)
+        {
+            if (wkInfo == null)
+            {
+                TrackFeatureUseEvent.For(
+                    GetEventCloudOrganizationInfo(),
+                    TrackFeatureUseEvent.Features.WorkspaceMigrationFinishedFailure);
+                return;
+            }
+            
+            TrackFeatureUseEvent.For(
+                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
+                TrackFeatureUseEvent.Features.WorkspaceMigrationFinishedFailure);
+        }
+                 
         static void DisplayException(
             ProgressControlsForMigration progressControls,
             Exception ex)

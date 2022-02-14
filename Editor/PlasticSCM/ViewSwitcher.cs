@@ -109,6 +109,23 @@ namespace Unity.PlasticSCM.Editor
             view.Refresh();
         }
 
+        internal void RefreshWorkingObjectInfoForSelectedView(
+            ViewType viewType,
+            WorkingObjectInfo homeInfo)
+        {
+            switch (viewType)
+            {
+                case ViewType.BranchesView:
+                    if (BranchesTab != null)
+                        BranchesTab.SetWorkingObjectInfo(homeInfo);
+                    break;
+                case ViewType.ChangesetsView:
+                    if (ChangesetsTab != null)
+                        ChangesetsTab.SetWorkingObjectInfo(homeInfo);
+                    break;
+            }
+        }
+
         internal void OnDisable()
         {
             PlasticAssetsProcessor.UnRegisterViews();
