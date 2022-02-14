@@ -1,5 +1,3 @@
-﻿using System.Reflection;
-
 using Unity.Plastic.Newtonsoft.Json;
 
 using PlasticGui.WebApi.Responses;
@@ -9,7 +7,6 @@ namespace Unity.PlasticSCM.Editor.WebApi
     /// <summary>
     /// Response to credentials request.
     /// </summary>
-    [ObfuscationAttribute(Exclude = true)]
     public class CredentialsResponse
     {
         /// <summary>

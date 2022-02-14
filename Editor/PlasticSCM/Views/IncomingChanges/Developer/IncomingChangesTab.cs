@@ -354,7 +354,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 mGuiMessage,
                 selectedPaths,
                 MergeContributorType.MergeContributors,
-                RefreshAsset.UnityAssetDatabase);
+                RefreshAsset.UnityAssetDatabase,
+                null);
         }
 
         void IIncomingChangesViewMenuOperations.MergeKeepingSourceChanges()
@@ -369,7 +370,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 mGuiMessage,
                 selectedPaths,
                 MergeContributorType.KeepSource,
-                RefreshAsset.UnityAssetDatabase);
+                RefreshAsset.UnityAssetDatabase,
+                null);
         }
 
         void IIncomingChangesViewMenuOperations.MergeKeepingWorkspaceChanges()
@@ -384,7 +386,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 mGuiMessage,
                 selectedPaths,
                 MergeContributorType.KeepDestination,
-                RefreshAsset.UnityAssetDatabase);
+                RefreshAsset.UnityAssetDatabase,
+                null);
         }
 
         void IIncomingChangesViewMenuOperations.DiffYoursWithIncoming()
@@ -706,7 +709,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     guiMessage,
                     new List<string>(),
                     MergeContributorType.MergeContributors,
-                    afterProcessMergesAction);
+                    afterProcessMergesAction,
+                    null);
             }
 
             GUI.enabled = true;

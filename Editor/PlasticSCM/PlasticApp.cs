@@ -35,12 +35,17 @@ namespace Unity.PlasticSCM.Editor
         internal static PlasticAPI PlasticAPI { get; private set; }
         internal static PlasticWebRestApi PlasticWebRestApi { get; private set; }
 
+        internal static bool IsInitialized
+        { 
+            get { return mIsInitialized; } 
+        }
+
         internal static void InitializeIfNeeded()
         {
-            if (sIsInitialized)
+            if (mIsInitialized)
                 return;
 
-            sIsInitialized = true;
+            mIsInitialized = true;
 
             PlasticAPI = new PlasticAPI();
             PlasticWebRestApi = new PlasticWebRestApi();
@@ -105,18 +110,18 @@ namespace Unity.PlasticSCM.Editor
         // or else an error will be thrown and the Plastic context menu will not show up
         internal static void RegisterClientHandlersIfNeeded()
         {
-            if (sIsInitialized)
+            if (mIsInitialized)
                 return;
 
             ClientHandlers.Register();
             ThreadWaiter.Initialize(new UnityThreadWaiterBuilder());
 
-            sIsInitialized = true;
+            mIsInitialized = true;
         }
 
         internal static void Dispose()
         {
-            sIsInitialized = false;
+            mIsInitialized = false;
 
             UnRegisterExceptionHandlers();
 
@@ -126,7 +131,7 @@ namespace Unity.PlasticSCM.Editor
             {
                 sPingEventLoop.Stop();
                 sEventSenderScheduler.End();
-            }
+        }
 
             WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
                 Application.dataPath,
@@ -270,7 +275,7 @@ namespace Unity.PlasticSCM.Editor
             return ex is ExitGUIException;
         }
 
-        static bool sIsInitialized;
+        static bool mIsInitialized;
 
         static EventSenderScheduler sEventSenderScheduler;
         static PingEventLoop sPingEventLoop;

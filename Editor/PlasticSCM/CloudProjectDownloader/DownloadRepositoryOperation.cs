@@ -5,7 +5,6 @@ using UnityEditor;
 
 using Codice.Client.BaseCommands;
 using Codice.Client.Commands;
-using Codice.Client.Common;
 using Codice.CM.Common;
 using Codice.LogWrapper;
 using PlasticGui;
@@ -14,9 +13,8 @@ using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.Update;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
 using Unity.PlasticSCM.Editor.WebApi;
-using Unity.PlasticSCM.Editor.AssetMenu;
+using Unity.PlasticSCM.Editor.Configuration;
 
 namespace Unity.PlasticSCM.Editor.ProjectDownloader
 {
@@ -97,20 +95,11 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
                     parameters.CloudOrganization,
                     defaultCloudAlias);
 
-                // we just download a cloud project,
-                // so let's assume we're going to use Cloud Edition
-                SetupUnityEditionToken.CreateCloudEditionTokenIfNeeded();
-
-                if (!ClientConfig.IsConfigured())
-                {
-                    AutoConfigClientConf.FromUnityAccessToken(
+                TokenExchangeResponse tokenExchangeResponse =
+                    AutoConfig.PlasticCredentials(
                         parameters.AccessToken,
                         repSpec.Server,
                         parameters.ProjectPath);
-                }
-                
-                TokenExchangeResponse tokenExchangeResponse = WebRestApiClient.
-                    PlasticScm.TokenExchange(parameters.AccessToken);
 
                 if (tokenExchangeResponse.Error != null)
                 {
@@ -123,15 +112,6 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
                             tokenExchangeResponse.Error.ErrorCode));
                     return;
                 }
-
-                CloudEditionWelcomeWindow.JoinCloudServer(
-                    repSpec.Server,
-                    tokenExchangeResponse.User,
-                    tokenExchangeResponse.AccessToken);
-
-                ClientConfigData clientConfigData = ClientConfig.Get().GetClientConfigData();
-                clientConfigData.WorkspaceServer = repSpec.Server;
-                ClientConfig.Get().Save(clientConfigData);
 
                 WorkspaceInfo wkInfo = CreateWorkspace(
                     repSpec, parameters.ProjectPath);

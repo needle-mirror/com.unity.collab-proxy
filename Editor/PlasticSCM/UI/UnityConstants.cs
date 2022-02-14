@@ -89,7 +89,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const string DEVELOPER_INCOMING_CHANGES_TABLE_SETTINGS_NAME = "{0}_DeveloperIncomingChangesTreeV2_{1}";
         internal const string DEVELOPER_UPDATE_REPORT_TABLE_SETTINGS_NAME = "{0}_DeveloperUpdateReportList_{1}";
         internal const string REPOSITORIES_TABLE_SETTINGS_NAME = "{0}_RepositoriesList_{1}";
-        internal const string CHANGESETS_TABLE_SETTINGS_NAME = "{0}_ChangesetsList_{1}";
+        internal const string CHANGESETS_TABLE_SETTINGS_NAME = "{0}_ChangesetsListV2_{1}";
         internal const string CHANGESETS_DATE_FILTER_SETTING_NAME = "{0}_ChangesetsDateFilter_{1}";
         internal const string CHANGESETS_SHOW_CHANGES_SETTING_NAME = "{0}_ShowChanges_{1}";
         internal const string HISTORY_TABLE_SETTINGS_NAME = "{0}_HistoryList_{1}";

@@ -117,12 +117,22 @@ namespace Unity.PlasticSCM.Editor
 
             update.Run(
                 UpdateWorkspaceOperation.UpdateType.UpdateToLatest,
-                RefreshAsset.UnityAssetDatabase);
+                RefreshAsset.UnityAssetDatabase,
+                null);
         }
 
         void IWorkspaceWindow.RefreshView(ViewType viewType)
         {
             mSwitcher.RefreshView(viewType);
+        }
+
+        void IWorkspaceWindow.RefreshWorkingObjectViews(
+            ViewType viewType,
+            WorkingObjectInfo workingObjectInfo)
+        {
+            mSwitcher.RefreshWorkingObjectInfoForSelectedView(
+                viewType,
+                workingObjectInfo);
         }
 
         void IWorkspaceWindow.UpdateTitle()

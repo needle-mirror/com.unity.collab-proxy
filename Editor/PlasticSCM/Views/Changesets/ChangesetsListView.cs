@@ -54,6 +54,11 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             return mRows;
         }
 
+        internal void SetLoadedChangesetId(long loadedChangesetId)
+        {
+            mLoadedChangesetId = loadedChangesetId;
+        }
+
         protected override TreeViewItem BuildRoot()
         {
             return new TreeViewItem(0, -1, string.Empty);
