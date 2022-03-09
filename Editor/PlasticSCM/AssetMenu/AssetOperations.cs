@@ -5,7 +5,6 @@ using UnityEditor;
 using UnityEditor.VersionControl;
 
 using Codice.Client.BaseCommands;
-
 using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Commands;
 using Codice.Client.Commands.WkTree;
@@ -69,8 +68,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
             mGuiMessage = new UnityPlasticGuiMessage();
             mProgressControls = new EditorProgressControls(mGuiMessage);
-
         }
+
         void IAssetMenuOperations.ShowPendingChanges()
         {
             mViewSwitcher.ShowPendingChanges();
@@ -79,7 +78,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         void IAssetMenuOperations.Add()
         {
             List<string> selectedPaths = GetSelectedPaths.ForOperation(
-                mAssetSelection,
+                mAssetSelection.GetSelectedAssets(),
                 mAssetStatusCache,
                 AssetMenuOperations.Add);
 
@@ -109,7 +108,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         void IAssetMenuOperations.Checkout()
         {
             List<string> selectedPaths = GetSelectedPaths.ForOperation(
-                mAssetSelection,
+                mAssetSelection.GetSelectedAssets(),
                 mAssetStatusCache,
                 AssetMenuOperations.Checkout);
 
@@ -137,7 +136,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         void IAssetMenuOperations.Checkin()
         {
             List<string> selectedPaths = GetSelectedPaths.ForOperation(
-                mAssetSelection,
+                mAssetSelection.GetSelectedAssets(),
                 mAssetStatusCache,
                 AssetMenuOperations.Checkin);
 
@@ -160,7 +159,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         void IAssetMenuOperations.Undo()
         {
             List<string> selectedPaths = GetSelectedPaths.ForOperation(
-                mAssetSelection,
+                mAssetSelection.GetSelectedAssets(),
                 mAssetStatusCache,
                 AssetMenuOperations.Undo);
 
@@ -313,53 +312,5 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         readonly EditorProgressControls mProgressControls;
         readonly EditorWindow mParentWindow;
         readonly IAssetSelection mAssetSelection;
-
-        static class GetSelectedPaths
-        {
-            internal static List<string> ForOperation(
-                IAssetSelection assetSelection,
-                IAssetStatusCache assetStatusCache,
-                AssetMenuOperations operation)
-            {
-                List<string> selectedPaths = AssetsSelection.GetSelectedPaths(
-                    assetSelection.GetSelectedAssets());
-
-                List<string> result = new List<string>(selectedPaths);
-
-                foreach (string path in selectedPaths)
-                {
-                    if (MetaPath.IsMetaPath(path))
-                        continue;
-
-                    string metaPath = MetaPath.GetMetaPath(path);
-
-                    if (!File.Exists(metaPath))
-                        continue;
-
-                    if (result.Contains(metaPath))
-                        continue;
-
-                    if (!IsApplicableForOperation(
-                        metaPath, false, operation, assetStatusCache))
-                        continue;
-
-                    result.Add(metaPath);
-                }
-
-                return result;
-            }
-
-            static bool IsApplicableForOperation(
-                string path,
-                bool isDirectory,
-                AssetMenuOperations operation,
-                IAssetStatusCache assetStatusCache)
-            {
-                SelectedAssetGroupInfo info = SelectedAssetGroupInfo.BuildFromSingleFile(
-                    path, isDirectory, assetStatusCache);
-
-                return AssetMenuUpdater.GetAvailableMenuOperations(info).HasFlag(operation);
-            }
-        }
     }
 }

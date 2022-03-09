@@ -305,7 +305,6 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 mRepSpec,
                 revision,
                 fullPath,
-                mGuiMessage,
                 mNewIncomingChangesUpdater,
                 RefreshAsset.UnityAssetDatabase);
         }

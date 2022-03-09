@@ -394,6 +394,12 @@ Comment
 == ItemsSelectedPlural ==
 {0} of {1} items selected
 
+== ItemsSelectedForGluonSingular ==
+{0} of 1 item
+
+== ItemsSelectedForGluonPlural ==
+{0} of {1} items
+
 == ChangedItemsCategory ==
 Changed items
 
@@ -5840,12 +5846,6 @@ Conflicts that no longer apply and possible warnings
 == MergeFileChangesInConflictForIncomingViewCategory ==
 Files to download that are in conflict with your changes
 
-== MergeFileChangesInConflictForGluonSingular ==
-Files to download that are in conflict with your changes ({0} of 1 item)
-
-== MergeFileChangesInConflictForGluonPlural ==
-Files to download that are in conflict with your changes ({0} of {1} items)
-
 == MergeFileChangesInConflictRemark ==
 Changes in both source and destination contributors
 
@@ -5858,12 +5858,6 @@ Changes made in the source of the merge. No conflicts
 == MergeChangesMadeInSourceOfMergeForIncomingViewCategory ==
 Files that just need update
 
-== MergeChangesMadeInSourceOfMergeForGluonSingular ==
-Files that just need update ({0} of 1 item)
-
-== MergeChangesMadeInSourceOfMergeForGluonPlural ==
-Files that just need update ({0} of {1} items)
-
 == MergeChangesMadeInSourceOfMergeOverviewSingular ==
 1 changed file updated ({1})
 
@@ -5873,12 +5867,6 @@ Files that just need update ({0} of {1} items)
 == MergeMovesToApplyCategory ==
 Moves to apply
 
-== MergeMovesToApplyForGluonSingular ==
-Moves to apply ({0} of 1 item)
-
-== MergeMovesToApplyForGluonPlural ==
-Moves to apply ({0} of {1} items)
-
 == MergeMovesToApplyRemark ==
 Moved on source to {0}
 
@@ -5887,12 +5875,6 @@ Will apply the move to your workspace
 
 == MergeDeletesToApplyCategory ==
 Deletes to apply
-
-== MergeDeletesToApplyForGluonSingular ==
-Deletes to apply ({0} of 1 item)
-
-== MergeDeletesToApplyForGluonPlural ==
-Deletes to apply ({0} of {1} items)
 
 == MergeDeletesToApplyOverviewSingular ==
 1 file deleted ({1})
@@ -5908,12 +5890,6 @@ Will apply the delete to your workspace
 
 == MergeNewItemsToDownloadCategory ==
 New items to download
-
-== MergeNewItemsToDownloadForGluonSingular ==
-New items to download ({0} of 1 item)
-
-== MergeNewItemsToDownloadForGluonPlural ==
-New items to download ({0} of {1} items)
 
 == MergeNewItemsToDownloadOverviewSingular ==
 1 file added ({1})
@@ -7200,6 +7176,9 @@ Shift+Cmd+I
 == PlasticMergeActionShortcutForMacOS ==
 Shift+Cmd+M
 
+== PlasticSwitchToActionShortcutForMacOS ==
+Shift+Cmd+W
+
 == PlasticSwitchWorkspaceActionShortcutForMacOS ==
 Shift+Cmd+T
 
@@ -7523,3 +7502,6 @@ Invite members
 
 == InviteMembersMessage ==
 You cannot invite members to the organization because you are not the administrator.
+
+== CalculatingViewLayout ==
+Calculating view layout

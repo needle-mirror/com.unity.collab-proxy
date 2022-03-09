@@ -298,8 +298,13 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
         {
             throw new NotImplementedException();
         }
+        
+        BranchInfo IPlasticAPI.GetBranchInfo(RepositorySpec repSpec, Guid brGuid)
+        {
+            throw new NotImplementedException();
+        }
 
-        BranchInfo IPlasticAPI.GetBranchInfo(RepositorySpec repSpec, Guid brId)
+        BranchInfo IPlasticAPI.GetBranchInfo(RepositoryInfo repInfo, long brId)
         {
             throw new NotImplementedException();
         }
@@ -329,6 +334,12 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
             throw new NotImplementedException();
         }
 
+        WorkspaceStatusResult IPlasticAPI.GetChanges(
+            WorkspaceInfo wkInfo, WorkspaceStatusOptions options, MovedMatchingOptions matchingOptions)
+        {
+            throw new NotImplementedException();
+        }
+        
         List<ClientDiff> IPlasticAPI.GetChangesetDifferences(RepositorySpec repSpec, ChangesetInfo csetInfo)
         {
             throw new NotImplementedException();

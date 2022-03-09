@@ -47,6 +47,7 @@
             internal const string INSTALLER_MACOS_OPEN_ARGS = "-W -n {0}";
         }
 
-        internal const string MACOS_BINDIR = "/Applications/PlasticSCM.app/Contents/MonoBundle";
+        internal const string LEGACY_MACOS_BINDIR = "/Applications/PlasticSCM.app/Contents/MonoBundle";
+        internal const string NEW_MACOS_BINDIR = "/Applications/PlasticSCM.app/Contents/MacOS";
     }
 }

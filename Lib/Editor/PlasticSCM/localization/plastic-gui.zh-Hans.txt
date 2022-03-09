@@ -364,6 +364,12 @@ GUID
 == ItemsSelectedPlural ==
 已选择 {0} / {1} 项
 
+== ItemsSelectedForGluonSingular ==
+{0} / 1 项
+
+== ItemsSelectedForGluonPlural ==
+{0} / {1} 项
+
 == ChangedItemsCategory ==
 已更改项
 
@@ -5724,12 +5730,6 @@ https://www.plasticscm.com/download/help/locking
 == MergeFileChangesInConflictForIncomingViewCategory ==
 要下载的文件，与您的更改发生冲突
 
-== MergeFileChangesInConflictForGluonSingular ==
-要下载的文件，与您的更改发生冲突（{0} / 1 项）
-
-== MergeFileChangesInConflictForGluonPlural ==
-要下载的文件，与您的更改发生冲突（{0} / {1} 项）
-
 == MergeFileChangesInConflictRemark ==
 同时位于源参与者和目标参与者中的更改
 
@@ -5742,20 +5742,8 @@ https://www.plasticscm.com/download/help/locking
 == MergeChangesMadeInSourceOfMergeForIncomingViewCategory ==
 只需要更新的文件
 
-== MergeChangesMadeInSourceOfMergeForGluonSingular ==
-只需要更新的文件（{0} / 1 项）
-
-== MergeChangesMadeInSourceOfMergeForGluonPlural ==
-只需要更新的文件（{0} / {1} 项）
-
 == MergeMovesToApplyCategory ==
 要应用的移动
-
-== MergeMovesToApplyForGluonSingular ==
-要应用的移动（{0} / 1 项）
-
-== MergeMovesToApplyForGluonPlural ==
-要应用的移动（{0} / {1} 项）
 
 == MergeMovesToApplyRemark ==
 已在源上移动到 {0}
@@ -5766,12 +5754,6 @@ https://www.plasticscm.com/download/help/locking
 == MergeDeletesToApplyCategory ==
 要应用的删除
 
-== MergeDeletesToApplyForGluonSingular ==
-要应用的删除（{0} / 1 项）
-
-== MergeDeletesToApplyForGluonPlural ==
-要应用的删除（{0} / {1} 项）
-
 == MergeDeletesToApplyRemark ==
 已在源上删除
 
@@ -5780,12 +5762,6 @@ https://www.plasticscm.com/download/help/locking
 
 == MergeNewItemsToDownloadCategory ==
 要下载的新项
-
-== MergeNewItemsToDownloadForGluonSingular ==
-要下载的新项（{0} / 1 项）
-
-== MergeNewItemsToDownloadForGluonPlural ==
-要下载的新项（{0} / {1} 项）
 
 == MergeNewItemsToDownloadRemark ==
 已在源上添加

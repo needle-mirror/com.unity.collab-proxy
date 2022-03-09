@@ -210,7 +210,7 @@ namespace Unity.PlasticSCM.Editor
 
             if (IsExitGUIException(ex) ||
                 !IsPlasticStackTrace(ex.StackTrace))
-                return;
+                throw ex;
 
             GUIActionRunner.RunGUIAction(delegate {
                 ExceptionsHandler.HandleException("HandleUnhandledException", ex);

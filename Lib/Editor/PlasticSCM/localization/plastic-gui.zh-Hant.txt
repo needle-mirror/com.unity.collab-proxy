@@ -364,6 +364,12 @@ GUID
 == ItemsSelectedPlural ==
 已選取 {0} 個項目，共 {1} 個
 
+== ItemsSelectedForGluonSingular ==
+{0} 個項目，共 1 個
+
+== ItemsSelectedForGluonPlural ==
+{0} 個項目，共 {1} 個
+
 == ChangedItemsCategory ==
 已變更項目
 
@@ -5724,12 +5730,6 @@ https://www.plasticscm.com/download/help/locking
 == MergeFileChangesInConflictForIncomingViewCategory ==
 要下載的檔案與您的變更存在衝突
 
-== MergeFileChangesInConflictForGluonSingular ==
-要下載的檔案與您的變更存在衝突 ({0} 個項目，共 1 個)
-
-== MergeFileChangesInConflictForGluonPlural ==
-要下載的檔案與您的變更存在衝突 ({0} 個項目，共 {1} 個)
-
 == MergeFileChangesInConflictRemark ==
 同時在來源與目的地貢獻者中的變更
 
@@ -5742,20 +5742,8 @@ https://www.plasticscm.com/download/help/locking
 == MergeChangesMadeInSourceOfMergeForIncomingViewCategory ==
 只需要更新的檔案
 
-== MergeChangesMadeInSourceOfMergeForGluonSingular ==
-只需要更新的檔案 ({0} 個項目，共 1 個)
-
-== MergeChangesMadeInSourceOfMergeForGluonPlural ==
-只需要更新的檔案 ({0} 個項目，共 {1} 個)
-
 == MergeMovesToApplyCategory ==
 要套用的移動
-
-== MergeMovesToApplyForGluonSingular ==
-要套用的移動 ({0} 個項目，共 1 個)
-
-== MergeMovesToApplyForGluonPlural ==
-要套用的移動 ({0} 個項目，共 {1} 個)
 
 == MergeMovesToApplyRemark ==
 已在來源上移動至 {0}
@@ -5766,12 +5754,6 @@ https://www.plasticscm.com/download/help/locking
 == MergeDeletesToApplyCategory ==
 要套用的刪除
 
-== MergeDeletesToApplyForGluonSingular ==
-要套用的刪除 ({0} 個項目，共 1 個)
-
-== MergeDeletesToApplyForGluonPlural ==
-要套用的刪除 ({0} 個項目，共 {1} 個)
-
 == MergeDeletesToApplyRemark ==
 已在來源上刪除
 
@@ -5780,12 +5762,6 @@ https://www.plasticscm.com/download/help/locking
 
 == MergeNewItemsToDownloadCategory ==
 要下載的新項目
-
-== MergeNewItemsToDownloadForGluonSingular ==
-要下載的新項目 ({0} 個項目，共 1 個)
-
-== MergeNewItemsToDownloadForGluonPlural ==
-要下載的新項目 ({0} 個項目，共 {1} 個)
 
 == MergeNewItemsToDownloadRemark ==
 已新增於來源

@@ -6,7 +6,6 @@ using UnityEditor;
 
 using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetsOverlays;
-using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
 using PlasticGui;
@@ -70,17 +69,13 @@ namespace Unity.PlasticSCM.Editor.Inspector
                 sAssetSelection,
                 isGluonMode);
         }
-
+        
         static void Editor_finishedDefaultHeaderGUI(UnityEditor.Editor inspector)
         {
             if (!sIsEnabled)
                 return;
 
-            WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
-                Application.dataPath,
-                PlasticApp.PlasticAPI);
-
-            if (wkInfo == null)
+            if (!FindWorkspace.HasWorkspace(Application.dataPath))
             {
                 Disable();
                 return;

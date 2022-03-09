@@ -35,7 +35,7 @@ namespace Unity.Cloud.Collaborate.UserInterface
             Collab.instance.StateChanged += OnCollabStateChanged;
             UnityConnect.instance.StateChanged += OnUnityConnectStateChanged;
             UnityConnect.instance.UserStateChanged += OnUnityConnectUserStateChanged;
-            PlasticWindow.OnNotificationUpdated += OnPlasticNotificationUpdated;
+            PlasticPlugin.OnNotificationUpdated += OnPlasticNotificationUpdated;
         }
 
         ~ToolbarButton()
@@ -43,7 +43,7 @@ namespace Unity.Cloud.Collaborate.UserInterface
             Collab.instance.StateChanged -= OnCollabStateChanged;
             UnityConnect.instance.StateChanged -= OnUnityConnectStateChanged;
             UnityConnect.instance.UserStateChanged -= OnUnityConnectUserStateChanged;
-            PlasticWindow.OnNotificationUpdated -= OnPlasticNotificationUpdated;
+            PlasticPlugin.OnNotificationUpdated -= OnPlasticNotificationUpdated;
         }
 
         void OnUnityConnectUserStateChanged(UserInfo state)
@@ -146,7 +146,7 @@ namespace Unity.Cloud.Collaborate.UserInterface
             {
                 if (m_CurrentState == ToolbarButtonState.Plastic)
                 {
-                    var icon = PlasticWindow.GetWindowIcon();
+                    var icon = PlasticPlugin.GetPluginIcon();
                     EditorGUIUtility.SetIconSize(new Vector2(16, 16));
                     if (GUI.Button(rect, new GUIContent(icon, "Plastic SCM"), collabButtonStyle))
                     {
