@@ -32,6 +32,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         AssetList AssetOperations.IAssetSelection.GetSelectedAssets()
         {
+            if (Selection.assetGUIDs.Length == 0)
+                return new AssetList();
+
             return Provider.GetAssetListFromSelection();
         }
 

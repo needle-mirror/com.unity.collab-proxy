@@ -364,6 +364,12 @@ GUID
 == ItemsSelectedPlural ==
 {1} 項目のうち {0} 個が選択されています
 
+== ItemsSelectedForGluonSingular ==
+1 項目中 {0} 個
+
+== ItemsSelectedForGluonPlural ==
+{1} 項目中 {0} 個
+
 == ChangedItemsCategory ==
 変更された項目
 
@@ -5724,12 +5730,6 @@ Xlink されたファイルに対するレビューのコメントはまだサ�
 == MergeFileChangesInConflictForIncomingViewCategory ==
 変更と競合しているダウンロード対象ファイル
 
-== MergeFileChangesInConflictForGluonSingular ==
-変更と競合しているダウンロード対象ファイル ({0} 項目中 1 個)
-
-== MergeFileChangesInConflictForGluonPlural ==
-変更と競合しているダウンロード対象ファイル ({1} 項目中 {0} 個)
-
 == MergeFileChangesInConflictRemark ==
 ソース共同作成者と同期先の共同作成者の両方での変更
 
@@ -5742,20 +5742,8 @@ Xlink されたファイルに対するレビューのコメントはまだサ�
 == MergeChangesMadeInSourceOfMergeForIncomingViewCategory ==
 更新が必要なファイル
 
-== MergeChangesMadeInSourceOfMergeForGluonSingular ==
-更新が必要なファイル (1 項目中 {0} 個)
-
-== MergeChangesMadeInSourceOfMergeForGluonPlural ==
-更新が必要なファイル ({1} 項目中 {0} 個)
-
 == MergeMovesToApplyCategory ==
 適用する移動
-
-== MergeMovesToApplyForGluonSingular ==
-適用する移動 (1 項目中 {0} 個)
-
-== MergeMovesToApplyForGluonPlural ==
-適用する移動 ({1} 項目中 {0} 個)
 
 == MergeMovesToApplyRemark ==
 ソースで {0} に移動済み
@@ -5766,12 +5754,6 @@ Xlink されたファイルに対するレビューのコメントはまだサ�
 == MergeDeletesToApplyCategory ==
 適用する削除
 
-== MergeDeletesToApplyForGluonSingular ==
-適用する削除 (1 項目中 {0} 個)
-
-== MergeDeletesToApplyForGluonPlural ==
-適用する削除 ({1} 項目中 {0} 個)
-
 == MergeDeletesToApplyRemark ==
 ソースで削除済み
 
@@ -5780,12 +5762,6 @@ Xlink されたファイルに対するレビューのコメントはまだサ�
 
 == MergeNewItemsToDownloadCategory ==
 ダウンロードする新しい項目
-
-== MergeNewItemsToDownloadForGluonSingular ==
-ダウンロードする新しい項目 (1 項目中 {0} 個)
-
-== MergeNewItemsToDownloadForGluonPlural ==
-ダウンロードする新しい項目 ({1} 項目中 {0} 個)
 
 == MergeNewItemsToDownloadRemark ==
 ソースで追加済み

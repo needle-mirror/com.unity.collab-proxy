@@ -7,13 +7,13 @@ using UnityEngine;
 using Codice.Client.BaseCommands;
 using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Common;
-using Codice.Client.Common.FsNodeReaders;
 using Codice.Client.Common.FsNodeReaders.Watcher;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.LogWrapper;
 using GluonGui;
 using PlasticGui;
+using PlasticGui.WebApi.Responses;
 using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Configuration;
@@ -26,6 +26,7 @@ using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.Views.CreateWorkspace;
 using Unity.PlasticSCM.Editor.Views.Welcome;
 using Unity.PlasticSCM.Editor.WebApi;
+using Unity.PlasticSCM.Editor.SceneView;
 
 using GluonCheckIncomingChanges = PlasticGui.Gluon.WorkspaceWindow.CheckIncomingChanges;
 using GluonNewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncomingChangesUpdater;
@@ -47,11 +48,6 @@ namespace Unity.PlasticSCM.Editor
         internal CmConnection CmConnectionForTesting { get { return CmConnection.Get(); } }
 
         /// <summary>
-        /// Invoked when notification status changed.
-        /// </summary>
-        public static event Action OnNotificationUpdated = delegate { };
-
-        /// <summary>
         /// Open the Plastic SCM window.
         /// </summary>
         public static void Open()
@@ -59,39 +55,16 @@ namespace Unity.PlasticSCM.Editor
             ShowWindow.Plastic();
         }
 
-        /// <summary>
-        /// Get the Plastic window current icon.
-        /// </summary>
-        public static Texture GetWindowIcon()
+        internal void SetupWindowTitle(PlasticNotification.Status status)
         {
-            return mIsWindowIconAvailable ?
-                mPlasticWindowIcon :
-                PlasticNotification.GetIcon(PlasticNotification.Status.None);
-        }
-
-        internal void SetupWindowTitle()
-        {
-            mPlasticWindowIcon = PlasticNotification.GetIcon(mNotificationStatus);
-            mIsWindowIconAvailable = true;
+            Texture windowIcon = PlasticNotification.GetIcon(status);
 
             // The titleContent icon does not update unless we also update the title text
             // Temporarily doing it by adding space characters
             string title = UnityConstants.PLASTIC_WINDOW_TITLE;
-            title += String.Concat(Enumerable.Repeat(" ", (int)mNotificationStatus));
+            title += String.Concat(Enumerable.Repeat(" ", (int)status));
 
-            titleContent = new GUIContent(title, mPlasticWindowIcon);
-        }
-
-        internal void SetNotificationStatus(
-            PlasticNotification.Status status,
-            string infoText,
-            string actionText)
-        {
-            if (status == mNotificationStatus) return;
-
-            mNotificationStatus = status;
-            SetupWindowTitle();
-            OnNotificationUpdated.Invoke();
+            titleContent = new GUIContent(title, windowIcon);
         }
 
         internal void DisableCollabIfEnabledWhenLoaded()
@@ -190,7 +163,7 @@ namespace Unity.PlasticSCM.Editor
                 UnityConstants.PLASTIC_WINDOW_MIN_SIZE_WIDTH,
                 UnityConstants.PLASTIC_WINDOW_MIN_SIZE_HEIGHT);
 
-            SetupWindowTitle();
+            SetupWindowTitle(PlasticNotification.Status.None);
 
             RegisterApplicationFocusHandlers(this);
 
@@ -199,8 +172,6 @@ namespace Unity.PlasticSCM.Editor
 
         void OnDisable()
         {
-            mIsWindowIconAvailable = false;
-
             MonoFileSystemWatcher.IsEnabled = false;
 
             if (mException != null)
@@ -470,6 +441,12 @@ namespace Unity.PlasticSCM.Editor
                     this,
                     mIsGluonMode);
 
+                DrawSceneOperations.Initialize(
+                    mWorkspaceWindow,
+                    viewHost,
+                    mDeveloperNewIncomingChangesUpdater,
+                    mIsGluonMode);
+
                 mLastUpdateTime = EditorApplication.timeSinceStartup;
 
                 mViewSwitcher.ShowBranchesViewIfNeeded();
@@ -694,7 +671,7 @@ namespace Unity.PlasticSCM.Editor
                        PlasticLocalization.Name.InviteMembers)),
                 false,
                InviteMemberButton_clicked,
-               wkInfo);
+               PlasticGui.Plastic.API.GetRepositorySpec(wkInfo));
             }
 
             menu.AddSeparator("");
@@ -820,7 +797,11 @@ namespace Unity.PlasticSCM.Editor
 
         static void InviteMemberButton_clicked(object obj)
         {
-            WorkspaceInfo wkInfo = (WorkspaceInfo)obj;
+            RepositorySpec repSpec = (RepositorySpec)obj; 
+
+            string organizationName = ServerOrganizationParser.
+                GetOrganizationFromServer(repSpec.Server);
+
             CurrentUserAdminCheckResponse response = null;
 
             IThreadWaiter waiter = ThreadWaiter.GetWaiter(50);
@@ -828,18 +809,32 @@ namespace Unity.PlasticSCM.Editor
                 /*threadOperationDelegate*/
                 delegate
                 {
-                    RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(wkInfo);
+                    ServerProfile serverProfile = CmConnection.Get().
+                        GetProfileManager().GetProfileForServer(repSpec.Server);
 
-                    ServerProfile serverProfile =
-                        CmConnection.Get().GetProfileManager().GetProfileForServer(repSpec.Server) ??
-                        ClientConfig.Get().GetDefaultProfile();
+                    string authToken = serverProfile != null ?
+                        CmConnection.Get().
+                            BuildWebApiTokenForCloudEditionForUser(
+                                serverProfile.Server, 
+                                serverProfile.GetSEIDWorkingMode(), 
+                                serverProfile.SecurityConfig):
+                        CmConnection.Get().
+                            BuildWebApiTokenForCloudEditionForUser(
+                                repSpec.Server, 
+                                ClientConfig.Get().GetSEIDWorkingMode(), 
+                                ClientConfig.Get().GetSecurityConfig());
 
-                    string authToken = CmConnection.Get()
-                        .BuildWebApiTokenForCloudEditionForProfileAndOrg(
-                        serverProfile);
+                    if (string.IsNullOrEmpty(authToken))
+                        authToken = CmConnection.Get().
+                            BuildWebApiTokenForCloudEditionDefaultUser();
+
+                    if (string.IsNullOrEmpty(authToken))
+                    {
+                        return;
+                    }
 
                     response = WebRestApiClient.PlasticScm.IsUserAdmin(
-                        ServerOrganizationParser.GetOrganizationFromServer(repSpec.Server),                        
+                        organizationName,
                         authToken);
                 },
                 /*afterOperationDelegate*/
@@ -850,25 +845,36 @@ namespace Unity.PlasticSCM.Editor
                         ExceptionsHandler.LogException(
                             "IsUserAdmin",
                             waiter.Exception);
+
+                        OpenCloudDashboardUsersGroupsUrl(organizationName);
+                        return;
+                    }
+
+                    if (response == null)
+                    {
+                        mLog.DebugFormat(
+                            "Error checking if the user is the organization admin for {0}",
+                            organizationName);
+
+                        OpenCloudDashboardUsersGroupsUrl(organizationName);
                         return;
                     }
 
                    if (response.Error != null)
                     {
-                        Debug.LogErrorFormat(
+                        mLog.DebugFormat(
                           "Error checking if the user is the organization admin: {0}",
                           string.Format("Unable to get IsUserAdminResponse: {0} [code {1}]",
                               response.Error.Message,
                               response.Error.ErrorCode));
 
+                        OpenCloudDashboardUsersGroupsUrl(organizationName);
                         return;
                     }
                   
                     if (response.IsCurrentUserAdmin)
                     {
-                        Application.OpenURL("https://www.plasticscm.com/dashboard/cloud/" +
-                            response.OrganizationName +
-                "/users-and-groups");
+                        OpenCloudDashboardUsersGroupsUrl(response.OrganizationName);
                         return;
         }
 
@@ -876,6 +882,13 @@ namespace Unity.PlasticSCM.Editor
                         PlasticLocalization.GetString(PlasticLocalization.Name.InviteMembersTitle),
                         PlasticLocalization.GetString(PlasticLocalization.Name.InviteMembersMessage));
                 });
+        }
+
+        static void OpenCloudDashboardUsersGroupsUrl(string organization)
+        {
+            Application.OpenURL("https://www.plasticscm.com/dashboard/cloud/" +
+                organization +
+                "/users-and-groups");
         }
 
         static void TrySimplifiedUIButton_Clicked(object obj)
@@ -1103,10 +1116,6 @@ namespace Unity.PlasticSCM.Editor
         bool mIsGluonMode;
         bool mDisableCollabIfEnabledWhenLoaded;
         AssetOperations mAssetOperations;
-
-        PlasticNotification.Status mNotificationStatus = PlasticNotification.Status.None;
-        static Texture mPlasticWindowIcon;
-        static bool mIsWindowIconAvailable;
 
         static readonly ILog mLog = LogManager.GetLogger("PlasticWindow");
     }

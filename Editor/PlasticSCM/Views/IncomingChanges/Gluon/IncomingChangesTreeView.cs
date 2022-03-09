@@ -7,6 +7,7 @@ using UnityEngine;
 
 using Codice.CM.Common;
 using Codice.Client.Common;
+using PlasticGui;
 using PlasticGui.Gluon.WorkspaceWindow.Views.IncomingChanges;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Tree;
@@ -421,7 +422,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             bool isFocused)
         {
             Texture icon = GetCategoryIcon(item.Category.CategoryType);
-            string label = item.Category.GetHeaderText();
+            string label = item.Category.CategoryName;
+            string infoLabel = item.Category.GetCheckedChangesText();
 
             bool wasChecked = item.Category.IsChecked();
             bool hadCheckedChildren = item.Category.GetCheckedChangesCount() > 0;
@@ -435,7 +437,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 item.depth,
                 icon,
                 label,
-                null,
+                infoLabel,
                 isSelected,
                 isFocused,
                 wasChecked,

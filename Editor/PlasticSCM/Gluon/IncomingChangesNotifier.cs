@@ -25,10 +25,9 @@ namespace Unity.PlasticSCM.Editor.Gluon
 
         void CheckIncomingChanges.IUpdateIncomingChanges.Hide()
         {
-            mPlasticWindow.SetNotificationStatus(
-                PlasticNotification.Status.None,
-                string.Empty,
-                string.Empty);
+            PlasticPlugin.SetNotificationStatus(
+                mPlasticWindow,
+                PlasticNotification.Status.None);
                 
             mNotification.Clear();
 
@@ -49,10 +48,9 @@ namespace Unity.PlasticSCM.Editor.Gluon
             else if (severity == CheckIncomingChanges.Severity.Warning)
                 status = PlasticNotification.Status.Conflicts;
 
-            mPlasticWindow.SetNotificationStatus(
-                status,
-                infoText,
-                actionText);
+            PlasticPlugin.SetNotificationStatus(
+                mPlasticWindow,
+                status);
             
             UpdateData(
                 mNotification,

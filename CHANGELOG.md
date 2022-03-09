@@ -1,6 +1,28 @@
 # Changelog
 All notable changes to this package will be documented in this file.
 
+## [1.14.15] - 2022-03-09
+
+Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!
+If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
+Removing a previously added Plastic SCM Asset Store Plug-In:
+- Select the PlasticSCM folder in the Assets\Plugins folder on the Project tab, then click Edit > Delete
+- Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
+
+### Added
+- Added checkout option in scene prefab view
+
+### Changed
+- Updated file overlay icon size to adapt to project window zoom level
+- Updated the styling of number of items in a category in Gluon incoming changes view
+
+### Fixed
+- Fixed Plastic X not opening from plugin menu
+- Fixed error when trying to invite members to proect
+- Fixed editor unhandled errors being hijacked by the plugin
+- Fixed toolbar icon not displaying incoming changes notification when Plastic window is closed
+- Fixed VCCache::instance != NULL error when opening a project with Plastic window opened
+
 ## [1.14.13] - 2022-02-14
 
 Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!

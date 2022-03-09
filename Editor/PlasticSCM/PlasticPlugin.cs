@@ -1,8 +1,9 @@
+using System;
+
 using UnityEngine;
 using UnityEditor;
 
 using Codice.CM.Common;
-
 using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.AssetsOverlays;
@@ -11,12 +12,21 @@ using Unity.PlasticSCM.Editor.CollabMigration;
 using Unity.PlasticSCM.Editor.Inspector;
 using Unity.PlasticSCM.Editor.ProjectDownloader;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.SceneView;
 
 namespace Unity.PlasticSCM.Editor
 {
+    /// <summary>
+    /// The Plastic SCM plugin for Unity editor.
+    /// </summary>
     [InitializeOnLoad]
-    internal static class PlasticPlugin
+    public static class PlasticPlugin
     {
+        /// <summary>
+        /// Invoked when notification status changed.
+        /// </summary>
+        public static event Action OnNotificationUpdated = delegate { };
+
         internal static IAssetStatusCache AssetStatusCache { get; private set; }
 
         static PlasticPlugin()
@@ -28,6 +38,14 @@ namespace Unity.PlasticSCM.Editor
             CooldownWindowDelayer cooldownInitializeAction = new CooldownWindowDelayer(
                 Enable, UnityConstants.PLUGIN_DELAYED_INITIALIZE_INTERVAL);
             cooldownInitializeAction.Ping();
+        }
+
+        /// <summary>
+        /// Get the plugin icon.
+        /// </summary>
+        public static Texture GetPluginIcon()
+        {
+            return PlasticNotification.GetIcon(sNotificationStatus);
         }
 
         internal static void Enable()
@@ -69,6 +87,7 @@ namespace Unity.PlasticSCM.Editor
             AssetsProcessors.Enable();
             DrawAssetOverlay.Enable();
             DrawInspectorOperations.Enable();
+            DrawSceneOperations.Enable();
         }
 
         internal static void Disable()
@@ -84,6 +103,7 @@ namespace Unity.PlasticSCM.Editor
                 AssetMenuItems.Disable();
                 DrawAssetOverlay.Disable();
                 DrawInspectorOperations.Disable();
+                DrawSceneOperations.Disable();
             }
             finally
             {
@@ -91,6 +111,19 @@ namespace Unity.PlasticSCM.Editor
                 sIsEnabledForWorkspace = false;
             }
         }
+
+        internal static void SetNotificationStatus(
+            PlasticWindow plasticWindow,
+            PlasticNotification.Status status)
+        {
+            sNotificationStatus = status;
+
+            plasticWindow.SetupWindowTitle(status);
+
+            if (OnNotificationUpdated!=null) OnNotificationUpdated.Invoke();
+        }
+
+        static PlasticNotification.Status sNotificationStatus;
 
         static bool sIsEnabled;
         static bool sIsEnabledForWorkspace;

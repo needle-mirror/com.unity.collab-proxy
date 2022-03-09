@@ -37,14 +37,19 @@ namespace Unity.PlasticSCM.Editor.UI
         static Rect GetOverlayRectForOtherSizes(
             Rect selectionRect)
         {
-            float xOffset =  selectionRect.width - UnityConstants.OVERLAY_STATUS_ICON_SIZE;
-            float yOffset =  selectionRect.height - UnityConstants.OVERLAY_STATUS_ICON_SIZE;
+            float widthRatio = selectionRect.width / 
+                UNITY_STANDARD_ICON_SIZE;
+            float heightRatio = selectionRect.height / 
+                UNITY_STANDARD_ICON_SIZE;
 
             return new Rect(
-               selectionRect.x + xOffset,
-               selectionRect.y + yOffset,
-               UnityConstants.OVERLAY_STATUS_ICON_SIZE,
-               UnityConstants.OVERLAY_STATUS_ICON_SIZE);
+               selectionRect.x + (OFFSET_STANDARD_ICON * widthRatio) - 1f,
+               selectionRect.y + (OFFSET_STANDARD_ICON * heightRatio) - 13f,
+               UnityConstants.OVERLAY_STATUS_ICON_SIZE * widthRatio,
+               UnityConstants.OVERLAY_STATUS_ICON_SIZE * heightRatio);
         }
+
+        const float OFFSET_STANDARD_ICON = 20f;
+        const int UNITY_STANDARD_ICON_SIZE = 32;
     }
 }

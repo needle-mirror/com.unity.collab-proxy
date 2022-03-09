@@ -1,15 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Linq;
+
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
+
+using Codice.CM.Common;
 using PlasticGui;
 using Unity.PlasticSCM.Editor;
-using System.Linq;
-using Codice.CM.Common;
-using UnityEngine.UIElements;
 using Unity.PlasticSCM.Editor.UI.UIElements;
-using UnityEditor.UIElements;
 using Unity.PlasticSCM.Editor.Inspector;
+using Unity.PlasticSCM.Editor.SceneView;
 
 internal class TurnOffPlasticWindow : EditorWindow
 {
@@ -111,6 +112,7 @@ internal class TurnOffPlasticWindow : EditorWindow
                        PlasticApp.PlasticAPI);
             Plastic.API.RemoveWorkspace(workspaceInfo);
             DrawInspectorOperations.Disable();
+            DrawSceneOperations.Disable();
             mProgress = 4;
             return;
         }

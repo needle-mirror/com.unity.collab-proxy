@@ -33,7 +33,13 @@ namespace Unity.PlasticSCM.Editor.Tool
             }
 
             if (PlatformIdentifier.IsMac())
-                return GetExistingDir(ToolConstants.MACOS_BINDIR);
+            {
+                string path = GetToolCommand(Plastic.NEW_GUI_MACOS);
+                if (path != null)
+                    return GetExistingDir(ToolConstants.NEW_MACOS_BINDIR);
+               
+                return GetExistingDir(ToolConstants.LEGACY_MACOS_BINDIR);
+            }
 
             return null;
         }
@@ -46,7 +52,13 @@ namespace Unity.PlasticSCM.Editor.Tool
                     new List<String>() { GetWindowsInstallationFolder() });
 
             if (PlatformIdentifier.IsMac())
-                return GetToolCommand(Plastic.GUI_MACOS);
+            {
+                string path = GetToolCommand(Plastic.NEW_GUI_MACOS);
+                if(path != null)
+                    return path;
+
+                return GetToolCommand(Plastic.LEGACY_GUI_MACOS);
+            }
 
             return null;
         }
@@ -59,7 +71,13 @@ namespace Unity.PlasticSCM.Editor.Tool
                     new List<String>() { GetWindowsInstallationFolder() });
 
             if (PlatformIdentifier.IsMac())
-                return GetToolCommand(Gluon.GUI_MACOS);
+            {
+                string path = GetToolCommand(Gluon.NEW_GUI_MACOS);
+                if (path != null)
+                    return path;
+
+                return GetToolCommand(Gluon.LEGACY_GUI_MACOS);
+            }
 
             return null;
         }
@@ -89,13 +107,15 @@ namespace Unity.PlasticSCM.Editor.Tool
         class Plastic
         {
             internal const string GUI_WINDOWS = "plastic.exe";
-            internal const string GUI_MACOS = "/Applications/PlasticSCM.app/Contents/MacOS/PlasticSCM";
+            internal const string LEGACY_GUI_MACOS = "/Applications/PlasticSCM.app/Contents/MacOS/PlasticSCM";
+            internal const string NEW_GUI_MACOS = "/Applications/PlasticSCM.app/Contents/MacOS/macplasticx";
         }
 
         class Gluon
         {
             internal const string GUI_WINDOWS = "gluon.exe";
-            internal const string GUI_MACOS = "/Applications/Gluon.app/Contents/MacOS/Gluon";
+            internal const string LEGACY_GUI_MACOS = "/Applications/Gluon.app/Contents/MacOS/Gluon";
+            internal const string NEW_GUI_MACOS = "/Applications/PlasticSCM.app/Contents/MacOS/macgluonx";
         }
     }
 }

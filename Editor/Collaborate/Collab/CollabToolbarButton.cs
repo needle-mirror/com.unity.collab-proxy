@@ -56,7 +56,7 @@ namespace UnityEditor
                             m_CollabIcons.Add(this, EditorGUIUtility.TrTextContentWithIcon(
                                 "Plastic SCM", 
                                 m_toolTip,
-                                PlasticWindow.GetWindowIcon()));
+                                PlasticPlugin.GetPluginIcon()));
                         }
                         else
                         {
@@ -128,7 +128,7 @@ namespace UnityEditor
             Collab.instance.StateChanged += OnCollabStateChanged;
             UnityConnect.instance.StateChanged += OnUnityConnectStateChanged;
             UnityConnect.instance.UserStateChanged += OnUnityConnectUserStateChanged;
-            PlasticWindow.OnNotificationUpdated += OnPlasticNotificationUpdated;
+            PlasticPlugin.OnNotificationUpdated += OnPlasticNotificationUpdated;
         }
 
         void OnUnityConnectUserStateChanged(UserInfo state)
@@ -194,7 +194,7 @@ namespace UnityEditor
                 if (m_CollabToolbarState == CollabToolbarState.Plastic)
                 {
                     GUIContent content = currentCollabContent;
-                    content.image = PlasticWindow.GetWindowIcon();
+                    content.image = PlasticPlugin.GetPluginIcon();
 
                     Width = kPlasticButtonWidth;
                     if (GUI.Button(rect, content, plasticButtonStyle))
@@ -333,7 +333,7 @@ namespace UnityEditor
             Collab.instance.StateChanged -= OnCollabStateChanged;
             UnityConnect.instance.StateChanged -= OnUnityConnectStateChanged;
             UnityConnect.instance.UserStateChanged -= OnUnityConnectUserStateChanged;
-            PlasticWindow.OnNotificationUpdated -= OnPlasticNotificationUpdated;
+            PlasticPlugin.OnNotificationUpdated -= OnPlasticNotificationUpdated;
 
             if (m_CollabButton != null)
                 m_CollabButton.Clear();

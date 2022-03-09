@@ -364,6 +364,12 @@ GUID
 == ItemsSelectedPlural ==
 {0}/{1}개 항목 선택됨
 
+== ItemsSelectedForGluonSingular ==
+{0}/1개 항목
+
+== ItemsSelectedForGluonPlural ==
+{0}/{1}개 항목
+
 == ChangedItemsCategory ==
 변경된 항목
 
@@ -5712,12 +5718,6 @@ Xlink 파일에 대한 검토 코멘트가 아직 지원되지 않습니다
 == MergeFileChangesInConflictForIncomingViewCategory ==
 변경사항과 충돌하는 다운로드할 파일
 
-== MergeFileChangesInConflictForGluonSingular ==
-변경사항과 충돌하는 다운로드할 파일({0}/1개 항목)
-
-== MergeFileChangesInConflictForGluonPlural ==
-변경사항과 충돌하는 다운로드할 파일({0}/{1}개 항목)
-
 == MergeFileChangesInConflictRemark ==
 소스 기여자와 대상 기여자 모두의 변경사항
 
@@ -5730,20 +5730,8 @@ Xlink 파일에 대한 검토 코멘트가 아직 지원되지 않습니다
 == MergeChangesMadeInSourceOfMergeForIncomingViewCategory ==
 업데이트가 필요한 파일
 
-== MergeChangesMadeInSourceOfMergeForGluonSingular ==
-업데이트가 필요한 파일({0}/1개 항목)
-
-== MergeChangesMadeInSourceOfMergeForGluonPlural ==
-업데이트가 필요한 파일({0}/{1}개 항목)
-
 == MergeMovesToApplyCategory ==
 적용할 이동
-
-== MergeMovesToApplyForGluonSingular ==
-적용할 이동({0}/1개 항목)
-
-== MergeMovesToApplyForGluonPlural ==
-적용할 이동({0}/{1}개 항목)
 
 == MergeMovesToApplyRemark ==
 소스에서 {0}(으)로 이동됨
@@ -5754,12 +5742,6 @@ Xlink 파일에 대한 검토 코멘트가 아직 지원되지 않습니다
 == MergeDeletesToApplyCategory ==
 적용할 삭제
 
-== MergeDeletesToApplyForGluonSingular ==
-적용할 삭제({0}/1개 항목)
-
-== MergeDeletesToApplyForGluonPlural ==
-적용할 삭제({0}/{1}개 항목)
-
 == MergeDeletesToApplyRemark ==
 소스에서 삭제됨
 
@@ -5768,12 +5750,6 @@ Xlink 파일에 대한 검토 코멘트가 아직 지원되지 않습니다
 
 == MergeNewItemsToDownloadCategory ==
 다운로드할 새 항목
-
-== MergeNewItemsToDownloadForGluonSingular ==
-다운로드할 새 항목({0}/1개 항목)
-
-== MergeNewItemsToDownloadForGluonPlural ==
-다운로드할 새 항목({0}/{1}개 항목)
 
 == MergeNewItemsToDownloadRemark ==
 소스에서 추가됨
