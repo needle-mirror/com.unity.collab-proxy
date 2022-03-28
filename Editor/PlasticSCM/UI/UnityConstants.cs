@@ -82,18 +82,18 @@ namespace Unity.PlasticSCM.Editor.UI
         
         internal const double NOTIFICATION_CLEAR_INTERVAL = 5;
 
-        internal const string PENDING_CHANGES_TABLE_SETTINGS_NAME = "{0}_PendingChangesTreeV2_{1}";
-        internal const string GLUON_INCOMING_CHANGES_TABLE_SETTINGS_NAME = "{0}_GluonIncomingChangesTree_{1}";
-        internal const string GLUON_INCOMING_ERRORS_TABLE_SETTINGS_NAME = "{0}_GluonIncomingErrorsList_{1}";
-        internal const string GLUON_UPDATE_REPORT_TABLE_SETTINGS_NAME = "{0}_GluonUpdateReportList_{1}";
-        internal const string DEVELOPER_INCOMING_CHANGES_TABLE_SETTINGS_NAME = "{0}_DeveloperIncomingChangesTreeV2_{1}";
-        internal const string DEVELOPER_UPDATE_REPORT_TABLE_SETTINGS_NAME = "{0}_DeveloperUpdateReportList_{1}";
-        internal const string REPOSITORIES_TABLE_SETTINGS_NAME = "{0}_RepositoriesList_{1}";
-        internal const string CHANGESETS_TABLE_SETTINGS_NAME = "{0}_ChangesetsListV2_{1}";
+        internal const string PENDING_CHANGES_TABLE_SETTINGS_NAME = "{0}_PendingChangesTreeV3_{1}";
+        internal const string GLUON_INCOMING_CHANGES_TABLE_SETTINGS_NAME = "{0}_GluonIncomingChangesTreeV2_{1}";
+        internal const string GLUON_INCOMING_ERRORS_TABLE_SETTINGS_NAME = "{0}_GluonIncomingErrorsListV2_{1}";
+        internal const string GLUON_UPDATE_REPORT_TABLE_SETTINGS_NAME = "{0}_GluonUpdateReportListV2_{1}";
+        internal const string DEVELOPER_INCOMING_CHANGES_TABLE_SETTINGS_NAME = "{0}_DeveloperIncomingChangesTreeV3_{1}";
+        internal const string DEVELOPER_UPDATE_REPORT_TABLE_SETTINGS_NAME = "{0}_DeveloperUpdateReportListV2_{1}";
+        internal const string REPOSITORIES_TABLE_SETTINGS_NAME = "{0}_RepositoriesListV2_{1}";
+        internal const string CHANGESETS_TABLE_SETTINGS_NAME = "{0}_ChangesetsListV3_{1}";
         internal const string CHANGESETS_DATE_FILTER_SETTING_NAME = "{0}_ChangesetsDateFilter_{1}";
         internal const string CHANGESETS_SHOW_CHANGES_SETTING_NAME = "{0}_ShowChanges_{1}";
-        internal const string HISTORY_TABLE_SETTINGS_NAME = "{0}_HistoryList_{1}";
-        internal const string BRANCHES_TABLE_SETTINGS_NAME = "{0}_BranchesList_{1}";
+        internal const string HISTORY_TABLE_SETTINGS_NAME = "{0}_HistoryListV2_{1}";
+        internal const string BRANCHES_TABLE_SETTINGS_NAME = "{0}_BranchesListV2_{1}";
         internal const string BRANCHES_DATE_FILTER_SETTING_NAME = "{0}_BranchesDateFilter_{1}";
 
         internal const string SHOW_BRANCHES_VIEW_KEY_NAME = "showbranchesviewkey";

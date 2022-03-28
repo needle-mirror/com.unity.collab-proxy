@@ -25,6 +25,7 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 
 using IGluonUpdateReport = PlasticGui.Gluon.IUpdateReport;
+using IGluonWorkspaceStatusChangeListener = PlasticGui.Gluon.IWorkspaceStatusChangeListener;
 using GluonUpdateReportDialog = Unity.PlasticSCM.Editor.Gluon.UpdateReport.UpdateReportDialog;
 
 namespace Unity.PlasticSCM.Editor
@@ -32,7 +33,8 @@ namespace Unity.PlasticSCM.Editor
     internal class WorkspaceWindow :
         IWorkspaceWindow,
         IUpdateReport,
-        IGluonUpdateReport
+        IGluonUpdateReport,
+        IGluonWorkspaceStatusChangeListener
     {
         internal void SetUpdateNotifierForTesting(UpdateNotifier updateNotifier)
         {
@@ -137,23 +139,7 @@ namespace Unity.PlasticSCM.Editor
 
         void IWorkspaceWindow.UpdateTitle()
         {
-            WorkspaceStatusString.Data status = null;
-
-            IThreadWaiter waiter = ThreadWaiter.GetWaiter();
-            waiter.Execute(
-                /*threadOperationDelegate*/ delegate
-                {
-                    status = GetWorkspaceStatus(mWkInfo);
-                },
-                /*afterOperationDelegate*/ delegate
-                {
-                    if (waiter.Exception != null)
-                        return;
-
-                    WorkspaceStatus = status;
-
-                    RequestRepaint();
-                });
+            UpdateWorkspaceTitle();
         }
 
         bool IWorkspaceWindow.CheckOperationInProgress()
@@ -245,6 +231,32 @@ namespace Unity.PlasticSCM.Editor
         void IGluonUpdateReport.AppendReport(string updateReport)
         {
             throw new NotImplementedException();
+        }
+
+        void IGluonWorkspaceStatusChangeListener.OnWorkspaceStatusChanged()
+        {
+            UpdateWorkspaceTitle();
+        }
+
+        void UpdateWorkspaceTitle()
+        {
+            WorkspaceStatusString.Data status = null;
+
+            IThreadWaiter waiter = ThreadWaiter.GetWaiter();
+            waiter.Execute(
+                /*threadOperationDelegate*/ delegate
+                {
+                    status = GetWorkspaceStatus(mWkInfo);
+                },
+                /*afterOperationDelegate*/ delegate
+                {
+                    if (waiter.Exception != null)
+                        return;
+
+                    WorkspaceStatus = status;
+
+                    RequestRepaint();
+                });
         }
 
         static WorkspaceStatusString.Data GetWorkspaceStatus(WorkspaceInfo wkInfo)

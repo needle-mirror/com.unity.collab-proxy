@@ -3457,7 +3457,7 @@ The following rules will be removed from the configuration file. Continue?
 The following rules will be added or removed from the configuration file. Continue?
 
 == ApplyRulesToAllWorkspaceCheckButton ==
-Apply rules to all workspaces
+Apply rules to all my workspaces
 
 == ShelveWithPendingMergeLinksRequest ==
 Shelve with pending merge links
@@ -3529,6 +3529,9 @@ Server:
 
 == UndeleteButton ==
 Undelete
+
+== ShowUndeleteButton ==
+Deleted items
 
 == UndeleteButtonTooltip ==
 Use it to recover deleted files
@@ -4240,7 +4243,7 @@ Please choose one path to start working with Plastic Cloud
 Please choose any of the following options to start working with Plastic SCM
 
 == TeamEditionFirstStepsJoinExistingProjectExplanation ==
-Just select an existing repository on your Plastic SCM server and create a new workspace to download it
+Just select an existing repository on your Plastic SCM server and create a new workspace to download it.
 
 == CloudEditionFirstStepsNewCloudRepositoryExplanation ==
 To create a new Cloud Edition project, let's first create a repository in Plastic Cloud, and a local one to checkin the changes before pushing to Cloud
@@ -4294,7 +4297,7 @@ Creating repository {0}@local...
 Creating sync view...
 
 == CloudEditionFirstStepsDistributedExplanation ==
-This is the Git way of working, with a local repo and push/pull to the Cloud one
+This is the Git way of working, with a local repo and push/pull to a repo in the Cloud.
 
 == CloudRepositoryDoNotExist ==
 The repository {0} does not exist on your cloud organization
@@ -4303,7 +4306,7 @@ The repository {0} does not exist on your cloud organization
 Checking cloud repository exists...
 
 == CloudEditionFirstStepsCreateWorkspaceExplanation ==
-Just your workspace connected to the cloud repo. If you are not sure, then this is your option
+Just your workspace connected to the cloud repo. If you are not sure, then this is your option.
 
 == NoRepositoriesFound ==
 No repositories found. Check that your Plastic SCM server is running and that there are repositories on it
@@ -4330,7 +4333,7 @@ Local server detected
 Use SSL
 
 == TeamEditionFirstStepsJoinTeamExplanation ==
-To start a new project, you can create a new repository in your Plastic SCM server
+To start a new project, you can create a new repository in your Plastic SCM server.
 
 == ConfirmDeleteChangesetCaption ==
 Confirm changeset delete
@@ -6868,22 +6871,31 @@ Available
 Unavailable
 
 == PlasticOpenShortcutForWindows ==
-Ctrl+O
+Shift+Ctrl+O
 
 == PlasticOpenShortcutForMacOS ==
-Cmd+O
+Shift+Cmd+O
 
 == PlasticOpenShortcutForLinux ==
-Ctrl+O
+Shift+Ctrl+O
 
 == PlasticOpenInNewWindowShortcutForWindows ==
 Shift+O
 
 == PlasticOpenInNewWindowShortcutForMacOS ==
-Cmd+Shift+O
+Shift+O
 
 == PlasticOpenInNewWindowShortcutForLinux ==
 Shift+O
+
+== PlasticOpenInExplorerShortcutForWindows ==
+Shift+Ctrl+S
+
+== PlasticOpenInExplorerShortcutForMacOS ==
+Shift+Cmd+S
+
+== PlasticOpenInExplorerShortcutForLinux ==
+Shift+Ctrl+S
 
 == PlasticNewShortcutForWindows ==
 Ctrl+N
@@ -6967,13 +6979,13 @@ Cmd+A
 Ctrl+A
 
 == PlasticSwitchShortcutForWindows ==
-Ctrl+W
+Shift+Ctrl+W
 
 == PlasticSwitchShortcutForMacOS ==
-Cmd+W
+Shift+Cmd+W
 
 == PlasticSwitchShortcutForLinux ==
-Ctrl+W
+Shift+Ctrl+W
 
 == PlasticBranchShortcutForWindows ==
 Ctrl+B
@@ -7030,13 +7042,13 @@ Cmd+I
 Ctrl+I
 
 == PlasticCheckoutShortcutForWindows ==
-Shift+Ctrl+O
+Ctrl+O
 
 == PlasticCheckoutShortcutForMacOS ==
-Shift+Cmd+O
+Cmd+O
 
 == PlasticCheckoutShortcutForLinux ==
-Shift+Ctrl+O
+Ctrl+O
 
 == PlasticUndoShortcutForWindows ==
 Shift+Ctrl+U
@@ -7344,6 +7356,9 @@ Dark theme
 == CheckinCompleted ==
 Checkin successfully completed
 
+== UndoCompleted ==
+Undo changes successfully completed
+
 == WorkspaceUpdateCompleted ==
 Workspace successfully updated
 
@@ -7505,3 +7520,39 @@ You cannot invite members to the organization because you are not the administra
 
 == CalculatingViewLayout ==
 Calculating view layout
+
+== SwitchToLegacyGui ==
+Switch to Legacy GUI
+
+== SwitchToNewGuiFirstText ==
+Try the new GUI!
+
+== SwitchToNewGuiSecondText ==
+(You can switch back anytime)
+
+== WelcomeToNewGuiWindows ==
+Welcome to the new Plastic SCM GUI (alpha)!
+
+== WelcomeToNewGui ==
+Welcome to the new Plastic SCM GUI!
+
+== WelcomeToNewGuiFirstText ==
+You're invited to check out the new Plastic SCM GUI - a sneak peek at the work we've been doing to continuously improve the Plastic experience for all users, regardless of experience level.
+
+== WelcomeToNewGuiSecondText ==
+This release is cross-platform, includes a dark theme and provides better syntax highlighting. Many more improvements are coming soon, including Gluon support! Try out the new experience and switch back at any time. Let us know what you think!
+
+== WelcomeToNewGuiSecondTextWindows ==
+This alpha release is cross-platform, includes a dark theme and provides better syntax highlighting. Many more improvements are coming soon, including Gluon support! Try out the new experience and switch back at any time. Let us know what you think!
+
+== GetStartedButton ==
+Let's get started!
+
+== SwitchToLegacyGuiHelp ==
+You can switch back to the "legacy" GUI here
+
+== GoBackToWarning ==
+Are you sure you want to revert to this changeset?
+
+== ChangesetMenuItemGoBackTo ==
+Go back to changeset

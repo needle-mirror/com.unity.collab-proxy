@@ -104,7 +104,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     (ChangeCategoryTreeViewItem)args.item;
 
                 CategoryTreeViewItemGUI(
-                    args.rowRect, rowHeight,
+                    args.rowRect,
                     categoryItem,
                     GetSolvedChildrenCount(categoryItem.Category, mSolvedFileConflicts),
                     args.selected,
@@ -355,13 +355,11 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
         static void CategoryTreeViewItemGUI(
             Rect rowRect,
-            float rowHeight,
             ChangeCategoryTreeViewItem item,
             int solvedChildrenCount,
             bool isSelected,
             bool isFocused)
         {
-            Texture icon = GetCategoryIcon(item.Category.CategoryType);
             string label = item.Category.GetCategoryName();
             string infoLabel = item.Category.GetChildrenCountText();
 
@@ -372,9 +370,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
             DrawTreeViewItem.ForCategoryItem(
                 rowRect,
-                rowHeight,
                 item.depth,
-                icon,
                 label,
                 infoLabel,
                 isSelected,
@@ -478,27 +474,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
             DrawTreeViewItem.ForSecondaryLabel(
                 rect, label, isSelected, isFocused, isCurrentConflict);
-        }
-
-        static Texture GetCategoryIcon(
-            MergeChangesCategory.Type categoryType)
-        {
-            switch (categoryType)
-            {
-                case MergeChangesCategory.Type.DirectoryConflicts:
-                case MergeChangesCategory.Type.FileConflicts:
-                    return Images.GetImage(Images.Name.IconMergeConflict);
-                case MergeChangesCategory.Type.Changed:
-                    return Images.GetImage(Images.Name.IconChanged);
-                case MergeChangesCategory.Type.Moved:
-                    return Images.GetImage(Images.Name.IconMoved);
-                case MergeChangesCategory.Type.Deleted:
-                    return Images.GetImage(Images.Name.IconDeleted);
-                case MergeChangesCategory.Type.Added:
-                    return Images.GetImage(Images.Name.IconAdded);
-                default:
-                    return null;
-            }
         }
 
         static Texture GetIcon(

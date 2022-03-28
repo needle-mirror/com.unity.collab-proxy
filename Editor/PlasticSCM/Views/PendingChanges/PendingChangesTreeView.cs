@@ -505,7 +505,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             int checkedCount = 0;
             foreach (PendingChangeCategory category in categories)
             {
-                checkedCount += category.GetCheckedChangesCount();
+                checkedCount += ((ICheckablePlasticTreeCategory)category).GetCheckedChangesCount();
             }
             return checkedCount;
         }
@@ -634,18 +634,16 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             bool isSelected,
             bool isFocused)
         {
-            Texture icon = GetCategoryIcon(item.Category);
             string label = item.Category.CategoryName;
             string secondaryLabel = item.Category.GetCheckedChangesText();
 
             bool wasChecked = item.Category.IsChecked();
-            bool hadCheckedChildren = item.Category.GetCheckedChangesCount() > 0;
+            bool hadCheckedChildren = ((ICheckablePlasticTreeCategory)item.Category).GetCheckedChangesCount() > 0;
 
             bool isChecked = DrawTreeViewItem.ForCheckableCategoryItem(
                 rowRect,
                 rowHeight,
                 item.depth,
-                icon,
                 label,
                 secondaryLabel,
                 isSelected,
@@ -655,7 +653,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             if (wasChecked != isChecked)
             {
-                item.Category.UpdateCheckedState(isChecked);
+                ((ICheckablePlasticTreeCategory)item.Category).UpdateCheckedState(isChecked);
                 treeView.SelectionChanged();
             }
         }
@@ -725,7 +723,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                     GetChangesOverlayIcon.ForPendingChange(
                         changeInfo.ChangeInfo, isConflicted);
 
-                bool wasChecked = changeInfo.IsChecked();
+                bool wasChecked = ((ICheckablePlasticTreeNode)changeInfo).IsChecked();
 
                 bool isChecked = DrawTreeViewItem.ForCheckableItemCell(
                     rect, rowHeight, item.depth,
@@ -733,7 +731,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                     isSelected, isFocused, false,
                     wasChecked);
 
-                changeInfo.UpdateCheckedState(isChecked);
+                ((ICheckablePlasticTreeNode)changeInfo).UpdateCheckedState(isChecked);
 
                 if (wasChecked != isChecked)
                 {
@@ -767,19 +765,19 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             if (!selectedIds.Contains(senderTreeViewItem.id))
                 return;
 
-            bool isChecked = senderTreeViewItem.ChangeInfo.IsChecked();
+            bool isChecked = ((ICheckablePlasticTreeNode)senderTreeViewItem.ChangeInfo).IsChecked();
 
             foreach (TreeViewItem treeViewItem in treeView.FindRows(selectedIds))
             {
                 if (treeViewItem is ChangeCategoryTreeViewItem)
                 {
-                    ((ChangeCategoryTreeViewItem)treeViewItem).Category
-                        .UpdateCheckedState(isChecked);
+                    ((ICheckablePlasticTreeCategory)((ChangeCategoryTreeViewItem)treeViewItem)
+                        .Category).UpdateCheckedState(isChecked);
                     continue;
                 }
 
-                ((ChangeTreeViewItem)treeViewItem).ChangeInfo
-                    .UpdateCheckedState(isChecked);
+                ((ICheckablePlasticTreeNode)((ChangeTreeViewItem)treeViewItem)
+                    .ChangeInfo).UpdateCheckedState(isChecked);
             }
         }
 
@@ -842,23 +840,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 rootItem.children.Clear();
 
             rows.Clear();
-        }
-
-        static Texture GetCategoryIcon(PendingChangeCategory category)
-        {
-            switch (category.Type)
-            {
-                case PendingChangeCategoryType.Added:
-                    return Images.GetImage(Images.Name.IconAdded);
-                case PendingChangeCategoryType.Changed:
-                    return Images.GetImage(Images.Name.IconChanged);
-                case PendingChangeCategoryType.Deleted:
-                    return Images.GetImage(Images.Name.IconDeleted);
-                case PendingChangeCategoryType.Moved:
-                    return Images.GetImage(Images.Name.IconMoved);
-                default:
-                    return null;
-            }
         }
 
         static Texture GetIcon(PendingChangeInfo change)

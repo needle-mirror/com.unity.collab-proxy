@@ -1,6 +1,26 @@
 # Changelog
 All notable changes to this package will be documented in this file.
 
+## [1.15.16] - 2022-03-28
+
+Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!
+If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
+Removing a previously added Plastic SCM Asset Store Plug-In:
+- Select the PlasticSCM folder in the Assets\Plugins folder on the Project tab, then click Edit > Delete
+- Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
+
+### Added
+- Added "Switch to changeset" menu option in changesets view
+- Added "Go back to changeset" menu option in changesets view
+
+### Changed
+- Removed category icons from views
+- Removed "com.unity.services.core" package dependency
+
+### Fixed
+- Fixed light theme icons used in dark theme after pulling incoming changes
+- Fixed "Input string was not in a correct format" error
+
 ## [1.15.15] - 2022-03-09
 
 Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!

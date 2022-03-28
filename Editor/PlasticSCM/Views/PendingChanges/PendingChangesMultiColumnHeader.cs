@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
+using PlasticGui;
 using PlasticGui.WorkspaceWindow.PendingChanges;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Tree;
@@ -81,7 +82,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             foreach (PendingChangeCategory category in categories)
             {
-                if (category.GetCheckedChangesCount() > 0)
+                if (((ICheckablePlasticTreeCategory)category).GetCheckedChangesCount() > 0)
                     return true;
             }
 
@@ -96,7 +97,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return;
 
             foreach (PendingChangeCategory category in categories)
-                category.UpdateCheckedState(isChecked);
+                ((ICheckablePlasticTreeCategory)category).UpdateCheckedState(isChecked);
         }
 
         readonly PendingChangesTreeView mPendingChangesTreeView;

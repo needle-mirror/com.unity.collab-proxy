@@ -17,9 +17,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 
         internal static void ForCategoryItem(
             Rect rowRect,
-            float rowHeight,
             int depth,
-            Texture icon,
             string label,
             string infoLabel,
             bool isSelected,
@@ -30,7 +28,10 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             rowRect.x += indent;
             rowRect.width -= indent;
 
-            rowRect = DrawIconLeft(rowRect, rowHeight, icon, null);
+            //add a little indentation
+            rowRect.x += 5;
+            rowRect.width -= 5;
+            
             TreeView.DefaultGUI.Label(rowRect, label, isSelected, isFocused);
 
             if (!string.IsNullOrEmpty(infoLabel))
@@ -41,7 +42,6 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             Rect rowRect,
             float rowHeight,
             int depth,
-            Texture icon,
             string label,
             string infoLabel,
             bool isSelected,
@@ -65,7 +65,9 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             rowRect.x = checkRect.xMax - 4;
             rowRect.width -= checkRect.width;
 
-            rowRect = DrawIconLeft(rowRect, rowHeight, icon, null);
+            //add a little indentation
+            rowRect.x += 5;
+            rowRect.width -= 5;
           
             TreeView.DefaultGUI.Label(rowRect, label, isSelected, isFocused);
 
