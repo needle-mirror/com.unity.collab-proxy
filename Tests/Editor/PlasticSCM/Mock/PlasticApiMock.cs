@@ -868,7 +868,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
             throw new NotImplementedException();
         }
 
-        List<string> IPlasticAPI.UndoUnchanged(WorkspaceInfo wkInfo, IList paths)
+        List<string> IPlasticAPI.UndoUnchanged(WorkspaceInfo wkInfo, List<string> paths)
         {
             throw new NotImplementedException();
         }

@@ -119,7 +119,6 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             {
                 MergeCategoryTreeViewItemGUI(
                     args.rowRect,
-                    rowHeight,
                     (MergeCategoryTreeViewItem)args.item,
                     args.selected,
                     args.focused);
@@ -130,7 +129,6 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             {
                 ChangeCategoryTreeViewItemGUI(
                     args.rowRect,
-                    rowHeight,
                     (ChangeCategoryTreeViewItem)args.item,
                     args.selected,
                     args.focused);
@@ -424,20 +422,16 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         static void MergeCategoryTreeViewItemGUI(
             Rect rowRect,
-            float rowHeight,
             MergeCategoryTreeViewItem item,
             bool isSelected,
             bool isFocused)
         {
-            Texture icon = Images.GetImage(Images.Name.IconMergeCategory);
             string label = item.Category.CategoryName;
             string infoLabel = item.Category.GetChildrenCountText();
 
             DrawTreeViewItem.ForCategoryItem(
                 rowRect,
-                rowHeight,
                 item.depth,
-                icon,
                 label,
                 infoLabel,
                 isSelected,
@@ -446,20 +440,16 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         static void ChangeCategoryTreeViewItemGUI(
             Rect rowRect,
-            float rowHeight,
             ChangeCategoryTreeViewItem item,
             bool isSelected,
             bool isFocused)
         {
-            Texture icon = GetChangeCategoryIcon(item.Category);
             string label = item.Category.CategoryName;
             string infoLabel = item.Category.GetChildrenCountText();
 
             DrawTreeViewItem.ForCategoryItem(
                 rowRect,
-                rowHeight,
                 item.depth,
-                icon,
                 label,
                 infoLabel,
                 isSelected,
@@ -512,27 +502,6 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             float iconWidth = rowHeight * ((float)icon.width / icon.height);
 
             return iconWidth + contentSize.x;
-        }
-
-        static Texture GetChangeCategoryIcon(ChangeCategory category)
-        {
-            switch (category.Type)
-            {
-                case ChangeCategoryType.Merged:
-                    return Images.GetImage(Images.Name.IconMerged);
-                case ChangeCategoryType.Changed:
-                    return Images.GetImage(Images.Name.IconChanged);
-                case ChangeCategoryType.Moved:
-                    return Images.GetImage(Images.Name.IconMoved);
-                case ChangeCategoryType.Deleted:
-                    return Images.GetImage(Images.Name.IconDeleted);
-                case ChangeCategoryType.FSProtection:
-                    return Images.GetImage(Images.Name.IconFsChanged);
-                case ChangeCategoryType.Added:
-                    return Images.GetImage(Images.Name.IconAdded);
-                default:
-                    return null;
-            }
         }
 
         static Texture GetClientDiffIcon(bool isDirectory, string path)

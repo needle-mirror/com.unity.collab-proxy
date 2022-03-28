@@ -6,6 +6,7 @@ using Codice.CM.Common;
 using PlasticGui.WorkspaceWindow.QueryViews.Changesets;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.Tool;
+using Unity.PlasticSCM.Editor.UI.Progress;
 
 namespace Unity.PlasticSCM.Editor.Views.Changesets
 {
@@ -65,9 +66,20 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
             mChangesetMenuOperations.DiffSelectedChangesets();
         }
+
+        void BackToMenuItem_Click()
+        {
+            mChangesetMenuOperations.GoBackToChangeset();
+        }
+
         void DiffBranchMenuItem_Click()
         {
             mMenuOperations.DiffBranch();
+        }
+
+        void SwitchToChangesetMenuItem_Click()
+        {
+            mChangesetMenuOperations.SwitchToChangeset();
         }
 
         void UpdateMenuItems(GenericMenu menu)
@@ -90,17 +102,34 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 operations,
                 DiffSelectedChangesetsMenuItem_Click);
 
-            if (IsOnMainBranch(singleSeletedChangeset))
-                return;
+            if (!IsOnMainBranch(singleSeletedChangeset))
+            {
+                menu.AddSeparator(string.Empty);
+
+                AddDiffBranchMenuItem(
+                    mDiffBranchMenuItemContent,
+                    menu,
+                    singleSeletedChangeset,
+                    operations,
+                    DiffBranchMenuItem_Click);
+            }
 
             menu.AddSeparator(string.Empty);
 
-            AddDiffBranchMenuItem(
-               mDiffBranchMenuItemContent,
-               menu,
-               singleSeletedChangeset,
-               operations,
-               DiffBranchMenuItem_Click);
+            AddSwitchToChangesetMenuItem(
+                mSwitchToChangesetMenuItemContent,
+                menu,
+                operations,
+                SwitchToChangesetMenuItem_Click);
+
+            if (mIsGluonMode)
+                return;
+
+            AddBackToMenuItem(
+                   mGoBackToMenuItemContent,
+                   menu,
+                   operations,
+                   BackToMenuItem_Click);
         }
 
         static void AddDiffChangesetMenuItem(
@@ -151,6 +180,25 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             menu.AddDisabledItem(menuItemContent);
         }
 
+        static void AddBackToMenuItem(
+            GUIContent menuItemContent,
+            GenericMenu menu,
+            ChangesetMenuOperations operations,
+            GenericMenu.MenuFunction menuFunction)
+        {
+            if (operations.HasFlag(ChangesetMenuOperations.GoBackToChangeset))
+            {
+                menu.AddItem(
+                menuItemContent,
+                false,
+                menuFunction);
+
+                return;
+            }
+
+            menu.AddDisabledItem(menuItemContent);
+        }
+
         static void AddDiffBranchMenuItem(
             GUIContent menuItemContent,
             GenericMenu menu,
@@ -177,13 +225,37 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 menuItemContent);
         }
 
+        static void AddSwitchToChangesetMenuItem(
+            GUIContent menuItemContent,
+            GenericMenu menu,
+            ChangesetMenuOperations operations,
+            GenericMenu.MenuFunction menuFunction)
+        {
+            if (operations.HasFlag(ChangesetMenuOperations.SwitchToChangeset))
+            {
+                menu.AddItem(
+                    menuItemContent,
+                    false,
+                    menuFunction);
+
+                return;
+            }
+
+            menu.AddDisabledItem(menuItemContent);
+        }
+
         void BuildComponents()
         {
             mDiffChangesetMenuItemContent = new GUIContent();
             mDiffSelectedChangesetsMenuItemContent = new GUIContent(
                 PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetMenuItemDiffSelected));
             mDiffBranchMenuItemContent = new GUIContent();
+            mSwitchToChangesetMenuItemContent = new GUIContent(
+                PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetMenuItemSwitchToChangeset));
+            mGoBackToMenuItemContent = new GUIContent(
+                PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetMenuItemGoBackTo));
         }
+        
 
         static string GetBranchName(ChangesetExtendedInfo changesetInfo)
         {
@@ -211,6 +283,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         GUIContent mDiffChangesetMenuItemContent;
         GUIContent mDiffSelectedChangesetsMenuItemContent;
         GUIContent mDiffBranchMenuItemContent;
+        GUIContent mSwitchToChangesetMenuItemContent;
+        GUIContent mGoBackToMenuItemContent;
 
         readonly WorkspaceInfo mWkInfo;
         readonly IChangesetMenuOperations mChangesetMenuOperations;

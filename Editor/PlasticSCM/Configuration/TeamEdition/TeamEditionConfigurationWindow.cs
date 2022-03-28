@@ -57,9 +57,10 @@ namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
                 ShowNotification: ShowServerNotificationMessage,
                 DisableButtons: () => { mConnectButton.SetEnabled(false); },
                 EnableButtons: () => { mConnectButton.SetEnabled(true); },
-                UpdatePasswordEntries: (bIsPasswordRequired, seidWorkingMode) =>
+                UpdatePasswordEntries: (seidWorkingMode) =>
                 {
-                    UpdatePasswordEntries(bIsPasswordRequired);
+                    UpdatePasswordEntries(ValidateServerAndCreds.
+                        IsPasswordRequired(seidWorkingMode));
                 },
                 NotifyWorkingMode: (mode) => { mSEIDWorkingMode = mode; },
                 NotifyConnectedStatus: (b) => { });

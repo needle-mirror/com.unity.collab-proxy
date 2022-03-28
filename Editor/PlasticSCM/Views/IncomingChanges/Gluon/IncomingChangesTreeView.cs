@@ -267,7 +267,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             int checkedCount = 0;
             foreach (IncomingChangeCategory category in categories)
             {
-                checkedCount += category.GetCheckedChangesCount();
+                checkedCount += ((ICheckablePlasticTreeCategory)category).GetCheckedChangesCount();
             }
             return checkedCount;
         }
@@ -396,19 +396,19 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             if (!selectedIds.Contains(senderTreeViewItem.id))
                 return;
 
-            bool isChecked = senderTreeViewItem.ChangeInfo.IsChecked();
+            bool isChecked = ((ICheckablePlasticTreeNode)senderTreeViewItem.ChangeInfo).IsChecked();
 
             foreach (TreeViewItem treeViewItem in treeView.FindRows(selectedIds))
             {
                 if (treeViewItem is ChangeCategoryTreeViewItem)
                 {
-                    ((ChangeCategoryTreeViewItem)treeViewItem).Category
-                        .UpdateCheckedState(isChecked);
+                    ((ICheckablePlasticTreeCategory)((ChangeCategoryTreeViewItem)treeViewItem)
+                        .Category).UpdateCheckedState(isChecked);
                     continue;
                 }
 
-                ((ChangeTreeViewItem)treeViewItem).ChangeInfo
-                    .UpdateCheckedState(isChecked);
+                ((ICheckablePlasticTreeNode)((ChangeTreeViewItem)treeViewItem)
+                    .ChangeInfo).UpdateCheckedState(isChecked);
             }
         }
 
@@ -421,12 +421,11 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             bool isSelected,
             bool isFocused)
         {
-            Texture icon = GetCategoryIcon(item.Category.CategoryType);
             string label = item.Category.CategoryName;
             string infoLabel = item.Category.GetCheckedChangesText();
 
             bool wasChecked = item.Category.IsChecked();
-            bool hadCheckedChildren = item.Category.GetCheckedChangesCount() > 0;
+            bool hadCheckedChildren = ((ICheckablePlasticTreeCategory)item.Category).GetCheckedChangesCount() > 0;
 
             DefaultStyles.label = GetCategoryStyle(
                 item.Category, solvedConflictsCount, isSelected);
@@ -435,7 +434,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 rowRect,
                 rowHeight,
                 item.depth,
-                icon,
                 label,
                 infoLabel,
                 isSelected,
@@ -447,14 +445,14 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
             if (!wasChecked && isChecked)
             {
-                item.Category.UpdateCheckedState(true);
+                ((ICheckablePlasticTreeCategory)item.Category).UpdateCheckedState(true);
                 onCheckedNodeChanged();
                 return;
             }
 
             if (wasChecked && !isChecked)
             {
-                item.Category.UpdateCheckedState(false);
+                ((ICheckablePlasticTreeNode)item.Category).UpdateCheckedState(false);
                 onCheckedNodeChanged();
                 return;
             }
@@ -522,7 +520,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                     GetChangesOverlayIcon.ForGluonIncomingChange(
                         incomingChange, isSolvedConflict);
 
-                bool wasChecked = incomingChange.IsChecked();
+                bool wasChecked = ((ICheckablePlasticTreeNode)incomingChange).IsChecked();
 
                 bool isChecked = DrawTreeViewItem.ForCheckableItemCell(
                     rect, rowHeight, item.depth,
@@ -530,7 +528,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                     isSelected, isFocused, isCurrentConflict,
                     wasChecked);
 
-                incomingChange.UpdateCheckedState(isChecked);
+                ((ICheckablePlasticTreeNode)incomingChange).UpdateCheckedState(isChecked);
 
                 if (wasChecked != isChecked)
                 {
@@ -561,26 +559,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
             DrawTreeViewItem.ForSecondaryLabel(
                 rect, label, isSelected, isFocused, isCurrentConflict);
-        }
-
-        static Texture GetCategoryIcon(
-            IncomingChangeCategory.Type categoryType)
-        {
-            switch (categoryType)
-            {
-                case IncomingChangeCategory.Type.Conflicted:
-                    return Images.GetImage(Images.Name.IconMergeConflict);
-                case IncomingChangeCategory.Type.Changed:
-                    return Images.GetImage(Images.Name.IconChanged);
-                case IncomingChangeCategory.Type.Moved:
-                    return Images.GetImage(Images.Name.IconMoved);
-                case IncomingChangeCategory.Type.Deleted:
-                    return Images.GetImage(Images.Name.IconDeleted);
-                case IncomingChangeCategory.Type.Added:
-                    return Images.GetImage(Images.Name.IconAdded);
-                default:
-                    return null;
-            }
         }
 
         static Texture GetIcon(

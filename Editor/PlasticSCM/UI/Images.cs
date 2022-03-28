@@ -19,7 +19,6 @@ namespace Unity.PlasticSCM.Editor.UI
             IconPlastic,
             IconCloseButton,
             IconPressedCloseButton,
-            IconAdded,
             IconAddedLocal,
             IconAddedOverlay,
             IconPrivateOverlay,
@@ -28,7 +27,6 @@ namespace Unity.PlasticSCM.Editor.UI
             IconDeletedLocalOverlay,
             IconDeletedRemote,
             IconDeletedRemoteOverlay,
-            IconChanged,
             IconOutOfSync,
             IconOutOfSyncOverlay,
             IconMoved,
@@ -36,14 +34,10 @@ namespace Unity.PlasticSCM.Editor.UI
             Ignored,
             IgnoredOverlay,
             IconConflicted,
-            IconMergeConflict,
             IconConflictedOverlay,
             IconConflictResolvedOverlay,
             IconLockedLocalOverlay,
             IconLockedRemoteOverlay,
-            IconMerged,
-            IconFsChanged,
-            IconMergeCategory,
             XLink,
             Ok,
             SecondaryTabClose,
@@ -469,7 +463,11 @@ namespace Unity.PlasticSCM.Editor.UI
             Texture2D result;
 
             if (mImagesByPathCache.TryGetValue(path, out result))
-                return result;
+            {
+                if (result != null)
+                    return result;
+                mImagesByPathCache.Remove(path);
+            }
 
             byte[] fileData = File.ReadAllBytes(path);
             result = new Texture2D(1, 1);

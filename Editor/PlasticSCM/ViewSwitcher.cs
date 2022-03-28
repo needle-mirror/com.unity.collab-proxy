@@ -478,6 +478,11 @@ namespace Unity.PlasticSCM.Editor
                     mWorkspaceWindow,
                     this,
                     this,
+                    this,
+                    mViewHost,
+                    mWorkspaceWindow,
+                    mWorkspaceWindow,
+                    mDeveloperNewIncomingChangesUpdater,
                     mParentWindow,
                     mIsGluonMode);
 

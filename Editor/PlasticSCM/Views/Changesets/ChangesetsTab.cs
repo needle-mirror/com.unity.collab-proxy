@@ -10,35 +10,54 @@ using Codice.Client.Commands;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using PlasticGui;
+using PlasticGui.WorkspaceWindow;
+using PlasticGui.WorkspaceWindow.Update;
 using PlasticGui.WorkspaceWindow.QueryViews;
 using PlasticGui.WorkspaceWindow.QueryViews.Changesets;
+using GluonGui;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.Diff;
+using Unity.PlasticSCM.Editor.AssetUtils;
+
+using IGluonUpdateReport = PlasticGui.Gluon.IUpdateReport;
 
 namespace Unity.PlasticSCM.Editor.Views.Changesets
 {
-    internal class ChangesetsTab :
+    internal partial class ChangesetsTab :
         IRefreshableView,
+        IQueryRefreshableView,
         IChangesetMenuOperations,
         ChangesetsViewMenu.IMenuOperations
     {
         internal ChangesetsTab(
             WorkspaceInfo wkInfo,
-            IWorkspaceWindow workspaceWindow,
+            WorkspaceWindow workspaceWindow,
             IViewSwitcher viewSwitcher,
+            IMergeViewLauncher mergeViewLauncher,
             IHistoryViewLauncher historyViewLauncher,
+            ViewHost viewHost,
+            IUpdateReport updateReport,
+            IGluonUpdateReport gluonUpdateReport,
+            NewIncomingChangesUpdater newIncomingChangesUpdater,
             EditorWindow parentWindow,
             bool isGluonMode)
         {
             mWkInfo = wkInfo;
+            mViewHost = viewHost;
+            mWorkspaceWindow = workspaceWindow;
+            mViewSwitcher = viewSwitcher;
             mParentWindow = parentWindow;
             mIsGluonMode = isGluonMode;
+            mGluonUpdateReport = gluonUpdateReport;
 
             BuildComponents(
-                wkInfo, workspaceWindow, viewSwitcher,
-                historyViewLauncher, parentWindow);
+                wkInfo,
+                workspaceWindow,
+                viewSwitcher,
+                historyViewLauncher,
+                parentWindow);
 
             mProgressControls = new ProgressControlsForViews();
 
@@ -51,6 +70,20 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mBorderColor = EditorGUIUtility.isProSkin
                 ? (Color)new Color32(35, 35, 35, 255)
                 : (Color)new Color32(153, 153, 153, 255);
+
+            mChangesetOperations = new ChangesetOperations(
+                wkInfo,
+                workspaceWindow,
+                viewSwitcher,
+                mergeViewLauncher,
+                this,
+                ViewType.ChangesetsView,
+                mProgressControls,
+                updateReport,
+                new ContinueWithPendingChangesQuestionerBuilder(viewSwitcher, parentWindow),
+                newIncomingChangesUpdater,
+                null,
+                null);
 
             ((IRefreshableView)this).Refresh();
         }
@@ -114,11 +147,37 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             VerifyIfSearchFieldIsRecentlyFocused(mSearchField);
         }
 
+        internal void SetWorkingObjectInfo(WorkingObjectInfo homeInfo)
+        {
+            if (mIsGluonMode)
+                return;
+
+            lock (mLock)
+            {
+                mLoadedChangesetId = homeInfo.ChangesetId;
+            }
+
+            mChangesetsListView.SetLoadedChangesetId(mLoadedChangesetId);
+        }
+
         void IRefreshableView.Refresh()
         {
             string query = GetChangesetsQuery(mDateFilter);
 
-            FillChangesets(mWkInfo, query);
+            FillChangesets(
+                mWkInfo,
+                query,
+                ChangesetsSelection.GetSelectedRepObjectInfos(mChangesetsListView));
+        }
+
+        void IQueryRefreshableView.RefreshAndSelect(RepObjectInfo repObj)
+        {
+            string query = GetChangesetsQuery(mDateFilter);
+
+            FillChangesets(
+                mWkInfo,
+                query,
+                new List<RepObjectInfo> { repObj });
         }
 
         int IChangesetMenuOperations.GetSelectedChangesetsCount()
@@ -149,23 +208,14 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 mIsGluonMode);
         }
 
-        internal void SetWorkingObjectInfo(WorkingObjectInfo homeInfo)
+        void IChangesetMenuOperations.SwitchToChangeset()
         {
-            if (mIsGluonMode)
-                return;
-
-            lock(mLock)
-            {
-                mLoadedChangesetId = homeInfo.ChangesetId;
-            }
-
-            mChangesetsListView.SetLoadedChangesetId(mLoadedChangesetId);
+            SwitchToChangesetForMode(mIsGluonMode);
         }
 
         void IChangesetMenuOperations.DiffWithAnotherChangeset() { }
         void IChangesetMenuOperations.CreateBranch() { }
         void IChangesetMenuOperations.LabelChangeset() { }
-        void IChangesetMenuOperations.SwitchToChangeset() { }
         void IChangesetMenuOperations.MergeChangeset() {}
         void IChangesetMenuOperations.CherryPickChangeset() { }
         void IChangesetMenuOperations.SubtractiveChangeset() { }
@@ -177,20 +227,33 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         void IChangesetMenuOperations.BrowseRepositoryOnChangeset() { }
         void IChangesetMenuOperations.CreateCodeReview() { }
 
+        void IChangesetMenuOperations.GoBackToChangeset()
+        {
+            if (((IChangesetMenuOperations)this).GetSelectedChangesetsCount() != 1)
+                return;
+
+            ChangesetExtendedInfo targetChangesetInfo = ((ChangesetsViewMenu.IMenuOperations)this).GetSelectedChangeset();
+
+            GoBackToOperation.GoBackTo(
+                mWkInfo,
+                mViewSwitcher,
+                mWorkspaceWindow,
+                mProgressControls,
+                targetChangesetInfo,
+                RefreshAsset.UnityAssetDatabase);
+        }
+
         void SearchField_OnDownOrUpArrowKeyPressed()
         {
             mChangesetsListView.SetFocusAndEnsureSelectedItem();
         }
 
-        void FillChangesets(WorkspaceInfo wkInfo, string query)
+        void FillChangesets(WorkspaceInfo wkInfo, string query, List<RepObjectInfo> changesetsToSelect)
         {
             if (mIsRefreshing)
                 return;
 
             mIsRefreshing = true;
-
-            List<RepObjectInfo> changesetsToSelect =
-                ChangesetsSelection.GetSelectedRepObjectInfos(mChangesetsListView);
 
             int defaultRow = TableViewOperations.
                 GetFirstSelectedRow(mChangesetsListView);
@@ -482,12 +545,18 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         bool mIsSearchFieldFocused = false;
 
         ChangesetsListView mChangesetsListView;
+        ChangesetOperations mChangesetOperations;
         DiffPanel mDiffPanel;
 
         long mLoadedChangesetId = -1;
         object mLock = new object();
 
         readonly bool mIsGluonMode;
+        readonly ViewHost mViewHost;
+        readonly IGluonUpdateReport mGluonUpdateReport;
+
+        readonly WorkspaceWindow mWorkspaceWindow;
+        readonly IViewSwitcher mViewSwitcher;
 
         readonly ProgressControlsForViews mProgressControls;
         readonly EditorWindow mParentWindow;

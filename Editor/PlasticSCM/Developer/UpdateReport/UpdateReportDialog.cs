@@ -223,7 +223,7 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
             instance.mReportLines = reportLines;
             instance.mProgressControls = progressControls;
             instance.mEscapeKeyAction = instance.CloseButtonAction;
-            instance.BuildComponenets(wkInfo);
+            instance.BuildComponents(wkInfo);
             instance.SetReportLines(reportLines);
             return instance;
         }
@@ -237,7 +237,7 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
             mAreAllLinesChecked = false;
         }
 
-        void BuildComponenets(WorkspaceInfo wkInfo)
+        void BuildComponents(WorkspaceInfo wkInfo)
         {
             mErrorDetailsSplitterState = PlasticSplitterGUILayout.InitSplitterState(
                 new float[] { 0.50f, 0.50f },
