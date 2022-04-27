@@ -156,8 +156,9 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
                 if (overlayIcon == null)
                     return;
 
-                Rect overlayRect = OverlayRect.GetRightBottonRect(
-                    selectionRect);
+                Rect overlayRect = OverlayRect.GetOverlayRect(
+                    selectionRect,
+                    OVERLAY_ICON_OFFSET);
 
                 GUI.DrawTexture(
                     overlayRect, overlayIcon, ScaleMode.ScaleToFit);
@@ -223,6 +224,8 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
 
         static Action sRepaintProjectWindow;
         static bool sIsEnabled;
+
+        const float OVERLAY_ICON_OFFSET = 20f;
     }
 }
 

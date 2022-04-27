@@ -31,6 +31,11 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         IChangesetMenuOperations,
         ChangesetsViewMenu.IMenuOperations
     {
+        internal interface IGoBackToListener
+        {
+            void OnSuccessOperation();
+        }
+
         internal ChangesetsTab(
             WorkspaceInfo wkInfo,
             WorkspaceWindow workspaceWindow,
@@ -41,6 +46,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             IUpdateReport updateReport,
             IGluonUpdateReport gluonUpdateReport,
             NewIncomingChangesUpdater newIncomingChangesUpdater,
+            IGoBackToListener goBackToListener,
             EditorWindow parentWindow,
             bool isGluonMode)
         {
@@ -48,6 +54,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mViewHost = viewHost;
             mWorkspaceWindow = workspaceWindow;
             mViewSwitcher = viewSwitcher;
+            mGoBackToListener = goBackToListener;
             mParentWindow = parentWindow;
             mIsGluonMode = isGluonMode;
             mGluonUpdateReport = gluonUpdateReport;
@@ -158,6 +165,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             }
 
             mChangesetsListView.SetLoadedChangesetId(mLoadedChangesetId);
+            mChangesetsViewMenu.SetLoadedBranchId(homeInfo.BranchInfo.BranchId);
         }
 
         void IRefreshableView.Refresh()
@@ -240,7 +248,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 mWorkspaceWindow,
                 mProgressControls,
                 targetChangesetInfo,
-                RefreshAsset.UnityAssetDatabase);
+                RefreshAsset.UnityAssetDatabase,
+                mGoBackToListener.OnSuccessOperation);
         }
 
         void SearchField_OnDownOrUpArrowKeyPressed()
@@ -270,10 +279,16 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 {
                     long loadedChangesetId = GetLoadedChangesetId(
                         wkInfo, mIsGluonMode);
-                    lock(mLock)
+                    long loadedBranchId = PlasticGui.Plastic.API.GetChangesetInfoFromId(
+                        wkInfo, loadedChangesetId).BranchId;
+
+                    lock (mLock)
                     {
                         mLoadedChangesetId = loadedChangesetId;
                     }
+
+                    mChangesetsViewMenu.SetLoadedBranchId(loadedBranchId);
+
                     queryResult = new ViewQueryResult(
                         PlasticGui.Plastic.API.FindQuery(wkInfo, query));
                 },
@@ -516,10 +531,12 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 UnityConstants.CHANGESETS_TABLE_SETTINGS_NAME,
                 (int)ChangesetsListColumn.CreationDate, false);
 
+            mChangesetsViewMenu = new ChangesetsViewMenu(wkInfo, this, this, mIsGluonMode);
+
             mChangesetsListView = new ChangesetsListView(
                 headerState,
                 ChangesetsListHeaderState.GetColumnNames(),
-                new ChangesetsViewMenu(wkInfo, this, this, mIsGluonMode),
+                mChangesetsViewMenu,
                 sizeChangedAction: OnChangesetsListViewSizeChanged,
                 selectionChangedAction: OnSelectionChanged,
                 doubleClickAction: ((IChangesetMenuOperations)this).DiffChangeset);
@@ -547,6 +564,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         ChangesetsListView mChangesetsListView;
         ChangesetOperations mChangesetOperations;
         DiffPanel mDiffPanel;
+        ChangesetsViewMenu mChangesetsViewMenu;
 
         long mLoadedChangesetId = -1;
         object mLock = new object();
@@ -554,11 +572,10 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         readonly bool mIsGluonMode;
         readonly ViewHost mViewHost;
         readonly IGluonUpdateReport mGluonUpdateReport;
-
         readonly WorkspaceWindow mWorkspaceWindow;
         readonly IViewSwitcher mViewSwitcher;
-
         readonly ProgressControlsForViews mProgressControls;
+        readonly IGoBackToListener mGoBackToListener;
         readonly EditorWindow mParentWindow;
         readonly WorkspaceInfo mWkInfo;
     }

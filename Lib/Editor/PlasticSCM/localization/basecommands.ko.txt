@@ -2070,7 +2070,7 @@ ACL 내보내기 중
 == PushingAttributes ==
 속성 내보내기 중
 
-== PushingBranhces ==
+== PushingBranches ==
 브랜치 내보내기 중
 
 == PushingChangesets ==
@@ -2494,3 +2494,56 @@ Xlink 리포지토리에 병합을 계산할 조상 변경 세트가 지정되�
 
 == YesValidAnswers ==
 y;예
+
+== CmdConfigureErrorCloudEdition ==
+The 'cm configure' command cannot be run on Cloud Edition flavor of Plastic SCM
+
+== CmdConfigureErrorDvcsEdition ==
+The 'cm configure' command cannot be run on DVCS Edition flavor of Plastic SCM
+
+== CmdConfigureErrorCannotCreateDir ==
+Failed when creating a directory [{0}]:{1}
+
+== CmdConfigureErrorWrongParameters ==
+매개 변수의 숫자가 잘못되었습니다. 도움말을 확인하려면 cm configure ---help를 입력하십시오
+
+== CmdConfigureErrorReadingParameters ==
+매개 변수를 읽는 중 오류가 발생했습니다. 제공되는 매개 변수의 목록을 확인하십시오.
+
+== CmdConfigureHeader ==
+####--- 클라이언트 구성 마법사 ---####
+
+== CmdConfigureSuccess ==
+Plastic SCM 클라이언트가 올바르게 구성되었습니다.
+
+== CmdConfigureDetectedWorkingMode ==
+감지된 작업 모드: {0}
+
+== CmdConfigureDetectedWorkingModeError ==
+Plastic SCM 서버 보안 모드를 검사하는 중 오류가 발생했습니다.
+서버가 오프라인 상태거나 지정한 주소가 잘못되었을 수 있습니다.
+Plastic SCM 서버 주소를 다시 입력하시겠습니까?
+
+== CmdConfigureServerParams ==
+Plastic SCM 서버 주소/포트를 구성하십시오.
+
+== CmdConfigureServerParamsAddress ==
+Plastic SCM 서버 주소 [{0}]
+
+== CmdConfigureServerParamsPort ==
+Plastic SCM 서버 포트 [{0}]
+
+== CmdConfigureServerParamsSslPort ==
+Plastic SCM SSL 서버 포트 [{0}]
+
+== CmdConfigureServerParamsUseSsl ==
+암호화(SSL)를 사용하시겠습니까?
+
+== CmdConfigureProxyParams ==
+프록시 서버를 구성하시겠습니까?
+
+== CmdConfigureProxyParamsAddress ==
+프록시 서버 주소
+
+== CmdConfigureProxyParamsPort ==
+프록시 서버 포트

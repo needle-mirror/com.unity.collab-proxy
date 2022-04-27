@@ -575,6 +575,12 @@ El repositorio destino '{0}' ha sido creado.
 == CmUndoIncompatibleFlags ==
 Las opciones '--silent' y '--machinereadable' no son compatibles.
 
+== CmdApiPressEnterToExit ==
+API REST cliente de Plastic SCM: Pulse <ENTER> para salir.
+
+== CmdApiInvalidPort ==
+Número de puerto incorrecto: {0}
+
 == CmdArchiveErrorRestore ==
 Ha habido un error restaurando los datos archivados. Recuerde que debe ser el administrador del servidor Plastic SCM para poder restaurar datos archivados. {0}
 
@@ -2126,7 +2132,7 @@ Escribiendo ACLs
 == PushingAttributes ==
 Escribiendo atributos
 
-== PushingBranhces ==
+== PushingBranches ==
 Escribiendo ramas
 
 == PushingChangesets ==
@@ -2565,3 +2571,62 @@ s;si;sí;y;yes
 
 == LocalContentCheckedOut ==
 LocalContentCheckedOut
+
+== MovedHistDesc ==
+Movido de {0} a {1}
+
+== RemovedHistDesc ==
+Borrado {0}
+
+== CmdConfigureErrorCloudEdition ==
+El comando 'cm configure' no se puede ejecutar en la versión 'Cloud Edition' de Plastic SCM
+
+== CmdConfigureErrorDvcsEdition ==
+El comando 'cm configure' no se puede ejecutar en la versión 'DVCSEdition' de Plastic SCM
+
+== CmdConfigureErrorCannotCreateDir ==
+No se pudo crear el directorio [{0}]:{1}
+
+== CmdConfigureErrorWrongParameters ==
+El número de parámtros es incorrecto. Teclee 'cm configure --help' para obtener ayuda
+
+== CmdConfigureErrorReadingParameters ==
+Error al leer los parámetros; por favor revise la lista de parámetros indicados.
+
+== CmdConfigureHeader ==
+####--- Asistente de configuración del cliente ---####
+
+== CmdConfigureSuccess ==
+El cliente de Plastic SCM ha sido configurado correctamente.
+
+== CmdConfigureDetectedWorkingMode ==
+Modo de seguridad detectado: {0}
+
+== CmdConfigureDetectedWorkingModeError ==
+Hubo un error comprobando la configuración de seguridad del servidor Plastic SCM.
+Quizá el servidor está offline, o la dirección especificada es incorrecta.
+¿Quiere reescribir la dirección del servidor?
+
+== CmdConfigureServerParams ==
+Configure la dirección/puerto del servidor Plastic SCM:
+
+== CmdConfigureServerParamsAddress ==
+Dirección del servidor Plastic SCM [{0}]
+
+== CmdConfigureServerParamsPort ==
+Puerto del servidor Plastic SCM [{0}]
+
+== CmdConfigureServerParamsSslPort ==
+Puerto SSL del servidor Plastic SCM [{0}]
+
+== CmdConfigureServerParamsUseSsl ==
+¿Utilizar cifrado (SSL)?
+
+== CmdConfigureProxyParams ==
+Configurar un servidor proxy?
+
+== CmdConfigureProxyParamsAddress ==
+Dirección del servidor proxy
+
+== CmdConfigureProxyParamsPort ==
+Puerto del servidor proxy

@@ -16,7 +16,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges
             MergeViewTexts.ChangesToApplySummary changesSummary)
         {
             DrawItem(
-                Images.Name.IconConflicted,
+                Images.GetConflictedIcon(),
                 PlasticLocalization.Name.DirectoryConflictsTitleSingular,
                 PlasticLocalization.Name.DirectoryConflictsTitlePlural,
                 directoryConflictCount,
@@ -24,7 +24,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges
                 false);
 
             DrawItem(
-                Images.Name.IconConflicted,
+                Images.GetConflictedIcon(),
                 PlasticLocalization.Name.FileConflictsTitleSingular,
                 PlasticLocalization.Name.FileConflictsTitlePlural,
                 fileConflictCount,
@@ -32,7 +32,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges
                 false);
 
             DrawItem(
-                Images.Name.IconOutOfSync,
+                Images.GetOutOfSyncIcon(),
                 PlasticLocalization.Name.MergeChangesMadeInSourceOfMergeOverviewSingular,
                 PlasticLocalization.Name.MergeChangesMadeInSourceOfMergeOverviewPlural,
                 changesSummary.FilesToModify,
@@ -40,7 +40,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges
                 true);
 
             DrawItem(
-                Images.Name.IconAddedLocal,
+                Images.GetAddedLocalIcon(),
                 PlasticLocalization.Name.MergeNewItemsToDownloadOverviewSingular,
                 PlasticLocalization.Name.MergeNewItemsToDownloadOverviewPlural,
                 changesSummary.FilesToAdd,
@@ -48,7 +48,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges
                 true);
 
             DrawItem(
-                Images.Name.IconDeletedRemote,
+                Images.GetDeletedRemoteIcon(),
                 PlasticLocalization.Name.MergeDeletesToApplyOverviewSingular,
                 PlasticLocalization.Name.MergeDeletesToApplyOverviewPlural,
                 changesSummary.FilesToDelete,
@@ -57,7 +57,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges
         }
 
         static void DrawItem(
-            Images.Name iconName,
+            Texture2D icon,
             PlasticLocalization.Name singularLabel,
             PlasticLocalization.Name pluralLabel,
             int count,
@@ -69,7 +69,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges
 
             EditorGUILayout.BeginHorizontal();
 
-            GUIContent iconContent = new GUIContent(Images.GetImage(iconName));
+            GUIContent iconContent = new GUIContent(icon);
             GUILayout.Label(iconContent, GUILayout.Width(20f), GUILayout.Height(20f));
 
             string label = PlasticLocalization.GetString(count > 1 ? pluralLabel : singularLabel);

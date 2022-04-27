@@ -94,6 +94,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             TreeHeaderSettings.Save(
                 mIncomingChangesTreeView.multiColumnHeader.state,
                 UnityConstants.DEVELOPER_INCOMING_CHANGES_TABLE_SETTINGS_NAME);
+
+            mResolveChangeset.Clear();
         }
 
         void IIncomingChangesTab.Update()
@@ -263,7 +265,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     mResultConflicts,
                     this,
                     rootMountPoint),
-                mIncomingChangesTreeView);
+                mIncomingChangesTreeView,
+                mResolveChangeset);
 
             UpdateOverview(
                 resultConflicts,
@@ -635,7 +638,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 DrawTreeViewEmptyState.For(
                     rect,
                     PlasticLocalization.GetString(PlasticLocalization.Name.WorkspaceUpdateCompleted),
-                    Images.Name.StepOk);
+                    Images.GetStepOkIcon());
 
                 return;
             }
@@ -748,7 +751,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
         void UpdateFileConflictsTree(
             MergeChangesTree incomingChangesTree,
-            IncomingChangesTreeView incomingChangesTreeView)
+            IncomingChangesTreeView incomingChangesTreeView,
+            IResolveChangeset resolveChangeset)
         {
             UnityIncomingChangesTree unityIncomingChangesTree = null;
 
@@ -760,6 +764,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                         incomingChangesTree);
                     incomingChangesTree.ResolveUserNames(
                         new MergeChangesTree.ResolveUserName());
+                    incomingChangesTree.ResolveComments(resolveChangeset);
                 },
                 /*afterOperationDelegate*/ delegate
                 {
@@ -896,5 +901,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         readonly IViewSwitcher mSwitcher;
         readonly IWorkspaceWindow mWorkspaceWindow;
         readonly WorkspaceInfo mWkInfo;
+        readonly IResolveChangeset mResolveChangeset = new ResolveChangeset();
     }
 }

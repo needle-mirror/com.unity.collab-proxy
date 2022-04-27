@@ -282,7 +282,7 @@ Dynamic workspaces cannot be renamed.
 Invalid replication package. No valid version signature found
 
 == ErrorClientconfignotfound ==
-Plastic SCM client is not correctly configured for the current user: Client config file {0} not found. Please execute 'clconfigureclient' to perform a text mode configuration or '{1} --configure' for graphical mode.
+Plastic SCM client is not correctly configured for the current user: Client config file {0} not found. Please execute 'cm configure' to perform a text mode configuration or '{1} --configure' for graphical mode.
 
 == ErrorCreateCodeReview ==
 The code review could not be stored in the server.

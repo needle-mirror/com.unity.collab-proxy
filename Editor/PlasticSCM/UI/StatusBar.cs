@@ -44,9 +44,9 @@ namespace Unity.PlasticSCM.Editor.UI
                 UnityConstants.NOTIFICATION_CLEAR_INTERVAL);
         }
 
-        internal void Notify(string message, MessageType type, Images.Name imageName)
+        internal void Notify(string message, MessageType type, Texture2D image)
         {
-            mNotification = new Notification(message, type, imageName);
+            mNotification = new Notification(message, type, image);
             mCooldownNotificationClearAction.Ping();
         }
 
@@ -95,12 +95,11 @@ namespace Unity.PlasticSCM.Editor.UI
             IncomingChangesNotification notification,
             bool isGluonMode)
         {
-            Images.Name iconName = 
-                notification.Status == PlasticNotification.Status.Conflicts ?
-                Images.Name.IconConflicted :
-                Images.Name.IconOutOfSync;
+            Texture2D icon = notification.Status == PlasticNotification.Status.Conflicts ?
+                Images.GetConflictedIcon() :
+                Images.GetOutOfSyncIcon();
 
-            DrawIcon(iconName);
+            DrawIcon(icon);
 
             DrawNotificationLabel(notification.InfoText);
 
@@ -122,13 +121,13 @@ namespace Unity.PlasticSCM.Editor.UI
 
         static void DrawNotification(Notification notification)
         {
-            DrawIcon(notification.ImageName);
+            DrawIcon(notification.Image);
             DrawNotificationLabel(notification.Message);
         }
 
         static void DrawWorkspaceStatus(WorkspaceStatusString.Data status)
         {
-            DrawIcon(Images.Name.IconBranch);
+            DrawIcon(Images.GetBranchIcon());
 
             if (status != null)
             {
@@ -140,12 +139,11 @@ namespace Unity.PlasticSCM.Editor.UI
             }
         }
 
-        static void DrawIcon(Images.Name iconName)
+        static void DrawIcon(Texture2D icon)
         {
             GUILayout.BeginVertical();
             GUILayout.FlexibleSpace();
 
-            var icon = Images.GetImage(iconName);
             GUILayout.Label(
                 icon,
                 UnityStyles.StatusBar.Icon,
@@ -155,7 +153,7 @@ namespace Unity.PlasticSCM.Editor.UI
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
         }
-        
+
         static void DrawLabel(string label)
         {
             GUILayout.BeginVertical();
@@ -238,13 +236,13 @@ namespace Unity.PlasticSCM.Editor.UI
         {
             internal string Message { get; private set; }
             internal MessageType MessageType { get; private set; }
-            internal Images.Name ImageName { get; private set; }
+            internal Texture2D Image { get; private set; }
 
-            internal Notification(string message, MessageType messageType, Images.Name imageName)
+            internal Notification(string message, MessageType messageType, Texture2D image)
             {
                 Message = message;
                 MessageType = messageType;
-                ImageName = imageName;
+                Image = image;
             }
         }
 

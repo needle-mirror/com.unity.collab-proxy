@@ -375,10 +375,10 @@ namespace Unity.PlasticSCM.Editor.Views.History
         static Texture GetRevisionIcon(RepObjectInfo revision)
         {
             if (revision is MoveRealizationInfo)
-                return Images.GetImage(Images.Name.IconMoved);
+                return Images.GetMovedIcon();
 
             if (revision is RemovedRealizationInfo)
-                return Images.GetImage(Images.Name.IconDeleted);
+                return Images.GetDeletedIcon();
 
             return Images.GetFileIcon();
         }

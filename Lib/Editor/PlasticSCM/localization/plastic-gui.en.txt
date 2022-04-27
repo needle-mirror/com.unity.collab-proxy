@@ -778,6 +778,9 @@ Apply label to workspace content
 == LabelMenuItemSwitchToLabel ==
 Switch workspace to this label
 
+== LabelMenuItemBrowseRepositoryOnLabel ==
+Browse repository in this label
+
 == LabelMenuItemMergeFromLabel ==
 Merge from this label...
 
@@ -1559,6 +1562,21 @@ Home
 
 == GoHomeTooltip ==
 Go to working changeset
+
+== CloudAccount ==
+Cloud
+
+== OnPremAccount ==
+On-premises
+
+== CloudLocalAccount ==
+Local
+
+== AddNewAccount ==
+Add new account
+
+== ChooseAccount ==
+Choose an account
 
 == OnlyRelevantButton ==
 Only relevant
@@ -6870,6 +6888,45 @@ Available
 == Unavailable ==
 Unavailable
 
+== CheckinChangelist ==
+Checkin changelist
+
+== ShelveChangelist ==
+Shelve changelist
+
+== UndoChangesChangelist ==
+Undo changes
+
+== CreateNewChangelist ==
+Create new changelist
+
+== EditChangelist ==
+Edit
+
+== DeleteChangelist ==
+Delete changelist
+
+== CreateChangelistTitle ==
+Create new changelist
+
+== EditChangelistTitle ==
+Edit changelist
+
+== CreateChangelistExplanation ==
+Provide a name and a description to create a new changelist
+
+== EditChangelistExplanation ==
+Change the desired values, and press ok when you're ready
+
+== ChangelistNameEntry ==
+Name
+
+== ChangelistDescriptionEntry ==
+Description
+
+== ChangelistPersistentCheckBoxEntry ==
+Persistent. The changelist won't be deleted when it's empty
+
 == PlasticOpenShortcutForWindows ==
 Shift+Ctrl+O
 
@@ -6937,7 +6994,7 @@ F2
 Delete
 
 == PlasticDeleteShortcutForMacOS ==
-Cmd+Delete
+Cmd+Back
 
 == PlasticDeleteShortcutForLinux ==
 Delete
@@ -7229,6 +7286,7 @@ Cmd+F
 
 == PlasticFindNextActionShortcutForMacOS ==
 Cmd+G
+
 
 == PlasticFindPreviousActionShortcutForMacOS ==
 Shift+Cmd+G
@@ -7552,7 +7610,43 @@ Let's get started!
 You can switch back to the "legacy" GUI here
 
 == GoBackToWarning ==
-Are you sure you want to revert to this changeset?
+ Are you sure you want to go back to this changeset?
 
 == ChangesetMenuItemGoBackTo ==
 Go back to changeset
+
+== UpdateReportTitle ==
+Update report
+
+== MoveToChangelist ==
+Move to changelist
+
+== ChangelistNameEmpty ==
+Changelist name must not be empty
+
+== SignInToContinue ==
+Sign in to continue
+
+== SignInToOrganizationRequired ==
+Sign into this organization is required to view its repositories.
+
+== SignIntoServer ==
+SIGN IN
+
+== NotSignedIn ==
+You're not signed in
+
+== SessionEnded ==
+Your session probably ended because there was not activity for this account.
+
+== SignInAgain ==
+SIGN IN AGAIN
+
+== SomethingWentWrong ==
+Something went wrong
+
+== TryAgain ==
+TRY AGAIN
+
+== ConfirmGoBackToTitle ==
+Confirm Go Back

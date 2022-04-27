@@ -25,7 +25,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
         internal static void For(
             Rect rect,
             string text,
-            Images.Name iconName)
+            Texture2D icon)
         {
             GUIContent content = new GUIContent(text);
             Vector2 contentSize = GetContentSize(content);
@@ -37,7 +37,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                 contentSize,
                 (rect.width - contentSize.x) / 2,
                 rect.height / 2,
-                iconName);
+                icon);
 
             GUI.EndGroup();
         }
@@ -59,7 +59,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             Vector2 contentSize,
             float offsetX,
             float offsetY,
-            Images.Name iconName)
+            Texture2D icon)
         {
             int iconSize = UnityConstants.TREEVIEW_STATUS_ICON_SIZE;
             int padding = UnityConstants.TREEVIEW_STATUS_CONTENT_PADDING;
@@ -69,7 +69,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 
             GUI.DrawTexture(
                 new Rect(iconOffsetX, offsetY + padding, iconSize, iconSize),
-                Images.GetImage(iconName),
+                icon,
                 ScaleMode.ScaleToFit);
 
             DrawLabel(

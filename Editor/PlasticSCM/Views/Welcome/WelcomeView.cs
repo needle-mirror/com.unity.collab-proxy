@@ -214,7 +214,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             bool isStep1Completed,
             ProgressControlsForViews.Data progressData)
         {
-            Images.Name stepImage = (isStep1Completed) ? Images.Name.StepOk : Images.Name.Step1;
+            Texture2D stepImage = (isStep1Completed) ? Images.GetStepOkIcon() : Images.GetStep1Icon();
 
             string stepText = GetConfigurationStepText(progressData, isStep1Completed);
 
@@ -234,7 +234,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
 
             DoStepLabel(
                 PlasticLocalization.GetString(PlasticLocalization.Name.CreateAPlasticWorkspace),
-                Images.Name.Step2,
+                Images.GetStep2Icon(),
                 EditorStyles.label);
 
             GUILayout.EndHorizontal();
@@ -242,14 +242,14 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
 
         static void DoStepLabel(
             string text,
-            Images.Name imageName,
+            Texture2D image,
             GUIStyle style)
         {
             GUILayout.Space(STEPS_LEFT_MARGIN);
 
             GUIContent stepLabelContent = new GUIContent(
                 string.Format(" {0}", text),
-                Images.GetImage(imageName));
+                image);
 
             GUILayout.Label(
                 stepLabelContent,

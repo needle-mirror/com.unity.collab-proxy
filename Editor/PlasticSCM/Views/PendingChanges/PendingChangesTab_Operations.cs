@@ -221,8 +221,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             mStatusBar.Notify(
                 PlasticLocalization.GetString(PlasticLocalization.Name.CheckinCompleted), 
-                UnityEditor.MessageType.None, 
-                Images.Name.StepOk);
+                UnityEditor.MessageType.None,
+                Images.GetStepOkIcon());
         }
 
         void DelayedClearCheckinSuccess()

@@ -172,6 +172,8 @@ namespace Unity.PlasticSCM.Editor
 
         void OnDisable()
         {
+            // We need to disable FSWatcher because otherwise it hangs
+            // when you move the window between monitors with different scale
             MonoFileSystemWatcher.IsEnabled = false;
 
             if (mException != null)
@@ -379,14 +381,10 @@ namespace Unity.PlasticSCM.Editor
 
                 ViewHost viewHost = new ViewHost();
 
-                PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges =
-                    new PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges(mWkInfo);
-
                 mViewSwitcher = new ViewSwitcher(
                     mWkInfo,
                     viewHost,
                     mIsGluonMode,
-                    pendingChanges,
                     mDeveloperNewIncomingChangesUpdater,
                     mGluonNewIncomingChangesUpdater,
                     mIncomingChangesNotifier,
@@ -745,7 +743,7 @@ namespace Unity.PlasticSCM.Editor
 
             if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.PendingChanges))
             {
-                Texture2D icon = Images.GetImage(Images.Name.IconUndo);
+                Texture2D icon = Images.GetUndoIcon();
                 string tooltip = PlasticLocalization.GetString(
                     PlasticLocalization.Name.UndoSelectedChanges);
 
@@ -767,7 +765,7 @@ namespace Unity.PlasticSCM.Editor
             }
             else
             {
-                Texture2D icon = Images.GetImage(Images.Name.IconBranch);
+                Texture2D icon = Images.GetBranchIcon();
                 string tooltip = PlasticLocalization.GetString(PlasticLocalization.Name.Branches);
                 if (DrawLaunchButton(icon, tooltip))
                 {

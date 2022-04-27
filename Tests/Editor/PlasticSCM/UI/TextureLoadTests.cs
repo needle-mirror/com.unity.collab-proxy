@@ -17,7 +17,7 @@ namespace Unity.PlasticSCM.Tests.Editor.UI
         {
             Profiler.BeginSample("TextureLoadTest - One load");
 
-            var icon = Images.GetImage(Images.Name.IconPlastic);
+            var icon = Images.GetPlasticIcon();
 
             Profiler.EndSample();
 
@@ -32,7 +32,7 @@ namespace Unity.PlasticSCM.Tests.Editor.UI
             Profiler.BeginSample("TextureLoadTest - One hundred loads");
 
             for (int i = 0; i < 100; i++)
-                icons[i] = Images.GetImage(Images.Name.IconPlastic);
+                icons[i] = Images.GetPlasticIcon();
 
             Profiler.EndSample();
 

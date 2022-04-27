@@ -202,14 +202,19 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             base.RowGUI(args);
         }
 
-        internal void BuildModel(
-            PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges,
-            CheckedStateManager checkedStateManager)
+        internal void BuildModel(List<ChangeInfo> changes, CheckedStateManager checkedStateManager)
         {
             mTreeViewItemIds.Clear();
 
             mPendingChangesTree.BuildChangeCategories(
-                mWkInfo.ClientPath, pendingChanges, checkedStateManager);
+                mWkInfo,
+                changes,
+                checkedStateManager);
+        }
+
+        internal ChangeInfo GetChangedForMoved(ChangeInfo moved)
+        {
+            return mPendingChangesTree.GetChangedForMoved(moved);
         }
 
         internal void Refilter()
@@ -503,9 +508,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return 0;
 
             int checkedCount = 0;
-            foreach (PendingChangeCategory category in categories)
+            foreach (ICheckablePlasticTreeCategory category in categories)
             {
-                checkedCount += ((ICheckablePlasticTreeCategory)category).GetCheckedChangesCount();
+                checkedCount += category.GetCheckedChangesCount();
             }
             return checkedCount;
         }
@@ -518,7 +523,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return 0;
 
             int totalCount = 0;
-            foreach (PendingChangeCategory category in categories)
+            foreach (ICheckablePlasticTreeCategory category in categories)
             {
                 totalCount += category.GetChildrenCount();
             }

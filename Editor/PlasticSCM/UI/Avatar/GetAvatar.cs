@@ -13,13 +13,13 @@ namespace Unity.PlasticSCM.Editor.UI.Avatar
             Action avatarLoadedAction)
         {
             if (string.IsNullOrEmpty(email))
-                return AvatarImages.GetDefaultImage();
+                return Images.GetEmptyGravatar();
 
             if (AvatarImages.HasGravatar(email))
                 return AvatarImages.GetAvatar(email);
 
             Texture2D defaultImage =
-                AvatarImages.GetDefaultImage();
+                Images.GetEmptyGravatar();
 
             AvatarImages.AddGravatar(email, defaultImage);
 

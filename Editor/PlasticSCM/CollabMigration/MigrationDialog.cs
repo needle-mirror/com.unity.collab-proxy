@@ -90,7 +90,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
 
             GUI.DrawTexture(
                 iconRect,
-                Images.GetImage(Images.Name.IconPlastic),
+                Images.GetPlasticIcon(),
                 ScaleMode.ScaleToFit);
 
             GUILayout.EndVertical();

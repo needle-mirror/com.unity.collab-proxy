@@ -282,7 +282,7 @@ dm 命令僅適用於比較檔案，不適用於比較目錄。
 複寫套件無效。找不到任何有效的版本簽名
 
 == ErrorClientconfignotfound ==
-未針對目前的使用者正確設定 Plastic SCM 用戶端: 找不到用戶端設定檔案 {0}。請執行 'clconfigureclient' 以執行文字模式設定，或針對圖形模式執行 '{1} --configure'。
+未針對目前的使用者正確設定 Plastic SCM 用戶端: 找不到用戶端設定檔案 {0}。請執行 'cm configure' 以執行文字模式設定，或針對圖形模式執行 '{1} --configure'。
 
 == ErrorCreateCodeReview ==
 無法將程式碼檢閱儲存在伺服器中。

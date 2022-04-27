@@ -44,13 +44,7 @@ namespace Unity.PlasticSCM.Editor.UI.Avatar
             if (image != null)
                 return image;
 
-            return GetDefaultImage();
-        }
-
-        internal static Texture2D GetDefaultImage()
-        {
-            return Images.GetImage(
-                Images.Name.IconEmptyGravatar);
+            return Images.GetEmptyGravatar();
         }
 
         static Texture2D GetGravatarImage(string email)

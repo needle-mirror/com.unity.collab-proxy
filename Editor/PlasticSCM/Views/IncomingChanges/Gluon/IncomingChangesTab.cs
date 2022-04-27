@@ -71,8 +71,9 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 workspaceWindow.GluonProgressOperationHandler, workspaceWindow,
                 new IncomingChangesViewLogic.ApplyWorkspaceLocalChanges(),
                 new IncomingChangesViewLogic.OutOfDateItemsOperations(),
-                new IncomingChangesViewLogic.ResolveUserName(),
                 new IncomingChangesViewLogic.GetWorkingBranch(),
+                new IncomingChangesViewLogic.ResolveUserName(),
+                new ResolveChangeset(),
                 NewChangesInWk.Build(wkInfo, new BuildWorkspacekIsRelevantNewChange()),
                 null);
 
@@ -615,7 +616,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 DrawTreeViewEmptyState.For(
                     rect,
                     PlasticLocalization.GetString(PlasticLocalization.Name.WorkspaceUpdateCompleted),
-                    Images.Name.StepOk);
+                    Images.GetStepOkIcon());
 
                 return;
             }
@@ -699,7 +700,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             mStatusBar.Notify(
                 PlasticLocalization.GetString(PlasticLocalization.Name.WorkspaceUpdateCompleted),
                 MessageType.None,
-                Images.Name.StepOk);
+                Images.GetStepOkIcon());
         }
 
         void UpdateOverview(

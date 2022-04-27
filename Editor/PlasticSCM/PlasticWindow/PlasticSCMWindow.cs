@@ -16,7 +16,7 @@ namespace Unity.PlasticSCM.Editor
             PlasticSCMWindow window = GetWindow<PlasticSCMWindow>();
             window.titleContent = new GUIContent(
                 UnityConstants.PLASTIC_WINDOW_TITLE,
-                Images.GetImage(Images.Name.IconPlasticView));
+                Images.GetPlasticViewIcon());
 
             window.minSize= new Vector2(750, 260);
 

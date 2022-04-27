@@ -76,7 +76,16 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 GUILayout.Label(
                     PlasticLocalization.GetString(PlasticLocalization.Name.BranchNameEntry),
                     GUILayout.Width(100));
+
+                GUI.SetNextControlName(NAME_FIELD_CONTROL_NAME);
                 mNewBranchName = GUILayout.TextField(mNewBranchName);
+
+                if (!mWasNameFieldFocused)
+                {
+                    EditorGUI.FocusTextInControl(NAME_FIELD_CONTROL_NAME);
+                    mWasNameFieldFocused = true;
+                }
+
                 GUILayout.Space(5);
             }
 
@@ -177,5 +186,8 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         string mComment;
         bool mSwitchToBranch;
         string mExplanation;
+
+        bool mWasNameFieldFocused;
+        const string NAME_FIELD_CONTROL_NAME = "CreateBranchNameField";
     }
 }

@@ -221,7 +221,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                     rect,
                     rowHeight,
                     0,
-                    Images.GetImage(Images.Name.IconRepository),
+                    Images.GetRepositoryIcon(),
                     null,
                     item.Repository.Name,
                     isSelected,
