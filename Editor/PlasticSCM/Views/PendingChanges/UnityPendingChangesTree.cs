@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 using Codice.Client.BaseCommands;
 using Codice.Client.Commands;
+using Codice.CM.Common;
+
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.PendingChanges;
 
@@ -17,7 +20,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         internal List<PendingChangeCategory> GetNodes()
         {
-            return mInnerTree.GetNodes();
+            return mInnerTree.GetNodes().Cast<PendingChangeCategory>().ToList();
         }
 
         internal bool HasMeta(ChangeInfo changeInfo)
@@ -42,6 +45,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             out List<ChangeInfo> dependenciesCandidates)
         {
             mInnerTree.GetCheckedChanges(
+                null,
                 bExcludePrivates,
                 out changes,
                 out dependenciesCandidates);
@@ -61,16 +65,21 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         }
 
         internal void BuildChangeCategories(
-            string wkPath,
-            PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges,
+            WorkspaceInfo wkInfo,
+            List<ChangeInfo> changes,
             CheckedStateManager checkedStateManager)
         {
-            mMetaCache.Build(pendingChanges);
+            mMetaCache.Build(changes);
 
-            mInnerTree.BuildChangeCategories(
-                wkPath,
-                pendingChanges,
+            mInnerTree = BuildPendingChangesTree.FromChanges(
+                wkInfo,
+                changes,
                 checkedStateManager);
+        }
+
+        internal ChangeInfo GetChangedForMoved(ChangeInfo moved)
+        {
+            return mInnerTree.GetChangedForMoved(moved);
         }
 
         internal void Filter(Filter filter, List<string> columnNames)
@@ -124,14 +133,11 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return result;
             }
 
-            internal void Build(PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges)
+            internal void Build(List<ChangeInfo> changes)
             {
                 mCache.Clear();
 
-                ExtractMetaToCache(pendingChanges.Added, mCache);
-                ExtractMetaToCache(pendingChanges.Deleted, mCache);
-                ExtractMetaToCache(pendingChanges.Changed, mCache);
-                ExtractMetaToCache(pendingChanges.Moved, mCache);
+                ExtractMetaToCache(changes, mCache);
             }
 
             static void ExtractMetaToCache(

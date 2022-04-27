@@ -80,9 +80,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             if (IsAllCheckedState())
                 return false;
 
-            foreach (PendingChangeCategory category in categories)
+            foreach (ICheckablePlasticTreeCategory category in categories)
             {
-                if (((ICheckablePlasticTreeCategory)category).GetCheckedChangesCount() > 0)
+                if (category.GetCheckedChangesCount() > 0)
                     return true;
             }
 
@@ -96,8 +96,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             if (categories == null)
                 return;
 
-            foreach (PendingChangeCategory category in categories)
-                ((ICheckablePlasticTreeCategory)category).UpdateCheckedState(isChecked);
+            foreach (ICheckablePlasticTreeCategory category in categories)
+                category.UpdateCheckedState(isChecked);
         }
 
         readonly PendingChangesTreeView mPendingChangesTreeView;

@@ -41,7 +41,6 @@ namespace Unity.PlasticSCM.Editor
             WorkspaceInfo wkInfo,
             ViewHost viewHost,
             bool isGluonMode,
-            PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges,
             NewIncomingChangesUpdater developerNewIncomingChangesUpdater,
             GluonNewIncomingChangesUpdater gluonNewIncomingChangesUpdater,
             IIncomingChangesNotifier incomingChangesNotifier,
@@ -52,7 +51,6 @@ namespace Unity.PlasticSCM.Editor
             mWkInfo = wkInfo;
             mViewHost = viewHost;
             mIsGluonMode = isGluonMode;
-            mPendingChanges = pendingChanges;
             mDeveloperNewIncomingChangesUpdater = developerNewIncomingChangesUpdater;
             mGluonNewIncomingChangesUpdater = gluonNewIncomingChangesUpdater;
             mIncomingChangesNotifier = incomingChangesNotifier;
@@ -406,7 +404,6 @@ namespace Unity.PlasticSCM.Editor
                     this,
                     this,
                     this,
-                    mPendingChanges,
                     mDeveloperNewIncomingChangesUpdater,
                     mGluonNewIncomingChangesUpdater,
                     mAssetStatusCache,
@@ -483,6 +480,7 @@ namespace Unity.PlasticSCM.Editor
                     mWorkspaceWindow,
                     mWorkspaceWindow,
                     mDeveloperNewIncomingChangesUpdater,
+                    PendingChangesTab,
                     mParentWindow,
                     mIsGluonMode);
 
@@ -760,7 +758,6 @@ namespace Unity.PlasticSCM.Editor
         readonly IIncomingChangesNotifier mIncomingChangesNotifier;
         readonly GluonNewIncomingChangesUpdater mGluonNewIncomingChangesUpdater;
         readonly NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
-        readonly PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges mPendingChanges;
         readonly bool mIsGluonMode;
         readonly ViewHost mViewHost;
         readonly WorkspaceInfo mWkInfo;

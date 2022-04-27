@@ -41,6 +41,11 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             menu.ShowAsContext();
         }
 
+        internal void SetLoadedBranchId(long loadedBranchId)
+        {
+            mLoadedBranchId = loadedBranchId;
+        }
+
         void DiffChangesetMenuItem_Click()
         {
             if (LaunchTool.ShowDownloadPlasticExeWindow(
@@ -84,15 +89,18 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         void UpdateMenuItems(GenericMenu menu)
         {
-            ChangesetExtendedInfo singleSeletedChangeset = mMenuOperations.GetSelectedChangeset();
+            ChangesetExtendedInfo singleSelectedChangeset = mMenuOperations.GetSelectedChangeset();
 
             ChangesetMenuOperations operations = ChangesetMenuUpdater.GetAvailableMenuOperations(
-                mChangesetMenuOperations.GetSelectedChangesetsCount());
+                mChangesetMenuOperations.GetSelectedChangesetsCount(),
+                mIsGluonMode,
+                singleSelectedChangeset.BranchId,
+                mLoadedBranchId);
 
             AddDiffChangesetMenuItem(
                 mDiffChangesetMenuItemContent,
                 menu,
-                singleSeletedChangeset,
+                singleSelectedChangeset,
                 operations,
                 DiffChangesetMenuItem_Click);
 
@@ -102,14 +110,14 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 operations,
                 DiffSelectedChangesetsMenuItem_Click);
 
-            if (!IsOnMainBranch(singleSeletedChangeset))
+            if (!IsOnMainBranch(singleSelectedChangeset))
             {
                 menu.AddSeparator(string.Empty);
 
                 AddDiffBranchMenuItem(
                     mDiffBranchMenuItemContent,
                     menu,
-                    singleSeletedChangeset,
+                    singleSelectedChangeset,
                     operations,
                     DiffBranchMenuItem_Click);
             }
@@ -290,6 +298,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         readonly IChangesetMenuOperations mChangesetMenuOperations;
         readonly IMenuOperations mMenuOperations;
         readonly bool mIsGluonMode;
+
+        long mLoadedBranchId = -1;
 
         const string MAIN_BRANCH_NAME = "/main";
     }

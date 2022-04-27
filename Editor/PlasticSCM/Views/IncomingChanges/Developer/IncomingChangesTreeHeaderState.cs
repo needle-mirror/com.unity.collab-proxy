@@ -16,7 +16,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         Author,
         Details,
         Resolution,
-        DateModififed
+        DateModified,
+        Comment
     }
 
     [Serializable]
@@ -41,6 +42,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.DetailsColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.ResolutionMethodColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.DateModifiedColumn));
+            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn));
             return result;
         }
 
@@ -58,8 +60,10 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     return PlasticLocalization.GetString(PlasticLocalization.Name.DetailsColumn);
                 case IncomingChangesTreeColumn.Resolution:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.ResolutionMethodColumn);
-                case IncomingChangesTreeColumn.DateModififed:
+                case IncomingChangesTreeColumn.DateModified:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.DateModifiedColumn);
+                case IncomingChangesTreeColumn.Comment:
+                    return PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn);
                 default:
                     return null;
             }
@@ -84,7 +88,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             result.Add((int)IncomingChangesTreeColumn.Path);
             result.Add((int)IncomingChangesTreeColumn.Size);
             result.Add((int)IncomingChangesTreeColumn.Author);
-            result.Add((int)IncomingChangesTreeColumn.DateModififed);
+            result.Add((int)IncomingChangesTreeColumn.DateModified);
+            result.Add((int)IncomingChangesTreeColumn.Comment);
             return result.ToArray();
         }
 
@@ -137,7 +142,15 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 {
                     width = 330,
                     headerContent = new GUIContent(
-                        GetColumnName(IncomingChangesTreeColumn.DateModififed)),
+                        GetColumnName(IncomingChangesTreeColumn.DateModified)),
+                    minWidth = 100,
+                    sortingArrowAlignment = TextAlignment.Right
+                },
+                new Column()
+                {
+                    width = 400,
+                    headerContent = new GUIContent(
+                        GetColumnName(IncomingChangesTreeColumn.Comment)),
                     minWidth = 100,
                     sortingArrowAlignment = TextAlignment.Right
                 }

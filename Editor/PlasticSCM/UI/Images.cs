@@ -284,6 +284,150 @@ namespace Unity.PlasticSCM.Editor.UI
             return mHoveredCloseIcon;
         }
 
+        internal static Texture2D GetUndoIcon()
+        {
+            if (mUndoIcon == null)
+                mUndoIcon = GetImage(Name.IconUndo);
+
+            return mUndoIcon;
+        }
+
+        internal static Texture2D GetPlasticIcon()
+        {
+            if (mPlasticIcon == null)
+                mPlasticIcon = GetImage(Name.IconPlastic);
+
+            return mPlasticIcon;
+        }
+
+        internal static Texture2D GetBranchIcon()
+        {
+            if (mBranchIcon == null)
+                mBranchIcon = GetImage(Name.IconBranch);
+
+            return mBranchIcon;
+        }
+
+        internal static Texture2D GetConflictedIcon()
+        {
+            if (mConflictedIcon == null)
+                mConflictedIcon = GetImage(Name.IconConflicted);
+
+            return mConflictedIcon;
+        }
+
+        internal static Texture2D GetOutOfSyncIcon()
+        {
+            if (mOutOfSyncIcon == null)
+                mOutOfSyncIcon = GetImage(Name.IconOutOfSync);
+
+            return mOutOfSyncIcon;
+        }
+
+        internal static Texture2D GetPlasticViewIcon()
+        {
+            if (mPlasticViewIcon == null)
+                mPlasticViewIcon = GetImage(Name.IconPlasticView);
+
+            return mPlasticViewIcon;
+        }
+
+        internal static Texture2D GePlasticNotifyIncomingIcon()
+        {
+            if (mPlasticNotifyIncomingIcon == null)
+                mPlasticNotifyIncomingIcon = GetImage(Name.IconPlasticNotifyIncoming);
+
+            return mPlasticNotifyIncomingIcon;
+        }
+
+        internal static Texture2D GetPlasticNotifyConflictIcon()
+        {
+            if (mPlasticNotifyConflictIcon == null)
+                mPlasticNotifyConflictIcon = GetImage(Name.IconPlasticNotifyConflict);
+
+            return mPlasticNotifyConflictIcon;
+        }
+
+        internal static Texture2D GetEmptyGravatar()
+        {
+            if (mEmptyGravatarIcon == null)
+                mEmptyGravatarIcon = Images.GetImage(Images.Name.IconEmptyGravatar);
+
+            return mEmptyGravatarIcon;
+        }
+
+        internal static Texture2D GetStepOkIcon()
+        {
+            if (mStepOkIcon == null)
+                mStepOkIcon = Images.GetImage(Images.Name.StepOk);
+
+            return mStepOkIcon;
+        }
+
+        internal static Texture2D GetStep1Icon()
+        {
+            if (mStep1Icon == null)
+                mStep1Icon = Images.GetImage(Images.Name.Step1);
+
+            return mStep1Icon;
+        }
+
+        internal static Texture2D GetStep2Icon()
+        {
+            if (mStep2Icon == null)
+                mStep2Icon = Images.GetImage(Images.Name.Step2);
+
+            return mStep2Icon;
+        }
+        
+        internal static Texture2D GetMergeLinkIcon()
+        {
+            if (mMergeLinkIcon == null)
+                mMergeLinkIcon = Images.GetImage(Images.Name.IconMergeLink);
+
+            return mMergeLinkIcon;
+        }
+
+        internal static Texture2D GetAddedLocalIcon()
+        {
+            if (mAddedLocalIcon == null)
+                mAddedLocalIcon = Images.GetImage(Images.Name.IconAddedLocal);
+
+            return mAddedLocalIcon;
+        }
+
+        internal static Texture2D GetDeletedRemoteIcon()
+        {
+            if (mDeletedRemoteIcon == null)
+                mDeletedRemoteIcon = Images.GetImage(Images.Name.IconDeletedRemote);
+
+            return mDeletedRemoteIcon;
+        }
+
+        internal static Texture2D GetDeletedIcon()
+        {
+            if (mDeletedIcon == null)
+                mDeletedIcon = Images.GetImage(Images.Name.IconDeleted);
+
+            return mDeletedIcon;
+        }
+
+        internal static Texture2D GetMovedIcon()
+        {
+            if (mMovedIcon == null)
+                mMovedIcon = Images.GetImage(Images.Name.IconMoved);
+
+            return mMovedIcon;
+        }
+
+        internal static Texture2D GetRepositoryIcon()
+        {
+            if (mRepositoryIcon == null)
+                mRepositoryIcon = Images.GetImage(Images.Name.IconRepository);
+
+            return mRepositoryIcon;
+        }
+                
         internal static Texture GetFileIcon()
         {
             if (mFileIcon == null)
@@ -417,7 +561,11 @@ namespace Unity.PlasticSCM.Editor.UI
             Texture2D result;
 
             if (mImagesFromEditorGUICache.TryGetValue(name, out result))
-                return result;
+            {
+                if (result != null)
+                    return result;
+                mImagesFromEditorGUICache.Remove(name);
+            }
 
             result = EditorGUIUtility.IconContent(name).image as Texture2D;
 
@@ -431,7 +579,11 @@ namespace Unity.PlasticSCM.Editor.UI
             Texture2D result;
 
             if (mImagesFromAssetPreviewCache.TryGetValue(type.ToString(), out result))
-                return result;
+            {
+                if (result != null)
+                    return result;
+                mImagesFromAssetPreviewCache.Remove(type.ToString());
+            }
 
             result = AssetPreview.GetMiniTypeThumbnail(type);
 
@@ -512,7 +664,29 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mTreeviewBackgroundTexture;
         static Texture2D mColumnsBackgroundTexture;
         static Texture2D mCommentBackground;
+        
+        static Texture2D mUndoIcon;
+        static Texture2D mPlasticIcon;
+        static Texture2D mBranchIcon;
+        static Texture2D mConflictedIcon;
+        static Texture2D mOutOfSyncIcon;
 
+        static Texture2D mPlasticViewIcon;
+        static Texture2D mPlasticNotifyIncomingIcon;
+        static Texture2D mPlasticNotifyConflictIcon;
+
+        static Texture2D mEmptyGravatarIcon;
+        static Texture2D mStepOkIcon;
+        static Texture2D mStep1Icon;
+        static Texture2D mStep2Icon;
+
+        static Texture2D mMergeLinkIcon;
+        static Texture2D mAddedLocalIcon;
+        static Texture2D mDeletedRemoteIcon;
+        static Texture2D mDeletedIcon;
+        static Texture2D mMovedIcon;
+        static Texture2D mRepositoryIcon;
+        
         static readonly ILog mLog = LogManager.GetLogger("Images");
     }
 }

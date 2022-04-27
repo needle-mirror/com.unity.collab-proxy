@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Codice.Client.BaseCommands;
 using Codice.Client.Commands;
 using Codice.CM.Common;
+using PlasticGui.WorkspaceWindow.PendingChanges;
 using Unity.PlasticSCM.Editor.Views.PendingChanges;
 
 namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
@@ -19,20 +20,18 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
 
             WorkspaceInfo wkInfo = new WorkspaceInfo("foo", "/foo");
 
-            PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges =
-                new PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges(wkInfo);
-
             ChangeInfo added = new ChangeInfo()
             {
                 Path = "/foo/foo.c"
             };
 
-            pendingChanges.Added.Add(added);
+            List<ChangeInfo> changes = new List<ChangeInfo>();
+            changes.Add(added);
 
             tree.BuildChangeCategories(
-                wkInfo.ClientPath,
-                pendingChanges,
-                new PlasticGui.WorkspaceWindow.PendingChanges.CheckedStateManager());
+                wkInfo,
+                changes,
+                new CheckedStateManager());
 
             Assert.IsNull(
                 tree.GetMetaChange(added),
@@ -46,9 +45,6 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
 
             WorkspaceInfo wkInfo = new WorkspaceInfo("foo", "/foo");
 
-            PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges =
-                new PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges(wkInfo);
-
             ChangeInfo added = new ChangeInfo()
             {
                 Path = "/foo/foo.c"
@@ -59,20 +55,21 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
                 Path = "/foo/foo.c.meta"
             };
 
-            pendingChanges.Added.Add(added);
-            pendingChanges.Added.Add(addedMeta);
+            List<ChangeInfo> changes = new List<ChangeInfo>();
+            changes.Add(added);
+            changes.Add(addedMeta);
 
             tree.BuildChangeCategories(
-                wkInfo.ClientPath,
-                pendingChanges,
-                new PlasticGui.WorkspaceWindow.PendingChanges.CheckedStateManager());
+                wkInfo,
+                changes,
+                new CheckedStateManager());
 
             Assert.IsTrue(
-                pendingChanges.Added.Contains(added),
+                changes.Contains(added),
                 "Pending changes should contain the change");
 
             Assert.IsFalse(
-                pendingChanges.Added.Contains(addedMeta),
+                changes.Contains(addedMeta),
                 "Pending changes should not contain the meta");
 
             Assert.AreEqual(addedMeta, tree.GetMetaChange(added));
@@ -84,9 +81,6 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
             UnityPendingChangesTree tree = new UnityPendingChangesTree();
 
             WorkspaceInfo wkInfo = new WorkspaceInfo("foo", "/foo");
-
-            PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges =
-                new PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges(wkInfo);
 
             ChangeInfo added = new ChangeInfo()
             {
@@ -100,20 +94,21 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
                 ChangeTypes = ChangeTypes.Private,
             };
 
-            pendingChanges.Added.Add(added);
-            pendingChanges.Added.Add(privateMeta);
+            List<ChangeInfo> changes = new List<ChangeInfo>();
+            changes.Add(added);
+            changes.Add(privateMeta);
 
             tree.BuildChangeCategories(
-                wkInfo.ClientPath,
-                pendingChanges,
-                new PlasticGui.WorkspaceWindow.PendingChanges.CheckedStateManager());
+                wkInfo,
+                changes,
+                new CheckedStateManager());
 
             Assert.IsTrue(
-                pendingChanges.Added.Contains(added),
+                changes.Contains(added),
                 "Pending changes should contain the change");
 
             Assert.IsTrue(
-                pendingChanges.Added.Contains(privateMeta),
+                changes.Contains(privateMeta),
                 "Pending changes should contain the meta");
         }
 
@@ -124,20 +119,18 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
 
             WorkspaceInfo wkInfo = new WorkspaceInfo("foo", "/foo");
 
-            PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges =
-                new PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges(wkInfo);
-
             ChangeInfo deleted = new ChangeInfo()
             {
                 Path = "/foo/foo.c"
             };
 
-            pendingChanges.Deleted.Add(deleted);
+            List<ChangeInfo> changes = new List<ChangeInfo>();
+            changes.Add(deleted);
 
             tree.BuildChangeCategories(
-                wkInfo.ClientPath,
-                pendingChanges,
-                new PlasticGui.WorkspaceWindow.PendingChanges.CheckedStateManager());
+                wkInfo,
+                changes,
+                new CheckedStateManager());
 
             Assert.IsNull(
                 tree.GetMetaChange(deleted),
@@ -151,9 +144,6 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
 
             WorkspaceInfo wkInfo = new WorkspaceInfo("foo", "/foo");
 
-            PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges =
-                new PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges(wkInfo);
-
             ChangeInfo deleted = new ChangeInfo()
             {
                 Path = "/foo/foo.c"
@@ -164,20 +154,21 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
                 Path = "/foo/foo.c.meta"
             };
 
-            pendingChanges.Deleted.Add(deleted);
-            pendingChanges.Deleted.Add(deletedMeta);
+            List<ChangeInfo> changes = new List<ChangeInfo>();
+            changes.Add(deleted);
+            changes.Add(deletedMeta);
 
             tree.BuildChangeCategories(
-                wkInfo.ClientPath,
-                pendingChanges,
-                new PlasticGui.WorkspaceWindow.PendingChanges.CheckedStateManager());
+                wkInfo,
+                changes,
+                new CheckedStateManager());
 
             Assert.IsTrue(
-                pendingChanges.Deleted.Contains(deleted),
+                changes.Contains(deleted),
                 "Pending changes should contain the change");
 
             Assert.IsFalse(
-                pendingChanges.Deleted.Contains(deletedMeta),
+                changes.Contains(deletedMeta),
                 "Pending changes should not contain the meta");
 
             Assert.AreEqual(deletedMeta, tree.GetMetaChange(deleted));
@@ -190,20 +181,18 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
 
             WorkspaceInfo wkInfo = new WorkspaceInfo("foo", "/foo");
 
-            PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges =
-                new PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges(wkInfo);
-
             ChangeInfo changed = new ChangeInfo()
             {
                 Path = "/foo/foo.c"
             };
 
-            pendingChanges.Changed.Add(changed);
+            List<ChangeInfo> changes = new List<ChangeInfo>();
+            changes.Add(changed);
 
             tree.BuildChangeCategories(
-                wkInfo.ClientPath,
-                pendingChanges,
-                new PlasticGui.WorkspaceWindow.PendingChanges.CheckedStateManager());
+                wkInfo,
+                changes,
+                new CheckedStateManager());
 
             Assert.IsNull(
                 tree.GetMetaChange(changed),
@@ -217,9 +206,6 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
 
             WorkspaceInfo wkInfo = new WorkspaceInfo("foo", "/foo");
 
-            PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges =
-                new PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges(wkInfo);
-
             ChangeInfo changed = new ChangeInfo()
             {
                 Path = "/foo/foo.c"
@@ -230,20 +216,21 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
                 Path = "/foo/foo.c.meta"
             };
 
-            pendingChanges.Changed.Add(changed);
-            pendingChanges.Changed.Add(changedMeta);
+            List<ChangeInfo> changes = new List<ChangeInfo>();
+            changes.Add(changed);
+            changes.Add(changedMeta);
 
             tree.BuildChangeCategories(
-                wkInfo.ClientPath,
-                pendingChanges,
-                new PlasticGui.WorkspaceWindow.PendingChanges.CheckedStateManager());
+                wkInfo,
+                changes,
+                new CheckedStateManager());
 
             Assert.IsTrue(
-                pendingChanges.Changed.Contains(changed),
+                changes.Contains(changed),
                 "Pending changes should contain the change");
 
             Assert.IsFalse(
-                pendingChanges.Changed.Contains(changedMeta),
+                changes.Contains(changedMeta),
                 "Pending changes should not contain the meta");
 
             Assert.AreEqual(changedMeta, tree.GetMetaChange(changed));
@@ -256,21 +243,19 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
 
             WorkspaceInfo wkInfo = new WorkspaceInfo("foo", "/foo");
 
-            PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges =
-                new PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges(wkInfo);
-
             ChangeInfo moved = new ChangeInfo()
             {
                 OldPath = "/foo/foo.c",
                 Path = "/foo/bar/newfoo.c",
             };
 
-            pendingChanges.Moved.Add(moved);
+            List<ChangeInfo> changes = new List<ChangeInfo>();
+            changes.Add(moved);
 
             tree.BuildChangeCategories(
-                wkInfo.ClientPath,
-                pendingChanges,
-                new PlasticGui.WorkspaceWindow.PendingChanges.CheckedStateManager());
+                wkInfo,
+                changes,
+                new CheckedStateManager());
 
             Assert.IsNull(
                 tree.GetMetaChange(moved),
@@ -284,9 +269,6 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
 
             WorkspaceInfo wkInfo = new WorkspaceInfo("foo", "/foo");
 
-            PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges =
-                new PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges(wkInfo);
-
             ChangeInfo moved = new ChangeInfo()
             {
                 OldPath = "/foo/foo.c",
@@ -299,20 +281,21 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
                 Path = "/foo/bar/newfoo.c.meta",
             };
 
-            pendingChanges.Moved.Add(moved);
-            pendingChanges.Moved.Add(movedMeta);
+            List<ChangeInfo> changes = new List<ChangeInfo>();
+            changes.Add(moved);
+            changes.Add(movedMeta);
 
             tree.BuildChangeCategories(
-                wkInfo.ClientPath,
-                pendingChanges,
-                new PlasticGui.WorkspaceWindow.PendingChanges.CheckedStateManager());
+                wkInfo,
+                changes,
+                new CheckedStateManager());
 
             Assert.IsTrue(
-                pendingChanges.Moved.Contains(moved),
+                changes.Contains(moved),
                 "Pending changes should contain the change");
 
             Assert.IsFalse(
-                pendingChanges.Moved.Contains(movedMeta),
+                changes.Contains(movedMeta),
                 "Pending changes should not contain the meta");
 
             Assert.AreEqual(movedMeta, tree.GetMetaChange(moved));
@@ -325,20 +308,18 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
 
             WorkspaceInfo wkInfo = new WorkspaceInfo("foo", "/foo");
 
-            PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges =
-                new PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges(wkInfo);
-
             ChangeInfo addedMeta = new ChangeInfo()
             {
                 Path = "/foo/foo.c.meta",
             };
 
-            pendingChanges.Added.Add(addedMeta);
+            List<ChangeInfo> changes = new List<ChangeInfo>();
+            changes.Add(addedMeta);
 
             tree.BuildChangeCategories(
-                wkInfo.ClientPath,
-                pendingChanges,
-                new PlasticGui.WorkspaceWindow.PendingChanges.CheckedStateManager());
+                wkInfo,
+                changes,
+                new CheckedStateManager());
 
             Assert.IsNull(
                 tree.GetMetaChange(addedMeta),
@@ -352,33 +333,32 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
 
             WorkspaceInfo wkInfo = new WorkspaceInfo("foo", "/foo");
 
-            PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges =
-                new PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges(wkInfo);
-
             ChangeInfo added = new ChangeInfo()
             {
                 Path = "/foo/foo.c",
+                ChangeTypes = ChangeTypes.Added
             };
 
             ChangeInfo addedMeta = new ChangeInfo()
             {
-                Path = "/foo/foo.c",
+                Path = "/foo/foo.c.meta",
+                ChangeTypes = ChangeTypes.Added
             };
 
-            pendingChanges.Added.Add(added);
-            pendingChanges.Added.Add(addedMeta);
+            List<ChangeInfo> changes = new List<ChangeInfo>();
+            changes.Add(added);
+            changes.Add(addedMeta);
 
-            PlasticGui.WorkspaceWindow.PendingChanges.CheckedStateManager checkedStateManager =
-                new PlasticGui.WorkspaceWindow.PendingChanges.CheckedStateManager();
+            CheckedStateManager checkedStateManager =
+                new CheckedStateManager();
 
             tree.BuildChangeCategories(
-                wkInfo.ClientPath,
-                pendingChanges,
+                wkInfo,
+                changes,
                 checkedStateManager);
 
             checkedStateManager.Update(added, true);
 
-            List<ChangeInfo> changes;
             List<ChangeInfo> dependenciesCandidates;
 
             tree.GetCheckedChanges(
@@ -400,46 +380,47 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
 
             WorkspaceInfo wkInfo = new WorkspaceInfo("foo", "/foo");
 
-            PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges pendingChanges =
-                new PlasticGui.WorkspaceWindow.PendingChanges.PendingChanges(wkInfo);
-
             ChangeInfo dir = new ChangeInfo()
             {
                 Path = "/foo/bar",
+                ChangeTypes = ChangeTypes.Changed
             };
 
             ChangeInfo dirMeta = new ChangeInfo()
             {
                 Path = "/foo/bar.meta",
+                ChangeTypes = ChangeTypes.Changed
             };
 
 
             ChangeInfo added = new ChangeInfo()
             {
                 Path = "/foo/bar/foo.c",
+                ChangeTypes = ChangeTypes.Added
             };
 
             ChangeInfo addedMeta = new ChangeInfo()
             {
                 Path = "/foo/bar/foo.c.meta",
+                ChangeTypes = ChangeTypes.Added
             };
 
-            pendingChanges.Added.Add(dir);
-            pendingChanges.Added.Add(dirMeta);
-            pendingChanges.Added.Add(added);
-            pendingChanges.Added.Add(addedMeta);
+            List<ChangeInfo> changes = new List<ChangeInfo>();
+            changes.Add(dir);
+            changes.Add(dirMeta);
+            changes.Add(added);
+            changes.Add(addedMeta);
 
-            PlasticGui.WorkspaceWindow.PendingChanges.CheckedStateManager checkedStateManager =
-                new PlasticGui.WorkspaceWindow.PendingChanges.CheckedStateManager();
+            CheckedStateManager checkedStateManager = new CheckedStateManager();
 
             tree.BuildChangeCategories(
-                wkInfo.ClientPath,
-                pendingChanges,
+                wkInfo,
+                changes,
                 checkedStateManager);
 
             checkedStateManager.Update(added, true);
+            checkedStateManager.Update(dir, false);
 
-            List<ChangeInfo> changes;
             List<ChangeInfo> dependenciesCandidates;
 
             tree.GetCheckedChanges(
@@ -457,7 +438,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
                 "Dependencies candidates should contains the dir");
 
             Assert.IsTrue(dependenciesCandidates.Contains(dirMeta),
-                "Dependencies candidates should contains the meta ir");
+                "Dependencies candidates should contains the meta dir");
         }
     }
 }

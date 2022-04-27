@@ -14,16 +14,13 @@ namespace Unity.PlasticSCM.Editor
 
         internal static Texture GetIcon(Status status)
         {
-            Images.Name iconName = Images.Name.IconPlasticView;
             if (status == Status.IncomingChanges)
-            {
-                iconName = Images.Name.IconPlasticNotifyIncoming;
-            }
-            else if (status == Status.Conflicts)
-            {
-                iconName = Images.Name.IconPlasticNotifyConflict;
-            }
-            return Images.GetImage(iconName);
+                return Images.GePlasticNotifyIncomingIcon();
+
+            if (status == Status.Conflicts)
+                return Images.GetPlasticNotifyConflictIcon();
+
+            return Images.GetPlasticViewIcon();
         }
     }
 }

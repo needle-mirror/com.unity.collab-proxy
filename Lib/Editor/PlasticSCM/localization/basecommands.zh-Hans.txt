@@ -2070,7 +2070,7 @@ n;否
 == PushingAttributes ==
 正在推送属性
 
-== PushingBranhces ==
+== PushingBranches ==
 正在推送分支
 
 == PushingChangesets ==
@@ -2494,3 +2494,56 @@ Xlink 缺少上级冲突
 
 == YesValidAnswers ==
 y;是
+
+== CmdConfigureErrorCloudEdition ==
+The 'cm configure' command cannot be run on Cloud Edition flavor of Plastic SCM
+
+== CmdConfigureErrorDvcsEdition ==
+The 'cm configure' command cannot be run on DVCS Edition flavor of Plastic SCM
+
+== CmdConfigureErrorCannotCreateDir ==
+Failed when creating a directory [{0}]:{1}
+
+== CmdConfigureErrorWrongParameters ==
+错误的参数编号。请键入 cm configure --help 以获取帮助
+
+== CmdConfigureErrorReadingParameters ==
+读取参数时出错；请检查提供的参数列表。
+
+== CmdConfigureHeader ==
+####--- 客户端配置向导 ---####
+
+== CmdConfigureSuccess ==
+已正确配置 Plastic SCM 客户端。
+
+== CmdConfigureDetectedWorkingMode ==
+检测到工作模式：{0}
+
+== CmdConfigureDetectedWorkingModeError ==
+检查 Plastic SCM 服务器安全模式时出错。
+可能服务器处于脱机状态，或者指定的地址错误。
+是否要重新输入 Plastic SCM 服务器地址？
+
+== CmdConfigureServerParams ==
+配置 Plastic SCM 服务器地址/端口：
+
+== CmdConfigureServerParamsAddress ==
+Plastic SCM 服务器地址 [{0}]
+
+== CmdConfigureServerParamsPort ==
+Plastic SCM 服务器端口 [{0}]
+
+== CmdConfigureServerParamsSslPort ==
+Plastic SCM SSL 服务器端口 [{0}]
+
+== CmdConfigureServerParamsUseSsl ==
+使用加密 (SSL)？
+
+== CmdConfigureProxyParams ==
+配置代理服务器？
+
+== CmdConfigureProxyParamsAddress ==
+代理服务器地址
+
+== CmdConfigureProxyParamsPort ==
+代理服务器端口

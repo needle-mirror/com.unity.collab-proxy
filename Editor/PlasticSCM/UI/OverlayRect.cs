@@ -4,14 +4,15 @@ namespace Unity.PlasticSCM.Editor.UI
 {
     internal class OverlayRect
     {
-        internal static Rect GetRightBottonRect(
-            Rect selectionRect)
+        internal static Rect GetOverlayRect(
+            Rect selectionRect,
+            float iconOffset)
         {
             if (selectionRect.width > selectionRect.height)
                 return GetOverlayRectForSmallestSize(
                     selectionRect);
 
-            return GetOverlayRectForOtherSizes(selectionRect);
+            return GetOverlayRectForOtherSizes(selectionRect, iconOffset);
         }
 
         internal static Rect GetCenteredRect(
@@ -35,7 +36,8 @@ namespace Unity.PlasticSCM.Editor.UI
         }
 
         static Rect GetOverlayRectForOtherSizes(
-            Rect selectionRect)
+            Rect selectionRect,
+            float iconOffset)
         {
             float widthRatio = selectionRect.width / 
                 UNITY_STANDARD_ICON_SIZE;
@@ -43,13 +45,12 @@ namespace Unity.PlasticSCM.Editor.UI
                 UNITY_STANDARD_ICON_SIZE;
 
             return new Rect(
-               selectionRect.x + (OFFSET_STANDARD_ICON * widthRatio) - 1f,
-               selectionRect.y + (OFFSET_STANDARD_ICON * heightRatio) - 13f,
+               selectionRect.x + (iconOffset * widthRatio) - 1f,
+               selectionRect.y + (iconOffset * heightRatio) - 13f,
                UnityConstants.OVERLAY_STATUS_ICON_SIZE * widthRatio,
                UnityConstants.OVERLAY_STATUS_ICON_SIZE * heightRatio);
         }
 
-        const float OFFSET_STANDARD_ICON = 20f;
         const int UNITY_STANDARD_ICON_SIZE = 32;
     }
 }

@@ -282,7 +282,7 @@ dm 命令仅可用于比较文件，而不能用于比较目录。
 无效的复制包。找不到有效的版本签名
 
 == ErrorClientconfignotfound ==
-对于当前用户，Plastic SCM 客户端的配置不正确：找不到配置文件 {0}。请执行 'clconfigureclient' 以执行文本模式配置，或执行 '{1} --configure' 以使用图形模式。
+对于当前用户，Plastic SCM 客户端的配置不正确：找不到配置文件 {0}。请执行 'cm configure' 以执行文本模式配置，或执行 '{1} --configure' 以使用图形模式。
 
 == ErrorCreateCodeReview ==
 无法在服务器中存储代码审查。

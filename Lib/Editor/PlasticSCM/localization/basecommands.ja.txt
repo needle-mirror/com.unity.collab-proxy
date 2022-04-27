@@ -2067,7 +2067,7 @@ ACL をプッシュ中
 == PushingAttributes ==
 属性をプッシュ中
 
-== PushingBranhces ==
+== PushingBranches ==
 ブランチをプッシュ中
 
 == PushingChangesets ==
@@ -2491,3 +2491,56 @@ Xlink されたリポジトリはマージを計算するための祖先変更�
 
 == YesValidAnswers ==
 y;はい
+
+== CmdConfigureErrorCloudEdition ==
+The 'cm configure' command cannot be run on Cloud Edition flavor of Plastic SCM
+
+== CmdConfigureErrorDvcsEdition ==
+The 'cm configure' command cannot be run on DVCS Edition flavor of Plastic SCM
+
+== CmdConfigureErrorCannotCreateDir ==
+Failed when creating a directory [{0}]:{1}
+
+== CmdConfigureErrorWrongParameters ==
+パラメーター数が間違っています。ヘルプを表示するには cm configure --help と入力します
+
+== CmdConfigureErrorReadingParameters ==
+パラメーターの読み取り中にエラーが発生しました。提供されているパラメーターのリストを確認してください。
+
+== CmdConfigureHeader ==
+####--- クライアント設定ウィザード ---####
+
+== CmdConfigureSuccess ==
+Plastic SCM クライアントは正しく設定されました。
+
+== CmdConfigureDetectedWorkingMode ==
+検出された動作モード: {0}
+
+== CmdConfigureDetectedWorkingModeError ==
+Plastic SCM サーバーのセキュリティモードの確認中にエラーが発生しました。
+サーバーがオフラインになっているか、指定されたアドレスが間違っている可能性があります。
+Plastic SCM サーバーアドレスを再入力しますか?
+
+== CmdConfigureServerParams ==
+Plastic SCM サーバーアドレス/ポートを設定:
+
+== CmdConfigureServerParamsAddress ==
+Plastic SCM サーバーアドレス [{0}]
+
+== CmdConfigureServerParamsPort ==
+Plastic SCM サーバーポート [{0}]
+
+== CmdConfigureServerParamsSslPort ==
+Plastic SCM SSL サーバーポート [{0}]
+
+== CmdConfigureServerParamsUseSsl ==
+暗号化 (SSL) を使用しますか?
+
+== CmdConfigureProxyParams ==
+プロキシサーバーを設定しますか?
+
+== CmdConfigureProxyParamsAddress ==
+プロキシサーバーアドレス
+
+== CmdConfigureProxyParamsPort ==
+プロキシサーバーポート

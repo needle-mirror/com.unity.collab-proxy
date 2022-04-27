@@ -17,6 +17,7 @@ using PlasticGui.WorkspaceWindow.History;
 
 using GluonRevertOperation = GluonGui.WorkspaceWindow.Views.Details.History.RevertOperation;
 using HistoryDescriptor = GluonGui.WorkspaceWindow.Views.Details.History.HistoryDescriptor;
+using OpenRevisionOperation = PlasticGui.WorkspaceWindow.History.OpenRevisionOperation;
 
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Tool;

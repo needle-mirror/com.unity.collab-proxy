@@ -240,9 +240,13 @@ namespace Unity.PlasticSCM.Editor
                 mMatchTextSameExtension;
 
             return new PendingChangesOptions(
-                resultWkStatusOptions, matchingOptions,
-                mAutoRefresh, false,
-                mCheckFileContent, false);
+                resultWkStatusOptions,
+                matchingOptions,
+                false,
+                mAutoRefresh,
+                false,
+                mCheckFileContent,
+                false);
         }
 
         void SetOptions(PendingChangesOptions options)

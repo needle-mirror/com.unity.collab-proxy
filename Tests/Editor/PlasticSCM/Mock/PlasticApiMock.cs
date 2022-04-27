@@ -355,7 +355,12 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
             throw new NotImplementedException();
         }
 
-        ChangesetInfo IPlasticAPI.GetChangesetInfo(RepositorySpec repSpec, Guid csetId)
+        ChangesetInfo IPlasticAPI.GetChangesetInfo(RepositorySpec repSpec, Guid csetGuid)
+        {
+            throw new NotImplementedException();
+        }
+
+        List<ChangesetInfo> IPlasticAPI.GetChangesetInfos(RepositorySpec repSpec, List<long> csetIds)
         {
             throw new NotImplementedException();
         }
@@ -566,6 +571,11 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
         }
 
         TreeContent IPlasticAPI.GetTreeContent(RepositorySpec repSpec, long changesetId)
+        {
+            throw new NotImplementedException();
+        }
+
+        TreeContent IPlasticAPI.GetTreeContent(RepositorySpec repSpec, string branchName)
         {
             throw new NotImplementedException();
         }
@@ -993,6 +1003,17 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
             throw new NotImplementedException();
         }
 
+        string IPlasticAPI.BuildWebApiTokenForCloudEditionDefaultUser()
+        {
+            throw new NotImplementedException();
+        }
+
+        string IPlasticAPI.BuildWebApiTokenForCloudEditionForUser(
+            string server, SEIDWorkingMode workingMode, string seecurityConfig)
+        {
+            throw new NotImplementedException();
+        }
+
         void IPlasticAPI.SaveToken(string server, string user, string token)
         {
             throw new NotImplementedException();
@@ -1000,6 +1021,26 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
 
         void IPlasticAPI.SaveProfile(
             string server, SEIDWorkingMode workingMode, string user, string password)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IPlasticAPI.SetDefaultProfileForServer(string server, ServerProfile profile)
+        {
+            throw new NotImplementedException();
+        }
+
+        IList<ServerProfile> IPlasticAPI.GetProfilesForServer(string server)
+        {
+            throw new NotImplementedException();
+        }
+
+        SEID IPlasticAPI.GetSeidFromProfile(ServerProfile profile)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool IPlasticAPI.IsAdmin(SEID seid, string server)
         {
             throw new NotImplementedException();
         }

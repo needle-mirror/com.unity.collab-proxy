@@ -281,7 +281,7 @@ Los espacios de trabajo dinámicos no pueden ser renombrados.
 Paquete de replicación incorrecto, no se ha encontrado una cabecera válida
 
 == ErrorClientconfignotfound ==
-El cliente Plastic SCM no está configurado correctamente para el usuario actual: No se ha encontrado el fichero de configuración {0}. Ejecute 'clconfigureclient' para realizar una configuración en modo texto o 'plastic --configure' para realizarla en modo gráfico.
+El cliente Plastic SCM no está configurado correctamente para el usuario actual: No se ha encontrado el fichero de configuración {0}. Ejecute 'cm configure' para realizar una configuración en modo texto o 'plastic --configure' para realizarla en modo gráfico.
 
 == ErrorCreateCodeReview ==
 No se pudo almacenar la revisión de código en el servidor.

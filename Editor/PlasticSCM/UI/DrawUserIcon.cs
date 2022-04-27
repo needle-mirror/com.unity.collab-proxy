@@ -5,11 +5,11 @@ namespace Unity.PlasticSCM.Editor.UI
 {
     internal static class DrawUserIcon
     {
-        static internal void ForPendeingChangesTab(string commentText)
+        static internal void ForPendingChangesTab(string commentText)
         {
             Rect rect = BuildUserIconAreaRect(commentText, 35f);
 
-            GUI.DrawTexture(rect, GetIconTexture());
+            GUI.DrawTexture(rect, Images.GetEmptyGravatar());
         }
 
         static Rect BuildUserIconAreaRect(string commentText, float sizeOfImage)
@@ -22,14 +22,6 @@ namespace Unity.PlasticSCM.Editor.UI
             return result;
         }
 
-        static Texture2D GetIconTexture()
-        {
-            if (sUserIconImage == null)
-                sUserIconImage = Images.GetImage(Images.Name.IconEmptyGravatar);
-
-            return sUserIconImage;
-        }
-
-        static Texture2D sUserIconImage;
+        
     }
 }

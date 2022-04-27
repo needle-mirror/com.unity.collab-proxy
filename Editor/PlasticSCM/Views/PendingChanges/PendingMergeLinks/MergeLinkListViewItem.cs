@@ -15,7 +15,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.PendingMergeLinks
             MergeLink = mergeLink;
 
             displayName = mergeLink.GetPendingMergeLinkText();
-            icon = Images.GetImage(Images.Name.IconMergeLink);
+            icon = Images.GetMergeLinkIcon();
         }
     }
 }

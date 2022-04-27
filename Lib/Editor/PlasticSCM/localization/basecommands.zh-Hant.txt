@@ -2067,7 +2067,7 @@ n;否
 == PushingAttributes ==
 正在推送屬性
 
-== PushingBranhces ==
+== PushingBranches ==
 正在推送分支
 
 == PushingChangesets ==
@@ -2491,3 +2491,56 @@ Xlinked 儲存庫不知道上層變更集以計算合併。使用者必須手動
 
 == YesValidAnswers ==
 y;是
+
+== CmdConfigureErrorCloudEdition ==
+The 'cm configure' command cannot be run on Cloud Edition flavor of Plastic SCM
+
+== CmdConfigureErrorDvcsEdition ==
+The 'cm configure' command cannot be run on DVCS Edition flavor of Plastic SCM
+
+== CmdConfigureErrorCannotCreateDir ==
+Failed when creating a directory [{0}]:{1}
+
+== CmdConfigureErrorWrongParameters ==
+錯誤的參數號碼。輸入 cm configure --help 以取得說明
+
+== CmdConfigureErrorReadingParameters ==
+讀取參數時發生錯誤；請檢查提供的參數清單。
+
+== CmdConfigureHeader ==
+####--- 用戶端設定精靈 ---####
+
+== CmdConfigureSuccess ==
+已正確設定 Plastic SCM 用戶端。
+
+== CmdConfigureDetectedWorkingMode ==
+已偵測到工作模式: {0}
+
+== CmdConfigureDetectedWorkingModeError ==
+檢查 Plastic SCM 伺服器安全性模式時發生錯誤。
+伺服器可能處於離線狀態，或指定的位址不正確。
+是否要重新輸入 Plastic SCM 伺服器位址?
+
+== CmdConfigureServerParams ==
+設定 Plastic SCM 伺服器位址/連接埠:
+
+== CmdConfigureServerParamsAddress ==
+Plastic SCM 伺服器位址 [{0}]
+
+== CmdConfigureServerParamsPort ==
+Plastic SCM 伺服器連接埠 [{0}]
+
+== CmdConfigureServerParamsSslPort ==
+Plastic SCM SSL 伺服器連接埠 [{0}]
+
+== CmdConfigureServerParamsUseSsl ==
+使用加密 (SSL)?
+
+== CmdConfigureProxyParams ==
+是否要設定 proxy 伺服器?
+
+== CmdConfigureProxyParamsAddress ==
+Proxy 伺服器位址
+
+== CmdConfigureProxyParamsPort ==
+Proxy 伺服器連接埠

@@ -17,7 +17,7 @@ namespace Unity.PlasticSCM.Editor.UI.Message
 
                 GUI.DrawTexture(
                     iconRect,
-                    Images.GetImage(Images.Name.IconPlastic),
+                    Images.GetPlasticIcon(),
                     ScaleMode.ScaleToFit);
 
                 Rect overlayIconRect = new Rect(

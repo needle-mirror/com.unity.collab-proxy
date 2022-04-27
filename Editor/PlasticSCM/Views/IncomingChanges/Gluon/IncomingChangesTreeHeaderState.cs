@@ -14,7 +14,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         Path,
         LastEditedBy,
         Size,
-        DateModififed
+        DateModififed,
+        Comment
     }
 
     [Serializable]
@@ -32,6 +33,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.LastEditedByColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.SizeColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.DateModifiedColumn));
+            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn));
             return result;
         }
 
@@ -47,6 +49,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                     return PlasticLocalization.GetString(PlasticLocalization.Name.SizeColumn);
                 case IncomingChangesTreeColumn.DateModififed:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.DateModifiedColumn);
+                case IncomingChangesTreeColumn.Comment:
+                    return PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn);
                 default:
                     return null;
             }
@@ -99,6 +103,14 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                         width = 260,
                         headerContent = new GUIContent(
                             GetColumnName(IncomingChangesTreeColumn.DateModififed)),
+                        minWidth = 100,
+                        sortingArrowAlignment = TextAlignment.Right
+                    },
+                    new Column()
+                    {
+                        width = 400,
+                        headerContent = new GUIContent(
+                            GetColumnName(IncomingChangesTreeColumn.Comment)),
                         minWidth = 100,
                         sortingArrowAlignment = TextAlignment.Right
                     }

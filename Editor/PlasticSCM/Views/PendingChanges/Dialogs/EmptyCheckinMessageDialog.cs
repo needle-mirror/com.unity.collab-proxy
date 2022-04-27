@@ -36,7 +36,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
                 var plasticIconRect = GUILayoutUtility.GetRect(36f, 36f);
                 plasticIconRect.x -= 46f;
                 plasticIconRect.y += 10f;
-                GUI.DrawTexture(plasticIconRect, GetIconTexture());
+                GUI.DrawTexture(plasticIconRect, Images.GetPlasticIcon());
 
                 using (new EditorGUILayout.VerticalScope())
                 {
@@ -168,21 +168,11 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             return instance;
         }
 
-        static Texture2D GetIconTexture()
-        {
-            if (sPlasticIconImage == null)
-                sPlasticIconImage = Images.GetImage(Images.Name.IconPlastic);
-
-            return sPlasticIconImage;
-        }
-
         WorkspaceInfo mWkInfo;
 
         // IMGUI evaluates every frame, need to make sure feature tracks get sent only once
         bool mSentCheckinAnywayTrackEvent = false;
         bool mSentCancelTrackEvent = false;
         bool mSentCheckboxTrackEvent = false;
-
-        static Texture2D sPlasticIconImage = null;
     }
 }

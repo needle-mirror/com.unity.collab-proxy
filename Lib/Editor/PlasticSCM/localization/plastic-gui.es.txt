@@ -772,6 +772,9 @@ Apply label to workspace content
 == LabelMenuItemSwitchToLabel ==
 Switch workspace to this label
 
+== LabelMenuItemBrowseRepositoryOnLabel ==
+Explorar repositorio en esta etiqueta
+
 == LabelMenuItemMergeFromLabel ==
 Merge from this label...
 
@@ -1544,6 +1547,21 @@ Home
 
 == GoHomeTooltip ==
 Go to working changeset
+
+== CloudAccount ==
+Nube
+
+== OnPremAccount ==
+On-premises
+
+== CloudLocalAccount ==
+Local
+
+== AddNewAccount ==
+Añadir nueva cuenta
+
+== ChooseAccount ==
+Elige una cuenta
 
 == OnlyRelevantButton ==
 Only relevant
@@ -6860,6 +6878,45 @@ Disponible
 == Unavailable ==
 No disponible
 
+== CheckinChangelist ==
+Checkin lista de cambios
+
+== ShelveChangelist ==
+Shelve lista de cambios
+
+== UndoChangesChangelist ==
+Deshacer cambios
+
+== CreateNewChangelist ==
+Crear nueva lista de cambios
+
+== EditChangelist ==
+Editar
+
+== DeleteChangelist ==
+Borrar lista de cambios
+
+== CreateChangelistTitle ==
+Crear lista de cambios
+
+== EditChangelistTitle ==
+Editar lista de cambios
+
+== CreateChangelistExplanation ==
+Proporciona un nombre y una descripción para crear una nueva lista de cambios
+
+== EditChangelistExplanation ==
+Cambia los valores deseados, y pulsa ok cuando estes listo
+
+== ChangelistNameEntry ==
+Nombre
+
+== ChangelistDescriptionEntry ==
+Descripción
+
+== ChangelistPersistentCheckBoxEntry ==
+Persistente. La lista de cambios no será eliminada cuando este vacía
+
 == PlasticOpenShortcutForWindows ==
 Shift+Ctrl+O
 
@@ -6927,7 +6984,7 @@ F2
 Delete
 
 == PlasticDeleteShortcutForMacOS ==
-Cmd+Delete
+Cmd+Back
 
 == PlasticDeleteShortcutForLinux ==
 Delete
@@ -7542,7 +7599,43 @@ Esta versión alpha es multiplataforma, incluye un tema oscuro y proporciona un 
 Puedes cambiar a la GUI clásica desde aquí
 
 == GoBackToWarning ==
-Estas seguro de querer revertir los cambios a ese changeset?
+Estas seguro de querer volver a este changeset?
 
 == ChangesetMenuItemGoBackTo ==
 Volver al changeset
+
+== UpdateReportTitle ==
+Informe de actualización
+
+== MoveToChangelist ==
+Mover a una lista de cambios
+
+== ChangelistNameEmpty ==
+El nombre de la lista de cambios no puede estar vacío
+
+== SignInToContinue ==
+Inicia sesión para continuar
+
+== SignInToOrganizationRequired ==
+Es necesario iniciar sesión en esta organización para ver sus repositorios.
+
+== SignIntoServer ==
+INICIAR SESIÓN
+
+== NotSignedIn ==
+No has iniciado sesión
+
+== SessionEnded ==
+La sesión ha terminado probablemente porque no ha habido actividad en esta cuenta.
+
+== SignInAgain ==
+INICIAR SESIÓN DE NUEVO
+
+== SomethingWentWrong ==
+Algo ha fallado
+
+== TryAgain ==
+PROBAR DE NUEVO
+
+== ConfirmGoBackToTitle ==
+Confirmación de volver atras
