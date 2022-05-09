@@ -27,6 +27,7 @@ using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Configuration;
 using Unity.PlasticSCM.Editor.UI;
 using MacUI;
+using UnityEditor;
 
 namespace Unity.PlasticSCM.Editor
 {
@@ -97,6 +98,7 @@ namespace Unity.PlasticSCM.Editor
         internal static void SetWorkspace(WorkspaceInfo wkInfo)
         {
             RegisterApplicationFocusHandlers();
+            RegisterAssemblyReloadHandlers();
 
             if (sEventSenderScheduler == null)
                 return;
@@ -126,6 +128,7 @@ namespace Unity.PlasticSCM.Editor
             UnRegisterExceptionHandlers();
 
             UnRegisterApplicationFocusHandlers();
+            UnRegisterAssemblyReloadHandlers();
 
             if (sEventSenderScheduler != null)
             {
@@ -202,6 +205,18 @@ namespace Unity.PlasticSCM.Editor
             EditorWindowFocus.OnApplicationActivated -= EnableFsWatcher;
 
             EditorWindowFocus.OnApplicationDeactivated -= DisableFsWatcher;
+        }
+
+        static void RegisterAssemblyReloadHandlers()
+        {
+            AssemblyReloadEvents.beforeAssemblyReload += DisableFsWatcher;
+            AssemblyReloadEvents.afterAssemblyReload += EnableFsWatcher;
+        }
+
+        static void UnRegisterAssemblyReloadHandlers()
+        {
+            AssemblyReloadEvents.beforeAssemblyReload -= DisableFsWatcher;
+            AssemblyReloadEvents.afterAssemblyReload -= EnableFsWatcher;
         }
 
         static void HandleUnhandledException(object sender, UnhandledExceptionEventArgs args)
