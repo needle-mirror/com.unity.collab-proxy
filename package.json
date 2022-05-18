@@ -1,7 +1,7 @@
 {
   "name": "com.unity.collab-proxy",
   "displayName": "Version Control",
-  "version": "1.14.17",
+  "version": "1.14.18",
   "unity": "2019.4",
   "description": "The Version Control package gives you the ability to use either Collaborate or Plastic SCM for Unity (beta) in the Unity editor. To use Plastic SCM for Unity (beta), a Plastic SCM subscription is required. Learn more about how you can get started for free by visiting plasticscm.com.",
   "keywords": [
@@ -20,14 +20,14 @@
     "vcs"
   ],
   "_upm": {
-    "changelog": "Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!\nIf you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.\nRemoving a previously added Plastic SCM Asset Store Plug-In:\n- Select the PlasticSCM folder in the Assets\\Plugins folder on the Project tab, then click Edit > Delete\n- Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.\n\n### Added\n- Added checkin comment column to Incoming Changes view\n\n### Changed\n- Updated Go Back confirmation message to be consistent with feature\n- Updated Create Child Branch dialog to focus on branch name field when opened\n- Improved messaging of Subtractive Merge after using Go Back feature\n\n### Fixed\n- Fixed assets not added correctly when Plastic SCM window is not open\n- Fixed wrong position of overlay icons on Pending Changes view\n- Disallowed Go Back feature to a changeset from another branch"
+    "changelog": "Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!\nIf you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.\nRemoving a previously added Plastic SCM Asset Store Plug-In:\n- Select the PlasticSCM folder in the Assets\\Plugins folder on the Project tab, then click Edit > Delete\n- Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.\n\n### Fixed\n\n- Fixed editor hang when entering Play Mode"
   },
   "upmCi": {
-    "footprint": "eb30c06592f06542e6c72ed527eacf44ecd79006"
+    "footprint": "30605d6c930e71586786d7cf447657b0609374d9"
   },
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.collab-proxy.git",
     "type": "git",
-    "revision": "4d2242f194cb3429ee04b7544c7b09bdee73b624"
+    "revision": "cd64ca5729c424e07686e9d2c23fea31f47c44da"
   }
 }
