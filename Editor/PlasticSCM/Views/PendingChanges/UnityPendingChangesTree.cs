@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 using Codice.Client.BaseCommands;
 using Codice.Client.Commands;
@@ -7,6 +6,7 @@ using Codice.CM.Common;
 
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.PendingChanges;
+using PlasticGui.WorkspaceWindow.PendingChanges.Changelists;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
@@ -18,9 +18,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mMetaCache = new MetaCache();
         }
 
-        internal List<PendingChangeCategory> GetNodes()
+        internal List<IPlasticTreeNode> GetNodes()
         {
-            return mInnerTree.GetNodes().Cast<PendingChangeCategory>().ToList();
+            return ((IPlasticTree)mInnerTree).GetNodes();
         }
 
         internal bool HasMeta(ChangeInfo changeInfo)
@@ -39,13 +39,31 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 mMetaCache.GetExistingMeta(changes));
         }
 
+        internal PendingChangeInfo GetFirstPendingChange()
+        {
+            List<PendingChangeInfo> changes = mInnerTree.GetAllPendingChanges();
+
+            if (changes == null || changes.Count == 0)
+                return null;
+
+            return changes[0];
+        }
+
+        internal List<ChangeInfo> GetAllChanges()
+        {
+            List<ChangeInfo> changes = mInnerTree.GetAllChanges();
+            FillWithMeta(changes);
+            return changes;
+        }
+
         internal void GetCheckedChanges(
+            List<ChangelistNode> selectedChangelists,
             bool bExcludePrivates,
             out List<ChangeInfo> changes,
             out List<ChangeInfo> dependenciesCandidates)
         {
             mInnerTree.GetCheckedChanges(
-                null,
+                selectedChangelists,
                 bExcludePrivates,
                 out changes,
                 out dependenciesCandidates);

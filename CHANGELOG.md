@@ -1,7 +1,25 @@
 # Changelog
 All notable changes to this package will be documented in this file.
 
-## [1.15.18] - 2022-05-09
+## [1.17.0] - 2022-06-13
+
+Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!
+If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
+Removing a previously added Plastic SCM Asset Store Plug-In:
+- Select the PlasticSCM folder in the Assets\Plugins folder on the Project tab, then click Edit > Delete
+- Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
+
+### Added
+
+- Added option to enable changelists and display them in pending changes tab
+- Added changelist related options to pending changes context menu
+
+### Fixed
+
+- Fixed editor hangs when there is no network available
+- Fixed existing checkout has locked the workspace error
+
+## [1.15.18] - 2022-05-18
 
 Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!
 If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.

@@ -91,6 +91,10 @@ namespace Unity.PlasticSCM.Editor.Configuration
             OkButtonAction();
         }
 
+        void OAuthSignIn.INotify.SuccessForHomeView(string usrName)
+        {
+        }
+
         void OAuthSignIn.INotify.Cancel(string errorMessage)
         {
             CancelButtonAction();
@@ -210,8 +214,10 @@ namespace Unity.PlasticSCM.Editor.Configuration
         }
 
         void Login.INotify.SuccessForConfigure(
-        List<string> organizations,
-        bool canCreateAnOrganization)
+            List<string> organizations,
+            bool canCreateAnOrganization,
+            string userName,
+            string password)
         {
             OkButtonAction();
         }
@@ -231,6 +237,10 @@ namespace Unity.PlasticSCM.Editor.Configuration
             string userName)
         {
             OkButtonAction();
+        }
+
+        void Login.INotify.SuccessForHomeView(string userName)
+        {
         }
 
         void Login.INotify.ValidationFailed(

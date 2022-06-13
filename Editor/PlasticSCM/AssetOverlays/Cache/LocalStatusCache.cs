@@ -2,6 +2,7 @@
 
 using Codice;
 using Codice.Client.BaseCommands;
+using Codice.Client.BaseCommands.Config;
 using Codice.Client.Commands.WkTree;
 using Codice.Client.Common;
 using Codice.CM.Common;
@@ -52,27 +53,36 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
             if (!IsOnWorkspace(fullPath, wkPath))
                 return AssetStatus.None;
 
-            WorkspaceTreeNode treeNode = PlasticGui.Plastic.API.GetWorkspaceTreeNode(fullPath);
-
-            if (CheckWorkspaceTreeNodeStatus.IsPrivate(treeNode))
+            bool wasDownloadEnabled = GlobalConfig.Instance.DisableDownload();
+            try
             {
-                return ignoredFilter.IsIgnored(fullPath) ?
-                    AssetStatus.Ignored : AssetStatus.Private;
+                WorkspaceTreeNode treeNode = PlasticGui.Plastic.API.GetWorkspaceTreeNode(fullPath);
+
+                if (CheckWorkspaceTreeNodeStatus.IsPrivate(treeNode))
+                {
+                    return ignoredFilter.IsIgnored(fullPath) ?
+                        AssetStatus.Ignored : AssetStatus.Private;
+                }
+
+                if (CheckWorkspaceTreeNodeStatus.IsAdded(treeNode))
+                    return AssetStatus.Added;
+
+                AssetStatus result = AssetStatus.Controlled;
+
+                if (CheckWorkspaceTreeNodeStatus.IsCheckedOut(treeNode) &&
+                    !CheckWorkspaceTreeNodeStatus.IsDirectory(treeNode))
+                    result |= AssetStatus.Checkout;
+
+                if (hiddenChangesFilter.IsHiddenChanged(fullPath))
+                    result |= AssetStatus.HiddenChanged;
+
+                return result;
             }
-
-            if (CheckWorkspaceTreeNodeStatus.IsAdded(treeNode))
-                return AssetStatus.Added;
-
-            AssetStatus result = AssetStatus.Controlled;
-
-            if (CheckWorkspaceTreeNodeStatus.IsCheckedOut(treeNode) &&
-                !CheckWorkspaceTreeNodeStatus.IsDirectory(treeNode))
-                result |= AssetStatus.Checkout;
-
-            if (hiddenChangesFilter.IsHiddenChanged(fullPath))
-                result |= AssetStatus.HiddenChanged;
-
-            return result;
+            finally
+            {
+                if (wasDownloadEnabled)
+                    GlobalConfig.Instance.EnableDownload();
+            }
         }
 
         static bool IsOnWorkspace(string fullPath, string clientPath)

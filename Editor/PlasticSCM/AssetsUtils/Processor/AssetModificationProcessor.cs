@@ -9,7 +9,6 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 {
     class AssetModificationProcessor : UnityEditor.AssetModificationProcessor
     {
-        internal static bool IsEnabled { get; set; }
         internal static bool ForceCheckout { get; private set; }
 
         /*We need to do a checkout, verifying that the content/date or size has changed. In order
@@ -23,10 +22,17 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             ForceCheckout = EditorPrefs.GetBool("forceCheckoutPlasticSCM");
         }
 
-        internal static void RegisterAssetStatusCache(
+        internal static void Enable(
             IAssetStatusCache assetStatusCache)
         {
             mAssetStatusCache = assetStatusCache;
+            sIsEnabled = true;
+        }
+
+        internal static void Disable()
+        {
+            sIsEnabled = false;
+            mAssetStatusCache = null;
         }
 
         internal static void SetForceCheckoutOption(bool isEnabled)
@@ -39,7 +45,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
         static string[] OnWillSaveAssets(string[] paths)
         {
-            if (!IsEnabled)
+            if (!sIsEnabled)
                 return paths;
 
             ModifiedAssets = (string[])paths.Clone();
@@ -51,7 +57,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
         {
             message = string.Empty;
 
-            if (!IsEnabled)
+            if (!sIsEnabled)
                 return true;
 
             if (assetPath.StartsWith("ProjectSettings/"))
@@ -73,6 +79,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             return !AssetOverlays.ClassifyAssetStatus.IsControlled(status);
         }
 
+        static bool sIsEnabled;
         static IAssetStatusCache mAssetStatusCache;
     }
 }

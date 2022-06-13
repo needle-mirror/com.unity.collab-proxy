@@ -439,7 +439,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 isSelected,
                 isFocused,
                 wasChecked,
-                hadCheckedChildren);
+                hadCheckedChildren,
+                hadPartiallyCheckedChildren: false);
 
             DefaultStyles.label = UnityStyles.Tree.Label;
 

@@ -13,7 +13,6 @@ using Codice.CM.Common;
 using Codice.LogWrapper;
 using GluonGui;
 using PlasticGui;
-using PlasticGui.WebApi.Responses;
 using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Configuration;
@@ -26,12 +25,11 @@ using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.Views.CreateWorkspace;
 using Unity.PlasticSCM.Editor.Views.Welcome;
 using Unity.PlasticSCM.Editor.WebApi;
-using Unity.PlasticSCM.Editor.SceneView;
 
 using GluonCheckIncomingChanges = PlasticGui.Gluon.WorkspaceWindow.CheckIncomingChanges;
 using GluonNewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncomingChangesUpdater;
-using processor = Unity.PlasticSCM.Editor.AssetUtils.Processor;
-
+using PlasticAssetPostprocessor = Unity.PlasticSCM.Editor.AssetUtils.Processor.AssetPostprocessor;
+using PlasticAssetModificationProcessor = Unity.PlasticSCM.Editor.AssetUtils.Processor.AssetModificationProcessor;
 
 namespace Unity.PlasticSCM.Editor
 {
@@ -221,6 +219,14 @@ namespace Unity.PlasticSCM.Editor
             if (mWkInfo == null)
                 return;
 
+            // We don't want to auto-refresh the views when the window
+            // is focused due to a right mouse button click because
+            // if there is no internet connection a dialog appears and
+            // it prevents being able to open the context menu in order
+            // to close the Plastic SCM window
+            if (Mouse.IsRightMouseButtonPressed(Event.current))
+                return;
+
             mViewSwitcher.AutoRefreshPendingChangesView();
             mViewSwitcher.AutoRefreshIncomingChangesView();
         }
@@ -389,6 +395,7 @@ namespace Unity.PlasticSCM.Editor
                     mGluonNewIncomingChangesUpdater,
                     mIncomingChangesNotifier,
                     PlasticPlugin.AssetStatusCache,
+                    PlasticPlugin.WorkspaceOperationsMonitor,
                     mStatusBar,
                     this);
 
@@ -406,6 +413,11 @@ namespace Unity.PlasticSCM.Editor
 
                 mViewSwitcher.SetWorkspaceWindow(mWorkspaceWindow);
                 mViewSwitcher.ShowInitialView();
+
+                PlasticPlugin.WorkspaceOperationsMonitor.RegisterWindow(
+                    mWorkspaceWindow,
+                    viewHost,
+                    mDeveloperNewIncomingChangesUpdater);
 
                 UnityStyles.Initialize(Repaint);
 
@@ -437,12 +449,6 @@ namespace Unity.PlasticSCM.Editor
                     mViewSwitcher,
                     mViewSwitcher,
                     this,
-                    mIsGluonMode);
-
-                DrawSceneOperations.Initialize(
-                    mWorkspaceWindow,
-                    viewHost,
-                    mDeveloperNewIncomingChangesUpdater,
                     mIsGluonMode);
 
                 mLastUpdateTime = EditorApplication.timeSinceStartup;
@@ -691,7 +697,7 @@ namespace Unity.PlasticSCM.Editor
 
             //TODO: Localization
             menu.AddItem(
-                new GUIContent(processor.AssetModificationProcessor.ForceCheckout ?
+                new GUIContent(PlasticAssetModificationProcessor.ForceCheckout ?
                 PlasticLocalization.GetString(PlasticLocalization.Name.DisableForcedCheckout) :
                 PlasticLocalization.GetString(PlasticLocalization.Name.EnableForcedCheckout)),
                 false,
@@ -902,8 +908,8 @@ namespace Unity.PlasticSCM.Editor
         }
         static void ForceCheckout_Clicked(object obj)
         {
-            processor.AssetModificationProcessor.SetForceCheckoutOption(
-                !processor.AssetModificationProcessor.ForceCheckout);
+            PlasticAssetModificationProcessor.SetForceCheckoutOption(
+                !PlasticAssetModificationProcessor.ForceCheckout);
         }
 
         static void SetupCloudProjectIdIfNeeded(
@@ -969,6 +975,8 @@ namespace Unity.PlasticSCM.Editor
         static void ClosePlasticWindow(PlasticWindow window)
         {
             UnRegisterApplicationFocusHandlers(window);
+
+            PlasticPlugin.WorkspaceOperationsMonitor.UnRegisterWindow();
 
             DisposeNewIncomingChanges(window);
 

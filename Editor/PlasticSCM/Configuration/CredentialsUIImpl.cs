@@ -1,16 +1,22 @@
-﻿using UnityEditor;
+﻿using System;
+using System.Threading.Tasks;
+
+using UnityEditor;
 
 using Codice.Client.Common;
 using Codice.Client.Common.Connection;
+using Codice.Client.Common.Threading;
+using Codice.CM.Common;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
+using Unity.PlasticSCM.Editor.WebApi;
 
 namespace Unity.PlasticSCM.Editor.Configuration
 {
     internal class CredentialsUiImpl : AskCredentialsToUser.IGui
     {
-        AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForCredentials(string servername)
+        AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForCredentials(
+            string servername)
         {
             AskCredentialsToUser.DialogData result = null;
 
@@ -23,7 +29,8 @@ namespace Unity.PlasticSCM.Editor.Configuration
             return result;
         }
 
-        void AskCredentialsToUser.IGui.ShowSaveProfileErrorMessage(string message)
+        void AskCredentialsToUser.IGui.ShowSaveProfileErrorMessage(
+            string message)
         {
             GUIActionRunner.RunGUIAction(delegate
             {
@@ -34,32 +41,75 @@ namespace Unity.PlasticSCM.Editor.Configuration
             });
         }
 
-        AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForSSOCredentials(string cloudServer)
+        AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForSSOCredentials(
+            string cloudServer)
         {
             AskCredentialsToUser.DialogData result = null;
 
-            // Check SSO auto login here
             GUIActionRunner.RunGUIAction(delegate
             {
-                result = RunCredentialsRequest(cloudServer);
+                result = RunSSOCredentialsRequest(
+                    cloudServer, CloudProjectSettings.accessToken);
             });
 
             return result;
         }
 
-        private AskCredentialsToUser.DialogData RunCredentialsRequest(string cloudServer)
+        AskCredentialsToUser.DialogData RunSSOCredentialsRequest(
+            string cloudServer,
+            string unityAccessToken)
         {
-            AutoLogin autoLogin = new AutoLogin();
-            var response = autoLogin.Run();
+            if (string.IsNullOrEmpty(unityAccessToken))
+            {
+                return SSOCredentialsDialog.RequestCredentials(
+                    cloudServer, ParentWindow.Get());
+            }
 
-            if (response != ResponseType.None)
+            TokenExchangeResponse tokenExchangeResponse =
+                WaitUntilTokenExchange(unityAccessToken);
+
+            // There is no internet connection, so no way to get credentials
+            if (tokenExchangeResponse == null)
             {
-                return autoLogin.BuildCredentialsDialogData(response);
+                return new AskCredentialsToUser.DialogData(
+                    false, null, null, false,
+                    SEIDWorkingMode.SSOWorkingMode);
             }
-            else
+
+            if (tokenExchangeResponse.Error == null)
             {
-                return SSOCredentialsDialog.RequestCredentials(cloudServer, ParentWindow.Get());
+                return new AskCredentialsToUser.DialogData(
+                    true, 
+                    tokenExchangeResponse.User,
+                    tokenExchangeResponse.AccessToken, 
+                    false,
+                    SEIDWorkingMode.SSOWorkingMode);
             }
+
+            return SSOCredentialsDialog.RequestCredentials(
+                cloudServer, ParentWindow.Get());
+        }
+
+        static TokenExchangeResponse WaitUntilTokenExchange(
+            string unityAccessToken)
+        {
+            TokenExchangeResponse result = null;
+
+            Task.Run(() =>
+            {
+                try
+                {
+                    result = WebRestApiClient.PlasticScm.
+                        TokenExchange(unityAccessToken);
+                }
+                catch (Exception ex)
+                {
+                    ExceptionsHandler.LogException(
+                        "CredentialsUiImpl", ex);
+                }
+            }).Wait();
+
+            return result;
         }
     }
 }

@@ -16,6 +16,11 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             return new List<int>(mCacheByCategories.Values);
         }
 
+        internal List<KeyValuePair<C, int>> GetCategoryItems()
+        {
+            return mCacheByCategories.ToList();
+        }
+
         internal List<KeyValuePair<I, int>> GetInfoItems()
         {
             return mCacheByInfo.ToList();

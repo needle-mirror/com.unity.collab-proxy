@@ -23,10 +23,10 @@ Fichero
 Directorios
 
 == Branch ==
-Branch
+Rama
 
 == Branches ==
-Branches
+Ramas
 
 == Changeset ==
 Changeset
@@ -38,148 +38,154 @@ changeset
 changesets
 
 == Label ==
-Label
+Etiqueta
 
 == Labels ==
-Labels
+Etiquetas
+
+== CodeReview ==
+Revisión de código
+
+== CodeReviews ==
+Revisiones de código
 
 == Server ==
-Server
+Servidor
 
 == Workspace ==
 Workspace
 
 == Repository ==
-Repository
+Repositorio
 
 == Checkin ==
 Checkin
 
 == UndoChanges ==
-Undo
+Deshacer
 
 == UpdateWorkspace ==
-Update workspace
+Actualizar workspace
 
 == UpdateWorkspaceAmp ==
 &Update workspace
 
 == ItemsMenuUndoCheckout ==
-Undo checkout
+Deshacer checkout
 
 == ItemsMenuUndoChanges ==
-Undo changes
+Deshacer cambios
 
 == ItemsMenuChangeRevType ==
-Change revision type
+Cambiar tipo de revisión
 
 == MenuItemExternalTools ==
-External tools
+Herramientas externas
 
 == ItemNameEmpty ==
-The name cannot be empty
+El nombre no puede estar vacío
 
 == ItemExists ==
-The item {0} already exists
+El ítem {0} ya existe
 
 == MovingItems ==
-Moving items...
+Moviendo ítems...
 
 == Options ==
-Options
+Opciones
 
 == OptionsAmp ==
-&Options
+&Opciones
 
 == BranchExplorerOptionsTooltip ==
-Show the options panel
+Mostrar el panel de opciones
 
 == BranchExplorerOptionsToggleTooltip ==
-Hide or show the options panel
+Ocultar o mostrar el panel de opciones
 
 == GoButton ==
-Go
+Ir
 
 == GoToBranchBase ==
-Go to branch base
+Ir a la rama base
 
 == BranchExplorerMenu ==
-Branch Explorer
+Explorador de Ramas
 
 == FilterSelectedBranches ==
-Filter selected branches
+Filtrar ramas seleccionadas
 
 == FilterSelectedAndRelatedBranches ==
-Filter selected and related branches
+Filtrar ramas seleccionadas y relacionadas
 
 == FilterSelectedBranchesPendingMerges ==
-Filter pending merges for selected branches
+Filtrar merges pendientes para ramas seleccionadas
 
 == GoToParentChangeset ==
-Go to parent changeset
+Ir al changeset padre
 
 == AddInclusion ==
-Add inclusion
+Añadir inclusión
 
 == AddExclusion ==
-Add exclusion
+Añadir exclusión
 
 == CustomBranchQuery ==
-Custom branch query rule
+Regla personalizada de consulta de rama
 
 == CustomChangesetQuery ==
-Custom changeset query rule
+Regla personalizada de consulta de changeset
 
 == CustomLabelQuery ==
-Custom label query rule
+Regla personalizada de consulta de etiqueta
 
 == ConditionalBranchFormatText ==
-Nuevo formato condicional de ramas (para destacar)
+Nuevo formato condicional de ramas (a resaltar)
 
 == ConditionalChangesetFormatText ==
-Nuevo formato condicional de changesets (para destacar)
+Nuevo formato condicional de changesets (a resaltar)
 
 == ConditionalLabelFormatText ==
-Nuevo formato condicional de etiquetas (para destacar)
+Nuevo formato condicional de etiquetas (a resaltar)
 
 == InclusionRuleText ==
-New inclusion branch filter (branches to be included)
+Nuevo filtro de inclusión de ramas (a incluir)
 
 == ExclusionRuleText ==
-New exclusion branch filter (branches to be excluded)
+Nuevo filtro de exclusión de ramas (a excluir)
 
 == ActiveBranch ==
-Active branch in the workspace
+Rama activa en el workspace
 
 == ActiveBranches ==
-Active branches in the workspace
+Ramas activas en el workspace
 
 == BranchesWithPendingIntegrations ==
-Branches with pending merges
+Ramas con merges pendientes
 
 == AddFormat ==
-Add format
+Añadir formato
 
 == Calculating ==
-Calculating...
+Calculando...
 
 == CopyrightTextFormat ==
-Copyright © 2006-{0} Codice Software S.L. All Rights Reserved.
+Copyright © 2006-{0} Codice Software S.L. Todos los derechos reservados.
 
 == FiltersAndConditionalFormat ==
-Filters & format
+Filtros y formato
 
 == VisitUsText ==
-Visit us at
+Visítenos en
 
 == MeetUsText ==
-Meet us at
+Conózcanos en
 
 == ReleaseText ==
-Release:
+Versión:
 
 == ReleaseNotesLinkText ==
-Release notes
+Notas de versión
 
 == WebsiteLink ==
 https://www.plasticscm.com
@@ -191,25 +197,25 @@ https://www.plasticscm.com/company/team
 https://www.plasticscm.com/download/releasenotes/
 
 == DesignedInText ==
-Designed in Boecillo Park (Valladolid), Spain
+Diseñado en Parque Tecnológico Boecillo (Valladolid), España
 
 == RevertStart ==
-Reverting the revision in the workspace...
+Revirtiendo la revisión en el workspace...
 
 == RevertingItemsSingular ==
-Reverting 1 item...
+Revirtiendo ítem...
 
 == RevertingItemsPlural ==
-Reverting {0} items...
+Revirtiendo {0} ítems...
 
 == RevertingProgress ==
-Reverting file {0} of {1}: {2}
+Revirtiendo fichero {0} de {1}: {2}
 
 == Validating ==
-Validating data...
+Validando datos...
 
 == UpdateReportNoLinesSelected ==
-Please select the paths you want to update
+Por favor, seleccione las rutas que quiere actualizar
 
 == UpdateProgressCalculating ==
 Calculando...
@@ -224,73 +230,73 @@ Actualizados {0} de {1} ({2} de 1 fichero){4}
 Actualizados {0} de {1} ({2} de {3} ficheros){4}
 
 == CheckinComments ==
-Checkin comments
+Comentarios de checkin
 
 == UpdatingSelectedItems ==
-Updating the selected items...
+Actualizando los ítems seleccionados...
 
 == LoadingItems ==
-Loading items...
+Cargando ítems...
 
 == LoadingBranches ==
-Loading branches...
+Cargando ramas...
 
 == LoadingBranchExplorer ==
-Loading Branch Explorer...
+Cargando Explorador de Ramas...
 
 == LoadingLabels ==
-Loading labels...
+Cargando etiquetas...
 
 == LoadingChangesets ==
-Loading changesets...
+Cargando changesets...
 
 == LoadingShelves ==
-Loading shelves...
+Cargando shelves...
 
 == LoadingSyncViewDetails ==
-Loading sync view details...
+Cargando detalles de la vista de sincronización...
 
 == LoadingDeletedItems ==
-Loading deleted items...
+Cargando ítems borrados...
 
 == UncheckoutStart ==
-Unchecking out selected items...
+Deshaciendo checkout de ítems seleccionados...
 
 == ActionMenuButtonTooltip ==
-Perform actions with the selected item
+Realizar acciones con los ítems seleccionados
 
 == MainSidebarMainActionsItem ==
-Main Actions
+Acciones Principales
 
 == MainSidebarItemsItem ==
-Workspace Explorer
+Explorador de Workspaces
 
 == MainSidebarPendingChangesItem ==
-Pending Changes
+Cambios Pendientes
 
 == MainSidebarCheckinItem ==
 Checkin
 
 == MainSidebarBranchesItem ==
-Branches
+Ramas
 
 == MainSidebarBranchExplorerItem ==
-Branch Explorer
+Explorador de Ramas
 
 == MainSidebarChangesetsItem ==
 Changesets
 
 == MainSidebarLabelsItem ==
-Labels
+Etiquetas
 
 == MainSidebarAttributesItem ==
 Atributos
 
 == MainSidebarSyncItem ==
-Sync Repositories
+Repositorios Sinc.
 
 == MainSidebarSyncItemCloudEdition ==
-Sync to Cloud
+Sincronizar a Cloud
 
 == MainSidebarCloudItem ==
 Cloud
@@ -299,112 +305,112 @@ Cloud
 Merge
 
 == MainSidebarIncomingChangesItem ==
-Incoming Changes
+Cambio Entrantes
 
 == MainSidebarPreferencesItem ==
-Preferences
+Preferencias
 
 == MainSidebarAboutItem ==
-About Plastic SCM
+Sobre Plastic SCM
 
 == MainSidebarAboutGluonItem ==
-About Gluon
+Sobre Gluon
 
 == MainSidebarRepositoriesItem ==
-Repositories
+Repositorios
 
 == MainSidebarWorkspacesItem ==
-Workspaces
+Espacios de Trabajo
 
 == MainSidebarCodeReviewsItem ==
 Revisiones de código
 
 == ItemColumn ==
-Item
+Ítem
 
 == StatusColumn ==
-Status
+Estado
 
 == ExtensionColumn ==
-Extension
+Extensión
 
 == TypeColumn ==
-Type
+Tipo
 
 == DateModifiedColumn ==
-Date modified
+Fecha de modificación
 
 == RepositoryColumn ==
-Repository
+Repositorio
 
 == ServerColumn ==
-Server
+Servidor
 
 == ObjectNameColumn ==
-Object name
+Nombre de objeto
 
 == NameColumn ==
-Name
+Nombre
 
 == PathColumn ==
-Path
+Ruta
 
 == ProblemColumn ==
-Problem
+Problema
 
 == SeverityColumn ==
-Severity
+Gravedad
 
 == TimestampColumn ==
-Time stamp
+Registro de tiempo
 
 == LastEditedByColumn ==
-Last edited by
+Última edición por
 
 == CreationDateColumn ==
-Creation date
+Fecha de creación
 
 == GuidColumn ==
 Guid
 
 == CommentColumn ==
-Comment
+Comentario
 
 == ItemsCount ==
 ({0})
 
 == ItemsCountSingular ==
-(1 item)
+(1 ítem)
 
 == ItemsCountPlural ==
-({0} items)
+({0} ítems)
 
 == ItemsSelected ==
-({0}/{1} selected)
+({0}/{1} seleccionados)
 
 == ItemsSelectedSingular ==
-{0} of 1 item selected
+{0} de 1 ítem seleccionado
 
 == ItemsSelectedPlural ==
-{0} of {1} items selected
+{0} de {1} ítems seleccionados
 
 == ItemsSelectedForGluonSingular ==
-{0} de 1 item
+{0} de 1 ítem
 
 == ItemsSelectedForGluonPlural ==
-{0} de {1} items
+{0} de {1} ítems
 
 == ChangedItemsCategory ==
-Changed items
+Ítems cambiados
 
 == AddedPrivateItemsCategory ==
-Added and private
+Añadidos y privados
 
 == DeletedItemsCategory ==
-Deleted items
+Ítems borrados
 
 == MovedItemsCategory ==
-Moved items
+Ítems movidos
 
 == DeleteConfirmationMessage ==
 Está a punto de eliminar
@@ -413,637 +419,664 @@ Está a punto de eliminar
 ...y {0} más.
 
 == DeletingObjectsSingular ==
-Deleting 1 object
+Borrando 1 objeto
 
 == DeletingObjectsPlural ==
-Deleting {0} objects
+Borrando {0} objetos
 
 == DeleteObjectsSingular ==
-Deleting 1 object. Are you sure?
+Borrando 1 objeto. ¿Está seguro?
 
 == DeleteObjectsPlural ==
-Deleting {0} objects. Are you sure?
+Borrando {0} objetos. ¿Está seguro?
 
 == ConfirmDeletionTitle ==
-Confirm deletion
+Confirme el borrado
 
 == ConfirmRevertTitle ==
-Confirm revert
+Confirme el revertido
 
 == ConfirmRevertMessage ==
-Contents will be reverted to revision {0}. Continue?
+Los contenidos se revertirán a la revisión {0}. ¿Desea continuar?
 
 == ConfirmRevertToClientDiffsMessage ==
-The selected files will be reverted. Continue?
+Los ficheros seleccionados se revertirán. ¿Desea continuar?
 
 == ConfirmUndeleteTitle ==
-Confirm undelete
+Confirme la recuperación de borrados
 
 == ConfirmUndeleteMessage ==
-The selected files will be undeleted. Continue?
+Los ficheros seleccionados borrados se van a recuperar. ¿Desea continuar?
 
 == FromTo ==
-{0} to {1}
+{0} a {1}
 
 == From ==
-from
+desde
 
 == To ==
-to
+a
 
 == AddProgress ==
-Adding items...
+Añadiendo ítems...
 
 == CheckoutProgress ==
-Checking out items...
+Haciendo checkout de ítems...
 
 == UndoingPendingChanges ==
-Undoing changes...
+Deshaciendo cambios...
 
 == UndoingUnchanged ==
-Undoing unchanged items...
+Deshaciendo ítems no cambiados...
 
 == ShelvingPendingChanges ==
-Shelving changes...
+Haciendo shelving de los cambios...
 
 == UndoingChangedFiles ==
-Undoing changes...
+Deshaciendo cambios...
 
 == UndoingChangedFilesError ==
-Some error has occurred during the undo changes operation:
+Se ha producido un error mientras se deshacían los cambios:
 
 == New ==
-New...
+Nuevo...
 
 == ItemsMenuItemHistory ==
-History
+Historia
 
 == ItemsMenuItemAnnotate ==
-Annotate
+Anotar
 
 == NoItemsAreSelected ==
-No items are selected. Use items' checkboxes to select them. This can also occur if you have selected items, but they are all ignored.
+No ha seleccionado ningún ítem (use las casillas para seleccionarlos) o ha seleccionado ítems ignorados.
 
 == EmptyCommentsDialogTitle ==
-Empty Checkin Comment Field
+Comentario de checkin vacío
 
 == EmptyCommentsDialogContent ==
-The checkin comment field is blank. Writing a comment is recommended.
+El comentario de checkin está vacío. Es recomendable escribir un comentario.
 
 == EmptyComments ==
-The comment field is empty. Don't forget to add a checkin comment before creating a new changeset.
+El comentario está vacío. No olvide introducir un comentario antes de crear un changeset.
 
 == CheckinAnyway ==
-Checkin Anyway
+Hacer checkin de todos modos
 
 == RepositoryNameLabel ==
-Name of the new repository:
+Nombre del nuevo repositorio:
 
 == WorkspaceNameLabel ==
-Name of the new workspace:
+Nombre del nuevo workspace:
 
 == NewRepositoryTitle ==
-Create a new repository
+Crear un repositorio nuevo
 
 == RenameRepositoryTitle ==
-Rename Repository
+Renombrar Repositorio
 
 == NewWorkspace ==
-Create a new workspace
+Crear un workspace nuevo
+
+== DownloadRepository ==
+Descargar repositorio
+
+== DownloadRepositoryIntoWorkspace ==
+Descargar repositorio en un workspace
+
+== DownloadRepositoryTitle ==
+Crear una nueva copia de trabajo para trabajar con el repositorio localmente
 
 == RenameWorkspaceTitle ==
-Rename Workspace
+Renombrar workspace
 
 == NewWorkspaceNameLabel ==
-New name of the workspace:
+Nuevo nombre del workspace:
 
 == RepositoryServerLabel ==
-Server (your_server:8087 or your_org@cloud):
+Servidor (tu_servidor:8087 o tu_org@cloud):
 
 == WorkspacePathLabel ==
-Path on disk:
+Ruta en disco:
 
 == RepositoryLabel ==
-Repository:
+Repositorio:
 
 == BrowseLabel ==
-Browse...
+Explorar...
 
 == LocalChangesApplierProgressProcessingNeededPaths ==
-Processing needed paths
+Procesando rutas necesarias
 
 == CheckinAutoUpdateMergeRequest ==
-New files in the branch, update needed.
+Hay nuevos ficheros en la rama. Es necesario actualizar.
 
 == CheckinAutoUpdateMergeRequestMessage ==
-New changes appeared on the branch you are working on since you started your own changes in the workspace. You need to get those changes to your workspace before checking in yours.
+Mientras creaba cambios en la rama del workspace, se han incorporado otros nuevos. Es necesario agregarlos al workspace antes de hacer checkin de sus propios cambios.
 
-Since the changes in the branch don't conflict with your changes in the workspace, you can simply update the workspace before checking in.
+Como estos cambios nuevos de la rama no entran en conflicto con los suyos del workspace, puede, simplemente, actualizar el workspace antes de hacer checkin.
 
-Do you want to update the workspace and checkin your changes now?
+¿Quiere actualizar y hacer checkin de sus cambios ahora?
 
 == UpdateWorkspaceMergeRequest ==
-Conflicts detected before updating
+Conflictos detectados antes de la actualización
 
 == UpdateWorkspaceMergeRequestMessage ==
-Some files you have changed in your workspace were modified as well in the branch and you need to merge them before continuing.
+Algunos de los ficheros que ha cambiado en su workspace se han modificado también en la rama y es necesario hacer merge antes de continuar.
 
-A merge view will open so that you can merge the items with conflicts. Please resolve them and then proceed with the update.
+Podrá hacer merge de los ítems en conflicto en la vista de merge. Por favor, resuelva los conflictos y luego continúe con la actualización.
 
 == CheckinMergeRequest ==
-Checkin on this branch cannot proceed.
+No se puede hacer checkin en esta rama.
 
 == CheckinMergeRequestMessage ==
-Other changes have been checked in while you were making your changes.
+Mientras estaba aplicando sus propios cambios, se ha hecho checkin de otros.
 
 == CheckinMergeRequestQuestion ==
-A merge is needed in order to continue. How would you like to proceed?
+Es necesario hacer un merge para continuar. ¿Cómo desea proceder?
 
 == CheckinMergeNow ==
-Merge now
+Hacer merge ahora
 
 == RepositoryServerEmpty ==
-Repository server must not be empty
+El servidor de repositorio no puede estar vacío
 
 == CouldNotGetOrganizationNameFromCredentials ==
-Invalid credentials. Couldn't get organization name
+Credenciales inválidas. No se ha podido obtener el nombre de la organización
 
 == CouldNotGetOrganizationName ==
-Unable to get the organization name from the cloud server. Maybe your credentials are wrong. Please run again the configuration tool enter new credentials ('{0} --configure')
+No es posible obtener el nombre de la organización desde el servidor cloud. Es posible que sus credenciales no sean correctas. Por favor, ejecute de nuevo la herramienta de configuración para introducir nuevas credenciales ('{0} --configure')
 
 == RepositoryServerIsNotAvailable ==
-The repository server is not available
+El servidor de repositorio no está disponible
 
 == RepositoryNameEmpty ==
-Repository name must not be empty
+El nombre del repositorio no puede estar vacío
 
 == WorkspaceNameEmpty ==
-Workspace name must not be empty
+El nombre del workspace no puede estar vacío
 
 == WorkspacePathEmpty ==
-Workspace path must not be empty
+La ruta del workspace no puede estar vacía
 
 == WorkspacePathUnauthorizedAccess ==
-Unauthorized access to create the workspace on the specified path
+No tiene acceso para crear un workspace en la ruta especificada
 
 == InvalidCharsInPath ==
-Workspace path contains invalid characters
+La ruta del workspace contiene caracteres no válidos
 
 == WorkspaceNameAlreadyExists ==
-The workspace {0} already exists
+El workspace {0} ya existe
 
 == WorkspacePathAlreadyUsed ==
-The path {0} is already contained in a workspace
+La ruta {0} ya existe en el workspace
 
 == CheckinMergeNowMessage ==
-Stop the checkin. Show a dialog to merge the other changes with your changes. You can then proceed again with the original checkin.
+Parar el checkin. Mostrar un diálogo para hacer merge de los otros cambios con los suyos. Después podrá continuar con el checkin.
 
 == CheckinMergeLater ==
-Merge later (checkin my changes in a child branch)
+Hacer merge más tarde (hacer checkin de mis cambios en una rama hija)
 
 == CheckinMergeLaterMessage ==
-Continue the checkin. Create a child branch of {0} and save your changes on that branch. Later you can merge the child branch back to current branch.
+Continuar con el checkin. Crear una rama hija de {0} y guardar sus cambios en dicha rama. Más tarde podrá hacer merge de la rama hija con la rama actual.
 
 == CheckinMergeBranch ==
-Name for child branch
+Nombre para la rama hija
 
 == RepositoryMenuItemCreate ==
-Create new repository...
+Crear un repositorio nuevo...
 
 == RepositoryMenuItemCreateWorkspace ==
-Create workspace for this repository...
+Crear workspace para este repositorio...
+
+== RepositoryMenuItemDownloadRepository ==
+Descargar este repositorio
 
 == RenameMenuItem ==
-Rename
+Renombrar
 
 == WorkspaceMenuItemOpen ==
-Open
+Abrir
 
 == WorkspaceMenuItemOpenAmp ==
 &Open
 
 == WorkspaceMenuItemOpenInNewWindow ==
-Open in a new window
+Abrir en una nueva ventana
 
 == WorkspaceMenuItemOpenInNewWindowAmp ==
-Open in a &new window
+Abrir en una &nueva ventana
 
 == WorkspaceMenuItemOpenWith ==
-Open with...
+Abrir con...
 
 == OpenInExplorerMenuItem ==
-Open in explorer
+Abrir en el explorador
 
 == DeleteMenuItem ==
-Delete
+Borrar
 
 == UndeleteMenuItem ==
-Undelete
+Deshacer borrado
 
 == WorkspaceMenuItemCreate ==
-Create a new workspace...
+Crear un workspace nuevo...
 
 == WorkspaceMenuItemCreateAmp ==
-&Create a new workspace...
+&Crear un workspace nuevo...
 
 == WorkspaceMenuItemRename ==
-Rename
+Renombrar
 
 == WorkspaceMenuItemRenameAmp ==
-Rena&me
+Reno&mbrar
 
 == WorkspaceMenuItemDelete ==
-Delete
+Borrar
 
 == WorkspaceMenuItemDeleteAmp ==
 &Delete
 
 == BranchMenuItemCreateBranch ==
-Create child branch...
+Crear rama hija...
 
 == BranchMenuItemMergeFromBranch ==
-Merge from this branch...
+Hacer merge desde esta rama...
 
 == BranchMenuItemAdvancedMerge ==
-Advanced merge
+Merge avanzado
 
 == BranchMenuItemCherrypickFromBranch ==
-Cherry pick from this branch...
+Cherry-pick desde esta rama...
 
 == BranchMenuItemMergeToFromBranch ==
-Merge from this branch to...
+Hacer merge desde esta rama a...
 
 == BranchMenuItemPushPull ==
 Push/Pull
 
 == BranchMenuItemPullBranch ==
-Pull this branch...
+Pull de esta rama...
 
 == BranchMenuItemPullRemoteBranch ==
-Pull remote branch...
+Pull de rama remota...
 
 == BranchMenuItemSyncWithGit ==
 Sincronizar con Git...
 
 == BranchMenuItemPushBranch ==
-Push this branch...
+Push de esta rama...
 
 == BranchMenuItemRenameBranch ==
-Rename...
+Renombrar...
 
 == BranchMenuItemDeleteBranch ==
-Delete
+Borrar
 
 == BranchMenuItemSwitchToBranch ==
-Switch workspace to this branch
+Cambiar el workspace a esta rama
 
 == BranchMenuItemDiff ==
-Diff branch
+Diferencias de rama
 
 == BranchMenuItemDiffWithAnotherBranch ==
-Diff with another branch...
+Diferencias con otra rama...
 
 == BranchMenuItemViewChangesets ==
-View changesets on this branch
+Ver changesets en esta rama
 
 == ChangesetMenuItemCreateBranch ==
-Create branch from this changeset...
+Crear rama desde este changeset...
 
 == ChangesetMenuChangesetDiff ==
-Diff changeset
+Diferencias de changeset
 
 == ChangesetMenuItemDiff ==
-Diff with previous
+Diferencias con previo
 
 == ChangesetMenuItemDiffWithAnother ==
-Diff with another changeset...
+Diferencias con otro changeset...
 
 == ChangesetMenuItemDiffSelected ==
-Diff selected changesets
+Diferencias de los changesets seleccionados
 
 == ChangesetMenuItemBrowseRepositoryOnChangeset ==
-Browse repository on this changeset
+Explorar repositorio en este changeset
 
 == ChangesetMenuItemLabelChangeset ==
-Label this changeset...
+Etiquetar este changeset...
 
 == ChangesetMenuItemSwitchToChangeset ==
-Switch workspace to this changeset
+Cambiar el workspace a este changeset
 
 == ChangesetMenuItemMergeFromChangeset ==
-Merge from this changeset...
+Hacer merge desde este changeset...
 
 == ChangesetMenuItemCherrypickFromChangeset ==
-Cherry pick from this changeset...
+Cherry-pick desde este changeset...
 
 == ChangesetMenuItemAdvancedMerge ==
-Advanced merge
+Merge avanzado
 
 == ChangesetMenuItemSubtractiveFromChangeset ==
-Subtractive merge from this changeset...
+Hacer merge substractivo desde este changeset...
 
 == ChangesetMenuItemSubtractiveFromChangesetInterval ==
-Subtractive merge from this changeset interval...
+Hacer merge substractivo desde este intervalo de changesets...
 
 == ChangesetMenuItemCherrypickFromChangesetInterval ==
-Cherry pick from this changeset interval...
+Cherry-pick desde este intervalo de changesets...
 
 == ChangesetMenuItemMergeToFromChangeset ==
-Merge from this changeset to...
+Hacer merge desde este changeset a...
 
 == ChangesetMenuItemAdvancedOptions ==
-Advanced options
+Opciones avanzadas
 
 == ChangesetMenuItemMoveChangeset ==
-Move from this changeset to a different branch...
+Mover desde este changeset a una rama diferente...
 
 == ChangesetMenuItemDeleteChangeset ==
-Delete changeset
+Borrar changeset
 
 == CheckoutChangesetMenuItemShowPendingChangesView ==
-Show pending changes view
+Mostrar vista de cambios pendientes
 
 == LabelMenuItemCreateLabel ==
-Create new label...
+Crear etiqueta nueva...
 
 == LabelMenuItemApplyLabelToWorkspace ==
-Apply label to workspace content
+Aplicar etiqueta al contenido del workspace
 
 == LabelMenuItemSwitchToLabel ==
-Switch workspace to this label
+Cambiar el workspace a esta etiqueta
 
 == LabelMenuItemBrowseRepositoryOnLabel ==
 Explorar repositorio en esta etiqueta
 
+== LabelMenuItemDiffWithAnother ==
+Diferencias con otra etiqueta...
+
+== LabelMenuItemDiffSelected ==
+Diferencias de las etiquetas seleccionadas
+
 == LabelMenuItemMergeFromLabel ==
-Merge from this label...
+Hacer merge desde esta etiqueta...
 
 == LabelMenuItemMergeToFromLabel ==
-Merge from this label to...
+Hacer merge desde esta etiqueta a...
 
 == LabelMenuItemCreateBranchFromLabel ==
-Create branch from this label...
+Crear rama desde esta etiqueta...
 
 == LabelMenuItemRenameLabel ==
-Rename...
+Renombrar...
 
 == LabelMenuItemDeleteLabel ==
-Delete
+Borrar
 
 == ShelveMenuItemViewShelve ==
-View shelve
+Ver shelve
 
 == ShelveMenuItemApplyShelveInWorkspace ==
-Apply shelve in my workspace...
+Applicar shelve en mi workspace...
 
 == ShelveMenuItemDeleteShelve ==
-Delete
+Borrar
+
+== AttributeMenuItemCreate ==
+Crear
+
+== AttributeMenuItemEdit ==
+Editar
+
+== AttributeMenuItemDelete ==
+Borrar
 
 == PendingChangesMenuItemOpen ==
-Open
+Abrir
 
 == PendingChangesMenuItemOpenWith ==
-Open with...
+Abrir con...
 
 == PendingChangesMenuItemDiffAnnotateHistory ==
-Diff / Annotate / History
+Diferencias / Anotar / Historia
 
 == PendingChangesMenuItemDiffWorkspace ==
-Diff workspace contents
+Diferencias en los contenidos del workspace
 
 == PendingChangesMenuItemAnnotate ==
-Annotate
+Anotar
 
 == PendingChangesMenuItemViewHistory ==
-History
+Historia
 
 == PendingChangesMenuItemUndoChanges ==
-Undo changes
+Deshacer cambios
 
 == PendingChangesMenuItemDelete ==
-Delete
+Borrar
 
 == PendingChangesMenuItemCheckout ==
 Checkout
 
 == PendingChangesMenuItemSearchMatches ==
-Search matches...
+Buscar coincidencias...
 
 == PendingChangesMenuItemHideIgnoreCloak ==
-Hide / Ignore / Cloak
+Ocultar / Ignorar / Cloak
 
 == PendingChangesMenuItemHideIgnore ==
-Hide / Ignore
+Ocultar / Ignorar
 
 == DirectoryConflictsTitleSingular ==
-1 directory conflict
+1 conflicto de directorio
 
 == DirectoryConflictsTitlePlural ==
-{0} directory conflicts
+{0} conflictos de directorio
 
 == FileConflictsTitleSingular ==
-1 file conflict
+1 conflicto de fichero
 
 == FileConflictsTitlePlural ==
-{0} file conflicts
+{0} conflictos de fichero
 
 == NoActionMenuItem ==
-No action available
+Ninguna acción disponible
 
 == ItemsMenuItemNew ==
-New
+Nuevo
 
 == ItemsMenuItemNewDirectory ==
-Directory...
+Directorio...
 
 == ItemsMenuItemNewFile ==
-File...
+Fichero...
 
 == ItemsMenuAdd ==
-Add to source control
+Añadir al control de versiones
 
 == ItemsMenuAddRecursive ==
-Add directory tree to source control
+Añadir árbol de directorios al control de versiones
 
 == ItemsMenuCheckin ==
 Checkin
 
 == ItemsMenuItemOpen ==
-Open
+Abrir
 
 == ItemsMenuItemOpenWith ==
-Open with...
+Abrir con...
 
 == ItemsMenuItemOpenWithCustom ==
-Open with {0}
+Abrir con {0}
 
 == ItemsMenuItemRevealInFinder ==
-Reveal in Finder
+Mostrar en Finder
 
 == ItemsMenuItemCut ==
-Cut
+Cortar
 
 == ItemsMenuItemDelete ==
-Delete...
+Borrar...
 
 == ItemsMenuItemPaste ==
-Paste
+Pegar
 
 == ItemsMenuItemCreateXlink ==
-Create Xlink...
+Crear Xlink...
 
 == ItemsMenuItemEditXlink ==
-Edit Xlink...
+Editar Xlink...
 
 == BrowseRepositoryMenuItemOpen ==
-Open
+Abrir
 
 == BrowseRepositoryMenuItemOpenWith ==
-Open with...
+Abrir con...
 
 == BrowseRepositoryMenuItemDiffWithPrevious ==
-Diff with previous revision
+Diferencias con revisión anterior
 
 == BrowseRepositoryMenuItemSaveAs ==
-Save as...
+Guardar como...
 
 == BrowseRepositoryMenuItemViewHistory ==
-View history
+Ver historia
 
 == HistoryMenuItemOpen ==
-Open
+Abrir
 
 == HistoryMenuItemOpenWith ==
-Open with...
+Abrir con...
 
 == HistoryMenuItemSaveRevisionAs ==
-Save this revision as...
+Guardar esta revisión como...
 
 == HistoryMenuItemDiffWithPrevious ==
-Diff with previous revision
+Diferencias con revisión anterior
 
 == HistoryMenuItemDiffSelectedRevisions ==
-Diff selected revisions
+Diferencias de revisiones seleccionadas
 
 == HistoryMenuItemDiffChangeset ==
-Diff changeset
+Diferencias de changeset
 
 == HistoryMenuItemRevertToThisRevision ==
-Revert file to this revision
+Revertir fichero a esta revisión
 
 == RenameDialogTitleSingular ==
-Rename item
+Renombrar ítem
 
 == RenameDialogTitlePlural ==
-Rename items
+Renombrar ítems
 
 == RenameDialogDescription ==
-Enter new name:
+Introduzca el nuevo nombre:
 
 == ItemsMenuItemRename ==
-Rename...
+Renombrar...
 
 == ItemsMenuItemDiffWithPrevious ==
-Diff with previous revision
+Diferencias con revisión anterior
 
 == ListViewMenuItem ==
-View as a list
+Ver como lista
 
 == TreeViewMenuItem ==
-View as a tree
+Ver como árbol
 
 == HidePrivateItems ==
-Hide private items
+Ocultar ítems privados
 
 == ExcludePrivateItemsSize ==
-Exclude privates from directory size
+Excluir privados del tamaño del directorio
 
 == AutomaticMergesTitleSingular ==
-1 automatic merge
+1 merge automático
 
 == AutomaticMergesTitlePlural ==
-{0} automatic merges
+{0} merges automáticos
 
 == MergeExplanationTitle ==
-Merge explanation
+Explicación del merge
 
 == MergeWithPendingChangesTitle ==
-Changed files detected
+Ficheros cambiados detectados
 
 == MergeWithPendingChangesMessage ==
-You have changes pending to be checked in in your workspace. It is recommended that you checkin prior to merge to avoid possible issues undoing merges.
-If you are familiar with merge, you can change this behavior going to Preferences / Diff and merge / Allow to merge with pending changes.
+Tiene cambios pendientes para hacer checkin en su workspace. Es recomendable hacer checkin antes del merge para evitar posibles problemas deshaciendo merges.
+Si está familiarizado con el proceso de merge, puede cambiar el comportamiento anterior en Preferencias / Diferencias y merge / Permitir merge con cambios pendientes.
 
-Note: we changed this behavior to avoid issues for new users, although it is not dangerous to enable it if you are familiar with how merge works.
+Nota: Se ha modificado este comportamiento para evitar problemas a nuevos usuarios, aunque no es peligroso habilitarlo si conoce cómo funcionan los merges.
 
 == MergeNotificationMessageTitle ==
-Notification message
+Mensaje de notificación
 
 == BaseContributor ==
 Base
 
 == SrcContributor ==
-Source
+Origen
 
 == DstContributor ==
-Destination
+Destino
 
 == DeleteDialogTitleSingular ==
-Delete item
+Borrrar ítem
 
 == DeleteDialogTitlePlural ==
-Delete items
+Borrar ítems
 
 == DeleteFromDiskSingular ==
-Delete item from disk
+Borrar ítem de disco
 
 == DeleteFromDiskPlural ==
-Delete items from disk
+Borrar ítems de disco
 
 == DoNotDeleteFromDiskSingular ==
-Do not delete item from disk
+No borrar ítem de disco
 
 == DoNotDeleteFromDiskPlural ==
-Do not delete items from disk
+No borrar ítesm de disco
 
 == DeletingProgress ==
-Deleting {0}...
+Borrando {0}...
 
 == RemoveFromVersionControlSingular ==
-Remove item from version control
+Eliminar ítem del control de versiones
 
 == RemoveFromVersionControlPlural ==
-Remove items from version control
+Eliminar ítems del control de versiones
 
 == DiscardedConflictsTitleSingular ==
-1 discarded conflict
+1 conflicto descartado
 
 == DiscardedConflictsTitlePlural ==
-{0} discarded conflicts
+{0} conflictos descartados
 
 == DirectoryConflictsCaption ==
-These are conflicts in the directory structure. Typically involve moves, renames, deletes. They must be solved before applying other changes.
+Hay conflictos (movidos, renombrados o borrados) en la estructura del directorio. Estos conflictos tienen que resolverse antes de aplicar otros cambios.
 
 == DirectoryConflictsUnsolvedCaptionSingular ==
-directory conflict to solve.
+conflicto de directorio a resolver.
 
 == DirectoryConflictsUnsolvedCaptionPlural ==
-directory conflicts to solve.
+conflictos de directorio a resolver.
 
 == MergeAlreadyConnected ==
-La búsqueda de merges ha finalizado, el destino del merge ya incluye los cambios del origen.
+La búsqueda de merges ha finalizado. El destino del merge ya incluye los cambios del origen.
 
 == MergeAlreadySubtracted ==
-La búsqueda de merges ha finalizado, el origen del merge ya ha sido sustraído del destino.
+La búsqueda de merges ha finalizado. El origen del merge ya ha sido sustraído del destino.
 
 == MergeInvalidInterval ==
-La búsqueda de merges ha finalizado, el intervalo seleccionado no es válido.
+La búsqueda de merges ha finalizado. El intervalo seleccionado no es válido.
 
 == MergeNoMergesDetected ==
 La búsqueda de merges ha finalizado. No se han detectado merges.
 
 == MergeNoMergesDetectedCreateLink ==
-La búsqueda de merges ha finalizado. No se han detectado elementos a mezclar; sin embargo los changesets de origen y destino son diferentes. Normalmente esto ocurre cuando se han hecho los mismos cambios en el origen y en el destino.
+La búsqueda de merges ha finalizado. No se han detectado ítems para el merge. Sin embargo, los changesets de origen y destino son diferentes. Normalmente esto ocurre cuando se han hecho los mismos cambios en el origen y en el destino.
 
 Haga click en "Explicar merge" para ver más detalles de los contribuidores implicados.
 
@@ -1053,10 +1086,10 @@ Haga click en "Aplicar cambios" para unificar origen y destino (creando un enlac
 == MergeNoMergesDetectedCreateLinkForIncomingView ==
 No hay nada que descargar
 
-Simplemente haga clic en "Actualizar espacio de trabajo" para mover su espacio de trabajo al comienzo de la rama.
+Haga clic en "Actualizar workspace" para mover su workspace al comienzo de la rama.
 
 
-Explicación detallada: sus cambios coinciden con los realizados en la cabeza de la rama, por lo que realmente no hay nada que descargar, pero los metadatos deben sincronizarse.
+Explicación detallada: sus cambios coinciden con los realizados en la cabeza de la rama. Por lo que realmente no hay nada que descargar pero los metadatos deben sincronizarse.
 
 
 == MergeNothingToDownloadForIncomingView ==
@@ -1064,19 +1097,19 @@ No hay nada que descargar
 
 
 == MergeNotConnected ==
-La búsqueda de merges ha finalizado, el origen y destino del merge subtractivo no están conectados.
+La búsqueda de merges ha finalizado. El origen y destino del merge substractivo no están conectados.
 
 == MergeAlreadyProcessed ==
-Merge finished. Your changes are displayed ​on the pending changes view. Close this view and you will see them!
+Merge finalizado. Sus cambios se muestran en la vista de cambios pendientes. Cierre esta vista para verlos.
 
 == FileMergeTitleSingular ==
-1 change to apply
+1 cambio a aplicar
 
 == FileMergeTitlePlural ==
-{0} changes to apply
+{0} cambios a aplicar
 
 == MergeChangedOnSrc ==
-Changes only in source contributor
+Cambios solo en el contribuidor origen
 
 == MergeChangedOnSrcForIncomingView ==
 Actualizará
@@ -1091,106 +1124,106 @@ Actualizará
 Conflictos descartados y posibles advertencias.
 
 == DeleteDeleteWarningMessageSingular ==
-Deleted in the source of the merge, but also deleted on destination (1 item)
+Borrado en el origen del merge pero también en el destino (1 ítem)
 
 == DeleteDeleteWarningMessagePlural ==
-Deleted in the source of the merge, but also deleted on destination ({0} items)
+Borrado en el origen del merge pero también en el destino ({0} ítems)
 
 == DiscardedAddedWarningMessageSingular ==
-Added in the source of the merge, but add already applied on destination (1 item)
+Añadido en el origen del merge pero también en el destino (1 ítem)
 
 == DiscardedAddedWarningMessagePlural ==
-Added in the source of the merge, but add already applied on destination ({0} items)
+Añadido en el origen del merge pero también en el destino ({0} ítems)
 
 == DiscardedChangedWarningMessageSingular ==
-Changed in the source of the merge, but destination contents are exactly the same (1 item)
+Cambiado en el origen del merge pero los contenidos del destino son exactamente los mismos (1 ítem)
 
 == DiscardedChangedWarningMessagePlural ==
-Changed in the source of the merge, but destination contents are exactly the same ({0} items)
+Cambiado en el origen del merge pero los contenidos del destino son exactamente los mismos ({0} ítems)
 
 == DiscardedDeleteWarningMessageSingular ==
-Deleted in the source of the merge. Destination tree doesn't have to load this path (1 item)
+Borrado en el origen del merge. El árbol de destino no tiene que cagar esta ruta (1 ítem)
 
 == DiscardedDeleteWarningMessagePlural ==
-Deleted in the source of the merge. Destination tree doesn't have to load this path ({0} items)
+Borrado en el origen del merge. El árbol de destino no tiene que cargar esta ruta ({0} ítems)
 
 == DiscardedFSProtectionWarningMessageSingular ==
-Filesystem permissions changed in the source of the merge, but same permissions were already applied on the destination ((1 item)
+Permisos del sistema de archivos cambiados en el origen del merge pero se han aplicado los mismos permisos al destino ((1 ítem)
 
 == DiscardedFSProtectionWarningMessagePlural ==
-Filesystem permissions changed in the source of the merge, but same permissions were already applied on the destination (({0} items)
+Permisos del sistema de archivos cambiados en el origen del merge pero se han aplicado los mismos permisos al destino (({0} ítems)
 
 == DiscardedMovedWarningMessageSingular ==
-Moved in the source of the merge, but move already applied on the destination (1 item)
+Movido en el origen del merge pero también en el destino (1 ítem)
 
 == DiscardedMovedWarningMessagePlural ==
-Moved in the source of the merge, but move already applied on the destination ({0} items)
+Movido en el origen del merge pero también en el destion ({0} ítems)
 
 == PathInConflictWarningMessageSingular ==
-These items were renamed because the paths were already in use during the merge operation (1 item)
+Estos ítems se han renombrado porque las rutas estaban en uso durante el merge (1 ítem)
 
 == PathInConflictWarningMessagePlural ==
-These items were renamed because the paths were already in use during the merge operation ({0} items)
+Estos ítems se han renombrado porque las rutas estaban en uso durante el merge ({0} ítems)
 
 == XlinkWarningMessageSingular ==
-{0} (1 item)
+{0} (1 ítem)
 
 == XlinkWarningMessagePlural ==
-{0} ({{0}} items)
+{0} ({{0}} ítems)
 
 == DivergentMoveConflictsSingular ==
-Divergent move conflicts (1 item)
+Conflictos de movido divergente (1 ítem)
 
 == DivergentMoveConflictsPlural ==
-Divergent move conflicts ({0} items)
+Conflictos de movido divergente ({0} ítems)
 
 == CyleMoveConflictsSingular ==
-Cycle move conflicts (1 item)
+Conflictos de movido cíclico (1 ítem)
 
 == CyleMoveConflictsPlural ==
-Cycle move conflicts ({0} items)
+Conflictos de movido cíclico ({0} ítems)
 
 == EvilTwinsSingular ==
-Evil twin conflicts (1 item)
+Conflictos "evil twin" (1 ítem)
 
 == EvilTwinsPlural ==
-Evil twin conflicts ({0} items)
+Conflictos "evil twin" ({0} ítems)
 
 == MoveDeleteConflictsSingular ==
-Move/Delete conflicts (1 item)
+Conflictos de Movido/Borrado (1 ítem)
 
 == MoveDeleteConflictsPlural ==
-Move/Delete conflicts ({0} items)
+Conflictos de Movido/Borrado ({0} ítems)
 
 == DeleteMoveConflictsSingular ==
-Delete/Move conflicts (1 item)
+Conflictos de Borrado/Movido (1 ítem)
 
 == DeleteMoveConflictsPlural ==
-Delete/Move conflicts ({0} items)
+Conflictos de Borrado/Movido ({0} ítems)
 
 == MovedEvilTwinsSingular ==
-Moved evil twin conflicts (1 item)
+Conflictos de "evil twin" movido (1 ítem)
 
 == MovedEvilTwinsPlural ==
-Moved evil twin conflicts ({0} items)
+Conflictos de "evil twin" movido ({0} ítems)
 
 == AddMoveConflictsSingular ==
-Add/Move conflicts (1 item)
+Conflictos de Añadido/Movido (1 ítem)
 
 == AddMoveConflictsPlural ==
-Add/Move conflicts ({0} items)
+Conflictos de Añadido/Movido ({0} ítems)
 
 == MoveAddConflictsSingular ==
-Move/Add conflicts (1 item)
+Conflictos de Movido/Añadido (1 ítem)
 
 == MoveAddConflictsPlural ==
-Move/Add conflicts ({0} items)
+Conflictos de Movido/Añadido ({0} ítems)
 
 == LoadedTwiceConflictsSingular ==
-Items loaded twice conflicts (1 item)
+Conflictos de ítems cargados dos veces (1 ítem)
 
 == LoadedTwiceConflictsPlural ==
-Items loaded twice conflicts ({0} items)
+Conflictos de ítems cargados dos veces ({0} ítems)
 
 == MoveSourceDeleteConflictsSingular ==
 Move/Delete, move out of delete conflicts (1 item)
@@ -1205,165 +1238,165 @@ Delete/Move, move out of delete conflicts (1 item)
 Delete/Move, move out of delete conflicts ({0} items)
 
 == ChangeDeleteConflictsSingular ==
-Change/Delete conflicts (1 item)
+Conflictos de cambiado/borrado (1 ítem)
 
 == ChangeDeleteConflictsPlural ==
-Change/Delete conflicts ({0} items)
+Conflictos de cambiado/borrado ({0} ítems)
 
 == DeleteChangeConflictsSingular ==
-Delete/Change conflicts (1 item)
+Conflictos de borrado/cambiado (1 ítem)
 
 == DeleteChangeConflictsPlural ==
-Delete/Change conflicts ({0} items)
+Conflictos de borrado/cambiado ({0} ítems)
 
 == ReadonlyXlinkConflictsSingular ==
-Readonly Xlink conflicts (1 item)
+Conflictos de Xlink de solo lectura (1 ítem)
 
 == ReadonlyXlinkConflictsPlural ==
-Readonly Xlink conflicts ({0} items)
+Conflictos de Xlink de solo lectura ({0} ítems)
 
 == ResolveDirectoryConflict ==
-Resolve directory conflict
+Resolver conflicto de directorio
 
 == ResolveDirectoryConflictChooseOption ==
-In order to resolve the conflict, choose one of the following options:
+Seleccione una de las siguientes opciones para resolver el conflicto:
 
 == SelectAMatch ==
-Please select a change to be matched
+Por favor, seleccione un cambio para usar como coincidencia
 
 == SearchMatchesDialogTitle ==
-Search moved candidates
+Buscar candidatos movidos
 
 == SearchMatchesDialogExplanation ==
-All possible sources for the new item are displayed. Slide the bar below to change the similarity threshold.
+Estos son los orígenes posibles para el nuevo ítem. Deslice la barra para cambiar el umbral de similitud.
 
 == MinSimilarityAccepted ==
-Min. accepted similarity: {0:0.0}
+Mín. similitud aceptada: {0:0.0}
 
 == LoadingMatches ==
-Loading matches...
+Cargando coincidencias...
 
 == SrcPathColumn ==
-Source path
+Ruta origen
 
 == DstPathColumn ==
-Destination path
+Ruta destino
 
 == SimilarityColumn ==
-Similarity
+Similitud
 
 == DiffCategoryHeaderSingular ==
-{0}: 1 item
+{0}: 1 ítem
 
 == DiffCategoryHeaderPlural ==
-{0}: {1} items
+{0}: {1} ítems
 
 == MergeDiffCategory ==
-Merged from {0}
+Merge hecho desde {0}
 
 == AddedMergeDiffCategory ==
-Added (files added in the merge source)
+Añadido (ficheros añadidos en el origen del merge)
 
 == DeletedMergeDiffCategory ==
-Deleted (files deleted in the merge source)
+Borrado (ficheros borrados en el origen del merge)
 
 == MergedMergeDiffCategory ==
-Merged (files changed in the merge source and in the merge destination)
+Merge realizado (ficheros cambiados en el origen y el destino del merge)
 
 == MovedMergeDiffCategory ==
-Moved (files moved in the merge source)
+Movido (ficheros movidos en el origen del merge)
 
 == ReplacedMergeDiffCategory ==
-Changed (files changed in the merge source)
+Cambiado (ficheros cambiados en el origen del merge)
 
 == AddedDiffCategory ==
-Added
+Añadido
 
 == ChangedDiffCategory ==
-Changed
+Cambiado
 
 == DeletedDiffCategory ==
-Deleted
+Borrado
 
 == MovedDiffCategory ==
-Moved
+Movido
 
 == MergedDiffCategory ==
-Merged
+Merge hecho
 
 == FSProtectionDiffCategory ==
-Only filesystem permissions changed
+Cambiados solo permisos del sistema de archivos
 
 == Source ==
-Source/theirs:
+Origen/suyos:
 
 == Destination ==
-Destination/yours:
+Destino/tuyos:
 
 == KeepSrcChanges ==
-Keep source changes
+Mantener cambios del origen
 
 == KeepSrcNotSupported ==
-Keeping the source item is not supported for this type of conflict
+No se puede mantener el ítem de origen en este tipo de conflicto
 
 == KeepDstChanges ==
-Keep destination changes
+Mantener cambios del destino
 
 == KeepDstNotSupported ==
-Keeping the destination item is not supported for this type of conflict
+No se puede mantener el ítem de destino en este tipo de conflicto
 
 == RenameOnDst ==
-Rename item in your workspace
+Renombrar ítem en workspace
 
 == RenameNotSupported ==
-Renaming of destination item is not supported for this type of conflict
+No se puede renombrar el ítem de destino en este tipo de conflicto
 
 == InputItemNameMessage ==
-Please input an item name
+Por favor, introduzca un nombre para el ítem
 
 == AutomaticMergesUnsolvedCaptionSingular ==
-1 item to merge
+1 ítem para el merge
 
 == AutomaticMergesUnsolvedCaptionPlural ==
-{0} items to merge
+{0} ítems para el merge
 
 == HelpButton ==
-Help
+Ayuda
 
 == AdvancedButton ==
-Advanced
+Avanzado
 
 == AdvancedButtonAmp ==
-&Advanced
+&Avanzado
 
 == BranchExplorerMenuButton ==
-Branch Explorer
+Explorador de Ramas
 
 == BranchExplorerSearchFieldTooltip ==
-Type a search pattern. Use cs: lb: or br: to restrict results
+Introduzca un patrón de búsqueda. Use cs:, lb: o br: para limitar los resultados
 
 == BranchExplorerSearchFieldShortcutsTooltip ==
-Keyboard shortcuts:
-  Enter: focus the next search result
-  Ctrl+Enter: focus the previous one
+Atajos de teclado:
+  Enter: foco en el siguiente resultado
+  Ctrl+Enter: foco en el anterior resultado
 
 == BranchColumn ==
-Branch
+Rama
 
 == CancelButton ==
-Cancel
+Cancelar
 
 == CancelButtonAmp ==
-&Cancel
+&Cancelar
 
 == CloseButton ==
-Close
+Cerrar
 
 == OkButton ==
 OK
 
 == YesButton ==
-Yes
+Sí
 
 == NoButton ==
 No
@@ -1375,40 +1408,40 @@ Checkin
 Check&in
 
 == CheckinToADifferentBranchButton ==
-Checkin changes to a different branch...
+Checkin de los cambios a una rama diferente...
 
 == CheckinToADifferentBranch ==
-Checkin changes to a different branch
-
-== MoveChangesetsToADifferentBranch ==
-Move changesets to a different branch
+Checkin de los cambios a una rama diferente
 
 == CheckinToADifferentBranchNewBranchWaterMark ==
 task001
+
+== MoveChangesetsToADifferentBranch ==
+Mover changesets a una rama diferente
 
 == ShelveButton ==
 Shelve
 
 == ShowShelvesButton ==
-Show shelves
+Mostrar shelves
 
 == ShowShelvesViewTooltip ==
-Show the shelves view
+Mostrar la vista de shelves
 
 == OptionsTooltip ==
-Configure the pending changes options
+Configurar las opciones de cambios pendientes
 
 == ChooseMessage ==
-Choose...
+Elegir...
 
 == GluonConfigurationSelectRepositoryButton ==
-Select...
+Seleccionar...
 
 == GluonConfigurationBrowseWorkspacePathButton ==
-Choose Path...
+Elija una ruta...
 
 == GluonConfigurationCreateRepositoryButton ==
-Create...
+Crear...
 
 == ChooseMessageAmp ==
 Ch&oose...
@@ -1417,79 +1450,79 @@ Ch&oose...
 C&hoose...
 
 == NewMessageAmp ==
-&New...
+&Nuevo...
 
 == ConflictColumn ==
-Conflict
+Conflicto
 
 == CheckinMergeTitle ==
-User action required at checkin
+Acción requerida para el checkin
 
 == ChangesetColumn ==
 Changeset
 
 == DefaultBranchesQuery ==
-find branch
+encontrar rama
 
 == DefaultChangesetsQuery ==
-find changeset
+encontrar changeset
 
 == ExecuteButton ==
-Execute
+Ejecutar
 
 == ExecuteButtonAmp ==
-&Execute
+&Ejecutar
 
 == FileConflictsCaptionSingular ==
-file conflict to solve.
+conflicto de fichero a resolver.
 
 == FileConflictsCaptionPlural ==
-file conflicts to solve.
+conflictos de fichero a resolver.
 
 == FileConflictsCaptionForIncomingViewSingular ==
-file in conflict with your changes.
+fichero en conflicto con sus cambios.
 
 == FileConflictsCaptionForIncomingViewPlural ==
-files in conflict with your changes.
+ficheros en conflicto con sus cambios.
 
 == FileConflictsUnsolvedCaption ==
-For {0} items, both source and destination contributors have changes. User interaction might be required (manual merge)
+Para {0} ítems, los contribuidores origen y destino tienen cambios. Es necesario un merge manual
 
 == FilterLabel ==
-Filter:
+Filtro:
 
 == Controlled ==
-Controlled
+Controlado
 
 == ItemsMenuCheckout ==
 Checkout
 
 == ItemsMenuLockAndCheckout ==
-Lock and checkout
+Bloquear y checkout
 
 == ItemsMenuCheckoutRecursive ==
-Checkout recursively
+Checkout recursivo
 
 == CheckedOut ==
 Checked-out
 
 == Deleted ==
-Deleted
+Borrado
 
 == Changed ==
-Changed on disk
+Cambiado en disco
 
 == ContainsChanges ==
-Contains changes
+Contiene cambios
 
 == Private ==
-Private
+Privado
 
 == Ignored ==
-Ignored
+Ignorado
 
 == Ignore ==
-Ignore
+Ignorar
 
 == Cloaked ==
 Cloaked
@@ -1498,7 +1531,7 @@ Cloaked
 Cloak
 
 == HiddenChanged ==
-Hidden changed
+Cambios ocultos
 
 == SwitcherMainWindowTitle ==
 Plastic SCM - Switcher
@@ -1510,16 +1543,16 @@ Plastic SCM - wk: {0} - {1} - {2}: {3}@{4}
 Gluon - wk: {0} - {1}
 
 == StatusInfo ==
-You are browsing {0} {1}@{2}
+Está viendo {0} {1}@{2}
 
 == DiffWindowTitle ==
-Comparing previous content with revisions on {0}
+Comparando contenido previo con revisiones en {0}
 
 == ChangesetsDiffWindowTitle ==
-Comparing revisions on {0} with revisions on {1}
+Comparando revisiones en {0} con revisiones en {1}
 
 == FsProtectionDifferences ==
-Filesystem permissions changed from {0} to {1}
+Permisos de sistema de archivos cambiados de {0} a {1}
 
 == NoItemsToUndo ==
 No items are selected. Use items' checkboxes to select them. This can also occur if you have selected items, but they are all private or ignored.
@@ -1553,12 +1586,6 @@ Nube
 
 == OnPremAccount ==
 On-premises
-
-== CloudLocalAccount ==
-Local
-
-== AddNewAccount ==
-Añadir nueva cuenta
 
 == ChooseAccount ==
 Elige una cuenta
@@ -1802,6 +1829,18 @@ Diff item moved on source with item deleted on destination
 == DiffSourceWithDestinationMoveEvilTwin ==
 Diff item moved on source with item moved on destination
 
+== DiffSourceWithDestinationChangeDelete ==
+View changes on source item
+
+== DiffSourceWithDestinationDeleteChange ==
+View changes on destination item
+
+== DiffEntireBranch ==
+Diferencias de la rama
+
+== DiffChangesetByChangeset ==
+Diferencias entre changesets
+
 == RetryUpdate ==
 Retry update
 
@@ -1833,7 +1872,7 @@ Calculating merges...
 Calculating incoming changes...
 
 == LoadingFindMerge ==
-Buscando elementos a mezclar, por favor espere...
+Buscando elementos para el merge, por favor espere...
 
 == LoadingPendingChanges ==
 Finding changes in the workspace...
@@ -1861,7 +1900,7 @@ These following options let you choose how the items are shown in the 'Pending c
 Type a name for the new repo and make sure you will create it on the correct server.
 
 == NewWorkspaceExplanation ==
-The workspace is the local copy to work on files and make changes. A workspace handles a single branch at a time. The workspace can be switched to a different branch even on a different repository.
+Descargar una copia de trabajo del repositorio {0}. Sólo contiene los ficheros para trabajar, no el historial completo. Un workspace es una carpeta en disco que se usa para hacer cambios, editar y compilar localmente.
 
 == RenameWorkspaceExplanation ==
 Renaming the workspace won’t modify its path.
@@ -2275,7 +2314,7 @@ Create
 Save
 
 == DeleteButton ==
-Delete
+Borrar
 
 == SwitchButton ==
 Switch
@@ -2559,6 +2598,12 @@ Available Plastic SCM changesets
 == SelectChangesetBelow ==
 Please select a changeset from the list below:
 
+== AvailableLabels ==
+Etiquetas disponibles en Plastic SCM
+
+== SelectLabelBelow ==
+Seleccione una etiqueta de la siguiente lista:
+
 == AvailableBranches ==
 Available Plastic SCM branches
 
@@ -2701,7 +2746,7 @@ Please enter the user and password you use to connect to Plastic Cloud (same as 
 This way you won't be prompted again when replicating to cloud.
 
 == PlasticSCMServerLabel ==
-Enter the name/IP and port of your server:
+Enter the name/IP and port of your server
 
 == GluonServerLabel ==
 Server:
@@ -2760,6 +2805,9 @@ Other options
 
 == UserProfileOptions ==
 User profile
+
+== DynamicWorkspaces ==
+Workspaces dinámicos
 
 == MiscOptionsTitle ==
 Miscellaneous
@@ -2905,7 +2953,7 @@ Undoing the checkout of the selected items will discard any changes made to them
 Rename Sync View
 
 == RenameTitle ==
-Rename item
+Renombrar ítem
 
 == RenameExplanation ==
 Enter a new name for the element to be renamed
@@ -3624,7 +3672,7 @@ Add
 Rename
 
 == DeleteSyncViewButton ==
-Delete
+Borrar
 
 == SyncViewDetailsTitle ==
 Sync view details
@@ -4467,7 +4515,7 @@ Don't save
 Select a file to see its differences
 
 == SaveThisRevisionAs ==
-Save this revision as...
+Guardar esta revisión como...
 
 == SaveRevisionAs ==
 Save revision as...
@@ -4542,7 +4590,7 @@ File History
 Comment
 
 == OpenButton ==
-Open
+Abrir
 
 == StatusAtWorkspace ==
 {0} at {1} workspace
@@ -4743,7 +4791,7 @@ Display full branch names
 Shelve
 
 == AnnotateDialogTitle ==
-Annotate
+Anotar
 
 == AnnotateCantFindRevisionAtChangeset ==
 Cannot find revision in changeset cs:{0}
@@ -5021,7 +5069,7 @@ Reemplazado
 Copiado (nuevo)
 
 == CheckedOutStatus ==
-Desprotegido
+Checked-out
 
 == ChangedStatus ==
 Cambiado
@@ -5581,10 +5629,10 @@ No tiene el permiso 'configlocks'. Contacte con su administrador para que le con
 El fichero {0} no tiene extensión. Actualmente esta opción no permite configurar reglas de bloqueo para ficheros sin extensión.
 
 == AddLockRuleAndCheckoutTitle ==
-Añadir regla de bloqueo y desproteger para editar
+Añadir regla de bloqueo y hacer checkout para editar
 
 == AddLockRuleAndCheckoutMessage ==
-Para bloquear un fichero, primero debe configurar una regla de bloqueo.{0{0}Elija una de las opciones siguientes para configurar qué ficheros se bloquean automáticamente al desproteger para editar.
+Para bloquear un fichero, primero debe configurar una regla de bloqueo.{0{0}Elija una de las opciones siguientes para configurar qué ficheros se bloquean automáticamente al hacer checkout para editar.
 
 == AddLockRuleRadioGroup ==
 Escoge una regla de bloqueo o cree la suya
@@ -5882,7 +5930,7 @@ Movidos a aplicar
 Movido en origen a {0}
 
 == MergeMovesToApplyRemarkForIncomingView ==
-Aplicará el movido a tu espacio de trabajo
+Aplicará el movido a tu workspace
 
 == MergeDeletesToApplyCategory ==
 Borrados a aplicar
@@ -5897,7 +5945,7 @@ Borrados a aplicar
 Borrado en origen
 
 == MergeDeletesToApplyRemarkForIncomingView ==
-Aplicará el borrado a tu espacio de trabajo
+Aplicará el borrado a tu workspace
 
 == MergeNewItemsToDownloadCategory ==
 Items nuevos a descargar
@@ -5912,7 +5960,7 @@ Items nuevos a descargar
 Añadido en origen
 
 == MergeNewItemsToDownloadRemarkForIncomingView ==
-Aplicará el añadido a tu espacio de trabajo
+Aplicará el añadido a tu workspace
 
 == MergeFileSystemPermissionsChangesToApplyCategory ==
 Cambios de permisos a aplicar
@@ -5921,7 +5969,7 @@ Cambios de permisos a aplicar
 Cambios en los permisos del fichero
 
 == MergeFileSystemPermissionsChangesToApplyRemarkForIncomingView ==
-Aplicará los cambios de permisos del fichero en tu espacio de trabajo
+Aplicará los cambios de permisos del fichero en tu workspace
 
 == MergeFilesToDownloadCaptionSingular ==
 1 fichero a descargar ({0})
@@ -6026,7 +6074,7 @@ Estás a punto de recuperar los siguientes repositorios: {0}. ¿Deseas continuar
 Merge manteniendo los cambios entrantes (head/origen)
 
 == IncomingChangesMenuItemMergeKeepingWorkspaceChanges ==
-Merge manteniendo los cambios del espacio de trabajo (tuyos/destino)
+Merge manteniendo los cambios del workspace (tuyos/destino)
 
 == IncomingChangesMenuItemDiffIncomingChanges ==
 Diferencias del cambio entrante (head/origen)
@@ -6582,7 +6630,7 @@ Repository Name
 Repository Name:
 
 == NewButton ==
-New
+Nuevo
 
 == WorkPreferenceQuestion ==
 How do you prefer to work?
@@ -6645,7 +6693,7 @@ Undelete revision to specified path...
 Diff
 
 == DiffMenuItemSaveRevisionAs ==
-Save this revision as...
+Guardar esta revisión como...
 
 == DiffMetaMenuItem ==
 Diff .meta
@@ -6729,7 +6777,7 @@ Assets/Plastic SCM
 Show pending changes view
 
 == AddPlasticMenu ==
-Add to source control
+Añadir a control de versiones
 
 == CheckoutPlasticMenu ==
 Checkout
@@ -6738,10 +6786,10 @@ Checkout
 Checkin
 
 == UndoPlasticMenu ==
-Undo changes
+Deshacer cambios
 
 == DiffPlasticMenu ==
-Diff with previous revision
+Diferencias con revisión anterior
 
 == HistoryPlasticMenu ==
 View file history
@@ -6769,18 +6817,6 @@ Sign up with Unity ID
 
 == SignUpGoogle ==
 Sign up with Google
-
-== CannotAddVersionControl ==
-Cannot add files to Version Control: {0}
-
-== CannotDeleteVersionControl ==
-Cannot delete '{0}' in Version Control: {1}
-
-== CannotMoveVersionControl ==
-Cannot move '{0}' to '{1}' in Version Control: {2}
-
-== CannotCheckoutVersionControl ==
-Cannot checkout files in Version Control: {0}
 
 == ErrorGettingCredentialsCloudProject ==
 Error getting credentials to download Cloud Project: {0} ({1})
@@ -7380,7 +7416,7 @@ Ir a {0}
 +{0} más
 
 == CheckoutChangesetComment ==
-El changeset seleccionado representa los cambios en su workspace, que todavía no es está protegido en el repositorio.
+El changeset seleccionado representa los cambios pendientes en su workspace. Aún no se ha hecho checkin en el repositorio.
 
 == NoIncomingChanges ==
 No incoming changes
@@ -7488,16 +7524,16 @@ Use Selection for Find
 Jump to Selection
 
 == EditMenuCut ==
-Cut
+Cortar
 
 == EditMenuCopy ==
 Copy
 
 == EditMenuPaste ==
-Paste
+Pegar
 
 == EditMenuDelete ==
-Delete
+Borrar
 
 == EditMenuSelectAll ==
 Select All
@@ -7510,6 +7546,9 @@ Eliminando comentario...
 
 == AppMenuAbout ==
 About PlasticX SCM
+
+== AppMenuAboutGluon ==
+About GluonX
 
 == AppMenuPreferences ==
 Preferences…
@@ -7583,11 +7622,20 @@ Bienvenido a la nueva GUI de Plastic SCM (alpha)
 == WelcomeToNewGui ==
 Bienvenido a la nueva GUI de Plastic SCM
 
+== WelcomeToNewGluonGui ==
+Bienvenido a la nueva GUI de Gluon
+
 == WelcomeToNewGuiFirstText ==
 Estás invitado a probar la nueva GUI de Plastic SCM: un adelanto del trabajo que hemos estado haciendo para mejorar continuamente la experiencia de Plastic para todos los usuarios, independientemente del nivel de experiencia.
 
+== WelcomeToNewGluonGuiFirstText ==
+Estás invitado a probar la nueva GUI de Gluon: un adelanto del trabajo que hemos estado haciendo para mejorar continuamente la experiencia de Plastic para todos los usuarios, independientemente del nivel de experiencia.
+
 == WelcomeToNewGuiSecondText ==
-Esta versión es multiplataforma, incluye un tema oscuro y proporciona un mejor resaltado de sintaxis. ¡Pronto habrá muchas más mejoras, incluida la compatibilidad con Gluon! Prueba la nueva experiencia y vuelve a cambiar en cualquier momento, ¡haznos saber lo que piensas!
+Esta versión es multiplataforma, incluye un tema oscuro y proporciona un mejor resaltado de sintaxis. ¡Pronto habrá muchas más mejoras! Prueba la nueva experiencia y vuelve a cambiar en cualquier momento, ¡haznos saber lo que piensas!
+
+== WelcomeToNewGluonGuiSecondText ==
+Esta versión tiene todas las funcionalidades, es multiplataforma e incluye tema oscuro. También incluye soporte para changelists. Prueba la nueva experiencia y vuelve a cambiar en cualquier momento, ¡haznos saber lo que piensas!
 
 == WelcomeToNewGuiSecondTextWindows ==
 Esta versión alpha es multiplataforma, incluye un tema oscuro y proporciona un mejor resaltado de sintaxis. ¡Pronto habrá muchas más mejoras, incluida la compatibilidad con Gluon! Prueba la nueva experiencia y vuelve a cambiar en cualquier momento, ¡haznos saber lo que piensas!
@@ -7597,6 +7645,9 @@ Esta versión alpha es multiplataforma, incluye un tema oscuro y proporciona un 
 
 == SwitchToLegacyGuiHelp ==
 Puedes cambiar a la GUI clásica desde aquí
+
+== ConfirmGoBackToTitle ==
+Confirmación de volver atras
 
 == GoBackToWarning ==
 Estas seguro de querer volver a este changeset?
@@ -7637,5 +7688,243 @@ Algo ha fallado
 == TryAgain ==
 PROBAR DE NUEVO
 
-== ConfirmGoBackToTitle ==
-Confirmación de volver atras
+== LoadingRepositoryTree ==
+Cargando árbol del repositorio...
+
+== DetailsHeader ==
+Detalles
+
+== Download ==
+Descargar
+
+== CalculatingSize ==
+Calculando tamaño del directorio...
+
+== OpenWorkspace ==
+Abrir workspace
+
+== OpenCloudDashboard ==
+Abrir dashboard de cloud
+
+== Accounts ==
+Cuentas
+
+== ManageAccounts ==
+Administrar cuentas
+
+== LocalServer ==
+Servidor local
+
+== DivergentMoveViewSource ==
+View content of the moved item
+
+== LoadedTwiceViewSource ==
+View content of the item loaded twice
+
+== CycleMoveConflictViewSource ==
+Ver contenido del item movido en origen
+
+== CycleMoveConflictViewDestination ==
+Ver contenido del item movido en destino
+
+== EvilTwinsConflictViewSource ==
+Ver contenido del item añadido en origen
+
+== EvilTwinsConflictViewDestination ==
+Ver contenido del item añadido en destino
+
+== MoveDeleteConflictViewSource ==
+Ver contenido del item movido en origen
+
+== MoveDeleteConflictViewDestination ==
+Ver contenido del item movido en destino
+
+== DeleteMoveConflictViewSource ==
+Ver contenido del item eliminado en origen
+
+== DeleteMoveConflictViewDestination ==
+Ver contenido del item movido en destino
+
+== MovedEvilConflictViewSource ==
+Ver contenido del item movido en origen
+
+== MovedEvilConflictViewDestination ==
+Ver contenido del item movido en destino
+
+== AddMoveConflictViewSource ==
+Ver contenido del item añadido en origen
+
+== AddMoveConflictViewDestination ==
+Ver contenido del item movido en destino
+
+== MoveAddConflictViewSource ==
+Ver contenido del item movido en origen
+
+== MoveAddConflictViewDestination ==
+Ver contenido del item añadido en destino
+
+== ChangeDeleteConflictViewSourceAdded ==
+Ver contenido del item añadido en origen
+
+== ChangeDeleteConflictViewSourceChanged ==
+Ver contenido del item modificado en origen
+
+== ChangeDeleteConflictViewDestination ==
+Ver contenido del item eliminado en destino
+
+== DeleteChangeConflictViewSource ==
+Ver contenido del item eliminado en origen
+
+== DeleteChangeConflictViewDestinationAdded ==
+Ver contenido del item añadido en destino
+
+== DeleteChangeConflictViewDestinationChanged ==
+Ver contenido del item modificado en destino
+
+== NoOrganizationTitle ==
+¿Aún no tienes una organización?
+
+== CreateNewOrganization ==
+Crear una nueva organización
+
+== CreateOrganizationNameLabel ==
+Nombre de la organización
+
+== CreateDatacenterLabel ==
+Datacenter
+
+== Organizations ==
+Organizaciones
+
+== NoRepositoryTitle ==
+¿Aún no tienes un repositorio?
+
+== CreateNewRepository ==
+Crear un nuevo repositorio
+
+== CreateRepositoryNameLabel ==
+Repositorio nombre
+
+== CreateWorkspaceNameLabel ==
+Espacio de trabajo nombre
+
+== CreateWorkspaceLocationLabel ==
+Ubicación
+
+== CreateWorkspaceCheckBoxLabel ==
+Crear un espacio de trabajo para este repositorio
+
+== CreateWorkspaceExplanation ==
+Un espacio de trabajo es su propia copia local de los elementos descargados de un repositorio. Contiene código fuente, documentos o cualquier otro archivo en el que desee realizar un seguimiento de todos los cambios.
+
+== CreateRepositoryExplanation ==
+Es repositorio se almacena en un servidor (local o remoto) y contiene el historial completo de un árbol de directorios en particular, incluidos todos los cambios de sus archivos y directorios, las etiquetas de revisión, los enlaces combinados y otros metadatos.
+
+== EmailWatermark ==
+Correo electrónico
+
+== PasswordWatermark ==
+Contraseña
+
+== ConfirmPasswordWatermark ==
+Confirmar contraseña
+
+== OrContinueWith ==
+O continuar con
+
+== UnityID ==
+Unity ID
+
+== WelcomeToPlasticSCMUnity ==
+Bienvenido a Plastic SCM - Parte de la familia de Unity
+
+== DontHaveAccount ==
+¿No tienes una cuenta?
+
+== AlreadyHaveAccount ==
+¿Ya tienes una cuenta?
+
+== ForgotPassword ==
+¿Olvidaste tu contraseña?
+
+== CreatePlasticSCMAccount ==
+Crear una cuenta de Plastic SCM
+
+== ConnectToOnPremiseServer ==
+Conectar a un servidor en línea
+
+== SelectAPlasticClient ==
+Seleccione un cliente de Plastic
+
+== HowWillYouBeWorkingWithPlastic ==
+Cómo vas a usar Plastic SCM?
+
+== PlasticProductDescription ==
+Necesito todas las funciones de Plastic SCM, incluyendo ramas, merge y push/pull.
+
+== PlasticProductDetails ==
+Esta opción lanza el Cliente de Plastic SCM con todas las funciones de Plastic.
+
+== GluonProductDescription ==
+No necesito todas las funciones de Plastic, sólo editar y hacer checkin de cambios.
+
+== GluonProductDetails ==
+Esta opción lanza el Client Gluon, que no incluye funciones como ramas, y merge.
+
+== SwitchToGluon ==
+Cambiar a Gluon
+
+== SwitchToPlastic ==
+Cambiar a Plastic SCM
+
+== DynamicWkspacesTitle ==
+Configuración de los Workspaces Dinámicos (Workspaces Virtuales)
+
+== DynamicWkspacesSummary ==
+Un Workspace Dinámico es espacio virtual controlado por Plastic SCM donde solo se permite la descarga bajo demanda (potenciado por heurísticas para acelerar descargas de multiples ficheros).
+Es posible crear copias de enormes entornos trabajo, solamente consumiendo el espacio de los ficheros que realmente se van a utilizar.
+
+== DynamicWkspacesCurrently ==
+Workspaces Dinámicos estan actualmente
+
+== DynamicWkspacesInYourComputer ==
+en esta máquina
+
+== DynamicWkspacesTurnedOn ==
+habilitados
+
+== DynamicWkspacesTurnedOff ==
+deshabilitados
+
+== TurnOn ==
+Habilitar
+
+== LearnMoreAboutDynamicWorkspaces ==
+Saber más acerca de los Workspaces Dinámicos
+
+== UsernameWatermark ==
+Nombre de usuario
+
+== CheckConnection ==
+Comprobar conexión
+
+== WrongServer ==
+¿Servidor incorrecto?
+
+== GoBack ==
+Volver
+
+== ConnectToCloudServer ==
+Conectar a un servidor cloud
+
+== WrongAuthenticationMethod ==
+Quieres usar otro método de autenticación?
+
+== ConfirmDeleteAccountTitle ==
+Confirmar quitar cuenta
+
+== DeleteUserAccountConfirmMessage ==
+¿Estás seguro de que quieres quitar la cuenta {0}?
+
+== RemoveAccountButton ==
+Quitar cuenta

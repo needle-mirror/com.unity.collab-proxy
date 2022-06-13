@@ -2558,12 +2558,6 @@ Moved from {0} to {1}
 == RemovedHistDesc ==
 Removed {0}
 
-== CmdConfigureErrorCloudEdition ==
-The 'cm configure' command cannot be run on Cloud Edition flavor of Plastic SCM
-
-== CmdConfigureErrorDvcsEdition ==
-The 'cm configure' command cannot be run on DVCS Edition flavor of Plastic SCM
-
 == CmdConfigureErrorCannotCreateDir ==
 Failed when creating a directory [{0}]:{1}
 

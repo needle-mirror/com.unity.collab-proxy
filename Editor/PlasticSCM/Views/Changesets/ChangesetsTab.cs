@@ -62,6 +62,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             BuildComponents(
                 wkInfo,
                 workspaceWindow,
+                workspaceWindow,
                 viewSwitcher,
                 historyViewLauncher,
                 parentWindow);
@@ -512,6 +513,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         void BuildComponents(
             WorkspaceInfo wkInfo,
             IWorkspaceWindow workspaceWindow,
+            IRefreshView refreshView,
             IViewSwitcher viewSwitcher,
             IHistoryViewLauncher historyViewLauncher,
             EditorWindow parentWindow)
@@ -543,7 +545,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mChangesetsListView.Reload();
 
             mDiffPanel = new DiffPanel(
-                wkInfo, workspaceWindow, viewSwitcher,
+                wkInfo, workspaceWindow, refreshView, viewSwitcher,
                 historyViewLauncher, parentWindow, mIsGluonMode);
         }
 

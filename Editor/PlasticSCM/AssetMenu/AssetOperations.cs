@@ -171,7 +171,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                     mWkInfo,
                     mViewHost,
                     mProgressControls,
-                    mGuiMessage,
                     selectedPaths.ToArray(),
                     false,
                     RefreshAsset.UnityAssetDatabase);

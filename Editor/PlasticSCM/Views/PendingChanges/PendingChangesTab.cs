@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -18,9 +17,7 @@ using Codice.CM.Common.Merge;
 using Codice.LogWrapper;
 using GluonGui;
 using GluonGui.WorkspaceWindow.Views.Checkin.Operations;
-
 using PlasticGui;
-using PlasticGui.Gluon;
 using PlasticGui.Help.Actions;
 using PlasticGui.Help.Conditions;
 using PlasticGui.WorkspaceWindow;
@@ -28,7 +25,7 @@ using PlasticGui.WorkspaceWindow.Diff;
 using PlasticGui.WorkspaceWindow.Items;
 using PlasticGui.WorkspaceWindow.Open;
 using PlasticGui.WorkspaceWindow.PendingChanges;
-using PlasticGui.WorkspaceWindow.QueryViews.Changesets;
+using PlasticGui.WorkspaceWindow.PendingChanges.Changelists;
 
 using Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
@@ -43,7 +40,6 @@ using Unity.PlasticSCM.Editor.Views.PendingChanges.PendingMergeLinks;
 using Unity.PlasticSCM.Editor.Views.Changesets;
 
 using GluonNewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncomingChangesUpdater;
-using GluonShowIncomingChanges = PlasticGui.Gluon.WorkspaceWindow.ShowIncomingChanges;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
@@ -52,10 +48,12 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         PlasticProjectSettingsProvider.IAutoRefreshView,
         IPendingChangesView,
         CheckinUIOperation.ICheckinView,
-        PendingChangesViewMenu.IMetaMenuOperations,
+        PendingChangesViewPendingChangeMenu.IMetaMenuOperations,
         IPendingChangesMenuOperations,
+        IChangelistMenuOperations,
         IOpenMenuOperations,
         IFilesFilterPatternsMenuOperations,
+        PendingChangesViewMenu.IGetSelectedNodes,
         ChangesetsTab.IGoBackToListener
     {
         internal IProgressControls ProgressControlsForTesting { get { return mProgressControls; } }
@@ -331,12 +329,12 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             ClearComments();
         }
 
-        bool PendingChangesViewMenu.IMetaMenuOperations.SelectionHasMeta()
+        bool PendingChangesViewPendingChangeMenu.IMetaMenuOperations.SelectionHasMeta()
         {
             return mPendingChangesTreeView.SelectionHasMeta();
         }
 
-        void PendingChangesViewMenu.IMetaMenuOperations.DiffMeta()
+        void PendingChangesViewPendingChangeMenu.IMetaMenuOperations.DiffMeta()
         {
             if (LaunchTool.ShowDownloadPlasticExeWindow(
                 mWkInfo,
@@ -364,7 +362,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 null);
         }
 
-        void PendingChangesViewMenu.IMetaMenuOperations.HistoryMeta()
+        void PendingChangesViewPendingChangeMenu.IMetaMenuOperations.HistoryMeta()
         {
             ChangeInfo selectedChange = PendingChangesSelection
                 .GetSelectedChange(mPendingChangesTreeView);
@@ -378,7 +376,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 selectedChangeMeta.IsDirectory);
         }
 
-        void PendingChangesViewMenu.IMetaMenuOperations.OpenMeta()
+        void PendingChangesViewPendingChangeMenu.IMetaMenuOperations.OpenMeta()
         {
             List<string> selectedPaths = PendingChangesSelection
                 .GetSelectedMetaPaths(mPendingChangesTreeView);
@@ -386,7 +384,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             FileSystemOperation.Open(selectedPaths);
         }
 
-        void PendingChangesViewMenu.IMetaMenuOperations.OpenMetaWith()
+        void PendingChangesViewPendingChangeMenu.IMetaMenuOperations.OpenMetaWith()
         {
             List<string> selectedPaths = PendingChangesSelection
                 .GetSelectedMetaPaths(mPendingChangesTreeView);
@@ -396,7 +394,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 selectedPaths);
         }
 
-        void PendingChangesViewMenu.IMetaMenuOperations.OpenMetaInExplorer()
+        void PendingChangesViewPendingChangeMenu.IMetaMenuOperations.OpenMetaInExplorer()
         {
             List<string> selectedPaths = PendingChangesSelection
                 .GetSelectedMetaPaths(mPendingChangesTreeView);
@@ -410,7 +408,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         SelectedChangesGroupInfo IPendingChangesMenuOperations.GetSelectedChangesGroupInfo()
         {
             return PendingChangesSelection.GetSelectedChangesGroupInfo(
-                mPendingChangesTreeView);
+                mWkInfo.ClientPath, mPendingChangesTreeView);
         }
 
         void IPendingChangesMenuOperations.Diff()
@@ -443,7 +441,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             List<ChangeInfo> dependenciesCandidates =
                 mPendingChangesTreeView.GetDependenciesCandidates(changesToUndo, true);
 
-            UndoChangesForMode(mIsGluonMode, changesToUndo, dependenciesCandidates);
+            UndoChangesForMode(
+                mWkInfo, mIsGluonMode,
+                changesToUndo, dependenciesCandidates);
         }
 
         void IPendingChangesMenuOperations.SearchMatches()
@@ -514,6 +514,116 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 selectedChange.IsDirectory);
         }
 
+        SelectedChangesGroupInfo IChangelistMenuOperations.GetSelectedChangesGroupInfo()
+        {
+            return PendingChangesSelection.GetSelectedChangesGroupInfo(
+                mWkInfo.ClientPath, mPendingChangesTreeView);
+        }
+
+        List<ChangeListInfo> IChangelistMenuOperations.GetSelectedChangelistInfos()
+        {
+            return PendingChangesSelection.GetSelectedChangeListInfos(
+                mPendingChangesTreeView);
+        }
+
+        void IChangelistMenuOperations.Checkin()
+        {
+            List<ChangeInfo> changesToCheckin;
+            List<ChangeInfo> dependenciesCandidates;
+
+            mPendingChangesTreeView.GetCheckedChanges(
+                PendingChangesSelection.GetSelectedChangelistNodes(mPendingChangesTreeView),
+                false, out changesToCheckin, out dependenciesCandidates);
+
+            CheckinChangesForMode(
+                changesToCheckin, dependenciesCandidates,
+                mWkInfo, mIsGluonMode, mKeepItemsLocked);
+        }
+
+        void IChangelistMenuOperations.Shelve()
+        {
+            if (mIsGluonMode)
+                return;
+
+            List<ChangeInfo> changesToShelve;
+            List<ChangeInfo> dependenciesCandidates;
+
+            mPendingChangesTreeView.GetCheckedChanges(
+                PendingChangesSelection.GetSelectedChangelistNodes(mPendingChangesTreeView),
+                false, out changesToShelve, out dependenciesCandidates);
+
+            ShelveChanges(changesToShelve, dependenciesCandidates, mWkInfo);
+        }
+
+        void IChangelistMenuOperations.Undo()
+        {
+            List<ChangeInfo> changesToUndo;
+            List<ChangeInfo> dependenciesCandidates;
+
+            mPendingChangesTreeView.GetCheckedChanges(
+                PendingChangesSelection.GetSelectedChangelistNodes(mPendingChangesTreeView),
+                true, out changesToUndo, out dependenciesCandidates);
+
+            UndoChangesForMode(
+                mWkInfo, mIsGluonMode, 
+                changesToUndo, dependenciesCandidates);
+        }
+
+        void IChangelistMenuOperations.CreateNew()
+        {
+            ChangelistCreationData changelistCreationData = 
+                CreateChangelistDialog.CreateChangelist(mWkInfo, mParentWindow);
+
+            ChangelistOperations.CreateNew(mWkInfo, this, changelistCreationData);
+        }
+
+        void IChangelistMenuOperations.MoveToNewChangelist(List<ChangeInfo> changes)
+        {
+            ChangelistCreationData changelistCreationData =
+                CreateChangelistDialog.CreateChangelist(mWkInfo, mParentWindow);
+
+            if (!changelistCreationData.Result)
+                return;
+
+            ChangelistOperations.CreateNew(mWkInfo, this, changelistCreationData);
+
+            ChangelistOperations.MoveToChangelist(
+                mWkInfo, this, changes, 
+                changelistCreationData.ChangelistInfo.Name);
+        }
+
+        void IChangelistMenuOperations.Edit()
+        {
+            ChangeListInfo changelistToEdit = PendingChangesSelection.GetSelectedChangeListInfo(
+                mPendingChangesTreeView);
+
+            ChangelistCreationData changelistCreationData = CreateChangelistDialog.EditChangelist(
+                mWkInfo,
+                changelistToEdit,
+                mParentWindow);
+
+            ChangelistOperations.Edit(mWkInfo, this, changelistToEdit, changelistCreationData);
+        }
+
+        void IChangelistMenuOperations.Delete()
+        {
+            ChangelistOperations.Delete(
+                mWkInfo,
+                this,
+                PendingChangesSelection.GetSelectedChangelistNodes(mPendingChangesTreeView));
+        }
+
+        void IChangelistMenuOperations.MoveToChangelist(
+            List<ChangeInfo> changes,
+            string targetChangelist)
+        {
+            ChangelistOperations.MoveToChangelist(
+                mWkInfo,
+                this,
+                changes,
+                targetChangelist);
+        }
+
         void IOpenMenuOperations.Open()
         {
             List<string> selectedPaths = PendingChangesSelection.
@@ -569,6 +679,11 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             AddFilesFilterPatternsOperation.Run(
                 mWkInfo, mWorkspaceWindow, type, operation, filterRulesConfirmationData);
+        }
+
+        List<IPlasticTreeNode> PendingChangesViewMenu.IGetSelectedNodes.GetSelectedNodes()
+        {
+            return mPendingChangesTreeView.GetSelectedNodes();
         }
 
         void ChangesetsTab.IGoBackToListener.OnSuccessOperation()
@@ -934,7 +1049,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mPendingChangesTreeView = new PendingChangesTreeView(
                 mWkInfo, mIsGluonMode, headerState,
                 PendingChangesTreeHeaderState.GetColumnNames(),
-                new PendingChangesViewMenu(mWkInfo, this, this, this, this, mIsGluonMode),
+                new PendingChangesViewMenu(mWkInfo, this, this, this, this, this, this, mIsGluonMode),
                 mAssetStatusCache);
             mPendingChangesTreeView.Reload();
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using Codice.Client.Commands;
+using Codice.Client.Common;
 using Codice.Utils;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Diff;
@@ -15,9 +16,12 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             mMetaCache = new MetaCache();
         }
 
-        internal void BuildCategories(List<ClientDiff> diffs, bool skipMergeTracking)
+        internal void BuildCategories(
+            List<ClientDiff> diffs,
+            BranchResolver brResolver,
+            bool skipMergeTracking)
         {
-            mInnerTree.BuildCategories(diffs, skipMergeTracking);
+            mInnerTree.BuildCategories(diffs, brResolver, skipMergeTracking);
             mMetaCache.Build(mInnerTree.GetNodes());
         }
 

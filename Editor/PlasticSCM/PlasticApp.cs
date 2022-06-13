@@ -33,7 +33,7 @@ namespace Unity.PlasticSCM.Editor
 {
     internal static class PlasticApp
     {
-        internal static PlasticAPI PlasticAPI { get; private set; }
+        internal static IPlasticAPI PlasticAPI { get; private set; }
         internal static PlasticWebRestApi PlasticWebRestApi { get; private set; }
 
         internal static bool IsInitialized
@@ -93,6 +93,9 @@ namespace Unity.PlasticSCM.Editor
                 new CredentialsUiImpl());
             ClientEncryptionServiceProvider.SetEncryptionPasswordProvider(
                 new MissingEncryptionPasswordPromptHandler());
+
+            DiffMergeToolConfigFactory.Get().SetDiffMergeToolConfig(
+                    GetDiffMergeToolConfig.ForPlatform());
         }
 
         internal static void SetWorkspace(WorkspaceInfo wkInfo)

@@ -5,9 +5,7 @@ using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 using PlasticGui;
-using PlasticGui.WorkspaceWindow.PendingChanges;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.Tree;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
@@ -56,14 +54,14 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         internal bool IsAllCheckedState()
         {
-            List<PendingChangeCategory> categories = mPendingChangesTree.GetNodes();
+            List<IPlasticTreeNode> nodes = mPendingChangesTree.GetNodes();
 
-            if (categories == null)
+            if (nodes == null || nodes.Count == 0)
                 return false;
 
-            foreach (PendingChangeCategory category in categories)
+            foreach (IPlasticTreeNode node in nodes)
             {
-                if (!category.IsChecked())
+                if (!(CheckedItems.GetIsCheckedValue(node) ?? false))
                     return false;
             }
 
@@ -72,17 +70,24 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         protected bool IsMixedCheckedState()
         {
-            List<PendingChangeCategory> categories = mPendingChangesTree.GetNodes();
+            List<IPlasticTreeNode> nodes = mPendingChangesTree.GetNodes();
 
-            if (categories == null)
+            if (nodes == null)
                 return false;
 
-            if (IsAllCheckedState())
-                return false;
-
-            foreach (ICheckablePlasticTreeCategory category in categories)
+            bool hasCheckedNode = false;
+            bool hasUncheckedNode = false;
+            foreach (IPlasticTreeNode node in nodes)
             {
-                if (category.GetCheckedChangesCount() > 0)
+                if (CheckedItems.GetIsPartiallyCheckedValue(node))
+                    return true;
+
+                if (CheckedItems.GetIsCheckedValue(node) ?? false)
+                    hasCheckedNode = true;
+                else
+                    hasUncheckedNode = true;
+
+                if (hasCheckedNode && hasUncheckedNode)
                     return true;
             }
 
@@ -91,13 +96,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         internal void UpdateCheckedState(bool isChecked)
         {
-            List<PendingChangeCategory> categories = mPendingChangesTree.GetNodes();
+            List<IPlasticTreeNode> nodes = mPendingChangesTree.GetNodes();
 
-            if (categories == null)
+            if (nodes == null)
                 return;
 
-            foreach (ICheckablePlasticTreeCategory category in categories)
-                category.UpdateCheckedState(isChecked);
+            foreach (IPlasticTreeNode node in nodes)
+                CheckedItems.SetCheckedValue(node, isChecked);
         }
 
         readonly PendingChangesTreeView mPendingChangesTreeView;

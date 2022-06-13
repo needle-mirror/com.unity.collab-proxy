@@ -47,7 +47,8 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             bool isSelected,
             bool isFocused,
             bool wasChecked,
-            bool hadCheckedChildren)
+            bool hadCheckedChildren,
+            bool hadPartiallyCheckedChildren)
         {
             float indent = GetIndent(depth);
 
@@ -56,7 +57,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 
             Rect checkRect = GetCheckboxRect(rowRect, rowHeight);
 
-            if (!wasChecked && hadCheckedChildren)
+            if (!wasChecked && (hadCheckedChildren || hadPartiallyCheckedChildren))
                 EditorGUI.showMixedValue = true;
 
             bool isChecked = EditorGUI.Toggle(checkRect, wasChecked);

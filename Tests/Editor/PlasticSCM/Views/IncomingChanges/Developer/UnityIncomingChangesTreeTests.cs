@@ -147,7 +147,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
 
             MountPointWithPath rootMountPointWithPath = BuildRootMountPointWithPath();
 
-            Difference difference =
+            DiffMoved difference =
                 BuildMergeTreeResult.CreateMovedDifference("/foo/bar.c", "/foo/var.c");
 
             conflicts.MovesToApply.Add(difference);
@@ -177,9 +177,9 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
 
             MountPointWithPath rootMountPointWithPath = BuildRootMountPointWithPath();
 
-            Difference difference =
+            DiffMoved difference =
                 BuildMergeTreeResult.CreateMovedDifference("/foo/bar.c", "/foo/var.c");
-            Difference differenceMeta =
+            DiffMoved differenceMeta =
                 BuildMergeTreeResult.CreateMovedDifference("/foo/bar.c.meta", "/foo/var.c.meta");
 
             conflicts.MovesToApply.Add(difference);
@@ -216,9 +216,9 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             FileConflict fileConflictMeta =
                 BuildMergeTreeResult.CreateFileConflict("/foo/var.c.meta");
 
-            Difference difference =
+            DiffMoved difference =
                 BuildMergeTreeResult.CreateMovedDifference("/foo/bar.c", "/foo/var.c");
-            Difference differenceMeta =
+            DiffMoved differenceMeta =
                 BuildMergeTreeResult.CreateMovedDifference("/foo/bar.c.meta", "/foo/var.c.meta");
 
             conflicts.FilesModifiedOnSource.Add(fileConflict);
@@ -261,7 +261,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
 
             MountPointWithPath rootMountPointWithPath = BuildRootMountPointWithPath();
 
-            Difference difference =
+            DiffChanged difference =
                 BuildMergeTreeResult.CreateFileAddedDifference("/foo/bar.c");
 
             conflicts.AddsToApply.Add(difference);
@@ -291,9 +291,9 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
 
             MountPointWithPath rootMountPointWithPath = BuildRootMountPointWithPath();
 
-            Difference difference =
+            DiffChanged difference =
                 BuildMergeTreeResult.CreateFileAddedDifference("/foo/bar.c");
-            Difference differenceMeta =
+            DiffChanged differenceMeta =
                 BuildMergeTreeResult.CreateFileAddedDifference("/foo/bar.c.meta");
 
             conflicts.AddsToApply.Add(difference);
@@ -324,7 +324,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
 
             MountPointWithPath rootMountPointWithPath = BuildRootMountPointWithPath();
 
-            Difference difference =
+            DiffChanged difference =
                 BuildMergeTreeResult.CreateDeletedDifference("/foo/bar.c");
 
             conflicts.DeletesToApply.Add(difference);
@@ -354,9 +354,9 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
 
             MountPointWithPath rootMountPointWithPath = BuildRootMountPointWithPath();
 
-            Difference difference =
+            DiffChanged difference =
                 BuildMergeTreeResult.CreateFileAddedDifference("/foo/bar.c");
-            Difference differenceMeta =
+            DiffChanged differenceMeta =
                 BuildMergeTreeResult.CreateFileAddedDifference("/foo/bar.c.meta");
 
             conflicts.DeletesToApply.Add(difference);
@@ -483,7 +483,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             FileConflict modified =
                 BuildMergeTreeResult.CreateModifiedDifference("/foo/bar.c");
 
-            Difference deletedMeta =
+            DiffChanged deletedMeta =
                 BuildMergeTreeResult.CreateDeletedDifference("/foo/bar.c.meta");
 
             conflicts.FilesModifiedOnSource.Add(modified);
@@ -528,14 +528,14 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
 
         class BuildMergeTreeResult
         {
-            internal static Difference CreateFileAddedDifference(string path)
+            internal static DiffChanged CreateFileAddedDifference(string path)
             {
                 return new DiffChanged(
                     CreateFileRevision(128), -1, path, -1,
                     Difference.DiffNodeStatus.Added);
             }
 
-            internal static Difference CreateMovedDifference(string srcPath, string dstPath)
+            internal static DiffMoved CreateMovedDifference(string srcPath, string dstPath)
             {
                 return new DiffMoved(
                     new RevisionInfo(),
@@ -545,7 +545,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
                     dstPath, -1);
             }
 
-            internal static Difference CreateDeletedDifference(string path)
+            internal static DiffChanged CreateDeletedDifference(string path)
             {
                 return new DiffChanged(
                     new RevisionInfo() { Type = EnumRevisionType.enTextFile },

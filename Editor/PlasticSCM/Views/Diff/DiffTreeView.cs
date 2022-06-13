@@ -4,6 +4,7 @@ using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 using Codice.Client.Commands;
+using Codice.Client.Common;
 using Codice.Utils;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Diff;
@@ -177,11 +178,12 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         internal void BuildModel(
             List<ClientDiff> diffs,
+            BranchResolver brResolver,
             bool skipMergeTracking)
         {
             mTreeViewItemIds.Clear();
 
-            mDiffTree.BuildCategories(diffs, skipMergeTracking);
+            mDiffTree.BuildCategories(diffs, brResolver, skipMergeTracking);
         }
 
         internal void Refilter()

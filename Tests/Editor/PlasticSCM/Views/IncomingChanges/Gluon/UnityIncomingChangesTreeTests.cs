@@ -98,7 +98,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Gluon
         {
             MountPointWithPath rootMountPointWithPath = BuildRootMountPointWithPath();
 
-            Difference changed = Build.ChangedDifference(
+            DiffChanged changed = Build.ChangedDifference(
                 "/foo/bar.c");
 
             OutOfDateItemsByMount outOfDateItems = new OutOfDateItemsByMount()
@@ -140,10 +140,10 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Gluon
         {
             MountPointWithPath rootMountPointWithPath = BuildRootMountPointWithPath();
 
-            Difference changed = Build.ChangedDifference(
+            DiffChanged changed = Build.ChangedDifference(
                 "/foo/bar.c");
 
-            Difference changedMeta = Build.ChangedDifference(
+            DiffChanged changedMeta = Build.ChangedDifference(
                 "/foo/bar.c.meta");
 
             OutOfDateItemsByMount outOfDateItems = new OutOfDateItemsByMount()
@@ -186,7 +186,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Gluon
         {
             MountPointWithPath rootMountPointWithPath = BuildRootMountPointWithPath();
 
-            Difference moved = Build.MovedDifference(
+            DiffMoved moved = Build.MovedDifference(
                 "/foo/bar.c",
                 "/foo/var.c");
 
@@ -195,7 +195,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Gluon
                 Mount = rootMountPointWithPath
             };
 
-            outOfDateItems.Changed.Add(moved);
+            outOfDateItems.Moved.Add(moved);
 
             CheckedStateManager checkedStateManager = new CheckedStateManager();
             List<OutOfDateItemsByMount> outOfDateItemsByMount =
@@ -229,11 +229,11 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Gluon
         {
             MountPointWithPath rootMountPointWithPath = BuildRootMountPointWithPath();
 
-            Difference moved = Build.MovedDifference(
+            DiffMoved moved = Build.MovedDifference(
                 "/foo/bar.c",
                 "/foo/var.c");
 
-            Difference movedMeta = Build.MovedDifference(
+            DiffMoved movedMeta = Build.MovedDifference(
                 "/foo/bar.c.meta",
                 "/foo/var.c.meta");
 
@@ -277,16 +277,16 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Gluon
         {
             MountPointWithPath rootMountPointWithPath = BuildRootMountPointWithPath();
 
-            Difference changed =
+            DiffChanged changed =
                 Build.ChangedDifference("/foo/var.c");
 
-            Difference changedMeta =
+            DiffChanged changedMeta =
                 Build.ChangedDifference("/foo/var.c.meta");
 
-            Difference moved =
+            DiffMoved moved =
                 Build.MovedDifference(
                     "/foo/bar.c", "/foo/var.c");
-            Difference movedMeta =
+            DiffMoved movedMeta =
                 Build.MovedDifference(
                     "/foo/bar.c.meta", "/foo/var.c.meta");
 
@@ -342,7 +342,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Gluon
         {
             MountPointWithPath rootMountPointWithPath = BuildRootMountPointWithPath();
 
-            Difference added = Build.AddedDifference(
+            DiffChanged added = Build.AddedDifference(
                 "/foo/bar.c");
 
             OutOfDateItemsByMount outOfDateItems = new OutOfDateItemsByMount()
@@ -384,10 +384,10 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Gluon
         {
             MountPointWithPath rootMountPointWithPath = BuildRootMountPointWithPath();
 
-            Difference added = Build.AddedDifference(
+            DiffChanged added = Build.AddedDifference(
                 "/foo/bar.c");
 
-            Difference addedMeta = Build.AddedDifference(
+            DiffChanged addedMeta = Build.AddedDifference(
                 "/foo/bar.c.meta");
 
             OutOfDateItemsByMount outOfDateItems = new OutOfDateItemsByMount()
@@ -430,7 +430,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Gluon
         {
             MountPointWithPath rootMountPointWithPath = BuildRootMountPointWithPath();
 
-            Difference deleted = Build.DeletedDifference(
+            DiffChanged deleted = Build.DeletedDifference(
                 "/foo/bar.c");
 
             OutOfDateItemsByMount outOfDateItems = new OutOfDateItemsByMount()
@@ -472,10 +472,10 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Gluon
         {
             MountPointWithPath rootMountPointWithPath = BuildRootMountPointWithPath();
 
-            Difference deleted = Build.DeletedDifference(
+            DiffChanged deleted = Build.DeletedDifference(
                 "/foo/bar.c");
 
-            Difference deletedMeta = Build.DeletedDifference(
+            DiffChanged deletedMeta = Build.DeletedDifference(
                 "/foo/bar.c.meta");
 
             OutOfDateItemsByMount outOfDateItems = new OutOfDateItemsByMount()
@@ -518,10 +518,10 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Gluon
         {
             MountPointWithPath rootMountPointWithPath = BuildRootMountPointWithPath();
 
-            Difference changed = Build.ChangedDifference(
+            DiffChanged changed = Build.ChangedDifference(
                 "/foo/bar.c");
 
-            Difference deletedMeta = Build.DeletedDifference(
+            DiffChanged deletedMeta = Build.DeletedDifference(
                 "/foo/bar.c.meta");
 
             OutOfDateItemsByMount outOfDateItems = new OutOfDateItemsByMount()
@@ -571,7 +571,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Gluon
         {
             MountPointWithPath rootMountPointWithPath = BuildRootMountPointWithPath();
 
-            Difference changedMeta = Build.ChangedDifference(
+            DiffChanged changedMeta = Build.ChangedDifference(
                 "/foo/bar.c.meta");
 
             OutOfDateItemsByMount outOfDateItems = new OutOfDateItemsByMount()
@@ -633,7 +633,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Gluon
                     path);
             }
 
-            internal static Difference AddedDifference(
+            internal static DiffChanged AddedDifference(
                 string path)
             {
                 return new DiffChanged(
@@ -641,7 +641,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Gluon
                     Difference.DiffNodeStatus.Added);
             }
 
-            internal static Difference MovedDifference(
+            internal static DiffMoved MovedDifference(
                 string srcPath,
                 string dstPath)
             {
@@ -653,7 +653,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Gluon
                     dstPath, -1);
             }
 
-            internal static Difference DeletedDifference(
+            internal static DiffChanged DeletedDifference(
                 string path)
             {
                 return new DiffChanged(
@@ -664,7 +664,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Gluon
                     Difference.DiffNodeStatus.Deleted);
             }
 
-            internal static Difference ChangedDifference(
+            internal static DiffChanged ChangedDifference(
                 string path)
             {
                 return new DiffChanged(

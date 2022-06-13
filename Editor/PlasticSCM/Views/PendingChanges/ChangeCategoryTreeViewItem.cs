@@ -8,8 +8,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
     {
         internal PendingChangeCategory Category { get; private set; }
 
-        internal ChangeCategoryTreeViewItem(int id, PendingChangeCategory category)
-            : base(id, 0)
+        internal ChangeCategoryTreeViewItem(int id, PendingChangeCategory category, int depth)
+            : base(id, depth)
         {
             Category = category;
         }

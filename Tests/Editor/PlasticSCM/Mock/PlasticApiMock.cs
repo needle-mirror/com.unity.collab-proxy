@@ -12,6 +12,7 @@ using Codice.Client.Commands.Tree;
 using Codice.Client.Commands.WkTree;
 using Codice.Client.Commands.Xlinks;
 using Codice.Client.Common;
+using Codice.Client.Common.GameUI;
 using Codice.Client.Common.Xlinks;
 using Codice.Client.GameUI.Update;
 using Codice.Client.IssueTracker;
@@ -20,6 +21,9 @@ using Codice.CM.Common.Merge;
 using Codice.CM.Common.Replication;
 using Codice.CM.Common.Serialization;
 using Codice.CM.Common.Tree;
+using Codice.CM.WorkspaceServer.Tree.GameUI;
+using Codice.Utils;
+using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer;
 using PlasticGui;
 using PlasticGui.SwitcherWindow.Workspaces;
 using PlasticGui.WorkspaceWindow.BranchExplorer;
@@ -244,6 +248,22 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
             throw new NotImplementedException();
         }
 
+        ServerProfile[] PlasticGui.IPlasticAPI.GetPersistentProfiles()
+        {
+            throw new NotImplementedException();
+        }
+
+        void PlasticGui.IPlasticAPI.EditProfile(ServerProfile serverProfile)
+        {
+            throw new NotImplementedException();
+        }
+
+        void PlasticGui.IPlasticAPI.RenameProfile(ServerProfile serverProfile, string userName)
+        {
+            throw new NotImplementedException();
+        }
+
+
         List<WorkspaceGuiEntry> IPlasticAPI.GetAllWorkspaces()
         {
             throw new NotImplementedException();
@@ -274,6 +294,22 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
             throw new NotImplementedException();
         }
 
+        void IPlasticAPI.EditAttributeComment(RepositoryInfo repInfo, string attributeSpec, string newComment)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IPlasticAPI.RenameAttribute(RepositoryInfo repInfo, long attId, string newName)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IPlasticAPI.DeleteAttribute(RepositoryInfo repInfo, long attId)
+        {
+            throw new NotImplementedException();
+        }
+
+
         List<ClientDiff> IPlasticAPI.GetBranchDifferences(RepositorySpec repSpec, BranchInfo brInfo)
         {
             throw new NotImplementedException();
@@ -298,7 +334,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
         {
             throw new NotImplementedException();
         }
-        
+
         BranchInfo IPlasticAPI.GetBranchInfo(RepositorySpec repSpec, Guid brGuid)
         {
             throw new NotImplementedException();
@@ -339,7 +375,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
         {
             throw new NotImplementedException();
         }
-        
+
         List<ClientDiff> IPlasticAPI.GetChangesetDifferences(RepositorySpec repSpec, ChangesetInfo csetInfo)
         {
             throw new NotImplementedException();
@@ -555,11 +591,11 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
             throw new NotImplementedException();
         }
 
-		WebadminAddress IPlasticAPI.GetServerWebPortAndProtocol(string server)
+        WebadminAddress IPlasticAPI.GetServerWebPortAndProtocol(string server)
         {
             throw new NotImplementedException();
         }
-		
+
         ReplicationLogEntryInfo[] IPlasticAPI.GetSortedReplicationLogsFromBranch(RepositorySpec repSpec, BranchInfo branchInfo)
         {
             throw new NotImplementedException();
@@ -570,12 +606,12 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
             throw new NotImplementedException();
         }
 
-        TreeContent IPlasticAPI.GetTreeContent(RepositorySpec repSpec, long changesetId)
+        TreeContent IPlasticAPI.GetTreeContent(RepositorySpec repSpec, string path, long changesetId, bool bRecurse)
         {
             throw new NotImplementedException();
         }
 
-        TreeContent IPlasticAPI.GetTreeContent(RepositorySpec repSpec, string branchName)
+        TreeContent IPlasticAPI.GetTreeContent(RepositorySpec repSpec, string path, string branchName, bool bRecurse)
         {
             throw new NotImplementedException();
         }
@@ -659,11 +695,6 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
         }
 
         bool IPlasticAPI.IsFsReaderWatchLimitReached(WorkspaceInfo wkInfo)
-        {
-            throw new NotImplementedException();
-        }
-
-        bool IPlasticAPI.IsGluonWorkspace(WorkspaceInfo wkInfo)
         {
             throw new NotImplementedException();
         }
@@ -798,11 +829,6 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
             throw new NotImplementedException();
         }
 
-        void IPlasticAPI.SetAsGluonWorkspace(WorkspaceInfo wkInfo)
-        {
-            throw new NotImplementedException();
-        }
-
         void IPlasticAPI.SetAttribute(RepositorySpec repSpec, long attId, long objId, string attributeValue)
         {
             throw new NotImplementedException();
@@ -869,6 +895,11 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
         }
 
         void IPlasticAPI.UndoCheckout(WorkspaceInfo wkInfo, IList<string> paths, IList<string> skippedLocks, bool bHandleDeletedChangeset)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IPlasticAPI.UndoCheckout(WorkspaceInfo wkInfo, string[] paths, ICmdNotifier notifier, UndoCheckoutModifiers flags)
         {
             throw new NotImplementedException();
         }
@@ -1019,12 +1050,23 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
             throw new NotImplementedException();
         }
 
-        void IPlasticAPI.SaveProfile(
+        ServerProfile IPlasticAPI.SaveProfile(
             string server, SEIDWorkingMode workingMode, string user, string password)
         {
             throw new NotImplementedException();
         }
-
+        
+        void IPlasticAPI.SaveProfile(
+            ServerProfile profile)
+        {
+            throw new NotImplementedException();
+        }
+        
+        void IPlasticAPI.DeleteProfiles(List<Codice.Client.Common.ServerProfile> profiles)
+        {
+            throw new NotImplementedException();
+        }
+        
         void IPlasticAPI.SetDefaultProfileForServer(string server, ServerProfile profile)
         {
             throw new NotImplementedException();
@@ -1046,6 +1088,38 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
         }
 
         ReviewInfo IPlasticAPI.GetReview(RepositorySpec repSpec, long reviewId)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool IPlasticAPI.IsGluonWorkspace(WorkspaceInfo wkInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IPlasticAPI.SetAsGluonWorkspace(WorkspaceInfo wkInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        ConfigurationTreeNode IPlasticAPI.GetConfigurationTree(WorkspaceInfo wkInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        List<ConfigurationTreeNode> IPlasticAPI.GetConfigurationTreeNodeChildren(
+            WorkspaceInfo wkInfo, MountPoint mount, string path, bool bOnlyControlled, FsReader fsReader)
+        {
+            throw new NotImplementedException();
+        }
+
+        ConfigurationTreeNode IPlasticAPI.GetLocalConfigurationTree(WorkspaceInfo wkInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        StatusLoader.ICalculatedStatus IPlasticAPI.CalculateConfigurationTreeStatus(
+            WorkspaceInfo wkInfo, bool bSkipPrivate, FsReader fsReader, CancelToken cancelToken)
         {
             throw new NotImplementedException();
         }

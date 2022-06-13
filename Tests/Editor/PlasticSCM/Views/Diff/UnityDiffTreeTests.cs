@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 using Codice.Client.Commands;
 using Codice.Client.Commands.Mount;
+using Codice.Client.Common;
 using Codice.CM.Common;
 using Codice.CM.Common.Merge;
 using Codice.Utils;
@@ -24,7 +25,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.Diff
             diffs.Add(added);
 
             UnityDiffTree diffTree = new UnityDiffTree();
-            diffTree.BuildCategories(diffs, false);
+            diffTree.BuildCategories(diffs, new BranchResolver(), false);
 
             ClientDiffInfo clientDiffInfo = FindClientDiffInfo.FromClientDiff(
                 added,
@@ -49,7 +50,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.Diff
             diffs.Add(changed);
 
             UnityDiffTree diffTree = new UnityDiffTree();
-            diffTree.BuildCategories(diffs, false);
+            diffTree.BuildCategories(diffs, new BranchResolver(), false);
 
             ClientDiffInfo clientDiffInfo = FindClientDiffInfo.FromClientDiff(
                 changed,
@@ -74,7 +75,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.Diff
             diffs.Add(deleted);
 
             UnityDiffTree diffTree = new UnityDiffTree();
-            diffTree.BuildCategories(diffs, false);
+            diffTree.BuildCategories(diffs, new BranchResolver(), false);
 
             ClientDiffInfo clientDiffInfo = FindClientDiffInfo.FromClientDiff(
                 deleted,
@@ -99,7 +100,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.Diff
             diffs.Add(moved);
 
             UnityDiffTree diffTree = new UnityDiffTree();
-            diffTree.BuildCategories(diffs, false);
+            diffTree.BuildCategories(diffs, new BranchResolver(), false);
 
             ClientDiffInfo clientDiffInfo = FindClientDiffInfo.FromClientDiff(
                 moved,
@@ -124,7 +125,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.Diff
             diffs.Add(changedFsPermissions);
 
             UnityDiffTree diffTree = new UnityDiffTree();
-            diffTree.BuildCategories(diffs, false);
+            diffTree.BuildCategories(diffs, new BranchResolver(), false);
 
             ClientDiffInfo clientDiffInfo = FindClientDiffInfo.FromClientDiff(
                 changedFsPermissions,
@@ -149,7 +150,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.Diff
             diffs.Add(merged);
 
             UnityDiffTree diffTree = new UnityDiffTree();
-            diffTree.BuildCategories(diffs, false);
+            diffTree.BuildCategories(diffs, new BranchResolver(), false);
 
             ClientDiffInfo clientDiffInfo = FindClientDiffInfo.FromClientDiff(
                 merged,
@@ -176,7 +177,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.Diff
             diffs.Add(addedMeta);
 
             UnityDiffTree diffTree = new UnityDiffTree();
-            diffTree.BuildCategories(diffs, false);
+            diffTree.BuildCategories(diffs, new BranchResolver(), false);
 
             ClientDiffInfo clientDiffInfo = FindClientDiffInfo.FromClientDiff(
                 added,
@@ -212,7 +213,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.Diff
             diffs.Add(changedMeta);
 
             UnityDiffTree diffTree = new UnityDiffTree();
-            diffTree.BuildCategories(diffs, false);
+            diffTree.BuildCategories(diffs, new BranchResolver(), false);
 
             ClientDiffInfo clientDiffInfo = FindClientDiffInfo.FromClientDiff(
                 changed,
@@ -248,7 +249,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.Diff
             diffs.Add(deletedMeta);
 
             UnityDiffTree diffTree = new UnityDiffTree();
-            diffTree.BuildCategories(diffs, false);
+            diffTree.BuildCategories(diffs, new BranchResolver(), false);
 
             ClientDiffInfo clientDiffInfo = FindClientDiffInfo.FromClientDiff(
                 deleted,
@@ -284,7 +285,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.Diff
             diffs.Add(movedMeta);
 
             UnityDiffTree diffTree = new UnityDiffTree();
-            diffTree.BuildCategories(diffs, false);
+            diffTree.BuildCategories(diffs, new BranchResolver(), false);
 
             ClientDiffInfo clientDiffInfo = FindClientDiffInfo.FromClientDiff(
                 moved,
@@ -320,7 +321,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.Diff
             diffs.Add(fsPermissionsChangeMeta);
 
             UnityDiffTree diffTree = new UnityDiffTree();
-            diffTree.BuildCategories(diffs, false);
+            diffTree.BuildCategories(diffs, new BranchResolver(), false);
 
             ClientDiffInfo clientDiffInfo = FindClientDiffInfo.FromClientDiff(
                 fsPermissionsChange,
@@ -356,7 +357,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.Diff
             diffs.Add(mergedMeta);
 
             UnityDiffTree diffTree = new UnityDiffTree();
-            diffTree.BuildCategories(diffs, false);
+            diffTree.BuildCategories(diffs, new BranchResolver(), false);
 
             ClientDiffInfo clientDiffInfo = FindClientDiffInfo.FromClientDiff(
                 merged,
@@ -392,7 +393,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.Diff
             diffs.Add(deletedMeta);
 
             UnityDiffTree diffTree = new UnityDiffTree();
-            diffTree.BuildCategories(diffs, false);
+            diffTree.BuildCategories(diffs, new BranchResolver(), false);
 
             ClientDiffInfo clientDiffInfo = FindClientDiffInfo.FromClientDiff(
                 changed,

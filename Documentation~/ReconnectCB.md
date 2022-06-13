@@ -1,12 +1,10 @@
-# Reconnect Unity Cloud Build
+# Connect Unity Cloud Build
 
-If you were using Cloud Build with Collaborate, you will need to reconnect Cloud build to use with Plastic SCM.
+Unity Cloud Build is a [continuous integration](https://docs.unity3d.com/2022.2/Documentation/Manual/UnityCloudBuild.html#automated-build-generation) that automatically creates multiplatform builds in the Cloud in minutes. You can point Cloud Build toward your version control system to:
 
-1. In the Unity dashboard, go to the **Projects** page and click your project.
-2. Click **DevOps** > **Cloud Build** > **Config**.
-3. In **Source Control Settings**, click **Edit Source Control**.
-4. In the **Source Control window**, click the **Plastic SCM** tile.
-5. Add the name of your organization with @cloud after it. For example, Exampleproject@cloud.
-6. Click **Next**.
-7. If everything is correct, click the **Continue With Unity ID** button.
-8. Cloud Build is now connected to your project via Plastic SCM.
+* Automate new builds
+* Build faster
+* Catch problems earlier
+* Iterate on your builds more efficiently with agility.
+
+To get started, see [Pay as you go with Cloud Build](https://docs.unity3d.com/2022.2/Documentation/Manual/UnityCloudBuildMeteredBilling.html).

@@ -177,6 +177,11 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             // empty implementation
         }
 
+        void OAuthSignIn.INotify.SuccessForHomeView(string homeView)
+        {
+            // empty implementation
+        }
+
         void OAuthSignIn.INotify.SuccessForCredentials(
             string email,
             string accessToken)

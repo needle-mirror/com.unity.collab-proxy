@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using Codice.Client.BaseCommands;
 using Codice.Client.BaseCommands.EventTracking;
+using Codice.Client.Common;
 using Codice.CM.Common;
 using GluonGui.WorkspaceWindow.Views.Checkin.Operations;
 using PlasticGui;
@@ -14,24 +15,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
     internal partial class PendingChangesTab
     {
-        void CheckinForMode(WorkspaceInfo wkInfo, bool isGluonMode, bool keepItemsLocked)
-        {
-            TrackFeatureUseEvent.For(
-                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
-                isGluonMode ?
-                    TrackFeatureUseEvent.Features.PartialCheckin :
-                    TrackFeatureUseEvent.Features.Checkin);
-
-            if (isGluonMode)
-            {
-                PartialCheckin(keepItemsLocked);
-                return;
-            }
-
-            Checkin();
-        }
-
-        internal void UndoForMode(WorkspaceInfo wkInfo, bool isGluonMode)
+        internal void UndoForMode(
+            WorkspaceInfo wkInfo,
+            bool isGluonMode)
         {
             TrackFeatureUseEvent.For(
                 PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
@@ -49,17 +35,70 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         }
 
         void UndoChangesForMode(
+            WorkspaceInfo wkInfo,
             bool isGluonMode,
             List<ChangeInfo> changesToUndo,
             List<ChangeInfo> dependenciesCandidates)
         {
+            TrackFeatureUseEvent.For(
+                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
+                    isGluonMode ?
+                    TrackFeatureUseEvent.Features.PartialUndo :
+                    TrackFeatureUseEvent.Features.Undo);
+
             if (isGluonMode)
             {
-                PartialUndoChanges(changesToUndo, dependenciesCandidates);
+                PartialUndoChanges(
+                    changesToUndo, dependenciesCandidates);
                 return;
             }
 
-            UndoChanges(changesToUndo, dependenciesCandidates);
+            UndoChanges(
+                changesToUndo, dependenciesCandidates);
+        }
+
+        void CheckinForMode(
+            WorkspaceInfo wkInfo,
+            bool isGluonMode,
+            bool keepItemsLocked)
+        {
+            TrackFeatureUseEvent.For(
+                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
+                isGluonMode ?
+                    TrackFeatureUseEvent.Features.PartialCheckin :
+                    TrackFeatureUseEvent.Features.Checkin);
+
+            if (isGluonMode)
+            {
+                PartialCheckin(keepItemsLocked);
+                return;
+            }
+
+            Checkin();
+        }
+
+        void CheckinChangesForMode(
+            List<ChangeInfo> changesToCheckin,
+            List<ChangeInfo> dependenciesCandidates,
+            WorkspaceInfo wkInfo,
+            bool isGluonMode,
+            bool keepItemsLocked)
+        {
+            TrackFeatureUseEvent.For(
+                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
+                isGluonMode ?
+                    TrackFeatureUseEvent.Features.PartialCheckin :
+                    TrackFeatureUseEvent.Features.Checkin);
+
+            if (isGluonMode)
+            {
+                PartialCheckinChanges(
+                    changesToCheckin, dependenciesCandidates, keepItemsLocked);
+                return;
+            }
+
+            CheckinChanges(
+                changesToCheckin, dependenciesCandidates);
         }
 
         void PartialCheckin(bool keepItemsLocked)
@@ -68,10 +107,20 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             List<ChangeInfo> dependenciesCandidates;
 
             mPendingChangesTreeView.GetCheckedChanges(
+                null,
                 false,
                 out changesToCheckin,
                 out dependenciesCandidates);
 
+            PartialCheckinChanges(
+                changesToCheckin, dependenciesCandidates, keepItemsLocked);
+        }
+
+        void PartialCheckinChanges(
+            List<ChangeInfo> changesToCheckin,
+            List<ChangeInfo> dependenciesCandidates,
+            bool keepItemsLocked)
+        {
             if (CheckEmptyOperation(changesToCheckin))
             {
                 ((IProgressControls)mProgressControls).ShowWarning(
@@ -107,8 +156,16 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             List<ChangeInfo> dependenciesCandidates;
 
             mPendingChangesTreeView.GetCheckedChanges(
+                null,
                 false, out changesToCheckin, out dependenciesCandidates);
 
+            CheckinChanges(changesToCheckin, dependenciesCandidates);
+        }
+
+        void CheckinChanges(
+            List<ChangeInfo> changesToCheckin,
+            List<ChangeInfo> dependenciesCandidates)
+        {
             if (CheckEmptyOperation(changesToCheckin, HasPendingMergeLinks()))
             {
                 ((IProgressControls)mProgressControls).ShowWarning(
@@ -131,26 +188,59 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 null);
         }
 
+        void ShelveChanges(
+           List<ChangeInfo> changesToShelve,
+           List<ChangeInfo> dependenciesCandidates,
+           WorkspaceInfo wkInfo)
+        {
+            TrackFeatureUseEvent.For(
+                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
+                TrackFeatureUseEvent.Features.Shelve);
+
+            ShelveChanges(changesToShelve, dependenciesCandidates);
+        }
+
+        void ShelveChanges(
+            List<ChangeInfo> changesToShelve,
+            List<ChangeInfo> dependenciesCandidates)
+        {
+            bool hasPendingMergeLinks = HasPendingMergeLinks();
+
+            if (hasPendingMergeLinks &&
+                !UserWantsShelveWithPendingMergeLinks(mGuiMessage))
+            {
+                return;
+            }
+
+            if (CheckEmptyOperation(changesToShelve, hasPendingMergeLinks))
+            {
+                ((IProgressControls)mProgressControls).ShowWarning(
+                    PlasticLocalization.GetString(PlasticLocalization.Name.NoItemsAreSelected));
+                return;
+            }
+
+            bool isCancelled;
+            SaveAssets.ForChangesWithConfirmation(changesToShelve, out isCancelled);
+
+            if (isCancelled)
+                return;
+
+            mPendingChangesOperations.Shelve(
+                changesToShelve,
+                dependenciesCandidates,
+                CommentText);
+        }
+
         void PartialUndo()
         {
             List<ChangeInfo> changesToUndo;
             List<ChangeInfo> dependenciesCandidates;
 
             mPendingChangesTreeView.GetCheckedChanges(
-                true, out changesToUndo, out dependenciesCandidates);
+                null, true, 
+                out changesToUndo, out dependenciesCandidates);
 
             PartialUndoChanges(changesToUndo, dependenciesCandidates);
-        }
-
-        void Undo()
-        {
-            List<ChangeInfo> changesToUndo;
-            List<ChangeInfo> dependenciesCandidates;
-
-            mPendingChangesTreeView.GetCheckedChanges(
-                true, out changesToUndo, out dependenciesCandidates);
-
-            UndoChanges(changesToUndo, dependenciesCandidates);
         }
 
         void PartialUndoChanges(
@@ -171,12 +261,24 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 new LaunchDependenciesDialog(
                     PlasticLocalization.GetString(PlasticLocalization.Name.UndoButton),
                     mParentWindow),
-                mProgressControls, mGuiMessage);
+                mProgressControls);
 
             undoOperation.Undo(
                 changesToUndo,
                 dependenciesCandidates,
                 RefreshAsset.UnityAssetDatabase);
+        }
+
+        void Undo()
+        {
+            List<ChangeInfo> changesToUndo;
+            List<ChangeInfo> dependenciesCandidates;
+
+            mPendingChangesTreeView.GetCheckedChanges(
+                null, true,
+                out changesToUndo, out dependenciesCandidates);
+
+            UndoChanges(changesToUndo, dependenciesCandidates);
         }
 
         void UndoChanges(
@@ -244,6 +346,14 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return false;
 
             return true;
+        }
+
+        static bool UserWantsShelveWithPendingMergeLinks(GuiMessage.IGuiMessage guiMessage)
+        {
+            return guiMessage.ShowQuestion(
+                PlasticLocalization.GetString(PlasticLocalization.Name.ShelveWithPendingMergeLinksRequest),
+                PlasticLocalization.GetString(PlasticLocalization.Name.ShelveWithPendingMergeLinksRequestMessage),
+                PlasticLocalization.GetString(PlasticLocalization.Name.ShelveButton));
         }
     }
 }

@@ -517,6 +517,15 @@ Rename Repository
 == NewWorkspace ==
 Create a new workspace
 
+== DownloadRepository ==
+Download repository
+
+== DownloadRepositoryIntoWorkspace ==
+Download repository into a new workspace
+
+== DownloadRepositoryTitle ==
+Create a new working copy to work with the repository locally
+
 == RenameWorkspaceTitle ==
 Rename Workspace
 
@@ -618,6 +627,9 @@ Create new repository...
 
 == RepositoryMenuItemCreateWorkspace ==
 Create workspace for this repository...
+
+== RepositoryMenuItemDownloadRepository ==
+Download this repository
 
 == RenameMenuItem ==
 Rename
@@ -780,6 +792,12 @@ Switch workspace to this label
 
 == LabelMenuItemBrowseRepositoryOnLabel ==
 Browse repository in this label
+
+== LabelMenuItemDiffWithAnother ==
+Diff with another label...
+
+== LabelMenuItemDiffSelected ==
+Diff selected labels
 
 == LabelMenuItemMergeFromLabel ==
 Merge from this label...
@@ -1569,9 +1587,6 @@ Cloud
 == OnPremAccount ==
 On-premises
 
-== CloudLocalAccount ==
-Local
-
 == AddNewAccount ==
 Add new account
 
@@ -1817,6 +1832,18 @@ Diff item moved in source with item deleted in destination
 == DiffSourceWithDestinationMoveEvilTwin ==
 Diff item moved in source with item moved in destination
 
+== DiffSourceWithDestinationChangeDelete ==
+View changes on source item
+
+== DiffSourceWithDestinationDeleteChange ==
+View changes on destination item
+
+== DiffEntireBranch ==
+Diff entire branch
+
+== DiffChangesetByChangeset ==
+Diff changeset by changeset
+
 == RetryUpdate ==
 Retry update
 
@@ -1876,7 +1903,7 @@ These following options let you choose how the items are shown in the 'Pending c
 Type a name for the new repo and ensure you will create it on the correct server.
 
 == NewWorkspaceExplanation ==
-The workspace is the local copy to work on files and make changes. A workspace handles a single branch at a time. The workspace can be switched to a different branch even in a different repository.
+Download a working copy of the repository {0}. It will just contain the files to work, not the entire history. A workspace is just the directory on disk that you use to make changes, edit, build and test locally.
 
 == RenameWorkspaceExplanation ==
 Renaming the workspace won’t modify its path.
@@ -2577,6 +2604,12 @@ Available Plastic SCM changesets
 == SelectChangesetBelow ==
 Please select a changeset from the list below:
 
+== AvailableLabels ==
+Available Plastic SCM labels
+
+== SelectLabelBelow ==
+Please select a label from the list below:
+
 == AvailableBranches ==
 Available Plastic SCM branches
 
@@ -2719,7 +2752,7 @@ Please enter the username and password you use to connect to Plastic Cloud (same
 This way you won't be prompted again when replicating to cloud.
 
 == PlasticSCMServerLabel ==
-Enter the name/IP and port of your server:
+Enter the name/IP and port of your server
 
 == GluonServerLabel ==
 Server:
@@ -2778,6 +2811,9 @@ Other options
 
 == UserProfileOptions ==
 User profile
+
+== DynamicWorkspaces ==
+Dynamic Workspaces
 
 == MiscOptionsTitle ==
 Miscellaneous
@@ -6780,18 +6816,6 @@ Sign up with Unity ID
 == SignUpGoogle ==
 Sign up with Google
 
-== CannotAddVersionControl ==
-Cannot add files to Version Control: {0}
-
-== CannotDeleteVersionControl ==
-Cannot delete '{0}' in Version Control: {1}
-
-== CannotMoveVersionControl ==
-Cannot move '{0}' to '{1}' in Version Control: {2}
-
-== CannotCheckoutVersionControl ==
-Cannot checkout files in Version Control: {0}
-
 == ErrorGettingCredentialsCloudProject ==
 Error getting credentials to download Cloud Project: {0} ({1})
 
@@ -7522,6 +7546,9 @@ Deleting comment...
 == AppMenuAbout ==
 About PlasticX SCM
 
+== AppMenuAboutGluon ==
+About GluonX
+
 == AppMenuPreferences ==
 Preferences…
 
@@ -7594,8 +7621,14 @@ Welcome to the new Plastic SCM GUI (alpha)!
 == WelcomeToNewGui ==
 Welcome to the new Plastic SCM GUI!
 
+== WelcomeToNewGluonGui ==
+Welcome to the new Gluon GUI!
+
 == WelcomeToNewGuiFirstText ==
 You're invited to check out the new Plastic SCM GUI - a sneak peek at the work we've been doing to continuously improve the Plastic experience for all users, regardless of experience level.
+
+== WelcomeToNewGluonGuiFirstText ==
+You're invited to check out the new Gluon GUI - a sneak peek at the work we've been doing to continuously improve the Plastic experience for all users, regardless of experience level.
 
 == WelcomeToNewGuiSecondText ==
 This release is cross-platform, includes a dark theme and provides better syntax highlighting. Many more improvements are coming soon, including Gluon support! Try out the new experience and switch back at any time. Let us know what you think!
@@ -7603,14 +7636,20 @@ This release is cross-platform, includes a dark theme and provides better syntax
 == WelcomeToNewGuiSecondTextWindows ==
 This alpha release is cross-platform, includes a dark theme and provides better syntax highlighting. Many more improvements are coming soon, including Gluon support! Try out the new experience and switch back at any time. Let us know what you think!
 
+== WelcomeToNewGluonGuiSecondText ==
+This release is feature complete, cross-platform and includes a dark theme. It also includes support for changelists. Try out the new experience and switch back at any time. Let us know what you think!
+
 == GetStartedButton ==
 Let's get started!
 
 == SwitchToLegacyGuiHelp ==
 You can switch back to the "legacy" GUI here
 
+== ConfirmGoBackToTitle ==
+Confirm Go Back
+
 == GoBackToWarning ==
- Are you sure you want to go back to this changeset?
+Are you sure you want to go back to this changeset?
 
 == ChangesetMenuItemGoBackTo ==
 Go back to changeset
@@ -7648,5 +7687,243 @@ Something went wrong
 == TryAgain ==
 TRY AGAIN
 
-== ConfirmGoBackToTitle ==
-Confirm Go Back
+== LoadingRepositoryTree ==
+Loading repository tree...
+
+== DetailsHeader ==
+Details
+
+== Download ==
+Download
+
+== CalculatingSize ==
+Calculating directory size...
+
+== OpenWorkspace ==
+Open workspace
+
+== OpenCloudDashboard ==
+Open cloud dashboard
+
+== Accounts ==
+Accounts
+
+== ManageAccounts ==
+Manage accounts
+
+== LocalServer ==
+Local server
+
+== DivergentMoveViewSource ==
+View content of the moved item
+
+== LoadedTwiceViewSource ==
+View content of the item loaded twice
+
+== CycleMoveConflictViewSource ==
+View content of item moved on source
+
+== CycleMoveConflictViewDestination ==
+View content of item moved on destination
+
+== EvilTwinsConflictViewSource ==
+View content of item added on source
+
+== EvilTwinsConflictViewDestination ==
+View content of item added on destination
+
+== MoveDeleteConflictViewSource ==
+View content of item moved on source
+
+== MoveDeleteConflictViewDestination ==
+View content of item deleted on destination
+
+== DeleteMoveConflictViewSource ==
+View content of item deleted on source
+
+== DeleteMoveConflictViewDestination ==
+View content of item moved on destination
+
+== MovedEvilConflictViewSource ==
+View content of item moved on source
+
+== MovedEvilConflictViewDestination ==
+View content of item moved on destination
+
+== AddMoveConflictViewSource ==
+View content of item added on source
+
+== AddMoveConflictViewDestination ==
+View content of item moved on destination
+
+== MoveAddConflictViewSource ==
+View content of item moved on source
+
+== MoveAddConflictViewDestination ==
+View content of item added on destination
+
+== ChangeDeleteConflictViewSourceAdded ==
+View content of item added on source
+
+== ChangeDeleteConflictViewSourceChanged ==
+View content of item changed on source
+
+== ChangeDeleteConflictViewDestination ==
+View content of item deleted on destination
+
+== DeleteChangeConflictViewSource ==
+View content of item deleted on source
+
+== DeleteChangeConflictViewDestinationAdded ==
+View content of item added on destination
+
+== DeleteChangeConflictViewDestinationChanged ==
+View content of item changed on destination
+
+== NoOrganizationTitle ==
+No organization yet?
+
+== CreateNewOrganization ==
+Create a new organization
+
+== CreateOrganizationNameLabel ==
+Organization name
+
+== CreateDatacenterLabel ==
+Datacenter
+
+== Organizations ==
+Organizations
+
+== NoRepositoryTitle ==
+No repository yet?
+
+== CreateNewRepository ==
+Create a new repository
+
+== CreateRepositoryNameLabel ==
+Repository name
+
+== CreateWorkspaceNameLabel ==
+Workspace name
+
+== CreateWorkspaceLocationLabel ==
+Location
+
+== CreateWorkspaceCheckBoxLabel ==
+Create a workspace for this repository
+
+== CreateWorkspaceExplanation ==
+A workspace is your own local copy of items downloaded from a repository. It contains source code, documents, or any other files where you want to track all changes.
+
+== CreateRepositoryExplanation ==
+A repository is stored on a server (local or remote), it contains the entire history of a particular directory tree, including all the changes of its files and directories, revision labels, merge links, and other metadata.
+
+== EmailWatermark ==
+Email
+
+== PasswordWatermark ==
+Password
+
+== ConfirmPasswordWatermark ==
+Confirm password
+
+== OrContinueWith ==
+Or continue with
+
+== UnityID ==
+Unity ID
+
+== WelcomeToPlasticSCMUnity ==
+Welcome to Plastic SCM - Part of the Unity family
+
+== DontHaveAccount ==
+Don't have an account?
+
+== AlreadyHaveAccount ==
+Already have an account?
+
+== ForgotPassword ==
+Forgot password?
+
+== CreatePlasticSCMAccount ==
+Create your Plastic SCM account
+
+== ConnectToOnPremiseServer ==
+Connect to an on-premises server
+
+== SelectAPlasticClient ==
+Select a Plastic SCM client
+
+== HowWillYouBeWorkingWithPlastic ==
+How will you be working with Plastic SCM?
+
+== PlasticProductDescription ==
+I need all of the features of source control including branches, merging and push/pull.
+
+== PlasticProductDetails ==
+This option will launch the full Plastic SCM Client with all souce control features.
+
+== GluonProductDescription ==
+I do not need all of the features of source control. I only need to edit and checkin files.
+
+== GluonProductDetails ==
+This option will launch the Gluon Client which does not include features like branching and merging.
+
+== SwitchToGluon ==
+Switch to Gluon
+
+== SwitchToPlastic ==
+Switch to Plastic SCM
+
+== DynamicWkspacesTitle ==
+Configuration of Dynamic Workspaces (a.k.a. virtual workspaces)
+
+== DynamicWkspacesSummary ==
+A Dynamic Workspace is a virtual filesystem controlled by Plastic SCM where is only downloaded on demand (powered by heuristics to speed up downloads of multiple files).
+You can mount gigantic working copies but only consume the space of the files you really use.
+
+== DynamicWkspacesCurrently ==
+Dynamic Workspaces are currently
+
+== DynamicWkspacesInYourComputer ==
+in your computer
+
+== DynamicWkspacesTurnedOn ==
+turned ON
+
+== DynamicWkspacesTurnedOff ==
+turned OFF
+
+== TurnOn ==
+Turn on
+
+== LearnMoreAboutDynamicWorkspaces ==
+Learn more about Dynamic Workspaces
+
+== UsernameWatermark ==
+Username
+
+== CheckConnection ==
+Check connection
+
+== WrongServer ==
+Wrong server?
+
+== GoBack ==
+Go back
+
+== ConnectToCloudServer ==
+Connect to a cloud server
+
+== WrongAuthenticationMethod ==
+Wrong authentication method?
+
+== ConfirmDeleteAccountTitle ==
+Confirm remove account
+
+== DeleteUserAccountConfirmMessage ==
+Are you sure you want to remove account {0}?
+
+== RemoveAccountButton ==
+Remove account

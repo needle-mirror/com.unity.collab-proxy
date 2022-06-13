@@ -4,7 +4,18 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 {
     class AssetPostprocessor : UnityEditor.AssetPostprocessor
     {
-        internal static bool IsEnabled { get; set; }
+        internal static void Enable(
+            PlasticAssetsProcessor plasticAssetsProcessor)
+        {
+            mPlasticAssetsProcessor = plasticAssetsProcessor;
+            sIsEnabled = true;
+        }
+
+        internal static void Disable()
+        {
+            sIsEnabled = false;
+            mPlasticAssetsProcessor = null;
+        }
 
         static void OnPostprocessAllAssets(
             string[] importedAssets,
@@ -12,7 +23,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             string[] movedAssets,
             string[] movedFromAssetPaths)
         {
-            if (!IsEnabled)
+            if (!sIsEnabled)
                 return;
 
             // We need to ensure that the FSWatcher is enabled before processing Plastic operations
@@ -24,24 +35,29 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
             for (int i = 0; i < movedAssets.Length; i++)
             {
-                PlasticAssetsProcessor.MoveOnSourceControl(
+                mPlasticAssetsProcessor.MoveOnSourceControl(
                     movedFromAssetPaths[i],
                     movedAssets[i]);
             }
 
             foreach (string deletedAsset in deletedAssets)
             {
-                PlasticAssetsProcessor.DeleteFromSourceControl(
+                mPlasticAssetsProcessor.DeleteFromSourceControl(
                     deletedAsset);
             }
 
-            PlasticAssetsProcessor.AddToSourceControl(importedAssets);
+            mPlasticAssetsProcessor.AddToSourceControl(importedAssets);
 
             if (AssetModificationProcessor.ModifiedAssets == null)
                 return;
 
-            PlasticAssetsProcessor.CheckoutOnSourceControl(AssetModificationProcessor.ModifiedAssets);
+            mPlasticAssetsProcessor.CheckoutOnSourceControl(
+                AssetModificationProcessor.ModifiedAssets);
+
             AssetModificationProcessor.ModifiedAssets = null;
         }
+
+        static bool sIsEnabled;
+        static PlasticAssetsProcessor mPlasticAssetsProcessor;
     }
 }

@@ -59,7 +59,6 @@ namespace Unity.PlasticSCM.Editor
 
                 if (autoRefreshView != null)
                 {
-
                     autoRefreshView.EnableAutoRefresh();
 
                     if (isDialogueDirty)
@@ -138,6 +137,7 @@ namespace Unity.PlasticSCM.Editor
                 EditorStyles.boldLabel);
             EditorGUILayout.Space(1);
 
+            mUseChangeLists = EditorGUILayout.Toggle(Styles.useChangeLists, mUseChangeLists);
             mShowPrivateFields = EditorGUILayout.Toggle(Styles.showPrivateFields, mShowPrivateFields);
             mShowIgnoredFiles = EditorGUILayout.Toggle(Styles.showIgnoredFields, mShowIgnoredFiles);
             mShowHiddenFiles = EditorGUILayout.Toggle(Styles.showHiddenFields, mShowHiddenFiles);
@@ -242,7 +242,7 @@ namespace Unity.PlasticSCM.Editor
             return new PendingChangesOptions(
                 resultWkStatusOptions,
                 matchingOptions,
-                false,
+                mUseChangeLists,
                 mAutoRefresh,
                 false,
                 mCheckFileContent,
@@ -258,6 +258,8 @@ namespace Unity.PlasticSCM.Editor
             mShowChangedFiles = IsEnabled(
                 WorkspaceStatusOptions.FindChanged, options.WorkspaceStatusOptions);
             mCheckFileContent = options.CheckFileContentForChanged;
+            
+            mUseChangeLists = options.UseChangeLists;
 
             mShowPrivateFields = IsEnabled(
                 WorkspaceStatusOptions.FindPrivates, options.WorkspaceStatusOptions);
@@ -377,7 +379,6 @@ namespace Unity.PlasticSCM.Editor
                         PlasticLocalization.Name.PendingChangesAutoRefresh),
                     PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesAutoRefreshExplanation));
-
             internal static GUIContent showChangedFiles =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesFindChanged),
@@ -388,7 +389,11 @@ namespace Unity.PlasticSCM.Editor
                         PlasticLocalization.Name.PendingChangesCheckFileContent),
                     PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesCheckFileContentExplanation));
-
+            internal static GUIContent useChangeLists =
+                new GUIContent(PlasticLocalization.GetString(
+                        PlasticLocalization.Name.PendingChangesGroupInChangeLists), 
+                    PlasticLocalization.GetString(
+                        PlasticLocalization.Name.PendingChangesGroupInChangeListsExplanation));
             internal static GUIContent showPrivateFields =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesShowPrivateFiles),
@@ -409,7 +414,6 @@ namespace Unity.PlasticSCM.Editor
                         PlasticLocalization.Name.PendingChangesShowDeletedFiles),
                     PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesShowDeletedFilesExplanation));
-
             internal static GUIContent showMovedFiles =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesFindMovedFiles),
@@ -441,6 +445,7 @@ namespace Unity.PlasticSCM.Editor
         bool mShowChangedFiles;
         bool mCheckFileContent;
 
+        bool mUseChangeLists;
         bool mShowPrivateFields;
         bool mShowIgnoredFiles;
         bool mShowHiddenFiles;

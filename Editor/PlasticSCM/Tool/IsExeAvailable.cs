@@ -115,7 +115,7 @@ namespace Unity.PlasticSCM.Editor.Tool
         {
             internal const string GUI_WINDOWS = "gluon.exe";
             internal const string LEGACY_GUI_MACOS = "/Applications/Gluon.app/Contents/MacOS/Gluon";
-            internal const string NEW_GUI_MACOS = "/Applications/PlasticSCM.app/Contents/MacOS/macgluonx";
+            internal const string NEW_GUI_MACOS = "/Applications/Gluon.app/Contents/MacOS/macgluonx";
         }
     }
 }

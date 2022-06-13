@@ -6,11 +6,13 @@ using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 using Codice.Client.BaseCommands;
+using Codice.Client.Commands;
 using Codice.Client.Common;
 using Codice.CM.Common;
 
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.PendingChanges;
+using PlasticGui.WorkspaceWindow.PendingChanges.Changelists;
 
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
@@ -39,7 +41,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mAssetStatusCache = assetStatusCache;
 
             mPendingChangesTree = new UnityPendingChangesTree();
-            
+
             multiColumnHeader = new PendingChangesMultiColumnHeader(
                 this,
                 headerState,
@@ -118,7 +120,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         protected override bool CanChangeExpandedState(TreeViewItem item)
         {
-            return item is ChangeCategoryTreeViewItem;
+            return item is ChangeCategoryTreeViewItem || item is ChangelistTreeViewItem;
         }
 
         protected override TreeViewItem BuildRoot()
@@ -176,6 +178,16 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
  
         protected override void RowGUI(RowGUIArgs args)
         {
+            if (args.item is ChangelistTreeViewItem)
+            {
+                ChangelistTreeViewItemGUI(
+                    this,
+                    args.rowRect, rowHeight,
+                    (ChangelistTreeViewItem)args.item,
+                    args.selected, args.focused);
+                return;
+            }
+
             if (args.item is ChangeCategoryTreeViewItem)
             {
                 CategoryTreeViewItemGUI(
@@ -235,57 +247,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 sortAscending);
         }
 
-        internal SelectedChangesGroupInfo GetSelectedChangesGroupInfo()
-        {
-            SelectedChangesGroupInfo result = new SelectedChangesGroupInfo();
-
-            IList<int> selectedIds = GetSelection();
-
-            if (selectedIds.Count == 0)
-                return result;
-
-            foreach (KeyValuePair<PendingChangeInfo, int> item
-                in mTreeViewItemIds.GetInfoItems())
-            {
-                if (!selectedIds.Contains(item.Value))
-                    continue;
-
-                ChangeInfo changeInfo = item.Key.ChangeInfo;
-
-                result.SelectedCount++;
-                result.IsAnyDirectorySelected |= changeInfo.IsDirectory;
-                result.IsAnyPrivateSelected |= !ChangeInfoType.IsControlled(changeInfo);
-                result.IsAnyControlledSelected |= ChangeInfoType.IsControlled(changeInfo);
-                result.IsAnyLocalChangeSelected |= ChangeInfoType.IsLocalChange(changeInfo);
-
-                result.FilterInfo.IsAnyIgnoredSelected |= ChangeInfoType.IsIgnored(changeInfo);
-                result.FilterInfo.IsAnyHiddenChangedSelected |= ChangeInfoType.IsHiddenChanged(changeInfo);
-
-                string wkRelativePath = InternalNames.RootDir +
-                    WorkspacePath.GetWorkspaceRelativePath(
-                        mWkInfo.ClientPath, changeInfo.GetFullPath());
-
-                if (result.SelectedCount == 1)
-                {
-                    result.FilterInfo.CommonName = Path.GetFileName(changeInfo.GetFullPath());
-                    result.FilterInfo.CommonExtension = changeInfo.GetExtension();
-                    result.FilterInfo.CommonFullPath = wkRelativePath;
-                    continue;
-                }
-
-                if (result.FilterInfo.CommonName != Path.GetFileName(changeInfo.GetFullPath()))
-                    result.FilterInfo.CommonName = null;
-
-                if (result.FilterInfo.CommonExtension != changeInfo.GetExtension())
-                    result.FilterInfo.CommonExtension = null;
-
-                if (result.FilterInfo.CommonFullPath != wkRelativePath)
-                    result.FilterInfo.CommonFullPath = null;
-            }
-
-            return result;
-        }
-
         internal bool GetSelectedPathsToDelete(
             out List<string> privateDirectories,
             out List<string> privateFiles)
@@ -333,26 +294,21 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         }
 
         internal void GetCheckedChanges(
+            List<ChangelistNode> selectedChangelists,
             bool bExcludePrivates,
             out List<ChangeInfo> changes,
             out List<ChangeInfo> dependenciesCandidates)
         {
             mPendingChangesTree.GetCheckedChanges(
-                bExcludePrivates, out changes, out dependenciesCandidates);
+                selectedChangelists,
+                bExcludePrivates,
+                out changes,
+                out dependenciesCandidates);
         }
 
         internal List<ChangeInfo> GetAllChanges()
         {
-            List<ChangeInfo> result = new List<ChangeInfo>();
-            foreach (PendingChangeCategory category in mPendingChangesTree.GetNodes())
-            {
-                foreach (PendingChangeInfo change in category.GetCurrentChanges())
-                    result.Add(change.ChangeInfo);
-            }
-
-            mPendingChangesTree.FillWithMeta(result);
-
-            return result;
+            return mPendingChangesTree.GetAllChanges();
         }
 
         internal ChangeInfo GetMetaChange(ChangeInfo change)
@@ -368,6 +324,36 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         {
             return mPendingChangesTree.GetDependenciesCandidates(
                 selectedChanges, bExcludePrivates);
+        }
+
+        internal List<IPlasticTreeNode> GetSelectedNodes()
+        {
+            List<IPlasticTreeNode> result = new List<IPlasticTreeNode>();
+
+            IList<int> selectedIds = GetSelection();
+
+            if (selectedIds.Count == 0)
+                return result;
+
+            foreach (KeyValuePair<IPlasticTreeNode, int> item
+                in mTreeViewItemIds.GetCategoryItems())
+            {
+                if (!selectedIds.Contains(item.Value))
+                    continue;
+
+                result.Add(item.Key);
+            }
+
+            foreach (KeyValuePair<PendingChangeInfo, int> item
+                in mTreeViewItemIds.GetInfoItems())
+            {
+                if (!selectedIds.Contains(item.Value))
+                    continue;
+
+                result.Add(item.Key);
+            }
+
+            return result;
         }
 
         internal List<ChangeInfo> GetSelectedChanges(bool includeMetaFiles)
@@ -390,6 +376,49 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             if (includeMetaFiles)
                 mPendingChangesTree.FillWithMeta(result);
+
+            return result;
+        }
+
+        internal List<PendingChangeInfo> GetSelectedPendingChangeInfos()
+        {
+            List<PendingChangeInfo> result = new List<PendingChangeInfo>();
+
+            IList<int> selectedIds = GetSelection();
+
+            if (selectedIds.Count == 0)
+                return result;
+
+            foreach (KeyValuePair<PendingChangeInfo, int> item
+                in mTreeViewItemIds.GetInfoItems())
+            {
+                if (!selectedIds.Contains(item.Value))
+                    continue;
+
+                result.Add(item.Key);
+            }
+
+            return result;
+        }
+
+        internal List<ChangelistNode> GetSelectedChangelistNodes()
+        {
+            List<ChangelistNode> result = new List<ChangelistNode>();
+
+            IList<int> selectedIds = GetSelection();
+
+            if (selectedIds.Count == 0)
+                return result;
+
+            foreach (KeyValuePair<IPlasticTreeNode, int> item
+                in mTreeViewItemIds.GetCategoryItems())
+            {
+                if (!selectedIds.Contains(item.Value))
+                    continue;
+
+                if (item.Key is ChangelistNode)
+                    result.Add((ChangelistNode)item.Key);
+            }
 
             return result;
         }
@@ -502,32 +531,12 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         internal int GetCheckedItemCount()
         {
-            List<PendingChangeCategory> categories = mPendingChangesTree.GetNodes();
-
-            if (categories == null)
-                return 0;
-
-            int checkedCount = 0;
-            foreach (ICheckablePlasticTreeCategory category in categories)
-            {
-                checkedCount += category.GetCheckedChangesCount();
-            }
-            return checkedCount;
+            return CheckedItems.GetCheckedChildNodeCount(mPendingChangesTree.GetNodes());
         }
 
         internal int GetTotalItemCount()
         {
-            List<PendingChangeCategory> categories = mPendingChangesTree.GetNodes();
-
-            if (categories == null)
-                return 0;
-
-            int totalCount = 0;
-            foreach (ICheckablePlasticTreeCategory category in categories)
-            {
-                totalCount += category.GetChildrenCount();
-            }
-            return totalCount;
+            return CheckedItems.GetTotalChildNodeCount(mPendingChangesTree.GetNodes());
         }
 
         ChangeInfo GetNextExistingAddedItem(
@@ -575,21 +584,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         int GetTreeIdFirstItem()
         {
-            List<PendingChangeCategory> categories = mPendingChangesTree.GetNodes();
+            PendingChangeInfo firstChange = mPendingChangesTree.GetFirstPendingChange();
 
-            if (categories == null)
-                return -1;
-
-            if (categories.Count == 0)
-                return -1;
-
-            List<PendingChangeInfo> changes = categories[0].GetCurrentChanges();
-
-            if (changes.Count == 0)
+            if (firstChange == null)
                 return -1;
 
             int changeId;
-            if (mTreeViewItemIds.TryGetInfoItemId(changes[0], out changeId))
+            if (mTreeViewItemIds.TryGetInfoItemId(firstChange, out changeId))
                 return changeId;
 
             return -1;
@@ -631,6 +632,44 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             Reload();
         }
 
+        static void ChangelistTreeViewItemGUI(
+            PendingChangesTreeView treeView,
+            Rect rowRect,
+            float rowHeight,
+            ChangelistTreeViewItem item,
+            bool isSelected,
+            bool isFocused)
+        {
+            string label = item.Changelist.ChangelistInfo.Name;
+            string secondaryLabel = item.Changelist.ChangelistInfo.Description;
+
+            bool wasChecked = CheckedItems.GetIsCheckedValue(item.Changelist) ?? false;
+            
+            bool hadCheckedChildren = 
+                ((ICheckablePlasticTreeCategoryGroup)item.Changelist).GetCheckedCategoriesCount() > 0;
+
+            bool hadPartiallyCheckedChildren =
+                ((ICheckablePlasticTreeCategoryGroup)item.Changelist).GetPartiallyCheckedCategoriesCount() > 0;
+
+            bool isChecked = DrawTreeViewItem.ForCheckableCategoryItem(
+                rowRect,
+                rowHeight,
+                item.depth,
+                label,
+                secondaryLabel,
+                isSelected,
+                isFocused,
+                wasChecked,
+                hadCheckedChildren,
+                hadPartiallyCheckedChildren);
+
+            if (wasChecked != isChecked)
+            {
+                CheckedItems.SetCheckedValue(item.Changelist, isChecked);
+                treeView.SelectionChanged();
+            }
+        }
+
         static void CategoryTreeViewItemGUI(
             PendingChangesTreeView treeView,
             Rect rowRect,
@@ -643,7 +682,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             string secondaryLabel = item.Category.GetCheckedChangesText();
 
             bool wasChecked = item.Category.IsChecked();
-            bool hadCheckedChildren = ((ICheckablePlasticTreeCategory)item.Category).GetCheckedChangesCount() > 0;
+            bool hadCheckedChildren = 
+                ((ICheckablePlasticTreeCategory)item.Category).GetCheckedChangesCount() > 0;
 
             bool isChecked = DrawTreeViewItem.ForCheckableCategoryItem(
                 rowRect,
@@ -654,11 +694,12 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 isSelected,
                 isFocused,
                 wasChecked,
-                hadCheckedChildren);
+                hadCheckedChildren,
+                false);
 
             if (wasChecked != isChecked)
             {
-                ((ICheckablePlasticTreeCategory)item.Category).UpdateCheckedState(isChecked);
+                CheckedItems.SetCheckedValue(item.Category, isChecked);
                 treeView.SelectionChanged();
             }
         }
@@ -788,7 +829,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         static void RegenerateRows(
             UnityPendingChangesTree pendingChangesTree,
-            TreeViewItemIds<PendingChangeCategory, PendingChangeInfo> treeViewItemIds,
+            TreeViewItemIds<IPlasticTreeNode, PendingChangeInfo> treeViewItemIds,
             PendingChangesTreeView treeView,
             TreeViewItem rootItem,
             List<TreeViewItem> rows,
@@ -796,45 +837,114 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         {
             ClearRows(rootItem, rows);
 
-            List<PendingChangeCategory> categories = pendingChangesTree.GetNodes();
+            List<IPlasticTreeNode> nodes = pendingChangesTree.GetNodes();
 
-            if (categories == null)
+            if (nodes == null)
                 return;
 
-            foreach (PendingChangeCategory category in categories)
+            foreach (IPlasticTreeNode node in nodes)
             {
-                int categoryId;
-                if (!treeViewItemIds.TryGetCategoryItemId(category, out categoryId))
-                    categoryId = treeViewItemIds.AddCategoryItem(category);
-
-                ChangeCategoryTreeViewItem categoryTreeViewItem =
-                    new ChangeCategoryTreeViewItem(categoryId, category);
-
-                rootItem.AddChild(categoryTreeViewItem);
-                rows.Add(categoryTreeViewItem);
-
-                if (!expandCategories &&
-                    !treeView.IsExpanded(categoryTreeViewItem.id))
-                    continue;
-
-                foreach (PendingChangeInfo change in category.GetCurrentChanges())
+                if (node is ChangelistNode)
                 {
-                    int changeId;
-                    if (!treeViewItemIds.TryGetInfoItemId(change, out changeId))
-                        changeId = treeViewItemIds.AddInfoItem(change);
-
-                    TreeViewItem changeTreeViewItem =
-                        new ChangeTreeViewItem(changeId, change);
-
-                    categoryTreeViewItem.AddChild(changeTreeViewItem);
-                    rows.Add(changeTreeViewItem);
+                    AddChangelistNode(
+                        (ChangelistNode)node, 
+                        treeViewItemIds,
+                        treeView,
+                        rootItem,
+                        rows,
+                        expandCategories);
+                    continue;
                 }
+
+                if (node is PendingChangeCategory)
+                    AddPendingChangeCategory(
+                        (PendingChangeCategory)node,
+                        treeViewItemIds,
+                        treeView,
+                        rootItem,
+                        rows,
+                        expandCategories,
+                        0);
             }
 
             if (!expandCategories)
                 return;
 
             treeView.state.expandedIDs = treeViewItemIds.GetCategoryIds();
+        }
+
+        static void AddChangelistNode(
+            ChangelistNode changelist,
+            TreeViewItemIds<IPlasticTreeNode, PendingChangeInfo> treeViewItemIds,
+            PendingChangesTreeView treeView,
+            TreeViewItem rootItem,
+            List<TreeViewItem> rows,
+            bool expandCategories)
+        {
+            int changelistCategoryId;
+            if (!treeViewItemIds.TryGetCategoryItemId(changelist, out changelistCategoryId))
+                changelistCategoryId = treeViewItemIds.AddCategoryItem(changelist);
+
+            ChangelistTreeViewItem changelistTreeViewItem =
+                new ChangelistTreeViewItem(changelistCategoryId, changelist);
+
+            rootItem.AddChild(changelistTreeViewItem);
+            rows.Add(changelistTreeViewItem);
+
+            if (!expandCategories &&
+                !treeView.IsExpanded(changelistTreeViewItem.id))
+                return;
+
+            IList<IPlasticTreeNode> categories = ((IPlasticTreeNode)changelist).GetChildren();
+
+            foreach (IPlasticTreeNode category in categories)
+            {
+                AddPendingChangeCategory(
+                    (PendingChangeCategory)category,
+                    treeViewItemIds,
+                    treeView,
+                    changelistTreeViewItem,
+                    rows,
+                    expandCategories,
+                    1);
+            }
+        }
+
+        static void AddPendingChangeCategory(
+            PendingChangeCategory category,
+            TreeViewItemIds<IPlasticTreeNode, PendingChangeInfo> treeViewItemIds,
+            PendingChangesTreeView treeView,
+            TreeViewItem rootItem,
+            List<TreeViewItem> rows,
+            bool expandCategories,
+            int depth)
+        {
+            int categoryId;
+            if (!treeViewItemIds.TryGetCategoryItemId(category, out categoryId))
+                categoryId = treeViewItemIds.AddCategoryItem(category);
+
+            ChangeCategoryTreeViewItem categoryTreeViewItem =
+                new ChangeCategoryTreeViewItem(categoryId, category, depth);
+
+            rootItem.AddChild(categoryTreeViewItem);
+            rows.Add(categoryTreeViewItem);
+
+            if (!expandCategories &&
+                !treeView.IsExpanded(categoryTreeViewItem.id))
+                return;
+
+            foreach (PendingChangeInfo change in category.GetCurrentChanges())
+            {
+                int changeId;
+                if (!treeViewItemIds.TryGetInfoItemId(change, out changeId))
+                    changeId = treeViewItemIds.AddInfoItem(change);
+
+                TreeViewItem changeTreeViewItem =
+                    new ChangeTreeViewItem(changeId, change, depth + 1);
+
+                categoryTreeViewItem.AddChild(changeTreeViewItem);
+                rows.Add(changeTreeViewItem);
+            }
         }
 
         static void ClearRows(
@@ -871,8 +981,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         bool mExpandCategories;
         bool mIsSelectionChangedEventDisabled;
 
-        TreeViewItemIds<PendingChangeCategory, PendingChangeInfo> mTreeViewItemIds =
-            new TreeViewItemIds<PendingChangeCategory, PendingChangeInfo>();
+        TreeViewItemIds<IPlasticTreeNode, PendingChangeInfo> mTreeViewItemIds =
+            new TreeViewItemIds<IPlasticTreeNode, PendingChangeInfo>();
         List<TreeViewItem> mRows = new List<TreeViewItem>();
 
         UnityPendingChangesTree mPendingChangesTree;

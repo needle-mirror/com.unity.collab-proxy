@@ -87,7 +87,8 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                     mConfirmPasswordTextField.text,
                     false),
                 mProgressControls,
-                this);
+                this,
+                false);
         }
 
         void SignUpWithUnityButton_clicked()
@@ -219,6 +220,10 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 PlasticLocalization.GetString(PlasticLocalization.Name.SignUp),
                 organizations,
                 canCreateAnOrganization);
+        }
+
+        void SignUp.INotify.SuccessForHomeView(string userName)
+        {
         }
 
         void SignUp.INotify.ValidationFailed(SignUp.ValidationResult validationResult)

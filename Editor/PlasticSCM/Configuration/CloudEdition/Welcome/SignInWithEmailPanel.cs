@@ -55,7 +55,9 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         void Login.INotify.SuccessForConfigure(
             List<string> organizations,
-            bool canCreateAnOrganization)
+            bool canCreateAnOrganization,
+            string userName,
+            string password)
         {
             mNotify.SuccessForConfigure(
                 organizations,
@@ -77,6 +79,10 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         void Login.INotify.SuccessForCredentials(string userName, string password)
         {
             mNotify.SuccessForCredentials(userName, password);
+        }
+
+        void Login.INotify.SuccessForHomeView(string userName)
+        {
         }
 
         void Login.INotify.ValidationFailed(

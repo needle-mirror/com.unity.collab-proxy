@@ -1,18 +1,18 @@
 using System;
 
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 using Codice.CM.Common;
 using Unity.PlasticSCM.Editor.AssetMenu;
-using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
+using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.CollabMigration;
 using Unity.PlasticSCM.Editor.Inspector;
 using Unity.PlasticSCM.Editor.ProjectDownloader;
-using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.SceneView;
+using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor
 {
@@ -27,7 +27,15 @@ namespace Unity.PlasticSCM.Editor
         /// </summary>
         public static event Action OnNotificationUpdated = delegate { };
 
-        internal static IAssetStatusCache AssetStatusCache { get; private set; }
+        internal static IAssetStatusCache AssetStatusCache 
+        { 
+            get { return sAssetStatusCache; } 
+        }
+
+        internal static WorkspaceOperationsMonitor WorkspaceOperationsMonitor 
+        { 
+            get { return sWorkspaceOperationsMonitor; } 
+        }
 
         static PlasticPlugin()
         {
@@ -79,15 +87,21 @@ namespace Unity.PlasticSCM.Editor
 
             PlasticApp.SetWorkspace(wkInfo);
 
-            AssetStatusCache = new AssetStatusCache(
-                wkInfo,
-                PlasticApp.PlasticAPI.IsGluonWorkspace(wkInfo));
+            bool isGluonMode = PlasticApp.PlasticAPI.IsGluonWorkspace(wkInfo);
 
+            sAssetStatusCache = new AssetStatusCache(wkInfo, isGluonMode);
+
+            PlasticAssetsProcessor plasticAssetsProcessor = new PlasticAssetsProcessor();
+
+            sWorkspaceOperationsMonitor = BuildWorkspaceOperationsMonitor(
+                plasticAssetsProcessor, isGluonMode);
+            sWorkspaceOperationsMonitor.Start();
+
+            AssetsProcessors.Enable(plasticAssetsProcessor, sAssetStatusCache);
             AssetMenuItems.Enable();
-            AssetsProcessors.Enable();
             DrawAssetOverlay.Enable();
             DrawInspectorOperations.Enable();
-            DrawSceneOperations.Enable();
+            DrawSceneOperations.Enable(sWorkspaceOperationsMonitor);
         }
 
         internal static void Disable()
@@ -98,6 +112,8 @@ namespace Unity.PlasticSCM.Editor
 
                 if (!sIsEnabledForWorkspace)
                     return;
+
+                sWorkspaceOperationsMonitor.Stop();
 
                 AssetsProcessors.Disable();
                 AssetMenuItems.Disable();
@@ -120,11 +136,23 @@ namespace Unity.PlasticSCM.Editor
 
             plasticWindow.SetupWindowTitle(status);
 
-            if (OnNotificationUpdated!=null) OnNotificationUpdated.Invoke();
+            if (OnNotificationUpdated != null) 
+                OnNotificationUpdated.Invoke();
+        }
+
+        static WorkspaceOperationsMonitor BuildWorkspaceOperationsMonitor(
+            PlasticAssetsProcessor plasticAssetsProcessor,
+            bool isGluonMode)
+        {
+            WorkspaceOperationsMonitor result = new WorkspaceOperationsMonitor(
+                PlasticApp.PlasticAPI, plasticAssetsProcessor, isGluonMode);
+            plasticAssetsProcessor.SetWorkspaceOperationsMonitor(result);
+            return result;
         }
 
         static PlasticNotification.Status sNotificationStatus;
-
+        static AssetStatusCache sAssetStatusCache;
+        static WorkspaceOperationsMonitor sWorkspaceOperationsMonitor;
         static bool sIsEnabled;
         static bool sIsEnabledForWorkspace;
     }

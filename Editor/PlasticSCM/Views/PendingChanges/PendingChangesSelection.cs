@@ -4,8 +4,8 @@ using System.Linq;
 
 using Codice.Client.BaseCommands;
 using Codice.Client.Commands;
-using PlasticGui.WorkspaceWindow.Diff;
 using PlasticGui.WorkspaceWindow.PendingChanges;
+using PlasticGui.WorkspaceWindow.PendingChanges.Changelists;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
@@ -46,12 +46,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         internal static List<string> GetSelectedMetaPaths(
             PendingChangesTreeView treeView)
         {
-            List<ChangeInfo> selectedChanges = PendingChangesSelection
-                .GetSelectedChanges(treeView);
-
             List<string> result = new List<string>();
 
-            foreach (ChangeInfo change in selectedChanges)
+            foreach (ChangeInfo change in GetSelectedChanges(treeView))
             {
                 string path = change.GetFullPath();
 
@@ -92,11 +89,12 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         }
 
         internal static SelectedChangesGroupInfo GetSelectedChangesGroupInfo(
-            PendingChangesTreeView treeView)
+            string wkPath, PendingChangesTreeView treeView)
         {
-            SelectedChangesGroupInfo result = treeView.GetSelectedChangesGroupInfo();
-            result.IsApplicableDiffWorkspaceContent = IsApplicableDiffWorkspaceContent(treeView);
-            return result;
+            return SelectedChangesGroupInfo.BuildFromChangeInfos(
+                wkPath,
+                treeView.GetSelectedChanges(true),
+                GetInvolvedChangelists(treeView.GetSelectedPendingChangeInfos()));
         }
 
         internal static List<ChangeInfo> GetSelectedChanges(
@@ -105,21 +103,57 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             return treeView.GetSelectedChanges(true);
         }
 
+        internal static List<ChangeListInfo> GetSelectedChangeListInfos(
+            PendingChangesTreeView treeView)
+        {
+            List<ChangeListInfo> result = new List<ChangeListInfo>();
+            List<ChangelistNode> nodes = treeView.GetSelectedChangelistNodes();
+
+            foreach (ChangelistNode node in nodes)
+                result.Add(node.ChangelistInfo);
+
+            return result;
+        }
+
+        internal static ChangeListInfo GetSelectedChangeListInfo(
+            PendingChangesTreeView treeView)
+        {
+            List<ChangeListInfo> changeListInfos = GetSelectedChangeListInfos(treeView);
+
+            if (changeListInfos.Count == 0)
+                return null;
+
+            return changeListInfos[0];
+        }
+
+        internal static List<ChangelistNode> GetSelectedChangelistNodes(
+            PendingChangesTreeView treeView)
+        {
+            return treeView.GetSelectedChangelistNodes();
+        }
+
         internal static ChangeInfo GetSelectedChange(
             PendingChangesTreeView treeView)
         {
             return treeView.GetSelectedRow();
         }
 
-        static bool IsApplicableDiffWorkspaceContent(
-            PendingChangesTreeView treeView)
+        static List<ChangeListInfo> GetInvolvedChangelists(List<PendingChangeInfo> changes)
         {
-            ChangeInfo selectedRow = GetSelectedChange(treeView);
+            List<ChangeListInfo> result = new List<ChangeListInfo>();
 
-            if (selectedRow == null)
-                return false;
+            foreach (PendingChangeInfo pendingChangeInfo in changes)
+            {
+                ChangelistNode changelistNode =
+                    (ChangelistNode)pendingChangeInfo.GetParent().GetParent();
 
-            return DiffOperation.IsApplicableDiffWorkspaceContent(selectedRow);
+                if (changelistNode == null)
+                    continue;
+
+                result.Add(changelistNode.ChangelistInfo);
+            }
+
+            return result;
         }
 
         static bool IsAddedFile(ChangeInfo change)

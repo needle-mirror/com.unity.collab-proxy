@@ -32,6 +32,7 @@ namespace Unity.PlasticSCM.Editor
 {
     internal class WorkspaceWindow :
         IWorkspaceWindow,
+        IRefreshView,
         IUpdateReport,
         IGluonUpdateReport,
         IGluonWorkspaceStatusChangeListener
@@ -218,6 +219,11 @@ namespace Unity.PlasticSCM.Editor
         EncryptionConfigurationDialogData IWorkspaceWindow.RequestEncryptionPassword(string server)
         {
             return EncryptionConfigurationDialog.RequestEncryptionPassword(server, mPlasticWindow);
+        }
+
+        void IRefreshView.ForType(ViewType viewType)
+        {
+            mSwitcher.RefreshView(viewType);
         }
 
         void IUpdateReport.Show(WorkspaceInfo wkInfo, IList reportLines)

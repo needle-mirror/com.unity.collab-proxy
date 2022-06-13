@@ -20,7 +20,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
         internal WelcomeView(
             PlasticWindow parentWindow,
             CreateWorkspaceView.ICreateWorkspaceListener createWorkspaceListener,
-            PlasticAPI plasticApi,
+            IPlasticAPI plasticApi,
             CmConnection cmConnection,
             IPlasticWebRestApi plasticWebRestApi)
         {
@@ -315,7 +315,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
         readonly ProgressControlsForViews mConfigureProgress;
         readonly GuiMessage.IGuiMessage mGuiMessage;
         readonly CmConnection mCmConnection;
-        readonly PlasticAPI mPlasticApi;
+        readonly IPlasticAPI mPlasticApi;
         readonly IPlasticWebRestApi mPlasticWebRestApi;
         readonly CreateWorkspaceView.ICreateWorkspaceListener mCreateWorkspaceListener;
         readonly PlasticWindow mParentWindow;

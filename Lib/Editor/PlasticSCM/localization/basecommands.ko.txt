@@ -2495,12 +2495,6 @@ Xlink 리포지토리에 병합을 계산할 조상 변경 세트가 지정되�
 == YesValidAnswers ==
 y;예
 
-== CmdConfigureErrorCloudEdition ==
-The 'cm configure' command cannot be run on Cloud Edition flavor of Plastic SCM
-
-== CmdConfigureErrorDvcsEdition ==
-The 'cm configure' command cannot be run on DVCS Edition flavor of Plastic SCM
-
 == CmdConfigureErrorCannotCreateDir ==
 Failed when creating a directory [{0}]:{1}
 

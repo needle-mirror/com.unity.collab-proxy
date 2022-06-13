@@ -1,14 +1,10 @@
  [About version control](index.md)
 
 * [Quick start guide](QuickStartGuide.md)
-* [Upgrade from Collaborate to Plastic SCM](UpgradeCollab.md)
-* [Upgrade from Collaborate without moving the history](MigrateCollabHistory.md)
-  * [Switch between Collaborate and Plastic SCM](SwitchCollabAndPlastic.md)
   * [Create projects](CreateProjects.md)
   * [Access remote projects](AccessRemoteProjects.md)
-  * [Export Collaborate projects](ExportCollabProjects.md)
   * [Add team members](AddMembers.md)
-  * [Reconnect Cloud Build](ReconnectCB.md)
+  * [Connect Cloud Build](ReconnectCB.md)
   * [Add integrations](AddIntegrations.md)
 * [Getting started with Plastic SCM for Unity](StartPlasticForUnity.md)
   * [Getting started with a new Plastic SCM repository](NewPlasticRepo.md)
@@ -20,5 +16,6 @@
 * [Plastic SCM for Git users](PlasticForGitUsers.md)
 * [Glossary](Glossary.md)
   * [General terms](Glossary.md#general-terms)
-  * [Plastic SCM terms](Glossary.md#plastic-scm-terms)
-* [FAQ](Faq.md)
+  * [Plastic SCM terms](Glossary.md#plastic-scm-terms
+* [More help](MoreHelp.md)
+

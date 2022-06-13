@@ -362,6 +362,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
             List<ChangeInfo> dependenciesCandidates;
 
             tree.GetCheckedChanges(
+                null,
                 false,
                 out changes,
                 out dependenciesCandidates);
@@ -424,6 +425,7 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.PendingChanges
             List<ChangeInfo> dependenciesCandidates;
 
             tree.GetCheckedChanges(
+                null,
                 false,
                 out changes,
                 out dependenciesCandidates);

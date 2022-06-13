@@ -77,28 +77,28 @@ namespace Unity.PlasticSCM.Tests.Editor.Views.IncomingChanges.Developer
             return mergeTreeResult;
         }
 
-        static Difference CreateDirectoryAddedDifference()
+        static DiffChanged CreateDirectoryAddedDifference()
         {
             return new DiffChanged(
                 CreateDirectoryRevision(), -1, CreateRandomPath(), -1,
                 Difference.DiffNodeStatus.Added);
         }
 
-        static Difference CreateFileAddedDifference(long size)
+        static DiffChanged CreateFileAddedDifference(long size)
         {
             return new DiffChanged(
                 CreateFileRevision(size), -1, CreateRandomPath(), -1,
                 Difference.DiffNodeStatus.Added);
         }
 
-        static Difference CreateMovedDifference()
+        static DiffMoved CreateMovedDifference()
         {
             return new DiffMoved(
                 new RevisionInfo(), -1, CreateRandomPath(), -1,
                 CreateRandomPath(), -1);
         }
 
-        static Difference CreateDeletedDifference()
+        static DiffChanged CreateDeletedDifference()
         {
             return new DiffChanged(
                 new RevisionInfo() { Type = EnumRevisionType.enTextFile }, -1, CreateRandomPath(), -1,

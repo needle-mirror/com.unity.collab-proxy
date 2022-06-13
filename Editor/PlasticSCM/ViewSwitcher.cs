@@ -45,6 +45,7 @@ namespace Unity.PlasticSCM.Editor
             GluonNewIncomingChangesUpdater gluonNewIncomingChangesUpdater,
             IIncomingChangesNotifier incomingChangesNotifier,
             IAssetStatusCache assetStatusCache,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
             StatusBar statusBar,
             EditorWindow parentWindow)
         {
@@ -55,6 +56,7 @@ namespace Unity.PlasticSCM.Editor
             mGluonNewIncomingChangesUpdater = gluonNewIncomingChangesUpdater;
             mIncomingChangesNotifier = incomingChangesNotifier;
             mAssetStatusCache = assetStatusCache;
+            mWorkspaceOperationsMonitor = workspaceOperationsMonitor;
             mStatusBar = statusBar;
             mParentWindow = parentWindow;
 
@@ -126,7 +128,7 @@ namespace Unity.PlasticSCM.Editor
 
         internal void OnDisable()
         {
-            PlasticAssetsProcessor.UnRegisterViews();
+            mWorkspaceOperationsMonitor.UnRegisterViews();
 
             if (PendingChangesTab != null)
                 PendingChangesTab.OnDisable();
@@ -414,8 +416,8 @@ namespace Unity.PlasticSCM.Editor
                     ViewType.CheckinView,
                     PendingChangesTab);
 
-                PlasticAssetsProcessor.
-                    RegisterPendingChangesView(PendingChangesTab);
+                mWorkspaceOperationsMonitor.RegisterPendingChangesView(
+                    PendingChangesTab);
             }
 
             bool wasPendingChangesSelected =
@@ -453,8 +455,8 @@ namespace Unity.PlasticSCM.Editor
                     ViewType.IncomingChangesView,
                     (IRefreshableView)mIncomingChangesTab);
 
-                PlasticAssetsProcessor.
-                    RegisterIncomingChangesView(mIncomingChangesTab);
+                mWorkspaceOperationsMonitor.RegisterIncomingChangesView(
+                    mIncomingChangesTab);
             }
 
             bool wasIncomingChangesSelected =
@@ -754,6 +756,7 @@ namespace Unity.PlasticSCM.Editor
 
         readonly EditorWindow mParentWindow;
         readonly StatusBar mStatusBar;
+        readonly WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
         readonly IAssetStatusCache mAssetStatusCache;
         readonly IIncomingChangesNotifier mIncomingChangesNotifier;
         readonly GluonNewIncomingChangesUpdater mGluonNewIncomingChangesUpdater;

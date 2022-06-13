@@ -34,7 +34,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
         internal CreateWorkspaceView(
             PlasticWindow parentWindow,
             ICreateWorkspaceListener listener,
-            PlasticAPI plasticApi,
+            IPlasticAPI plasticApi,
             IPlasticWebRestApi plasticWebRestApi,
             string workspacePath)
         {
@@ -82,7 +82,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                 mWorkspacePath);
         }
 
-        void Initialize(PlasticAPI plasticApi, IPlasticWebRestApi plasticWebRestApi)
+        void Initialize(IPlasticAPI plasticApi, IPlasticWebRestApi plasticWebRestApi)
         {
             ((IProgressControls)mProgressControls).ShowProgress(string.Empty);
 

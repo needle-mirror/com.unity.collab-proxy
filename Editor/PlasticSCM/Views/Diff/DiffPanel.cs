@@ -31,6 +31,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         internal DiffPanel(
             WorkspaceInfo wkInfo,
             IWorkspaceWindow workspaceWindow,
+            IRefreshView refreshView,
             IViewSwitcher viewSwitcher,
             IHistoryViewLauncher historyViewLauncher,
             EditorWindow parentWindow,
@@ -38,6 +39,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         {
             mWkInfo = wkInfo;
             mWorkspaceWindow = workspaceWindow;
+            mRefreshView = refreshView;
             mViewSwitcher = viewSwitcher;
             mHistoryViewLauncher = historyViewLauncher;
             mParentWindow = parentWindow;
@@ -82,6 +84,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             DoActionsToolbar(
                 mDiffs,
+                mDiffsBranchResolver,
                 mProgressControls,
                 mIsSkipMergeTrackingButtonVisible,
                 mIsSkipMergeTrackingButtonChecked,
@@ -192,7 +195,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             UndeleteClientDiffsOperation.Undelete(
                 mWkInfo,
                 DiffSelection.GetSelectedDiffs(mDiffTreeView),
-                mWorkspaceWindow,
+                mRefreshView,
                 mProgressControls,
                 this,
                 mGuiMessage,
@@ -204,7 +207,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             UndeleteClientDiffsOperation.UndeleteToSpecifiedPaths(
                 mWkInfo,
                 DiffSelection.GetSelectedDiffs(mDiffTreeView),
-                mWorkspaceWindow,
+                mRefreshView,
                 mProgressControls,
                 this,
                 mGuiMessage,
@@ -313,6 +316,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                 {
                     mDiffs = PlasticGui.Plastic.API.GetChangesetDifferences(
                         mountWithPath, csetInfo);
+
+                    mDiffsBranchResolver = BuildBranchResolver.ForDiffs(mDiffs);
                 },
                 /*afterOperationDelegate*/ delegate
                 {
@@ -342,7 +347,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                         mIsSkipMergeTrackingButtonChecked;
 
                     UpdateDiffTreeView(
-                        mDiffs, skipMergeTracking, mDiffTreeView);
+                        mDiffs, mDiffsBranchResolver,
+                        skipMergeTracking, mDiffTreeView);
                 });
         }
 
@@ -366,11 +372,12 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         static void UpdateDiffTreeView(
             List<ClientDiff> diffs,
+            BranchResolver brResolver,
             bool skipMergeTracking,
             DiffTreeView diffTreeView)
         {
             diffTreeView.BuildModel(
-                diffs, skipMergeTracking);
+                diffs, brResolver, skipMergeTracking);
 
             diffTreeView.Refilter();
 
@@ -381,6 +388,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void DoActionsToolbar(
             List<ClientDiff> diffs,
+            BranchResolver brResolver,
             ProgressControlsForViews progressControls,
             bool isSkipMergeTrackingButtonVisible,
             bool isSkipMergeTrackingButtonChecked,
@@ -400,7 +408,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             if (isSkipMergeTrackingButtonVisible)
             {
                 DoSkipMergeTrackingButton(
-                    diffs,
+                    diffs, brResolver,
                     isSkipMergeTrackingButtonChecked,
                     diffTreeView);
             }
@@ -431,6 +439,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void DoSkipMergeTrackingButton(
             List<ClientDiff> diffs,
+            BranchResolver brResolver,
             bool isSkipMergeTrackingButtonChecked,
             DiffTreeView diffTreeView)
         {
@@ -461,7 +470,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                     TrackFeatureUseEvent.Features.ChangesetViewSkipMergeTrackingButton);
             }
 
-            UpdateDiffTreeView(diffs, isChecked, diffTreeView);
+            UpdateDiffTreeView(diffs, brResolver, isChecked, diffTreeView);
 
             mIsSkipMergeTrackingButtonChecked = isChecked;
         }
@@ -489,6 +498,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         }
 
         volatile List<ClientDiff> mDiffs;
+        volatile BranchResolver mDiffsBranchResolver;
 
         bool mIsSkipMergeTrackingButtonVisible;
         bool mIsSkipMergeTrackingButtonChecked;
@@ -504,6 +514,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         readonly ProgressControlsForViews mProgressControls;
         readonly GuiMessage.IGuiMessage mGuiMessage;
         readonly EditorWindow mParentWindow;
+        readonly IRefreshView mRefreshView;
         readonly IWorkspaceWindow mWorkspaceWindow;
         readonly IHistoryViewLauncher mHistoryViewLauncher;
         readonly IViewSwitcher mViewSwitcher;

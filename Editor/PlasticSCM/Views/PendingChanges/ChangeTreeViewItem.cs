@@ -9,8 +9,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
     {
         internal PendingChangeInfo ChangeInfo { get; private set; }
 
-        internal ChangeTreeViewItem(int id, PendingChangeInfo change)
-            : base(id, 1)
+        internal ChangeTreeViewItem(int id, PendingChangeInfo change, int depth)
+            : base(id, depth)
         {
             ChangeInfo = change;
 
