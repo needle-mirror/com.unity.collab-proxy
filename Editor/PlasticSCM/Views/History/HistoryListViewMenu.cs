@@ -5,6 +5,7 @@ using Codice.Client.BaseCommands.EventTracking;
 using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.History;
+using PlasticGui.WorkspaceWindow.Open;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.Tool;
 
@@ -18,9 +19,11 @@ namespace Unity.PlasticSCM.Editor.Views.History
         }
 
         internal HistoryListViewMenu(
+            IOpenMenuOperations openMenuOperations,
             IHistoryViewMenuOperations operations,
             IMenuOperations menuOperations)
         {
+            mOpenMenuOperations = openMenuOperations;
             mOperations = operations;
             mMenuOperations = menuOperations;
 
@@ -58,12 +61,12 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         void OpenRevisionMenu_Click()
         {
-            mOperations.OpenRevision();
+            mOpenMenuOperations.Open();
         }
 
         void OpenRevisionWithMenu_Click()
         {
-            mOperations.OpenRevisionWith();
+            mOpenMenuOperations.OpenWith();
         }
 
         void SaveRevisionasMenu_Click()
@@ -98,18 +101,22 @@ namespace Unity.PlasticSCM.Editor.Views.History
             HistoryMenuOperations operations =
                 HistoryMenuUpdater.GetAvailableMenuOperations(info);
 
-            if (operations == HistoryMenuOperations.None)
+            OpenMenuOperations openOperations =
+                GetOpenMenuOperations.ForHistoryView(info);
+
+            if (operations == HistoryMenuOperations.None &&
+                openOperations == OpenMenuOperations.None)
             {
                 menu.AddDisabledItem(GetNoActionMenuItemContent(), false);
                 return;
             }
 
-            if (operations.HasFlag(HistoryMenuOperations.Open))
+            if (openOperations.HasFlag(OpenMenuOperations.Open))
                 menu.AddItem(mOpenRevisionMenuItemContent, false, OpenRevisionMenu_Click);
             else
                 menu.AddDisabledItem(mOpenRevisionMenuItemContent, false);
 
-            if (operations.HasFlag(HistoryMenuOperations.OpenWith))
+            if (openOperations.HasFlag(OpenMenuOperations.OpenWith))
                 menu.AddItem(mOpenRevisionWithMenuItemContent, false, OpenRevisionWithMenu_Click);
             else
                 menu.AddDisabledItem(mOpenRevisionWithMenuItemContent, false);
@@ -209,7 +216,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
         GUIContent mDiffSelectedRevisionsMenuItemContent;
         GUIContent mDiffChangesetMenuItemContent;
         GUIContent mRevertToThisRevisionMenuItemContent;
-
+        readonly IOpenMenuOperations mOpenMenuOperations;
         readonly IHistoryViewMenuOperations mOperations;
         readonly IMenuOperations mMenuOperations;
      }

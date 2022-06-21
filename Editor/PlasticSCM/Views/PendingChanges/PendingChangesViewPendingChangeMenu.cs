@@ -157,7 +157,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 ChangelistMenuOperations.None;
 
             OpenMenuOperations openOperations =
-                GetOpenMenuOperations.ForPendingChanges(info);
+                GetOpenMenuOperations.ForPendingChangesView(info);
 
             bool useChangelists = PlasticGuiConfig.Get().
                 Configuration.CommitUseChangeLists;
@@ -381,7 +381,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             SelectedChangesGroupInfo info)
         {
             OpenMenuOperations openOperations =
-                GetOpenMenuOperations.ForPendingChanges(info);
+                GetOpenMenuOperations.ForPendingChangesView(info);
 
             if (!openOperations.HasFlag(openOperationToExecute))
                 return false;

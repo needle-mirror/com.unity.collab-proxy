@@ -8,13 +8,18 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             PlasticAssetsProcessor plasticAssetsProcessor)
         {
             mPlasticAssetsProcessor = plasticAssetsProcessor;
-            sIsEnabled = true;
+            mIsEnabled = true;
         }
 
         internal static void Disable()
         {
-            sIsEnabled = false;
+            mIsEnabled = false;
             mPlasticAssetsProcessor = null;
+        }
+
+        internal static void SetIsRepaintInspectorNeededAfterAssetDatabaseRefresh()
+        {
+            mIsRepaintInspectorNeededAfterAssetDatabaseRefresh = true;
         }
 
         static void OnPostprocessAllAssets(
@@ -23,8 +28,14 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             string[] movedAssets,
             string[] movedFromAssetPaths)
         {
-            if (!sIsEnabled)
+            if (!mIsEnabled)
                 return;
+
+            if (mIsRepaintInspectorNeededAfterAssetDatabaseRefresh)
+            {
+                mIsRepaintInspectorNeededAfterAssetDatabaseRefresh = false;
+                RepaintInspector.All();
+            }
 
             // We need to ensure that the FSWatcher is enabled before processing Plastic operations
             // It fixes the following scenario: 
@@ -57,7 +68,8 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             AssetModificationProcessor.ModifiedAssets = null;
         }
 
-        static bool sIsEnabled;
+        static bool mIsEnabled;
+        static bool mIsRepaintInspectorNeededAfterAssetDatabaseRefresh;
         static PlasticAssetsProcessor mPlasticAssetsProcessor;
     }
 }

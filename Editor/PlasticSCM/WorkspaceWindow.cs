@@ -318,7 +318,7 @@ namespace Unity.PlasticSCM.Editor
 
             ((IUpdateProgress)mGluonProgressOperationHandler).ShowCancelableProgress();
 
-            OutOfDateUpdater outOfDateUpdater = new OutOfDateUpdater(mWkInfo);
+            OutOfDateUpdater outOfDateUpdater = new OutOfDateUpdater(mWkInfo, null);
 
             BuildProgressSpeedAndRemainingTime.ProgressData progressData =
                 new BuildProgressSpeedAndRemainingTime.ProgressData(DateTime.Now);

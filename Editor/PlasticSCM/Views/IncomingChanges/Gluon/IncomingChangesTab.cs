@@ -70,7 +70,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 mProgressControls, updateIncomingChanges,
                 workspaceWindow.GluonProgressOperationHandler, workspaceWindow,
                 new IncomingChangesViewLogic.ApplyWorkspaceLocalChanges(),
-                new IncomingChangesViewLogic.OutOfDateItemsOperations(),
+                new IncomingChangesViewLogic.OutOfDateItemsOperations(null),
                 new IncomingChangesViewLogic.GetWorkingBranch(),
                 new IncomingChangesViewLogic.ResolveUserName(),
                 new ResolveChangeset(),

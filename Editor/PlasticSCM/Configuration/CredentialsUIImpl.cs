@@ -1,36 +1,33 @@
 ﻿using System;
-using System.Threading.Tasks;
-
 using UnityEditor;
 
+using Codice.CM.Common;
+using System.Threading.Tasks;
 using Codice.Client.Common;
 using Codice.Client.Common.Connection;
-using Codice.Client.Common.Threading;
-using Codice.CM.Common;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
+using Codice.Client.Common.Threading;
 using Unity.PlasticSCM.Editor.WebApi;
 
 namespace Unity.PlasticSCM.Editor.Configuration
 {
     internal class CredentialsUiImpl : AskCredentialsToUser.IGui
     {
-        AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForCredentials(
-            string servername)
+        AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForCredentials(string servername, SEIDWorkingMode seidWorkingMode)
         {
             AskCredentialsToUser.DialogData result = null;
 
             GUIActionRunner.RunGUIAction(delegate
             {
                 result = CredentialsDialog.RequestCredentials(
-                        servername, ParentWindow.Get());
+                        servername, seidWorkingMode, ParentWindow.Get());
             });
 
             return result;
         }
 
-        void AskCredentialsToUser.IGui.ShowSaveProfileErrorMessage(
-            string message)
+        void AskCredentialsToUser.IGui.ShowSaveProfileErrorMessage(string message)
         {
             GUIActionRunner.RunGUIAction(delegate
             {

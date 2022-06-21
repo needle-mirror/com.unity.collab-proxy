@@ -18,17 +18,16 @@ namespace Unity.PlasticSCM.Editor.Configuration
             {
                 var baseRect = base.DefaultRect;
                 return new Rect(baseRect.x, baseRect.y, 525, 250);
-
-
             }
         }
 
         internal static AskCredentialsToUser.DialogData RequestCredentials(
             string server,
+            SEIDWorkingMode seidWorkingMode,
             EditorWindow parentWindow)
         {
             CredentialsDialog dialog = Create(
-                server, new ProgressControlsForDialogs());
+                server, seidWorkingMode, new ProgressControlsForDialogs());
 
             ResponseType dialogResult = dialog.RunModal(parentWindow);
 
@@ -68,7 +67,7 @@ namespace Unity.PlasticSCM.Editor.Configuration
         {
             return new AskCredentialsToUser.DialogData(
                 dialogResult == ResponseType.Ok,
-                mUser, mPassword, mSaveProfile, SEIDWorkingMode.LDAPWorkingMode);
+                mUser, mPassword, mSaveProfile, mSeidWorkingMode);
         }
 
         void DoEntriesArea()
@@ -134,10 +133,12 @@ namespace Unity.PlasticSCM.Editor.Configuration
 
         static CredentialsDialog Create(
             string server,
+            SEIDWorkingMode seidWorkingMode,
             ProgressControlsForDialogs progressControls)
         {
             var instance = CreateInstance<CredentialsDialog>();
             instance.mServer = server;
+            instance.mSeidWorkingMode = seidWorkingMode;
             instance.mProgressControls = progressControls;
             instance.mEnterKeyAction = instance.OkButtonWithValidationAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
@@ -151,6 +152,7 @@ namespace Unity.PlasticSCM.Editor.Configuration
         bool mSaveProfile;
 
         string mServer;
+        SEIDWorkingMode mSeidWorkingMode;
 
         const float ENTRY_WIDTH = 345f;
         const float ENTRY_X = 150f;

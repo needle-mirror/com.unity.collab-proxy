@@ -4,12 +4,12 @@ using UnityEngine;
 using UnityEditor.VersionControl;
 using UnityEditor;
 
+using Codice.CM.Common;
 using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
 using PlasticGui;
-using Codice.CM.Common;
 
 namespace Unity.PlasticSCM.Editor.Inspector
 {
@@ -27,7 +27,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
             UnityEditor.Editor.finishedDefaultHeaderGUI +=
                 Editor_finishedDefaultHeaderGUI;
 
-            RefreshAsset.RepaintInspectors();
+            RepaintInspector.All();
         }
 
         internal static void Disable()
@@ -37,7 +37,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
             UnityEditor.Editor.finishedDefaultHeaderGUI -=
                 Editor_finishedDefaultHeaderGUI;
 
-            RefreshAsset.RepaintInspectors();
+            RepaintInspector.All();
         }
 
         internal static void BuildOperations(

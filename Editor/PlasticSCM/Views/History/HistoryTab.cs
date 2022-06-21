@@ -14,6 +14,7 @@ using PlasticGui;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.Diff;
 using PlasticGui.WorkspaceWindow.History;
+using PlasticGui.WorkspaceWindow.Open;
 
 using GluonRevertOperation = GluonGui.WorkspaceWindow.Views.Details.History.RevertOperation;
 using HistoryDescriptor = GluonGui.WorkspaceWindow.Views.Details.History.HistoryDescriptor;
@@ -32,6 +33,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
         IRefreshableView,
         HistoryViewLogic.IHistoryView,
         HistoryListViewMenu.IMenuOperations,
+        IOpenMenuOperations,
         IHistoryViewMenuOperations
     {
         internal HistoryTab(
@@ -159,7 +161,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 mIsDirectory);
         }
 
-        void IHistoryViewMenuOperations.OpenRevision()
+        void IOpenMenuOperations.Open()
         {
             OpenRevisionOperation.Open(
                 mRepSpec,
@@ -168,7 +170,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
                     mHistoryListView));
         }
 
-        void IHistoryViewMenuOperations.OpenRevisionWith()
+        void IOpenMenuOperations.OpenWith()
         {
             List<HistoryRevision> revisions = HistorySelection.
                 GetSelectedHistoryRevisions(mHistoryListView);
@@ -178,6 +180,14 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 FileSystemOperation.GetExePath(),
                 Path.GetFileName(mPath),
                 revisions);
+        }
+
+        void IOpenMenuOperations.OpenWithCustom(string exePath, string args)
+        {
+        }
+
+        void IOpenMenuOperations.OpenInExplorer()
+        {
         }
 
         void IHistoryViewMenuOperations.SaveRevisionAs()
@@ -389,7 +399,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 wkInfo.ClientPath,
                 repSpec,
                 headerState,
-                new HistoryListViewMenu(this, this),
+                new HistoryListViewMenu(this, this, this),
                 HistoryListHeaderState.GetColumnNames());
 
             mHistoryListView.Reload();

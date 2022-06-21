@@ -1,5 +1,4 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 
 namespace Unity.PlasticSCM.Editor.AssetUtils
 {
@@ -7,23 +6,19 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
     {
         internal static void UnityAssetDatabase()
         {
-            AssetDatabase.Refresh(ImportAssetOptions.Default);
-            VersionControlCache();
+            UnityEditor.AssetDatabase.Refresh(
+                UnityEditor.ImportAssetOptions.Default);
+
+            UnityEditor.VersionControl.Provider.ClearCache();
+
+            AssetPostprocessor.SetIsRepaintInspectorNeededAfterAssetDatabaseRefresh();
         }
 
         internal static void VersionControlCache()
         {
             UnityEditor.VersionControl.Provider.ClearCache();
-            RepaintInspectors();
+
+            RepaintInspector.All();
         }
-
-        internal static void RepaintInspectors()
-        {
-            UnityEditor.Editor[] editors =
-                Resources.FindObjectsOfTypeAll<UnityEditor.Editor>();
-
-            foreach (UnityEditor.Editor editor in editors)
-                editor.Repaint();
-         }
     }
 }

@@ -140,7 +140,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 new LaunchDependenciesDialog(
                     PlasticLocalization.GetString(PlasticLocalization.Name.CheckinButton),
                     mParentWindow),
-                this, mWorkspaceWindow.GluonProgressOperationHandler);
+                this,
+                mWorkspaceWindow.GluonProgressOperationHandler,
+                null);
 
             ciOperation.Checkin(
                 changesToCheckin,
