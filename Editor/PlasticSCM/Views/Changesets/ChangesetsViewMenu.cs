@@ -95,7 +95,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 mChangesetMenuOperations.GetSelectedChangesetsCount(),
                 mIsGluonMode,
                 singleSelectedChangeset.BranchId,
-                mLoadedBranchId);
+                mLoadedBranchId,
+                false);
 
             AddDiffChangesetMenuItem(
                 mDiffChangesetMenuItemContent,

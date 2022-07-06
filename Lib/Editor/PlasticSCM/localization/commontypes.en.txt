@@ -1,4 +1,4 @@
-﻿== AclNotFound ==
+== AclNotFound ==
 You are working with out-of-date objects. Maybe your client or workspace is out of date, please update it.
 
 == ActivateUserNotInLicenseList ==
@@ -61,6 +61,9 @@ A branch cannot be created from a shelve.
 == BranchAlreadyExists ==
 The branch {0} already exists.
 
+== CannotArchiveNotUploadedRevision ==
+The archive operation cannot continue since the requested data was not committed to the blob storage yet. Please wait some seconds and try again.
+
 == CannotCheckSecurityPathInIncompleteCset ==
 The security cannot be checked because the path of the item:{0} cannot be calculated in the changeset cs:{1} (br:{2}): the changeset isn't replicated. Please, replicate the missing changeset and try again.
 
@@ -71,7 +74,10 @@ Unable to connect to the server {0}
 Error: unable to create folder for disk test. {0}
 
 == CannotCreateSymlink ==
-The symlink cannot be created.
+Cannot create symlink.
+
+== CannotCreateWindowsSymlink ==
+Cannot create symlink from '{0}' to '{1}'. You can enable 'developer mode' in your Windows version. Or you can fully disable symlink creation by setting '<EnableSymlinkSupportOnWindows>no</EnableSymlinkSupportOnWindows>' in your client.conf.
 
 == CannotCreateXlink ==
 Can't create the xlink because the entry already exists: {0}
@@ -280,6 +286,15 @@ The client version ({0}) doesn't match the server version ({1}). Please update y
 
 == CloudForbiddenError ==
 Data cannot read/write to Plastic Cloud. There was an authentication issue. Your local date (client or server) is probably wrong. Change it to fix the issue.
+
+== CloudWkAlreadyExists ==
+The cloud workspace {0} already exists.
+
+== CloudWkMountNotFound ==
+The mount point {0} doesn't exist.
+
+== CloudWkNotFound ==
+The specified cloud workspace {0} can't be found.
 
 == CmdCantMove ==
 Can't move {0} to {1}.
@@ -499,6 +514,9 @@ File {0} already exists.
 
 == FilesIdentical ==
 Files are identical.
+
+== FindSortingPaginationNotSupported ==
+The server {0} doesn't support sorting or pagination. Please upgrade the server.
 
 == FipsCompliantServerEncryptionNoAllowed ==
 The server '{0}' requires encryption, but it's not allowed for FIPS compliant servers. Please contact support@plasticscm.com for further info.
@@ -1038,6 +1056,9 @@ Remember it is in the form repo/module. Example: default/module2.
 == RepAlreadyExists ==
 The repository {0} for repository server {1} already exists.
 
+== RepDoesntExist ==
+The repository {0} doesn't exist. Probably, it was deleted and you are working with out-of-date metadata in the client side.
+
 == RepDoesntHaveRootItem ==
 Fatal, repository does not contain a root item.
 
@@ -1487,6 +1508,9 @@ Incorrect object specification {0}
 
 == NotValidCmPath ==
 The specified path: {0} is not a valid server path.
+
+== FindOrderbyNotValid  ==
+The object type {0} cannot order by {1}.
 
 == FindTypeNotExists ==
 The object type {0} doesn't exist

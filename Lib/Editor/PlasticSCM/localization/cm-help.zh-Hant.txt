@@ -8121,3 +8121,73 @@ Jira 參數 (皆為強制):
                     滑鼠位置。
                     在 Bash 中，這位於 COMP_POINT 環境變數中。
                     在 PowerShell 中，這位於 $cursorPosition 變數中。
+
+== CMD_DESCRIPTION_CONFIGURECLIENT ==
+Configures the Plastic SCM client for the current machine user to work with a default server.
+
+== CMD_USAGE_CONFIGURECLIENT ==
+用法:
+    cm ^configure [--^language=<language> --^workingmode=<mode> [AuthParameters] 
+                 --^server=<server> [--^port=<port>]] [--^clientconf=<clientconfpath>]
+
+    --^language          可用的語言:
+                        en (English)
+                        es (Spanish)
+
+    --^workingmode       可用的使用者/安全性工作模式:
+                        NameWorkingMode (Name)
+                        NameIDWorkingMode (Name + ID)
+                        LDAPWorkingMode (LDAP)
+                        ADWorkingMode (Active Directory)
+                        UPWorkingMode (User and password)
+                        SSOWorkingMode (Single Sign On)
+
+    AuthParameters      驗證參數 (僅適用於 ^LDAPWorkingMode 和 ^UPWorkingMode):
+                        --^user=<user>
+                        --^password=<password>
+
+                        Single Sign On parameters (only for ^SSOWorkingMode):
+                        --^user=<user>
+                        --^token=<token>
+
+    --^server            Plastic SCM server IP / address
+
+    --^port              Plastic SCM server port
+                        (port optional for Cloud servers)
+
+    --^clientconf        用來建立設定檔案的檔案路徑 (選用)
+                        引數可以是完整的路徑、檔案名稱或目錄。
+
+                        範例:
+
+                        --^clientconf=c:/path/to/myclient.conf
+                        (將使用指定的路徑來建立用戶端設定檔案)
+
+                        --^clientconf=myclient.conf
+                        (將使用預設設定目錄內的檔案 myclient.conf)
+
+                        --^clientconf=c:/exisitingDirectory
+                        (將使用指定目錄中的預設檔案名稱 client.conf)
+
+== CMD_HELP_CONFIGURECLIENT ==
+備註：
+
+    The cm ^configure command cannot be used on Cloud Edition or DVCS Edition of Plastic SCM.
+    Use 'plastic --configure' instead.
+
+範例:
+
+    cm ^configure 
+    (runs the interactive Plastic SCM client configuration command)
+
+    cm ^configure --^language=^en --^workingmode=^LDAPWorkingMode --^user=^jack --^password=^01234 \
+                 --^server=^plastic.mymachine.com --^port=^8084
+    (configures the Plastic SCM client with the specified parameters and creates the 'client.conf'
+    configuration file in the default directory).
+    (Cloud 伺服器的選用連接埠)    
+
+    cm ^configure --^language=^en --^workingmode=^NameWorkingMode --^server=^plastic.mymachine.com \
+                 --^port=^8084 --^clientconf=^clientconf_exp.conf
+    (configures the Plastic SCM client with the specified parameters and creates the 'client.conf'
+    configuration file in the specified path).
+    (Cloud 伺服器的選用連接埠)

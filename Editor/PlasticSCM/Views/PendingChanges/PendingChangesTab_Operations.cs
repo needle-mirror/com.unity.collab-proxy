@@ -149,6 +149,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 dependenciesCandidates,
                 CommentText,
                 keepItemsLocked,
+                false,
                 EndCheckin);
         }
 
@@ -195,10 +196,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
            List<ChangeInfo> dependenciesCandidates,
            WorkspaceInfo wkInfo)
         {
-            TrackFeatureUseEvent.For(
-                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
-                TrackFeatureUseEvent.Features.Shelve);
-
             ShelveChanges(changesToShelve, dependenciesCandidates);
         }
 

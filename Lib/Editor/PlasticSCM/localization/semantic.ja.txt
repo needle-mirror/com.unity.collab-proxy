@@ -302,12 +302,6 @@ Java 仮想マシンのパスが見つかりません
 == GetLicense ==
 ライセンスを取得
 
-== GetUpdates ==
-更新を取得
-
-== GetUpdatesExplanation ==
-新しいバージョンの SemanticMerge を利用できます。ぜひ入手してください!
-
 == ShowUserGuideMenuItem ==
 ユーザーガイド
 
@@ -319,9 +313,6 @@ https://semanticmerge.com/documentation
 
 == OpenSamplesDirectoryMenuItem ==
 サンプルを開く
-
-== GiveUsFeedbackMenuItem ==
-フィードバックを送信
 
 == FollowSemanticmergeMenuItem ==
 @semanticmerge をフォロー
@@ -637,7 +628,7 @@ SemanticMerge の基礎の詳細については、
 解析エラーを表示
 
 == ReleaseNotesBaseUrl ==
-https://users.semanticmerge.com/releasenotes/
+https://www.plasticscm.com/download/releasenotes
 
 == MultifileCurrentFile ==
 {1} 個のうち {0} 個目のファイル:

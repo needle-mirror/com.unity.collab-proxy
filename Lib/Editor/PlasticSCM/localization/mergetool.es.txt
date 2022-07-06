@@ -19,6 +19,24 @@ Anterior conflicto no automático (Ctrl+PagUp)
 == NextNotAutomaticConflictButtonTooltip ==
 Siguiente conflicto no automático (Ctrl+PagDown)
 
+== FirstConflictButtonTooltipPrefix ==
+Ir al primer conflicto ({0})
+
+== PrevConflictButtonTooltipPrefix ==
+Conflicto anterior ({0})
+
+== NextConflictButtonTooltipPrefix ==
+Siguiente conflicto ({0})
+
+== LastConflictButtonTooltipPrefix ==
+Ir al último conflicto ({0})
+
+== PrevNotAutomaticConflictButtonTooltipPrefix ==
+Anterior conflicto no automático ({0})
+
+== NextNotAutomaticConflictButtonTooltipPrefix ==
+Siguiente conflicto no automático ({0})
+
 == GtkPendingAutomaticConflictsLabel ==
 {0}/{1}
 
@@ -61,6 +79,9 @@ Marcar como no resuelto
 == SourceHeaderButton ==
 Seleccionar Origen: '{0}'
 
+== SourceHeader ==
+Origen: '{0}'
+
 == SourceHeaderPressedButton ==
 Deseleccionar Origen: '{0}'
 
@@ -69,6 +90,9 @@ Deseleccionar Origen: '{0}'
 
 == BaseHeaderButton ==
 Seleccionar Base: '{0}'
+
+== BaseHeader ==
+Base: '{0}'
 
 == BaseHeaderButtonTooltip ==
 (Ctrl+2)
@@ -79,6 +103,9 @@ Deseleccionar Base: '{0}'
 == DestinationHeaderButton ==
 Seleccionar Destino: '{0}'
 
+== DestinationHeader ==
+Destino: '{0}'
+
 == DestinationHeaderButtonTooltip ==
 (Ctrl+3)
 
@@ -87,6 +114,9 @@ Deseleccionar Destino: '{0}'
 
 == ResultButton ==
 Seleccionar Resultado
+
+== KeepResultButton ==
+Mantener resultado
 
 == ResultButtonTooltip ==
 (Ctrl+4)
@@ -260,10 +290,10 @@ Mostrar fecha de modificación
 Mostrar edad de la línea
 
 == BigFileMessage ==
-El fichero es bastante grande. Calcular las diferencias podría tardar unos minutos. Pulse el botón si realmente desea calcular las diferencias para este fichero.
+El fichero es bastante grande. Buscar las diferencias podría tardar unos minutos. Pulse el botón si realmente desea buscar las diferencias para este fichero.
 
 == CalculateDifferencesButton ==
-Calcular diferencias
+Buscar diferencias
 
 == BigFileContentsMessage ==
 El fichero es bastante grande. Mostrar su contenido podría tardar unos minutos. Pulse el botón si realmente desea mostrar el contenido de este fichero.
@@ -317,7 +347,7 @@ Contenido de {0}
 Copiar al portapapeles
 
 == DiffWaitingAnimation ==
-Calculando diferencias. Por favor, espere...
+Buscando diferencias. Por favor, espere...
 
 == ContentWaitingAnimation ==
 Calculando el contenido para mostrar. Por favor, espere...
@@ -483,6 +513,9 @@ Argumento duplicado: {0}.
 
 == MergetoolUsageTitle ==
 Sintaxis herramienta de merge
+
+== BinMergeToolExitQuestion ==
+Quiere guardar el contribuidor seleccionado como resultado del merge?
 
 == WinMergetoolUsage ==
 Sintaxis: mergetool [<opcionesDiferencias> | <opcionesMerge>]
@@ -672,6 +705,12 @@ Encoding del resultado
 == SplitMenuItem ==
 Dividir los bloques de conflicto
 
+== SplitBlocksMenuTitle ==
+Dividir los bloques de conflicto
+
+== MergeBlocksMenuTitle ==
+Unir los bloques de conflicto
+
 == XmergeButton ==
 XMerge...
 
@@ -761,3 +800,81 @@ Seleccionar todo
 
 == FileTooLargeToDisplay ==
 Fichero demasiado grande para mostrar su contenido.
+
+== SourceTitle ==
+Origen
+
+== RemoteVersion ==
+versión remota
+
+== BaseTitle ==
+Base
+
+== OriginalVersion ==
+versión original
+
+== DestinationTitle ==
+Destino
+
+== LocalVersion ==
+versión local
+
+== MenuItemOpen ==
+Abrir
+
+== MenuItemOpenWith ==
+Abrir con...
+
+== PlasticNextUnresolvedConflictShortcutForWindows ==
+Ctrl+M
+
+== PlasticNextUnresolvedConflictShortcutForMacOS ==
+Cmd+M
+
+== PlasticNextUnresolvedConflictShortcutForLinux ==
+Ctrl+M
+
+== PlasticPreviousUnresolvedConflictShortcutForWindows ==
+Ctrl+N
+
+== PlasticPreviousUnresolvedConflictShortcutForMacOS ==
+Cmd+N
+
+== PlasticPreviousUnresolvedConflictShortcutForLinux ==
+Ctrl+N
+
+== PlasticNextConflictShortcutForWindows ==
+Ctrl+OemPlus
+
+== PlasticNextConflictShortcutForMacOS ==
+Cmd+OemPlus
+
+== PlasticNextConflictShortcutForLinux ==
+Ctrl+OemPlus
+
+== PlasticPreviousConflictShortcutForWindows ==
+Ctrl+OemMinus
+
+== PlasticPreviousConflictShortcutForMacOS ==
+Cmd+OemMinus
+
+== PlasticPreviousConflictShortcutForLinux ==
+Ctrl+OemMinus
+
+== PlasticFirstConflictShortcutForWindows ==
+Ctrl+Shift+OemMinus
+
+== PlasticFirstConflictShortcutForMacOS ==
+Cmd+Shift+OemMinus
+
+== PlasticFirstConflictShortcutForLinux ==
+Ctrl+Shift+OemMinus
+
+== PlasticLastConflictShortcutForWindows ==
+Ctrl+Shift+OemPlus
+
+== PlasticLastConflictShortcutForMacOS ==
+Cmd+Shift+OemPlus
+
+== PlasticLastConflictShortcutForLinux ==
+Ctrl+Shift+OemPlus

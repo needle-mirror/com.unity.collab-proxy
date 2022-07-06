@@ -154,7 +154,7 @@ Secured path examples:
     is created to be able to refer to it later.)
 
     cm ^acl ^path:/server#rel --^branches=-/main,+/main/Rel2.1
-    (Updates the secured path '/server', whose tag is 'rel', removing the
+    (Updates the secured path '/server' whose tag is 'rel', removing the
     'main' branch and adding the branch 'main/Rel2.1' to the branch
     group the secured path applies to. Considering the previous example,
     now the branches list will contain 'main/Rel2.1' and 'main/2.0'.)
@@ -189,8 +189,8 @@ Remarks:
     operation in Plastic SCM. The user is automatically activated only if
     the maximum number of users has not been exceeded.
 
-    See the 'cm ^help ^deactivateuser' command for more information about
-    deactivating Plastic SCM users.
+    (See the 'cm ^help ^deactivateuser' command for more information about
+    deactivating Plastic SCM users.)
 
 Examples:
 
@@ -385,13 +385,14 @@ Remarks:
 
     Binary files can't be annotated.
 
-    --^ignore options:
-        ^none                Detects end of line and whitespace differences.
-        ^eol                 Ignores end of line differences.
-        ^whitespaces         Ignores whitespace differences.
-        ^"eol&whitespaces"   Ignores end of line and whitespace differences.
+    Comparison methods (--^ignore option):
+        ^eol                 Ignores the end of line differences.
+        ^whitespaces         Ignores the whitespace differences.
+        ^"eol&whitespaces"   Ignores the end of line and whitespace differences.
+        ^none                Detects the end of line and whitespace differences.
 
-    --^format options:
+    Output format parameters (--^format option):
+        This command accepts a format string to show the output.
         The output parameters of this command are the following:
         {^owner}        User who changed the line the last time.
         {^rev}          Source revision specification of the line.
@@ -464,9 +465,10 @@ Options:
 == CMD_HELP_APPLY_LOCAL ==
 Remarks:
 
-    If --^dependencies and <item_path> are not specified, the operation involves
-    all the local changes in the workspace.
-    It is always applied recursively from the given path.
+    - If --^dependencies and <item_path> are not specified, the operation involves
+      all the local changes in the workspace.
+
+    - It is always applied recursively from the given path.
 
 Examples:
 
@@ -494,22 +496,24 @@ Archives data in external storage.
 == CMD_USAGE_ARCHIVE ==
 Usage:
 
-    cm ^archive | ^arch <revspec>[ ...] [-^c | --^comment=<str_comment>]
+    cm ^archive | ^arch <revspec>[ ...] [-^c=<str_comment>]
                         [--^file=<base_file>]
     (Extracts data from the repository and stores it on external storage.)
 
     cm ^archive | ^arch <revspec>[ ...] --^restore
     (Restores previously archived revisions back into the repository.)
 
-    revspec             One or more revision specs. Can be read from the STDIN
-                        with the "-" modifier. (Use 'cm ^help ^objectspec' to
-                        learn more about revspecs.)
+    revspec             One or more revision specs. (Use 'cm ^help ^objectspec'
+                        to learn more about revspecs.)
     --^restore           Restores previously archived data from generated archive
-                        files.
+                        files. The external storage location and the 
+                        externaldata.conf file must be available at the moment
+                        of the revision restoration. See Remarks for more
+                        information.
 
 Options:
 
-    -^c | --^comment      Sets a comment in the archive storage files to create.
+    -^c                  Sets a comment in the archive storage files to create.
     --^file              Name prefix and (optional) path for the new archive
                         data files.
 
@@ -518,8 +522,8 @@ Remarks:
 
     This command extracts data from the repository database and store it on 
     external storage, saving database space.
-    The command can also restore previously archived revisions back into the
-    repository database (--^restore).
+    The command can also restore (--^restore) previously archived revisions back
+    into the repository database.
 
     Use 'cm ^help ^objectspec' to learn how to specify a revspec.
 
@@ -534,47 +538,75 @@ Remarks:
     Once archived, the data from the specified revisions will be accessible in
     two ways:
 
-    - From the client: The client will detect if the data was archived and it
-      will prompt the user to enter the location of the files.
-      Users can configure the external data location by creating a file named
-      externaldata.conf (at the standard configuration files locations, using
-      the same rules that apply for the client.conf file) containing the paths
-      where archived data have been located.
+    1. From the client: The client will detect if the data was archived and it
+       will prompt the user to enter the location of the files.
+       Users can configure the external data location by creating a file named
+       externaldata.conf (at the standard configuration files locations, using
+       the same rules that apply for the client.conf file) containing the paths
+       where archived data have been located.
 
-    - From the server: This way users won't have to know whether the data was
-      archived or not, since requests will be transparently resolved by the
-      server. To do so, the administrator will create a file called
-      externaldata.conf in the server directory and will fill it with the
-      paths where the archived volumes are.
+    2. From the server: This way users won't have to know whether the data was
+       archived or not, since requests will be transparently resolved by the
+       server. To do so, the administrator will create a file called
+       externaldata.conf in the server directory and will fill it with the
+       paths where the archived volumes are.
 
     To unarchive (restore) a revision (or set of revisions), the archived
     files must be accessible from the client. Hence, it is not possible to
     unarchive data being resolved by the server (method 2) because the client
-    will not be able to identify it as archived. If method 2 is used, to
-    unarchive successfully, the administrator will have to edit the
-    externaldata.conf server file first to remove access to the archived
-    files which have to be unarchived.
+    will not be able to identify it as archived. 
+    If method 2 is used, to unarchive successfully, the administrator will have
+    to edit the externaldata.conf server file first to remove access to the
+    archived files which have to be unarchived.
 
-    Set PLASTICEDITOR environment variable to specify an editor to type the
-    comment.
+    Archive example:
+    1) Archive one revision:
+       cm ^archive Assets/RoofTextures/Textures/Wooden_Roof_05.png --^file=/Users/ruben/archive/battle
+    2) See the archived revision in the specified output path:
+       ^ls -^al /Users/ruben/archive/battle*
+       -rw-r--r--  1 ruben  staff  2220039 Nov  9 10:52 /Users/ruben/archive/battle-100280-167
+    
+    Unarchive (restore) example:
+    1) Add the output archive folder to the externaldata.conf file:
+       ^vi /Users/ruben/.plastic4/externaldata.conf
+       /Users/ruben/archive
+    2) Unarchive the revision:
+       cm ^archive Assets/RoofTextures/Textures/Wooden_Roof_05.png --^restore
+
+    Set the PLASTICEDITOR environment variable to specify an editor for
+    entering comments. If the PLASTICEDITOR environment variable is set, and
+    the comment is empty, the editor will be automatically launched to allow
+    you to specify the comment.
+
+Reading input from stdin:
+
+    The '^archive' command can read paths from stdin. To do this, pass a single
+    dash "-".
+    Example: cm ^archive -
+
+    Paths will be read until an empty line is entered.
+    This allows you to use pipe to specify which files to archive.
+    Example:
+      dir /S /B *.c | cm ^archive -
+      (In Windows, archives all .c files in the workspace.)
 
 Examples:
 
-    cm ^archive bigfile.zip#^br:/main
+    cm ^archive bigfile.zip#^br:/^main
     (Archives the last revision of 'bigfile.zip' in branch 'main'.)
+
+    cm ^archive bigfile.zip#^br:/^main --^restore
+    (Restores the archived revision.)
 
     cm ^archive ^rev:myfile.pdf#^cs:2 -^c="big pdf file" --^file=c:\arch_files\arch
     (Archives the revision with changeset 2 of myfile.pdf in 'c:\archived_files'
     folder. The archived file name will start with 'arch' (for example, arch_11_56).)
 
     cm ^find "^revs ^where ^size > 26214400" --^format="{^item}#{^branch}" \
-      --^nototal | cm ^archive --^comment="volume00" --^file="volume00" -
+      --^nototal | cm ^archive -^c="volume00" --^file="volume00" -
     (Archives all the files bigger than 25Mb on files starting with name
     'volume00'.)
 
-    cm ^find "^revs ^where ^size > 26214400 ^and ^archived='true'" \
-      --^format="{^item}#{^branch}" --^nototal | cm ^archive --^restore
-    (Restores all the archived files bigger than 25Mb.)
 
 == CMD_DESCRIPTION_ATTRIBUTE ==
 Allows the user to manage attributes.
@@ -634,7 +666,7 @@ Usage:
 
        cm ^changelist | ^clist <clist_name> (^add | ^rm) <path_name>[ ...]
                              [--^symlink]
-       (Adds the selected changelist by adding ('^add') or removing ('^rm') the 
+       (Edits the selected changelist by adding ('^add') or removing ('^rm') the
        change(s) that match with the given path_name(s). Use a whitespace to 
        separate path_names. Use double quotes (" ") to specify paths containing
        spaces. The status of the paths must be '^Added' or '^Checked-out'.)
@@ -676,7 +708,7 @@ Examples:
     'config_files'. Also, it turns the changelist into "not persistent".)
         
     cm ^changelist ^edit config_changes --^notpersistent
-    (Edits the changelist named 'config_changes' and turns it into "not persistent".)
+    (Edits the changelist named 'config_changes' by turning it into "not persistent".)
 
     cm ^changelist ^rm config_files
     (Removes the pending changelist 'config_files' from the current workspace.)
@@ -738,6 +770,8 @@ Examples:
     cm ^changeset ^editcomment ^cs:15@myrepo "I forgot to add the checkin details"
     cm ^changeset ^edit ^cs:cb11ecdb-1aa9-4f11-8698-dcab14e5885a \
          "This comment text will replace the previous one."
+    cm ^changeset ^edit "89095131-895d-4173-9440-ff9ef9b2538d@project@cloud" \
+         "Changing my comment"
 
 == CMD_DESCRIPTION_CHANGESET_MOVE ==
 Moves a changeset and all its descendants to a different branch.
@@ -767,7 +801,7 @@ Remarks:
     - The targeted changeset spec must be valid.
     - The destination branch must be either empty or non-existing.
     - If the destination branch doesn't exist, it will created.
-    - Merge links will be kept unchanged, since branches don't affect them.
+    - Merge links will be kept unchanged since branches don't affect them.
 
 Examples:
 
@@ -797,7 +831,7 @@ Remarks:
     - The target changeset cannot be neither the source of a merge link nor
       part of an interval merge as source.
     - No label must be applied to the target changeset.
-    - The target changeset must not be the root changeset ('^cs:0')
+    - The target changeset must not be the root changeset ('^cs:0').
 
 Examples:
 
@@ -805,7 +839,7 @@ Examples:
     cm ^changeset ^delete ^cs:cb11ecdb-1aa9-4f11-8698-dcab14e5885a
 
 == CMD_DESCRIPTION_CHANGEUSERPASSWORD ==
-Changes the user password (UP).
+Changes the user's password (UP).
 
 == CMD_USAGE_CHANGEUSERPASSWORD ==
 Usage:
@@ -816,7 +850,10 @@ Usage:
 Remarks:
 
     This command is only available when the security configuration is UP
-    (user/password). See the Administration guide for more information.
+    (user/password).
+    See the Administrator Guide for more information:
+    https://www.plasticscm.com/download/help/adminguide
+
     The old and new passwords are required.
 
 Examples:
@@ -836,8 +873,8 @@ Remarks:
 
     - This command returns a message indicating whether there is a valid
       connection to the configured Plastic SCM server.
-    - The command checks whether the configured user is valid or not. It also
-      checks the version compatibility with the server.
+    - The command checks checks the version compatibility with the server.
+    - The command also checks whether the configured user is valid or not.
 
 == CMD_DESCRIPTION_CHECKDB ==
 Checks the repositories integrity.
@@ -847,7 +884,12 @@ Usage:
 
     cm ^checkdatabase | ^chkdb [<repserverspec> | <repspec>]
 
-Use 'cm ^help ^objectspec' to learn more about repserver and rep specs.
+Options:
+
+    repserverspec       Repositories server.
+    repspec             Repository.
+
+    (Use 'cm ^help ^objectspec' to learn more about repserver and rep specs.)
 
 == CMD_HELP_CHECKDB ==
 Remarks:
@@ -921,8 +963,10 @@ Remarks:
     Revision content should be different from previous revision in order to be
     checked in.
 
-    Set PLASTICEDITOR environment variable to specify an editor to type the
-    comment.
+    Set the PLASTICEDITOR environment variable to specify an editor for
+    entering comments. If the PLASTICEDITOR environment variable is set, and
+    the comment is empty, the editor will be automatically launched to allow
+    you to specify the comment.
 
 Reading input from stdin:
 
@@ -946,8 +990,7 @@ Examples:
     'mycomment.txt' file.)
 
     cm ^checkin link --^symlink
-    (Checkins the 'link' file and not the target; available on UNIX
-    environments.)
+    (Checkins the symlink file and not the target.)
 
     cm ^ci file1.txt -^c="my comment"
     (Checkins 'file1.txt' and includes a comment.)
@@ -987,8 +1030,6 @@ Options:
     -^R                    Checks out files recursively.
     --^format              Retrieves the output progress message in a specific
                           format. Check the examples for more information.
-    --^errorformat         Retrieves the error message (if any) in a specific
-                          format. Check the examples for more information.
     --^resultformat        Retrieves the output result message in a specific
                           format. Check the examples for more information.
     --^silent              Does not show any output at all.
@@ -1010,7 +1051,7 @@ Remarks:
 
     To checkout an item:
     - The item must be under source code control.
-    - The item must be checked in.
+    - The item must be checked-in.
 
     If locks are configured on the server (lock.conf exists), then each time
     a checkout on a path happens, Plastic checks if it meets any of the rules
@@ -1050,14 +1091,12 @@ Examples:
     (Recursively checkouts 'src' folder.)
 
     cm ^co file.txt --^format="Checking out item {0}" 
-        --^errorformat="Error checking out item {0}" /
         --^resultformat="Item {0} checked out"
     (Checkouts 'file.txt' using the specified formatting strings
-    to show the progress, the result, and the errors of the operation.)
+    to show the progress and the result of the operation.)
 
     cm ^checkout link --^symlink
-    (Checkouts the 'link' file and not to the target; available on UNIX
-    environments.)
+    (Checkouts the symlink file and not the target.)
 
     cm ^checkout . -^R --^ignorefailed
     (Recursively checkouts the current folder, ignoring those files that can
@@ -1143,8 +1182,8 @@ Usage:
                          [--^filter=<str_filter>] [--^server=<repserverspec>]
 
     subtype_type        Trigger execution and trigger operation.
-                        Type 'cm ^showtriggertypes' to see a list of trigger
-                        types.
+                        (Use 'cm ^showtriggertypes' to see a list of trigger
+                        types.)
     position_number     Position occupied by the trigger to be modified.
 
 Options:
@@ -1198,28 +1237,25 @@ Usage:
     (Deletes one or more code reviews.)
 
 
-    spec                It can be either a changeset spec or a branch spec. It
-                        will be the target of the new code review. (Use
-                        'cm ^help ^objectspec' to learn more about changeset or
-                        branch specs.)
-    title               A text string to be used as title of the new
-                        code review.
-    id                  The code review identification number. A GUID can be
-                        used as well.
+    spec        It can be either a changeset spec or a branch spec. It will be
+                the target of the new code review. (Use 'cm ^help ^objectspec'
+                to learn more about changeset or branch specs.)
+    title       A text string to be used as title of the new code review.
+    id          The code review identification number. A GUID can be used as
+                well.
 
 Options:
 
-    -^e                  Edits the parameters of an existing code review.
-    -^d                  Deletes one or more existing code reviews. Use a 
-                        whitespace to separate the code reviews IDs.
-    --^status            Sets the new status of a code review. See Remarks
-                        for additional information.
-    --^assignee          Sets the new assignee of a code review.
-    --^format            Retrieves the output message in a specific format. See
-                        Remarks for additional information.
-    --^repository        Sets the repository to be used as default. (Use 
-                        'cm ^help ^objectspec' to learn more about repository
-                        specs.)
+    -^e              Edits the parameters of an existing code review.
+    -^d              Deletes one or more existing code reviews. Use a 
+                    whitespace to separate the code reviews IDs.
+    --^status        Sets the new status of a code review. See Remarks for
+                    additional information.
+    --^assignee      Sets the new assignee of a code review.
+    --^format        Retrieves the output message in a specific format. See
+                    Remarks for additional information.
+    --^repository    Sets the repository to be used as default. (Use 
+                    'cm ^help ^objectspec' to learn more about repository specs.)
 
 == CMD_HELP_CODEREVIEW ==
 Remarks:
@@ -1234,18 +1270,17 @@ Remarks:
     To edit or delete an existing code review, the target code review ID
     (or GUID) is required. No messages are displayed if there are no errors.
 
-    The status parameter can only be one of the following: ^"Under review"
+    The 'status parameter' must only be one of the following: ^"Under review"
     (default), ^"Reviewed", or ^"Rework required".
 
-    The repository parameter is available to set the default working
+    The 'repository' parameter is available to set the default working
     repository. This is useful when the user wants to manage reviews on
     a server different than the one associated to the current workspace, or
     when there is no current workspace at all.
 
-    Output format customization:
-
-    This command accepts a format string to show the output.
-    The output parameters of this command are the following:
+    Output format parameters (--^format option):
+        This command accepts a format string to show the output.
+        The output parameters of this command are the following:
         {0}             id
         {1}             guid
 
@@ -1351,13 +1386,13 @@ Usage:
         the diff; the second, the 'destination'.
         If only one specification is given, the 'source' will be the parent
         changeset of the specified 'destination'.
-        If an optional path is specified, the Diff Window will launch to show
+        If an optional path is specified, the Diff window will launch to show
         differences between the two revision of that file.
 
     cm ^diff <revspec1> <revspec2>
 
         Shows differences between a pair of revisions. The differences are
-        shown in the Diff Window. The first revision specified will appear on
+        shown in the Diff window. The first revision specified will appear on
         the left.
 
     cm ^diff <brspec> [--^added] [--^changed] [--^moved] [--^deleted]
@@ -1414,14 +1449,14 @@ Options:
 == CMD_HELP_DIFF ==
 Remarks:
 
-    Comparison methods:
+    Comparison methods (--^ignore option):
         ^eol                 Ignores the end of line differences.
         ^whitespaces         Ignores the whitespace differences.
         ^"eol&whitespaces"   Ignores the end of line and whitespace differences.
         ^none                Detects the end of line and whitespace differences.
 
-    This command accepts a format string to show the output.
-    The parameters of this command are the following:
+        This command accepts a format string to show the output.
+        The parameters of this command are the following:
         {^path}              Item path.
         {^date}              Change date/time.
         {^owner}             Change author.
@@ -1487,6 +1522,7 @@ Examples:
     cm ^diff ^sh:2 ^sh:4
 
   Comparing revspecs:
+
     cm ^diff ^rev:readme.txt#^cs:19 ^rev:readme.txt#^cs:20
     cm ^diff ^serverpath:/doc/readme.txt#^cs:19@myrepo \
         ^serverpath:/doc/readme.txt#^br:/main@myrepo@localhost:8084
@@ -1509,10 +1545,10 @@ Options:
     --^format          Retrieves the output message in a specific format. See
                       Remarks for more info.
     --^encoding        Specifies the output encoding, i.e.: utf-8.
-                        See the MSDN documentation at
-                        http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
-                        to get the table of supported encodings and its format, 
-                        (at the end of the page, in the "Name" column).
+                      See the MSDN documentation at
+                      http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
+                      to get the table of supported encodings and its format, 
+                      (at the end of the page, in the "Name" column).
     --^ignore          Sets the specified comparison method.
                       See Remarks for more info.
 
@@ -1521,11 +1557,18 @@ Remarks:
 
     The metrics are: number of changed, added, and deleted lines.
 
-    This command accepts a format string to show the output.
-    The output parameters of this command are the following:
+    Output format parameters (--^format option):
+        This command accepts a format string to show the output.
+        The output parameters of this command are the following:
         {0}             Number of changed lines.
         {1}             Number of added lines.
         {2}             Number of deleted lines.
+
+    Comparison methods (--^ignore option):
+        ^eol                 Ignores the end of line differences.
+        ^whitespaces         Ignores the whitespace differences.
+        ^"eol&whitespaces"   Ignores the end of line and whitespace differences.
+        ^none                Detects the end of line and whitespace differences.
 
 Examples:
 
@@ -1572,7 +1615,7 @@ Options:
 == CMD_HELP_FASTEXPORT ==
 Remarks:
 
-    - In order to import a Plastic SCM repository to Git, use a command such as:
+    - To import a Plastic SCM repository to Git, use a command such as:
       ^cat repo.fe.00 | ^git ^fast-import --^export-marks=marks.git  --^import-marks=marks.git
 
     - Incremental export is supported using a marks file that contains the
@@ -1638,7 +1681,7 @@ Options:
 == CMD_HELP_FASTIMPORT ==
 Remarks:
 
-    - In order to export a git repository, use a command such as:
+    - To export a Git repository, use a command such as:
       ^git ^fast-export --^all -^M --^signed-tags=^strip --^tag-of-filtered-object=^drop> ..\git-fast-export.dat
       The -^M option is important to detect moved items.
 
@@ -1678,31 +1721,29 @@ Usage:
                 [[--^xml | -^x [=<output_file>]] | [--^format=<str_format>]]
                 [--^symlink] [--^encoding=<name>]
 
-    item_path           Items to display. Use a whitespace to separate the
-                        items.
-                        Use double quotes (" ") to specify paths containing
-                        spaces.
+    item_path       Items to display. Use a whitespace to separate the items.
+                    Use double quotes (" ") to specify paths containing spaces.
 
 Options:
 
-    --^fields            A string of comma-separated values. This selects which
-                        fields will be printed for each item. See Remarks for
-                        more information.
-    --^xml | -^x          Prints the output in XML format to the standard output.
-                        It is possible to specify an output file. This option
-                        cannot be combined with '--^format'.
-    --^format            Retrieves the output message in a specific format. See
-                        Remarks for more info. This option cannot be combined 
-                        with '--^xml'.
-                        This '--^format' option prevails over '--^fields' if both
-                        are specified.
-    --^symlink           Applies the fileinfo operation to the symlink and not
-                        to the target.
-    --^encoding          Specifies the output encoding, i.e.: utf-8.
-                        See the MSDN documentation at
-                        http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
-                        to get the table of supported encodings and its format, 
-                        (at the end of the page, in the "Name" column).
+    --^fields        A string of comma-separated values. This selects which
+                    fields will be printed for each item. See Remarks for
+                    more information.
+    --^xml | -^x      Prints the output in XML format to the standard output.
+                    It is possible to specify an output file. This option
+                    cannot be combined with '--^format'.
+    --^format        Retrieves the output message in a specific format. See
+                    Remarks for more info. This option cannot be combined 
+                    with '--^xml'.
+                    This '--^format' option prevails over '--^fields' if both
+                    are specified.
+    --^symlink       Applies the fileinfo operation to the symlink and not
+                    to the target.
+    --^encoding      Specifies the output encoding, i.e.: utf-8.
+                    See the MSDN documentation at
+                    http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
+                    to get the table of supported encodings and its format, 
+                    (at the end of the page, in the "Name" column).
 
 
 == CMD_HELP_FILEINFO ==
@@ -1712,7 +1753,7 @@ Remarks:
     Each attribute is printed on a new line by default.
 
     The attribute list can be modified to display only the attributes the user
-    needs. This can be achieved using the '--^fields=<field_list>', which accepts
+    needs. This can be achieved using the '--^fields=<field_list>' which accepts
     a string of comma-separated attribute names. This way, only those arguments
     whose name has been indicated are shown.
 
@@ -1772,10 +1813,10 @@ Remarks:
         ^XlinkRelative           Whether the Xlink item is a relative Xlink
                                 or not.
 
-    Output format customization:
 
-    This command accepts a format string to show the output.
-    The output parameters of this command are the following:
+    Output format parameters (--^format option):
+        This command accepts a format string to show the output.
+        The output parameters of this command are the following:
         {^ClientPath}
         {^RelativePath}
         {^ServerPath}
@@ -1822,13 +1863,16 @@ Usage:
     cm ^find <object_type> 
             [^where <str_conditions>]
             [^on ^repository '<repspec>' | ^on ^repositories '<repspec1>','<repspec2>'[,...]]
+            [^order ^by <sort_field> ['^asc' | '^desc']]
+            [[^limit <maxresults>] [^offset <offset>]]
             [--^format=<str_format>] [--^dateformat=<date_format>]
             [--^nototal] [--^file=<dump_file>] [--^xml] 
             [--^encoding=<name>]
 
-    object_type         Object type to find.
-                        Use 'cm ^help ^showfindobjects' to learn how to specify 
-                        these objects.
+    object_type         Object type to find. 
+                        Some of these objects are implementing the '^order ^by' clause.
+                        Use 'cm ^help ^showfindobjects' to learn how to specify these
+                        objects, the ones allowing '^order ^by' and by what fields.
                         You can also read the 'cm ^find' guide:
                         https://www.plasticscm.com/download/help/cmfind
 
@@ -1840,6 +1884,12 @@ Options:
                         separate the repspec fields.
                         (Use 'cm ^help ^objectspec' to learn more about repository
                         specifications.)
+    sort_field          The name of the field to use as sorting field. Mind there is only
+                        a subset of field possibilities. Use 'cm ^help ^showfindobjects' 
+                        to find what objects are allowed to be ordered and by what fields.
+    maxresults          The maximun number of results returned by the query.
+    offset              The number of rows to skip before starting to return results
+                        from the query.
     --^format            Retrieves the output message in a specific format.
                         Read the 'cm ^find' guide to see all the object
                         attributes that can be used as output format strings:
@@ -1892,6 +1942,8 @@ Examples:
     cm ^find ^branch "^where ^parent='^br:/main' ^on ^repository 'rep1'"
     cm ^find ^revision "^where ^item='^item:.'" --^format="{^item}#{^branch}"
     cm ^find ^revision "^where ^item='^item:.'" --^xml --^file=c:\queryresults\revs.xml
+    cm ^find ^label "^where ^owner='^me' ^limit 10 ^offset 20"
+    cm ^find ^branches "^where ^owner='^me' ^order ^by ^branchname ^desc ^limit 10"
 
 == CMD_DESCRIPTION_FINDCHANGED ==
 Gets a list of changed files. This command is deprecated and kept just for 
@@ -1916,11 +1968,12 @@ Options:
 Remarks:
 
     If no '--^checkcontent' option is given, Plastic finds changes based on the
-    file timestamp. When '--^checkcontent' option is specified, the file or
-    folder contents are compared, instead of using the timestamp.
+    file timestamp.
+    When '--^checkcontent' option is specified, the file or folder contents are
+    compared, instead of using the timestamp.
 
     This command is useful to detect changed files while disconnected from
-    the Plastic SCM server. The output can be piped to the checkout command,
+    the Plastic SCM server.The output can be piped to the ^checkout command,
     to check the changes later (see examples).
 
 Examples:
@@ -1954,8 +2007,9 @@ Remarks:
     one single step, redirecting the standard output to other command.
     See examples.
 
-    This command accepts a format string to show the output.
-    The output parameters of this command are the following:
+    Output format parameters (--^format option):
+        This command accepts a format string to show the output.
+        The output parameters of this command are the following:
         {0}             Date.
         {1}             Owner.
         {2}             Workspace info.
@@ -1998,7 +2052,7 @@ Remarks:
     current directory.
 
     This command is useful to add private items on a folder, piping the output
-    to the add command. See examples.
+    to the '^add' command. See examples.
 
 Examples:
 
@@ -2063,7 +2117,7 @@ Examples:
 
     cm ^cat ^serverpath:/src/foo.c#^br:/main/task003@myrepo
     (Obtains the contents of '/src/foo.c' at the last changeset of branch
-    '/main/task003' in repository 'myrepo')
+    '/main/task003' in repository 'myrepo'.)
 
     cm ^cat ^revid:1230@^rep:myrep@^repserver:myserver:8084
     (Obtains the revision with id 1230.)
@@ -2096,7 +2150,7 @@ Gets the status of an item.
 
 == CMD_USAGE_GETSTATUS ==
 This is an automation command, meant to be used to automate 'cm' only.
-It is not as user friendly as it should be.
+It is not as user-friendly as it should be.
 
 Usage:
 
@@ -2117,8 +2171,9 @@ Options:
 == CMD_HELP_GETSTATUS ==
 Remarks:
 
-    This command accepts a format string to show the output.
-    The output parameters of this command are the following:
+    Output format parameters (--^format option):
+        This command accepts a format string to show the output.
+        The output parameters of this command are the following:
         {0}             Item path.
         {1}             Item status:
             0   private,
@@ -2151,7 +2206,7 @@ Gets branches linked with a task.
 
 == CMD_USAGE_GETTASKBRANCHES ==
 This is an automation command, meant to be used to automate 'cm' only.
-It is not as user friendly as it should be.
+It is not as user-friendly as it should be.
 
 Usage:
 
@@ -2169,14 +2224,14 @@ Options:
 == CMD_HELP_GETTASKBRANCHES ==
 Remarks:
 
-    This command accepts a format string to show the output.
-    The output parameters of this command are the following:
+    Output format parameters (--^format option):
+        This command accepts a format string to show the output.
+        The output parameters of this command are the following:
         {^tab}           Inserts a tab space.
         {^newline}       Inserts a new line.
         {^name}          Branch name.
         {^owner}         Owner of the branch.
         {^date}          Date when the branch was created.
-        {^type}          Branch type ('T' if it is smart or 'F' if not).
         {^parent}        Parent branch.
         {^comment}       Comment of the branch.
         {^repname}       Repository where the branch exists.
@@ -2213,7 +2268,7 @@ Gets workspace info from a path.
 
 == CMD_USAGE_GWP ==
 This is an automation command, meant to be used to automate 'cm' only.
-It is not as user friendly as it should be.
+It is not as user-friendly as it should be.
 
 Usage:
 
@@ -2230,8 +2285,9 @@ Remarks:
 
     This command shows information about the workspace that is located in path.
 
-    This command accepts a format string to show the output.
-    The output parameters of this command are the following:
+    Output format parameters (--^format option):
+        This command accepts a format string to show the output.
+        The output parameters of this command are the following:
         {0} | {^wkname}          Workspace name.
         {1} | {^wkpath}          Workspace path.
         {2} | {^machine}         Client machine name.
@@ -2386,7 +2442,7 @@ Examples:
     
     cm ^issuetracker jira ^status ^find "Done" --^user=user@mail.es --^password=pwd \
       --^host=https://user.atlassian.net --^projectkey=PRJ
-    (Gets the task ids whose status is set to 'Done' for the 'PRJ' project-)
+    (Gets the task ids whose status is set to 'Done' for the 'PRJ' project.)
     
     cm ^issuetracker jira ^connection ^check --^user=user@mail.es --^password=pwd \
       --^host=https://user.atlassian.net --^projectkey=PRJ
@@ -2457,12 +2513,14 @@ Usage:
     cm ^lock ^list | ^ls [<revspec> [ ...]] [--^server=<server>]
                       [--^onlycurrentuser] [--^onlycurrentworkspace]
                       [--^ignorecase]
+                      [--^machinereadable [--^startlineseparator=<sep>]
+                        [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
 
     revspec             If one or more are present, this command will display
                         one lock line for each specified revision if its
                         associated item is locked in the server. Otherwise,
                         this command will list all locked items in the default
-                        server (or the one set with the '--^server' option)
+                        server (or the one set with the '--^server' option).
                         Use a whitespace to separate the rev specs when using
                         more than one.
                         (Use 'cm ^help ^objectspec' to learn more about rev specs.)
@@ -2482,12 +2540,19 @@ Options:
     --^ignorecase            Ignores casing on the paths when a serverpath spec
                             is used. With this flag, the command will work for
                             "/src/foo.c" even if the user writes "/sRc/fOO.c".
+    --^machinereadable       Outputs the result in an easy-to-parse format.
+    --^startlineseparator    Used with the '--^machinereadable' flag, specifies how
+                            the lines should start.
+    --^endlineseparator      Used with the '--^machinereadable' flag, specifies how
+                            the lines should end.
+    --^fieldseparator        Used with the '--^machinereadable' flag, specifies how
+                            the fields should be separated.
 
 == CMD_HELP_LOCK_LIST ==
 Remarks:
 
     The command will display a list of the currently locked items in the
-    default server. It also accepts a list of revision specifications; in that
+    default server. It also accepts a list of revision specifications. In this
     case, only the locks belonging to the selected items will be displayed.
     A '--^server=<server>' can be used to set the default server to query.
 
@@ -2505,6 +2570,8 @@ Examples:
     cm ^lock ^list ^revid:3521@default ^itemid:2381@secondary --^onlycurrentuser
     cm ^lock ^ls --^onlycurrentuser
     cm ^lock ^ls --^onlycurrentuser --^onlycurrentworkspace
+    cm ^lock ^list --^machinereadable --^startlineseparator=">" \
+      --^endlineseparator="<" --^fieldseparator=","
 
 == CMD_DESCRIPTION_LISTUSERS ==
 Lists users and groups.
@@ -2566,7 +2633,7 @@ Examples:
 
     cm ^lock ^list
     cm ^lock
-    ('^list' is optional if there are no arguments.)
+    (The option '^list' is optional if there are no arguments.)
     cm ^lock ^ls ^serverpath:/src/foo.c#^cs:99@default@localhost:8084
     cm ^lock ^unlock 91961b14-3dfe-4062-8c4c-f33a81d201f5
 
@@ -2578,17 +2645,15 @@ Usage:
 
     cm ^log [<csetspec> | <repspec>] [--^from=<csetspec_from>] [--^allbranches]
            [--^ancestors] [--^csformat=<str_format>] [--^itemformat=<str_format>]
-           [--^xml[=<output_file>]] [--^encoding=<name>] 
+           [--^xml[=<output_file>]] [--^encoding=<name>]
            [--^repositorypaths | --^fullpaths | --^fp]
 
 Options:
 
-    csetspec            The command will return every change made in the
-                        changeset which specification is provided.
+    csetspec            Returns all changes made in the specified changeset.
                         (Use 'cm ^help ^objectspec' to learn more about changeset
                         specs.)
-    repspec             The command will list all changes made in the specified
-                        repository.
+    repspec             Returns all changes made in the specified repository.
                         (Use 'cm ^help ^objectspec' to learn more about repository
                         specs.)
     --^from              Lists all the changes made in every changeset from the
@@ -2607,11 +2672,14 @@ Options:
                         lower limit for all the paths. Remarks: The changeset
                         changes will not be shown when this option is used.
     --^csformat          Retrieves the changeset info in a specific format. See
-                        Remarks for more info.
+                        Remarks for more info. This option cannot be combined
+                        with '--^xml'.
     --^itemformat        Retrieves the item info in a specific format. See
-                        Remarks for more info.
+                        Remarks for more info. This option cannot be combined
+                        with '--^xml'.
     --^xml               Prints the output in XML format to the standard output.
-                        It is possible to specify an output file.
+                        It is possible to specify an output file. This option
+                        cannot be combined with '--^csformat' and '--^itemformat'.
     --^encoding          Used with the '--^xml' option, specifies the encoding to
                         use in the XML output, i.e.: utf-8.
                         See the MSDN documentation at
@@ -2632,7 +2700,7 @@ Remarks:
       branch.
     - If only the option '--^from' is included, the command shows the
       information about every changeset from that specified changeset to the
-      last changeset, in the branch where the changeset was created.
+      last changeset in the branch where the changeset was created.
     - If the option '--^allbranches' appears without an interval, the command
       retrieves the same information as it would do if only 'csetspec' was
       specified.
@@ -2663,8 +2731,8 @@ Remarks:
         {^branch}        Branch where the changeset was created.
         {^date}          Date of the changeset.
         {^owner}         Owner of the changeset.
-        {^shortstatus}   Prints the short format. See below.
-        {^fullstatus}    Prints the long format. See below.
+        {^shortstatus}   Prints the short format for the status. See below.
+        {^fullstatus}    Prints the long format for the status. See below.
 
         Short format and its corresponding long format:
             '^A'   ^Added
@@ -2726,7 +2794,8 @@ Options:
                         Use double quotes (" ") to specify paths containing
                         spaces.
     --^format            Retrieves the output message in a specific format. See
-                        Remarks for more info.
+                        Remarks for more info. This option cannot be combined
+                        with '--^xml'.
     --^symlink           Applies the operation to the symlink and not to the
                         target.
     --^selector          Gets the content from the active workspace selector.
@@ -2738,7 +2807,8 @@ Options:
                         (Use 'cm ^help ^objectspec' to learn more about specs.)
     -^R                  Lists recursively.
     --^xml               Prints the output in XML format to the standard output.
-                        It is possible to specify an output file.
+                        It is possible to specify an output file. This option
+                        cannot be combined with '--^format'.
     --^encoding          Used with the '--^xml' option, specifies the encoding to
                         use in the XML output, i.e.: utf-8.
                         See the MSDN documentation at
@@ -2764,8 +2834,9 @@ Remarks:
        {^type,-6} {^location,-12} {^checkout,-5} {^name}\
        {^symlinktarget}"
 
-    This command accepts a format string to show the output.
-    The output parameters of this command are the following:
+    Output format parameters (--^format option):
+        This command accepts a format string to show the output.
+        The output parameters of this command are the following:
         {^size}
         {^formattedsize}
         {^date}
@@ -2794,7 +2865,9 @@ Remarks:
         {^newlocation}   cset@branch
         {^guid}          (Will take longer to resolve)
         {^itemguid}
-        {^transformed}   Show applied rule for transformed items
+        {^transformed}   Show applied rule for transformed items. Check the
+                         Administrator Guide to learn about Transformable workspaces:
+                         https://www.plasticscm.com/download/help/adminguide
 
     You can customize the '^ls' format setting the PLASTIC_LS_FORMAT environment
     variable.
@@ -2808,8 +2881,8 @@ Examples:
     (Only file names.)
 
     cm ^ls --^symlink
-    (Displays information about the symlink instead of the 'symlinked' file or
-    directory. Available on UNIX environments.)
+    (Displays information about the symlink instead of the target file or
+    directory.)
 
     cm ^ls code --^selector
     (Shows the content of the 'code' subdirectory from the current workspace
@@ -2844,8 +2917,8 @@ Usage:
 Options:
 
     subtype-type        Trigger execution and trigger operation.
-                        Type 'cm ^showtriggertypes' to see a list of trigger
-                        types.
+                        (Use 'cm ^showtriggertypes' to see a list of trigger
+                        types.)
     --^server            Lists the triggers on the specified server.
                         If no server is specified, executes the command on the
                         one configured on the client.
@@ -2859,8 +2932,9 @@ Remarks:
 
     If the type is not specified, lists all the triggers on the server.
 
-    This command accepts a format string to show the output.
-    The output parameters of this command are the following:
+    Output format parameters (--^format option):
+        This command accepts a format string to show the output.
+        The output parameters of this command are the following:
         {0}             Trigger position.
         {1}             Trigger name.
         {2}             Trigger path.
@@ -2870,7 +2944,11 @@ Remarks:
 
 Examples:
     cm ^trigger list after-mklabel
+    (Lists all triggers of type 'after-mklabel' on the server configured on the
+    client.)
+
     cm ^tr ^ls ^before-mkbranch --^server=myserver:8084
+    (Lists all triggers of type 'before-mkbranch' on server 'myserver:8084'.)
 
 == CMD_DESCRIPTION_MANIPULATESELECTOR ==
 Changes the selector to a date.
@@ -2944,13 +3022,13 @@ Options:
     --^forced                  Does not check if the source and destination are
                               already connected.
                               This option is only available for interval merge 
-                              and cherrypicking.
-    --^mergetype               See Remarks for more info.
+                              and cherry picking.
+    --^mergetype               Type of the merge. See Remarks for more info.
     --^interval-origin         Specifies which changeset is chosen as the 
                               interval origin, so the merge will only take the
                               differences between the source changeset and the 
                               specified interval origin.
-    --^ancestor                This is an alias of --^interval-origin.
+    --^ancestor                This is an alias of '--^interval-origin'.
     --^keepsource              Accepts all changes from source contributor for
                               items with conflicts.
     --^keepdestination         Preserves changes from destination contributor
@@ -2978,7 +3056,9 @@ Options:
     --^silent                  Does not show any output.
     --^to | --^destination      Performs a merge-to operation to the specified
                               branch (by entering a branch spec or brspec)
-                              with full conflict resolution.
+                              with full conflict resolution. 
+                              (Use 'cm ^help ^objectspec' to learn more about
+                              branch specs.)
                               A "merge-to" (or workspace-less merge) is a merge
                               done in the server side. While normal merges
                               happen on a workspace merging "from" a branch,
@@ -3059,22 +3139,22 @@ Remarks:
     - A branch specification (brspec):
         [^br:/]br_name
         Example: ^br:/main/task001
-        (The above performs a merge from the last changeset on this branch.)
+        (Merges from the last changeset on this branch.)
 
     - A label specification (lbspec):
         ^lb:lb_name
         Example: ^lb:BL001
-        (Merge from the labeled changeset.)
+        (Merges from the labeled changeset.)
 
     - A changeset specification (csetspec):
         ^cs:cs_number
         Example: ^cs:25
-        (Merge from the given changeset content.)
+        (Merges from the given changeset content.)
 
     - A shelve specification (shspec):
         ^sh:shelve_number
         Example: ^sh:2
-        (Merge from the given shelve content.)
+        (Merges from the given shelve content.)
 
     To automatically resolve directory conflicts, use '--^automaticresolution'
     option and specify the type of conflict followed by the contributor
@@ -3139,6 +3219,11 @@ Remarks:
           --^solvedconflictsfile=C:\Users\Borja\AppData\Local\Temp\2tmp4D6D.tmp \
           --^resolveconflict --^conflict=1 --^resolutionoption=rename  \
           --^resolutioninfo=bin_dst ^br:/main/task --^merge
+		  
+    Set the PLASTICEDITOR environment variable to specify an editor for
+    entering comments. If the PLASTICEDITOR environment variable is set, and
+    the comment is empty, the editor will be automatically launched to allow
+    you to specify the comment.
 
 Examples:
 
@@ -3149,7 +3234,7 @@ Examples:
     (Does merge from branch 'task001'.)
 
     cm ^merge ^cs:5 --^merge --^cherrypicking --^interval-origin=^cs:2
-    (Cherrypick from the changeset interval (2,5].)
+    (Cherry pick from the changeset interval (2,5].)
 
     cm ^merge ^cs:8 --^merge --^subtractive --^keepdestination
     (Subtractive merge from changeset 8, keeping destination changes for those
@@ -3178,6 +3263,13 @@ Usage:
     att_name            Attribute name
 
 == CMD_HELP_ATTRIBUTE_CREATE ==
+Remarks:
+
+    Set the PLASTICEDITOR environment variable to specify an editor for
+    entering comments. If the PLASTICEDITOR environment variable is set, and
+    the comment is empty, the editor will be automatically launched to allow
+    you to specify the comment.
+	
 Examples:
 
     cm ^attribute ^create status
@@ -3270,8 +3362,8 @@ Examples:
     cm ^branch ^create task001
     cm ^branch ^mk task001
     cm ^br ^mk task001
-    (Creates a top-level 'task001' branch in the repository of the current
-    workspace.)
+    (All of the examples above, create a top-level 'task001' branch in the
+    repository of the current workspace.)
 
     cm ^branch ^br:/task001/task002@
     (Creates 'task002' branch as child of 'task001'.)
@@ -3376,7 +3468,9 @@ Usage:
                             [--^format=<format_str>] [--^dateformat=<date_format>]
 
     repspec             The repository specification where to show the main
-                        branch.
+                        branch. If no repspec is specified, the command will show
+                        the main branch for the repository of the current
+                        workspace.
                         (Use 'cm ^help ^objectspec' to learn more about rep specs.)
 
 Options:
@@ -3396,8 +3490,9 @@ Remarks:
 
     This command shows the main branch of a repository.
 
-    This command accepts a format string to show the output.
-    The output parameters of this command are the following:
+    Output format parameters (--^format option):
+        This command accepts a format string to show the output.
+        The output parameters of this command are the following:
         {^id}                Branch id.
         {^comment}           Comment.
         {^date}              Date.
@@ -3418,9 +3513,9 @@ Examples:
     (Displays the main branch for the repository 'repo' in server
     'server:8084'.)
 
-    cm ^br ^showmain --^dateformat="yyyy, dd MMMM" --^encoding=utf8
+    cm ^br ^showmain --^dateformat="yyyy, dd MMMM" --^encoding=utf-8
     (Displays the main branch of the repository with a given date format,
-    and the output is in utf8.)
+    and the output is in utf-8.)
 
     cm ^br ^showmain --^format="{^id} - {^name}"
     (Displays the main branch of the repository, printing only its id and name.)
@@ -3446,8 +3541,9 @@ Options:
 == CMD_HELP_BRANCH_SHOWMERGES ==
 Remarks:
 
-    This command accepts a format string to show the output.
-    The output parameters of this command are the following:
+    Output format parameters (--^format option):
+        This command accepts a format string to show the output.
+        The output parameters of this command are the following:
         {^id}                Branch id.
         {^comment}           Comment.
         {^date}              Date.
@@ -3569,10 +3665,9 @@ Options:
 == CMD_HELP_REPOSITORY_LIST ==
 Remarks:
 
-    This command accepts a format string to show the output.
-
-    The output parameters of this command are the following:
-
+    Output format parameters (--^format option):
+        This command accepts a format string to show the output.
+        The output parameters of this command are the following:
         {^repid}     | {0}           Repository identifier.
         {^repname}   | {1}           Repository name.
         {^repserver} | {2}           Server name.
@@ -3644,10 +3739,9 @@ Usage:
 == CMD_HELP_REPOSITORY_ADD ==
 Remarks:
 
-    Reconnects an existing repository database to the server.
-    Example: After using the 'cm ^repository ^delete' command, use the '^add'
-    command to move a repository from one server to another or to restore an
-    archived repository.
+    Reconnects an existing repository database to the server. This command is
+    useful to move a repository from one server to another, or to restore an
+    archived repository after using the 'cm ^repository ^delete' command.
 
 Examples:
 
@@ -3665,8 +3759,8 @@ Usage:
                                 [--^server=<repserverspec>]
 
     subtype-type        Trigger execution and trigger operation.
-                        Type 'cm ^showtriggertypes' to see a list of trigger
-                        types.
+                        (Use 'cm ^showtriggertypes' to see a list of trigger
+                        types.)
     new_name            Name of the new trigger.
     script_path         Disk path on the server where the script to execute is
                         located. If the command line starts with "^webtrigger ",
@@ -3809,8 +3903,10 @@ Options:
 == CMD_HELP_LABEL_CREATE ==
 Remarks:
 
-    Set PLASTICEDITOR environment variable to specify an editor to type the
-    comment.
+    Set the PLASTICEDITOR environment variable to specify an editor for
+    entering comments. If the PLASTICEDITOR environment variable is set, and
+    the comment is empty, the editor will be automatically launched to allow
+    you to specify the comment.
 
 Examples:
 
@@ -4014,13 +4110,14 @@ Commands:
     ^configure
     ^add
     ^undo
-    ^co   | ^checkout
-    ^unco | ^undocheckout
-    ^ci   | ^checkin
-    ^mv   | ^move
-    ^rm   | ^remove
-    ^stb  | ^switch
-    ^upd  | ^update
+    ^co     | ^checkout
+    ^unco   | ^undocheckout
+    ^ci     | ^checkin
+    ^mv     | ^move
+    ^rm     | ^remove
+    ^stb    | ^switch
+    ^upd    | ^update
+    ^shelve | ^shelveset
 
     To get more information about each command run:
     cm ^partial <command> --^usage
@@ -4041,6 +4138,7 @@ Usage:
 
     cm ^partial ^add [-^R | -^r | --^recursive] [--^silent] [--^parents]
                    [--^ignorefailed] [--^skipcontentcheck] <item_path>[ ...]
+                   [--^format=<str-format>] [--^errorformat=<str-format>]
 
     item_path           Items to add. Use double quotes (" ") to specify paths
                         containing spaces. Use a whitespace to separate paths.
@@ -4058,6 +4156,10 @@ Options:
     --^skipcontentcheck  When the extension is not enough to set the file as
                         text or binary, it will be set as binary by default
                         instead of checking the content to detect the type.
+    --^format            Retrieves the output message in a specific format. Check
+                        the examples for more information.
+    --^errorformat       Retrieves the error message (if any) in a specific
+                        format. Check the examples for more information.
 
 == CMD_HELP_PARTIAL_ADD ==
 Remarks:
@@ -4082,6 +4184,11 @@ Examples:
     cm ^partial ^add -^R *
     (Recursively adds all the contents of the current directory.)
 
+    cm ^partial ^add -^R * --^format="ADD {0}" --^errorformat="ERR {0}"
+    (Recursively adds all the contents of the current directory, printing
+    '^ADD <item>' for successfully added files, and '^ERR <item>' for items that
+    could not be added.)
+
 == CMD_DESCRIPTION_PARTIAL_CHECKIN ==
 Stores changes in the repository.
 
@@ -4092,31 +4199,42 @@ Usage:
                             [-^c=<str_comment> | -^commentsfile=<comments_file>]
                             [--^all | -^a] [--^applychanged] [--^keeplock]
                             [--^symlink] [--^ignorefailed]
+                            [--^machinereadable [--^startlineseparator=<sep>]
+                              [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
 
 Options:
 
-    item_path           Items to checkin. Use double quotes (" ") to specify
-                        paths containing spaces. Use a whitespace to separate
-                        paths.
-                        Use . to apply checkin to current directory.
-    -^c                  Specifies a comment to the changeset created in the
-                        checkin operation.
-    -^commentsfile       Applies the comment from the specified file to the
-                        changeset created in the checkin operation.
-    --^all | -^a          Includes also the items changed, moved, and deleted
-                        locally on the specified paths.
-    --^applychanged      Applies the checkin operation to the changed items
-                        detected in the workspace along with the checked out
-                        items.
-    --^keeplock          Keeps the lock of the locked items after the checkin
-                        operation.
-    --^symlink           Applies the checkin operation to the symlink and not to
-                        the target.
-    --^ignorefailed      Any changes that cannot be applied (because the lock
-                        - a.k.a. exclusive checkout - cannot be adquired or 
-                        because local changes are in conflict with the server
-                        changes) are discarded and the checkin operation
-                        continues without them.
+    item_path             Items to checkin. Use double quotes (" ") to specify
+                          paths containing spaces. Use a whitespace to separate
+                          paths.
+                          Use . to apply checkin to current directory.
+    -^c                    Specifies a comment to the changeset created in the
+                          checkin operation.
+    -^commentsfile         Applies the comment from the specified file to the
+                          changeset created in the checkin operation.
+    --^all | -^a           Includes also the items changed, moved, and deleted
+                          locally on the specified paths.
+    --^applychanged        Applies the checkin operation to the changed items
+                          detected in the workspace along with the checked out
+                          items.
+    --^private             Private items detected in the workspace are also
+                          included.
+    --^keeplock            Keeps the lock of the locked items after the checkin
+                          operation.
+    --^symlink             Applies the checkin operation to the symlink and not to
+                          the target.
+    --^ignorefailed        Any changes that cannot be applied (because the lock
+                          - a.k.a. exclusive checkout - cannot be adquired or 
+                          because local changes are in conflict with the server
+                          changes) are discarded and the checkin operation
+                          continues without them.
+    --^machinereadable     Outputs the result in an easy-to-parse format.
+    --^startlineseparator  Used with the '--^machinereadable' flag, specifies how
+                          the lines should start.
+    --^endlineseparator    Used with the '--^machinereadable' flag, specifies how
+                          the lines should end.
+    --^fieldseparator      Used with the '--^machinereadable' flag, specifies how
+                          the fields should be separated.
 
 == CMD_HELP_PARTIAL_CHECKIN ==
 Remarks:
@@ -4134,8 +4252,10 @@ Remarks:
     Revision content should be different from previous revision in order to be
     checked in.
 
-    Set PLASTICEDITOR environment variable to specify an editor to type the
-    comment.
+    Set the PLASTICEDITOR environment variable to specify an editor for
+    entering comments. If the PLASTICEDITOR environment variable is set, and
+    the comment is empty, the editor will be automatically launched to allow
+    you to specify the comment.
 
 Reading input from stdin:
 
@@ -4166,8 +4286,7 @@ Examples:
     (Applies the checkin to all pending changes in the workspace.)
     
     cm ^partial ^checkin link --^symlink
-    (Applies the checkin to the link file and not to the target, available on
-    UNIX environments.)
+    (Applies the checkin to the symlink file and not to the target.)
 
     cm ^partial ^checkin . --^ignorefailed
     (Applies checkin to current directory, ignoring the changes that cannot be 
@@ -4232,6 +4351,8 @@ Usage:
 
     cm ^partial ^configure <+|-path>[ ...] [--^silent] [--^ignorefailed]
                          [--^ignorecase] [--^restorefulldirs]
+                         [--^machinereadable [--^startlineseparator=<sep>]
+                           [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
 
     path           Paths to be loaded or unloaded. Use double quotes (" ") to
                    specify paths containing spaces. Use a whitespace to separate
@@ -4240,20 +4361,27 @@ Usage:
 
 Options:
 
-    --^silent            Does not show any output.
-    --^ignorefailed      Skips all errors during the process. Incorrect paths
-                        will not cause the command to stop.
-    --^ignorecase        Ignores casing on the paths. With this flag, '^configure'
-                        will work for "/Data/Textures" even if the user writes
-                        "/data/teXtures".
-    --^restorefulldirs   Resets an invalid directory configuration (happens when
-                        a non-partial operation is run on a partial workspace).
-                        The directories in this list will be fully configured
-                        (full check) which means they will automatically
-                        download new content during the update.
-                        This operation does not download any files, just
-                        restores the directory configuration on partial
-                        workspaces.
+    --^silent              Does not show any output.
+    --^ignorefailed        Skips all errors during the process. Incorrect paths
+                          will not cause the command to stop.
+    --^ignorecase          Ignores casing on the paths. With this flag, '^configure'
+                          will work for "/Data/Textures" even if the user writes
+                          "/data/teXtures".
+    --^restorefulldirs     Resets an invalid directory configuration (happens when
+                          a non-partial operation is run on a partial workspace).
+                          The directories in this list will be fully configured
+                          (full check) which means they will automatically
+                          download new content during the update.
+                          This operation does not download any files, just
+                          restores the directory configuration on partial
+                          workspaces.
+    --^machinereadable     Outputs the result in an easy-to-parse format.
+    --^startlineseparator  Used with the '--^machinereadable' flag, specifies how
+                          the lines should start.
+    --^endlineseparator    Used with the '--^machinereadable' flag, specifies how
+                          the lines should end.
+    --^fieldseparator      Used with the '--^machinereadable' flag, specifies how
+                          the fields should be separated.
 
 == CMD_HELP_PARTIAL_CONFIGURE ==
 Remarks:
@@ -4364,6 +4492,176 @@ Examples:
 
     cm ^partial ^remove c:\workspace\pic01.png --^nodisk
     (Removes 'pic01.png' from version control, but keeps it on disk.)
+
+
+== CMD_DESCRIPTION_PARTIAL_SHELVESET ==
+Allows the user to manage partial shelvesets.
+
+== CMD_USAGE_PARTIAL_SHELVESET ==
+Usage:
+
+    cm ^partial ^shelveset | ^shelve <command> [options]
+
+Commands:
+
+    ^create | ^mk
+    ^apply
+    ^delete | ^rm
+
+    To get more information about each command run:
+    cm ^partial ^shelveset <command> --^usage
+    cm ^partial ^shelveset <command> --^help
+
+== CMD_HELP_PARTIAL_SHELVESET ==
+Examples:
+
+    cm ^partial ^shelveset ^create -^c="my comment"
+    cm ^partial ^shelveset ^apply sh:3
+    cm ^partial ^shelveset ^delete sh:5
+
+== CMD_DESCRIPTION_PARTIAL_SHELVESET_CREATE ==
+Shelves chosen pending changes.
+
+== CMD_USAGE_PARTIAL_SHELVESET_CREATE ==
+Usage:
+
+    cm ^partial ^shelveset | ^shelve ^create | ^mk [<item_path>[ ...]]
+                            [-^c=<str_comment> | -^commentsfile=<comments_file>]
+                            [--^applychanged] [--^symlink] [--^ignorefailed]
+                            [--^machinereadable [--^startlineseparator=<sep>]
+                              [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
+
+Options:
+
+    item_path              Items to shelve. Use double quotes (" ") to specify
+                          paths containing spaces. Use a whitespace to separate
+                          paths. Use . to apply shelve to current directory.
+    -^c                    Specifies a comment to the changeset created in the
+                          shelve operation.
+    -^commentsfile         Applies the comment from the specified file to the
+                          changeset created in the shelve operation.
+    --^applychanged        Applies the shelve operation to the changed items
+                          detected in the workspace along with the checked out
+                          items.
+    --^symlink             Applies the shelve operation to the symlink and not to
+                          the target.
+    --^ignorefailed        Any changes that cannot be applied (because the lock
+                          - a.k.a. exclusive checkout - cannot be adquired or 
+                          because local changes are in conflict with the server
+                          changes) are discarded and the shelve operation
+                          continues without them.
+    --^machinereadable     Outputs the result in an easy-to-parse format.
+    --^startlineseparator  Used with the '--^machinereadable' flag, specifies how
+                          the lines should start.
+    --^endlineseparator    Used with the '--^machinereadable' flag, specifies how
+                          the lines should end.
+    --^fieldseparator      Used with the '--^machinereadable' flag, specifies how
+                          the fields should be separated.
+
+== CMD_HELP_PARTIAL_SHELVESET_CREATE ==
+The '^partial ^shelveset ^create' command stores the contents of checked out items
+    inside the repository. This way the contents are protected without the need to
+    checkin the files.
+
+Remarks:
+
+    If neither <item_path> nor any option is specified, the shelveset will
+    include all the pending changes in the workspace.
+
+    The '^partial ^shelveset ^create' operation is always applied recursively from 
+    the given path.
+    
+    The '^partial ^shelveset ^create' operation is the default, which means that, 
+    if no other operation is defined, the command will try to perform a creation.  
+
+    Requirements to shelve an item:
+    - The item must be under source code control.
+    - The item must be checked out or changed.
+
+    Set the PLASTICEDITOR environment variable to specify an editor for
+    entering comments. If the PLASTICEDITOR environment variable is set, and
+    the comment is empty, the editor will be automatically launched to allow
+    you to specify the comment.
+
+Examples:
+
+    cm ^partial ^shelveset figure.png landscape.png
+    (Creates a new shelveset with 'figure.png' and 'landscape.png' checked-out files.)
+
+    cm ^partial ^shelveset . -^commentsfile=mycomment.txt
+    (Creates a new shelveset with every checked-out file in current directory 
+	and sets the comment from the 'mycomment.txt' file.)
+
+    cm ^partial ^shelve background.png -^c="my comment"
+    (Creates a new shelveset with 'background.png', includes a comment.)
+
+    cm ^partial ^shelveset --^applychanged
+    (Creates a new shelveset all pending changes in the workspace.)
+    
+    cm ^partial ^shelveset link --^symlink
+    (Creates a new shelveset with the symlink file and not the target.)
+
+    cm ^partial ^shelveset . --^ignorefailed
+    (Creates a new shelveset with every checked-out file in current directory, 
+    ignoring (skipping) the changes that cannot be applied.)
+
+== CMD_DESCRIPTION_PARTIAL_SHELVESET_APPLY ==
+Applies a stored shelveset.
+
+== CMD_USAGE_PARTIAL_SHELVESET_APPLY ==
+Usage:
+
+    cm ^partial ^shelveset ^apply <sh_spec> [--^encoding=<name>]
+                       [--^comparisonmethod=(^ignoreeol | ^ignorewhitespaces| \
+                                            ^ignoreeolwhitespaces | ^notignore)]
+
+    sh_spec             Shelveset specification. (Use 'cm ^help ^objectspec' to
+                        learn more about shelveset specs.)
+
+Options:
+
+    --^encoding          Specifies the output encoding, i.e.: utf-8.
+                        See the MSDN documentation at
+                        http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
+                        to get the table of supported encodings and its format, 
+                        (at the end of the page, in the "Name" column).
+    --^comparisonmethod  Sets the comparison method. See Remarks for more info.
+
+== CMD_HELP_PARTIAL_SHELVESET_APPLY ==
+The '^partial ^shelveset ^apply' command restores the contents of a stored shelveset.
+
+Remarks:
+
+    Comparison methods:
+        ^ignoreeol               Ignores end of line differences.
+        ^ignorewhitespaces       Ignores whitespace differences.
+        ^ignoreeolwhitespaces    Ignores end of line and whitespace differences.
+        ^notignore               Detects end of line and whitespace differences.
+
+Examples:
+
+    cm ^partial ^shelveset ^apply ^sh:3
+    (Applies a stored shelve.)
+
+== CMD_DESCRIPTION_PARTIAL_SHELVESET_DELETE ==
+Deletes a shelveset.
+
+== CMD_USAGE_PARTIAL_SHELVESET_DELETE ==
+Usage:
+
+    cm ^partial ^shelveset ^delete | ^rm <sh_spec>
+    
+    sh_spec             Shelveset specification. (Use 'cm ^help ^objectspec' to
+                        learn more about shelveset specs.)
+
+== CMD_HELP_PARTIAL_SHELVESET_DELETE ==
+The '^partial ^shelveset ^delete' command deletes a shelveset.
+
+Examples:
+
+    cm ^partial ^shelveset ^delete ^sh:3
+    (Removes a stored shelveset.)
+
 
 == CMD_DESCRIPTION_PARTIAL_SWITCH ==
 Sets a branch as the working branch.
@@ -4606,6 +4904,8 @@ Usage:
 
     cm ^partial ^update [<item_path>[ ...]] [--^changeset=<number>]
                       [--^silent | --^report] [--^dontmerge]
+                      [--^machinereadable [--^startlineseparator=<sep>]
+                        [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
 
     item_path           Items to be updated. Use double quotes (" ") to specify
                         paths containing spaces. Use a whitespace to separate
@@ -4616,13 +4916,20 @@ Usage:
 
 Options:
 
-    --^changeset         Updates the partial workspace to a specific changeset.
-    --^silent            Does not show any output.
-    --^report            Prints a list of the applied changes when the command
-                        is finished. Using '--^silent' will override this setting.
-    --^dontmerge         Does not merge the file conflicts, it just skips them.
-                        The other changes are properly applied. This option can
-                        be useful for automation to avoid user interaction.
+    --^changeset          Updates the partial workspace to a specific changeset.
+    --^silent             Does not show any output.
+    --^report             Prints a list of the applied changes when the command
+                         is finished. Using '--^silent' will override this setting.
+    --^dontmerge          Does not merge the file conflicts, it just skips them.
+                         The other changes are properly applied. This option can
+                         be useful for automation to avoid user interaction.
+    --^machinereadable    Outputs the result in an easy-to-parse format.
+    --^startlineseparator Used with the '--^machinereadable' flag,
+                         specifies how the lines should start.
+    --^endlineseparator   Used with the '--^machinereadable' flag,
+                         specifies how the lines should end.
+    --^fieldseparator     Used with the '--^machinereadable' flag,
+                         specifies how the fields should be separated.
 
 
 == CMD_HELP_PARTIAL_UPDATE ==
@@ -4723,6 +5030,170 @@ Examples:
 
     cm ^patch --^apply file.patch --^tool=C:\gnu\patch.exe
     (Applies the patch in 'file.patch' to the local workspace with a custom exe.)
+
+== CMD_DESCRIPTION_PROFILE ==
+Allows the user to manage server connection profiles.
+
+== CMD_USAGE_PROFILE ==
+Usage:
+
+    cm ^profile <command> [options]
+
+Commands:
+
+    ^list   | ^ls
+    ^create | ^mk
+    ^delete | ^rm
+
+    To get more information about each command run:
+    cm ^profile <command> --^usage
+    cm ^profile <command> --^help
+
+== CMD_HELP_PROFILE ==
+Examples:
+
+    cm ^profile
+    cm ^profile ^list
+    cm ^profile ^create
+    cm ^profile ^delete 1
+
+== CMD_DESCRIPTION_PROFILE_LIST ==
+Lists the server connection profiles configured on the client.
+
+== CMD_USAGE_PROFILE_LIST ==
+Usage:
+
+    cm ^profile [^list | ^ls] [--^format=<str_format>]
+
+Options:
+
+    --^format        Retrieves the output message in a specific format.
+                    See Remarks for more info.
+
+== CMD_HELP_PROFILE_LIST ==
+Remarks:
+
+    Output format parameters (--^format option):
+        This command accepts a format string to show the output.
+        The output parameters of this command are the following:
+        {^index}          | {0}       Profile index in the profiles list
+        {^name}           | {1}       Profile name
+        {^server}         | {2}       Profile server
+        {^user}           | {3}       Profile user
+        {^workingmode}    | {4}       Profile working mode
+        {^securityconfig} | {5}       Profile security config
+        {^tab}                        Inserts a tab space
+        {^newline}                    Inserts a new line
+
+Examples:
+
+    cm ^profile
+    (Lists all the profiles using the default format)
+
+    cm ^profile --^format="{index,2}  {server,-20}"
+    (Writes the profile index in 2 spaces, aligned to the right, then two blanks,
+    and then the repository server in 20 spaces, aligned to the left.)
+
+    cm ^profile --^format="{0,2}  {2,-20}"
+    (Writes the same output as the previous example.)
+
+== CMD_DESCRIPTION_PROFILE_CREATE ==
+Creates a new server connection profile.
+
+== CMD_USAGE_PROFILE_CREATE ==
+Usage:
+
+    cm ^profile [^create | ^mk]
+     (Creates a new profile interactively.)
+
+    cm ^profile [^create | ^mk] --^server=<server_addr> --^username=<username>
+                     --^password=<password> --^workingmode=<workingmode>
+     (Creates a new server connection profile using a user/password
+     authentication mode.)
+
+    cm ^profile [^create | ^mk] --^server=<server_addr> --^username=<username>
+                     --^token=<token> --^workingmode=SSOWorkingMode
+     (Creates a new server connection profile using Single Sign On authentication
+     mode.)
+
+Options:
+
+    --^server       Creates the connection profile for the specified server.
+    --^username     The username that should be used in the connection profile
+    --^password     The plain-text password that should be used in the connection
+                   profile. This option is only valid for authentication modes
+                   that are based on a user and password.
+    --^token        The plain-text token that should be used in the connection
+                   profile. This option is only valid for authentication modes
+                   that are based on a token (SSOWorkingMode for now).
+    --^workingmode  The target server's authentication mode.
+                   Available users/security working modes:
+                   ^LDAPWorkingMode (LDAP)
+                   ^UPWorkingMode (User and password)
+                   ^SSOWorkingMode (Single Sign On)
+
+== CMD_HELP_PROFILE_CREATE ==
+Remarks:
+
+    When using this command interactively (without options), the client will try
+    to connect to the server to obtain the working mode and check the credentials.
+    This guarantees that the resulting profile is correct.
+
+    When specifying the options, the client will generate the connection profile
+    without connecting to the server. This is useful when creating connection
+    profiles for automation purposes.
+
+Examples:
+
+    cm ^profile ^create
+    (Creates a new connection profile interactively.)
+
+    cm ^profile ^create --^server=plastic.domain.com:8087 --^username=sergio
+      --^password=thisissupersecret --^workingmode=LDAPWorkingMode
+    (Creates a new connection profile to connect to 'plastic.domain.com:8087'
+    using user 'sergio' and password 'thisissupersecret' through LDAP working mode.)
+
+    cm ^profile ^create --^server=plastic.domain.com:8087 --^username=sergio
+      --^token="TOKENAMoKJ9iAA(...)12fssoprov:unityid" --workingmode=^SSOWorkingMode
+    (Creates a new connection profile to connect to 'plastic.domain.com:8087'
+    using user 'sergio' and the specified token through Single Sign On working mode.)
+
+== CMD_DESCRIPTION_PROFILE_DELETE ==
+Deletes a server connection profile from the client's configuration.
+
+== CMD_USAGE_PROFILE_DELETE ==
+Usage:
+
+    cm ^profile ^delete | ^rm <index | name>
+    cm ^profile ^delete | ^rm --index=<index>
+    cm ^profile ^delete | ^rm --name=<name>
+
+    index       Profile index in the profiles list.
+    name        Profile name.
+
+Options:
+
+    --index     Used to disambiguate in case a profile has a name that is a number
+    --name      Used to disambiguate in case a profile has a name that is a number
+
+== CMD_HELP_PROFILE_DELETE ==
+Remarks:
+
+    Deletes a server connection profile from the client's configuration.
+    It works both with the profile index and the profile name.
+    The 'cm ^profile ^list' command does not show profile names by default,
+    check 'cm ^profile ^list --help' to check how to output profile's name.
+
+Example:
+
+    cm ^profile ^delete 1
+    (Removes the profile at index 1.)
+
+    cm ^profile ^delete 192.168.0.2:8087_UPWorkingMode
+    (Removes the profile with name '192.168.0.2:8087_UPWorkingMode'.)
+
+    cm ^profile ^delete --name=12
+    (Removes the profile with name '12'.)
 
 == CMD_DESCRIPTION_QUERY ==
 Executes SQL queries. Requires SQL storage.
@@ -4877,7 +5348,8 @@ Usage:
     att_spec        Attribute to change its comment. (Use 'cm ^help ^objectspec'
                     to learn more about attribute specs.)
     new_comment     New comment for the attribute. You can also specify a
-                    default list of values for the attribute.
+                    default list of values for the attribute. See Remarks for
+                    more info.
 
 == CMD_HELP_ATTRIBUTE_EDIT ==
 Remarks:
@@ -5318,7 +5790,7 @@ Translate options:
       modes. The '--^trmode' option specifies how to translate the user names from
       the source to the destination. The '--^trmode' must be one of the following
       values:
-          ^copy    (Default). Means that the user identifiers will be just copied.
+          ^copy    (Default.) Means that the user identifiers will be just copied.
           ^name    The user identifiers will be matched by name.
           ^table   Uses a translation table specified in the option '--^trtable'
                   (see below).
@@ -5343,12 +5815,12 @@ Authentication options:
 
         The '--^authdata' line is the content of the <^SecurityConfig> entry
         in the client.conf file and the profiles.conf file. The profiles.conf
-        file can be easily generated from the Plastic GUI in the replication
+        file can be easily generated from the Plastic GUI in the connection
         profiles tab under Preferences.
 
         If you are using ^UPWorkingMode, you can simply specify:
 
-        --^authmode=^UPWorkingMode --^user=<user> --^password=<psw>
+        --^authmode=^UPWorkingMode --^user=<user> --^password=<pwd>
 
     2) Authentication file where you may have a different file for each server
        you connect to, containing the credentials for that server.
@@ -5361,7 +5833,7 @@ Authentication options:
 == CMD_HELP_CLONE ==
 Remarks:
 
-    The clone command is able to replicate branches (along with their changesets,
+    The clone command can replicate branches (along with their changesets,
     labels, attributes, reviews, and so on) from a source repository to a
     destination repository. The repositories can be located at different servers.
 
@@ -5429,6 +5901,7 @@ Usage:
 
     cm ^history | ^hist <item_path>[ ...] [--^long | --^format=<str_format>]
                       [--^symlink] [--^xml[=<output_file>]] [--^encoding=<name>]
+                      [--^moveddeleted]
 
     item_path           Items path. Use a whitespace to separate paths. Use
                         double quotes (" ") to specify paths containing spaces.
@@ -5439,17 +5912,20 @@ Options:
 
     --^long              Shows additional information.
     --^format            Retrieves the output message in a specific format. See
-                        Remarks for more info.
+                        Remarks for more info. This option cannnot be combined
+                        with '--^xml'.
     --^symlink           Applies the history operation to the symlink and not to
                         the target.
     --^xml               Prints the output in XML format to the standard output.
-                        It is possible to specify an output file.
+                        It is possible to specify an output file. This option
+                        cannot be combined with '--^format'.
     --^encoding          Used with the '--^xml' option, specifies the encoding to
                         use in the XML output, i.e.: utf-8.
                         See the MSDN documentation at
                         http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
                         to get the table of supported encodings and its format, 
                         (at the end of the page, in the "Name" column).
+    --^moveddeleted      Include move and remove operations in the history.
 
 == CMD_HELP_REVISION_HISTORY ==
 Remarks:
@@ -5457,8 +5933,9 @@ Remarks:
     This command shows a list of revisions for a given item, and label, branch,
     and comment info for each revision.
 
-    This command accepts a format string to show the output.
-    The output parameters of this command are the following:
+    Output format parameters (--^format option):
+        This command accepts a format string to show the output.
+        The output parameters of this command are the following:
         {0} | {^date}              Date.
         {1} | {^changesetid}       Changeset number.
         {2} | {^branch}            Branch.
@@ -5479,8 +5956,7 @@ Examples:
     (Displays all information.)
 
     cm ^history link --^symlink
-    (Applies the history operation to the 'link' file and not to the target,
-    available on UNIX environments.)
+    (Applies the history operation to the symlink file and not to the target.)
 
     cm ^history ^serverpath:/src/foo/bar.c#^br:/main/task001@myserver
     (Retrieves the revision history from a server path in a given branch.)
@@ -5505,8 +5981,7 @@ Examples:
     cm ^tree fichero1.txt
     cm ^tree c:\workspace
     cm ^tree link --^symlink
-    (Applies the operation to the link file and not to the target; available on
-    UNIX environments.)
+    (Applies the operation to the symlink file and not to the target.)
 
 == CMD_DESCRIPTION_RM ==
 Allows the user to delete files and directories.
@@ -5652,8 +6127,8 @@ Usage:
                                 [--^server=<repserverspec>]
 
     subtype-type        Trigger execution and trigger operation.
-                        Type 'cm ^showtriggertypes' to see a list of trigger
-                        types.
+                        (Use 'cm ^showtriggertypes' to see a list of trigger
+                        types.)
     position_number     Position assigned to the trigger when it was created.
 
 Options:
@@ -5856,8 +6331,10 @@ Remarks:
         ^ignoreeolwhitespaces    Ignores end of line and whitespace differences.
         ^notignore               Detects end of line and whitespace differences.
 
-    Set PLASTICEDITOR environment variable to specify an editor to type the
-    comment.
+    Set the PLASTICEDITOR environment variable to specify an editor for
+    entering comments. If the PLASTICEDITOR environment variable is set, and
+    the comment is empty, the editor will be automatically launched to allow
+    you to specify the comment.
 
 Examples:
 
@@ -5945,8 +6422,10 @@ Remarks:
     - The item must be under source code control.
     - The item must be checked out or changed ('--^all' option must be used).
 
-    Set PLASTICEDITOR environment variable to specify an editor to type the
-    comment.
+    Set the PLASTICEDITOR environment variable to specify an editor for
+    entering comments. If the PLASTICEDITOR environment variable is set, and
+    the comment is empty, the editor will be automatically launched to allow
+    you to specify the comment.
 
 Examples:
 
@@ -6180,6 +6659,11 @@ Available objects and attributes:
                     cm ^find ^branch "^where ^id = 2029607"
                     (Finds the branch which id is 2029607.)
 
+    You can use the '^order ^by' clause with this object. Specifically, you can short
+    by using the following fields:
+        ^date
+        ^branchname
+
     Replication fields. Check "replication related fields" below.
         ^ReplLogId
         ^ReplSrcDate
@@ -6251,6 +6735,11 @@ Available objects and attributes:
 
     ^ID                : integer.
 
+    You can use the '^order ^by' clause with this object. Specifically, you can sort
+    by using the following fields:
+        ^date
+        ^changesetid
+
     Replication fields. Check "replication related fields" below.
         ^ReplLogId
         ^ReplSrcDate
@@ -6299,6 +6788,11 @@ Available objects and attributes:
     ^comment   : string.
     ^ID        : integer.
 
+    You can use the '^order ^by' clause with this object. Specifically, you can sort
+    by using the following fields:
+        ^date
+        ^labelname
+
     Replication fields. Check "replication related fields" below.
         ^ReplLogId
         ^ReplSrcDate
@@ -6341,7 +6835,7 @@ Available objects and attributes:
 
                    Example:
                       cm ^find ^merge "^where ^type = '^cherrypick' ^and ^owner = '^me'"
-                      (Finds all my cherrypicks.)
+                      (Finds all my cherry picks.)
 
     ^ID           : integer.
 
@@ -6403,6 +6897,12 @@ Available objects and attributes:
     ^GUID       : Global Unique Identifier.
                  Hexadecimal id in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
     ^ID         : integer.
+
+    You can use the '^order ^by' clause with this object. Specifically, you can sort
+    by using the following fields:
+        ^date
+        ^modifieddate
+        ^status
 
 ^revision:
     You can find revisions by filtering using the following fields:
@@ -6877,7 +7377,7 @@ Usage:
     cm ^synchronize | ^sync <repspec> ^git [<url> [--^user=<usr_name> --^pwd=<pwd>]]
                           [(--^txtsimilaritypercent | --^binsimilaritypercent | \
                             --^dirsimilaritypercent)=<value>]
-                          [--^author] [--^skipgitlfs]
+                          [--^author] [--^skipgitlfs] [--^gitpushchunk=<value>]
 
 
     repspec             Repository specification. (Use 'cm ^help ^objectspec' t
@@ -6900,6 +7400,12 @@ Options:
     --^skipgitlfs              Ignores the Git LFS configuration in the 
                               .gitattributes file. It acts like without Git LFS
                               support.
+    --^gitpushchunk            Process the push operation (exporting changes from
+                              Plastic to Git) in chunks of a certain number of
+                              changesets. This is only useful for huge repos to
+                              avoid network or package size related issues or
+                              just for debugging purposes. It uses chunks of
+                              1000 changesets if no value is specified.                              
 
 == CMD_HELP_SYNC ==
 Remarks:
@@ -7093,8 +7599,7 @@ Examples:
     (Undoes checkouts or local modifications of 'file1.txt')
 
     cm ^unco link --^symlink
-    (Applies the undocheckout operation to the link file and not to the target,
-    available on UNIX environments.)
+    (Applies the undocheckout operation to the symlink file and not to the target.)
 
     cm ^status --^short --^changelist=pending_to_review | cm ^undocheckout -
     (Undoes client changelist.
@@ -7246,15 +7751,14 @@ Usage:
             [--^silent | --^machinereadable [--^startlineseparator=<sep>]
                             [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
 
-    path                Path of the files or directories to apply the operation
-                        to. Use double quotes (" ") to specify paths containing
-                        spaces. Use a whitespace to separate paths.
-                        If no path is specified, by default the undo
-                        operation will take all of the files in the current
-                        directory.
-    filter              Applies the specified filter or filters to the given
-                        paths. Use a whitespace to separate filters. See the
-                        Filters section for more information.
+    path        Path of the files or directories to apply the operation to.
+                Use double quotes (" ") to specify paths containing spaces.
+                Use a whitespace to separate paths.
+                If no path is specified, by default the undo operation will take
+                all of the files in the current directory.
+    filter      Applies the specified filter or filters to the given paths. Use
+                a whitespace to separate filters. See the Filters section for
+                more information.
 
 Options:
 
@@ -7271,54 +7775,62 @@ Options:
                             how the fields should be separated.
 Filters:
 
-    If no flag is specified, by default all changes are undone, but the
-    paths can be filtered using one or more of the flags below.
-    If a file or directory matches one or more of the specified kinds of change,
-    all of the changes on said file or directory will be undone.
-    For example, if you specify both '--^checkedout' and '--^moved', if a file is
-    both checkedout and moved, both changes will be undone.
+    The paths can be filtered using one or more of the filters below. Each of
+    those filters refers to a type of change:
+    --^checkedout    Selects checked-out files and directories.
+    --^unchanged     Selects files whose content is unchanged.
+    --^changed       Selects locally changed or checked-out files and directories.
+    --^deleted       Selects deleted files and directories.
+    --^moved         Selects moved files and directories.
+    --^added         Selects added files and directories.
 
-    --^checkedout            Selects checked-out files and directories.
-    --^unchanged             Selects files whose content is unchanged.
-    --^changed               Selects locally changed or checked-out files and
-                            directories.
-    --^deleted               Selects deleted files and directories.
-    --^moved                 Selects moved files and directories.
-    --^added                 Selects added files and directories.
+    If the path matches one or more of the specified kinds of changes, those
+    types of changes will be undone on that said path.
+    For example, if you specify both '--^checkedout' and '--^moved', if a file
+    is both checkedout and moved, both changes will be undone.
+
+    If no filter is specified, all kinds of changes are undone.
 
 == CMD_HELP_UNDO ==
 Remarks:
 
-    The '^undo' command is dangerous - it undoes work in an irreversible way.
-    Once the ^undo has finished, it is not possible to recover the previous state
-    of the files and directories affected by it. If no path is specified
-    in the arguments, by default it will undo every change in the current
-    directory, but not recursively.
-    These are equivalent when executed from the /src directory:
+    - If no path is specified, it will undo every change in the current
+      directory but not recursively.
 
-        /src
-        |- file.txt
-        |- code.cs
-        \- /test
-           |- test_a.py
-           \- test_b.py
+    - If one or more paths are specified, it will undo every change in the
+      specified paths but not recursively.
 
+    - If you want the operation to be recursive, you must specify the '-^r' flag.
+      To undo all of the changes below a directory including changes affecting
+      the directory itself, run the following command:
+
+          cm ^undo dirpath -^r
+
+      If dirpath is a workspace path, every change in the workspace will be
+      undone.
+
+    - The '^undo' command is dangerous because it undoes work irreversibly.
+      Once the ^undo has finished, it is not possible to recover the previous
+      state of the files and directories affected by it.
+
+    - Consider the following scenario:
+
+          /src
+          |- file.txt
+          |- code.cs
+          \- /test
+             |- test_a.py
+             \- test_b.py
+
+      These commands are equivalent when executed from the /src directory:
         cm ^undo
         cm ^undo *
         cm ^undo file.txt code.cs /test
 
+      These commands are also equivalent when executed from the /src directory:
         cm ^undo .
         cm ^undo /src file.txt code.cs
 
-    If you want the operation to be recursive, you must specify the '-^r' flag.
-
-    To undo all of the changes below a directory (including changes affecting
-    the directory itself):
-
-        cm ^undo dirpath -^r
-
-    If dirpath is a workspace path, every change in the workspace will be
-    undone.
 
 Deleted items:
 
@@ -7329,10 +7841,11 @@ Deleted items:
     For example:
 
     cm ^undo .
-    (Does NOT undo deletions in the current directory.)
+    (Does NOT undo deletions (but other changes) in the current directory.)
 
     cm ^undo . -^r
-    (Undoes all deletions (and other changes) in the current directory recursively.)
+    (Undoes all deletions (and other changes) in the current directory
+    recursively.)
 
     cm ^undo src/file.txt
     (Undoes deletion (or other change) of src/file.txt.)
@@ -7346,6 +7859,10 @@ Examples:
     cm ^co file.txt
     cm ^undo file.txt
     (Undoes the checkout on 'file.txt'.)
+
+    cm ^undo c:\otherworkspace\file.txt
+    (Undoes changes in file 'file.txt' located in a workspace other than the
+    current one.)
 
     ^echo ^content >> file.txt
     cm ^undo file.txt
@@ -7414,9 +7931,9 @@ Remarks:
     - Only the administrator of the server can run the 'cm ^unlock' command.
     - To specify a GUID, the format should be the 32-digit separated by
       hyphens format (optionally enclosed in braces):
-
         {00000000-0000-0000-0000-000000000000}
-      or 00000000-0000-0000-0000-000000000000
+        or
+        00000000-0000-0000-0000-000000000000
 
 Examples:
 
@@ -7476,10 +7993,10 @@ Options:
     --^recursewk             Updates all the workspaces found within the current
                             path. Useful to update all the workspaces contained
                             in a specific path.
-    --^skipchangedcheck      The update checks if there are local changes in your
-                            workspace before starting. If you always checkout 
-                            before modifying a file, you can use this check and 
-                            speed up the operation.
+    --^skipchangedcheck      Checks if there are local changes in your workspace
+                            before starting. If you always checkout before
+                            modifying a file, you can use this check and speed
+                            up the operation.
     --^silent                Does not show any output.
     --^verbose               Shows additional information.
     --^xml                   Prints the output in XML format to the standard output.
@@ -7695,8 +8212,9 @@ Options:
 == CMD_HELP_WORKSPACE_LIST ==
 Remarks:
 
-    This command accepts a format string to show the output.
-    The output parameters of this command are the following:
+    Output format parameters (--^format option):
+        This command accepts a format string to show the output.
+        The output parameters of this command are the following:
 
         {0} | {^wkname}          Workspace name.
         {1} | {^machine}         Client machine name.
@@ -8121,3 +8639,115 @@ Usage:
                     requested.
                     In Bash, it is at the COMP_POINT environment variable.
                     In PowerShell, it is at the $cursorPosition variable.
+
+== CMD_DESCRIPTION_API ==
+Starts a local HTTP server that listens for REST API requests.
+
+== CMD_USAGE_API ==
+Usage:
+
+    cm ^api [(-^p|--^port)=<portnumber>] [(-^r|--^remote)]
+
+Options:
+
+    -^p | --^port         Tells the server to listen on port <portnumber>
+                        instead of 9090.
+
+    -^r | --^remote       Allows incoming remote connections. This means
+                        connections that come from other hosts instead of the
+                        local one.
+
+== CMD_HELP_API ==
+Remarks:
+
+    The cm ^api command allows programmers to perform Plastic client operations
+    in their machines.
+    Read the Plastic SCM API Guide for more information:
+    https://www.plasticscm.com/documentation/restapi/plastic-scm-version-control-rest-api-guide
+
+    By default, the API listens for local connections only, on port 9090.
+
+    Press the Enter key to stop the server.
+
+Examples:
+
+    cm ^api
+    (Starts the API listening on port 9090, local connections only.)
+
+    cm ^api -^r
+    (Starts the API listening on port 9090, allowing any incoming connection.)
+
+    cm ^api --^port=15000 -^r
+    (Starts the API listening on port 15000, allowing any incoming connection.)
+
+== CMD_DESCRIPTION_CONFIGURECLIENT ==
+Configures the Plastic SCM client for the current machine user to work with a default server.
+
+== CMD_USAGE_CONFIGURECLIENT ==
+Usage:
+    cm ^configure [--^language=<language> --^workingmode=<mode> [AuthParameters] 
+                 --^server=<server> [--^port=<port>]] [--^clientconf=<clientconfpath>]
+
+    --^language          Available languages:
+                        en (English)
+                        es (Spanish)
+
+    --^workingmode       Available users/security working modes:
+                        NameWorkingMode (Name)
+                        NameIDWorkingMode (Name + ID)
+                        LDAPWorkingMode (LDAP)
+                        ADWorkingMode (Active Directory)
+                        UPWorkingMode (User and password)
+                        SSOWorkingMode (Single Sign On)
+
+    AuthParameters      Auth parameters (only for ^LDAPWorkingMode and ^UPWorkingMode):
+                        --^user=<user>
+                        --^password=<password>
+
+                        Single Sign On parameters (only for ^SSOWorkingMode):
+                        --^user=<user>
+                        --^token=<token>
+
+    --^server            Plastic SCM server IP / address
+
+    --^port              Plastic SCM server port
+                        (port optional for Cloud servers)
+
+    --^clientconf        File path used to create the configuration file (optional)
+                        Argument can be a full path, a filename or a directory.
+                        If this parameter is not specified, the default directory for
+                        'client.conf' file would be:
+                        * '%LocalAppData%\plastic4' on Windows
+                        * '$HOME/.plastic4' on linux/macOS
+
+                        Examples:
+                        
+                        --^clientconf=c:/path/to/myclient.conf
+                        (Specified path will be used to create the client configuration file)
+
+                        --^clientconf=myclient.conf
+                        (File myclient.conf inside default config directory will be used)
+
+                        --^clientconf=c:/exisitingDirectory
+                        (Default filename, client.conf, in specified directory will be used)
+
+== CMD_HELP_CONFIGURECLIENT ==
+Remarks:
+
+    The cm ^configure command cannot be used on Cloud Edition or DVCS Edition of Plastic SCM.
+    Use 'plastic --configure' instead.
+
+Examples:
+
+    cm ^configure 
+    (runs the interactive Plastic SCM client configuration command)
+
+    cm ^configure --^language=^en --^workingmode=^LDAPWorkingMode --^user=^jack --^password=^01234 \
+                 --^server=^plastic.mymachine.com --^port=^8084
+    (configures the Plastic SCM client with the specified parameters and creates the 'client.conf'
+    configuration file in the default directory).    
+
+    cm ^configure --^language=^en --^workingmode=^NameWorkingMode --^server=^plastic.mymachine.com \
+                 --^port=^8084 --^clientconf=^clientconf_exp.conf
+    (configures the Plastic SCM client with the specified parameters and creates the 'client.conf'
+    configuration file in the specified path).

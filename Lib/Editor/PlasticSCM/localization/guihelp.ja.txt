@@ -103,7 +103,7 @@
 
 ファイルを無視するには、右クリックして「無視リストに追加」を選択します。
 
-無視したファイル、非表示の変更、その他の設定オプションの詳細については、[link:https://plasticscm.com/download/help/ignored-hidden-etc.html]こちら[/link]をご覧ください。
+無視したファイル、非表示の変更、その他の設定オプションの詳細については、[link:https://plasticscm.com/download/help/ignored-hidden-etc]こちら[/link]をご覧ください。
 
 == PlasticPendingChangesDotPrivate ==
 [title]一部のファイルを .private に名前変更する必要がありました[/title]
@@ -479,7 +479,7 @@ Cloud でホストされたリポジトリを、直接チェックイン/更新 
 
 必要なのは、いつものように「競合を解決」をクリックすることだけです。
 
-しかし、初めて再帰的マージに遭遇した場合は、最初に[link:https://plasticscm.com/help/recursivemerge]再帰的マージの詳細を学習しておく[/link]ことをお勧めします。
+しかし、初めて再帰的マージに遭遇した場合は、最初に[link:https://plasticscm.com/download/help/recursivemerge]再帰的マージの詳細を学習しておく[/link]ことをお勧めします。
 
 それが終われば、マージの勉強は完了です。
 
@@ -506,7 +506,7 @@ Cloud でホストされたリポジトリを、直接チェックイン/更新 
 
 * ロックを設定しましょう。おそらく、.prefab を排他的にロックしたいとお考えのことでしょう。[action:WebAdminOpenInLocks]WebAdmin に移動して、ロックを設定しましょう[/action]。
 * チェックアウトを使用しましょう。ロックするためには、ファイルを編集前にチェックアウト (ロック) する必要があります。チェックアウトは、「ファイルを変更しようとしている」ことを Plastic に知らせるためのアクションです。これは各ファイルの右クリックメニューから実行できます。
-* 無視するファイルを設定しましょう。バージョン管理に追加したくないファイルがある場合、[action:IgnoreConfCreateUnity]こちらをクリック[/action]して、Unity 用の ignore.conf を作成しましょう。[link:https://plasticscm.com/download/help/ignored-hidden-etc.html]ignore.conf についての詳細はこちらをご覧ください[/link]。
+* 無視するファイルを設定しましょう。バージョン管理に追加したくないファイルがある場合、[action:IgnoreConfCreateUnity]こちらをクリック[/action]して、Unity 用の ignore.conf を作成しましょう。[link:https://plasticscm.com/download/help/ignored-hidden-etc]ignore.conf についての詳細はこちらをご覧ください[/link]。
 
 == PlasticWkExplPendingChangesVisualStudioFirstTime ==
 [title]Visual Studio プロジェクトで作業するためのヒント[/title]
@@ -546,20 +546,20 @@ Cloud でホストされたリポジトリを、直接チェックイン/更新 
 == PlasticNewVersionAvailableWithDownloadAction ==
 [title]新しいバージョンが使用可能になっています[/title]
 
-[bold]新しい {バージョン} - {リリース日付}[/bold] ({バージョン遅れ})
+[bold]新しい {version} - {releaseDate}[/bold] ({versionsBehind})
 
 [action:DownloadNewVersion]ダウンロード[/action] - [link:{releaseNotesLink}]リリースノートを見る[/link]
 
-{リリースノート}
+{releaseNotes}
 
 == PlasticNewVersionAvailable ==
 [title]新しいバージョンが使用可能になっています[/title]
 
-[bold]新しい {バージョン} - {リリース日付}[/bold] ({バージョン遅れ})
+[bold]新しい {version} - {releaseDate}[/bold] ({versionsBehind})
 
 [link:{downloadLink}]ダウンロード[/link] - [link:{releaseNotesLink}]リリースノートを見る[/link]
 
-{リリースノート}
+{releaseNotes}
 
 == PlasticPendingChangesMerge ==
 [title]チェックインの準備ができたマージがあります[/title]

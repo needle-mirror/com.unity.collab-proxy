@@ -73,6 +73,14 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
             throw new NotImplementedException();
         }
 
+        List<ErrorMessage> IPlasticAPI.ApplyPartialShelveset(
+            WorkspaceInfo wkInfo,
+            ChangesetInfo shelveInfo,
+            UpdateProgress udpateProgress)
+        {
+            throw new NotImplementedException();
+        }
+
         bool IPlasticAPI.CheckAttributeExists(RepositorySpec repSpec, string attributeName)
         {
             throw new NotImplementedException();
@@ -159,6 +167,11 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
         }
 
         WorkspaceInfo IPlasticAPI.CreateWorkspace(string wkPath, string wkName, string repName)
+        {
+            throw new NotImplementedException();
+        }
+
+        WorkspaceInfo IPlasticAPI.CreateTemporaryWorkspace(RepositorySpec repSpec)
         {
             throw new NotImplementedException();
         }
@@ -1124,6 +1137,16 @@ namespace Unity.PlasticSCM.Tests.Editor.Mock
             throw new NotImplementedException();
         }
 
+        ConfigurationTreeNode IPlasticAPI.GetHeadConfigurationTree(WorkspaceInfo wkInfo)
+        {
+            throw new NotImplementedException();
+        }
+        
+        TreeChangedNode IPlasticAPI.GetChangesTree(WorkspaceInfo wkInfo)
+        {
+            throw new NotImplementedException();
+        }     
+        
         BranchInfo mWorkingBranch;
         Dictionary<string, WorkspaceTreeNode> mWorkspaceTreeNodes =
             new Dictionary<string, WorkspaceTreeNode>();

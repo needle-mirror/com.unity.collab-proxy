@@ -1,4 +1,4 @@
-﻿== AclNotFound ==
+== AclNotFound ==
 Está trabajando con objetos desactualizados. Puede que su cliente o su espacio de trabajo este desactualizado, por favor actualicelo.
 
 == AclidNotFound ==
@@ -64,6 +64,9 @@ No se puede crear una rama desde un shelve.
 == BranchAlreadyExists ==
 La rama {0} ya existe.
 
+== CannotArchiveNotUploadedRevision ==
+La operación de archive no puede continuar ya que los datos solicitados no fueron confirmados en el blob storage aún. Por favor, espere unos segundos e inténtelo de nuevo.
+
 == CannotCheckSecurityPathInIncompleteCset ==
 No se puede comprobar la seguridad al no poder cargar el path del item:{0} en el changeset cs:{1} (br:{2}): el changeset no ha sido replicado. Por favor, replique el changeset especificado e inténtelo de nuevo.
 
@@ -74,7 +77,10 @@ No se pudo conectar al servidor {0}
 Error: no se pudo crear el directorio para las pruebas de disco. {0}
 
 == CannotCreateSymlink ==
-The symlink cannot be created.
+No se pudo crear el symlink.
+
+== CannotCreateWindowsSymlink ==
+No se puede crear un symlink de '{0}' a '{1}'. Puede activar el 'modo de programador' en su versión de Windows. También puede desactivar completamente la creación de symlinks agregando '<EnableSymlinkSupportOnWindows>no</EnableSymlinkSupportOnWindows>' a su client.conf.
 
 == CannotCreateXlink ==
 No puede crearse el xlink porque ya hay un ítem en la ruta especificada: {0}
@@ -286,6 +292,15 @@ La versión del cliente ({0}) no es la misma que la versión del servidor ({1}).
 
 == CloudForbiddenError ==
 Los datos no pueden ser leídos/escritos de Plastic Cloud. Hubo un problema con la autenticación. Probablemente la fecha local (de su cliente o servidor) sea incorrecta. Corríjala para arreglar el problema.
+
+== CloudWkAlreadyExists ==
+El cloud workspace {0} ya existe.
+
+== CloudWkMountNotFound ==
+La unidad montada {0} no existe.
+
+== CloudWkNotFound ==
+No se ha podido encontrar el cloud workspace {0}.
 
 == CmdCantMove ==
 No se puede mover {0} a {1}.
@@ -505,6 +520,9 @@ El fichero {0} ya existe.
 
 == FilesIdentical ==
 Las dos revisiones son idénticas.
+
+== FindSortingPaginationNotSupported ==
+El servidor {0} no soporta ordenación ni paginación. Por favor, actualice el servidor.
 
 == FipsCompliantServerEncryptionNoAllowed ==
 El servidor '{0}' requiere cifrado, pero no está permitido para servidores que cumplen FIPS. Por favor, contacte con support@plasticscm.com para más información.
@@ -1046,6 +1064,9 @@ Los nombres de módulo siguen la forma 'repo/modulo'. Ejemplo: default/module2.
 == RepAlreadyExists ==
 El repositorio {0} ya existe en el servidor {1}.
 
+== RepDoesntExist ==
+El repositorio {0} no existe. Probablemente haya sido eliminado y este trabajando con metadatos antiguos en el cliente.
+
 == RepDoesntHaveRootItem ==
 Error grave: El repositorio no contiene un ítem raíz.
 
@@ -1495,6 +1516,9 @@ Especificación de objeto incorrecta: {0}
 
 == NotValidCmPath ==
 La ruta especificada: {0} no es una ruta de servidor válida.
+
+== FindOrderbyNotValid  ==
+El tipo de objeto {0} no pueder ordenar por {1}.
 
 == FindTypeNotExists ==
 El tipo de objeto {0} no existe

@@ -2,7 +2,7 @@
 The revision format specified is not valid
 
 == AcceptResults ==
-Do you want to accept the results? (Y/N): 
+Do you want to accept the results? (Y/N):
 
 == ActivatedUsers ==
 Total active users:     {0}
@@ -26,7 +26,7 @@ Keep source changes (preserve the add and discard the move)
 Keep destination changes (preserve the move and discard the add)
 
 == AddNotApplicable ==
-The new item cannot be loaded in the workspace. Probably, the path is already used. Please unload the item (from the configuration view) and retry the operation.
+The new item cannot be loaded in the workspace. Probably, the path is already used. Please unload the item (from the configuration view) and retry the operation: '{0}'.
 
 == Added ==
 Added
@@ -86,10 +86,10 @@ allows the user to apply attributes
 allows the user to apply labels
 
 == AskDeleteWorkspace ==
-No workspace specified. Do you want to delete the current workspace? (Y/N): 
+No workspace specified. Do you want to delete the current workspace? (Y/N):
 
 == AskDeleteDynamicWorkspace ==
-The workspace is dynamic. You will LOSE all of the private items in the workspace if you delete it. Do you want to continue? (Y/N): 
+The workspace is dynamic. You will LOSE all of the private items in the workspace if you delete it. Do you want to continue? (Y/N):
 
 == AttValueField ==
 Attribute value
@@ -149,7 +149,7 @@ Changesets involved
 The changesets to push could not be correctly sorted
 
 == BisyncCheckCommit ==
-Check commit 
+Check commit
 
 == BisyncCommitCheckFailed ==
 Commit check failed
@@ -287,7 +287,7 @@ The branch '{0}' has been deleted in remote repository and will be skipped.
 == BisyncRemoteError ==
 
       Remote error: {0}
-    
+
 
 == BisyncRemoteMappingSkip ==
 The branch '{0}' came from a remote tag mapping and it will be skipped.
@@ -323,7 +323,7 @@ The git type {0} has no builder
 Upload complete.
 
 == BisyncUploading ==
-Uploading... 
+Uploading...
 
 == BisyncWarnPushingCs ==
 Warn pushing cs:{0}. {1}\n{2}
@@ -436,6 +436,9 @@ An item has been {0} on the source, and the destination has deleted the item or 
 == ChangeDependencies ==
 Change: {0}. Dependencies:
 
+== ChangedItemAlreadyDeleted ==
+The item won't be downloaded because it is already deleted in the workspace: '{0}'. Please undo or checkin the local change and retry the operation.
+
 == ChangeReviewNotFound ==
 The following review change requests (specified in the checkin comment) cannot be found or are already applied in a previous changeset:{0}{1}
 
@@ -528,6 +531,21 @@ Uploading file data
 
 == CheckinStatusValidating ==
 Validating checkin data
+
+== ShelveStatusStarting ==
+Shelve operation starting...
+
+== ShelveStatusUploading ==
+Uploading file data
+
+== ShelveStatusConfirming ==
+Confirming shelve operation
+
+== ShelveStatusRestoringPermissions ==
+Restoring file access
+
+== ShelveStatusFinished ==
+Shelve finished
 
 == CheckoutCannotBeSaved ==
 Content for item {0} cannot be saved.
@@ -632,7 +650,7 @@ Unknown repository server
 
     Note: we changed this behavior to avoid issues to new users, although it is
     not dangerous to enable it if you are familiar with how merge works.
-    
+
 
 == CmdErrorNoSuchBranch ==
 Branch {0} doesn't exist in repository {1}.
@@ -720,6 +738,9 @@ Check database integrity may take some time. Please wait...
 
 == CmdMessageProceedCheckin ==
 The selected items are about to be checked in. Please wait ...
+
+== CmdMessageProceedShelveset ==
+The selected items are about to be shelved. Please wait ...
 
 == CmdMessageProceedCheckout ==
 The selected items are about to be checked out. Please wait ...
@@ -843,6 +864,45 @@ http://gnuwin32.sourceforge.net/packages/patch.htm.
 Once installed, please add it to the PATH environment variable or use the
 --tool parameter to specify the location of patch.exe.
 
+== CmdProfileAuthenticationModeError ==
+Could not retrieve the authentication mode from '{0}'
+
+== CmdProfileCreateSuccess ==
+Profile '{0}' correctly created
+
+== CmdProfileEnterServerAddress ==
+Enter server address
+
+== CmdProfileInvalidServerAddress ==
+'{0}' is not a valid server address
+
+== CmdProfileInvalidWorkingMode ==
+Invalid working mode '{0}'
+
+== CmdProfileNoProfiles ==
+There are no defined connection profiles
+
+== CmdProfileRemoveByIndexSuccess ==
+Profile '{0}' correctly deleted
+
+== CmdProfileRemoveByIndexFailure ==
+There is no profile with index {0}
+
+== CmdProfileRemoveByNameSuccess ==
+Profile '{0}' correctly deleted
+
+== CmdProfileRemoveByNameFailure ==
+There is no profile with name '{0}'
+
+== CmdProfileRetry ==
+Do you want to retry?
+
+== CmdProfileSpecifyOnlyPasswordOrToken ==
+Mst specify either '--password' or '--token', but not both nor none
+
+== CmdProfileUnknownWorkingMode ==
+Unknown working mode '{0}'
+
 == CmdRepServerResultCheckdb ==
 Repository Server: {0}
 
@@ -882,7 +942,7 @@ Comment
 # Please enter a checkin comment for your changes.
 # A checkin comment has a maximum of 1000 characters.
 # Lines starting with "#" will be ignored.
-  
+
 
 == Committing ==
 Checking in
@@ -891,7 +951,7 @@ Checking in
 allows adding new lock rules
 
 == ConfirmNewPassword ==
-Confirm password: 
+Confirm password:
 
 == ConnectTubeSucceeded ==
 The Plastic SCM server ({0}) was successfully connected to Plastic Tube.
@@ -903,7 +963,7 @@ Test connection encountered a problem trying to connect to Plastic SCM server
 Test connection executed successfully
 
 == ContinueSolving ==
-{0} conflicts left, do you want to continue solving conflicts? (Y/N): 
+{0} conflicts left, do you want to continue solving conflicts? (Y/N):
 
 == ContinueWithPendingChangesQuestion ==
 There are changed files in your workspace. You can cancel the switch operation in order to check the changed files or you can continue with the operation. If you continue with the switch operation, your changed files won't be lost, and will still appear as changed after the switch operation. Do you want to continue with the switch operation? (y/n)
@@ -974,6 +1034,9 @@ Delete/Change conflict
 == DeleteAndMove ==
 Delete/Move conflict
 
+== DeleteCannotBeApplied ==
+The delete operation ({0}) cannot be applied because the item cannot be found in the workspace.
+
 == DeleteChangeConflictActions11 ==
 Keep source changes (preserve the delete and discard the add)
 
@@ -1024,6 +1087,9 @@ Deleted {0}
 == DeleteDeleteWarningMessage ==
 This item has been discarded because it has been deleted on both source and destination
 
+== DeleteItemAlreadyChanged ==
+The item won't be deleted because it is already changed (checked-out, moved or reverted) in the workspace: '{0}'. Please undo or checkin the local change and retry the operation.
+
 == DeleteMoveConflictActions1 ==
 Keep source changes (preserve the delete and discard the move)
 
@@ -1040,7 +1106,7 @@ An item has been deleted on the source and it was moved on the destination.
 Deleted {0}
 
 == DeleteNotApplicable ==
-The item cannot be unloaded because the item wasn't found in the workspace. Your workspace might be corrupt. Please contact support. 
+The item cannot be unloaded because the item wasn't found in the workspace. Your workspace might be corrupt. Please contact support: '{0}'.
 
 == DeletePrivateDeletesSummary ==
 Deleted {0} individual files and {1} directory trees.
@@ -1217,7 +1283,7 @@ Source and destination repositories are the same ('{0}').
 Could not determine source repository for the clone operation from '{0}'.
 
 == ErrorExecutingQuery ==
-Error executing query: 
+Error executing query:
 
 == ErrorImportingCommit ==
 The changeset '{0}' could not be imported. Error: {1} Please contact with the support team.
@@ -1383,7 +1449,7 @@ The file {0} was modified on source and will replace the destination version
       # Examples:
       #     .cpp:txt
       #     .jpg:bin
-    
+
 
 == Files ==
 files
@@ -1574,6 +1640,9 @@ The item {0} has been added on source and will be added as result of the merge
 == ItemAlreadyChanged ==
 The item won't be downloaded because it is already changed (checked-out, locally changed, deleted, moved or reverted) in the workspace: '{0}'. Please undo or checkin the local change and retry the operation.
 
+== ItemAlreadyLoaded ==
+The item won't be downloaded because it is already loaded in the workspace with a different version: '{0}'. Please unload the item and retry the operation.
+
 == ItemDeletedSource ==
 The item {0} has been deleted on source and will be deleted as result of the merge
 
@@ -1585,6 +1654,9 @@ The item {0} has been moved to {1} on source and will be moved as result of the 
 
 == ItemNotFound ==
 Can't find the item {0}
+
+== ItemPathAlreadyUsed ==
+The item won't be downloaded/moved because there is another item loaded in the same path: '{0}'. Please unload the item and retry the operation.
 
 == ItemPathAlreadyUsedByChange ==
 The item won't be downloaded/moved because there is an existing change at '{0}'. Please undo the local change, unload the item (from the configuration view) and retry the operation.
@@ -1617,13 +1689,13 @@ Licensed to:            {0}
 Total licensed users:   {0}
 
 == ListFindObjects ==
-Available objects and attributes: 
+Available objects and attributes:
 
 == ListPermissionsKey ==
-Available permissions: 
+Available permissions:
 
 == ListTriggerTypes ==
-Available trigger types: 
+Available trigger types:
 
 == LkNameField ==
 Link name
@@ -1752,19 +1824,19 @@ controls the merge from operation
 Merging file {0} of {1}: {2}
 
 == MessageBranchSelector ==
-Select a branch to get revisions (/main if none): 
+Select a branch to get revisions (/main if none):
 
 == MessageCheckingIn ==
-Checking in {0} ... 
+Checking in {0} ...
 
 == MessageCheckingOut ==
-Checking out {0} ... 
+Checking out {0} ...
 
 == MessageCoSelector ==
-Select a branch where checkouts will go (/main if none): 
+Select a branch where checkouts will go (/main if none):
 
 == MessageContinueWithSelector ==
-This is the resulting selector. Make it active? (Y/N): 
+This is the resulting selector. Make it active? (Y/N):
 
 == MessageDone ==
 Done
@@ -1773,13 +1845,13 @@ Done
 The file {0} does not exist.
 
 == MessageLabelSelector ==
-Select a label to get revisions from: 
+Select a label to get revisions from:
 
 == MessageMoreRepositories ==
-More Repositories? (Y/N): 
+More Repositories? (Y/N):
 
 == MessageNoRepositories ==
-There are no repositories in this server. 
+There are no repositories in this server.
 
 == MessageNumItemSelector ==
 Item Selector #{0} for Repository Selector #{1}
@@ -1788,10 +1860,10 @@ Item Selector #{0} for Repository Selector #{1}
 Repository Selector #{0}
 
 == MessageRepositoryName ==
-Select a repository name: 
+Select a repository name:
 
 == MessageRepositoryServer ==
-Select a repository server: 
+Select a repository server:
 
 == MessageSelectorNotSet ==
 The selector has not been set.
@@ -1834,6 +1906,9 @@ Move/Add conflict
 
 == MoveAndDelete ==
 Move/Delete conflict
+
+== MoveCannotBeApplied ==
+The move operation ({0} -> {1}) cannot be applied because the item or the destination parent cannot be found in the workspace.
 
 == MoveDeleteConflictActions1 ==
 Keep source changes (preserve the move and discard the delete)
@@ -1975,7 +2050,7 @@ Unknown
       Repository: {0}
 Branch: {1}
       Label: {2}
-    
+
 
 == Multiple ==
 Multiple
@@ -1990,10 +2065,10 @@ The name {0} is not valid anymore
 The new name parameter must contain a branch name and not a branch specification
 
 == NewNameFor ==
-New name for {0}: 
+New name for {0}:
 
 == NewNameInstead ==
-New name instead of {0}: 
+New name instead of {0}:
 
 == No ==
 No
@@ -2063,6 +2138,12 @@ Starting Push
 
 == Owner ==
 Owner
+
+== ParentItemDeleted ==
+The item won't be downloaded because its parent directory was deleted in the workspace: '{0}'.
+
+== ParentItemDiscarded ==
+The item '{0}' won't be downloaded because its parent directory couldn't be downloaded either.
 
 == PasswordCantBeEmpty ==
 The password can't be empty. Password not set.
@@ -2365,7 +2446,7 @@ Creating a new support bundle...
 Remember you can reach us anytime at https://www.plasticscm.com/support.
 Don't hesitate to get in touch if you have any questions, suggestions
 or need guidance.
-    
+
 
 == SyncAlreadyReplicated ==
 The sync cannot start because the target repository was replicated from a repository synchronized with git. The repository originally synchronized is '{0} - {1}'. Please contact support for further info.
@@ -2383,10 +2464,10 @@ The Plastic SCM server ({0}) is connected to Plastic Tube.
 The Plastic SCM server ({0}) is not connected to Plastic Tube.
 
 == TypeNewPassword ==
-New password: 
+New password:
 
 == TypeOldPassword ==
-Old password: 
+Old password:
 
 == UnableToRemoveCset ==
 The selected changeset {0} could not be deleted.
@@ -2536,6 +2617,9 @@ A Xlink has been changed on source and destination.
 
 == XlinkConflictSourceOperation ==
 Changed Xlink to: {0}
+
+== XlinkPointsToShelveTarget ==
+The Xlink '{0}' won't be downloaded because it was created with new content inside. This is not supported yet.
 
 == XlinkWritableConflict ==
 Xlink missing ancestor conflict

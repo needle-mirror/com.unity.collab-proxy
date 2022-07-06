@@ -213,6 +213,9 @@ The changeset '{0}' content cannot be loaded.
 == DaysAgo ==
 {0} days ago
 
+== OneDayAgo ==
+1 day ago
+
 == DeleteNotAllowedTransfomerRuleInside ==
 The item '{0}' cannot be deleted because it contains the transformer rule '{1}'.
 
@@ -275,6 +278,9 @@ Incorrect "--branches" parameter. Please check that there aren't whitespaces bet
 == ErrorArchiveCantRetrieveData ==
 Can't retrieve archived volume, please configure the externaldata.conf file with the right paths to locate the archived data. Base file name: {0}. Comment: {1}. File: {2}
 
+== ErrorArchiveCantRetrieveTrimmedData ==
+Can't retrieve the content of the file '{0}' because the revision (id:{1}) was trimmed and its content is no longer available.
+
 == ErrorCannotRenameDynamicWk ==
 Dynamic workspaces cannot be renamed.
 
@@ -292,6 +298,9 @@ Differences between items of different types cannot be calculated
 
 == ErrorEmptySelector ==
 Selector cannot be empty.
+
+== ErrorInvalidPath ==
+The given path's format is not supported.
 
 == ErrorMoveSrcDstEqual ==
 Unable to move {0}. The source path and destination path are the same
@@ -345,7 +354,10 @@ Cannot perform a fast update since there are pending merge links. Please review 
 Unable to run fast update in the workspace: '{0}'. Please undo all local changes, disable the fast update option and launch the update again.
 
 == FieldTooLong ==
-{0} is too long. Its current size is {1}, whereas the maximum allowed size is {2}
+{0} is too long. Its current length is {1}, whereas the maximum allowed length is {2}
+
+== FieldEmpty ==
+{0} cannot be empty.
 
 == FileTypesFileNotFound ==
 Cannot find filetypes file {0}
@@ -379,6 +391,9 @@ The update operation cannot continue. The target changeset must be in the curren
 
 == HoursAgo ==
 {0} hours ago
+
+== OneHourAgo ==
+1 hour ago
 
 == IncomingChangesCannotCalculateMerge ==
 The incoming changes cannot be calculated. Please check if the workspace changeset was deleted or contact support for further info.
@@ -480,6 +495,9 @@ The mount point '{0}' for repository {1} is not valid on workspace '{2}'. It cou
 == InvalidMoveDstPriv ==
 Can't move a controled item to a private directory
 
+== InvalidWorkingMode ==
+Invalid working mode: {0}
+
 == IsNotAnXlink ==
 '{0}' is not an xlink.
 
@@ -544,7 +562,7 @@ The item '{0}' cannot be moved to '{1}'. The path '{1}' is already in use in the
 The item '{0}' cannot be moved because it has been transformed by the rule '{1}'. The merge cannot be completed with the current transformer rules. Please remove the involved transformer rule (or use a not transformed workspace) and try the merge again.
 
 == MergeNeeded ==
-A merge is needed from changeset cs:{0}@rep:{2}@repserver:{3}(mount:{4}) to changeset cs:{1}@rep:{2}@repserver:{3}(mount:{4}) (the changeset you are currently loading) in order to checkin. The checkin operation cannot continue. It is necessary to solve the conflicts by merging your current workspace contents with the latest contents of the branch you are currently working on. Then, you can retry the checkin operation.
+A merge is needed from changeset 'cs:{0}@rep:{2}@repserver:{3}(mount:{4})' to changeset 'cs:{1}@rep:{2}@repserver:{3}(mount:{4})' in order to checkin. The checkin operation cannot continue. Please run 'cm merge "cs:{0}@rep:{2}@repserver:{3}" --merge' at '{5}' to solve the conflicts. Then, you can retry the checkin operation.
 
 == MergeRestorerDeletedPathInUse ==
 The deleted path by the transformer rule '{0}' has been reused by the transformer rule '{1}', so the deleted content cannot be restored. The merge cannot be completed with the current transformer rules. Please remove the involved transformer rule (or use a not transformed workspace) and try the merge again.
@@ -572,6 +590,15 @@ Error in merge tool "{0}" execution. Merge tools in client.conf are incorrectly 
 
 == MinutesAgo ==
 {0} minutes ago
+
+== OneMinuteAgo ==
+1 minute ago
+
+== MissingUserOrPassword ==
+You need to specify user (--username) and password (--password) for working mode '{0}'.
+
+== MissingUserOrToken ==
+You need to specify user (--username) and token (--token) for working mode '{0}'.
 
 == MkNameField ==
 Label name
@@ -729,6 +756,12 @@ Current workspace selector doesn't contain any rule for repository {0}
 == SwitchSelectorErrorObjectsOnSameRep ==
 More than one branch or label selected for the same repository
 
+== PartialSwitchToLabelErrorNotSupported ==
+Switch to label not supported for partial workspaces
+
+== SwitchOperationNotSupported ==
+Switch operation not supported
+
 == SyncBranchWithMultipleHeads ==
 The branch {0} has more than one head. Please merge it to be able to continue synchronizing
 
@@ -782,6 +815,9 @@ The language of the selected file is not currently supported.
 
 == UnsupportedMergeType ==
 Unsupported merge type
+
+== UnsupportedWorkingModeArgument ==
+Working mode '{0}' is not supported.
 
 == UpPasswordCorrupt ==
 Parameter 'password' is corrupt in the client config file.

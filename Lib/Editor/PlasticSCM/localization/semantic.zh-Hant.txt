@@ -302,12 +302,6 @@ SemanticMerge 工具用法
 == GetLicense ==
 取得授權
 
-== GetUpdates ==
-取得更新
-
-== GetUpdatesExplanation ==
-Semanticmerge 有新版本，歡迎取得!
-
 == ShowUserGuideMenuItem ==
 使用者指南
 
@@ -319,9 +313,6 @@ https://semanticmerge.com/documentation
 
 == OpenSamplesDirectoryMenuItem ==
 開啟樣本
-
-== GiveUsFeedbackMenuItem ==
-傳送意見回饋
 
 == FollowSemanticmergeMenuItem ==
 關注 @semanticmerge
@@ -637,7 +628,7 @@ https://semanticmerge.com/documentation
 顯示剖析錯誤
 
 == ReleaseNotesBaseUrl ==
-https://users.semanticmerge.com/releasenotes/
+https://www.plasticscm.com/download/releasenotes
 
 == MultifileCurrentFile ==
 檔案 {1} 之 {0}:

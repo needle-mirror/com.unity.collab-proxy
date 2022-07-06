@@ -1,6 +1,24 @@
 # Changelog
 All notable changes to this package will be documented in this file.
 
+## [1.17.2] - 2022-07-06
+
+Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!
+If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
+Removing a previously added Plastic SCM Asset Store Plug-In:
+- Select the PlasticSCM folder in the Assets\Plugins folder on the Project tab, then click Edit > Delete
+- Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
+
+### Added
+- Added notification banner on the status bar for live updates
+
+### Changed
+- Renamed "Invite members to workspace" option to "Invite members to organization"
+
+### Fixed
+- Fixed not being able to view changesets in a Gluon workspace
+- Fixed not being able to insert carriage return in checkin dialog
+
 ## [1.17.1] - 2022-06-21
 
 Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!
@@ -10,7 +28,6 @@ Removing a previously added Plastic SCM Asset Store Plug-In:
 - Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
 
 ### Fixed
-
 - Fixed missing references in synced prefabs
 
 ## [1.17.0] - 2022-06-13
@@ -22,12 +39,10 @@ Removing a previously added Plastic SCM Asset Store Plug-In:
 - Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
 
 ### Added
-
 - Added option to enable changelists and display them in pending changes tab
 - Added changelist related options to pending changes context menu
 
 ### Fixed
-
 - Fixed editor hangs when there is no network available
 - Fixed existing checkout has locked the workspace error
 - Fixed checkin fails over unstable connection
@@ -41,7 +56,6 @@ Removing a previously added Plastic SCM Asset Store Plug-In:
 - Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
 
 ### Fixed
-
 - Fixed editor hang when entering Play Mode
 
 ## [1.15.17] - 2022-04-27

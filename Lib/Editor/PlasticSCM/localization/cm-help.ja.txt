@@ -8121,3 +8121,73 @@ Xlink の詳細を作成、編集、または表示します。
                     位置。
                     Bash では、これは COMP_POINT 環境変数の位置です。
                     PowerShell では、これは $cursorPosition 変数の位置です。
+
+== CMD_DESCRIPTION_CONFIGURECLIENT ==
+Configures the Plastic SCM client for the current machine user to work with a default server.
+
+== CMD_USAGE_CONFIGURECLIENT ==
+使用方法:
+    cm ^configure [--^language=<language> --^workingmode=<mode> [AuthParameters] 
+                 --^server=<server> [--^port=<port>]] [--^clientconf=<clientconfpath>]
+    
+    --^language          使用可能な言語:
+                        en (English)
+                        es (Spanish)
+
+    --^workingmode       使用可能なユーザー/セキュリティ動作モード:
+                        NameWorkingMode (Name)
+                        NameIDWorkingMode (Name + ID)
+                        LDAPWorkingMode (LDAP)
+                        ADWorkingMode (Active Directory)
+                        UPWorkingMode (User and password)
+                        SSOWorkingMode (Single Sign On)
+                        
+    AuthParameters      認証パラメーター (^LDAPWorkingMode および ^UPWorkingMode の場合のみ):
+                        --^user=<user>
+                        --^password=<password>
+
+                        Single Sign On parameters (only for ^SSOWorkingMode):
+                        --^user=<user>
+                        --^token=<token>
+                        
+    --^server            Plastic SCM server IP / address
+    
+    --^port              Plastic SCM server port
+                        (port optional for Cloud servers)
+
+    --^clientconf        設定ファイルの作成に使用するファイルパス (省略可能)
+                        引数はフルパス、ファイル名またはディレクトリにすることができます。
+
+                        例:
+
+                        --^clientconf=c:/path/to/myclient.conf
+                        (指定されたパスはクライアント設定ファイルの作成に使用されます)
+
+                        --^clientconf=myclient.conf
+                        (デフォルト設定ディレクトリ内のファイル myclient.conf が使用されます)
+
+                        --^clientconf=c:/exisitingDirectory
+                        (指定されたディレクトリ内のデフォルトファイル名、client.conf が使用されます)
+
+== CMD_HELP_CONFIGURECLIENT ==
+備考:
+
+    The 'cm ^configure' command cannot be used on Cloud Edition or DVCS Edition of Plastic SCM.
+    Use 'plastic --configure' instead.
+
+例:
+
+    cm ^configure 
+    (runs the interactive Plastic SCM client configuration command)
+
+    cm ^configure --^language=^en --^workingmode=^LDAPWorkingMode --^user=^jack --^password=^01234 \
+                 --^server=^plastic.mymachine.com --^port=^8084
+    (configures the Plastic SCM client with the specified parameters and creates the 'client.conf'
+    configuration file in the default directory).
+    (Cloud サーバーのオプションのポート)
+
+    cm ^configure --^language=^en --^workingmode=^NameWorkingMode --^server=^plastic.mymachine.com \
+                 --^port=^8084 --^clientconf=^clientconf_exp.conf
+    (configures the Plastic SCM client with the specified parameters and creates the 'client.conf'
+    configuration file in the specified path).
+    (Cloud サーバーのオプションのポート)

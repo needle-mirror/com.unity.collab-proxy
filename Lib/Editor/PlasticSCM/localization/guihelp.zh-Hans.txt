@@ -103,7 +103,7 @@
 
 只需右键单击要忽略的文件，然后选择“添加到已忽略列表”。
 
-在[link:https://plasticscm.com/download/help/ignored-hidden-etc.html]此处[/link]了解有关已忽略文件、隐藏更改和其他配置选项的更多信息。
+在[link:https://plasticscm.com/download/help/ignored-hidden-etc]此处[/link]了解有关已忽略文件、隐藏更改和其他配置选项的更多信息。
 
 == PlasticPendingChangesDotPrivate ==
 [title]我不得不将您的某些文件重命名为 .private[/title]
@@ -479,7 +479,7 @@ Plastic 非常擅长于检测和跟踪移动。
 
 只需照常单击“解决冲突”。
 
-但是，如果您不熟悉递归合并，最好先[link:https://plasticscm.com/help/recursivemerge]了解有关递归合并的更多信息[/link]。
+但是，如果您不熟悉递归合并，最好先[link:https://plasticscm.com/download/help/recursivemerge]了解有关递归合并的更多信息[/link]。
 
 此后，您便真正掌握了合并。
 
@@ -506,7 +506,7 @@ Plastic 非常擅长于检测和跟踪移动。
 
 * 配置锁定。很有可能您希望以独占方式锁定 .prefabs。请转到 [action:WebAdminOpenInLocks]WebAdmin 并配置锁[/action]。
 * 使用签出。为了锁定，您必须在编辑之前签出（锁定）文件。签出操作相当于告诉 Plastic“我要修改文件”。每个文件的右键菜单中都提供了此操作。
-* 配置要忽略的文件。有些文件您不想添加到版本控制下。[action:IgnoreConfCreateUnity]单击此处[/action]可为 Unity 创建一个 ignore.conf。[link:https://plasticscm.com/download/help/ignored-hidden-etc.html]了解有关 ignore.conf 的更多信息[/link]。
+* 配置要忽略的文件。有些文件您不想添加到版本控制下。[action:IgnoreConfCreateUnity]单击此处[/action]可为 Unity 创建一个 ignore.conf。[link:https://plasticscm.com/download/help/ignored-hidden-etc]了解有关 ignore.conf 的更多信息[/link]。
 
 == PlasticWkExplPendingChangesVisualStudioFirstTime ==
 [title]与 Visual Studio 项目结合使用时的提示[/title]

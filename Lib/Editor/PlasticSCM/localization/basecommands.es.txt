@@ -2,7 +2,7 @@
 El formato de la revision especificado no es valido
 
 == AcceptResults ==
-Desea guardar los cambios? (S/N): 
+Desea guardar los cambios? (S/N):
 
 == ActivatedUsers ==
 Total usuarios activos:       {0}
@@ -26,7 +26,7 @@ Mantener los cambios en origen (preservar el añadido y descartar el movido)
 Mantener los cambios en destino (preservar el movido y descartar el añadido)
 
 == AddNotApplicable ==
-El ítem no puede ser descargado en el workspace. Posiblemente, el path ya está en uso. Por favor, desmarque el ítem  (desde la vista de configuración) y reintente la operación. 
+El ítem no puede ser descargado en el workspace. Posiblemente, el path ya está en uso. Por favor, desmarque el ítem  (desde la vista de configuración) y reintente la operación: '{0}'.
 
 == Added ==
 Añadido
@@ -86,10 +86,10 @@ permite al usuario aplicar atributos
 controla la operación de etiquetar un changeset
 
 == AskDeleteWorkspace ==
-No se ha especificado ningún espacio de trabajo. ¿Desea borrar el actual? (S/N): 
+No se ha especificado ningún espacio de trabajo. ¿Desea borrar el actual? (S/N):
 
 == AskDeleteDynamicWorkspace ==
-El espacio de trabajo es dinámico. Todos los elementos privados se PERDERÁN si se borra. ¿Desea continuar? (S/N): 
+El espacio de trabajo es dinámico. Todos los elementos privados se PERDERÁN si se borra. ¿Desea continuar? (S/N):
 
 == AttValueField ==
 El valor del atributo
@@ -440,6 +440,9 @@ Un ítem ha sido {0} en el origen, y el destino ha borrado este ítem o su padre
 == ChangeDependencies ==
 Cambio: {0}. Dependencias:
 
+== ChangedItemAlreadyDeleted ==
+El ítem no será descargado porque se encuentra borrado en el workspace: '{0}'. Por favor, deshaga o confirme el cambio local y reintente la operación.
+
 == ChangeReviewNotFound ==
 Las siguientes peticiones de cambio (especificadas en el comentario del checkin) no pudieron ser encontradas o ya están aplicadas en otro changeset:{0}{1}
 
@@ -532,6 +535,21 @@ Transmitiendo ficheros
 
 == CheckinStatusValidating ==
 Validando la operación
+
+== ShelveStatusStarting ==
+Iniciando operación de shelve...
+
+== ShelveStatusUploading ==
+Transmitiendo ficheros
+
+== ShelveStatusConfirming ==
+Confirmando la operación de shelve
+
+== ShelveStatusRestoringPermissions ==
+Restaurando permisos de acceso
+
+== ShelveStatusFinished ==
+Shelve terminado
 
 == CheckoutCannotBeSaved ==
 El contenido del ítem {0} no ha podido salvarse.
@@ -645,7 +663,7 @@ Servidor de repositorios desconocido
       Nota: cambiamos este comportamiento para evitar problemas a los nuevos
       usuarios, aunque no es peligroso habilitarlo si estás familiarizado con
       cómo funciona el merge.
-    
+
 
 == CmdErrorNoSuchBranch ==
 No existe rama {0} en el repositorio {1}.
@@ -733,6 +751,9 @@ Comprobar la integridad de la base de datos puede requerir algo de tiempo. Por f
 
 == CmdMessageProceedCheckin ==
 Se va a proceder a proteger los items seleccionados. Por favor, espere ...
+
+== CmdMessageProceedShelveset ==
+Se va a proceder a crear un shelve con los items seleccionados. Por favor, espere ...
 
 == CmdMessageProceedCheckout ==
 Se va a proceder a desproteger los items seleccionados. Por favor, espere ...
@@ -859,6 +880,45 @@ http://gnuwin32.sourceforge.net/packages/patch.htm.
 Tras instalarlo puede añadir la carpeta a la variable de entorno PATH o
 utilizar el parametro --tool para especificar la ruta a patch.exe.
 
+== CmdProfileAuthenticationModeError ==
+No se pudo recuperar el modo de autenticación de '{0}'
+
+== CmdProfileCreateSuccess ==
+Perfil '{0}' creado correctamente
+
+== CmdProfileEnterServerAddress ==
+Dirección del servidor
+
+== CmdProfileInvalidServerAddress ==
+'{0}' no es una dirección de servidor válida
+
+== CmdProfileInvalidWorkingMode ==
+Modo de trabajo '{0}' inválido
+
+== CmdProfileNoProfiles ==
+No hay perfiles de conexión definidos
+
+== CmdProfileRemoveByIndexSuccess ==
+Perfil '{0}' eliminado correctamente
+
+== CmdProfileRemoveByIndexFailure ==
+No existe ningún perfil con índice {0}
+
+== CmdProfileRemoveByNameSuccess ==
+Perfil '{0}' eliminado correctamente
+
+== CmdProfileRemoveByNameFailure ==
+No existe ningún perfil con nombre '{0}'
+
+== CmdProfileRetry ==
+¿Quiere reintentar?
+
+== CmdProfileSpecifyOnlyPasswordOrToken ==
+Debe especificar '--password' o '--token', pero no ambas o ninguna
+
+== CmdProfileUnknownWorkingMode ==
+Modo de trabajo '{0}' desconocido
+
 == CmdRepServerResultCheckdb ==
 Servidor de repositorios: {0}
 
@@ -895,7 +955,7 @@ Comentario
 # Introduzca un comentario de checkin para sus cambios.
 # Un comentario puede tener un máximo de 1000 caracteres.
 # Las líneas que comiencen con "#" serán ignoradas.
-    
+
 
 == Committing ==
 Confirmando
@@ -904,7 +964,7 @@ Confirmando
 permite añadir nuevas reglas de checkout exclusivo
 
 == ConfirmNewPassword ==
-Confirmar contraseña: 
+Confirmar contraseña:
 
 == ConnectTubeSucceeded ==
 El servidor de Plastic SCM ({0}) conectó correctamente con Plastic Tube.
@@ -916,7 +976,7 @@ El test de conexión ha encontrado un problema intentando conectar con el servid
 El test de conexión se ha ejecutado correctamente.
 
 == ContinueSolving ==
-Conflicto {0} por la izquierda, Desea seguir solucionando conflictos? (S/N): 
+Conflicto {0} por la izquierda, Desea seguir solucionando conflictos? (S/N):
 
 == ContinueWithPendingChangesQuestion ==
 Existen ficheros cambiados localmente en su espacio de trabajo. Puede cancelar la operación para poder comprobar los cambios o puede continuar adelante con la operación. Si continúa con la operación sus ficheros cambiados no se perderán, y seguirán apareciendo como cambiados después de la operación. ¿Desea continuar con la operación? (s/n)
@@ -987,6 +1047,9 @@ Conflicto de borrado y cambiado
 == DeleteAndMove ==
 Conflicto de borrado y movido
 
+== DeleteCannotBeApplied ==
+El borrado ({0}) no puede ser aplicado porque el ítem no se encuentra en el workspace.
+
 == DeleteChangeConflictActions11 ==
 Mantener cambios en origen (preservar el borrado y descartar el añadido)
 
@@ -1037,6 +1100,9 @@ Borrado {0}
 == DeleteDeleteWarningMessage ==
 Este ítem ha sido descartado porque ha sido borrado tanto en orígen como en destino
 
+== DeleteItemAlreadyChanged ==
+El ítem no será borrado porque se encuentra cambiado (checked-out, movido) en el workspace: '{0}'. Por favor, deshaga o confirme el cambio local y reintente la operación.
+
 == DeleteMoveConflictActions1 ==
 Mantener cambios en origen (preservar el borrado y descartar el movido)
 
@@ -1053,7 +1119,7 @@ Un ítem ha sido borrado en el origen y también fue movido en el destino.
 Borrado {0}
 
 == DeleteNotApplicable ==
-El ítem no puede ser borrado porque no ha sido encontrado. Su workspace podría estar corrupto. Por favor, contacte con el equipo de soporte.
+El ítem no puede ser borrado porque no ha sido encontrado. Su workspace podría estar corrupto. Por favor, contacte con el equipo de soporte: '{0}'.
 
 == DeletePrivateDeletesSummary ==
 Se borraron {0} ficheros individuales y {1} árboles de directorio.
@@ -1230,7 +1296,7 @@ El repositorio de origen y de destino son el mismo ('{0}').
 No se pudo determinar el repositorio origen para la operación de clone a partir de '{0}'.
 
 == ErrorExecutingQuery ==
-Error al ejecutar la consulta: 
+Error al ejecutar la consulta:
 
 == ErrorImportingCommit ==
 El changeset '{0}' no pudo ser importado. Error: {1} Por favor, contacte con el equipo de soporte.
@@ -1390,13 +1456,13 @@ El fichero {0} fue modificado en origen y reemplazara la version de destino
 
 == FileTypesFileHeader ==
 
-      # Plastic SCM custom file types. Syntax: <expression>:<type>.
-      # Valid expressions are: .cpp, myfile.cpp ... You can use wildcards (*, ?)
-      # Type can be 'txt' or 'bin'.
-      # Examples:
+# Fichero de extensiones de Plastic SCM. Sintaxis: <expression>:<type>.
+# Son expresiones válidas: '.cpp', 'myfile.cpp' ... (Se admiten metacaracteres: '*', '?')
+# Los tipos permitidos son: 'txt' o 'bin'.
+# Ejemplos:
       #     .cpp:txt
       #     .jpg:bin
-    
+
 
 == Files ==
 ficheros
@@ -1587,6 +1653,9 @@ El elemento {0} ha sido añadido en origen y se añadirá como resultado del mer
 == ItemAlreadyChanged ==
 El ítem no se actualizará porque se encuentra cambiado (checked-out, cambiado, borrado o movido) en el workspace: '{0}'. Por favor, deshaga o confirme el cambio local y reintente la operación.
 
+== ItemAlreadyLoaded ==
+El ítem no se actualizará porque se encuentra ya cargado en el workspace con una versión diferente: '{0}'. Por favor, desmarque el ítem (desde la vista de configuración) y reintente la operación.
+
 == ItemDeletedSource ==
 El elemento {0} ha sido borrado en origen y sera borrado como resultado del merge
 
@@ -1598,6 +1667,9 @@ El elemento {0} ha sido movido a {1} en origen y sera movido como resultado del 
 
 == ItemNotFound ==
 No se ha podido encontrar el ítem {0}
+
+== ItemPathAlreadyUsed ==
+El ítem no se actualizará/moverá porque el path  cargado en el workspace con una versión diferente: '{0}'. Por favor, desmarque el ítem (desde la vista de configuración) y reintente la operación.
 
 == ItemPathAlreadyUsedByChange ==
 El ítem no será descargado/movido porque hay un cambio local en '{0}'. Por favor, deshaga el cambio local, desmarque el ítem (desde la vista de configuración) y reintente la operación.
@@ -1630,13 +1702,13 @@ Registrado a:                 {0}
 Total de licencias:           {0}
 
 == ListFindObjects ==
-Esta es la lista de los objetos y atributos disponibles: 
+Esta es la lista de los objetos y atributos disponibles:
 
 == ListPermissionsKey ==
-Esta es la lista de los permios disponibles: 
+Esta es la lista de los permios disponibles:
 
 == ListTriggerTypes ==
-Esta es la lista de los triggers disponibles: 
+Esta es la lista de los triggers disponibles:
 
 == LkNameField ==
 El nombre del enlace
@@ -1765,19 +1837,19 @@ controla la operación de merge desde el objeto
 Mezclando fichero {0} de {1}: {2}
 
 == MessageBranchSelector ==
-Seleccione una rama para cargar revisiones (/main si no se especifica ninguna): 
+Seleccione una rama para cargar revisiones (/main si no se especifica ninguna):
 
 == MessageCheckingIn ==
-Protegiendo {0} ... 
+Protegiendo {0} ...
 
 == MessageCheckingOut ==
-Desprotegiendo {0} ... 
+Desprotegiendo {0} ...
 
 == MessageCoSelector ==
-Seleccione una rama para las desprotecciones (/main si no se especifica ninguna): 
+Seleccione una rama para las desprotecciones (/main si no se especifica ninguna):
 
 == MessageContinueWithSelector ==
-Se va a fijar este selector, ¿desea continuar? (S/N): 
+Se va a fijar este selector, ¿desea continuar? (S/N):
 
 == MessageDone ==
 Hecho
@@ -1789,7 +1861,7 @@ El fichero {0} no existe
 Seleccione una etiqueta para cargar las revisiones (opcional):
 
 == MessageMoreRepositories ==
-¿Mas repositorios? (S/N): 
+¿Mas repositorios? (S/N):
 
 == MessageNoRepositories ==
 No hay repositorios en este servidor
@@ -1801,10 +1873,10 @@ Selector de items #{0} para el Selector de repositorios #{1}
 Selector de repositorio #{0}
 
 == MessageRepositoryName ==
-Seleccione un nombre de repositorio: 
+Seleccione un nombre de repositorio:
 
 == MessageRepositoryServer ==
-Seleccione un servidor de repositorios: 
+Seleccione un servidor de repositorios:
 
 == MessageSelectorNotSet ==
 El selector no se ha guardado.
@@ -1847,6 +1919,9 @@ Conflicto de movido y añadido
 
 == MoveAndDelete ==
 Conflicto de movido y borrado
+
+== MoveCannotBeApplied ==
+El movido ({0} -> {1}) no puede ser aplicado porque el ítem o el destino no se encuentran en el workspace.
 
 == MoveDeleteConflictActions1 ==
 Mantener cambios en origen (preservar el movido y descartar el borrado)
@@ -2001,10 +2076,10 @@ El nombre {0} no es válido
 El parametro nuevo nombre debe ser un nombre de rama y no una especificación de rama
 
 == NewNameFor ==
-Nuevo nombre para {0}: 
+Nuevo nombre para {0}:
 
 == NewNameInstead ==
-Nombre nuevo en vez de {0}: 
+Nombre nuevo en vez de {0}:
 
 == No ==
 No
@@ -2071,6 +2146,12 @@ Operación exportar iniciada
 
 == Owner ==
 Propietario
+
+== ParentItemDeleted ==
+El ítem no será descargado porque su directorio padre fue borrado en el workspace: '{0}'.
+
+== ParentItemDiscarded ==
+El ítem '{0}' no será descargado porque su directorio padre no pudo ser descargado tampoco.
 
 == PasswordCantBeEmpty ==
 La contraseña no puede ser vacía. El password no se ha modificado.
@@ -2385,7 +2466,7 @@ Creando un paquete de soporte nuevo...
 Recuerde que puede contactar con nosotros en cualquier momento a través de
 https://www.plasticscm.com/support. No dude en hacerlo si necesita ayuda
 o tiene alguna pregunta o sugerencia.
-    
+
 
 == SyncAlreadyReplicated ==
 El sync no puede comenzar porque el repositorio especificado viene de una réplica de un repositorio ya sincronizado con git. El repositorio originalmente sincronizado es '{0} - {1}'. Por favor, contacte con soporte para más información.
@@ -2403,10 +2484,10 @@ El servidor de Plastic SCM ({0}) está conectado a Plastic Tube.
 El servidor de Plastic SCM ({0}) no está conectado a Plastic Tube.
 
 == TypeNewPassword ==
-Contraseña nueva: 
+Contraseña nueva:
 
 == TypeOldPassword ==
-Contraseña antigua: 
+Contraseña antigua:
 
 == UnableToRemoveCset ==
 El changeset seleccionado {0} no se pudo eliminar.
@@ -2556,6 +2637,9 @@ Un Xlink se ha modificado en el origen y en el destino, y ahora apuntan a dos ch
 
 == XlinkConflictSourceOperation ==
 Modificado el Xlink a: {0}
+
+== XlinkPointsToShelveTarget ==
+El Xlink '{0}' no será descargado porque se creó con nuevo contenido dentro. Este escenario no está soportado aún.
 
 == XlinkWritableConflict ==
 Conflicto de antecesor común de Xlinks

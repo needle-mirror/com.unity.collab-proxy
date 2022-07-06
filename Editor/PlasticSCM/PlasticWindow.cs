@@ -13,6 +13,7 @@ using Codice.CM.Common;
 using Codice.LogWrapper;
 using GluonGui;
 using PlasticGui;
+using PlasticGui.WorkspaceWindow.NotificationBar;
 using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Configuration;
@@ -22,6 +23,7 @@ using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Avatar;
 using Unity.PlasticSCM.Editor.UI.Progress;
+using Unity.PlasticSCM.Editor.UI.StatusBar;
 using Unity.PlasticSCM.Editor.Views.CreateWorkspace;
 using Unity.PlasticSCM.Editor.Views.Welcome;
 using Unity.PlasticSCM.Editor.WebApi;
@@ -386,6 +388,8 @@ namespace Unity.PlasticSCM.Editor
 
                 ViewHost viewHost = new ViewHost();
 
+                mStatusBar = new StatusBar();
+
                 mViewSwitcher = new ViewSwitcher(
                     mWkInfo,
                     viewHost,
@@ -453,6 +457,12 @@ namespace Unity.PlasticSCM.Editor
                 mLastUpdateTime = EditorApplication.timeSinceStartup;
 
                 mViewSwitcher.ShowBranchesViewIfNeeded();
+
+                if (!EditionToken.IsCloudEdition())
+                    return;
+
+                InitializeNotificationBarUpdater(
+                    mWkInfo, mStatusBar.NotificationBar);
             }
             catch (Exception ex)
             {
@@ -486,6 +496,20 @@ namespace Unity.PlasticSCM.Editor
                 NewIncomingChanges.BuildUpdaterForDeveloper(
                     wkInfo, this, developerNotifier);
             mIncomingChangesNotifier = developerNotifier;
+        }
+
+        void InitializeNotificationBarUpdater(
+            WorkspaceInfo wkInfo,
+            INotificationBar notificationBar)
+        {
+            mNotificationBarUpdater = new NotificationBarUpdater(
+                notificationBar,
+                PlasticApp.PlasticWebRestApi,
+                new UnityPlasticTimerBuilder(),
+                new NotificationBarUpdater.NotificationBarConfig(),
+                ScreenResolution.Get());
+            mNotificationBarUpdater.Start();
+            mNotificationBarUpdater.SetWorkspace(wkInfo);
         }
 
         void OnApplicationActivated()
@@ -537,6 +561,8 @@ namespace Unity.PlasticSCM.Editor
             mException = null;
 
             DisposeNewIncomingChanges(this);
+
+            DisposeNotificationBarUpdater(this);
 
             InitializePlastic();
         }
@@ -905,6 +931,7 @@ namespace Unity.PlasticSCM.Editor
             TurnOffPlasticWindow.ShowWindow();
             PlasticPlugin.Disable();
         }
+
         static void ForceCheckout_Clicked(object obj)
         {
             PlasticAssetModificationProcessor.SetForceCheckoutOption(
@@ -945,6 +972,15 @@ namespace Unity.PlasticSCM.Editor
             window.mGluonNewIncomingChangesUpdater = null;
         }
 
+        static void DisposeNotificationBarUpdater(PlasticWindow window)
+        {
+            if (window.mNotificationBarUpdater == null)
+                return;
+
+            window.mNotificationBarUpdater.Dispose();
+            window.mNotificationBarUpdater = null;
+        }
+
         static void RegisterApplicationFocusHandlers(PlasticWindow window)
         {
             EditorWindowFocus.OnApplicationActivated += window.OnApplicationActivated;
@@ -978,6 +1014,8 @@ namespace Unity.PlasticSCM.Editor
             PlasticPlugin.WorkspaceOperationsMonitor.UnRegisterWindow();
 
             DisposeNewIncomingChanges(window);
+
+            DisposeNotificationBarUpdater(window);
 
             AvatarImages.Dispose();
         }
@@ -1035,6 +1073,7 @@ namespace Unity.PlasticSCM.Editor
             result.mIncomingChangesNotifier = window.mIncomingChangesNotifier;
             result.mStatusBar = window.mStatusBar;
             result.mWelcomeView = window.mWelcomeView;
+            result.mNotificationBarUpdater = window.mNotificationBarUpdater;
             return result;
         }
 
@@ -1111,7 +1150,9 @@ namespace Unity.PlasticSCM.Editor
         CooldownWindowDelayer mCooldownAutoRefreshPendingChangesAction;
         internal ViewSwitcher mViewSwitcher;
         WelcomeView mWelcomeView;
-        StatusBar mStatusBar = new StatusBar();
+
+        StatusBar mStatusBar;
+        NotificationBarUpdater mNotificationBarUpdater;
 
         PlasticGui.WorkspaceWindow.NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
         GluonNewIncomingChangesUpdater mGluonNewIncomingChangesUpdater;

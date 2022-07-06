@@ -103,7 +103,7 @@
 
 只要在要忽略的檔案上按一下滑鼠右鍵，然後選取 [新增至忽略清單] 即可。
 
-在[link:https://plasticscm.com/download/help/ignored-hidden-etc.html]這裡[/link]深入瞭解忽略的檔案、隱藏的變更及其他設定選項。
+在[link:https://plasticscm.com/download/help/ignored-hidden-etc]這裡[/link]深入瞭解忽略的檔案、隱藏的變更及其他設定選項。
 
 == PlasticPendingChangesDotPrivate ==
 [title]我必須將您的某些檔案重新命名為 .private[/title]
@@ -479,7 +479,7 @@ Plastic 相當擅長偵測和追蹤移動。
 
 您只需要像平常一樣按一下 [解決衝突]。
 
-不過，如果您不熟悉遞迴合併，建議您先[link:https://plasticscm.com/help/recursivemerge]深入瞭解遞迴合併[/link]。
+不過，如果您不熟悉遞迴合併，建議您先[link:https://plasticscm.com/download/help/recursivemerge]深入瞭解遞迴合併[/link]。
 
 此後您將非常熟悉如何處理合併相關問題。
 
@@ -506,7 +506,7 @@ Plastic 相當擅長偵測和追蹤移動。
 
 * 設定鎖定。您很可能會想要讓 .prefabs 獨佔鎖定。移至 [action:WebAdminOpenInLocks]WebAdmin 並設定鎖定[/action]。
 * 使用簽出。鎖定會要求您在進行編輯前簽出 (鎖定) 檔案。簽出是告訴 Plastic「我即將修改檔案」的動作。每個檔案的右鍵功能表都會提供此選項。
-* 設定要忽略的檔案。您會有一些不想要新增至版本控制的檔案。[action:IgnoreConfCreateUnity]按一下這裡[/action]來為 Unity 建立 ignore.conf。[link:https://plasticscm.com/download/help/ignored-hidden-etc.html]深入瞭解 ignore.conf[/link]。
+* 設定要忽略的檔案。您會有一些不想要新增至版本控制的檔案。[action:IgnoreConfCreateUnity]按一下這裡[/action]來為 Unity 建立 ignore.conf。[link:https://plasticscm.com/download/help/ignored-hidden-etc]深入瞭解 ignore.conf[/link]。
 
 == PlasticWkExplPendingChangesVisualStudioFirstTime ==
 [title]處理 Visual Studio 專案的秘訣[/title]

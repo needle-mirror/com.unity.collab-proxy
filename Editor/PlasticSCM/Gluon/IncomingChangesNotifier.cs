@@ -1,5 +1,5 @@
 ﻿using PlasticGui.Gluon.WorkspaceWindow;
-using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.UI.StatusBar;
 
 namespace Unity.PlasticSCM.Editor.Gluon
 {

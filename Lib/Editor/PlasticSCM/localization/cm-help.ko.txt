@@ -8121,3 +8121,75 @@ Xlink 세부사항을 생성하거나, 편집하거나, 표시합니다.
                     위치입니다.
                     Bash에서는 커서 위치가 COMP_LINE 환경 변수에 있습니다.
                     PowerShell에서는 커서 위치가 $cursorPosition 변수에 있습니다.
+
+== CMD_DESCRIPTION_CONFIGURECLIENT ==
+Configures the Plastic SCM client for the current machine user to work with a default server.
+
+== CMD_USAGE_CONFIGURECLIENT ==
+사용법:
+    cm ^configure [--^language=<language> --^workingmode=<mode> [AuthParameters] 
+                 --^server=<server> [--^port=<port>]] [--^clientconf=<clientconfpath>]
+    
+    --^language          지원하는 언어:
+                        en (English)
+                        es (Spanish)
+                        
+    --^workingmode       사용 가능한 사용자/보안 작업 모드:
+                        NameWorkingMode (Name)
+                        NameIDWorkingMode (Name + ID)
+                        LDAPWorkingMode (LDAP)
+                        ADWorkingMode (Active Directory)
+                        UPWorkingMode (User and password)
+                        SSOWorkingMode (Single Sign On)
+                        
+    AuthParameters      인증 매개 변수(^LDAPWorkingMode 및 ^UPWorkingMode만 해당):
+                        --^user=<user>
+                        --^password=<password>
+    
+                        Single Sign On parameters (only for ^SSOWorkingMode):
+                        --^user=<user>
+                        --^token=<token>
+                        
+    --^server            Plastic SCM server IP / address
+    
+    --^port              Plastic SCM server port
+                        (port optional for Cloud servers)
+
+    --^clientconf        구성 파일 생성에 사용할 파일 경로(선택사항)
+                        인수는 전체 경로, 파일 이름 또는 디렉터리일 수 있습니다.
+
+                        예:
+                        
+                        --^clientconf=c:/path/to/myclient.conf
+                        (지정한 경로가 클라이언트 구성 파일 생성에 사용됨)
+
+                        --^clientconf=myclient.conf
+                        (기본 구성 디렉터리 내부의 myclient.conf 파일이 사용됨)
+
+                        --^clientconf=c:/exisitingDirectory
+                        (지정한 디렉터리의 기본 파일 이름과 client.conf가 사용됨)
+
+    
+== CMD_HELP_CONFIGURECLIENT ==
+비고:
+
+    The cm ^configure command cannot be used on Cloud Edition or DVCS Edition of Plastic SCM.
+    Use 'plastic --configure' instead.
+    
+예:
+    
+    cm ^configure 
+    (runs the interactive Plastic SCM client configuration command)
+    
+    
+    cm ^configure --^language=^en --^workingmode=^LDAPWorkingMode --^user=^jack --^password=^01234 \
+                 --^server=^plastic.mymachine.com --^port=^8084
+    (configures the Plastic SCM client with the specified parameters and creates the 'client.conf'
+    configuration file in the default directory).
+    (Cloud 서버의 경우 포트는 선택사항)
+                  
+    cm ^configure --^language=^en --^workingmode=^NameWorkingMode --^server=^plastic.mymachine.com \
+                 --^port=^8084 --^clientconf=^clientconf_exp.conf
+    (configures the Plastic SCM client with the specified parameters and creates the 'client.conf'
+    configuration file in the specified path).
+    (Cloud 서버의 경우 포트는 선택사항)

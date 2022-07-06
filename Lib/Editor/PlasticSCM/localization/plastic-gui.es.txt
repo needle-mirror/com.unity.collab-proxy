@@ -232,6 +232,9 @@ Actualizados {0} de {1} ({2} de {3} ficheros){4}
 == CheckinComments ==
 Comentarios de checkin
 
+== RecentCheckinComments ==
+Comentarios recientes de checkin
+
 == UpdatingSelectedItems ==
 Actualizando los ítems seleccionados...
 
@@ -517,6 +520,9 @@ Renombrar Repositorio
 == NewWorkspace ==
 Crear un workspace nuevo
 
+== OpenRepository ==
+Abrir repositorio
+
 == DownloadRepository ==
 Descargar repositorio
 
@@ -627,6 +633,9 @@ Crear un repositorio nuevo...
 
 == RepositoryMenuItemCreateWorkspace ==
 Crear workspace para este repositorio...
+
+== RepositoryMenuItemOpenRepository ==
+Abrir este repositorio
 
 == RepositoryMenuItemDownloadRepository ==
 Descargar este repositorio
@@ -1728,10 +1737,13 @@ Deleting label{0}...
 Deleting labels{0}...
 
 == DeletingShelvesSingular ==
-Deleting shelve...
+Deleting shelveset...
 
 == DeletingShelvesPlural ==
 Deleting shelves...
+
+== ApplyingShelveset ==
+Applying shelveset...
 
 == DeletingChangeset ==
 Deleting changeset...
@@ -3613,6 +3625,9 @@ Undeleting {0} items...
 
 == EnterRestorePathFormTitle ==
 Undelete item
+
+== EnterRestorePathItemFormTitle ==
+Recuperar item: {0}
 
 == EnterRestorePathFormParentDoesNotExistExplanation ==
 The parent directory of the item does not exist, please enter a new location
@@ -5995,6 +6010,9 @@ Cambios entrantes de la rama {0}
 == IncomingChangesCannotBeApplied ==
 Cambios entrantes que no pueden ser aplicados
 
+== ChangesCannotBeApplied ==
+Cambios que no pueden ser aplicados
+
 == ConfirmRecalculateMergeSingular ==
 Hay 1 conflicto de directorio resuelto. ¿Quiere recalcular el merge?
 
@@ -6989,6 +7007,15 @@ Cmd+N
 == PlasticNewShortcutForLinux ==
 Ctrl+N
 
+== PlasticCopyShortcutForWindows ==
+Ctrl+C
+
+== PlasticCopyShortcutForMacOS ==
+Cmd+C
+
+== PlasticCopyShortcutForLinux ==
+Ctrl+C
+
 == PlasticNewWorkspaceShortcutForWindows ==
 Ctrl+W
 
@@ -7052,13 +7079,22 @@ Cmd+D
 == PlasticDiffShortcutForLinux ==
 Ctrl+D
 
-== PlasticApplyShortcutForWindows ==
-Ctrl+A
+== PlasticApplyLabelShortcutForWindows ==
+Ctrl+L
 
-== PlasticApplyShortcutForMacOS ==
+== PlasticApplyLabelShortcutForMacOS ==
+Cmd+L
+
+== PlasticApplyLabelShortcutForLinux ==
+Ctrl+L
+
+== PlasticSelectAllShortcutForWindows ==
+Ctrl+E
+
+== PlasticSelectAllShortcutForMacOS ==
 Cmd+A
 
-== PlasticApplyShortcutForLinux ==
+== PlasticSelectAllShortcutForLinux ==
 Ctrl+A
 
 == PlasticSwitchShortcutForWindows ==
@@ -7070,6 +7106,15 @@ Shift+Cmd+W
 == PlasticSwitchShortcutForLinux ==
 Shift+Ctrl+W
 
+== PlasticGoToLineShortcutForWindows ==
+Ctrl+G
+
+== PlasticGoToLineShortcutForMacOS ==
+Ctrl+G
+
+== PlasticGoToLineShortcutForLinux ==
+Ctrl+G
+
 == PlasticBranchShortcutForWindows ==
 Ctrl+R
 
@@ -7078,6 +7123,15 @@ Cmd+R
 
 == PlasticBranchShortcutForLinux ==
 Ctrl+R
+
+== PlasticFindShortcutForWindows ==
+Ctrl+F
+
+== PlasticFindShortcutForMacOS ==
+Cmd+F
+
+== PlasticFindShortcutForLinux ==
+Ctrl+F
 
 == PlasticLabelShortcutForWindows ==
 Ctrl+E
@@ -7098,13 +7152,13 @@ Cmd+S
 Ctrl+S
 
 == PlasticAnnotateShortcutForWindows ==
-Ctrl+A
+Ctrl+T
 
 == PlasticAnnotateShortcutForMacOS ==
-Cmd+A
+Cmd+T
 
 == PlasticAnnotateShortcutForLinux ==
-Ctrl+A
+Ctrl+T
 
 == PlasticHistoryShortcutForWindows ==
 Ctrl+H
@@ -7134,13 +7188,22 @@ Cmd+O
 Ctrl+O
 
 == PlasticUndoShortcutForWindows ==
-Shift+Ctrl+U
+Ctrl+Z
 
 == PlasticUndoShortcutForMacOS ==
-Shift+Cmd+U
+Cmd+Z
 
 == PlasticUndoShortcutForLinux ==
-Shift+Ctrl+U
+Ctrl+Z
+
+== PlasticRedoShortcutForWindows ==
+Ctrl+Y
+
+== PlasticRedoShortcutForMacOS ==
+Cmd+Y
+
+== PlasticRedoShortcutForLinux ==
+Ctrl+Y
 
 == PlasticCutShortcutForWindows ==
 Ctrl+X
@@ -7303,9 +7366,6 @@ Cmd+C
 
 == PlasticPasteActionShortcutForMacOS ==
 Cmd+V
-
-== PlasticSelectAllActionShortcutForMacOS ==
-Cmd+A
 
 == PlasticFindActionShortcutForMacOS ==
 Cmd+F
@@ -7538,6 +7598,9 @@ Borrar
 == EditMenuSelectAll ==
 Select All
 
+== EditMenuGoToLine ==
+Ir a línea...
+
 == SavingComment ==
 Guardando comentario...
 
@@ -7587,16 +7650,10 @@ Cómo quieres abrir este link?
 Plastic SCM (release oficial)
 
 == OpenLinkWithPlasticX ==
-Plastic X (alpha)
+Plastic X
 
 == OpenPlasticLinkDialogLink ==
 [[https://forum.plasticscm.com/forum/41-announcements/|Haz click aquí para saber más sobre Plastic X]]
-
-== PreferenceOpenLinksWithPlasticX ==
-Abrir plastic links con Plastic X (alpha)
-
-== PreferenceOpenLinksWithPlastic ==
-Abrir plastic links con Plastic SCM
 
 == InviteMembersTitle ==
 Invite members
@@ -7616,9 +7673,6 @@ Cambiar a la GUI clásica
 == SwitchToNewGuiSecondText ==
 (Podrá volver a esta versión)
 
-== WelcomeToNewGuiWindows ==
-Bienvenido a la nueva GUI de Plastic SCM (alpha)
-
 == WelcomeToNewGui ==
 Bienvenido a la nueva GUI de Plastic SCM
 
@@ -7636,9 +7690,6 @@ Esta versión es multiplataforma, incluye un tema oscuro y proporciona un mejor 
 
 == WelcomeToNewGluonGuiSecondText ==
 Esta versión tiene todas las funcionalidades, es multiplataforma e incluye tema oscuro. También incluye soporte para changelists. Prueba la nueva experiencia y vuelve a cambiar en cualquier momento, ¡haznos saber lo que piensas!
-
-== WelcomeToNewGuiSecondTextWindows ==
-Esta versión alpha es multiplataforma, incluye un tema oscuro y proporciona un mejor resaltado de sintaxis. ¡Pronto habrá muchas más mejoras, incluida la compatibilidad con Gluon! Prueba la nueva experiencia y vuelve a cambiar en cualquier momento, ¡haznos saber lo que piensas!
 
 == GetStartedButton ==
 ¡Empecemos!
@@ -7859,6 +7910,9 @@ Seleccione un cliente de Plastic
 == HowWillYouBeWorkingWithPlastic ==
 Cómo vas a usar Plastic SCM?
 
+== HowWillYouBeWorkingWithPlasticExplanation ==
+Independientemente de la selección, podrá cambiar entre las interfaces de Gluon y Plastic más tarde usando el menú de la esquina superior derecha.
+
 == PlasticProductDescription ==
 Necesito todas las funciones de Plastic SCM, incluyendo ramas, merge y push/pull.
 
@@ -7928,3 +7982,33 @@ Confirmar quitar cuenta
 
 == RemoveAccountButton ==
 Quitar cuenta
+
+== AddNewPlasticScmAccount ==
+Añadir una nueva cuenta de Plastic SCM
+
+== BrowseRepositoryDialogExplanation ==
+Seleccione una ruta
+
+== EmptyRepositoryHeader ==
+El repositorio todavía está vacío
+
+== EmptyRepositoryDescription ==
+Esta vista muestra el contenido del repositorio.
+
+== WorkspaceNotOnDisk ==
+<no está en disco>
+
+== OpeningRepository ==
+Abriendo repositorio
+
+== GoToLine ==
+Ir a línea
+
+== LineNumberRange ==
+Número de línea ({0} - {1}):
+
+== ShowNotification ==
+Mostrar Notificación
+
+== HideNotification ==
+Ocultar Notificación

@@ -96,8 +96,9 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const string BRANCHES_TABLE_SETTINGS_NAME = "{0}_BranchesListV2_{1}";
         internal const string BRANCHES_DATE_FILTER_SETTING_NAME = "{0}_BranchesDateFilter_{1}";
 
-        internal const string SHOW_BRANCHES_VIEW_KEY_NAME = "showbranchesviewkey";
-
+        internal const string SHOW_BRANCHES_VIEW_KEY_NAME = "ShowBranchesView";
+        internal const string SHOW_NOTIFICATION_KEY_NAME = "ShowNotification";
+        internal const string FORCE_CHECKOUT_KEY_NAME = "forceCheckoutPlasticSCM";
 
         internal static class ChangesetsColumns
         {

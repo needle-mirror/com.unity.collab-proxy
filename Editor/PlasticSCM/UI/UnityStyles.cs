@@ -332,6 +332,21 @@ namespace Unity.PlasticSCM.Editor.UI
                 style.fixedWidth = 60;
                 return style;
             });
+
+            internal static readonly LazyStyle NotificationPanel = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.helpBox);
+                style.fixedHeight = 24;
+                return style;
+            });
+
+            internal static readonly LazyStyle NotificationPanelCloseButton = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.label);
+                style.fixedHeight = 16;
+                style.fixedWidth = 16;
+                return style;
+            });
         }
 
         internal static class DiffPanel

@@ -11,9 +11,9 @@ using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.Merge;
 using PlasticGui.WorkspaceWindow.QueryViews;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
-using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.UI.StatusBar;
 using Unity.PlasticSCM.Editor.Views.Changesets;
 using Unity.PlasticSCM.Editor.Views.History;
 using Unity.PlasticSCM.Editor.Views.IncomingChanges;
@@ -381,7 +381,7 @@ namespace Unity.PlasticSCM.Editor
 
         void CloseBranchesTab()
         {
-            BoolSetting.Save(false,UnityConstants.SHOW_BRANCHES_VIEW_KEY_NAME);
+            BoolSetting.Save(false, UnityConstants.SHOW_BRANCHES_VIEW_KEY_NAME);
 
             ShowView(mPreviousSelectedTab);
 

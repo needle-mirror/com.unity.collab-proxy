@@ -212,6 +212,9 @@ No se ha podido cargar el contenido del changeset '{0}'.
 == DaysAgo ==
 hace {0} días
 
+== OneDayAgo ==
+hace 1 día
+
 == DeleteNotAllowedTransfomerRuleInside ==
 El ítem '{0}' no se puede borrar porque contiene la regla de transformación '{1}'.
 
@@ -274,6 +277,9 @@ El parámetro "--branches" no está bien formado. Por favor, compruebe que no ha
 == ErrorArchiveCantRetrieveData ==
 No se puede obtener el volumen externo de almacenamiento de datos, por favor configure externaldata.conf con los paths adecuados para encontrar los volúmenes archivados. Nombre base de fichero: {0}. Comentario de volumen: {1}. Fichero: {2}
 
+== ErrorArchiveCantRetrieveTrimmedData ==
+No se puede obtener el contenido del fichero '{0}' porque la revisión (id:{1}) fue recortada y su contenido ya no está disponible.
+
 == ErrorCannotRenameDynamicWk ==
 Los espacios de trabajo dinámicos no pueden ser renombrados.
 
@@ -291,6 +297,9 @@ No se pueden mostrar diferencias entre elementos de distinto tipo
 
 == ErrorEmptySelector ==
 El selector no puede estar vacio.
+
+== ErrorInvalidPath ==
+El formato del path no está soportado.
 
 == ErrorMoveSrcDstEqual ==
 No se puede mover {0}. La ruta de origen y la de destino son la misma.
@@ -372,6 +381,9 @@ La operación de update no puede continuar. El changeset destino debe estar en l
 
 == HoursAgo ==
 hace {0} horas
+
+== OneHourAgo ==
+hace 1 hora
 
 == IncomingChangesCannotCalculateMerge ==
 Los cambios a actualizar no se pueden calcular. Por favor, revise si el changeset cargado en el workspace fue borrado o bien contacte con soporte para obtener más información.
@@ -473,6 +485,9 @@ El punto de montaje '{0}' para el repositorio {1} no es válido para el espacio 
 == InvalidMoveDstPriv ==
 No se puede mover un elemento controlado a un directorio privado.
 
+== InvalidWorkingMode ==
+Modo de trabajo no válido: {0}
+
 == IsNotAnXlink ==
 '{0}' no es un xlink.
 
@@ -537,7 +552,7 @@ El ítem '{0}' no se puede mover a '{1}'. La ruta '{1}' ya está en uso en el se
 El ítem '{0}' no puede moverse porque ha sido transformado por la regla '{1}'. El merge no puede completarse con las reglas de transformación actuales. Por favor, borre de la regla de transformación involucrada (o use un espacio de trabajo sin transformar) e intente el merge de nuevo.
 
 == MergeNeeded ==
-Se necesitan combinar los cambios del changeset cs:{0}@rep:{2}@repserver:{3}(mount:{4}) con los cambios realizados sobre el changeset cs:{1}@rep:{2}@repserver:{3}(mount:{4}) (changeset cargado en su workspace) antes de continuar. Es necesario resolver los conflictos mezclando los contenidos de su workspace con los últimos contenidos de la rama en la que está actualmente trabajando. Después de eso, reintente la operación de protección.
+Se necesitan combinar los cambios del changeset cs:{0}@rep:{2}@repserver:{3}(mount:{4}) con los cambios realizados sobre el changeset cs:{1}@rep:{2}@repserver:{3}(mount:{4}) (changeset cargado en su workspace) antes de continuar. Por favor ejecute 'cm merge "cs:{0}@rep:{2}@repserver:{3}"  --merge' en '{5}' para resolver los conflictos. Después de eso, reintente la operación de checkin.
 
 == MergeRestorerDeletedPathInUse ==
 El path borrado por la regla de transformación {0}  ha sido reutilizado por la regla de transformación {1}, por lo que el contenido del borrado no se puede restaurar. El merge no puede completarse con las reglas de transformación actuales. Por favor, borre de la regla de transformación involucrada (o use un espacio de trabajo sin transformar) e intente el merge de nuevo.
@@ -565,6 +580,15 @@ Error en la ejecución de la herramineta de merge "{0}". Las herramientas de mer
 
 == MinutesAgo ==
 hace {0} minutos
+
+== OneMinuteAgo ==
+hace 1 minuto
+
+== MissingUserOrPassword ==
+Necesita especificar un usuario (--username) y una contraseña (--password) para el modo de trabajo '{0}'.
+
+== MissingUserOrToken ==
+Necesita especificar un usuario (--username) y un token (--token) para el modo de trabajo '{0}'.
 
 == MkNameField ==
 El nombre de la etiqueta
@@ -725,6 +749,12 @@ El selector del workspace actual no tiene ninguna regla para el repositorio {0}
 == SwitchSelectorErrorObjectsOnSameRep ==
 Se ha seleccionado más de una rama o etiqueta para el mismo repositorio
 
+== PartialSwitchToLabelErrorNotSupported ==
+La operación de switch a un label no está soportada para workspaces parciales
+
+== SwitchOperationNotSupported ==
+Operación de switch no soportada
+
 == SyncBranchWithMultipleHeads ==
 La rama {0} tiene más de un head. Por favor, unifíquela para continuar sincronizando.
 
@@ -778,6 +808,9 @@ El lenguaje del fichero indicado no está soportado actualmente.
 
 == UnsupportedMergeType ==
 Tipo de merge no soportado
+
+== UnsupportedWorkingModeArgument ==
+El modo de trabajo '{0}' no está soportado.
 
 == UpPasswordCorrupt ==
 El parámetro 'password' es incorrecto en el fichero de configuración del cliente.

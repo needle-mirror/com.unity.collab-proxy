@@ -48,7 +48,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         void UpdateMenuItems(GenericMenu menu)
         {
             BranchMenuOperations operations = BranchMenuUpdater.GetAvailableMenuOperations(
-                mBranchMenuOperations.GetSelectedBranchesCount());
+                mBranchMenuOperations.GetSelectedBranchesCount(), false);
 
 			AddBranchMenuItem(
                 mCreateBranchMenuItemContent,

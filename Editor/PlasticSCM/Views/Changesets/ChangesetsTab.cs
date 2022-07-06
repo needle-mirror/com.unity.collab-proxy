@@ -248,6 +248,10 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 mViewSwitcher,
                 mWorkspaceWindow,
                 mProgressControls,
+                new GoBackToOperation.GetStatusFromWorkspace(),
+                new GoBackToOperation.UndoCheckout(),
+                new GoBackToOperation.GoBackToMergeController(),
+                new UnityPlasticGuiMessage(),
                 targetChangesetInfo,
                 RefreshAsset.UnityAssetDatabase,
                 mGoBackToListener.OnSuccessOperation);
@@ -280,8 +284,9 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 {
                     long loadedChangesetId = GetLoadedChangesetId(
                         wkInfo, mIsGluonMode);
-                    long loadedBranchId = PlasticGui.Plastic.API.GetChangesetInfoFromId(
-                        wkInfo, loadedChangesetId).BranchId;
+
+                    long loadedBranchId = GetLoadedBranchId(
+                        wkInfo, loadedChangesetId, mIsGluonMode);
 
                     lock (mLock)
                     {
@@ -388,6 +393,18 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 return -1;
 
             return PlasticGui.Plastic.API.GetLoadedChangeset(wkInfo);
+        }
+
+        static long GetLoadedBranchId(
+            WorkspaceInfo wkInfo,
+            long loadedChangesetId,
+            bool isGluonMode)
+        {
+            if (isGluonMode)
+                return -1;
+
+            return PlasticGui.Plastic.API.GetChangesetInfoFromId(
+                        wkInfo, loadedChangesetId).BranchId;
         }
 
         static string GetChangesetsQuery(DateFilter dateFilter)

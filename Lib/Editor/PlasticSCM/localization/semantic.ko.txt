@@ -302,12 +302,6 @@ Java 가상 머신 경로를 찾을 수 없습니다
 == GetLicense ==
 라이센스 받기
 
-== GetUpdates ==
-업데이트 받기
-
-== GetUpdatesExplanation ==
-SemanticMerge의 새 버전을 받으실 수 있습니다.
-
 == ShowUserGuideMenuItem ==
 사용자 가이드
 
@@ -319,9 +313,6 @@ https://semanticmerge.com/documentation
 
 == OpenSamplesDirectoryMenuItem ==
 샘플 열기
-
-== GiveUsFeedbackMenuItem ==
-피드백 보내기
 
 == FollowSemanticmergeMenuItem ==
 @semanticmerge 팔로우하기
@@ -637,7 +628,7 @@ SemanticMerge의 기본적인 내용에 대해 알아보려면
 구문분석 오류 표시
 
 == ReleaseNotesBaseUrl ==
-https://users.semanticmerge.com/releasenotes/
+https://www.plasticscm.com/download/releasenotes
 
 == MultifileCurrentFile ==
 파일 {0}/{1}:

@@ -285,7 +285,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             instance.mGuiMessage = guiMessage;
             instance.mMergeViewLauncher = mergeViewLauncher;
             instance.mGluonViewSwitcher = gluonViewSwitcher;
-            instance.mEnterKeyAction = instance.OkButtonAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
             return instance;
         }

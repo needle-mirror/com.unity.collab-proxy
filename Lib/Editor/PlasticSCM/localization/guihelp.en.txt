@@ -103,7 +103,7 @@ Some privates are better if they are ignored, so that they do not show up in {vi
 
 Simply right click the files to ignore and select "Add to ignored".
 
-Find out more about ignored files, hidden changes, and other configuration options [link:https://plasticscm.com/download/help/ignored-hidden-etc.html]here[/link].
+Find out more about ignored files, hidden changes, and other configuration options [link:https://plasticscm.com/download/help/ignored-hidden-etc]here[/link].
 
 == PlasticPendingChangesDotPrivate ==
 [title]I had to rename some of your files to .private[/title]
@@ -479,7 +479,7 @@ No worries, but this is a difficult one, because the 3-way merge tool can potent
 
 All you need to do is click "Resolve conflicts" as usual.
 
-But, if recursive merges are new for you, you better [link:https://plasticscm.com/help/recursivemerge]learn more about recursive merges[/link] first.
+But, if recursive merges are new for you, you better [link:https://plasticscm.com/download/help/recursivemerge]learn more about recursive merges[/link] first.
 
 You will have graduated from merge school after this.
 
@@ -509,7 +509,7 @@ instead of merging files one by one.
 
 * Configure locking. Most likely you want the .prefabs to be exclusively locked. Go to the [action:WebAdminOpenInLocks]WebAdmin and configure locks[/action].
 * Use checkouts. Locking requires that you checkout (lock) the files before editing. Checkout is the action to tell Plastic "I'm going to modify the file". It is available from the right-click menu of each file.
-* Configure the files to ignore. There are files that you don't want to add to version control. [action:IgnoreConfCreateUnity]Click here[/action] to create a ignore.conf for Unity. [link:https://plasticscm.com/download/help/ignored-hidden-etc.html]Learn more about ignore.conf[/link].
+* Configure the files to ignore. There are files that you don't want to add to version control. [action:IgnoreConfCreateUnity]Click here[/action] to create a ignore.conf for Unity. [link:https://plasticscm.com/download/help/ignored-hidden-etc]Learn more about ignore.conf[/link].
 
 == PlasticWkExplPendingChangesVisualStudioFirstTime ==
 [title]Tips to work with Visual Studio projects[/title]

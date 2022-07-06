@@ -40,6 +40,9 @@ LDAP
 == UpWorkingMode ==
 Usuario y contraseña
 
+== SSOWorkingMode ==
+Single Sign On
+
 == ConfiguringLdap ==
 Configurando la conexión con LDAP ...
 

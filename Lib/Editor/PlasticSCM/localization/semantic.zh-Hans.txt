@@ -302,12 +302,6 @@ SemanticMerge 工具用法
 == GetLicense ==
 获取许可证
 
-== GetUpdates ==
-获取更新
-
-== GetUpdatesExplanation ==
-有一个新版 semanticmerge，请获取此版本！
-
 == ShowUserGuideMenuItem ==
 用户指南
 
@@ -319,9 +313,6 @@ https://semanticmerge.com/documentation
 
 == OpenSamplesDirectoryMenuItem ==
 打开示例
-
-== GiveUsFeedbackMenuItem ==
-发送反馈
 
 == FollowSemanticmergeMenuItem ==
 关注 @semanticmerge
@@ -637,7 +628,7 @@ https://semanticmerge.com/documentation
 显示解析错误
 
 == ReleaseNotesBaseUrl ==
-https://users.semanticmerge.com/releasenotes/
+https://www.plasticscm.com/download/releasenotes
 
 == MultifileCurrentFile ==
 文件 {0} / {1}：

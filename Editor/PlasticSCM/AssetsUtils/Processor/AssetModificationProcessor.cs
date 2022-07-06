@@ -2,8 +2,9 @@
 
 using UnityEditor;
 
-using AssetOverlays = Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
+using Unity.PlasticSCM.Editor.UI;
+using AssetOverlays = Unity.PlasticSCM.Editor.AssetsOverlays;
 
 namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 {
@@ -19,7 +20,8 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
         static AssetModificationProcessor()
         {
-            ForceCheckout = EditorPrefs.GetBool("forceCheckoutPlasticSCM");
+            ForceCheckout = EditorPrefs.GetBool(
+                UnityConstants.FORCE_CHECKOUT_KEY_NAME);
         }
 
         internal static void Enable(
@@ -39,7 +41,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
         {
             ForceCheckout = isEnabled;
             EditorPrefs.SetBool(
-                "forceCheckoutPlasticSCM",
+                UnityConstants.FORCE_CHECKOUT_KEY_NAME,
                 isEnabled);
         }
 

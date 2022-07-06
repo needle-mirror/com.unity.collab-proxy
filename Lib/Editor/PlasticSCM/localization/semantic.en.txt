@@ -302,12 +302,6 @@ Configuration...
 == GetLicense ==
 Get license
 
-== GetUpdates ==
-Get updates
-
-== GetUpdatesExplanation ==
-a new version of semanticmerge is available, get it!
-
 == ShowUserGuideMenuItem ==
 User guide
 
@@ -320,14 +314,11 @@ Show intro guide
 == OpenSamplesDirectoryMenuItem ==
 Open samples
 
-== GiveUsFeedbackMenuItem ==
-Send feedback
-
 == FollowSemanticmergeMenuItem ==
 Follow @semanticmerge
 
 == AboutSemanticmergeMenuItem ==
-About & license
+About
 
 == VisualDiffWindowTitle ==
 visual diff
@@ -637,7 +628,7 @@ Some issues were found while processing these files.
 Show parsing errors
 
 == ReleaseNotesBaseUrl ==
-https://users.semanticmerge.com/releasenotes/
+https://www.plasticscm.com/download/releasenotes
 
 == MultifileCurrentFile ==
 File {0} of {1}:

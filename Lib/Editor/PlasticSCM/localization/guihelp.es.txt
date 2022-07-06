@@ -103,7 +103,7 @@ Algunos privados es mejor ignorarlos, así no se mostrarán continuamente en la 
 1. Haz clic derecho en los ficheros que quieres ignorar.
 2. Selecciona "añadir a la lista de ignorados".
 
-Lee más sobre ficheros ignorados, ocultos y otras opciones de configuración [link:https://plasticscm.com/download/help/ignored-hidden-etc.html]aquí[/link].
+Lee más sobre ficheros ignorados, ocultos y otras opciones de configuración [link:https://plasticscm.com/download/help/ignored-hidden-etc]aquí[/link].
 
 == PlasticPendingChangesDotPrivate ==
 [title]He tenido que renombrar algunos de tus ficheros como .private[/title]
@@ -479,7 +479,7 @@ No te asustes, pero es un merge algo complicado porque la herramienta de merge d
 
 Todo lo que tienes que hacer es clic en "Resolver conflictos" como en otras ocasiones.
 
-Si todo esto es nuevo para ti, te recomendamos que dediques unos minutos a [link:https://plasticscm.com/help/recursivemerge]leer más sobre los merges recursivos[/link]
+Si todo esto es nuevo para ti, te recomendamos que dediques unos minutos a [link:https://plasticscm.com/download/help/recursivemerge]leer más sobre los merges recursivos[/link]
 
 Después de esto, ya podrás graduarte en la escuela de los merges.
 
@@ -511,7 +511,7 @@ fichero.
 
 * Configura el bloqueo. Es muy posible que quieras que los ficheros .prefabs estén bloqueados de manera exclusiva. Para ello, ve a [action:WebAdminOpenInLocks]WebAdmin y configura los bloqueos[/action].
 * Usa checkouts (desprotecciones). Para bloquear un fichero tienes que hacer checkout: desproteger para editar. Desproteger es la acción de decirle a Plastic "Voy a modificar el fichero". Esta acción está disponible desde el menú contextual (clic derecho) de cada fichero.
-* Configura los ficheros a ignorar. Hay ficheros que no quieres añadir al control de versiones. [action:IgnoreConfCreateUnity]Haz clic aquí[/action] para crear el fichero ignore.conf para Unity. [link:https://plasticscm.com/download/help/ignored-hidden-etc.html] Lee más sobre cómo configurar el fichero ignore.conf[/link].
+* Configura los ficheros a ignorar. Hay ficheros que no quieres añadir al control de versiones. [action:IgnoreConfCreateUnity]Haz clic aquí[/action] para crear el fichero ignore.conf para Unity. [link:https://plasticscm.com/download/help/ignored-hidden-etc] Lee más sobre cómo configurar el fichero ignore.conf[/link].
 
 == PlasticWkExplPendingChangesVisualStudioFirstTime ==
 [title]Consejos para trabajar con proyectos de Visual Studio[/title]
