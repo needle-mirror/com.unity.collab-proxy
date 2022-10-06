@@ -51,6 +51,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             IGluonViewSwitcher gluonViewSwitcher,
             EditorWindow parentWindow,
             IAssetSelection assetSelection,
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             bool isGluonMode)
         {
             mWkInfo = wkInfo;
@@ -63,6 +64,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             mMergeViewLauncher = mergeViewLauncher;
             mGluonViewSwitcher = gluonViewSwitcher;
             mAssetSelection = assetSelection;
+            mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
             mIsGluonMode = isGluonMode;
             mParentWindow = parentWindow;
 
@@ -188,7 +190,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         void IAssetMenuOperations.ShowDiff()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(
+            if (mShowDownloadPlasticExeWindow.Show(
                 mWkInfo,
                 mIsGluonMode,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromShowDiff,
@@ -228,7 +230,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         void IAssetMenuOperations.ShowHistory()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(
+            if (mShowDownloadPlasticExeWindow.Show(
                mWkInfo,
                mIsGluonMode,
                TrackFeatureUseEvent.Features.InstallPlasticCloudFromShowHistory,
@@ -311,5 +313,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         readonly EditorProgressControls mProgressControls;
         readonly EditorWindow mParentWindow;
         readonly IAssetSelection mAssetSelection;
+        readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
     }
 }

@@ -13,11 +13,6 @@
                 <Label name="dataCenterRetryAlert" class="alert-label"/>
                 <Button name="dataCenterRetryButton"/>
             </VisualElement>
-            <VisualElement class="field">
-                <Toggle name="encryptData"/>
-                <Label name="encryptExplanation"/>
-                <Button name="encryptLearnMore" class="anchor"/>
-            </VisualElement>
         </VisualElement>
         <VisualElement class="row flex-container flex-end">
             <Button class="footerButton" name="back"/>

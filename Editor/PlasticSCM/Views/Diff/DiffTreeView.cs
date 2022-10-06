@@ -5,6 +5,7 @@ using UnityEngine;
 
 using Codice.Client.Commands;
 using Codice.Client.Common;
+using Codice.CM.Common;
 using Codice.Utils;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Diff;
@@ -177,13 +178,14 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         }
 
         internal void BuildModel(
+            WorkspaceInfo wkInfo,
             List<ClientDiff> diffs,
             BranchResolver brResolver,
             bool skipMergeTracking)
         {
             mTreeViewItemIds.Clear();
 
-            mDiffTree.BuildCategories(diffs, brResolver, skipMergeTracking);
+            mDiffTree.BuildCategories(wkInfo, diffs, brResolver, skipMergeTracking);
         }
 
         internal void Refilter()
@@ -286,7 +288,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             foreach (IDiffCategory category in categories)
             {
-                if (category is MergeCategory)
+                if (category is CategoryGroup &&
+                    ((CategoryGroup)category).CategoryType == CategoryGroup.Type.MergeCategory)
                 {
                     AddMergeCategory(
                         rootItem,
@@ -341,7 +344,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                 new MergeCategoryTreeViewItem(
                     categoryId,
                     rootItem.depth + 1,
-                    (MergeCategory)category);
+                    (CategoryGroup)category);
 
             rootItem.AddChild(mergeCategoryTreeViewItem);
             rows.Add(mergeCategoryTreeViewItem);
@@ -429,7 +432,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             bool isFocused)
         {
             string label = item.Category.CategoryName;
-            string infoLabel = item.Category.GetChildrenCountText();
+            string infoLabel = PlasticLocalization.Name.ItemsCount.GetString(
+                item.Category.GetChildrenCount());
 
             DrawTreeViewItem.ForCategoryItem(
                 rowRect,
@@ -447,7 +451,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             bool isFocused)
         {
             string label = item.Category.CategoryName;
-            string infoLabel = item.Category.GetChildrenCountText();
+            string infoLabel = PlasticLocalization.Name.ItemsCount.GetString(
+                item.Category.GetChildrenCount());
 
             DrawTreeViewItem.ForCategoryItem(
                 rowRect,

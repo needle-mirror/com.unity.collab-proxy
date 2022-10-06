@@ -106,10 +106,8 @@ internal class TurnOffPlasticWindow : EditorWindow
             mProgressBar.title = mProgressBar.value.ToString() +"%";
             mTurnedOffLabel.text = PlasticLocalization.GetString(
                 PlasticLocalization.Name.TurnOffPlasticSCMDeleting);
-            WorkspaceInfo workspaceInfo =
-                       FindWorkspace.InfoForApplicationPath(
-                       Application.dataPath,
-                       PlasticApp.PlasticAPI);
+            WorkspaceInfo workspaceInfo = FindWorkspace.InfoForApplicationPath(
+                ApplicationDataPath.Get(), Plastic.API);
             Plastic.API.RemoveWorkspace(workspaceInfo);
             DrawInspectorOperations.Disable();
             DrawSceneOperations.Disable();

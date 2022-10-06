@@ -103,6 +103,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.PendingMergeLinks
         {
             List<MountPendingMergeLink> result = new List<MountPendingMergeLink>();
 
+            if (pendingMergeLinks == null)
+                return result;
+
             foreach (KeyValuePair<MountPoint, IList<PendingMergeLink>> mountLink
                 in pendingMergeLinks)
             {

@@ -7,6 +7,7 @@ using UnityEngine;
 
 using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Commands;
+using Codice.Client.Common;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using PlasticGui;
@@ -15,11 +16,12 @@ using PlasticGui.WorkspaceWindow.Update;
 using PlasticGui.WorkspaceWindow.QueryViews;
 using PlasticGui.WorkspaceWindow.QueryViews.Changesets;
 using GluonGui;
+using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
+using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.Views.Diff;
-using Unity.PlasticSCM.Editor.AssetUtils;
 
 using IGluonUpdateReport = PlasticGui.Gluon.IUpdateReport;
 
@@ -31,7 +33,10 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         IChangesetMenuOperations,
         ChangesetsViewMenu.IMenuOperations
     {
-        internal interface IGoBackToListener
+        internal ChangesetsListView Table { get { return mChangesetsListView; } }
+        internal IChangesetMenuOperations Operations { get { return this; } }
+
+        internal interface IRevertToChangesetListener
         {
             void OnSuccessOperation();
         }
@@ -46,7 +51,9 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             IUpdateReport updateReport,
             IGluonUpdateReport gluonUpdateReport,
             NewIncomingChangesUpdater newIncomingChangesUpdater,
-            IGoBackToListener goBackToListener,
+            IRevertToChangesetListener revertToChangesetListener,
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            LaunchTool.IProcessExecutor processExecutor,
             EditorWindow parentWindow,
             bool isGluonMode)
         {
@@ -54,7 +61,9 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mViewHost = viewHost;
             mWorkspaceWindow = workspaceWindow;
             mViewSwitcher = viewSwitcher;
-            mGoBackToListener = goBackToListener;
+            mRevertToChangesetListener = revertToChangesetListener;
+            mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
+            mProcessExecutor = processExecutor;
             mParentWindow = parentWindow;
             mIsGluonMode = isGluonMode;
             mGluonUpdateReport = gluonUpdateReport;
@@ -162,11 +171,29 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
             lock (mLock)
             {
-                mLoadedChangesetId = homeInfo.ChangesetId;
+                mLoadedChangesetId = homeInfo.GetChangesetId();
             }
 
             mChangesetsListView.SetLoadedChangesetId(mLoadedChangesetId);
             mChangesetsViewMenu.SetLoadedBranchId(homeInfo.BranchInfo.BranchId);
+        }
+
+        internal void SetRevertToChangesetOperationInterfacesForTesting(
+            RevertToChangesetOperation.IGetStatusForWorkspace getStatusForWorkspace,
+            RevertToChangesetOperation.IUndoCheckoutOperation undoCheckoutOperation,
+            RevertToChangesetOperation.IRevertToChangesetMergeController revertToChangesetMergeController)
+        {
+            mGetStatusForWorkspace = getStatusForWorkspace;
+            mUndoCheckoutOperation = undoCheckoutOperation;
+            mRevertToChangesetMergeController = revertToChangesetMergeController;
+        }
+
+        internal void SetLaunchToolForTesting(
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            LaunchTool.IProcessExecutor processExecutor)
+        {
+            mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
+            mProcessExecutor = processExecutor;
         }
 
         void IRefreshableView.Refresh()
@@ -197,6 +224,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         void IChangesetMenuOperations.DiffChangeset()
         {
             LaunchDiffOperations.DiffChangeset(
+                mShowDownloadPlasticExeWindow,
+                mProcessExecutor,
                 ChangesetsSelection.GetSelectedRepository(mChangesetsListView),
                 ChangesetsSelection.GetSelectedChangeset(mChangesetsListView),
                 mIsGluonMode);
@@ -211,6 +240,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 return;
 
             LaunchDiffOperations.DiffSelectedChangesets(
+                mShowDownloadPlasticExeWindow,
+                mProcessExecutor,
                 ChangesetsSelection.GetSelectedRepository(mChangesetsListView),
                 (ChangesetExtendedInfo)selectedChangesets[0],
                 (ChangesetExtendedInfo)selectedChangesets[1],
@@ -236,25 +267,26 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         void IChangesetMenuOperations.BrowseRepositoryOnChangeset() { }
         void IChangesetMenuOperations.CreateCodeReview() { }
 
-        void IChangesetMenuOperations.GoBackToChangeset()
+        void IChangesetMenuOperations.RevertToChangeset()
         {
             if (((IChangesetMenuOperations)this).GetSelectedChangesetsCount() != 1)
                 return;
 
             ChangesetExtendedInfo targetChangesetInfo = ((ChangesetsViewMenu.IMenuOperations)this).GetSelectedChangeset();
 
-            GoBackToOperation.GoBackTo(
+            RevertToChangesetOperation.RevertTo(
                 mWkInfo,
                 mViewSwitcher,
                 mWorkspaceWindow,
                 mProgressControls,
-                new GoBackToOperation.GetStatusFromWorkspace(),
-                new GoBackToOperation.UndoCheckout(),
-                new GoBackToOperation.GoBackToMergeController(),
-                new UnityPlasticGuiMessage(),
+                mGetStatusForWorkspace,
+                mUndoCheckoutOperation,
+                mRevertToChangesetMergeController,
+                GuiMessage.Get(),
                 targetChangesetInfo,
-                RefreshAsset.UnityAssetDatabase,
-                mGoBackToListener.OnSuccessOperation);
+                RefreshAsset.BeforeLongAssetOperation,
+                RefreshAsset.AfterLongAssetOperation,
+                mRevertToChangesetListener.OnSuccessOperation);
         }
 
         void SearchField_OnDownOrUpArrowKeyPressed()
@@ -335,6 +367,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         void ChangesetsViewMenu.IMenuOperations.DiffBranch()
         {
             LaunchDiffOperations.DiffBranch(
+                mShowDownloadPlasticExeWindow,
+                mProcessExecutor,
                 ChangesetsSelection.GetSelectedRepository(mChangesetsListView),
                 ChangesetsSelection.GetSelectedChangeset(mChangesetsListView),
                 mIsGluonMode);
@@ -550,7 +584,12 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 UnityConstants.CHANGESETS_TABLE_SETTINGS_NAME,
                 (int)ChangesetsListColumn.CreationDate, false);
 
-            mChangesetsViewMenu = new ChangesetsViewMenu(wkInfo, this, this, mIsGluonMode);
+            mChangesetsViewMenu = new ChangesetsViewMenu(
+                wkInfo, 
+                this, 
+                this,
+                mShowDownloadPlasticExeWindow,
+                mIsGluonMode);
 
             mChangesetsListView = new ChangesetsListView(
                 headerState,
@@ -563,7 +602,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
             mDiffPanel = new DiffPanel(
                 wkInfo, workspaceWindow, refreshView, viewSwitcher,
-                historyViewLauncher, parentWindow, mIsGluonMode);
+                historyViewLauncher, mShowDownloadPlasticExeWindow,
+                parentWindow, mIsGluonMode);
         }
 
         bool mIsRefreshing;
@@ -585,8 +625,18 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         DiffPanel mDiffPanel;
         ChangesetsViewMenu mChangesetsViewMenu;
 
+        RevertToChangesetOperation.IGetStatusForWorkspace mGetStatusForWorkspace =
+            new RevertToChangesetOperation.GetStatusFromWorkspace();
+        RevertToChangesetOperation.IUndoCheckoutOperation mUndoCheckoutOperation =
+            new RevertToChangesetOperation.UndoCheckout();
+        RevertToChangesetOperation.IRevertToChangesetMergeController mRevertToChangesetMergeController =
+            new RevertToChangesetOperation.RevertToChangesetMergeController();
+
         long mLoadedChangesetId = -1;
         object mLock = new object();
+
+        LaunchTool.IProcessExecutor mProcessExecutor;
+        LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
 
         readonly bool mIsGluonMode;
         readonly ViewHost mViewHost;
@@ -594,7 +644,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         readonly WorkspaceWindow mWorkspaceWindow;
         readonly IViewSwitcher mViewSwitcher;
         readonly ProgressControlsForViews mProgressControls;
-        readonly IGoBackToListener mGoBackToListener;
+        readonly IRevertToChangesetListener mRevertToChangesetListener;
         readonly EditorWindow mParentWindow;
         readonly WorkspaceInfo mWkInfo;
     }

@@ -79,6 +79,12 @@ Mark as unresolved
 == MergetoolUsageTitle ==
 Mergetool usage
 
+== XMergeUsageTitle ==
+XMerge Tool Usage
+
+== ToolUsageNotice ==
+Please read below the usage of the tool
+
 == BinMergeToolExitQuestion ==
 Do you want save the selected contributor as the merge result?
 
@@ -87,7 +93,55 @@ Do you want save the selected contributor as the merge result?
 
 == MacMergetoolUsageHeader ==
     Usage: macmergetool
-    
+
+== XMergeUsage ==
+Usage: {0} xmerge [<diffOptions> | <mergeOptions>]
+
+    diffOptions: <generalFiles> [<generalOptions>]
+
+    mergeOptions: <generalFiles> <baseFile> [<baseSymbolicName>] [[<automatic>] [<silent>] <resultFile>] [<mergeType>] [<generalOptions>]
+
+        baseFile:            {{-b | --base}}=<filename>
+        baseSymbolicName:    {{-bn | --basesymbolicname}}=<symbolicname>
+        automatic:           -a | --automatic
+        silent:              --silent
+        resultFile:          {{-r | --result}}=<filename>
+        mergeType:           {{-m | --mergeresolutiontype}}={{onlyone | onlysrc | onlydst | try | forced}}
+
+    generalFiles: <sourceFile> [<srcSymbolicName>] <destination> [<dstSymbolicName>]
+
+        sourceFile:          {{-s | --source}}=<filename>
+        srcSymbolicName:     {{-sn | --srcsymbolicname}}=<symbolicname>
+        destinationFile:     {{-d | --destination}}=<filename>
+        dstSymbolicName:     {{-dn | --dstsymbolicname}}=<symbolicname>
+
+    generalOptions: [<defaultEncoding>] [<comparisonMethod>] [<fileType>] [<resultEncoding>]
+
+        defaultEncoding:     {{-e | --encoding}}={{none |ascii | unicode | bigendian | utf7 | utf8}}
+        comparisonMethod:    {{-i | --ignore}}={{none | eol | whitespaces | eol&whitespaces}}
+        fileType:            {{-t | --filestype}}={{text/csharp | text/XML | text}}
+        resultEncoding:      {{-re | --resultencoding}}={{none |ascii | unicode | bigendian | utf7 | utf8}}
+        progress:            {{--progress}}=progress string indicating the current progress, for example: Merging file 1/8
+        extraInfoFile:       {{--extrainfofile}}=path to a file that contains extra info about the merge
+
+    Remarks:
+
+        -a | --automatic:    Tries to resolve the merge automatically.
+                             If the merge can't be resolved automatically (requires user interaction), the merge tool is shown.
+                             A result file must always be specified for a merge to be resolved automatically.
+        --silent:            This option must be used combined with the --automatic option.
+                             When a merge can't be resolved automatically, this option causes the tool to return immediately
+                             with a non-zero exit code (no merge tool is shown).
+                             If the tool was able to resolve the merge automatically, the program returns exit code 0.
+
+    Examples:
+
+       {0} xmerge
+       {0} xmerge -s=file1.txt -d=file2.txt
+       {0} xmerge -s=file1.txt -b=file0.txt --destination=file2.txt
+       {0} xmerge --base=file0.txt -d=file2.txt --source=file1.txt --automatic --result=result.txt
+       {0} xmerge -b=file0.txt -s=file1.txt -d=file2.txt -a -r=result.txt -e=utf7 -i=eol -t=text/csharp -m=onlyone
+
 == MergetoolUsage ==
     mergeOptions: <sourceFile> [<sourceSymbolicName>] 
                   <baseFile> [<baseSymbolicName>]
@@ -316,6 +370,9 @@ Merge conflict blocks
 
 == ComparisonMethodMenuTitle ==
 Comparison method
+
+== ColorsMenuTitle ==
+Merge tracking colors
 
 == RecognizeAll ==
 Recognize all
@@ -586,6 +643,9 @@ Highlight changes with conflicts that the user solved during the merge
 
 == MergedChanges ==
 Merged changes
+
+== RestoreDefaults ==
+Restore defaults
 
 == MergedChangesTooltip ==
 Highlight changes coming from a merge

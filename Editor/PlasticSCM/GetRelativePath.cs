@@ -8,7 +8,7 @@ namespace Unity.PlasticSCM.Editor
     {
         internal static string ToApplication(string path)
         {
-            Uri relativeToUri = new Uri(Application.dataPath);
+            Uri relativeToUri = new Uri(ApplicationDataPath.Get());
             Uri pathUri = new Uri(FixVolumeLetterPath(path));
 
             return Uri.UnescapeDataString(

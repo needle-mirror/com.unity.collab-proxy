@@ -34,6 +34,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             IRefreshView refreshView,
             IViewSwitcher viewSwitcher,
             IHistoryViewLauncher historyViewLauncher,
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             EditorWindow parentWindow,
             bool isGluonMode)
         {
@@ -42,6 +43,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             mRefreshView = refreshView;
             mViewSwitcher = viewSwitcher;
             mHistoryViewLauncher = historyViewLauncher;
+            mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
             mParentWindow = parentWindow;
             mGuiMessage = new UnityPlasticGuiMessage();
             mIsGluonMode = isGluonMode;
@@ -140,7 +142,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void IDiffTreeViewMenuOperations.Diff()
         {
-            if(LaunchTool.ShowDownloadPlasticExeWindow(
+            if (mShowDownloadPlasticExeWindow.Show(
                 mWkInfo,
                 mIsGluonMode,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffRevision,
@@ -161,7 +163,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void IDiffTreeViewMenuOperations.History()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(
+            if (mShowDownloadPlasticExeWindow.Show(
                 mWkInfo,
                 mIsGluonMode,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromShowHistory,
@@ -221,7 +223,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void DiffTreeViewMenu.IMetaMenuOperations.DiffMeta()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(
+            if (mShowDownloadPlasticExeWindow.Show(
                 mWkInfo,
                 mIsGluonMode,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffRevision,
@@ -255,7 +257,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void DiffTreeViewMenu.IMetaMenuOperations.HistoryMeta()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(
+            if (mShowDownloadPlasticExeWindow.Show(
                mWkInfo,
                mIsGluonMode,
                TrackFeatureUseEvent.Features.InstallPlasticCloudFromShowHistory,
@@ -347,8 +349,11 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                         mIsSkipMergeTrackingButtonChecked;
 
                     UpdateDiffTreeView(
-                        mDiffs, mDiffsBranchResolver,
-                        skipMergeTracking, mDiffTreeView);
+                        mWkInfo,
+                        mDiffs,
+                        mDiffsBranchResolver,
+                        skipMergeTracking,
+                        mDiffTreeView);
                 });
         }
 
@@ -371,13 +376,14 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         }
 
         static void UpdateDiffTreeView(
+            WorkspaceInfo wkInfo,
             List<ClientDiff> diffs,
             BranchResolver brResolver,
             bool skipMergeTracking,
             DiffTreeView diffTreeView)
         {
             diffTreeView.BuildModel(
-                diffs, brResolver, skipMergeTracking);
+                wkInfo, diffs, brResolver, skipMergeTracking);
 
             diffTreeView.Refilter();
 
@@ -470,7 +476,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                     TrackFeatureUseEvent.Features.ChangesetViewSkipMergeTrackingButton);
             }
 
-            UpdateDiffTreeView(diffs, brResolver, isChecked, diffTreeView);
+            UpdateDiffTreeView(mWkInfo, diffs, brResolver, isChecked, diffTreeView);
 
             mIsSkipMergeTrackingButtonChecked = isChecked;
         }
@@ -518,6 +524,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         readonly IWorkspaceWindow mWorkspaceWindow;
         readonly IHistoryViewLauncher mHistoryViewLauncher;
         readonly IViewSwitcher mViewSwitcher;
+        readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
         readonly WorkspaceInfo mWkInfo;
         readonly bool mIsGluonMode;
     }

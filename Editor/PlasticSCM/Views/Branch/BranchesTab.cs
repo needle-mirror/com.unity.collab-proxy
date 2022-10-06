@@ -6,7 +6,6 @@ using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 using Codice.CM.Common;
-using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Common.Threading;
 
 using PlasticGui;
@@ -28,6 +27,9 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         IBranchMenuOperations,
         IQueryRefreshableView
     {
+        internal BranchesListView Table { get { return mBranchesListView; } }
+        internal IBranchMenuOperations Operations { get { return this; } }
+
         internal BranchesTab(
             WorkspaceInfo wkInfo,
             IWorkspaceWindow workspaceWindow,
@@ -357,8 +359,13 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 repSpec,
                 branchInfo);
 
-            mBranchOperations.CreateBranch(branchCreationData, RefreshAsset.UnityAssetDatabase);
+            mBranchOperations.CreateBranch(
+                branchCreationData,
+                RefreshAsset.BeforeLongAssetOperation,
+                RefreshAsset.AfterLongAssetOperation);
         }
+		
+		void IBranchMenuOperations.CreateTopLevelBranch() { }
 
         void IBranchMenuOperations.SwitchToBranch()
         {
@@ -368,7 +375,8 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             mBranchOperations.SwitchToBranch(
                 repSpec,
                 branchInfo,
-                RefreshAsset.UnityAssetDatabase);
+                RefreshAsset.BeforeLongAssetOperation,
+                RefreshAsset.AfterLongAssetOperation);
         }
 
         void IBranchMenuOperations.MergeBranch() { }

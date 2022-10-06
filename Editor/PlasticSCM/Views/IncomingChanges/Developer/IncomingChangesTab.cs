@@ -32,7 +32,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         IIncomingChangesTab,
         IRefreshableView,
         MergeViewLogic.IMergeView,
-        MergeChangesTree.IGetConflictResolution,
         IIncomingChangesViewMenuOperations,
         IncomingChangesViewMenu.IMetaMenuOperations
     {
@@ -40,12 +39,14 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             WorkspaceInfo wkInfo,
             IWorkspaceWindow workspaceWindow,
             IViewSwitcher switcher,
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             NewIncomingChangesUpdater newIncomingChangesUpdater,
             EditorWindow parentWindow)
         {
             mWkInfo = wkInfo;
             mWorkspaceWindow = workspaceWindow;
             mSwitcher = switcher;
+            mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
             mNewIncomingChangesUpdater = newIncomingChangesUpdater;
             mParentWindow = parentWindow;
             mGuiMessage = new UnityPlasticGuiMessage();
@@ -154,7 +155,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                         mWorkspaceWindow,
                         mGuiMessage,
                         mMergeViewLogic,
-                        AfterProcessMerges);
+                        RefreshAsset.BeforeLongAssetOperation,
+                        () => AfterProcessMerges(RefreshAsset.AfterLongAssetOperation));
                 }
 
                 if (mIsCancelMergesButtonVisible)
@@ -243,6 +245,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
         void MergeViewLogic.IMergeView.UpdateData(
             MergeTreeResult resultConflicts,
+            MergeChangesTree mergeChangesTree,
             ExplainMergeData explainMergeData,
             MergeSolvedFileConflicts solvedFileConflicts,
             MountPointWithPath rootMountPoint,
@@ -261,10 +264,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             mConflictResolutionStates.Clear();
 
             UpdateFileConflictsTree(
-                MergeChangesTree.BuildForIncomingChangesView(
-                    mResultConflicts,
-                    this,
-                    rootMountPoint),
+                mergeChangesTree,
                 mIncomingChangesTreeView,
                 mResolveChangeset);
 
@@ -326,20 +326,22 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             mIsCancelMergesButtonVisible = false;
         }
 
+        void MergeViewLogic.IMergeView.EnableMergeOptionButton()
+        {
+        }
+
+        void MergeViewLogic.IMergeView.DisableMergeOptionsButton()
+        {
+        }
+
         SelectedIncomingChangesGroupInfo IIncomingChangesViewMenuOperations.GetSelectedIncomingChangesGroupInfo()
         {
             return IncomingChangesSelection.GetSelectedGroupInfo(mIncomingChangesTreeView);
         }
 
-        string MergeChangesTree.IGetConflictResolution.GetConflictResolution(
-            DirectoryConflict conflict)
-        {
-            return mMergeViewLogic.GetConflictResolution(conflict);
-        }
-
         void IIncomingChangesViewMenuOperations.MergeContributors()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(
+            if (mShowDownloadPlasticExeWindow.Show(
                 mWkInfo,
                 false,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromMergeSelectedFiles,
@@ -357,7 +359,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 mGuiMessage,
                 selectedPaths,
                 MergeContributorType.MergeContributors,
-                RefreshAsset.UnityAssetDatabase,
+                RefreshAsset.BeforeLongAssetOperation,
+                () => AfterProcessMerges(RefreshAsset.AfterLongAssetOperation),
                 null);
         }
 
@@ -373,7 +376,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 mGuiMessage,
                 selectedPaths,
                 MergeContributorType.KeepSource,
-                RefreshAsset.UnityAssetDatabase,
+                RefreshAsset.BeforeLongAssetOperation,
+                () => AfterProcessMerges(RefreshAsset.AfterLongAssetOperation),
                 null);
         }
 
@@ -389,7 +393,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 mGuiMessage,
                 selectedPaths,
                 MergeContributorType.KeepDestination,
-                RefreshAsset.UnityAssetDatabase,
+                RefreshAsset.BeforeLongAssetOperation,
+                () => AfterProcessMerges(RefreshAsset.AfterLongAssetOperation),
                 null);
         }
 
@@ -402,6 +407,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 return;
 
             DiffYoursWithIncoming(
+                mShowDownloadPlasticExeWindow,
                 incomingChange,
                 mWkInfo);
         }
@@ -415,6 +421,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 return;
 
             DiffIncomingChanges(
+                mShowDownloadPlasticExeWindow,
                 incomingChange,
                 mWkInfo);
         }
@@ -428,6 +435,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 return;
 
             DiffIncomingChanges(
+                mShowDownloadPlasticExeWindow,
                 mIncomingChangesTreeView.GetMetaChange(incomingChange),
                 mWkInfo);
         }
@@ -441,6 +449,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 return;
 
             DiffYoursWithIncoming(
+                mShowDownloadPlasticExeWindow,
                 mIncomingChangesTreeView.GetMetaChange(incomingChange),
                 mWkInfo);
         }
@@ -451,10 +460,11 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         }
 
         static void DiffYoursWithIncoming(
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             MergeChangeInfo incomingChange,
             WorkspaceInfo wkInfo)
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(
+            if (showDownloadPlasticExeWindow.Show(
                 wkInfo,
                 false,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffYoursWithIncoming,
@@ -473,10 +483,11 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         }
 
         static void DiffIncomingChanges(
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             MergeChangeInfo incomingChange,
             WorkspaceInfo wkInfo)
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(
+            if (showDownloadPlasticExeWindow.Show(
                 wkInfo,
                 false,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffIncomingChanges,
@@ -685,12 +696,12 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             }
         }
 
-        void AfterProcessMerges()
+        void AfterProcessMerges(Action afterAssetLongOperation)
         {
             mIsUpdateSuccessful = true;
             mCooldownClearUpdateSuccessAction.Ping();
 
-            RefreshAsset.UnityAssetDatabase();
+            afterAssetLongOperation();
         }
 
         static void DoProcessMergesButton(
@@ -700,6 +711,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             IWorkspaceWindow workspaceWindow,
             GuiMessage.IGuiMessage guiMessage,
             MergeViewLogic mergeViewLogic,
+            Action beforeProcessMergesAction,
             Action afterProcessMergesAction)
         {
             GUI.enabled = isEnabled;
@@ -712,6 +724,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     guiMessage,
                     new List<string>(),
                     MergeContributorType.MergeContributors,
+                    beforeProcessMergesAction,
                     afterProcessMergesAction,
                     null);
             }
@@ -898,6 +911,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         readonly GuiMessage.IGuiMessage mGuiMessage;
         readonly EditorWindow mParentWindow;
         readonly NewIncomingChangesUpdater mNewIncomingChangesUpdater;
+        readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
         readonly IViewSwitcher mSwitcher;
         readonly IWorkspaceWindow mWorkspaceWindow;
         readonly WorkspaceInfo mWkInfo;

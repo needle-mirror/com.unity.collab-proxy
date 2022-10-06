@@ -33,14 +33,14 @@ namespace Unity.PlasticSCM.Editor.UI.StatusBar
         internal void OnGUI()
         {
             GUILayout.BeginVertical();
+
             GUILayout.FlexibleSpace();
             GUILayout.BeginHorizontal(UnityStyles.StatusBar.NotificationPanel);
 
             if (mSubscriptionPanel.HasNotification)
-            {
                 mSubscriptionPanel.OnGUI();
-                GUILayout.FlexibleSpace();
-            }
+            
+            GUILayout.FlexibleSpace();
 
             if (mContactPanel.HasNotification)
                 mContactPanel.OnGUI();
@@ -49,6 +49,7 @@ namespace Unity.PlasticSCM.Editor.UI.StatusBar
 
             GUILayout.EndHorizontal();
             GUILayout.FlexibleSpace();
+
             GUILayout.EndVertical();
         }
 
@@ -136,7 +137,7 @@ namespace Unity.PlasticSCM.Editor.UI.StatusBar
 
                 GUILayout.Label(
                     text,
-                    EditorStyles.label);
+                    UnityStyles.StatusBar.Label);
 
                 GUILayout.FlexibleSpace();
                 GUILayout.EndVertical();
@@ -153,7 +154,7 @@ namespace Unity.PlasticSCM.Editor.UI.StatusBar
 
                 if (GUILayout.Button(
                         buttonText,
-                        EditorStyles.miniButton))
+                        UnityStyles.StatusBar.LinkLabel))
                 {
                     LaunchNotificationAction.For(
                         cloudServerInfo,

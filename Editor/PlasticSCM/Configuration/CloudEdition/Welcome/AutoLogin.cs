@@ -150,7 +150,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         void GetOrganizationList()
         {
             OAuthSignIn.GetOrganizationsFromAccessToken(
-                PlasticApp.PlasticWebRestApi,
+                PlasticGui.Plastic.WebRestAPI,
                 new ProgressControlsForDialogs(),
                 this,
                 string.Empty,
@@ -167,8 +167,8 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mPlasticWindow = GetPlasticWindow();
 
             CloudEditionWelcomeWindow.ShowWindow(
-                   PlasticApp.PlasticWebRestApi,
-                   mPlasticWindow.CmConnectionForTesting, null, true);
+                PlasticGui.Plastic.WebRestAPI,
+                mPlasticWindow.CmConnectionForTesting, null, true);
 
             mCloudEditionWelcomeWindow = CloudEditionWelcomeWindow.GetWelcomeWindow();
             mCloudEditionWelcomeWindow.FillUserAndToken(UserName, AccessToken);

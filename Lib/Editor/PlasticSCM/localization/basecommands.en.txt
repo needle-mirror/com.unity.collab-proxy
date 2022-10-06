@@ -1,4 +1,4 @@
-﻿== WrongRevFormat3D ==
+== WrongRevFormat3D ==
 The revision format specified is not valid
 
 == AcceptResults ==
@@ -85,6 +85,9 @@ allows the user to apply attributes
 == Applylabel ==
 allows the user to apply labels
 
+== Archived ==
+Archived
+
 == AskDeleteWorkspace ==
 No workspace specified. Do you want to delete the current workspace? (Y/N):
 
@@ -93,6 +96,9 @@ The workspace is dynamic. You will LOSE all of the private items in the workspac
 
 == AttValueField ==
 Attribute value
+
+== Available ==
+Available
 
 == AvailableUsers ==
 Total available users:  {0}
@@ -1022,6 +1028,9 @@ Two items have been moved on source and destination and collide because they cre
 == CycleMoveConflictSourceOperation ==
 Moved from {0} to {1}
 
+== DataStatus ==
+Data status
+
 == DataWritten ==
 Data written
 
@@ -1844,6 +1853,9 @@ Done
 == MessageFileNotFound ==
 The file {0} does not exist.
 
+== MessageFileNotRead ==
+The file {0} could not be read.
+
 == MessageLabelSelector ==
 Select a label to get revisions from:
 
@@ -2057,6 +2069,9 @@ Multiple
 
 == NameAlreadyInDirectory ==
 Name {0} is already in the directory
+
+== NameEmptyMultilineNotValid ==
+The file that contains the name {0} does not allow neither empty nor multiline text
 
 == NameNotValid ==
 The name {0} is not valid anymore
@@ -2457,6 +2472,9 @@ to
 == Total ==
 Total
 
+== Trimmed ==
+Trimmed
+
 == TubeStatusConnected ==
 The Plastic SCM server ({0}) is connected to Plastic Tube.
 
@@ -2688,3 +2706,23 @@ Proxy server address
 
 == CmdConfigureProxyParamsPort ==
 Proxy server port
+
+== EncryptionConfigurationExplanation ==
+The '{0}' source server requires data encryption.
+Your server (aka '{1}') is not yet configured to handle encrypted data from it.
+
+Remarks:
+* Be very careful with the encryption password; it's the only way to decrypt your data on '{0}'.
+* If you're decrypting data and you enter a wrong password, the data will fail to decrypt and you will have to edit cryptedservers.conf on your server to fix it.
+* Be careful to use the same password (encryption key) company-wide to work with '{0}'. Otherwise, data will be encrypted differently in each server.
+
+Enter a password to generate the encryption key (leave empty to cancel):
+
+== EncryptionPasswordNotEntered ==
+You didn't entered a password. Encryption won't be configured for server '{0}'.
+
+== EncryptionConfigurationFailed ==
+Failed to configure encryption for server '{0}'.
+
+== EncryptionConfigurationSucceeded ==
+Encryption configuration added for server '{0}'.

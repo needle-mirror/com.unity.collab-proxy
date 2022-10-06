@@ -134,12 +134,11 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             GuiMessage.GuiMessageResponseButton result = guiMessage.ShowQuestion(
                 PlasticLocalization.GetString(PlasticLocalization.Name.CheckinConflictsTitle),
                 PlasticLocalization.GetString(PlasticLocalization.Name.UnityCheckinConflictsExplanation),
-                "",
                 PlasticLocalization.GetString(PlasticLocalization.Name.CheckinShowIncomingChangesView),
                 PlasticLocalization.GetString(PlasticLocalization.Name.CancelButton),
-                false);
+                null);
 
-            return result == GuiMessage.GuiMessageResponseButton.Second;
+            return result == GuiMessage.GuiMessageResponseButton.Positive;
         }
     }
 }

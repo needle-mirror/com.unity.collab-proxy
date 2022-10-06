@@ -1440,7 +1440,7 @@ OK
 == Deleted ==
 削除済み
 
-== Changed ==
+== ChangedOnDisk ==
 ディスクで変更済
 
 == ContainsChanges ==
@@ -6366,3 +6366,39 @@ Unity Smart Merge
 
 == LaunchPlasticButton ==
 Launch Plastic SCM
+
+== ElementNotFound ==
+要素が見つかりませんでした
+
+== RevisionNotConnected ==
+処理できません。関連するリビジョンはレプリケートされていません
+
+== ChangedMergeFromCs ==
+マージ元と同期先で変更済み (cs:{0} から)
+
+== NotChanged ==
+変更なし
+
+== Added ==
+追加済み
+
+== Changed ==
+変更済み
+
+== MergeFromCs ==
+ マージ元ソース内 (cs:{0} から)
+
+== MovedOutScope ==
+{0} から {1} に移動しました
+
+== Renamed ==
+{0} から {1} に名前変更済み
+
+== MovedDownPosition ==
+位置を {0} 下に移動しました
+
+== MovedUpPosition ==
+{0} の位置を上に移動しました
+
+== And ==
+ および {0}

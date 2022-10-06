@@ -4,6 +4,7 @@ using Codice.Client.Common;
 using Codice.CM.Common;
 using PlasticGui.WorkspaceWindow;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.UI.StatusBar;
 
 using GluonNewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncomingChangesUpdater;
 using GluonCheckIncomingChanges = PlasticGui.Gluon.WorkspaceWindow.CheckIncomingChanges;
@@ -14,6 +15,8 @@ namespace Unity.PlasticSCM.Editor
     {
         internal static NewIncomingChangesUpdater BuildUpdaterForDeveloper(
             WorkspaceInfo wkInfo,
+            ViewSwitcher viewSwitcher,
+            IIncomingChangesNotifier incomingChangesNotifier,
             CheckIncomingChanges.IAutoRefreshIncomingChangesView autoRefreshIncomingChangesView,
             CheckIncomingChanges.IUpdateIncomingChanges updateIncomingChanges)
         {
@@ -25,6 +28,9 @@ namespace Unity.PlasticSCM.Editor
             updater.SetAutoRefreshIncomingChangesView(
                 autoRefreshIncomingChangesView);
 
+            viewSwitcher.SetNewIncomingChanges(
+                updater, null, incomingChangesNotifier);
+
             updater.SetWorkspace(wkInfo);
             updater.Start();
             return updater;
@@ -32,6 +38,8 @@ namespace Unity.PlasticSCM.Editor
 
         internal static GluonNewIncomingChangesUpdater BuildUpdaterForGluon(
             WorkspaceInfo wkInfo,
+            ViewSwitcher viewSwitcher,
+            IIncomingChangesNotifier incomingChangesNotifier,
             GluonCheckIncomingChanges.IAutoRefreshIncomingChangesView autoRefreshIncomingChangesView,
             GluonCheckIncomingChanges.IUpdateIncomingChanges updateIncomingChanges,
             GluonCheckIncomingChanges.ICalculateIncomingChanges calculateIncomingChanges)
@@ -45,6 +53,9 @@ namespace Unity.PlasticSCM.Editor
                 updateIncomingChanges,
                 autoRefreshIncomingChangesView,
                 calculateIncomingChanges);
+
+            viewSwitcher.SetNewIncomingChanges(
+                null, updater, incomingChangesNotifier);
 
             updater.Start();
             return updater;

@@ -21,14 +21,14 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             PlasticWindow parentWindow,
             CreateWorkspaceView.ICreateWorkspaceListener createWorkspaceListener,
             IPlasticAPI plasticApi,
-            CmConnection cmConnection,
-            IPlasticWebRestApi plasticWebRestApi)
+            IPlasticWebRestApi plasticWebRestApi,
+            CmConnection cmConnection)
         {
             mParentWindow = parentWindow;
             mCreateWorkspaceListener = createWorkspaceListener;
             mPlasticApi = plasticApi;
-            mCmConnection = cmConnection;
             mPlasticWebRestApi = plasticWebRestApi;
+            mCmConnection = cmConnection;
 
             mGuiMessage = new UnityPlasticGuiMessage();
             mConfigureProgress = new ProgressControlsForViews();
@@ -294,7 +294,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
                 return mCreateWorkspaceView;
 
             string workspacePath = ProjectPath.FromApplicationDataPath(
-                Application.dataPath);
+                ApplicationDataPath.Get());
 
             mCreateWorkspaceView = new CreateWorkspaceView(
                 mParentWindow,

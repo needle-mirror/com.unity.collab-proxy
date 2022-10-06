@@ -12,9 +12,44 @@ namespace Unity.PlasticSCM.Editor.Tool
 {
     internal static class LaunchTool
     {
-        internal static void OpenGUIForMode(WorkspaceInfo wkInfo, bool isGluonMode)
+        public interface IShowDownloadPlasticExeWindow
         {
-            if (ShowDownloadPlasticExeWindow(
+            bool Show(
+                WorkspaceInfo wkInfo,
+                bool isGluonMode,
+                string installCloudFrom,
+                string installEnterpriseFrom,
+                string cancelInstallFrom);
+            bool Show(
+                RepositorySpec repSpec,
+                bool isGluonMode,
+                string installCloudFrom,
+                string installEnterpriseFrom,
+                string cancelInstallFrom);
+        }
+
+        public interface IProcessExecutor
+        {
+            Process ExecuteGUI(
+                string program,
+                string args,
+                string commandFileArg,
+                string commandFileName,
+                int processId);
+            Process ExecuteWindowsGUI(
+                string program,
+                string args,
+                int processId);
+            Process ExecuteProcess(string program, string args);
+        }
+
+        internal static void OpenGUIForMode(
+            IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            IProcessExecutor processExecutor,
+            WorkspaceInfo wkInfo,
+            bool isGluonMode)
+        {
+            if (showDownloadPlasticExeWindow.Show(
                 wkInfo,
                 isGluonMode,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenGUI,
@@ -34,7 +69,7 @@ namespace Unity.PlasticSCM.Editor.Tool
 
             if (isGluonMode)
             {
-                Process gluonProcess = ExecuteGUI(
+                Process gluonProcess = processExecutor.ExecuteGUI(
                     PlasticInstallPath.GetGluonExePath(),
                     string.Format(
                         ToolConstants.Gluon.GUI_WK_EXPLORER_ARG,
@@ -51,7 +86,7 @@ namespace Unity.PlasticSCM.Editor.Tool
 
             if (PlatformIdentifier.IsMac())
             {
-                Process plasticProcess = ExecuteGUI(
+                Process plasticProcess = processExecutor.ExecuteGUI(
                     PlasticInstallPath.GetPlasticExePath(),
                     string.Format(
                         ToolConstants.Plastic.GUI_MACOS_WK_EXPLORER_ARG,
@@ -66,16 +101,20 @@ namespace Unity.PlasticSCM.Editor.Tool
                 return;
             }
 
-            ExecuteProcess(
+            processExecutor.ExecuteProcess(
                 PlasticInstallPath.GetPlasticExePath(),
                 string.Format(
                     ToolConstants.Plastic.GUI_WINDOWS_WK_ARG,
                     wkInfo.ClientPath));
         }
 
-        internal static void OpenBranchExplorer(WorkspaceInfo wkInfo, bool isGluonMode)
+        internal static void OpenBranchExplorer(
+            IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            IProcessExecutor processExecutor,
+            WorkspaceInfo wkInfo,
+            bool isGluonMode)
         {
-            if (ShowDownloadPlasticExeWindow(
+            if (showDownloadPlasticExeWindow.Show(
                 wkInfo,
                 isGluonMode,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenBranchExplorer,
@@ -93,7 +132,7 @@ namespace Unity.PlasticSCM.Editor.Tool
 
             if (PlatformIdentifier.IsMac())
             {
-                Process plasticProcess = ExecuteGUI(
+                Process plasticProcess = processExecutor.ExecuteGUI(
                     PlasticInstallPath.GetPlasticExePath(),
                     string.Format(
                         ToolConstants.Plastic.GUI_MACOS_BREX_ARG,
@@ -108,7 +147,7 @@ namespace Unity.PlasticSCM.Editor.Tool
                 return;
             }
 
-            Process brexProcess = ExecuteWindowsGUI(
+            Process brexProcess = processExecutor.ExecuteWindowsGUI(
                 PlasticInstallPath.GetPlasticExePath(),
                 string.Format(
                     ToolConstants.Plastic.GUI_WINDOWS_BREX_ARG,
@@ -119,9 +158,14 @@ namespace Unity.PlasticSCM.Editor.Tool
                 mBrexProcessId = brexProcess.Id;
         }
 
-        internal static void OpenChangesetDiffs(RepositorySpec repSpec, string fullChangesetSpec, bool isGluonMode)
+        internal static void OpenChangesetDiffs(
+            IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            IProcessExecutor processExecutor,
+            RepositorySpec repSpec,
+            string fullChangesetSpec,
+            bool isGluonMode)
         {
-            if (ShowDownloadPlasticExeWindow(
+            if (showDownloadPlasticExeWindow.Show(
                 repSpec,
                 isGluonMode,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenChangesetDiffs,
@@ -141,18 +185,20 @@ namespace Unity.PlasticSCM.Editor.Tool
                 ToolConstants.Gluon.GUI_CHANGESET_DIFF_ARG :
                 ToolConstants.Plastic.GUI_CHANGESET_DIFF_ARG;
 
-            ExecuteProcess(exePath,
+            processExecutor.ExecuteProcess(exePath,
                 string.Format(
                     changesetDiffArg, fullChangesetSpec));
         }
 
         internal static void OpenSelectedChangesetsDiffs(
+            IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            IProcessExecutor processExecutor,
             RepositorySpec repSpec,
             string srcFullChangesetSpec,
             string dstFullChangesetSpec,
             bool isGluonMode)
         {
-            if (ShowDownloadPlasticExeWindow(
+            if (showDownloadPlasticExeWindow.Show(
                 repSpec,
                 isGluonMode,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenSelectedChangesetsDiffs,
@@ -173,16 +219,21 @@ namespace Unity.PlasticSCM.Editor.Tool
                 ToolConstants.Gluon.GUI_SELECTED_CHANGESETS_DIFF_ARGS :
                 ToolConstants.Plastic.GUI_SELECTED_CHANGESETS_DIFF_ARGS;
 
-            ExecuteProcess(exePath,
+            processExecutor.ExecuteProcess(exePath,
                 string.Format(
                     selectedChangesetsDiffArgs,
                     srcFullChangesetSpec,
                     dstFullChangesetSpec));
         }
 
-        internal static void OpenBranchDiffs(RepositorySpec repSpec, string fullBranchSpec, bool isGluonMode)
+        internal static void OpenBranchDiffs(
+            IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            IProcessExecutor processExecutor,
+            RepositorySpec repSpec,
+            string fullBranchSpec,
+            bool isGluonMode)
         {
-            if (ShowDownloadPlasticExeWindow(
+            if (showDownloadPlasticExeWindow.Show(
                 repSpec,
                 isGluonMode,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenBranchDiff,
@@ -202,14 +253,18 @@ namespace Unity.PlasticSCM.Editor.Tool
                 ToolConstants.Gluon.GUI_BRANCH_DIFF_ARG :
                 ToolConstants.Plastic.GUI_BRANCH_DIFF_ARG;
 
-            ExecuteProcess(exePath,
+            processExecutor.ExecuteProcess(exePath,
                 string.Format(
                     branchDiffArg, fullBranchSpec));
         }
 
-        internal static void OpenWorkspaceConfiguration(WorkspaceInfo wkInfo, bool isGluonMode)
+        internal static void OpenWorkspaceConfiguration(
+            IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            IProcessExecutor processExecutor,
+            WorkspaceInfo wkInfo,
+            bool isGluonMode)
         {
-            if (ShowDownloadPlasticExeWindow(
+            if (showDownloadPlasticExeWindow.Show(
                 wkInfo,
                 isGluonMode,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenWorkspaceConfiguration,
@@ -225,7 +280,7 @@ namespace Unity.PlasticSCM.Editor.Tool
                 PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
                 TrackFeatureUseEvent.Features.LaunchPartialConfigure);
 
-            Process gluonProcess = ExecuteGUI(
+            Process gluonProcess = processExecutor.ExecuteGUI(
                 PlasticInstallPath.GetGluonExePath(),
                 string.Format(
                     ToolConstants.Gluon.GUI_WK_CONFIGURATION_ARG,
@@ -240,9 +295,13 @@ namespace Unity.PlasticSCM.Editor.Tool
             mGluonProcessId = gluonProcess.Id;
         }
 
-        internal static void OpenMerge(WorkspaceInfo wkInfo, bool isGluonMode)
+        internal static void OpenMerge(
+            IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            IProcessExecutor processExecutor,
+            WorkspaceInfo wkInfo,
+            bool isGluonMode)
         {
-            if (ShowDownloadPlasticExeWindow(
+            if (showDownloadPlasticExeWindow.Show(
                 wkInfo,
                 isGluonMode,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenMerge,
@@ -256,7 +315,7 @@ namespace Unity.PlasticSCM.Editor.Tool
 
             if (PlatformIdentifier.IsMac())
             {
-                Process plasticProcess = ExecuteGUI(
+                Process plasticProcess = processExecutor.ExecuteGUI(
                     PlasticInstallPath.GetPlasticExePath(),
                     string.Format(ToolConstants.Plastic.GUI_MACOS_MERGE_ARG, wkInfo.ClientPath),
                     ToolConstants.Plastic.GUI_MACOS_COMMAND_FILE_ARG,
@@ -269,154 +328,9 @@ namespace Unity.PlasticSCM.Editor.Tool
                 return;
             }
 
-            ExecuteProcess(
+            processExecutor.ExecuteProcess(
                 PlasticInstallPath.GetPlasticExePath(),
                 string.Format(ToolConstants.Plastic.GUI_WINDOWS_MERGE_ARG, wkInfo.ClientPath));
-        }
-
-        internal static bool ShowDownloadPlasticExeWindow(
-            WorkspaceInfo wkInfo,
-            bool isGluonMode,
-            string installCloudFrom,
-            string installEnterpriseFrom,
-            string cancelInstallFrom)
-        {
-            RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(wkInfo);
-
-            return ShowDownloadPlasticExeWindow(
-                repSpec,
-                isGluonMode,
-                installCloudFrom,
-                installEnterpriseFrom,
-                cancelInstallFrom);
-        }
-
-        internal static bool ShowDownloadPlasticExeWindow(
-            RepositorySpec repSpec,
-            bool isGluonMode,
-            string installCloudFrom,
-            string installEnterpriseFrom,
-            string cancelInstallFrom)
-        {
-            if (IsExeAvailable.ForMode(isGluonMode))
-                return false;
-
-            DownloadPlasticExeWindow.ShowWindow(
-                repSpec,
-                isGluonMode,
-                installCloudFrom,
-                installEnterpriseFrom,
-                cancelInstallFrom);
-
-            return true;
-        }
-
-
-        static Process ExecuteGUI(
-            string program,
-            string args,
-            string commandFileArg,
-            string commandFileName,
-            int processId)
-        {
-            string commandFile = Path.Combine(
-                Path.GetTempPath(), commandFileName);
-
-            Process process = GetGUIProcess(program, processId);
-
-            if (process == null)
-            {
-                mLog.DebugFormat("Executing {0} (new process).", program);
-
-                return ExecuteProcess(
-                    program, args + string.Format(commandFileArg, commandFile));
-            }
-
-            mLog.DebugFormat("Executing {0} (reuse process pid:{1}).", program, processId);
-
-            using (StreamWriter writer = new StreamWriter(new FileStream(
-                commandFile, FileMode.Append, FileAccess.Write, FileShare.Read)))
-            {
-                writer.WriteLine(args);
-            }
-
-            return process;
-        }
-
-        static Process ExecuteWindowsGUI(
-            string program,
-            string args,
-            int processId)
-        {
-            Process process = GetGUIProcess(program, processId);
-
-            if (process == null)
-            {
-                mLog.DebugFormat("Executing {0} (new process).", program);
-
-                return ExecuteProcess(program, args);
-            }
-
-            mLog.DebugFormat("Not executing {0} (existing process pid:{1}).", program, processId);
-
-            BringWindowToFront.ForWindowsProcess(process.Id);
-
-            return process;
-        }
-
-        static Process ExecuteProcess(string program, string args)
-        {
-            mLog.DebugFormat("Execute process: '{0} {1}'", program, args);
-
-            Process process = BuildProcess(program, args);
-
-            try
-            {
-                process.Start();
-
-                return process;
-            }
-            catch (Exception ex)
-            {
-                mLog.ErrorFormat("Couldn't execute the program {0}: {1}",
-                    program, ex.Message);
-                mLog.DebugFormat("Stack trace: {0}",
-                    ex.StackTrace);
-
-                return null;
-            }
-        }
-
-        static Process BuildProcess(string program, string args)
-        {
-            Process result = new Process();
-            result.StartInfo.FileName = program;
-            result.StartInfo.Arguments = args;
-            result.StartInfo.CreateNoWindow = false;
-            return result;
-        }
-
-        static Process GetGUIProcess(string program, int processId)
-        {
-            if (processId == -1)
-                return null;
-
-            mLog.DebugFormat("Checking {0} process [pid:{1}].", program, processId);
-
-            try
-            {
-                Process process = Process.GetProcessById(processId);
-
-                if (process == null)
-                    return null;
-
-                return process.HasExited ? null : process;
-            }
-            catch
-            {
-                // process is not running
-                return null;
-            }
         }
 
         static int mPlasticProcessId = -1;
@@ -424,5 +338,157 @@ namespace Unity.PlasticSCM.Editor.Tool
         static int mBrexProcessId = -1;
 
         static readonly ILog mLog = LogManager.GetLogger("LaunchTool");
+
+        internal class ShowDownloadPlasticExeWindow : LaunchTool.IShowDownloadPlasticExeWindow
+        {
+            bool LaunchTool.IShowDownloadPlasticExeWindow.Show(
+                WorkspaceInfo wkInfo,
+                bool isGluonMode,
+                string installCloudFrom,
+                string installEnterpriseFrom,
+                string cancelInstallFrom)
+            {
+                RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(wkInfo);
+
+                return ((LaunchTool.IShowDownloadPlasticExeWindow)this).Show(
+                    repSpec,
+                    isGluonMode,
+                    installCloudFrom,
+                    installEnterpriseFrom,
+                    cancelInstallFrom);
+            }
+
+            bool LaunchTool.IShowDownloadPlasticExeWindow.Show(
+                RepositorySpec repSpec,
+                bool isGluonMode,
+                string installCloudFrom,
+                string installEnterpriseFrom,
+                string cancelInstallFrom)
+            {
+                if (IsExeAvailable.ForMode(isGluonMode))
+                    return false;
+
+                DownloadPlasticExeWindow.ShowWindow(
+                    repSpec,
+                    isGluonMode,
+                    installCloudFrom,
+                    installEnterpriseFrom,
+                    cancelInstallFrom);
+
+                return true;
+            }
+        }
+
+        internal class ProcessExecutor : LaunchTool.IProcessExecutor
+        {
+            Process LaunchTool.IProcessExecutor.ExecuteGUI(
+                string program,
+                string args,
+                string commandFileArg,
+                string commandFileName,
+                int processId)
+            {
+                string commandFile = Path.Combine(
+                    Path.GetTempPath(), commandFileName);
+
+                Process process = GetGUIProcess(program, processId);
+
+                if (process == null)
+                {
+                    mLog.DebugFormat("Executing {0} (new process).", program);
+
+                    return ((LaunchTool.IProcessExecutor)this).ExecuteProcess(
+                        program, args + string.Format(commandFileArg, commandFile));
+                }
+
+                mLog.DebugFormat("Executing {0} (reuse process pid:{1}).", program, processId);
+
+                using (StreamWriter writer = new StreamWriter(new FileStream(
+                    commandFile, FileMode.Append, FileAccess.Write, FileShare.Read)))
+                {
+                    writer.WriteLine(args);
+                }
+
+                return process;
+            }
+
+            Process LaunchTool.IProcessExecutor.ExecuteWindowsGUI(
+                string program,
+                string args,
+                int processId)
+            {
+                Process process = GetGUIProcess(program, processId);
+
+                if (process == null)
+                {
+                    mLog.DebugFormat("Executing {0} (new process).", program);
+
+                    return ((LaunchTool.IProcessExecutor)this).ExecuteProcess(program, args);
+                }
+
+                mLog.DebugFormat("Not executing {0} (existing process pid:{1}).", program, processId);
+
+                BringWindowToFront.ForWindowsProcess(process.Id);
+
+                return process;
+            }
+
+            Process LaunchTool.IProcessExecutor.ExecuteProcess(string program, string args)
+            {
+                mLog.DebugFormat("Execute process: '{0} {1}'", program, args);
+
+                Process process = BuildProcess(program, args);
+
+                try
+                {
+                    process.Start();
+
+                    return process;
+                }
+                catch (Exception ex)
+                {
+                    mLog.ErrorFormat("Couldn't execute the program {0}: {1}",
+                        program, ex.Message);
+                    mLog.DebugFormat("Stack trace: {0}",
+                        ex.StackTrace);
+
+                    return null;
+                }
+            }
+
+            Process BuildProcess(string program, string args)
+            {
+                Process result = new Process();
+                result.StartInfo.FileName = program;
+                result.StartInfo.Arguments = args;
+                result.StartInfo.CreateNoWindow = false;
+                return result;
+            }
+
+            Process GetGUIProcess(string program, int processId)
+            {
+                if (processId == -1)
+                    return null;
+
+                mLog.DebugFormat("Checking {0} process [pid:{1}].", program, processId);
+
+                try
+                {
+                    Process process = Process.GetProcessById(processId);
+
+                    if (process == null)
+                        return null;
+
+                    return process.HasExited ? null : process;
+                }
+                catch
+                {
+                    // process is not running
+                    return null;
+                }
+            }
+
+            readonly ILog mLog = LogManager.GetLogger("ProcessExecutor");
+        }
     }
 }

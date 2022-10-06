@@ -38,7 +38,7 @@ namespace Unity.PlasticSCM.Editor.SceneView
             if (!sIsEnabled)
                 return true;
 
-            if (!FindWorkspace.HasWorkspace(Application.dataPath))
+            if (!FindWorkspace.HasWorkspace(ApplicationDataPath.Get()))
             { 
                 Disable();
                 return true;

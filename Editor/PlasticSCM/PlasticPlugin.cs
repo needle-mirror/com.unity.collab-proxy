@@ -12,6 +12,7 @@ using Unity.PlasticSCM.Editor.CollabMigration;
 using Unity.PlasticSCM.Editor.Inspector;
 using Unity.PlasticSCM.Editor.ProjectDownloader;
 using Unity.PlasticSCM.Editor.SceneView;
+using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor
@@ -65,7 +66,7 @@ namespace Unity.PlasticSCM.Editor
 
             PlasticApp.InitializeIfNeeded();
 
-            if (!FindWorkspace.HasWorkspace(Application.dataPath))
+            if (!FindWorkspace.HasWorkspace(ApplicationDataPath.Get()))
                 return;
 
             EnableForWorkspace();
@@ -77,8 +78,7 @@ namespace Unity.PlasticSCM.Editor
                 return;
 
             WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
-                Application.dataPath,
-                PlasticApp.PlasticAPI);
+                ApplicationDataPath.Get(), PlasticGui.Plastic.API);
 
             if (wkInfo == null)
                 return;
@@ -87,7 +87,7 @@ namespace Unity.PlasticSCM.Editor
 
             PlasticApp.SetWorkspace(wkInfo);
 
-            bool isGluonMode = PlasticApp.PlasticAPI.IsGluonWorkspace(wkInfo);
+            bool isGluonMode = PlasticGui.Plastic.API.IsGluonWorkspace(wkInfo);
 
             sAssetStatusCache = new AssetStatusCache(wkInfo, isGluonMode);
 
@@ -145,7 +145,7 @@ namespace Unity.PlasticSCM.Editor
             bool isGluonMode)
         {
             WorkspaceOperationsMonitor result = new WorkspaceOperationsMonitor(
-                PlasticApp.PlasticAPI, plasticAssetsProcessor, isGluonMode);
+                PlasticGui.Plastic.API, plasticAssetsProcessor, isGluonMode);
             plasticAssetsProcessor.SetWorkspaceOperationsMonitor(result);
             return result;
         }

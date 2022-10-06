@@ -3,11 +3,14 @@ using UnityEngine;
 
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.QueryViews.Branches;
+using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor.Views.Branches
 {
     internal class BranchesViewMenu
     {
+        internal GenericMenu Menu { get { return mMenu; } }
+
         internal BranchesViewMenu(
             IBranchMenuOperations branchMenuOperations)
         {
@@ -18,11 +21,30 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
         internal void Popup()
         {
-            GenericMenu menu = new GenericMenu();
+            mMenu = new GenericMenu();
 
-            UpdateMenuItems(menu);
+            UpdateMenuItems(mMenu);
 
-            menu.ShowAsContext();
+            mMenu.ShowAsContext();
+        }
+
+        internal bool ProcessKeyActionIfNeeded(Event e)
+        {
+            BranchMenuOperations operationToExecute = GetMenuOperations(e);
+
+            if (operationToExecute == BranchMenuOperations.None)
+                return false;
+
+            BranchMenuOperations operations = 
+                BranchMenuUpdater.GetAvailableMenuOperations(
+                    mBranchMenuOperations.GetSelectedBranchesCount(),
+                    false);
+
+            if (!operations.HasFlag(operationToExecute))
+                return false;
+
+            ProcessMenuOperation(operationToExecute, mBranchMenuOperations);
+            return true;
         }
 
         void CreateBranchMenuItem_Click()
@@ -45,7 +67,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             mBranchMenuOperations.DeleteBranch();
         }
     
-        void UpdateMenuItems(GenericMenu menu)
+        internal void UpdateMenuItems(GenericMenu menu)
         {
             BranchMenuOperations operations = BranchMenuUpdater.GetAvailableMenuOperations(
                 mBranchMenuOperations.GetSelectedBranchesCount(), false);
@@ -100,6 +122,25 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             menu.AddDisabledItem(menuItemContent);
         }
 
+        static void ProcessMenuOperation(
+            BranchMenuOperations operationToExecute,
+            IBranchMenuOperations branchMenuOperations)
+        {
+            if (operationToExecute == BranchMenuOperations.Delete)
+            {
+                branchMenuOperations.DeleteBranch();
+                return;
+            }
+        }
+
+        static BranchMenuOperations GetMenuOperations(Event e)
+        {
+            if (Keyboard.IsKeyPressed(e, KeyCode.Delete))
+                return BranchMenuOperations.Delete;
+
+            return BranchMenuOperations.None;
+        }
+
         void BuildComponents()
         {
             mCreateBranchMenuItemContent = new GUIContent(
@@ -108,9 +149,12 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 PlasticLocalization.GetString(PlasticLocalization.Name.BranchMenuItemSwitchToBranch));
             mRenameBranchMenuItemContent = new GUIContent(
                 PlasticLocalization.GetString(PlasticLocalization.Name.BranchMenuItemRenameBranch));
-            mDeleteBranchMenuItemContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.BranchMenuItemDeleteBranch));
+            mDeleteBranchMenuItemContent = new GUIContent(string.Format("{0} {1}",
+                PlasticLocalization.GetString(PlasticLocalization.Name.BranchMenuItemDeleteBranch),
+                GetPlasticShortcut.ForDelete()));
         }
+
+        GenericMenu mMenu;
 
         GUIContent mCreateBranchMenuItemContent;
         GUIContent mSwitchToBranchMenuItemContent;

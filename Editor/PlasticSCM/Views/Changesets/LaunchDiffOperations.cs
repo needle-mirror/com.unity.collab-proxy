@@ -6,6 +6,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
     static class LaunchDiffOperations
     {
         internal static void DiffChangeset(
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            LaunchTool.IProcessExecutor processExecutor,
             RepositorySpec repSpec,
             long changesetId,
             bool isGluonMode)
@@ -17,12 +19,16 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 repSpec, changesetId);
 
             LaunchTool.OpenChangesetDiffs(
+                showDownloadPlasticExeWindow,
+                processExecutor,
                 repSpec,
                 changesetFullSpec,
                 isGluonMode);
         }
 
         internal static void DiffChangeset(
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            LaunchTool.IProcessExecutor processExecutor,
             RepositorySpec repSpec,
             ChangesetInfo changesetInfo,
             bool isGluonMode)
@@ -34,12 +40,16 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 repSpec, changesetInfo.ChangesetId);
 
             LaunchTool.OpenChangesetDiffs(
+                showDownloadPlasticExeWindow,
+                processExecutor,
                 repSpec,
                 changesetFullSpec,
                 isGluonMode);
         }
 
         internal static void DiffSelectedChangesets(
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            LaunchTool.IProcessExecutor processExecutor,
             RepositorySpec repSpec,
             ChangesetInfo cset1,
             ChangesetInfo cset2,
@@ -61,6 +71,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 repSpec, dstChangesetInfo.ChangesetId);
 
             LaunchTool.OpenSelectedChangesetsDiffs(
+                showDownloadPlasticExeWindow,
+                processExecutor,
                 repSpec,
                 srcChangesetFullSpec,
                 dstChangesetFullSpec,
@@ -68,6 +80,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         }
 
         internal static void DiffBranch(
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            LaunchTool.IProcessExecutor processExecutor,
             RepositorySpec repSpec,
             ChangesetExtendedInfo changesetExtendedInfo,
             bool isGluonMode)
@@ -79,6 +93,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 repSpec, changesetExtendedInfo);
 
             LaunchTool.OpenBranchDiffs(
+                showDownloadPlasticExeWindow,
+                processExecutor,
                 repSpec,
                 branchFullSpec,
                 isGluonMode);

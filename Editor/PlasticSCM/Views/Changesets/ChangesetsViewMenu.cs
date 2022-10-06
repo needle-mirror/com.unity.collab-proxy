@@ -6,13 +6,15 @@ using Codice.CM.Common;
 using PlasticGui.WorkspaceWindow.QueryViews.Changesets;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.Tool;
-using Unity.PlasticSCM.Editor.UI.Progress;
+using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor.Views.Changesets
 {
     internal class ChangesetsViewMenu
     {
-        internal interface IMenuOperations
+        internal GenericMenu Menu { get { return mMenu; } }
+
+        public interface IMenuOperations
         {
             void DiffBranch();
             ChangesetExtendedInfo GetSelectedChangeset();
@@ -22,11 +24,13 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             WorkspaceInfo wkInfo,
             IChangesetMenuOperations changesetMenuOperations,
             IMenuOperations menuOperations,
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             bool isGluonMode)
         {
             mWkInfo = wkInfo;
             mChangesetMenuOperations = changesetMenuOperations;
             mMenuOperations = menuOperations;
+            mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
             mIsGluonMode = isGluonMode;
             
             BuildComponents();
@@ -34,11 +38,35 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         internal void Popup()
         {
-            GenericMenu menu = new GenericMenu();
+            mMenu = new GenericMenu();
 
-            UpdateMenuItems(menu);
+            UpdateMenuItems(mMenu);
 
-            menu.ShowAsContext();
+            mMenu.ShowAsContext();
+        }
+
+        internal bool ProcessKeyActionIfNeeded(Event e)
+        {
+            int selectedChangesetsCount = mChangesetMenuOperations.GetSelectedChangesetsCount();
+
+            ChangesetMenuOperations operationToExecute = GetMenuOperations(
+                e, selectedChangesetsCount > 1);
+
+            if (operationToExecute == ChangesetMenuOperations.None)
+                return false;
+
+            ChangesetMenuOperations operations = ChangesetMenuUpdater.GetAvailableMenuOperations(
+                selectedChangesetsCount,
+                mIsGluonMode,
+                mMenuOperations.GetSelectedChangeset().BranchId,
+                mLoadedBranchId,
+                false);
+
+            if (!operations.HasFlag(operationToExecute))
+                return false;
+
+            ProcessMenuOperation(operationToExecute, mChangesetMenuOperations);
+            return true;
         }
 
         internal void SetLoadedBranchId(long loadedBranchId)
@@ -48,7 +76,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         void DiffChangesetMenuItem_Click()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(
+            if (mShowDownloadPlasticExeWindow.Show(
                    mWkInfo,
                    mIsGluonMode,
                    TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffChangeset,
@@ -61,20 +89,20 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         void DiffSelectedChangesetsMenuItem_Click()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(
-                mWkInfo,
-                mIsGluonMode,
-                TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffSelectedChangesets,
-                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromDiffSelectedChangesets,
-                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromDiffSelectedChangesets))
+            if (mShowDownloadPlasticExeWindow.Show(
+                    mWkInfo,
+                    mIsGluonMode,
+                    TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffSelectedChangesets,
+                    TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromDiffSelectedChangesets,
+                    TrackFeatureUseEvent.Features.CancelPlasticInstallationFromDiffSelectedChangesets))
                 return;
 
             mChangesetMenuOperations.DiffSelectedChangesets();
         }
 
-        void BackToMenuItem_Click()
+        void RevertToChangesetMenuItem_Click()
         {
-            mChangesetMenuOperations.GoBackToChangeset();
+            mChangesetMenuOperations.RevertToChangeset();
         }
 
         void DiffBranchMenuItem_Click()
@@ -87,7 +115,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mChangesetMenuOperations.SwitchToChangeset();
         }
 
-        void UpdateMenuItems(GenericMenu menu)
+        internal void UpdateMenuItems(GenericMenu menu)
         {
             ChangesetExtendedInfo singleSelectedChangeset = mMenuOperations.GetSelectedChangeset();
 
@@ -135,10 +163,27 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 return;
 
             AddBackToMenuItem(
-                   mGoBackToMenuItemContent,
+                   mRevertToChangesetMenuItemContent,
                    menu,
                    operations,
-                   BackToMenuItem_Click);
+                   RevertToChangesetMenuItem_Click);
+        }
+
+        void ProcessMenuOperation(
+            ChangesetMenuOperations operationToExecute,
+            IChangesetMenuOperations changesetMenuOperations)
+        {
+            if (operationToExecute == ChangesetMenuOperations.DiffChangeset)
+            {
+                DiffChangesetMenuItem_Click();
+                return;
+            }
+
+            if (operationToExecute == ChangesetMenuOperations.DiffSelectedChangesets)
+            {
+                DiffSelectedChangesetsMenuItem_Click();
+                return;
+            }
         }
 
         static void AddDiffChangesetMenuItem(
@@ -153,9 +198,11 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 changeset.ChangesetId.ToString() :
                 string.Empty;
 
-            menuItemContent.text =
-                PlasticLocalization.GetString(PlasticLocalization.Name.AnnotateDiffChangesetMenuItem,
-                changesetName);
+            menuItemContent.text = string.Format("{0} {1}",
+                    PlasticLocalization.GetString(
+                        PlasticLocalization.Name.AnnotateDiffChangesetMenuItem,
+                        changesetName),
+                    GetPlasticShortcut.ForDiff());
 
             if (operations.HasFlag(ChangesetMenuOperations.DiffChangeset))
             {
@@ -195,7 +242,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             ChangesetMenuOperations operations,
             GenericMenu.MenuFunction menuFunction)
         {
-            if (operations.HasFlag(ChangesetMenuOperations.GoBackToChangeset))
+            if (operations.HasFlag(ChangesetMenuOperations.RevertToChangeset))
             {
                 menu.AddItem(
                 menuItemContent,
@@ -251,20 +298,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             }
 
             menu.AddDisabledItem(menuItemContent);
-        }
-
-        void BuildComponents()
-        {
-            mDiffChangesetMenuItemContent = new GUIContent();
-            mDiffSelectedChangesetsMenuItemContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetMenuItemDiffSelected));
-            mDiffBranchMenuItemContent = new GUIContent();
-            mSwitchToChangesetMenuItemContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetMenuItemSwitchToChangeset));
-            mGoBackToMenuItemContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetMenuItemGoBackTo));
-        }
-        
+        }       
 
         static string GetBranchName(ChangesetExtendedInfo changesetInfo)
         {
@@ -289,15 +323,43 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             return singleSeletedChangeset.BranchName == MAIN_BRANCH_NAME;
         }
 
+        static ChangesetMenuOperations GetMenuOperations(
+            Event e, bool isMultipleSelection)
+        {
+            if (Keyboard.IsControlOrCommandKeyPressed(e) &&
+                Keyboard.IsKeyPressed(e, KeyCode.D))
+                return isMultipleSelection ?
+                    ChangesetMenuOperations.DiffSelectedChangesets :
+                    ChangesetMenuOperations.DiffChangeset;
+
+            return ChangesetMenuOperations.None;
+        }
+
+        void BuildComponents()
+        {
+            mDiffChangesetMenuItemContent = new GUIContent(string.Empty);
+            mDiffSelectedChangesetsMenuItemContent = new GUIContent(string.Format("{0} {1}",
+                PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetMenuItemDiffSelected),
+                GetPlasticShortcut.ForDiff()));
+            mDiffBranchMenuItemContent = new GUIContent();
+            mSwitchToChangesetMenuItemContent = new GUIContent(
+                PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetMenuItemSwitchToChangeset));
+            mRevertToChangesetMenuItemContent = new GUIContent(
+                PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetMenuItemRevertToChangeset));
+        }
+
+        GenericMenu mMenu;
+
         GUIContent mDiffChangesetMenuItemContent;
         GUIContent mDiffSelectedChangesetsMenuItemContent;
         GUIContent mDiffBranchMenuItemContent;
         GUIContent mSwitchToChangesetMenuItemContent;
-        GUIContent mGoBackToMenuItemContent;
+        GUIContent mRevertToChangesetMenuItemContent;
 
         readonly WorkspaceInfo mWkInfo;
         readonly IChangesetMenuOperations mChangesetMenuOperations;
         readonly IMenuOperations mMenuOperations;
+        readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
         readonly bool mIsGluonMode;
 
         long mLoadedBranchId = -1;

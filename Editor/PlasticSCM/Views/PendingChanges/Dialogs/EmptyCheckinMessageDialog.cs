@@ -80,11 +80,17 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
                 {
                     GUILayout.FlexibleSpace();
 
+                    if (Application.platform == RuntimePlatform.WindowsEditor)
+                    {
+                        DoCheckInAnywayButton();                        
+                        GUILayout.Space(13f);                        
+                        DoCancelButton();
+                        return;
+                    }
+
+                    DoCancelButton();                    
+                    GUILayout.Space(13f);                    
                     DoCheckInAnywayButton();
-
-                    GUILayout.Space(13f);
-
-                    DoCancelButton();
                 }
             }
         }

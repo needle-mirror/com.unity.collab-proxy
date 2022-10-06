@@ -1,4 +1,8 @@
-﻿using Codice.Client.Commands;
+﻿using UnityEditor;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+using Codice.Client.Commands;
 using Codice.Client.Common.FsNodeReaders;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
@@ -6,9 +10,6 @@ using Codice.Utils;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.PendingChanges;
 using Unity.PlasticSCM.Editor.UI;
-using UnityEditor;
-using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Unity.PlasticSCM.Editor
 {
@@ -29,8 +30,8 @@ namespace Unity.PlasticSCM.Editor
 
             // Check if FSWatcher should be enabled
             WorkspaceInfo workspaceInfo = FindWorkspace.InfoForApplicationPath(
-                        Application.dataPath,
-                        PlasticApp.PlasticAPI);
+                ApplicationDataPath.Get(), PlasticGui.Plastic.API);
+
             CheckFsWatcher(workspaceInfo);
 
             mInitialOptions = new PendingChangesOptions();
@@ -91,7 +92,7 @@ namespace Unity.PlasticSCM.Editor
             if (CollabPlugin.IsEnabled())
                 return null;
 
-            if (!FindWorkspace.HasWorkspace(Application.dataPath))
+            if (!FindWorkspace.HasWorkspace(ApplicationDataPath.Get()))
                 return null;
 
             PlasticProjectSettingsProvider provider = new PlasticProjectSettingsProvider(

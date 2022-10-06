@@ -61,8 +61,14 @@ Repository
 == Checkin ==
 Checkin
 
+== CheckinWithAccKey ==
+Check_in
+
 == UndoChanges ==
 Undo
+
+== UndoChangesWithAccKey ==
+_Undo
 
 == UpdateWorkspace ==
 Update workspace
@@ -688,6 +694,9 @@ Delete
 == BranchMenuItemCreateBranch ==
 Create child branch...
 
+== BranchMenuItemCreateTopLevelBranch ==
+Create top-level branch...
+
 == BranchMenuItemMergeFromBranch ==
 Merge from this branch...
 
@@ -1111,6 +1120,18 @@ The merge search has finished; subtractive merge source and destination are not 
 == MergeAlreadyProcessed ==
 Merge finished. Your changes are displayed ​on the pending changes view. Close this view and you will see them!
 
+== MergeAlreadyProcessedOpenPendingChangesText ==
+Merge finished. Your changes are displayed on the
+
+== MergeAlreadyProcessedOpenPendingChangesLinkText ==
+pending changes view.
+
+== MergeAlreadyProcessedOpenPreferencesText ==
+You can configure Plastic SCM to automatically switch to that view when a merge is completed
+
+== MergeAlreadyProcessedOpenPreferencesLinkText ==
+here.
+
 == FileMergeTitleSingular ==
 1 change to apply
 
@@ -1437,6 +1458,9 @@ Show shelves
 == ShowShelvesViewTooltip ==
 Show the shelves view
 
+== ShowLinkedTasksButton ==
+Show tasks
+
 == OptionsTooltip ==
 Configure the pending changes options
 
@@ -1518,7 +1542,7 @@ Checked-out
 == Deleted ==
 Deleted
 
-== Changed ==
+== ChangedOnDisk ==
 Changed on disk
 
 == ContainsChanges ==
@@ -1810,6 +1834,53 @@ Merge keeping source changes (theirs)
 
 == MergeKeepingWorkspaceChanges ==
 Merge keeping workspace changes (yours/destination)
+
+== MergeOptionsButton ==
+Merge Options
+
+== MergeOptionsTitle ==
+Merge Options
+
+== MergeOptionsExplanation ==
+Use the following options to customize the merge operation to your needs
+
+== MergeOptionsContributorsTitle ==
+Select merge contributor
+
+== MergeOptionBoth  ==
+Merge changes from both contributors
+
+== MergeOptionFromDestination ==
+Preserve workspace changes (discarding the source contributor's changes)
+
+== MergeOptionFromSource ==
+Preserve source changes (discarding your changes)
+
+== MergeOptionSkipMergeTrackingTitle ==
+Merge tracking
+
+== MergeOptionSkipMergeTrackingExplanation ==
+Ignore merge tracking
+
+== MergeOptionSkipMergeTrackingHelpTitle ==
+Merge information
+
+== MergeOptionSkipMergeTrackingHelp ==
+Plastic SCM usually bypasses items whose changes don't need to be merged (typically because those changes have been merged previously).
+If you check this option, all items that can be merged will be shown, regardless of whether they have been merged previously. This way you can integrate again changes that were integrated in the past.
+This option is only available for cherry-pick and revision-interval merges.
+
+== MergeOptionAdvancedTitle ==
+Advanced
+
+== MergeOptionAutomaticCalculateAncestor ==
+Automatic calculate the common ancestor changeset for merge
+
+== MergeOptionManualSpecifyAncestor ==
+Specify a common ancestor changeset manually:
+
+== MergeOptionManualSpecifyAncestorExample ==
+(i.e 4572)
 
 == DiffDestinationWithSource ==
 Diff source with destination contributor
@@ -2472,6 +2543,15 @@ Please enter a server name
 == EnterServerFormat ==
 Please specify the server name in server:port format. The default port is 8087
 
+== EnterProxy ==
+Please enter a proxy name
+
+== EnterProxyFormat ==
+Please specify the proxy name in server:port format. The default port is 8087
+
+== ConnectingToProxy ==
+Connecting to proxy
+
 == EnterUserName ==
 Please enter a user name
 
@@ -2652,6 +2732,9 @@ Address
 == PortColumn ==
 Port
 
+== VersionColumn ==
+Version
+
 == OpsErrorOccured ==
 Oops! An error occurred
 
@@ -2814,9 +2897,15 @@ Automatic conflict resolution (if possible)
 == AutomaticConflictResolutionTooltip ==
 Launch the merge tool only when user interaction is required to resolve a conflict
 
+== CloseMergeAndOpenPendingChanges ==
+Close merge view and open pending changes when a merge is completed
+
 == MergeWithPendingChanges ==
 Allow merge with pending changes
 (disabled by default so new users don't have problems undoing merges)
+
+== CommentsOptions ==
+Comments
 
 == OtherOptions ==
 Other options
@@ -2827,8 +2916,49 @@ User profile
 == DynamicWorkspaces ==
 Dynamic Workspaces
 
+== IssueTrackers ==
+Issue trackers
+
 == MiscOptionsTitle ==
 Miscellaneous
+
+== CommentsAutoTextLabel ==
+Comments auto-text
+
+== CommentsAutoTextNoneOption ==
+None
+
+== CommentsAutoTextUserNameOption ==
+UserName
+
+== CommentsAutoTextDateOption ==
+Date
+
+== CommentsAutoTextCustomOption ==
+Custom
+
+== CommentsAutoTextBranchNameOption ==
+Branch Name
+
+== CommentsAutoTextHelpTitle ==
+Information
+
+== CommentsAutoTextHelpMessage ==
+Format string syntax:
+{0} = UserName
+{1} = Date
+{2} = New line character
+{3} = Branch name
+
+Example: "{0} - {1} {2} br:{3} {2} Summary: "
+will show:
+
+    charlie - 05/10/2011 10:30
+    br:/main/task1673
+    Summary:
+
+== CommentsAutoTextFormatErrorMessage ==
+{0} is not a valid format string for auto-text comments
 
 == SetFilesAsReadOnlyAfterUpdateOrCi ==
 Update and Checkin operations set files as read-only
@@ -2854,6 +2984,12 @@ Display error for same file name with different case
 
 == DisplayErrorOnSameCaseFilesTooltip ==
 Applies only to Unix-like filesystems
+
+== ShowEmptyCommentWarning ==
+Warn about empty comment in Pending changes view
+
+== ShowEmptyCommentWarning_ForGluon ==
+Warn about empty comment in Checkin view
 
 == DefaultWorkspaceRoot ==
 Default Workspace root:
@@ -4427,6 +4563,11 @@ Note, you can find shelvesets created from a given changeset by running the foll
 
     find shelve where parent=changesetspec
 
+== CantDeleteChangesetInPendingMerge ==
+The current changeset cannot be deleted because it is referenced by a pending merge link.
+
+You will need to undo your pending changes before deleting this changeset.
+
 == DeleteWorkingChangesetCaption ==
 Delete working changeset
 
@@ -4771,6 +4912,9 @@ Diff changeset {0}
 
 == AnnotateParentRevisionMenuItem ==
 Annotate parent revision
+
+== ShowSemanticHistoryMenuItem ==
+Show semantic history
 
 == AnnotateParentChangesetMenuItem ==
 Annotate before these changes (parent of cs:{0})
@@ -6195,6 +6339,9 @@ Loading members...
 == UserChooserDialogTitle ==
 Please select a user or group from the list below:
 
+== SelectUsersDialogTitle ==
+Select users
+
 == SelectUserGroupDialogTitle ==
 Select user or group
 
@@ -6521,6 +6668,15 @@ Waiting for a session...
 
 == RetrievingOrgsProgress ==
 Retrieving organizations...
+
+== RetrievingCloudDrivesProgress ==
+Retrieving cloud drives...
+
+== GettingCloudDriveRepositoryProgress ==
+Getting cloud drive repository...
+
+== UnableToGetCloudDriveRepositoryError ==
+Unable to get the repository with guid '{0}' for '{1}' organization
 
 == GettingSSOProviders ==
 Getting organization providers...
@@ -7162,7 +7318,7 @@ Ctrl+T
 Ctrl+H
 
 == PlasticHistoryShortcutForMacOS ==
-Cmd+H
+Cmd+Y
 
 == PlasticHistoryShortcutForLinux ==
 Ctrl+H
@@ -7198,7 +7354,7 @@ Ctrl+Z
 Ctrl+Y
 
 == PlasticRedoShortcutForMacOS ==
-Cmd+Y
+Shift+Cmd+Z
 
 == PlasticRedoShortcutForLinux ==
 Ctrl+Y
@@ -7688,7 +7844,7 @@ You're invited to check out the new Plastic SCM GUI - a sneak peek at the work w
 You're invited to check out the new Gluon GUI - a sneak peek at the work we've been doing to continuously improve the Plastic experience for all users, regardless of experience level.
 
 == WelcomeToNewGuiSecondText ==
-This release is cross-platform, includes a dark theme and provides better syntax highlighting. Many more improvements are coming soon, including Gluon support! Try out the new experience and switch back at any time. Let us know what you think!
+This release is cross-platform, includes a dark theme and provides better syntax highlighting. Many more improvements are coming soon, let us know what you think!
 
 == WelcomeToNewGluonGuiSecondText ==
 This release is feature complete, cross-platform and includes a dark theme. It also includes support for changelists. Try out the new experience and switch back at any time. Let us know what you think!
@@ -7699,14 +7855,14 @@ Let's get started!
 == SwitchToLegacyGuiHelp ==
 You can switch back to the "legacy" GUI here
 
-== ConfirmGoBackToTitle ==
-Confirm Go Back
+== ConfirmRevertToChangesetTitle ==
+Confirm Revert
 
-== GoBackToWarning ==
-Are you sure you want to go back to this changeset?
+== RevertToChangesetWarning ==
+Are you sure you want to revert to this changeset?
 
-== ChangesetMenuItemGoBackTo ==
-Go back to changeset
+== ChangesetMenuItemRevertToChangeset ==
+Revert to changeset
 
 == UpdateReportTitle ==
 Update report
@@ -8014,3 +8170,274 @@ Show Notification
 
 == HideNotification ==
 Hide Notification
+
+== NoCheckinComment ==
+<No checkin comment>
+
+== HistoryRevisionDetailsFormatString ==
+{0} {1} on {2} by {3}
+
+== HistoryHeaderDetailsStringFormat ==
+by {0} on {1}
+
+== ExpandCollapseComment ==
+Expand/collapse comment
+
+== OnBranch ==
+on branch
+
+== HistoryDiffViewButton ==
+Diff view
+
+== HistoryAnnotateButton ==
+Annotate
+
+== ThisItemWasMoved ==
+This item was moved
+
+== MovedFromLabel ==
+From:
+
+== MovedToLabel ==
+To:
+
+== ThisItemWasDeleted ==
+This item was deleted
+
+== IssueTrackersEmptyState ==
+A workspace is needed to configure an issue tracker extension.
+
+== NoTaskControlBinded ==
+Do not bind Plastic SCM branches or changesets with any issue tracking system
+
+== TaskControlBinded ==
+Bind to this issue tracking system:
+
+== TaskControlApplyBinding ==
+Apply binding to:
+
+== AllRepositories ==
+Repositories
+
+== SelectedIssueTracker ==
+Selected issue tracker: {0}
+
+== TestConnection ==
+Test Connection
+
+== BindIssuesToBranches ==
+Bind issues to Plastic branches (recommended)
+
+== BindIssuesToChangesets ==
+Bind issues to Plastic changesets
+
+== IssueTrackerConnectionFailed ==
+Test connection failed. Please review the entered values. {0}
+
+== IssueTrackerNotLoaded ==
+Unable to load the issue tracker extension library.
+
+== ChangesetColors ==
+Changeset colors
+
+== SelectUsersDialogDescription ==
+Please select one or more users from the list below:
+
+== ClickToSetOtherName ==
+Click to set other name
+
+== ClickToSetAlias ==
+Click to set alias
+
+== ByUser ==
+By user
+
+== ByReplicationSource ==
+By replication source
+
+== UnsavedChanges ==
+There are unsaved changes
+
+== ViewChangesOrExit ==
+Workspace '{0}' has unsaved changes. Would you like to view them, or exit without saving?
+
+== ViewChanges ==
+View changes
+
+== ExitWithoutSaving ==
+Exit without saving
+
+== OperationInProgressOnWk ==
+There is an operation in progress on workspace '{0}'. 
+Please wait for it to finish.
+
+== ExitButton ==
+Exit
+
+== MergeLinkMissingChangeset ==
+missing changeset (this link cannot be checked in)
+
+== NoCheckinCommentTitle ==
+No check-in comment
+
+== NoCheckinCommentMessage ==
+The comment field is empty. You'll create a changeset that has no check-in comment. Do you want to continue?
+
+== DontAskMeAgain ==
+Don't ask me again
+
+== ResetButton ==
+Reset
+
+== OnlyThis ==
+Only this
+
+== ModifiedWithDate ==
+modified {0}
+
+== SelectEntryToSeeDifferences ==
+Select an entry from the history to see what changed
+
+== ShowRevisionsThatContainsMethod ==
+Show only revisions that contain the element
+
+== ShowRevisionsWithChanges ==
+Show only revisions with changes
+
+== ShowFullFileDifferences ==
+Show full file differences
+
+== ShowElementDifferences ==
+Show only element differences
+
+== LoadMore ==
+Load more
+
+== LoadMoreCount ==
+Load more ({0}/{1})
+
+== SemanticHistoryTitle ==
+Semantic history of {0} at file {1}
+
+== ElementNotFound ==
+The element was not found
+
+== RevisionNotConnected ==
+Cannot be processed, related revisions are not replicated
+
+== ChangedMergeFromCs ==
+Changed in merge source and destination (from cs:{0})
+
+== NotChanged ==
+Unchanged
+
+== Added ==
+Added
+
+== Changed ==
+Changed
+
+== MergeFromCs ==
+ in merge source (from cs:{0})
+
+== MovedOutScope ==
+Moved from {0} to {1}
+
+== Renamed ==
+Renamed from {0} to {1}
+
+== MovedDownPosition ==
+Moved down {0} positions
+
+== MovedUpPosition ==
+Moved up {0} positions
+
+== And ==
+ and {0}
+
+== SearchingServers ==
+Searching for servers on the local network...
+
+== PendingConflicts ==
+Conflicts to solve ({0})
+
+== DiffConflictButton ==
+diff
+
+== ExplainMoveButton ==
+explain move
+
+== ViewConflictOnResultButton ==
+view on result
+
+== ViewMoveSrcOnResultButton ==
+source on result
+
+== ViewMoveDstOnResultButton ==
+destination on result
+
+== KeepBothChanges ==
+keep both
+
+== ChangePositionButton ==
+change position
+
+== TwoWayMergeButton ==
+2-way
+
+== KeepDstChangesButton ==
+keep destination
+
+== KeepSrcChangesButton ==
+keep source
+
+== CodeReviewFiltersAll ==
+ALL code reviews
+
+== CodeReviewFiltersPending ==
+Pending reviews
+
+== CodeReviewFiltersCreatedByMe ==
+Created by me
+
+== CodeReviewFiltersAssignedToMe ==
+Assigned to me
+
+== CodeReviewFiltersCustomQuery ==
+Use a custom query
+
+== AnalyzeRefactorGroups ==
+We find refactors automatically for less than 50 files. You can launch it manually :)
+
+== AnalyzeRefactorGroupsButton ==
+Analyze refactors
+
+== CantAnalyzeRefactors ==
+Can't analyze refactors: {0}
+
+== NoRefactorGroups ==
+There are no refactors detected.
+
+== DetectedRefactorGroups ==
+Code moved between files detected!
+
+== ShowButton ==
+Show
+
+== HideButton ==
+Hide
+
+== DownloadingData ==
+Downloading data
+
+== SemanticDifferencesCalculated ==
+Semantic differences calculated
+
+== ProcessingDifferences ==
+Processing differences
+
+== RefactorGroupNode ==
+Refactor Group {0}
+
+== AnalyzingRefactors ==
+Analyzing refactors...

@@ -144,7 +144,7 @@ namespace Unity.PlasticSCM.Editor.Configuration
             OAuthSignIn mSignIn = new OAuthSignIn();
 
             mSignIn.ForConfigure(
-                PlasticApp.PlasticWebRestApi,
+                PlasticGui.Plastic.WebRestAPI,
                 ssoProviderName,
                 mProgressControls,
                 this,
@@ -203,10 +203,11 @@ namespace Unity.PlasticSCM.Editor.Configuration
         void OkButtonWithValidationAction()
         {
             Login.Run(
-              PlasticApp.PlasticWebRestApi,
+              PlasticGui.Plastic.WebRestAPI,
               new SaveCloudEditionCreds(),
               mEmail,
               mPassword,
+              string.Empty,
               string.Empty,
               Login.Mode.Configure,
               mProgressControls,

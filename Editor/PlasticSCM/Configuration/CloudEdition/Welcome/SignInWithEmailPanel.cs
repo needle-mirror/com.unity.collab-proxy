@@ -43,6 +43,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 mEmailField.text,
                 mPasswordField.text,
                 string.Empty,
+                string.Empty,
                 Login.Mode.Configure,
                 mProgressControls,
                 this);

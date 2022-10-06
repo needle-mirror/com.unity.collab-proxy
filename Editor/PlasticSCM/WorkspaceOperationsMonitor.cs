@@ -238,7 +238,8 @@ namespace Unity.PlasticSCM.Editor
             {
                 AssetsProcessorOperations.AddIfNotControlled(
                     plasticApi, ExtractPathsToProcess(
-                        assetsProcessorPathsToAdd, lockObj));
+                        assetsProcessorPathsToAdd, lockObj),
+                    FilterManager.Get().GetIgnoredFilter());
 
                 AssetsProcessorOperations.DeleteIfControlled(
                     plasticApi, ExtractPathsToProcess(
@@ -393,12 +394,10 @@ namespace Unity.PlasticSCM.Editor
         {
             internal static void AddIfNotControlled(
                 IPlasticAPI plasticApi,
-                List<string> paths)
+                List<string> paths,
+                IgnoredFilesFilter ignoredFilter)
             {
                 List<string> fullPaths = new List<string>();
-
-                IgnoredFilesFilter ignoredFilter = new IgnoredFilesFilter(
-                    GlobalConfig.Instance);
 
                 foreach (string path in paths)
                 {

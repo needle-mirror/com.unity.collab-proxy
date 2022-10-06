@@ -316,6 +316,9 @@ Destaca los cambios con conflictos que el usuario ha resuelto durante el merge
 == MergedChanges ==
 Cambios merge
 
+== RestoreDefaults ==
+Restaurar valores por defecto
+
 == MergedChangesTooltip ==
 Destaca los cambios que proceden de un merge
 
@@ -514,8 +517,69 @@ Argumento duplicado: {0}.
 == MergetoolUsageTitle ==
 Sintaxis herramienta de merge
 
+== XMergeUsageTitle ==
+Sintaxis herramienta de XMerge
+
+== ToolUsageNotice ==
+Lea a abajo el sintaxis de la herramienta
+
 == BinMergeToolExitQuestion ==
 Quiere guardar el contribuidor seleccionado como resultado del merge?
+
+== XMergeUsage ==
+Sintaxis: {0} xmerge [<opcionesDiferencias> | <opcionesMerge>]
+
+    opcionesDiferencias: <Ficheros> [<OpcionesGenerales>]
+
+    opcionesMerge: <ficheros> <base> [<nombreSimbólico>] [[<automatic>] [<silent>] <ficheroResultados>] [<tipoMerge>] [<opcionesGenerales>]
+
+        FicheroBase:            {-b | --base}=<nombreFichero>
+        NombreSimbolicoBase:    {-bn | --basesymbolicname}=<nombre>
+        automatic:              -a | --automatic
+        silent:                 --silent
+        FicheroResultados:      {-r | --result}=<nombreFichero>
+        tipoMerge:              {-m | --mergeresolutiontype}={onlyone | onlysrc | onlydst | try | forced}
+
+    ficheros: <origen> [<nombreSimbólicoOrigen>] <destino> [<nombreSimbólicoDestino>]
+
+        origen:                 {-s | --source}=<nombreFichero>
+        nombreSimbólicoOrigen:  {-sn | --srcsymbolicname}=<nombre>
+        destinationFile:        {-d | --destination}=<nombreFichero>
+        nombreSimbólicoDestino: {-dn | --dstsymbolicname}=<nombre>
+
+    opcionesGenerales: [<codificaciónPorDefecto>] [<métodoComparación>] [<tipoFichero>] [<codificaciónResultado>]
+
+        codificaciónPorDefecto: {-e | --encoding}={none |ascii | unicode | bigendian | utf7 | utf8}
+        métodoComparación:      {-i | --ignore}={none | eol | whitespaces | eol&whitespaces}
+        tipoFichero:            {-t | --filestype}={text/csharp | text/XML | text}
+        codificaciónResultado:  {-re | --resultencoding}={none |ascii | unicode | bigendian | utf7 | utf8}
+        progreso:               {--progress}=cadena de progreso, por ejemplo: Mezclando fichero 1/8
+        extraInfo:              {--extrainfofile}=ruta a un fichero que contiene información extendida acerca del merge
+
+    Observaciones:
+
+        -a | --automatic: Intenta resolver el merge automaticamente.
+                          Si el merge no puede ser resuelto automaticamente (requiere la intervención del usuario), la herramienta se muestra.
+                          Siempre se debe especificar un archivo de resultados para que el merge se resuelva automáticamente.
+        --silent:         Esta opción debe ser usada junto con la opción --automatic.
+                          Cuando un merge no puede ser resuelto automaticamente, esta opción provoca que termine inmediatamente
+                          (no se muestra la herramienta), y el programa devuelve un código de salida diferente de cero.
+                          Si la herramienta puede resolver el merge automaticamente, el programa devuelve 0 como código de salida.
+
+        -a | --automatic: Intenta resolver el merge automaticamente.
+                          Si el merge no puede ser resuelto automaticamente (requiere la intervención del usuario), la herramienta se muestra.
+        --silent:         Esta opción debe ser usada junto con la opción --automatic.
+                          Cuando un merge no puede ser resuelto automaticamente, esta opción provoca que termine inmediatamente
+                          (no se muestra la herramienta), y el programa devuelve un código de salida diferente de cero.
+                          Si la herramienta puede resolver el merge automaticamente, el programa devuelve 0 como código de salida.
+
+    Ejemplos:
+
+        {0} xmerge
+        {0} xmerge -s=file1.txt -d=file2.txt
+        {0} xmerge -s=file1.txt -b=file0.txt --destination=file2.txt
+        {0} xmerge --base=file0.txt -d=file2.txt --source=file1.txt --automatic --result=result.txt
+        {0} xmerge -b=file0.txt -s=file1.txt -d=file2.txt -a -r=result.txt -e=utf7 -i=eol -t=text/csharp -m=onlyone
 
 == WinMergetoolUsage ==
 Sintaxis: mergetool [<opcionesDiferencias> | <opcionesMerge>]
@@ -710,6 +774,9 @@ Dividir los bloques de conflicto
 
 == MergeBlocksMenuTitle ==
 Unir los bloques de conflicto
+
+== ColorsMenuTitle ==
+Colores de merge tracking
 
 == XmergeButton ==
 XMerge...

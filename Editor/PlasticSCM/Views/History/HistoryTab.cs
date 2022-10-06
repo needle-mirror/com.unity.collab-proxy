@@ -40,6 +40,8 @@ namespace Unity.PlasticSCM.Editor.Views.History
             WorkspaceInfo wkInfo,
             IWorkspaceWindow workspaceWindow,
             RepositorySpec repSpec,
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            LaunchTool.IProcessExecutor processExecutor,
             NewIncomingChangesUpdater newIncomingChangesUpdater,
             ViewHost viewHost,
             EditorWindow parentWindow,
@@ -48,12 +50,12 @@ namespace Unity.PlasticSCM.Editor.Views.History
             mWkInfo = wkInfo;
             mWorkspaceWindow = workspaceWindow;
             mRepSpec = repSpec;
+            mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
+            mProcessExecutor = processExecutor;
             mNewIncomingChangesUpdater = newIncomingChangesUpdater;
             mViewHost = viewHost;
             mParentWindow = parentWindow;
             mIsGluonMode = isGluonMode;
-
-            mGuiMessage = new UnityPlasticGuiMessage();
 
             BuildComponents(wkInfo, repSpec);
 
@@ -130,7 +132,10 @@ namespace Unity.PlasticSCM.Editor.Views.History
         }
 
         void HistoryViewLogic.IHistoryView.UpdateData(
-            HistoryRevisionList list, long loadedRevisionId)
+            Dictionary<BranchInfo, ChangesetInfo> branchesAndChangesets,
+            BranchInfo workingBranch,
+            HistoryRevisionList list,
+            long loadedRevisionId)
         {
             mHistoryListView.BuildModel(list, loadedRevisionId);
 
@@ -217,7 +222,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         void IHistoryViewMenuOperations.DiffWithPrevious()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(
+            if (mShowDownloadPlasticExeWindow.Show(
                 mRepSpec,
                 mIsGluonMode,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffRevision,
@@ -243,7 +248,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         void IHistoryViewMenuOperations.DiffSelectedRevisions()
         {
-            if(LaunchTool.ShowDownloadPlasticExeWindow(
+            if(mShowDownloadPlasticExeWindow.Show(
                 mRepSpec,
                 mIsGluonMode,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffSelectedRevisions,
@@ -271,7 +276,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         void IHistoryViewMenuOperations.DiffChangeset()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(
+            if (mShowDownloadPlasticExeWindow.Show(
                mRepSpec,
                mIsGluonMode,
                TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffChangeset,
@@ -283,7 +288,11 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 GetSelectedHistoryRevision(mHistoryListView);
 
             LaunchDiffOperations.DiffChangeset(
-                mRepSpec, revision.ChangeSet, mIsGluonMode);
+                mShowDownloadPlasticExeWindow,
+                mProcessExecutor,
+                mRepSpec, 
+                revision.ChangeSet, 
+                mIsGluonMode);
         }
 
         void IHistoryViewMenuOperations.RevertToThisRevision()
@@ -304,7 +313,6 @@ namespace Unity.PlasticSCM.Editor.Views.History
                     mProgressControls,
                     historyDescriptor,
                     revision,
-                    mGuiMessage,
                     RefreshAsset.UnityAssetDatabase);
                 return;
             }
@@ -416,11 +424,12 @@ namespace Unity.PlasticSCM.Editor.Views.History
         readonly HistoryViewLogic mHistoryViewLogic;
         readonly ProgressControlsForViews mProgressControls;
         readonly IWorkspaceWindow mWorkspaceWindow;
+        readonly LaunchTool.IProcessExecutor mProcessExecutor;
+        readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
         readonly RepositorySpec mRepSpec;
         readonly bool mIsGluonMode;
         readonly EditorWindow mParentWindow;
         readonly ViewHost mViewHost;
-        readonly GuiMessage.IGuiMessage mGuiMessage;
         readonly NewIncomingChangesUpdater mNewIncomingChangesUpdater;
     }
 }

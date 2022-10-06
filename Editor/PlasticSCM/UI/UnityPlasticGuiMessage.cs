@@ -29,30 +29,29 @@ namespace Unity.PlasticSCM.Editor.UI
         GuiMessage.GuiMessageResponseButton GuiMessage.IGuiMessage.ShowQuestion(
             string title,
             string message,
-            string firstActionButton,
-            string secondActionButton,
-            string thirdActionButton,
-            bool isFirstButtonEnabled)
+            string positiveActionButton,
+            string neutralActionButton,
+            string negativeActionButton)
         {
-            if (!isFirstButtonEnabled)
+            if (string.IsNullOrEmpty(negativeActionButton))
             {
                 bool result = EditorUtility.DisplayDialog(
                     title,
                     message,
-                    secondActionButton,
-                    thirdActionButton);
+                    positiveActionButton,
+                    neutralActionButton);
 
                 return (result) ?
-                    GuiMessage.GuiMessageResponseButton.Second :
-                    GuiMessage.GuiMessageResponseButton.Third;
+                    GuiMessage.GuiMessageResponseButton.Positive :
+                    GuiMessage.GuiMessageResponseButton.Neutral;
             }
 
             int intResult = EditorUtility.DisplayDialogComplex(
                 title,
                 message,
-                firstActionButton,
-                secondActionButton,
-                thirdActionButton);
+                positiveActionButton,
+                neutralActionButton,
+                negativeActionButton);
 
             return GetResponse(intResult);
         }
@@ -85,8 +84,8 @@ namespace Unity.PlasticSCM.Editor.UI
                 title,
                 message,
                 PlasticLocalization.GetString(PlasticLocalization.Name.YesButton),
-                PlasticLocalization.GetString(PlasticLocalization.Name.NoButton),
-                PlasticLocalization.GetString(PlasticLocalization.Name.CancelButton));
+                PlasticLocalization.GetString(PlasticLocalization.Name.CancelButton),
+                PlasticLocalization.GetString(PlasticLocalization.Name.NoButton));
 
             return GetResponse(intResult);
         }
@@ -106,13 +105,13 @@ namespace Unity.PlasticSCM.Editor.UI
             switch (dialogResult)
             {
                 case 0:
-                    return GuiMessage.GuiMessageResponseButton.First;
+                    return GuiMessage.GuiMessageResponseButton.Positive;
                 case 1:
-                    return GuiMessage.GuiMessageResponseButton.Second;
+                    return GuiMessage.GuiMessageResponseButton.Neutral;
                 case 2:
-                    return GuiMessage.GuiMessageResponseButton.Third;
+                    return GuiMessage.GuiMessageResponseButton.Negative;
                 default:
-                    return GuiMessage.GuiMessageResponseButton.Second;
+                    return GuiMessage.GuiMessageResponseButton.Neutral;
             }
         }
 

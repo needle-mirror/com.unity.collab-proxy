@@ -61,8 +61,14 @@ Repositorio
 == Checkin ==
 Checkin
 
+== CheckinWithAccKey ==
+Check_in
+
 == UndoChanges ==
 Deshacer
+
+== UndoChangesWithAccKey ==
+_Deshacer
 
 == UpdateWorkspace ==
 Actualizar workspace
@@ -688,6 +694,9 @@ Borrar
 == BranchMenuItemCreateBranch ==
 Crear rama hija...
 
+== BranchMenuItemCreateTopLevelBranch ==
+Crear rama de primer nivel...
+
 == BranchMenuItemMergeFromBranch ==
 Hacer merge desde esta rama...
 
@@ -1111,6 +1120,18 @@ La búsqueda de merges ha finalizado. El origen y destino del merge substractivo
 == MergeAlreadyProcessed ==
 Merge finalizado. Sus cambios se muestran en la vista de cambios pendientes. Cierre esta vista para verlos.
 
+== MergeAlreadyProcessedOpenPendingChangesText ==
+Merge finalizado. Sus cambios se muestran en la
+
+== MergeAlreadyProcessedOpenPendingChangesLinkText ==
+vista de cambios pendientes.
+
+== MergeAlreadyProcessedOpenPreferencesText ==
+Puede configurar Plastic SCM para cambiar a esta vista al finalizar la operación de merge automáticamente
+
+== MergeAlreadyProcessedOpenPreferencesLinkText ==
+aquí.
+
 == FileMergeTitleSingular ==
 1 cambio a aplicar
 
@@ -1437,6 +1458,9 @@ Mostrar shelves
 == ShowShelvesViewTooltip ==
 Mostrar la vista de shelves
 
+== ShowLinkedTasksButton ==
+Mostrar tareas
+
 == OptionsTooltip ==
 Configurar las opciones de cambios pendientes
 
@@ -1518,7 +1542,7 @@ Checked-out
 == Deleted ==
 Borrado
 
-== Changed ==
+== ChangedOnDisk ==
 Cambiado en disco
 
 == ContainsChanges ==
@@ -1807,6 +1831,53 @@ Merge keeping source changes (theirs)
 
 == MergeKeepingWorkspaceChanges ==
 Merge keeping workspace changes (yours/destination)
+
+== MergeOptionsButton ==
+Opciones de merge
+
+== MergeOptionsTitle ==
+Opciones de merge
+
+== MergeOptionsExplanation ==
+Modifique las siguientes opciones para ajustar el comportamiento de la operación de 'merge'
+
+== MergeOptionsContributorsTitle ==
+Seleccione los contribuidores de merge
+
+== MergeOptionBoth ==
+Mezclar los cambios de mi espacio de trabajo con los cambios provenientes del origen
+
+== MergeOptionFromDestination ==
+Aceptar los cambios de mi espacio de trabajo (descartando los cambios provenientes del origen)
+
+== MergeOptionFromSource ==
+Aceptar los cambios provenientes del origen (descartando los cambios de mi espacio de trabajo)
+
+== MergeOptionSkipMergeTrackingTitle ==
+'Merge tracking'
+
+== MergeOptionSkipMergeTrackingExplanation ==
+Ignorar 'Merge tracking'
+
+== MergeOptionSkipMergeTrackingHelpTitle ==
+Informacion de merge
+
+== MergeOptionSkipMergeTrackingHelp ==
+A la hora de buscar merges, PlasicSCM normalmente descarta elementos cuyos cambios no necesitan ser mezclados, ya sea porque ya han sido mezclados previamente o porque pertenecen a una revisión padre.
+Si marca esta casilla, aparecerán todos los elemntos susceptibles de hacer merge, hayan sido o no mezclados anteriormente. De esta forma se pueden re-integrar changesets o revisiones que ya han sido previamente integradas.
+Ésta opción solamente está disponible para el cherry picking y el merge de un intervalo de revisiones.
+
+== MergeOptionAdvancedTitle ==
+Advanced
+
+== MergeOptionAutomaticCalculateAncestor ==
+Calcular automáticamente el changeset utilizado como antecesor común en el merge
+
+== MergeOptionManualSpecifyAncestor ==
+Especificar un changeset antecesor manualmente:
+
+== MergeOptionManualSpecifyAncestorExample ==
+(p. ej 4572)
 
 == DiffDestinationWithSource ==
 Diff source with destination contributor
@@ -2466,6 +2537,15 @@ Please enter a server name
 == EnterServerFormat ==
 Please specify the server name in server:port format. Default port is 8087
 
+== EnterProxy ==
+Introduzca un nombre de proxy
+
+== EnterProxyFormat ==
+Especifique el nombre del proxy en el formato servidor:puerto. El puerto por defecto es 8087
+
+== ConnectingToProxy ==
+Conectando al servidor proxy
+
 == EnterUserName ==
 Please enter a user name
 
@@ -2646,6 +2726,9 @@ Address
 == PortColumn ==
 Port
 
+== VersionColumn ==
+Version
+
 == OpsErrorOccured ==
 Oops! An error occurred
 
@@ -2808,9 +2891,15 @@ Automatic conflict resolution (if possible)
 == AutomaticConflictResolutionTooltip ==
 Launch the merge tool only when user interaction is required to resolve a conflict
 
+== CloseMergeAndOpenPendingChanges ==
+Cerrar la vista de merge y abrir la de cambios pendientes al finalizar un merge
+
 == MergeWithPendingChanges ==
-Allow merge with pending changes
-(disabled by default so new users don't have problems undoing merges)
+Permitir merge con cambios pendientes
+(deshabilitado por defecto para evitar problemas a nuevos usuarios al deshacer cambios)
+
+== CommentsOptions ==
+Comentarios
 
 == OtherOptions ==
 Other options
@@ -2821,8 +2910,49 @@ User profile
 == DynamicWorkspaces ==
 Workspaces dinámicos
 
+== IssueTrackers ==
+Issue trackers
+
 == MiscOptionsTitle ==
 Miscellaneous
+
+== CommentsAutoTextLabel ==
+Auto-texto para comentarios
+
+== CommentsAutoTextNoneOption ==
+Ninguno
+
+== CommentsAutoTextUserNameOption ==
+Nombre de usuario
+
+== CommentsAutoTextDateOption ==
+Fecha
+
+== CommentsAutoTextCustomOption ==
+Personalizado
+
+== CommentsAutoTextBranchNameOption ==
+Nombre de la rama
+
+== CommentsAutoTextHelpTitle ==
+Información
+
+== CommentsAutoTextHelpMessage ==
+Sintaxis de la cadena:
+{0} = NombreUsuario
+{1} = Fecha
+{2} = Carácter de nueva línea
+{3} = Nombre de la rama
+
+Ejemplo: {0} - {1} {2} br:{3} {2} Resumen de cambios:
+mostraría:
+
+    juan - 05/10/2006 10:30
+    br:/main/task1673
+    Resumen de cambios:
+
+== CommentsAutoTextFormatErrorMessage ==
+{0} no tiene un formato válido para comentarios con autotexto
 
 == SetFilesAsReadOnlyAfterUpdateOrCi ==
 Update and Checkin operations set files as read-only
@@ -2848,6 +2978,12 @@ Display error for same file name with different case
 
 == DisplayErrorOnSameCaseFilesTooltip ==
 Applies only to Unix-like filesystems
+
+== ShowEmptyCommentWarning ==
+Avisar de comentarios vacíos en la vista de Cambios pendientes
+
+== ShowEmptyCommentWarning_ForGluon ==
+Avisar de comentarios vacíos en la vista de Checkin
 
 == DefaultWorkspaceRoot ==
 Default Workspace root:
@@ -4430,6 +4566,11 @@ Note, you can find shelvesets created from a given changeset by running the foll
 
     find shelve where parent=changesetspec
 
+== CantDeleteChangesetInPendingMerge ==
+El changeset actual no pudo ser borrado porque existe un merge pendiente de checkin que lo referencia.
+
+Es necesario deshacer los cambios pendientes antes de borrar este changeset.
+
 == DeleteWorkingChangesetCaption ==
 Delete working changeset
 
@@ -4774,6 +4915,9 @@ Diff changeset {0}
 
 == AnnotateParentRevisionMenuItem ==
 Annotate parent revision
+
+== ShowSemanticHistoryMenuItem ==
+Mostrar historia semántica
 
 == AnnotateParentChangesetMenuItem ==
 Annotate before these changes (parent of cs:{0})
@@ -6197,6 +6341,9 @@ Cargando miembros...
 == UserChooserDialogTitle ==
 Seleccione un usuario o grupo de la lista:
 
+== SelectUsersDialogTitle ==
+Seleccionar usuarios
+
 == SelectUserGroupDialogTitle ==
 Seleccionar usuario o grupo
 
@@ -6523,6 +6670,15 @@ Esperando sesión...
 
 == RetrievingOrgsProgress ==
 Obteniendo organizaciones...
+
+== RetrievingCloudDrivesProgress ==
+Obteniendo cloud drives...
+
+== GettingCloudDriveRepositoryProgress ==
+Obteniendo el repositorio cloud drive...
+
+== UnableToGetCloudDriveRepositoryError ==
+No es posible obtener el repository con guid '{0}' para la organización '{1}'
 
 == GettingSSOProviders ==
 Obteniendo los proveedores de la organización...
@@ -7164,7 +7320,7 @@ Ctrl+T
 Ctrl+H
 
 == PlasticHistoryShortcutForMacOS ==
-Cmd+H
+Cmd+Y
 
 == PlasticHistoryShortcutForLinux ==
 Ctrl+H
@@ -7200,7 +7356,7 @@ Ctrl+Z
 Ctrl+Y
 
 == PlasticRedoShortcutForMacOS ==
-Cmd+Y
+Shift+Cmd+Z
 
 == PlasticRedoShortcutForLinux ==
 Ctrl+Y
@@ -7686,7 +7842,7 @@ Estás invitado a probar la nueva GUI de Plastic SCM: un adelanto del trabajo qu
 Estás invitado a probar la nueva GUI de Gluon: un adelanto del trabajo que hemos estado haciendo para mejorar continuamente la experiencia de Plastic para todos los usuarios, independientemente del nivel de experiencia.
 
 == WelcomeToNewGuiSecondText ==
-Esta versión es multiplataforma, incluye un tema oscuro y proporciona un mejor resaltado de sintaxis. ¡Pronto habrá muchas más mejoras! Prueba la nueva experiencia y vuelve a cambiar en cualquier momento, ¡haznos saber lo que piensas!
+Esta versión es multiplataforma, incluye un tema oscuro y proporciona un mejor resaltado de sintaxis. ¡Pronto habrá muchas más mejoras, haznos saber lo que piensas!
 
 == WelcomeToNewGluonGuiSecondText ==
 Esta versión tiene todas las funcionalidades, es multiplataforma e incluye tema oscuro. También incluye soporte para changelists. Prueba la nueva experiencia y vuelve a cambiar en cualquier momento, ¡haznos saber lo que piensas!
@@ -7697,13 +7853,13 @@ Esta versión tiene todas las funcionalidades, es multiplataforma e incluye tema
 == SwitchToLegacyGuiHelp ==
 Puedes cambiar a la GUI clásica desde aquí
 
-== ConfirmGoBackToTitle ==
+== ConfirmRevertToChangesetTitle ==
 Confirmación de volver atras
 
-== GoBackToWarning ==
+== RevertToChangesetWarning ==
 Estas seguro de querer volver a este changeset?
 
-== ChangesetMenuItemGoBackTo ==
+== ChangesetMenuItemRevertToChangeset ==
 Volver al changeset
 
 == UpdateReportTitle ==
@@ -8012,3 +8168,274 @@ Mostrar Notificación
 
 == HideNotification ==
 Ocultar Notificación
+
+== NoCheckinComment ==
+<Sin comentario de checkin>
+
+== HistoryRevisionDetailsFormatString ==
+{0} {1} en {2} por {3}
+
+== HistoryHeaderDetailsStringFormat ==
+por {0} el {1}
+
+== ExpandCollapseComment ==
+Expandir/contraer comentario
+
+== OnBranch ==
+en la rama
+
+== HistoryDiffViewButton ==
+Ver diferencias
+
+== HistoryAnnotateButton ==
+Ver annotate
+
+== ThisItemWasMoved ==
+Éste ítem fue movido
+
+== MovedFromLabel ==
+Origen:
+
+== MovedToLabel ==
+Destino:
+
+== ThisItemWasDeleted ==
+Éste ítem fue borrado
+
+== IssueTrackersEmptyState ==
+Un workspace es necesario para poder configurar una extensión de issue tracker.
+
+== NoTaskControlBinded ==
+No vincular ramas o changesets de Plastic SCM con ningun sistema de issue tracking
+
+== TaskControlBinded ==
+Vincular con este sistema de issue tracking:
+
+== TaskControlApplyBinding ==
+Aplicar vínculo a:
+
+== AllRepositories ==
+Repositorios
+
+== SelectedIssueTracker ==
+Issue tracker seleccionado: {0}
+
+== TestConnection ==
+Probar conexión
+
+== BindIssuesToBranches ==
+Vincular tareas a las ramas de Plastic (recomendado)
+
+== BindIssuesToChangesets ==
+Vincular tareas a los changesets de Plastic
+
+== IssueTrackerConnectionFailed ==
+La prueba de conexión ha fallado. Por favor, revise los valores introducidos. {0}
+
+== IssueTrackerNotLoaded ==
+No se pudo cargar la biblioteca de extensión asociada al issue tracker.
+
+== ChangesetColors ==
+Colores de changeset
+
+== SelectUsersDialogDescription ==
+Por favor, seleccione uno o más usuarios de la lista:
+
+== ClickToSetOtherName ==
+Click para fijar otro nombre
+
+== ClickToSetAlias ==
+Click para fijar alias
+
+== ByUser ==
+Por usuario
+
+== ByReplicationSource ==
+Por origen de réplica
+
+== UnsavedChanges ==
+Hay cambios no guardados
+
+== ViewChangesOrExit ==
+El workspace '{0}' tiene cambios no guardados. ¿Quieres ver los cambios, o salir sin guardar los?
+
+== ViewChanges ==
+Ver los cambios
+
+== ExitWithoutSaving ==
+Salir sin guardar
+
+== OperationInProgressOnWk ==
+Hay operacion en progreso en el workspace '{0}'. 
+Espere a que termine, por favor.
+
+== ExitButton ==
+Salir
+
+== MergeLinkMissingChangeset ==
+changeset borrado (no se puede hacer checkin de este merge link)
+
+== NoCheckinCommentTitle ==
+Comentario en blanco
+
+== NoCheckinCommentMessage ==
+No se ha introducido ningún comentario para la operación de protección. ¿Desea continuar (ok) o volver atrás y especificar uno en el recuadro de comentarios (cancelar)?
+
+== DontAskMeAgain ==
+No preguntar de nuevo
+
+== ResetButton ==
+Resetear
+
+== OnlyThis ==
+Solo éste
+
+== ModifiedWithDate ==
+modificado {0}
+
+== SelectEntryToSeeDifferences ==
+Seleccione una entrada del historial para ver qué cambió
+
+== ShowRevisionsThatContainsMethod ==
+Mostrar solamente revisiones que contengan al elemento
+
+== ShowRevisionsWithChanges ==
+Mostrar solamente revisiones con cambios en el elemento
+
+== ShowFullFileDifferences ==
+Mostrar cambios de todo el fichero
+
+== ShowElementDifferences ==
+Mostrar solo cambios del elemento
+
+== LoadMore ==
+Cargar más
+
+== LoadMoreCount ==
+Cargar más ({0}/{1})
+
+== SemanticHistoryTitle ==
+Historia semántica de {0} en el fichero {1}
+
+== ElementNotFound ==
+No se ha encontrado el elemento
+
+== RevisionNotConnected ==
+No se puede procesar, faltan revisiones por replicar
+
+== ChangedMergeFromCs ==
+Cambiado en el origen y destino del merge (desde cs:{0})
+
+== NotChanged ==
+Sin cambios
+
+== Added ==
+Añadido
+
+== Changed ==
+Cambiado
+
+== MergeFromCs ==
+ en el origen del merge (desde cs:{0})
+
+== MovedOutScope ==
+Movido desde {0} hasta {1}
+
+== Renamed ==
+Renombrado de {0} a {1}
+
+== MovedDownPosition ==
+Movido {0} posiciones hacia abajo
+
+== MovedUpPosition ==
+Movido {0} posiciones hacia arriba
+
+== And ==
+ y {0}
+
+== SearchingServers ==
+Buscando servidores...
+
+== PendingConflicts ==
+Conflictos a resolver ({0})
+
+== DiffConflictButton ==
+diferencias
+
+== ExplainMoveButton ==
+explicar mover
+
+== ViewConflictOnResultButton ==
+ver el resultado
+
+== ViewMoveSrcOnResultButton ==
+fuente en resultado
+
+== ViewMoveDstOnResultButton ==
+destino en resultado
+
+== KeepBothChanges ==
+mantén ambos
+
+== ChangePositionButton ==
+cambiar de posición
+
+== TwoWayMergeButton ==
+2 vías
+
+== KeepDstChangesButton ==
+mantener el destino
+
+== KeepSrcChangesButton ==
+mantener la fuente
+
+== CodeReviewFiltersAll ==
+Todas las revisiones
+
+== CodeReviewFiltersPending ==
+Revisiones pendientes
+
+== CodeReviewFiltersCreatedByMe ==
+Creadas por mi
+
+== CodeReviewFiltersAssignedToMe ==
+Asignadas a mi
+
+== CodeReviewFiltersCustomQuery ==
+Usar una consulta personalizada
+
+== AnalyzeRefactorGroups ==
+Encontramos refactors automáticamente cuando hay menos de 50 ficheros. Puedes lanzarlo manualmente :)
+
+== AnalyzeRefactorGroupsButton ==
+Analizar refactors
+
+== CantAnalyzeRefactors ==
+No se puede analizar refactors: {0}
+
+== NoRefactorGroups ==
+No se detectó ningún refactor.
+
+== DetectedRefactorGroups ==
+Código movido entre ficheros detectado!
+
+== ShowButton ==
+Mostrar
+
+== HideButton ==
+Ocultar
+
+== DownloadingData ==
+Descargando datos
+
+== SemanticDifferencesCalculated ==
+Diferencias semánticas calculadas
+
+== ProcessingDifferences ==
+Procesando diferencias
+
+== RefactorGroupNode ==
+Grupo de Refactorización {0}
+
+== AnalyzingRefactors ==
+Analizando refactors...

@@ -9,6 +9,7 @@ using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.Tool;
 using PlasticGui;
 
 namespace Unity.PlasticSCM.Editor.Inspector
@@ -49,6 +50,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
             PlasticGui.WorkspaceWindow.NewIncomingChangesUpdater incomingChangesUpdater,
             IMergeViewLauncher mergeViewLauncher,
             PlasticGui.Gluon.IGluonViewSwitcher gluonViewSwitcher,
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             EditorWindow parentWindow,
             bool isGluonMode)
         {
@@ -67,6 +69,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
                 gluonViewSwitcher,
                 parentWindow,
                 sAssetSelection,
+                showDownloadPlasticExeWindow,
                 isGluonMode);
         }
         
@@ -75,7 +78,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
             if (!sIsEnabled)
                 return;
 
-            if (!FindWorkspace.HasWorkspace(Application.dataPath))
+            if (!FindWorkspace.HasWorkspace(ApplicationDataPath.Get()))
             {
                 Disable();
                 return;

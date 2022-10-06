@@ -375,7 +375,7 @@ Couldn't get a repository from {0}. The item may be private.
 Can't load assembly {0}.
 
 == CsNotFound ==
-The specified changeset {0} can't be found.
+The changeset loaded in your workspace cannot be found (changeset ID: {0}). Probably someone deleted it. You need to undo your changes to restore a valid state.
 
 == CycleMoveConflict ==
 Cycle move conflict

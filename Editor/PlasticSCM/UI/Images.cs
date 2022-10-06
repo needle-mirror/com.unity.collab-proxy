@@ -601,10 +601,12 @@ namespace Unity.PlasticSCM.Editor.UI
 
         static Texture2D TryLoadImage(string imageFileRelativePath, string image2xFilePath)
         {
-            if (EditorGUIUtility.pixelsPerPoint > 1f && File.Exists(image2xFilePath))
+            bool isImageAvailable = File.Exists(Path.GetFullPath(imageFileRelativePath));
+            
+            if ((EditorGUIUtility.pixelsPerPoint > 1f || !isImageAvailable) && File.Exists(image2xFilePath))
                 return LoadTextureFromFile(image2xFilePath);
 
-            if (File.Exists(Path.GetFullPath(imageFileRelativePath)))
+            if (isImageAvailable)
                 return LoadTextureFromFile(imageFileRelativePath);
 
             return null;

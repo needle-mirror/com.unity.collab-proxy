@@ -4,6 +4,18 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
 {
     internal static class RefreshAsset
     {
+        internal static void BeforeLongAssetOperation()
+        {
+            UnityEditor.AssetDatabase.DisallowAutoRefresh();
+        }
+
+        internal static void AfterLongAssetOperation()
+        {
+            UnityEditor.AssetDatabase.AllowAutoRefresh();
+
+            UnityAssetDatabase();
+        }
+
         internal static void UnityAssetDatabase()
         {
             UnityEditor.AssetDatabase.Refresh(

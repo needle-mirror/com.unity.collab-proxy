@@ -13,8 +13,13 @@ namespace Unity.PlasticSCM.Editor
 {
     static class SetupCloudProjectId
     {
+        internal static bool IsUnitTesting { get; set; }
+
         internal static bool HasCloudProjectId()
         {
+            if (IsUnitTesting)
+                return false;
+            
             return !string.IsNullOrEmpty(GetCloudProjectId());
         }
 

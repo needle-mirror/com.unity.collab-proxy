@@ -41,10 +41,9 @@ namespace Unity.PlasticSCM.Editor
             WorkspaceInfo wkInfo,
             ViewHost viewHost,
             bool isGluonMode,
-            NewIncomingChangesUpdater developerNewIncomingChangesUpdater,
-            GluonNewIncomingChangesUpdater gluonNewIncomingChangesUpdater,
-            IIncomingChangesNotifier incomingChangesNotifier,
             IAssetStatusCache assetStatusCache,
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            LaunchTool.IProcessExecutor processExecutor,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
             StatusBar statusBar,
             EditorWindow parentWindow)
@@ -52,10 +51,9 @@ namespace Unity.PlasticSCM.Editor
             mWkInfo = wkInfo;
             mViewHost = viewHost;
             mIsGluonMode = isGluonMode;
-            mDeveloperNewIncomingChangesUpdater = developerNewIncomingChangesUpdater;
-            mGluonNewIncomingChangesUpdater = gluonNewIncomingChangesUpdater;
-            mIncomingChangesNotifier = incomingChangesNotifier;
             mAssetStatusCache = assetStatusCache;
+            mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
+            mProcessExecutor = processExecutor;
             mWorkspaceOperationsMonitor = workspaceOperationsMonitor;
             mStatusBar = statusBar;
             mParentWindow = parentWindow;
@@ -65,6 +63,16 @@ namespace Unity.PlasticSCM.Editor
             mChangesetsTabButton = new TabButton();
             mBranchesTabButton = new TabButton();
             mHistoryTabButton = new TabButton();
+        }
+
+        internal void SetNewIncomingChanges(
+            NewIncomingChangesUpdater developerNewIncomingChangesUpdater,
+            GluonNewIncomingChangesUpdater gluonNewIncomingChangesUpdater,
+            IIncomingChangesNotifier incomingChangesNotifier)
+        {
+            mDeveloperNewIncomingChangesUpdater = developerNewIncomingChangesUpdater;
+            mGluonNewIncomingChangesUpdater = gluonNewIncomingChangesUpdater;
+            mIncomingChangesNotifier = incomingChangesNotifier;
         }
 
         internal void SetWorkspaceWindow(WorkspaceWindow workspaceWindow)
@@ -322,7 +330,11 @@ namespace Unity.PlasticSCM.Editor
                 return;
             }
 
-            LaunchTool.OpenMerge(mWkInfo, mIsGluonMode);
+            LaunchTool.OpenMerge(
+                mShowDownloadPlasticExeWindow,
+                mProcessExecutor,
+                mWkInfo, 
+                mIsGluonMode);
         }
 
         void IGluonViewSwitcher.ShowIncomingChangesView()
@@ -406,6 +418,7 @@ namespace Unity.PlasticSCM.Editor
                     this,
                     this,
                     this,
+                    mShowDownloadPlasticExeWindow,
                     mDeveloperNewIncomingChangesUpdater,
                     mGluonNewIncomingChangesUpdater,
                     mAssetStatusCache,
@@ -440,6 +453,7 @@ namespace Unity.PlasticSCM.Editor
                         mWkInfo,
                         mViewHost,
                         mWorkspaceWindow,
+                        mShowDownloadPlasticExeWindow,
                         mGluonNewIncomingChangesUpdater,
                         (Gluon.IncomingChangesNotifier)mIncomingChangesNotifier,
                         mStatusBar,
@@ -448,6 +462,7 @@ namespace Unity.PlasticSCM.Editor
                         mWkInfo,
                         mWorkspaceWindow,
                         this,
+                        mShowDownloadPlasticExeWindow,
                         mDeveloperNewIncomingChangesUpdater,
                         mParentWindow);
 
@@ -468,7 +483,7 @@ namespace Unity.PlasticSCM.Editor
             SetSelectedView(SelectedTab.IncomingChanges);
         }
 
-        void ShowChangesetsView()
+        internal void ShowChangesetsView()
         {
             if (ChangesetsTab == null)
             {
@@ -483,6 +498,8 @@ namespace Unity.PlasticSCM.Editor
                     mWorkspaceWindow,
                     mDeveloperNewIncomingChangesUpdater,
                     PendingChangesTab,
+                    mShowDownloadPlasticExeWindow,
+                    mProcessExecutor,
                     mParentWindow,
                     mIsGluonMode);
 
@@ -512,6 +529,8 @@ namespace Unity.PlasticSCM.Editor
                     mWkInfo,
                     mWorkspaceWindow,
                     repSpec,
+                    mShowDownloadPlasticExeWindow,
+                    mProcessExecutor,
                     mDeveloperNewIncomingChangesUpdater,
                     mViewHost,
                     mParentWindow,
@@ -752,15 +771,17 @@ namespace Unity.PlasticSCM.Editor
         TabButton mHistoryTabButton;
         TabButton mBranchesTabButton;
 
+        IIncomingChangesNotifier mIncomingChangesNotifier;
+        GluonNewIncomingChangesUpdater mGluonNewIncomingChangesUpdater;
+        NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
         WorkspaceWindow mWorkspaceWindow;
 
         readonly EditorWindow mParentWindow;
         readonly StatusBar mStatusBar;
         readonly WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
+        readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
+        readonly LaunchTool.IProcessExecutor mProcessExecutor;
         readonly IAssetStatusCache mAssetStatusCache;
-        readonly IIncomingChangesNotifier mIncomingChangesNotifier;
-        readonly GluonNewIncomingChangesUpdater mGluonNewIncomingChangesUpdater;
-        readonly NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
         readonly bool mIsGluonMode;
         readonly ViewHost mViewHost;
         readonly WorkspaceInfo mWkInfo;

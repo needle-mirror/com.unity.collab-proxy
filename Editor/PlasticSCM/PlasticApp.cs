@@ -33,13 +33,7 @@ namespace Unity.PlasticSCM.Editor
 {
     internal static class PlasticApp
     {
-        internal static IPlasticAPI PlasticAPI { get; private set; }
-        internal static PlasticWebRestApi PlasticWebRestApi { get; private set; }
-
-        internal static bool IsInitialized
-        { 
-            get { return mIsInitialized; } 
-        }
+        internal static bool IsUnitTesting { get; set; }
 
         internal static void InitializeIfNeeded()
         {
@@ -48,18 +42,18 @@ namespace Unity.PlasticSCM.Editor
 
             mIsInitialized = true;
 
-            PlasticAPI = new PlasticAPI();
-            PlasticWebRestApi = new PlasticWebRestApi();
-
             ConfigureLogging();
 
-            GuiMessage.Initialize(new UnityPlasticGuiMessage());
+            if (!IsUnitTesting)
+                GuiMessage.Initialize(new UnityPlasticGuiMessage());
 
             RegisterExceptionHandlers();
 
             InitLocalization();
 
-            ThreadWaiter.Initialize(new UnityThreadWaiterBuilder());
+            if (!IsUnitTesting)
+                ThreadWaiter.Initialize(new UnityThreadWaiterBuilder());
+
             ServicePointConfigurator.ConfigureServicePoint();
             CertificateUi.RegisterHandler(new ChannelCertificateUiImpl());
 
@@ -73,12 +67,15 @@ namespace Unity.PlasticSCM.Editor
             PlasticGuiConfig.SetConfigFile(
                 PlasticGuiConfig.UNITY_GUI_CONFIG_FILE);
 
-            sEventSenderScheduler = EventTracking.Configure(
-                PlasticApp.PlasticWebRestApi,
-                AssetsPath.IsRunningAsUPMPackage() ?
-                    ApplicationIdentifier.UnityPackage : 
-                    ApplicationIdentifier.UnityAssetStorePlugin,
-                IdentifyEventPlatform.Get());
+            if (!IsUnitTesting)
+            {
+                sEventSenderScheduler = EventTracking.Configure(
+                    (PlasticWebRestApi)PlasticGui.Plastic.WebRestAPI,
+                    AssetsPath.IsRunningAsUPMPackage() ?
+                        ApplicationIdentifier.UnityPackage : 
+                        ApplicationIdentifier.UnityAssetStorePlugin,
+                    IdentifyEventPlatform.Get());
+            }
 
             if (sEventSenderScheduler != null)
             {
@@ -107,21 +104,8 @@ namespace Unity.PlasticSCM.Editor
                 return;
 
             sPingEventLoop.SetWorkspace(wkInfo);
-            ((IPlasticWebRestApi)PlasticWebRestApi).SetToken(
+            PlasticGui.Plastic.WebRestAPI.SetToken(
                 CmConnection.Get().BuildWebApiTokenForCloudEditionDefaultUser());
-        }
-
-        // These two (ClientHandlers and ThreadWatier) need to be reinitialized if they have not been 
-        // or else an error will be thrown and the Plastic context menu will not show up
-        internal static void RegisterClientHandlersIfNeeded()
-        {
-            if (mIsInitialized)
-                return;
-
-            ClientHandlers.Register();
-            ThreadWaiter.Initialize(new UnityThreadWaiterBuilder());
-
-            mIsInitialized = true;
         }
 
         internal static void Dispose()
@@ -140,8 +124,7 @@ namespace Unity.PlasticSCM.Editor
         }
 
             WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
-                Application.dataPath,
-                PlasticAPI);
+                ApplicationDataPath.Get(), PlasticGui.Plastic.API);
 
             if (wkInfo == null)
                 return;

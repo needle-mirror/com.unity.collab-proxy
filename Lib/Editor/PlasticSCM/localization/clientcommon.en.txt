@@ -290,9 +290,6 @@ Invalid replication package. No valid version signature found
 == ErrorClientconfignotfound ==
 Plastic SCM client is not correctly configured for the current user: Client config file {0} not found. Please execute 'cm configure' to perform a text mode configuration or '{1} --configure' for graphical mode.
 
-== ErrorCreateCodeReview ==
-The code review could not be stored in the server.
-
 == ErrorDiffType ==
 Differences between items of different types cannot be calculated
 
@@ -612,6 +609,9 @@ The parent branch {0} was not found on the repository server
 == MonthsAgo ==
 {0} months ago
 
+== OneMonthAgo ==
+1 month ago
+
 == MoveNotAllowedForTransformedItem ==
 The item '{0}' cannot be moved because it has been transformed by the rule '{1}'.
 
@@ -887,6 +887,9 @@ The xlink root '{0}' cannot be found on {1}@{2}@{3}.
 
 == YearsAgo ==
 {0} years ago
+
+== OneYearAgo ==
+1 year ago
 
 == RevisionToReloadNotFound ==
 The revision to reload was not found

@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to this package will be documented in this file.
 
+## [1.17.6] - 2022-10-06
+
+Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!
+If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
+Removing a previously added Plastic SCM Asset Store Plug-In:
+- Select the PlasticSCM folder in the Assets\Plugins folder on the Project tab, then click Edit > Delete
+- Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
+
+### Changed
+- Changed the "Go back to changeset" option in Changesets tab to "Revert to changeset"
+- Improved notification banner appearance
+
+### Fixed
+- Fixed editor refresh triggering when a workspace update is in progress
+- Fixed pending changes show global ignored as private
+- Removed encryption checkbox from create organization dialog
+
 ## [1.17.2] - 2022-07-06
 
 Plastic SCM for Unity is now available as part of the Version Control Package! You can enable Plastic SCM via Window > Plastic SCM to get started!

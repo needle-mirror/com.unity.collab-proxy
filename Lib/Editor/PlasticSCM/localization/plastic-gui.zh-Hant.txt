@@ -1440,7 +1440,7 @@ GUID
 == Deleted ==
 已刪除
 
-== Changed ==
+== ChangedOnDisk ==
 已在磁碟變更
 
 == ContainsChanges ==
@@ -6366,3 +6366,39 @@ Unity Smart Merge
 
 == LaunchPlasticButton ==
 Launch Plastic SCM
+
+== ElementNotFound ==
+找不到元素
+
+== RevisionNotConnected ==
+無法處理，未複寫相關修訂
+
+== ChangedMergeFromCs ==
+已在合併來源與目的地中變更 (從 cs:{0})
+
+== NotChanged ==
+未變更
+
+== Added ==
+已新增
+
+== Changed ==
+已變更
+
+== MergeFromCs ==
+ 在合併來源中 (從 cs:{0})
+
+== MovedOutScope ==
+從 {0} 移至 {1}
+
+== Renamed ==
+從 {0} 重新命名為 {1}
+
+== MovedDownPosition ==
+向下移動 {0} 個位置
+
+== MovedUpPosition ==
+向上移動 {0} 個位置
+
+== And ==
+ 和 {0}

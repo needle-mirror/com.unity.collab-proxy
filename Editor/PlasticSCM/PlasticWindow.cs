@@ -249,7 +249,7 @@ namespace Unity.PlasticSCM.Editor
                 {
                     mDisableCollabIfEnabledWhenLoaded = false;
                     DisableCollabIfEnabled(ProjectPath.FromApplicationDataPath(
-                        Application.dataPath));
+                        ApplicationDataPath.Get()));
                 }
 
                 if (CollabPlugin.IsEnabled())
@@ -290,6 +290,8 @@ namespace Unity.PlasticSCM.Editor
                     isPlasticExeAvailable,
                     mWkInfo,
                     mViewSwitcher,
+                    mShowDownloadPlasticExeWindow,
+                    mProcessExecutor,
                     mIsGluonMode);
 
                 mViewSwitcher.TabViewGUI();
@@ -371,20 +373,18 @@ namespace Unity.PlasticSCM.Editor
                     return;
 
                 mWkInfo = FindWorkspace.InfoForApplicationPath(
-                    Application.dataPath, PlasticApp.PlasticAPI);
+                    ApplicationDataPath.Get(), PlasticGui.Plastic.API);
 
                 if (mWkInfo == null)
                     return;
 
                 PlasticPlugin.EnableForWorkspace();
 
-                SetupCloudProjectIdIfNeeded(mWkInfo, PlasticApp.PlasticAPI);
+                SetupCloudProjectIdIfNeeded(mWkInfo, PlasticGui.Plastic.API);
 
                 DisableVCSIfEnabled(mWkInfo.ClientPath);
 
-                mIsGluonMode = PlasticApp.PlasticAPI.IsGluonWorkspace(mWkInfo);
-
-                InitializeNewIncomingChanges(mWkInfo, mIsGluonMode);
+                mIsGluonMode = PlasticGui.Plastic.API.IsGluonWorkspace(mWkInfo);
 
                 ViewHost viewHost = new ViewHost();
 
@@ -394,13 +394,14 @@ namespace Unity.PlasticSCM.Editor
                     mWkInfo,
                     viewHost,
                     mIsGluonMode,
-                    mDeveloperNewIncomingChangesUpdater,
-                    mGluonNewIncomingChangesUpdater,
-                    mIncomingChangesNotifier,
                     PlasticPlugin.AssetStatusCache,
+                    mShowDownloadPlasticExeWindow,
+                    mProcessExecutor,
                     PlasticPlugin.WorkspaceOperationsMonitor,
                     mStatusBar,
                     this);
+
+                InitializeNewIncomingChanges(mWkInfo, mIsGluonMode, mViewSwitcher);
 
                 mCooldownAutoRefreshPendingChangesAction = new CooldownWindowDelayer(
                     mViewSwitcher.AutoRefreshPendingChangesView,
@@ -440,6 +441,7 @@ namespace Unity.PlasticSCM.Editor
                         mViewSwitcher,
                         this,
                         projectViewAssetSelection,
+                        mShowDownloadPlasticExeWindow,
                         mIsGluonMode);
 
                 DrawInspectorOperations.BuildOperations(
@@ -451,6 +453,7 @@ namespace Unity.PlasticSCM.Editor
                     mDeveloperNewIncomingChangesUpdater,
                     mViewSwitcher,
                     mViewSwitcher,
+                    mShowDownloadPlasticExeWindow,
                     this,
                     mIsGluonMode);
 
@@ -474,7 +477,8 @@ namespace Unity.PlasticSCM.Editor
 
         void InitializeNewIncomingChanges(
             WorkspaceInfo wkInfo,
-            bool bIsGluonMode)
+            bool bIsGluonMode,
+            ViewSwitcher viewSwitcher)
         {
             if (bIsGluonMode)
             {
@@ -482,9 +486,7 @@ namespace Unity.PlasticSCM.Editor
                     new Gluon.IncomingChangesNotifier(this);
                 mGluonNewIncomingChangesUpdater =
                     NewIncomingChanges.BuildUpdaterForGluon(
-                        wkInfo,
-                        this,
-                        gluonNotifier,
+                        wkInfo, viewSwitcher, gluonNotifier, this, gluonNotifier,
                         new GluonCheckIncomingChanges.CalculateIncomingChanges());
                 mIncomingChangesNotifier = gluonNotifier;
                 return;
@@ -494,7 +496,8 @@ namespace Unity.PlasticSCM.Editor
                 new Developer.IncomingChangesNotifier(this);
             mDeveloperNewIncomingChangesUpdater =
                 NewIncomingChanges.BuildUpdaterForDeveloper(
-                    wkInfo, this, developerNotifier);
+                    wkInfo, viewSwitcher, developerNotifier,
+                    this, developerNotifier);
             mIncomingChangesNotifier = developerNotifier;
         }
 
@@ -504,7 +507,7 @@ namespace Unity.PlasticSCM.Editor
         {
             mNotificationBarUpdater = new NotificationBarUpdater(
                 notificationBar,
-                PlasticApp.PlasticWebRestApi,
+                PlasticGui.Plastic.WebRestAPI,
                 new UnityPlasticTimerBuilder(),
                 new NotificationBarUpdater.NotificationBarConfig(),
                 ScreenResolution.Get());
@@ -518,7 +521,7 @@ namespace Unity.PlasticSCM.Editor
                 return;
 
             Reload.IfWorkspaceConfigChanged(
-                PlasticApp.PlasticAPI, mWkInfo, mIsGluonMode,
+                PlasticGui.Plastic.API, mWkInfo, mIsGluonMode,
                 ExecuteFullReload);
 
             if (mWkInfo == null)
@@ -588,9 +591,9 @@ namespace Unity.PlasticSCM.Editor
             mWelcomeView = new WelcomeView(
                 this,
                 this,
-                PlasticApp.PlasticAPI,
-                CmConnection.Get(),
-                PlasticApp.PlasticWebRestApi);
+                PlasticGui.Plastic.API,
+                PlasticGui.Plastic.WebRestAPI,
+                CmConnection.Get());
 
             return mWelcomeView;
         }
@@ -623,6 +626,8 @@ namespace Unity.PlasticSCM.Editor
             bool isPlasticExeAvailable,
             WorkspaceInfo workspaceInfo,
             ViewSwitcher viewSwitcher,
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            LaunchTool.IProcessExecutor processExecutor,
             bool isGluonMode)
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
@@ -637,6 +642,8 @@ namespace Unity.PlasticSCM.Editor
                 isPlasticExeAvailable,
                 workspaceInfo,
                 viewSwitcher,
+                showDownloadPlasticExeWindow,
+                processExecutor,
                 isGluonMode);
 
             EditorGUILayout.EndHorizontal();
@@ -653,8 +660,10 @@ namespace Unity.PlasticSCM.Editor
         }
 
         static void ShowBranchesContextMenu(
-             WorkspaceInfo wkInfo,
+            WorkspaceInfo wkInfo,
             ViewSwitcher viewSwitcher,
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            LaunchTool.IProcessExecutor processExecutor,
             bool isGluonMode)
         {
             GenericMenu menu = new GenericMenu();
@@ -673,12 +682,18 @@ namespace Unity.PlasticSCM.Editor
             menu.AddItem(
               new GUIContent(branchExplorer),
               false,
-              () => LaunchTool.OpenBranchExplorer(wkInfo, isGluonMode));
+              () => LaunchTool.OpenBranchExplorer(
+                showDownloadPlasticExeWindow,
+                processExecutor,
+                wkInfo, 
+                isGluonMode));
 
             menu.ShowAsContext();
         }
 
         static void ShowSettingsContextMenu(
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            LaunchTool.IProcessExecutor processExecutor,
             WorkspaceInfo wkInfo,
             bool isGluonMode)
         {
@@ -689,9 +704,13 @@ namespace Unity.PlasticSCM.Editor
                 PlasticLocalization.GetString(PlasticLocalization.Name.LaunchPlasticButton);
 
             menu.AddItem(
-               new GUIContent(openToolText),
-               false,
-               () => LaunchTool.OpenGUIForMode(wkInfo, isGluonMode));
+                new GUIContent(openToolText),
+                false,
+                () => LaunchTool.OpenGUIForMode(
+                    showDownloadPlasticExeWindow,
+                    processExecutor,
+                    wkInfo,
+                    isGluonMode));
 
             if (EditionToken.IsCloudEdition())
             {
@@ -746,6 +765,8 @@ namespace Unity.PlasticSCM.Editor
             bool isPlasticExeAvailable,
             WorkspaceInfo wkInfo,
             ViewSwitcher viewSwitcher,
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            LaunchTool.IProcessExecutor processExecutor,
             bool isGluonMode)
         {
             //TODO: Codice - beta: hide the diff button until the behavior is implemented
@@ -792,7 +813,11 @@ namespace Unity.PlasticSCM.Editor
             {
                 string label = PlasticLocalization.GetString(PlasticLocalization.Name.ConfigureGluon);
                 if (DrawActionButton.For(label))
-                    LaunchTool.OpenWorkspaceConfiguration(wkInfo, isGluonMode);
+                    LaunchTool.OpenWorkspaceConfiguration(
+                        showDownloadPlasticExeWindow,
+                        processExecutor,
+                        wkInfo, 
+                        isGluonMode);
             }
             else
             {
@@ -803,6 +828,8 @@ namespace Unity.PlasticSCM.Editor
                     ShowBranchesContextMenu(
                         wkInfo,
                         viewSwitcher,
+                        showDownloadPlasticExeWindow,
+                        processExecutor,
                         isGluonMode);
                 }
             }
@@ -811,6 +838,8 @@ namespace Unity.PlasticSCM.Editor
             if (DrawLaunchButton(Images.GetSettingsIcon(), string.Empty))
             {
                 ShowSettingsContextMenu(
+                    showDownloadPlasticExeWindow,
+                    processExecutor,
                     wkInfo,
                     isGluonMode);
             }
@@ -1090,7 +1119,7 @@ namespace Unity.PlasticSCM.Editor
                 bool lastIsGluonMode,
                 Action reloadAction)
             {
-                string applicationPath = Application.dataPath;
+                string applicationPath = ApplicationDataPath.Get();
 
                 bool isGluonMode = false;
                 WorkspaceInfo wkInfo = null;
@@ -1162,6 +1191,11 @@ namespace Unity.PlasticSCM.Editor
         bool mIsGluonMode;
         bool mDisableCollabIfEnabledWhenLoaded;
         AssetOperations mAssetOperations;
+
+        LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow =
+            new LaunchTool.ShowDownloadPlasticExeWindow();
+        LaunchTool.IProcessExecutor mProcessExecutor =
+            new LaunchTool.ProcessExecutor();
 
         static readonly ILog mLog = LogManager.GetLogger("PlasticWindow");
     }

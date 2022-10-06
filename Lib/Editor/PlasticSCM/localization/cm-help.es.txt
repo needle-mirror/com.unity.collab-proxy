@@ -361,7 +361,8 @@ Sintaxis:
 
     cm annotate | blame <spec>[ ...]
         [--format=<str_format>]
-        [--ignore=(eol | whitespaces | "eol&whitespaces" | none)]
+        [--comparisonmethod=(ignoreeol | ignorewhitespaces 
+            | ignoreeolandwhitespaces | recognizeall)]
         [--dateformat=<str_date_format>]
         [--encoding=<name>]
         [--stats]
@@ -375,33 +376,33 @@ Sintaxis:
 
 Opciones:
 
-    --format        Muestra el mensaje de salida en el formato indicado.
-                    Consulte las Notas para más información.
-    --ignore        Configura el método de comparación indicado.
-                    Consulte las Notas para más información.
-    --dateformat    Configura el formato de salida para la impresión de fechas.
-    --encoding      Especifica el encoding que se usará en la salida, por
-                    ejemplo, utf-8. Consulte la documentación de MSDN en
-                    http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
-                    para obtener la tabla de codificaciones soportadas y su
-                    formato (al final de la página en la columna "Name").
-    --stats         Muestra estadísticas.
-    --repository    Especifica el repositorio a usar para calcular las
-                    anotaciones. Por defecto, se usa el repositorio del
-                    workspace cuya revisión está cargada. (Use
-                    'cm help objectspec' para más información sobre las
-                    especificaciones de repositorio.)
+    --format            Muestra el mensaje de salida en el formato indicado.
+                        Consulte las Notas para más información.
+    --comparisonmethod  Configura el método de comparación indicado.
+                        Consulte las Notas para más información.
+    --dateformat        Configura el formato de salida para la impresión de fechas.
+    --encoding          Especifica el encoding que se usará en la salida, por
+                        ejemplo, utf-8. Consulte la documentación de MSDN en
+                        http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
+                        para obtener la tabla de codificaciones soportadas y su
+                        formato (al final de la página en la columna "Name").
+    --stats             Muestra estadísticas.
+    --repository        Especifica el repositorio a usar para calcular las
+                        anotaciones. Por defecto, se usa el repositorio del
+                        workspace cuya revisión está cargada. (Use
+                        'cm help objectspec' para más información sobre las
+                        especificaciones de repositorio.)
 
 == CMD_HELP_ANNOTATE ==
 Notas:
 
      Los ítems de tipo binario no pueden ser anotados.
 
-    Métodos de comparación (opción --ignore):
-        eol                 Ignora diferencias en final de línea.
-        whitespaces         Ignora diferencias en espacios.
-        "eol&whitespaces"   Ignora diferencias en final de línea y espacios.
-        none                Detecta diferencias en final de línea y espacios.
+    Métodos de comparación (opción --comparisonmethod):
+        ignoreeol                 Ignora diferencias en final de línea.
+        ignorewhitespaces         Ignora diferencias en espacios.
+        ignoreeolandwhitespaces   Ignora diferencias en final de línea y espacios.
+        recognizeall              Detecta diferencias en final de línea y espacios.
 
     Parámetros de formato de salida (opción --format):
         Este comando acepta una cadena de formato para mostrar la salida.
@@ -430,8 +431,8 @@ Notas:
 
 Ejemplos:
 
-    cm blame c:\workspace\src --ignore="eol&whitespaces" --encoding=utf-8
-    cm annotate c:\workspace\file.txt --ignore=eol
+    cm blame c:\workspace\src --comparisonmethod=ignoreeolandwhitespaces --encoding=utf-8
+    cm annotate c:\workspace\file.txt --comparisonmethod=ignoreeol
 
     cm annotate c:\workspace\file.txt --format="{owner} {date, 10} {content}"
     (Muestra el usuario que hizo el último cambio, un espacio, la fecha alineada
@@ -673,12 +674,12 @@ Sintaxis:
        cm changelist | clist [--symlink]
        (Muestra todas las listas de cambios.)
 
-       cm changelist | clist add <clist_name>
+       cm changelist | clist create <clist_name>
           [<clist_desc>] [--persistent | --notpersistent] [--symlink]
        (Crea una lista de cambios.)
 
-       cm changelist | clist rm <clist_name> [--symlink]
-       (Elimina la lista de cambios indicada. Si dicha lista contiene cambios
+       cm changelist | clist delete <clist_name> [--symlink]
+       (Borra la lista de cambios indicada. Si dicha lista contiene cambios
        pendientes, estos se moverán a lista de cambios 'default'.)
 
        cm changelist | clist edit <clist_name> [<action_name> <action_value>]
@@ -697,8 +698,12 @@ Sintaxis:
 
 Opciones:
 
-    clist_name          El nombre de la lista de cambios (changelist).
-    clist_desc          La descripción de la lista de cambios.
+    clist_name          El nombre de la lista de cambios (changelist). Se puede 
+                        usar la ruta a un archivo que contenga el nombre en su
+                        lugar. Más información en --namefile.
+    clist_desc          La descripción de la lista de cambios. Se puede usar la 
+                        ruta a un archivo que contenga el nombre en su lugar. 
+                        Más información en --descriptionfile.
     action_name         Seleccione 'rename' o 'description' para modificar un
                         changelist.
     action_value        Aplica el nuevo cambio o la nueva descripción al editar
@@ -711,6 +716,15 @@ Opciones:
                         (checked-in) o se deshagan.
     --symlink           Aplica la operación al symlink pero no al destino
                         (target).
+    --namefile          Una ruta válida al archivo que contiene el nombre de la 
+                        lista de cambios. El archivo debe existir en esa ruta, debe 
+                        contener algo de texto y no puede contener saltos de línea.
+    --newnamefile       Una ruta válida al archivo que contiene el nuevo nombre de 
+                        la lista de cambios cuando se edita para renombrar. El 
+                        archivo debe existir en esa ruta, debe de contener algo de 
+                        texto y no puede contener saltos de línea.
+    --descriptionfile   Una ruta válida al archivo que contiene la descripción deseada 
+                        para la lista de cambios. El archivo debe existir en esa ruta.
 
 == CMD_HELP_CHANGELIST ==
 Notas:
@@ -723,10 +737,14 @@ Ejemplos:
     cm changelist
     (Muestra las listas de cambios del espacio de trabajo actual.)
 
-    cm changelist add config_changes "dotConf files" --persistent
+    cm changelist create config_changes "dotConf files" --persistent
     (Crea una nueva lista de cambios llamada 'config_changes' con descripción
     'dotConf files' que permanecerá en el espacio de trabajo después de que sus
     cambios se hayan protegido (checked-in) o deshecho.)
+
+    cm changelist create --namefile="name.txt" --descriptionfile="desc.txt"
+    (Crea una nueva lista de cambios cuyo nombre y descripción son tomados de 
+    archivos.)
 
     cm changelist edit config_changes rename config_files --notpersistent
     (Edita la lista de cambios 'config_changes' renombrándola a 'config_files'
@@ -735,8 +753,12 @@ Ejemplos:
     cm changelist edit config_changes --notpersistent
     (Edita la lista de cambios 'config_changes' haciéndola no persistente.)
 
-    cm changelist rm config_files
+    cm changelist delete config_files
     (Elimina la lista de cambios 'config_files' del espacio de trabajo actual.)
+
+    cm changelist delete --namefile="name.txt"
+    (Elimina la lista de cambios identificada por el nombre contenido en 'name.txt' 
+    del espacio de trabajo actual.)
 
     cm changelist config_files add foo.conf
     (Añade el fichero 'foo.conf' a la lista de cambios 'config_files'.)
@@ -744,6 +766,14 @@ Ejemplos:
     cm changelist config_files rm foo.conf readme.txt
     (Elimina los ficheros 'foo.conf' y 'readme.txt' de la lista de cambios
     'config_files' y los mueve la lista de cambios por defecto del sistema.)
+
+    cm changelist edit --namefile="name.txt" description --descriptionfile="desc.txt"
+    (Edita la lista de cambios identificada por el nombre contenido en 'name.txt', cambiando 
+    su descripción por el contenido del archivo 'desc.txt'.)
+
+    cm changelist edit --namefile="name.txt" rename --newnamefile="newname.txt"
+    (Edita la lista de cambios identificada por el nombre contenido en 'name.txt' file, 
+    renombrándola por el contenido del archivo 'newname.txt'.)
 
 == CMD_DESCRIPTION_CHANGESET ==
 Ejecuta operaciones avanzadas sobre changesets.
@@ -1413,7 +1443,8 @@ Sintaxis:
             [--added] [--changed] [--moved] [--deleted]
             [--repositorypaths] [--download=<download_path>]
             [--encoding=<name>] 
-            [--ignore=(eol | whitespaces | "eol&whitespaces" | none)] 
+            [--comparisonmethod=(ignoreeol | ignorewhitespaces | 
+                ignoreeolandwhitespaces | recognizeall)] 
             [--clean]
             [--format=<str_format>] [--dateformat=<str_format>]
 
@@ -1436,7 +1467,8 @@ Sintaxis:
     cm diff <brspec> [--added] [--changed] [--moved] [--deleted]
             [--repositorypaths] [--download=<download_path>]
             [--encoding=<name>] 
-            [--ignore=(eol | whitespaces | "eol&whitespaces" | none)]
+            [--comparisonmethod=(ignoreeol | ignorewhitespaces | 
+                ignoreeolandwhitespaces | recognizeall)] 
             [--clean]
             [--format=<str_format>] [--dateformat=<str_format>]
             [--fullpaths | --fp]
@@ -1470,7 +1502,7 @@ Opciones:
                         http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
                         para obtener la tabla de codificaciones soportadas y
                         su formato (al final de la página en la columna "Name").
-    --ignore            Configura el método de comparación indicado.
+    --comparisonmethod  Configura el método de comparación indicado.
                         Consulte las Notas para más información.
     --clean             Omite las diferencias que provienen de un merge mostrando
                         solo las diferencias creadas en los checkins.
@@ -1483,11 +1515,11 @@ Opciones:
 == CMD_HELP_DIFF ==
 Notas:
 
-    Métodos de comparación (opción --ignore):
-        eol                 Ignora diferencias en final de línea.
-        whitespaces         Ignora diferencias en espacios.
-        "eol&whitespaces"   Ignora diferencias en final de línea y espacios.
-        none                Detecta diferencias en final de línea y espacios.
+    Métodos de comparación (opción --comparisonmethod):
+        ignoreeol                 Ignora diferencias en final de línea.
+        ignorewhitespaces         Ignora diferencias en espacios.
+        ignoreeolandwhitespaces   Ignora diferencias en final de línea y espacios.
+        recognizeall              Detecta diferencias en final de línea y espacios.
 
     Parámetros de formato de salida (opción --format):
         Este comando acepta una cadena de formato para mostrar la salida.
@@ -1563,6 +1595,7 @@ Ejemplos:
     cm diff rev:readme.txt#cs:19 rev:readme.txt#cs:20
     cm diff serverpath:/doc/readme.txt#cs:19@myrepo \
         serverpath:/doc/readme.txt#br:/main@myrepo@localhost:8084
+    cm diff rev:foo.c#cs:1 rev:foo.c#cs:2 --comparisonmethod=ignoreeol
 
 == CMD_DESCRIPTION_DIFFMETRICS ==
 Muestra métricas de diferencias entre dos revisiones.
@@ -1572,7 +1605,8 @@ Sintaxis:
 
     cm diffmetrics | dm <revspec1> <revspec2> [--format=<str_format>]
                         [--encoding=<name>]
-                        [--ignore=(eol | whitespaces | "eol&whitespaces" | none)]
+                        [--comparisonmethod=(ignoreeol | ignorewhitespaces |
+                            ignoreeolandwhitespaces | recognizeall)]
 
     revspec           Revisiones a comparar.
                       (Use 'cm help objectspec' para más información sobre
@@ -1580,15 +1614,15 @@ Sintaxis:
 
 Options:
 
-    --format        Muestra el mensaje de salida en el formato indicado.
-                    Consulte las Notas para más información.
-    --encoding      Especifica el encoding que se usará en la salida, por
-                    ejemplo, utf-8. Consulte la documentación de MSDN en
-                    http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
-                    para obtener la tabla de codificaciones soportadas y
-                    su formato (al final de la página en la columna "Name").
-    --ignore        Configura el método de comparación indicado.
-                    Consulte las Notas para más información.
+    --format            Muestra el mensaje de salida en el formato indicado.
+                        Consulte las Notas para más información.
+    --encoding          Especifica el encoding que se usará en la salida, por
+                        ejemplo, utf-8. Consulte la documentación de MSDN en
+                        http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
+                        para obtener la tabla de codificaciones soportadas y
+                        su formato (al final de la página en la columna "Name").
+    --comparisonmethod  Configura el método de comparación indicado.
+                        Consulte las Notas para más información.
 
 == CMD_HELP_DIFFMETRICS ==
 Notas:
@@ -1603,11 +1637,11 @@ Notas:
         {1}             Número de líneas añadidas.
         {2}             Número de líneas borradas.
 
-    Métodos de comparación (opción --ignore):
-        eol                 Ignora diferencias en final de línea.
-        whitespaces         Ignora diferencias en espacios.
-        "eol&whitespaces"   Ignora diferencias en final de línea y espacios.
-        none                Detecta diferencias en final de línea y espacios.
+    Métodos de comparación (opción --comparisonmethod):
+        ignoreeol                 Ignora diferencias en final de línea.
+        ignorewhitespaces         Ignora diferencias en espacios.
+        ignoreeolandwhitespaces   Ignora diferencias en final de línea y espacios.
+        recognizeall              Detecta diferencias en final de línea y espacios.
 
 Ejemplos:
 
@@ -1615,7 +1649,7 @@ Ejemplos:
     --format="There are {0} changed, {1} added and {2} deleted lines."
     (Muestra las métricas de diferencias en el formato indicado.)
 
-    cm dm file.txt#cs:2 file.txt#cs:3 --encoding=utf-8 --ignore=whitespaces
+    cm dm file.txt#cs:2 file.txt#cs:3 --encoding=utf-8 --comparisonmethod=ignorewhitespaces
 
 == CMD_DESCRIPTION_FASTEXPORT ==
 Exporta los datos de un repositorio de Plastic SCM a un formato fast-export.
@@ -2322,13 +2356,16 @@ es posible, que no resulte muy intuitivo.
 
 Sintaxis:
 
-    cm getworkspacefrompath | gwp <item_path> [--format=<str_format>]
+    cm getworkspacefrompath | gwp <item_path> [--format=<str_format>] [--extended]
 
     item_path       Fichero o directorio en disco.
 
 Opciones:
     --format        Muestra el mensaje de salida en el formato indicado.
                     Consulte las Notas para más información.
+    --extended      Muestra más información sobre el espacio de trabajo: type y 
+                    dynamic además del resto de campos. Consulte las Notas para 
+                    más información.
 
 == CMD_HELP_GWP ==
 Notas:
@@ -2337,12 +2374,15 @@ Notas:
 
     Parámetros de formato de salida (opción --format):
         Este comando acepta una cadena de formato para mostrar la salida.
-        Los parámetros de salida de este comando son los siguientes::
+        Los parámetros de salida de este comando son los siguientes:
         {0} | {wkname}          Nombre del espacio de trabajo.
         {1} | {wkpath}          Ruta del espacio de trabajo.
         {2} | {machine}         Nombre de la máquina del cliente.
         {3} | {owner}           Propietario del espacio de trabajo.
         {4} | {guid}            GUID del espacio de trabajo.
+        {5} | {type}            Tipo de espacio de trabajo: partial (gluon) o regular.
+        {6} | {dynamic}         Un espacio de trabajo puede ser dynamic (plasticfs)
+                                o static.
 
         {tab}                   Inserta un tabulador.
         {newline}               Inserta una nueva línea.
@@ -2350,6 +2390,7 @@ Notas:
 Ejemplos:
 
     cm gwp c:\myworkspace\code\file1.cpp --format="Espacio de trabajo: {wkname}"
+    cm gwp . --format="Nombre: {wkname} | Tipo: {type}, {dynamic}"
 
 == CMD_DESCRIPTION_HELP ==
 Muestra la ayuda de un comando de Plastic SCM.
@@ -4545,24 +4586,24 @@ Use este comando para administrar shelvesets parciales.
 == CMD_USAGE_PARTIAL_SHELVESET ==
 Sintaxis:
 
-    cm ^partial ^shelveset | ^shelve <command> [options]
+    cm partial shelveset | shelve <command> [options]
 
 Comandos:
 
-    ^create | ^mk
-    ^apply
-    ^delete | ^rm
+    create | mk
+    apply
+    delete | rm
 
     Para obtener más información sobre cada comando:
-    cm ^partial ^shelveset <command> --^usage
-    cm ^partial ^shelveset <command> --^help
+    cm partial shelveset <command> --usage
+    cm partial shelveset <command> --help
 
 == CMD_HELP_PARTIAL_SHELVESET ==
 Ejemplos:
 
-    cm ^partial ^shelveset ^create -^c="my comment"
-    cm ^partial ^shelveset ^apply sh:3
-    cm ^partial ^shelveset ^delete sh:5
+    cm partial shelveset create -c="my comment"
+    cm partial shelveset apply sh:3
+	cm partial shelveset delete sh:5
 	
 == CMD_DESCRIPTION_PARTIAL_SHELVESET_CREATE ==
 Almacena los cambios pendientes escogidos.
@@ -4570,11 +4611,11 @@ Almacena los cambios pendientes escogidos.
 == CMD_USAGE_PARTIAL_SHELVESET_CREATE ==
 Sintaxis:
 
-    cm ^partial ^shelveset | ^shelve ^create | ^mk [<item_path>[ ...]]
-                            [-^c=<str_comment> | -^commentsfile=<comments_file>]
-                            [--^applychanged] [--^symlink] [--^ignorefailed]
-                            [--^machinereadable [--^startlineseparator=<sep>]
-                              [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
+    cm partial shelveset | shelve create | mk [<item_path>[ ...]]
+                            [-c=<str_comment> | -commentsfile=<comments_file>]
+                            [--applychanged] [--symlink] [--ignorefailed]
+                            [--machinereadable [--startlineseparator=<sep>]
+                              [--endlineseparator=<sep>] [--fieldseparator=<sep>]]
 
 Opciones:
 
@@ -4663,12 +4704,12 @@ Opciones:
     --encoding=codificación: Especifica la codificación de los ficheros de
       origen (por ejemplo, UTF-8 o Unicode)
     --comparisonmethod=tipo: cualquiera de las siguientes opciones:
-      IgnoreEol:            Ignora diferencias de final de línea.
-      IgnoreWhitespaces:    Ignora diferencias de espacios en blanco.
-      IgnoreEolWhitespaces: Ignora diferencias de final de línea y espacios en
-                            blanco.
-      NotIgnore:            Detecta diferencias de final de línea y espacios en
-                            blanco.
+      ignoreeol:               Ignora diferencias de final de línea.
+      ignorewhitespaces:       Ignora diferencias de espacios en blanco.
+      ignoreeolandwhitespaces: Ignora diferencias de final de línea y espacios en
+                               blanco.
+      recognizeall:            Detecta diferencias de final de línea y espacios en
+                               blanco.
 
 == CMD_HELP_PARTIAL_SHELVESET_APPLY ==
 El comando partial shelveset apply restaura los contenidos almancenados en el
@@ -5144,15 +5185,15 @@ Notas:
 
 Ejemplos:
 
-    cm ^profile
+    cm profile
     (Lista todos los perfiles usando el formato por defecto.)
 
-    cm ^profile --^format="{index,2}  {server,-20}"
+    cm profile --format="{index,2}  {server,-20}"
     (Muestra el índice del perfil utilizando 2 espacios y alineado a la derecha,
     dos espacios, y el servidor de repositorios utilizando veinte espacios,
     alineado a la izquierda.)
 
-    cm ^profile --^format="{0,2}  {2,-20}"
+    cm profile --format="{0,2}  {2,-20}"
     (Muestra el mismo resultado que el ejemplo anterior.)
 
 == CMD_DESCRIPTION_PROFILE_CREATE ==
@@ -6231,7 +6272,7 @@ Sintaxis:
 
     cm history | hist <item_path>[ ...] [--long | --format=<str_format>]
                       [--symlink] [--xml[=<output_file>]] [--encoding=<name>]
-                      [--^moveddeleted]
+                      [--moveddeleted]
 
     item_path       Ruta de los ítems. Use un espacio en blanco para separar
                     rutas de ítems. Use comillas dobles (" ") para especificar
@@ -6276,6 +6317,7 @@ Notas:
         {7} | {repository}        Repositorio.
         {8} | {server}            Servidor.
         {9} | {repspec}           Especificación de repositorio.
+        {10}| {datastatus}        Disponibilidad del dato de la revision.
         {tab}                     Inserta un tabulador.
         {newline}                 Inserta una nueva línea.
 
@@ -6609,12 +6651,12 @@ Opciones:
     --encoding=codificación: Especifica la codificación de los ficheros de
       origen (por ejemplo, UTF-8 o Unicode)
     --comparisonmethod=tipo: cualquiera de las siguientes opciones:
-      IgnoreEol:            Ignora diferencias de final de línea.
-      IgnoreWhitespaces:    Ignora diferencias de espacios en blanco.
-      IgnoreEolWhitespaces: Ignora diferencias de final de línea y espacios en
-                            blanco.
-      NotIgnore:            Detecta diferencias de final de línea y espacios en
-                            blanco.
+      ignoreeol:               Ignora diferencias de final de línea.
+      ignorewhitespaces:       Ignora diferencias de espacios en blanco.
+      ignoreeolandwhitespaces: Ignora diferencias de final de línea y espacios en
+                               blanco.
+      recognizeall:            Detecta diferencias de final de línea y espacios en
+                               blanco.
 
 == CMD_HELP_SHELVE ==
 
@@ -6780,12 +6822,12 @@ Opciones:
     --encoding=codificación: Especifica la codificación de los ficheros de
       origen (por ejemplo, UTF-8 o Unicode)
     --comparisonmethod=tipo: cualquiera de las siguientes opciones:
-      IgnoreEol:            Ignora diferencias de final de línea.
-      IgnoreWhitespaces:    Ignora diferencias de espacios en blanco.
-      IgnoreEolWhitespaces: Ignora diferencias de final de línea y espacios en
-                            blanco.
-      NotIgnore:            Detecta diferencias de final de línea y espacios en
-                            blanco.
+      ignoreeol:               Ignora diferencias de final de línea.
+      ignorewhitespaces:       Ignora diferencias de espacios en blanco.
+      ignoreeolandwhitespaces: Ignora diferencias de final de línea y espacios en
+                               blanco.
+      recognizeall:            Detecta diferencias de final de línea y espacios en
+                               blanco.
 
 == CMD_HELP_SHELVESET_APPLY ==
 El comando shelveset apply restaura los contenidos almancenados en el
@@ -8081,8 +8123,14 @@ Crea un nuevo workspace.
 == CMD_USAGE_WORKSPACE_CREATE ==
 Sintaxis:
 
-    cm workspace | wk [create | mk] nombre ruta [rep_spec] [--selector[=selector_file]
-                                    nombre ruta --dynamic --tree=[tree]
+    cm workspace | wk [create | mk] <rep_spec>
+                      [create | mk] <nombre> <ruta> [<rep_spec>]
+                      [create | mk] <nombre> <ruta> [--selector[=<fichero_selector>]
+    (Crea un nuevo workspace.)
+
+    cm workspace | wk [create | mk] <nombre> <ruta> --dynamic --tree=[<tree>]
+    (Crea un workspace dinámico. Esta característica es experimental,
+    y solamente se encuentra disponible en Windows.)
 
     nombre              Nombre del nuevo workspace.
     ruta                Ruta de acceso del workspace.
@@ -8121,6 +8169,16 @@ Notas:
       plano.
 
 Ejemplos:
+
+    cm workspace create mycode
+    cm wk mk mycode
+    (Crea un workspace llamado 'mycode' apuntando al repositorio del mismo nombre.
+    El directorio del workspace se creará bajo el directorio actual.)
+
+    cm wk mk mycode@localhost:8084
+    cm wk mk mycode@myorganization@cloud
+    (Crea un workspace llamado 'mycode' igual que antes, pero es posible especificar
+    un servidor de repositorios diferente.)
 
     cm workspace create myworkspace c:\workspace
     cm wk mk myworkspace /home/john/wkspace
@@ -8664,14 +8722,14 @@ Configura el cliente de Plastic SCM y especificar un servidor por defecto para e
 
 == CMD_USAGE_CONFIGURECLIENT ==
 Sintaxis:
-    cm ^configure [--^language=<idioma> --^workingmode=<modo> [AuthParameters] 
-                 --^server=<servidor> [--^port=<puerto>]] [--^clientconf=<ruta_clientconf>]
+    cm configure [--language=<idioma> --workingmode=<modo> [AuthParameters] 
+                 --server=<servidor> [--port=<puerto>]] [--clientconf=<ruta_clientconf>]
 
-    --^language          Idiomas disponibles:
+    --language          Idiomas disponibles:
                         en (English)
                         es (Spanish)
 
-    --^workingmode       Modos de seguridad/usuarios disponibles:
+    --workingmode       Modos de seguridad/usuarios disponibles:
                         NameWorkingMode (Name)
                         NameIDWorkingMode (Name + ID)
                         LDAPWorkingMode (LDAP)
@@ -8679,20 +8737,20 @@ Sintaxis:
                         UPWorkingMode (User and password)
                         SSOWorkingMode (Single Sign On)
                         
-    AuthParameters      Parámetros de autenticación (solo para modos ^LDAPWorkingMode y ^UPWorkingMode):
-                        --^user=<usuario>
-                        --^password=<contraseña>
+    AuthParameters      Parámetros de autenticación (solo para modos LDAPWorkingMode y UPWorkingMode):
+                        --user=<usuario>
+                        --password=<contraseña>
 
-                        Parámetros de Single Sign On (solo para modos ^SSOWorkingMode):
-                        --^user=<usuario>
-                        --^token=<token>
+                        Parámetros de Single Sign On (solo para modos SSOWorkingMode):
+                        --user=<usuario>
+                        --token=<token>
                         
-    --^server            Nombre/dirección IP del servidor de Plastic SCM
+    --server            Nombre/dirección IP del servidor de Plastic SCM
 
-    --^port              Puerto del servidor de Plastic SCM
+    --port              Puerto del servidor de Plastic SCM
                         (el puerto es opcional para servidores de Cloud)
 
-    --^clientconf        Ruta del fichero de configuración a crear (opcional)
+    --clientconf        Ruta del fichero de configuración a crear (opcional)
                         Este argumento puede ser una ruta completa, un nombre de fichero o un directorio.
                         Si no se especifica este parámetro, el directorio por defecto para el fichero
                         de configuración 'client.conf' será:
@@ -8701,32 +8759,32 @@ Sintaxis:
 
                         Ejemplos:
                         
-                        --^clientconf=c:/path/to/myclient.conf
+                        --clientconf=c:/path/to/myclient.conf
                         (La ruta especificada se utilizará para crear el fichero de configuración del cliente)
 
-                        --^clientconf=myclient.conf
+                        --clientconf=myclient.conf
                         (Se utilizará el fichero 'myclient.conf' dentro del directorio de configuración por defecto)
 
-                        --^clientconf=c:/exisitingDirectory
+                        --clientconf=c:/exisitingDirectory
                         (Se utilizará el nombre de fichero por defecto, client.conf, en el directorio especificado)
 
 == CMD_HELP_CONFIGURECLIENT ==
 Notas:
 
-    El comando 'cm ^configure' no podrá ser usado en las versiones Cloud Edition o DVCS Edition de Plastic SCM.
+    El comando 'cm configure' no podrá ser usado en las versiones Cloud Edition o DVCS Edition de Plastic SCM.
     Use de forma alternativa la aplicación 'plastic --configure'.
     
 Ejemplos:
 
-    cm ^configure 
+    cm configure 
     (ejecuta la versión interactiva del comando de configuración del cliente de Plastic SCM)
 
-    cm ^configure --^language=^en --^workingmode=^LDAPWorkingMode --^user=^jack --^password=^01234 \
-                  --^server=^plastic.mymachine.com --^port=^8084
+    cm configure --language=en --workingmode=LDAPWorkingMode --user=jack --password=01234 \
+                  --server=plastic.mymachine.com --port=8084
     (configura el cliente de Plastic SCM con los parámetros especificados, y creará el fichero
     de configuración 'client.conf' en el directorio por defecto).
 
-    cm ^configure --^language=^en --^workingmode=^NameWorkingMode --^server=^plastic.mymachine.com \
-                  --^port=^8084 --^clientconf=^clientconf_exp.conf
+    cm configure --language=en --workingmode=NameWorkingMode --server=plastic.mymachine.com \
+                  --port=8084 --clientconf=clientconf_exp.conf
     (configura el cliente de Plastic SCM con los parámetros especificados, y creará el fichero
     de configuración 'client.conf' en el directorio especificado).

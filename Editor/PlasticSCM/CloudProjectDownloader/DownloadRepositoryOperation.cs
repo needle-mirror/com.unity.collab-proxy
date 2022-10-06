@@ -26,7 +26,7 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
             string projectPath,
             string unityAccessToken)
         {
-            AssetDatabase.DisallowAutoRefresh();
+            RefreshAsset.BeforeLongAssetOperation();
 
             try
             {
@@ -60,9 +60,7 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
             {
                 EditorUtility.ClearProgressBar();
 
-                AssetDatabase.AllowAutoRefresh();
-
-                RefreshAsset.UnityAssetDatabase();
+                RefreshAsset.AfterLongAssetOperation();
 
                 if (!mOperationFailed)
                 {

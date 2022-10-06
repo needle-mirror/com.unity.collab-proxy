@@ -39,8 +39,6 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
 
         internal void Clear()
         {
-            FilterManager.Get().Reload();
-
             mStatusByPathCache.Clear();
         }
 
@@ -53,36 +51,27 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
             if (!IsOnWorkspace(fullPath, wkPath))
                 return AssetStatus.None;
 
-            bool wasDownloadEnabled = GlobalConfig.Instance.DisableDownload();
-            try
+            WorkspaceTreeNode treeNode = PlasticGui.Plastic.API.GetWorkspaceTreeNode(fullPath);
+
+            if (CheckWorkspaceTreeNodeStatus.IsPrivate(treeNode))
             {
-                WorkspaceTreeNode treeNode = PlasticGui.Plastic.API.GetWorkspaceTreeNode(fullPath);
-
-                if (CheckWorkspaceTreeNodeStatus.IsPrivate(treeNode))
-                {
-                    return ignoredFilter.IsIgnored(fullPath) ?
-                        AssetStatus.Ignored : AssetStatus.Private;
-                }
-
-                if (CheckWorkspaceTreeNodeStatus.IsAdded(treeNode))
-                    return AssetStatus.Added;
-
-                AssetStatus result = AssetStatus.Controlled;
-
-                if (CheckWorkspaceTreeNodeStatus.IsCheckedOut(treeNode) &&
-                    !CheckWorkspaceTreeNodeStatus.IsDirectory(treeNode))
-                    result |= AssetStatus.Checkout;
-
-                if (hiddenChangesFilter.IsHiddenChanged(fullPath))
-                    result |= AssetStatus.HiddenChanged;
-
-                return result;
+                return ignoredFilter.IsIgnored(fullPath) ?
+                    AssetStatus.Ignored : AssetStatus.Private;
             }
-            finally
-            {
-                if (wasDownloadEnabled)
-                    GlobalConfig.Instance.EnableDownload();
-            }
+
+            if (CheckWorkspaceTreeNodeStatus.IsAdded(treeNode))
+                return AssetStatus.Added;
+
+            AssetStatus result = AssetStatus.Controlled;
+
+            if (CheckWorkspaceTreeNodeStatus.IsCheckedOut(treeNode) &&
+                !CheckWorkspaceTreeNodeStatus.IsDirectory(treeNode))
+                result |= AssetStatus.Checkout;
+
+            if (hiddenChangesFilter.IsHiddenChanged(fullPath))
+                result |= AssetStatus.HiddenChanged;
+
+            return result;
         }
 
         static bool IsOnWorkspace(string fullPath, string clientPath)

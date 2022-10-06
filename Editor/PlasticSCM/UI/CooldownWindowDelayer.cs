@@ -6,6 +6,8 @@ namespace Unity.PlasticSCM.Editor.UI
 {
     internal class CooldownWindowDelayer
     {
+        internal static bool IsUnitTesting { get; set; }
+
         internal CooldownWindowDelayer(Action action, double cooldownSeconds)
         {
             mAction = action;
@@ -14,6 +16,12 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal void Ping()
         {
+            if (IsUnitTesting)
+            {
+                mAction();
+                return;
+            }
+            
             if (mIsOnCooldown)
             {
                 RefreshCooldown();

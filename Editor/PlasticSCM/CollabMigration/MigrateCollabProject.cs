@@ -41,7 +41,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
             EditorApplication.update -= RunOnceWhenAccessTokenAndProjectIdAreInitialized;
 
             string projectPath = ProjectPath.FromApplicationDataPath(
-                Application.dataPath);
+                ApplicationDataPath.Get());
 
             string projectGuid = SetupCloudProjectId.GetCloudProjectId();
 
@@ -77,7 +77,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
                 return false;
             }
 
-            if (FindWorkspace.HasWorkspace(Application.dataPath))
+            if (FindWorkspace.HasWorkspace(ApplicationDataPath.Get()))
             {
                 return false;
             }
@@ -106,8 +106,8 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
 
         internal static void DeletePlasticDirectoryIfExists(string projectPath)
         {
-            string plasticDirectory = WorkspaceConfigFile.
-                GetPlasticWkConfigPath(projectPath);
+            WorkspaceInfo wkInfo = new WorkspaceInfo("wk", projectPath);
+            string plasticDirectory = WorkspaceConfigFile.GetPlasticWkConfigPath(wkInfo);
 
             if (!Directory.Exists(plasticDirectory))
                 return;
@@ -215,7 +215,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
 
             mLog.DebugFormat(
                 "Disabled Collab Plugin after the migration for Project: {0}",
-                ProjectPath.FromApplicationDataPath(Application.dataPath));
+                ProjectPath.FromApplicationDataPath(ApplicationDataPath.Get()));
         }
 
         static string GetCollabHeadCommitSha(

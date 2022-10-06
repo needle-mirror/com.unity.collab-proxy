@@ -135,8 +135,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         static void Checkin()
         {
             WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
-                Application.dataPath,
-                PlasticApp.PlasticAPI);
+                ApplicationDataPath.Get(), PlasticGui.Plastic.API);
             
             if (wkInfo != null)
             {

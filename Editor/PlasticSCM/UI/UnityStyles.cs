@@ -319,6 +319,13 @@ namespace Unity.PlasticSCM.Editor.UI
                 return style;
             });
 
+            internal static readonly LazyStyle LinkLabel = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.linkLabel);
+                style.padding = EditorStyles.label.padding;
+                return style;
+            });
+
             internal static readonly LazyStyle NotificationLabel = new LazyStyle(() =>
             {
                 var style = new GUIStyle(EditorStyles.label);

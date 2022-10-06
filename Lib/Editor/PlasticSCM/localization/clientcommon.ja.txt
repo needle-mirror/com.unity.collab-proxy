@@ -281,9 +281,6 @@ dm コマンドはディレクトリではなく、ファイルの比較にの�
 == ErrorClientconfignotfound ==
 現在のユーザーに Plastic SCM クライアントが正しく設定されていません: クライアントの設定ファイル {0} が見つかりません。'cm configure' を実行してテキストモード設定を実行するか、グラフィカルモードについては '{1} --configure' を実行してください。
 
-== ErrorCreateCodeReview ==
-コードレビューをサーバーに格納できませんでした。
-
 == ErrorDiffType ==
 異なるタイプの項目間の差分は計算できません
 

@@ -188,11 +188,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             GetDatacenters.Run(mRestApi, mProgressControls, this);
         }
 
-        void EncryptionLinkLabel_LinkClicked()
-        {
-            Application.OpenURL(CreateOrganization.ENCRYPTION_LEARN_MORE_URL);
-        }
-
         void BackButton_Clicked()
         {
             mParentWindow.ReplaceRootPanel(mParentPanel);
@@ -205,7 +200,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 new CreateOrganization.Data(
                     mOrganizationNameTextField.text,
                     mDatacenter.text,
-                    mEncryptData.value),
+                    false),
                 mProgressControls,
                 this);
         }
@@ -236,10 +231,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mCreateButton = this.Q<Button>("create");
             mCreateButton.clicked += CreateButton_Clicked;
 
-            mEncryptData = this.Q<Toggle>("encryptData");
-            mEncryptLearnMoreButton = this.Q<Button>("encryptLearnMore");
-            mEncryptLearnMoreButton.clicked += EncryptionLinkLabel_LinkClicked;
-
             mGettingDatacentersProgressContainer = this.Q<VisualElement>("gettingDatacenters");
 
             mOrganizationNameTextField.RegisterValueChangedCallback(
@@ -252,12 +243,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 PlasticLocalization.Name.OrganizationName);
             this.SetControlText<Label>("datacenterLabel",
                 PlasticLocalization.Name.Datacenter);
-            this.SetControlText<Toggle>("encryptData",
-                PlasticLocalization.Name.EncryptionCheckButton);
-            this.SetControlText<Label>("encryptExplanation",
-                PlasticLocalization.Name.EncryptionCheckButtonExplanation, "");
-            this.SetControlText<Button>("encryptLearnMore",
-                PlasticLocalization.Name.LearnMore);
             this.SetControlText<Button>("back",
                 PlasticLocalization.Name.BackButton);
             this.SetControlText<Button>("create",
@@ -285,11 +270,9 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         ToolbarMenu mDatacenter;
         Button mBackButton;
         Button mCreateButton;
-        Button mEncryptLearnMoreButton;
         VisualElement mGettingDatacentersProgressContainer;
         LoadingSpinner mLoadingSpinner;
         string mSelectedDatacenter;
-        Toggle mEncryptData;
 
         IProgressControls mProgressControls;
         readonly IPlasticWebRestApi mRestApi;

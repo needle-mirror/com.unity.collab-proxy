@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 
 using Codice.CM.Common;
@@ -15,6 +16,8 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 {
     internal class BranchesListView : TreeView
     {
+        internal GenericMenu Menu { get { return mMenu.Menu; } }
+
         internal BranchesListView(
             BranchesListHeaderState headerState,
             List<string> columnNames,
@@ -92,6 +95,16 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             mLastRect = treeViewRect;
 
             base.OnGUI(rect);
+
+            Event e = Event.current;
+
+            if (e.type != EventType.KeyDown)
+                return;
+
+            bool isProcessed = mMenu.ProcessKeyActionIfNeeded(e);
+
+            if (isProcessed)
+                e.Use();
         }
 
         protected override void BeforeRowsGUI()

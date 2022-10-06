@@ -1,4 +1,4 @@
-﻿== Base ==
+== Base ==
 Base: 
 
 == ChangedResultFile ==
@@ -246,7 +246,7 @@ New name for {0}:
 Rename
 
 == CancelButton ==
-Cancel
+_Cancel
 
 == PendingConflictsToSolve ==
 {0}/{1}  -  Conflicts to solve: {2}
@@ -261,7 +261,10 @@ Previous conflict (Ctrl+PageUp)
 save the result file and exit the tool
 
 == SaveAndExitButton ==
-Save & E_xit
+_Save & Exit
+
+== ExitWithoutSavingButton ==
+_Exit without saving
 
 == MergeWaitingAnimation ==
 Calculating conflicts. Please wait...
@@ -635,3 +638,6 @@ File {0} of {1}:
 
 == MultifileCurrentFileExplanation ==
 This is the current file. To change file use the conflict navigation buttons and also the multi-file moves.
+
+== Ready ==
+Ready

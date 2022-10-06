@@ -1,3 +1,5 @@
+using UnityEditor;
+
 using Codice.CM.Common;
 using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer;
 using Unity.PlasticSCM.Editor.AssetUtils;
@@ -23,7 +25,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mChangesetOperations.SwitchToChangeset(
                 ChangesetsSelection.GetSelectedRepository(mChangesetsListView),
                 ChangesetsSelection.GetSelectedChangeset(mChangesetsListView),
-                RefreshAsset.UnityAssetDatabase);
+                RefreshAsset.BeforeLongAssetOperation,
+                RefreshAsset.AfterLongAssetOperation);
         }
 
         void SwitchToChangesetForGluon()
@@ -39,7 +42,9 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 mProgressControls,
                 mWorkspaceWindow.GluonProgressOperationHandler,
                 mGluonUpdateReport,
-                mWorkspaceWindow);
+                mWorkspaceWindow,
+                RefreshAsset.BeforeLongAssetOperation,
+                RefreshAsset.AfterLongAssetOperation);
         }
     }
 }

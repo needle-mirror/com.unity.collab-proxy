@@ -351,7 +351,8 @@ Usage:
 
     cm ^annotate | ^blame <spec>[ ...]
         [--^format=<str_format>]
-        [--^ignore=(^eol | ^whitespaces | ^"eol&whitespaces" | ^none)]
+        [--^comparisonmethod=(^ignoreeol | ^ignorewhitespaces 
+            | ^ignoreeolandwhitespaces | ^recognizeall)]
         [--^dateformat=<str_date_format>]
         [--^encoding=<name>]
         [--^stats]
@@ -363,33 +364,32 @@ Usage:
 
 Options:
 
-    --^format        Retrieves the output message in a specific format. See
-                    Remarks for more info.
-    --^ignore        Sets the specified comparison method.
-                    See Remarks for more info.
-    --^dateformat    Sets the output format to print dates.
-    --^encoding      Specifies the output encoding, i.e.: utf-8.
-                    See the MSDN documentation at
-                    http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
-                    to get the table of supported encodings and its format, 
-                    (at the end of the page, in the "Name" column).
-    --^stats         Shows statistics information.
-    --^repository    Specifies a repository spec used to calculate
-                    the annotations. By default, this command uses the
-                    repository where the loaded revision repository in the
-                    workspace is stored. (Use 'cm ^help ^objectspec' to learn 
-                    more about repspecs.)
+    --^format            Retrieves the output message in a specific format. See
+                        Remarks for more info.
+    --^comparisonmethod  Sets the specified comparison method. See Remarks for more info.
+    --^dateformat        Sets the output format to print dates.
+    --^encoding          Specifies the output encoding, i.e.: utf-8.
+                        See the MSDN documentation at
+                        http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
+                        to get the table of supported encodings and its format, 
+                        (at the end of the page, in the "Name" column).
+    --^stats             Shows statistics information.
+    --^repository        Specifies a repository spec used to calculate
+                        the annotations. By default, this command uses the
+                        repository where the loaded revision repository in the
+                        workspace is stored. (Use 'cm ^help ^objectspec' to learn 
+                        more about repspecs.)
 
 == CMD_HELP_ANNOTATE ==
 Remarks:
 
     Binary files can't be annotated.
 
-    Comparison methods (--^ignore option):
-        ^eol                 Ignores the end of line differences.
-        ^whitespaces         Ignores the whitespace differences.
-        ^"eol&whitespaces"   Ignores the end of line and whitespace differences.
-        ^none                Detects the end of line and whitespace differences.
+    Comparison methods (--^comparisonmethod option):
+        ^ignoreeol                 Ignores the end of line differences.
+        ^ignorewhitespaces         Ignores the whitespace differences.
+        ^ignoreeolandwhitespaces   Ignores the end of line and whitespace differences.
+        ^recognizeall              Detects the end of line and whitespace differences.
 
     Output format parameters (--^format option):
         This command accepts a format string to show the output.
@@ -418,8 +418,8 @@ Remarks:
 
 Examples:
 
-    cm ^blame c:\workspace\src --^ignore=^"eol&whitespaces" --^encoding=utf-8
-    cm ^annotate c:\workspace\file.txt --^ignore=^eol
+    cm ^blame c:\workspace\src --^comparisonmethod=^ignoreeolandwhitespaces --^encoding=utf-8
+    cm ^annotate c:\workspace\file.txt --^comparisonmethod=^ignoreeol
 
     cm ^annotate c:\workspace\file.txt --^format="{^owner} {^date, 10} {^content}"
     (Writes the owner field, then a blank, then the date field (aligned to
@@ -650,12 +650,12 @@ Usage:
        cm ^changelist | ^clist [--^symlink]
        (Displays all changelists.)
 
-       cm ^changelist | ^clist ^add <clist_name>
+       cm ^changelist | ^clist ^create <clist_name>
           [<clist_desc>] [--^persistent | --^notpersistent] [--^symlink]
        (Creates a changelist.)
 
-       cm ^changelist | ^clist ^rm <clist_name> [--^symlink]
-       (Removes the selected changelist. If this changelist contains pending
+       cm ^changelist | ^clist ^delete <clist_name> [--^symlink]
+       (Deletes the selected changelist. If this changelist contains pending
        changes, then these will be moved to the ^default changelist.)
 
        cm ^changelist | ^clist ^edit <clist_name> [<action_name> <action_value>]
@@ -673,8 +673,11 @@ Usage:
 
 Options:
 
-    clist_name          The name of the changelist.
-    clist_desc          The description of the changelist.
+    clist_name          The name of the changelist. A path to a file containing 
+                        the name can be used instead. More info at --^namefile.
+    clist_desc          The description of the changelist. A path to a file 
+                        containing the description can be used instead. More 
+                        info at --^descriptionfile.
     action_name         Choose between '^rename' or '^description' to edit the 
                         changelist.
     action_value        Applies the new name or new description when editing
@@ -686,6 +689,14 @@ Options:
                         reverted.
     --^symlink           Applies the operation to the symlink and not to the
                         target.
+    --^namefile          A valid path to a file containing the name of the 
+                        changelist. Bear in mind the file must exist and its 
+                        content cannot be neither empty nor multiline.
+    --^newnamefile       A valid path to a file containing the new name of the 
+                        changelist when renaming. Bear in mind the file must exist 
+                        and its content cannot be neither empty nor multiline.
+    --^descriptionfile   A valid path to a file containing the description for the 
+                        changelist. Bear in mind the file must exist.
 
 == CMD_HELP_CHANGELIST ==
 Remarks:
@@ -698,10 +709,13 @@ Examples:
     cm ^changelist
     (Shows the current workspace changelists.)
 
-    cm ^changelist ^add config_changes "dotConf files" --^persistent
+    cm ^changelist ^create config_changes "dotConf files" --^persistent
     (Creates a new changelist named 'config_changes' and description 'dotConf
     files' which will remain persistent in the current workspace once the
     pending changelist is either checked-in or reverted.)
+
+    cm ^changelist ^create --^namefile="name.txt" --^descriptionfile="desc.txt"
+    (Creates a new changelist which name and description are both taken from files.)
 
     cm ^changelist ^edit config_changes ^rename config_files --^notpersistent
     (Edits the changelist named 'config_changes' and renames it to
@@ -710,8 +724,12 @@ Examples:
     cm ^changelist ^edit config_changes --^notpersistent
     (Edits the changelist named 'config_changes' by turning it into "not persistent".)
 
-    cm ^changelist ^rm config_files
+    cm ^changelist ^delete config_files
     (Removes the pending changelist 'config_files' from the current workspace.)
+
+    cm ^changelist ^delete --namefile="name.txt"
+    (Removes the changelist identified by the content of 'name.txt' file from the current 
+    workspace.)
 
     cm ^changelist config_files ^add foo.conf
     (Adds the file 'foo.conf' to the 'config_files' changelist.)
@@ -719,6 +737,14 @@ Examples:
     cm ^changelist config_files ^rm foo.conf readme.txt
     (Removes the files 'foo.conf' and 'readme.txt' from the 'config_files'
     changelist and moves the files to the system default changelist.)
+
+    cm ^changelist ^edit --^namefile="name.txt" ^description --^descriptionfile="desc.txt"
+    (Edits the changelist identified by the content of 'name.txt' file, changing its 
+    description to the text content of the 'desc.txt' file.)
+
+    cm ^changelist ^edit --^namefile="name.txt" ^rename --^newnamefile="newname.txt"
+    (Edits the changelist identified by the content of 'name.txt' file, renaming it to 
+    the text content of the 'newname.txt' file.)
 
 == CMD_DESCRIPTION_CHANGESET ==
 Executes advanced operations on changesets.
@@ -1375,7 +1401,8 @@ Usage:
             [--^added] [--^changed] [--^moved] [--^deleted]
             [--^repositorypaths] [--^download=<download_path>]
             [--^encoding=<name>] 
-            [--^ignore=(^eol | ^whitespaces | ^"eol&whitespaces" | ^none)] 
+            [--^comparisonmethod=(^ignoreeol | ^ignorewhitespaces | 
+                ^ignoreeolandwhitespaces | ^recognizeall)] 
             [--^clean]
             [--^format=<str_format>] [--^dateformat=<str_format>]
 
@@ -1398,7 +1425,8 @@ Usage:
     cm ^diff <brspec> [--^added] [--^changed] [--^moved] [--^deleted]
             [--^repositorypaths] [--^download=<download_path>]
             [--^encoding=<name>] 
-            [--^ignore=(^eol | ^whitespaces | ^"eol&whitespaces" | ^none)]
+            [--^comparisonmethod=(^ignoreeol | ^ignorewhitespaces | 
+                ^ignoreeolandwhitespaces | ^recognizeall)] 
             [--^clean]
             [--^format=<str_format>] [--^dateformat=<str_format>]
             [--^fullpaths | --^fp]
@@ -1435,8 +1463,7 @@ Options:
                         http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
                         to get the table of supported encodings and its format, 
                         (at the end of the page, in the "Name" column).
-    --^ignore            Sets the specified comparison method.
-                        See Remarks for more info.
+    --^comparisonmethod  Sets the specified comparison method. See Remarks for more info.
     --^clean             Does not take into account the differences generated
                         because of a merge, but only the differences created by
                         simple checkins.
@@ -1449,11 +1476,11 @@ Options:
 == CMD_HELP_DIFF ==
 Remarks:
 
-    Comparison methods (--^ignore option):
-        ^eol                 Ignores the end of line differences.
-        ^whitespaces         Ignores the whitespace differences.
-        ^"eol&whitespaces"   Ignores the end of line and whitespace differences.
-        ^none                Detects the end of line and whitespace differences.
+    Comparison methods (--^comparisonmethod option):
+        ^ignoreeol                Ignores the end of line differences.
+        ^ignorewhitespaces        Ignores the whitespace differences.
+        ^ignoreeolandwhitespaces  Ignores the end of line and whitespace differences.
+        ^recognizeall             Detects the end of line and whitespace differences.
 
         This command accepts a format string to show the output.
         The parameters of this command are the following:
@@ -1526,6 +1553,7 @@ Examples:
     cm ^diff ^rev:readme.txt#^cs:19 ^rev:readme.txt#^cs:20
     cm ^diff ^serverpath:/doc/readme.txt#^cs:19@myrepo \
         ^serverpath:/doc/readme.txt#^br:/main@myrepo@localhost:8084
+    cm ^diff ^rev:foo.c#^cs:1 ^rev:foo.c#^cs:2 --^comparisonmethod=^ignoreeol
 
 == CMD_DESCRIPTION_DIFFMETRICS ==
 Shows diff metrics between two revs.
@@ -1535,22 +1563,23 @@ Usage:
 
     cm ^diffmetrics | ^dm <revspec1> <revspec2> [--^format=<str_format>]
                         [--^encoding=<name>]
-                        [--^ignore=(^eol | ^whitespaces | ^"eol&whitespaces" | ^none)]
+                        [--^comparisonmethod=(^ignoreeol | ^ignorewhitespaces |
+                            ^ignoreeolandwhitespaces | ^recognizeall)]
 
     revspec           Revisions used to compare.
                       (Use 'cm ^help ^objectspec' to learn more about rev specs.)
 
 Options:
 
-    --^format          Retrieves the output message in a specific format. See
-                      Remarks for more info.
-    --^encoding        Specifies the output encoding, i.e.: utf-8.
-                      See the MSDN documentation at
-                      http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
-                      to get the table of supported encodings and its format, 
-                      (at the end of the page, in the "Name" column).
-    --^ignore          Sets the specified comparison method.
-                      See Remarks for more info.
+    --^format            Retrieves the output message in a specific format. See
+                        Remarks for more info.
+    --^encoding          Specifies the output encoding, i.e.: utf-8.
+                        See the MSDN documentation at
+                        http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
+                        to get the table of supported encodings and its format, 
+                        (at the end of the page, in the "Name" column).
+    --^comparisonmethod  Sets the specified comparison method.
+                        See Remarks for more info.
 
 == CMD_HELP_DIFFMETRICS ==
 Remarks:
@@ -1564,11 +1593,11 @@ Remarks:
         {1}             Number of added lines.
         {2}             Number of deleted lines.
 
-    Comparison methods (--^ignore option):
-        ^eol                 Ignores the end of line differences.
-        ^whitespaces         Ignores the whitespace differences.
-        ^"eol&whitespaces"   Ignores the end of line and whitespace differences.
-        ^none                Detects the end of line and whitespace differences.
+    Comparison methods (--^comparisonmethod option):
+        ^ignoreeol                 Ignores the end of line differences.
+        ^ignorewhitespaces         Ignores the whitespace differences.
+        ^ignoreeolandwhitespaces   Ignores the end of line and whitespace differences.
+        ^recognizeall              Detects the end of line and whitespace differences.
 
 Examples:
 
@@ -1576,7 +1605,7 @@ Examples:
     --^format="There are {0} changed, {1} added and {2} deleted lines."
     (Retrieves diffmetrics results formatted.)
 
-    cm ^dm file.txt#^cs:2 file.txt#^cs:3 --^encoding=utf-8 --^ignore=^whitespaces
+    cm ^dm file.txt#^cs:2 file.txt#^cs:3 --^encoding=utf-8 --^comparisonmethod=^ignorewhitespaces
 
 == CMD_DESCRIPTION_FASTEXPORT ==
 Exports a repository in fast-export format.
@@ -2249,7 +2278,7 @@ Shows info about the workspace selector.
 == CMD_USAGE_GETWWI ==
 Usage:
 
-    cm ^wi [<wk_path>]
+    cm ^workspaceinfo | ^wi [<wk_path>]
 
 Options:
 
@@ -2272,13 +2301,15 @@ It is not as user-friendly as it should be.
 
 Usage:
 
-    cm ^getworkspacefrompath | ^gwp <item_path> [--^format=<str_format>]
+    cm ^getworkspacefrompath | ^gwp <item_path> [--^format=<str_format>] [--^extended]
 
     item_path           File or folder on disk.
 
 Options:
     --^format            Retrieves the output message in a specific format. See
                         Remarks for more info.
+    --^extended          Displays more information regarding the workspace: ^type
+                        and ^dynamic on top of the others. See Remarks for more info.
 
 == CMD_HELP_GWP ==
 Remarks:
@@ -2293,6 +2324,8 @@ Remarks:
         {2} | {^machine}         Client machine name.
         {3} | {^owner}           Workspace owner.
         {4} | {^guid}            Workspace GUID.
+        {5} | {^type}            Workspace type: partial (gluon) or regular.
+        {6} | {^dynamic}         A workspace can be dynamic (plasticfs) or static.
 
         {^tab}                   Inserts a tab space.
         {^newline}               Inserts a new line.
@@ -2300,6 +2333,7 @@ Remarks:
 Examples:
 
     cm ^gwp c:\myworkspace\code\file1.cpp --^format="Workspace name: {^wkname}"
+    cm ^gwp . --^format="Name: {^wkname} | Type: {^type}, {^dynamic}"
 
 == CMD_DESCRIPTION_HELP ==
 Gets help for a Plastic SCM command.
@@ -4613,7 +4647,7 @@ Usage:
 
     cm ^partial ^shelveset ^apply <sh_spec> [--^encoding=<name>]
                        [--^comparisonmethod=(^ignoreeol | ^ignorewhitespaces| \
-                                            ^ignoreeolwhitespaces | ^notignore)]
+                                            ^ignoreeolandwhitespaces | ^recognizeall)]
 
     sh_spec             Shelveset specification. (Use 'cm ^help ^objectspec' to
                         learn more about shelveset specs.)
@@ -4635,8 +4669,8 @@ Remarks:
     Comparison methods:
         ^ignoreeol               Ignores end of line differences.
         ^ignorewhitespaces       Ignores whitespace differences.
-        ^ignoreeolwhitespaces    Ignores end of line and whitespace differences.
-        ^notignore               Detects end of line and whitespace differences.
+        ^ignoreeolandwhitespaces Ignores end of line and whitespace differences.
+        ^recognizeall            Detects end of line and whitespace differences.
 
 Examples:
 
@@ -5945,6 +5979,7 @@ Remarks:
         {7} | {^repository}        Repository.
         {8} | {^server}            Server.
         {9} | {^repspec}           Repository spec.
+        {10}| {^datastatus}        Availability of the revision data.
         {^tab}                     Inserts a tab space.
         {^newline}                 Inserts a new line.
 
@@ -6328,8 +6363,8 @@ Remarks:
     Comparison methods:
         ^ignoreeol               Ignores end of line differences.
         ^ignorewhitespaces       Ignores whitespace differences.
-        ^ignoreeolwhitespaces    Ignores end of line and whitespace differences.
-        ^notignore               Detects end of line and whitespace differences.
+        ^ignoreeolandwhitespaces Ignores end of line and whitespace differences.
+        ^recognizeall            Detects end of line and whitespace differences.
 
     Set the PLASTICEDITOR environment variable to specify an editor for
     entering comments. If the PLASTICEDITOR environment variable is set, and
@@ -6470,7 +6505,7 @@ Usage:
 
     cm ^shelveset ^apply <sh_spec> [--^mount] [--^encoding=<name>]
                        [--^comparisonmethod=(^ignoreeol | ^ignorewhitespaces| \
-                                            ^ignoreeolwhitespaces | ^notignore)]
+                                            ^ignoreeolandwhitespaces | ^recognizeall)]
 
     sh_spec             Shelveset specification. (Use 'cm ^help ^objectspec' to
                         learn more about shelveset specs.)
@@ -6493,8 +6528,8 @@ Remarks:
     Comparison methods:
         ^ignoreeol               Ignores end of line differences.
         ^ignorewhitespaces       Ignores whitespace differences.
-        ^ignoreeolwhitespaces    Ignores end of line and whitespace differences.
-        ^notignore               Detects end of line and whitespace differences.
+        ^ignoreeolandwhitespaces Ignores end of line and whitespace differences.
+        ^recognizeall            Detects end of line and whitespace differences.
 
 Examples:
 
@@ -8107,8 +8142,9 @@ Creates a new workspace.
 == CMD_USAGE_WORKSPACE_CREATE ==
 Usage:
 
-    cm ^workspace | ^wk [^create | ^mk] <wk_name> <wk_path> [<rep_spec>]
-                      [--^selector[=<selector_file>]
+    cm ^workspace | ^wk [^create | ^mk] <rep_spec>
+                        [^create | ^mk] <wk_name> <wk_path> [<rep_spec>]
+                        [^create | ^mk] <wk_name> <wk_path> [--^selector[=<selector_file>]
     (Creates a new workspace.)
 
     cm ^workspace | ^wk [^create | ^mk] <wk_name> <wk_path> --^dynamic --^tree=[<tree>]
@@ -8148,6 +8184,15 @@ Remarks:
       requires the plasticfs.exe program running.
 
 Examples:
+
+    cm ^workspace ^create mycode
+    cm ^wk ^mk mycode
+    (Creates a 'mycode' workspace pointing to the repository with the same name.
+    The workspace directory will be created under the current directory.)
+
+    cm ^wk ^mk mycode@localhost:8084
+    cm ^wk ^mk mycode@myorganization@cloud
+    (Creates a 'mycode' workspace as before, but you can specify different repository server.)
 
     cm ^workspace ^create myworkspace c:\workspace
     cm ^wk ^mk myworkspace /home/john/plastic_view

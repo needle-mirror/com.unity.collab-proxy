@@ -2,8 +2,10 @@
 
 using Codice.Client.Commands;
 using Codice.Client.Common;
+using Codice.CM.Common;
 using Codice.Utils;
 using PlasticGui;
+using PlasticGui.Diff;
 using PlasticGui.WorkspaceWindow.Diff;
 
 namespace Unity.PlasticSCM.Editor.Views.Diff
@@ -17,11 +19,18 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         }
 
         internal void BuildCategories(
+            WorkspaceInfo wkInfo,
             List<ClientDiff> diffs,
             BranchResolver brResolver,
             bool skipMergeTracking)
         {
-            mInnerTree.BuildCategories(diffs, brResolver, skipMergeTracking);
+            mInnerTree.BuildCategories(
+                RevisionInfoCodeReviewAdapter.CalculateCodeReviewEntries(
+                        wkInfo,
+                        diffs,
+                        brResolver,
+                        skipMergeTracking),
+                brResolver);
             mMetaCache.Build(mInnerTree.GetNodes());
         }
 
@@ -130,7 +139,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                     string realPath = MetaPath.GetPathFromMetaPath(path);
 
                     if (!indexedKeys.Contains(BuildKey.BuildCacheKey(
-                        BuildKey.GetMergeCategory(diff),
+                        BuildKey.GetCategoryGroup(diff),
                         BuildKey.GetChangeCategory(diff),
                         realPath)))
                         return;
@@ -175,7 +184,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                     ClientDiffInfo diff)
                 {
                     return BuildCacheKey(
-                        GetMergeCategory(diff),
+                        GetCategoryGroup(diff),
                         GetChangeCategory(diff),
                         diff.DiffWithMount.Difference.Path);
                 }
@@ -184,22 +193,22 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                     ClientDiffInfo diff)
                 {
                     return BuildCacheKey(
-                        GetMergeCategory(diff),
+                        GetCategoryGroup(diff),
                         GetChangeCategory(diff),
                         MetaPath.GetMetaPath(diff.DiffWithMount.Difference.Path));
                 }
 
                 internal static string BuildCacheKey(
-                    MergeCategory mergeCategory,
+                    CategoryGroup categoryGroup,
                     ChangeCategory changeCategory,
                     string path)
                 {
                     string result = string.Concat(changeCategory.Type, ":", path);
 
-                    if (mergeCategory == null)
+                    if (categoryGroup == null)
                         return result;
 
-                    return string.Concat(mergeCategory.GetCategoryNameSingular(), ":", result);
+                    return string.Concat(categoryGroup.GetHeaderText(), ":", result);
                 }
 
                 internal static ChangeCategory GetChangeCategory(ClientDiffInfo diff)
@@ -207,16 +216,16 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                     return (ChangeCategory)diff.GetParent();
                 }
 
-                internal static MergeCategory GetMergeCategory(ClientDiffInfo diff)
+                internal static CategoryGroup GetCategoryGroup(ClientDiffInfo diff)
                 {
                     ChangeCategory changeCategory = GetChangeCategory(diff);
 
-                    ITreeViewNode mergeCategory = changeCategory.GetParent();
+                    ITreeViewNode categoryGroup = changeCategory.GetParent();
 
-                    if (mergeCategory == null)
+                    if (categoryGroup == null)
                         return null;
 
-                    return (MergeCategory)mergeCategory;
+                    return (CategoryGroup)categoryGroup;
                 }
             }
         }

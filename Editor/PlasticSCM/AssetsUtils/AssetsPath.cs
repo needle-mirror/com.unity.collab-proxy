@@ -64,7 +64,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
         }
 
         static string mProjectFullPath = ProjectPath.
-            FromApplicationDataPath(Application.dataPath);
+            FromApplicationDataPath(ApplicationDataPath.Get());
 
         static string mAssetsFolderLocation;
     }

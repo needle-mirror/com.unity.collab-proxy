@@ -1,4 +1,4 @@
-﻿== WrongRevFormat3D ==
+== WrongRevFormat3D ==
 El formato de la revision especificado no es valido
 
 == AcceptResults ==
@@ -85,6 +85,9 @@ permite al usuario aplicar atributos
 == Applylabel ==
 controla la operación de etiquetar un changeset
 
+== Archived ==
+Archivado
+
 == AskDeleteWorkspace ==
 No se ha especificado ningún espacio de trabajo. ¿Desea borrar el actual? (S/N):
 
@@ -93,6 +96,9 @@ El espacio de trabajo es dinámico. Todos los elementos privados se PERDERÁN si
 
 == AttValueField ==
 El valor del atributo
+
+== Available ==
+Disponible
 
 == AvailableUsers ==
 Total licencias disponibles:  {0}
@@ -1035,6 +1041,9 @@ Dos ítems se han movido en el origen y en el destino y forman un ciclo.
 == CycleMoveConflictSourceOperation ==
 Movido de {0} a {1}
 
+== DataStatus ==
+Estado del dato
+
 == DataWritten ==
 Datos escritos
 
@@ -1098,7 +1107,7 @@ Borrado {0}
 Borrado {0}
 
 == DeleteDeleteWarningMessage ==
-Este ítem ha sido descartado porque ha sido borrado tanto en orígen como en destino
+Este ítem ha sido descartado porque ha sido borrado tanto en origen como en destino
 
 == DeleteItemAlreadyChanged ==
 El ítem no será borrado porque se encuentra cambiado (checked-out, movido) en el workspace: '{0}'. Por favor, deshaga o confirme el cambio local y reintente la operación.
@@ -1191,13 +1200,13 @@ La revisión {0} no se pudo bajar del servidor. Por favor inténtelo de nuevo se
 El conflicto {0} con origen:'{1}' y destino:'{2}' no se ha podido aplicar debido al error:'{3}'.
 
 == DiscardedAddedWarningMessage ==
-Este ítem ha sido descartado porque fue añadido en orígen, pero ya esta cargado en el destino, por tanto no es necesario añadirlo
+Este ítem ha sido descartado porque fue añadido en origen, pero ya esta cargado en el destino, por tanto no es necesario añadirlo
 
 == DiscardedChangedWarningMessage ==
 Este ítem ha sido descartado porque el contenido de la revisión no ha cambiado entre el origen y el destino, o porque el origen y el destino cargan exactamente la misma revisión
 
 == DiscardedDeleteWarningMessage ==
-Este ítem ha sido descartado porque fue borrado en orígen, pero no está cargado en destino, y por tanto no se puede eliminar
+Este ítem ha sido descartado porque fue borrado en origen, pero no está cargado en destino, y por tanto no se puede eliminar
 
 == DiscardedFsProtectionFormat ==
 Los permisos del sistema de ficheros para el ítem {0} origen {1} se ha descartado porque {2}
@@ -1857,6 +1866,9 @@ Hecho
 == MessageFileNotFound ==
 El fichero {0} no existe
 
+== MessageFileNotRead ==
+El fichero {0} no se pudo leer.
+
 == MessageLabelSelector ==
 Seleccione una etiqueta para cargar las revisiones (opcional):
 
@@ -2068,6 +2080,9 @@ Múltiple
 
 == NameAlreadyInDirectory ==
 {0} ya existe en el directorio
+
+== NameEmptyMultilineNotValid ==
+El archivo que contiene el nombre {0} no permite textos formados sólo por espacios en blanco ni multilínea
 
 == NameNotValid ==
 El nombre {0} no es válido
@@ -2477,6 +2492,9 @@ a
 == Total ==
 Total
 
+== Trimmed ==
+Trimmed
+
 == TubeStatusConnected ==
 El servidor de Plastic SCM ({0}) está conectado a Plastic Tube.
 
@@ -2708,3 +2726,24 @@ Dirección del servidor proxy
 
 == CmdConfigureProxyParamsPort ==
 Puerto del servidor proxy
+
+== EncryptionConfigurationExplanation ==
+El servidor de origen '{0}' requiere encriptación de datos.
+Su servidor ('{1}') no ha sido aún configurado para manejar datos encriptados que procedan de dicho origen.
+
+Observaciones:
+* Extreme el cuidado y no pierda la contraseña de encriptación: es la única forma de descifrar sus datos en '{0}'.
+* Si introduce una contraseña errónea, el descifrado de sus datos fallará y deberá arreglarlo editando el fichero cryptedservers.conf en su servidor.
+* Asegúrese de emplear siempre la misma contraseña (clave de encriptación) en toda la empresa para trabajar con '{0}'. De otro modo, los datos se encriptarán de manera diferente en cada servidor.
+
+Introduzca una contraseña para generar la clave de encriptación (déjela en blanco para cancelar):
+
+== EncryptionPasswordNotEntered ==
+No ha introducido una contraseña.
+You didn't entered a password. No se configurará la encriptación para el servidor '{0}'.
+
+== EncryptionConfigurationFailed ==
+Se produjo un error al configurar la encriptación para el servidor '{0}'.
+
+== EncryptionConfigurationSucceeded ==
+Se agregó la configuración de encriptación para el servidor '{0}'.

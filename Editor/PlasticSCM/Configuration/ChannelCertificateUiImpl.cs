@@ -55,24 +55,24 @@ namespace Unity.PlasticSCM.Editor.Configuration
             string title, string message, PlasticCertInfo serverCertificate)
         {
             GuiMessage.GuiMessageResponseButton result =
-                GuiMessage.GuiMessageResponseButton.Third;
+                GuiMessage.GuiMessageResponseButton.Neutral;
 
             GUIActionRunner.RunGUIAction(delegate {
                 result = GuiMessage.ShowQuestion(
-                    title, GetCertificateMessageString(message, serverCertificate),
+                    title,
+                    GetCertificateMessageString(message, serverCertificate),
                     PlasticLocalization.GetString(PlasticLocalization.Name.YesButton),
-                    PlasticLocalization.GetString(PlasticLocalization.Name.NoButton),
                     PlasticLocalization.GetString(PlasticLocalization.Name.CancelButton),
-                    true);
+                    PlasticLocalization.GetString(PlasticLocalization.Name.NoButton));
             });
 
             switch (result)
             {
-                case GuiMessage.GuiMessageResponseButton.First:
+                case GuiMessage.GuiMessageResponseButton.Positive:
                     return CertOperationResult.AddToStore;
-                case GuiMessage.GuiMessageResponseButton.Second:
+                case GuiMessage.GuiMessageResponseButton.Negative:
                     return CertOperationResult.DoNotAddToStore;
-                case GuiMessage.GuiMessageResponseButton.Third:
+                case GuiMessage.GuiMessageResponseButton.Neutral:
                     return CertOperationResult.Cancel;
                 default:
                     return CertOperationResult.Cancel;

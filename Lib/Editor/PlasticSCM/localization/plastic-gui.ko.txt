@@ -1440,7 +1440,7 @@ Xlink 편집...
 == Deleted ==
 삭제됨
 
-== Changed ==
+== ChangedOnDisk ==
 디스크에서 변경됨
 
 == ContainsChanges ==
@@ -6342,3 +6342,39 @@ Single Sign On으로 로그인
 
 == LaunchPlasticButton ==
 Launch Plastic SCM
+
+== ElementNotFound ==
+요소를 찾을 수 없습니다
+
+== RevisionNotConnected ==
+처리할 수 없으며 관련 개정이 복제되지 않습니다
+
+== ChangedMergeFromCs ==
+병합 소스 및 대상에서 변경됨(cs:{0}에서)
+
+== NotChanged ==
+변경되지 않음
+
+== Added ==
+추가됨
+
+== Changed ==
+변경됨
+
+== MergeFromCs ==
+ 병합 소스에서(cs:{0}에서)
+
+== MovedOutScope ==
+{0}에서 {1}(으)로 이동됨
+
+== Renamed ==
+{0}에서 {1}(으)로 이름 변경됨
+
+== MovedDownPosition ==
+{0}개 위치 아래로 이동됨
+
+== MovedUpPosition ==
+{0}개 위치 위로 이동됨
+
+== And ==
+ 및 {0}

@@ -55,7 +55,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         IOpenMenuOperations,
         IFilesFilterPatternsMenuOperations,
         PendingChangesViewMenu.IGetSelectedNodes,
-        ChangesetsTab.IGoBackToListener
+        ChangesetsTab.IRevertToChangesetListener
     {
         internal IProgressControls ProgressControlsForTesting { get { return mProgressControls; } }
         internal HelpPanel HelpPanelForTesting { get { return mHelpPanel; } }
@@ -80,6 +80,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             IViewSwitcher switcher,
             IMergeViewLauncher mergeViewLauncher,
             IHistoryViewLauncher historyViewLauncher,
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             NewIncomingChangesUpdater developerNewIncomingChangesUpdater,
             GluonNewIncomingChangesUpdater gluonNewIncomingChangesUpdater,
             IAssetStatusCache assetStatusCache,
@@ -91,6 +92,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mIsGluonMode = isGluonMode;
             mWorkspaceWindow = workspaceWindow;
             mHistoryViewLauncher = historyViewLauncher;
+            mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
             mDeveloperNewIncomingChangesUpdater = developerNewIncomingChangesUpdater;
             mGluonNewIncomingChangesUpdater = gluonNewIncomingChangesUpdater;
             mAssetStatusCache = assetStatusCache;
@@ -207,7 +209,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 mIsGluonMode,
                 mIsCheckedInSuccessful);
 
-            if (HasPendingMergeLinks() && !mHasPendingMergeLinksFromGoBackTo)
+            if (HasPendingMergeLinks() && !mHasPendingMergeLinksFromRevert)
                 DoMergeLinksArea(mMergeLinksListView, mParentWindow.position.width);
 
             // Border
@@ -232,6 +234,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 UnityConstants.SEARCH_FIELD_WIDTH);
         }
 
+        void IPendingChangesView.SetDefaultComment(string defaultComment)
+        {
+        }
+
         void IPendingChangesView.ClearComments()
         {
             ClearComments();
@@ -241,8 +247,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         {
             if (!mAreIgnoreRulesInitialized)
                 return;
-
-            DrawAssetOverlay.ClearCache();
 
             if (mDeveloperNewIncomingChangesUpdater != null)
                 mDeveloperNewIncomingChangesUpdater.Update();
@@ -337,7 +341,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         void PendingChangesViewPendingChangeMenu.IMetaMenuOperations.DiffMeta()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(
+            if (mShowDownloadPlasticExeWindow.Show(
                 mWkInfo,
                 mIsGluonMode,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffWorkspaceContent,
@@ -414,7 +418,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         void IPendingChangesMenuOperations.Diff()
         {
-            if (LaunchTool.ShowDownloadPlasticExeWindow(
+            if (mShowDownloadPlasticExeWindow.Show(
                 mWkInfo,
                 mIsGluonMode,
                 TrackFeatureUseEvent.Features.InstallPlasticCloudFromDiffWorkspaceContent,
@@ -461,7 +465,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             operation.SearchMatches(
                 selectedChange,
-                PendingChangesSelection.GetAllChanges(mPendingChangesTreeView));
+                PendingChangesSelection.GetAllChanges(mPendingChangesTreeView),
+                null);
         }
 
         void IPendingChangesMenuOperations.ApplyLocalChanges()
@@ -478,7 +483,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             operation.ApplyLocalChanges(
                 selectedChanges,
-                PendingChangesSelection.GetAllChanges(mPendingChangesTreeView));
+                PendingChangesSelection.GetAllChanges(mPendingChangesTreeView),
+                null);
         }
 
         void IPendingChangesMenuOperations.Delete()
@@ -687,9 +693,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             return mPendingChangesTreeView.GetSelectedNodes();
         }
 
-        void ChangesetsTab.IGoBackToListener.OnSuccessOperation()
+        void ChangesetsTab.IRevertToChangesetListener.OnSuccessOperation()
         {
-            mHasPendingMergeLinksFromGoBackTo = true;
+            mHasPendingMergeLinksFromRevert = true;
         }
 
         void SearchField_OnDownOrUpArrowKeyPressed()
@@ -750,7 +756,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             waiter.Execute(
                 /*threadOperationDelegate*/ delegate
                 {
-                    FilterManager.Get().Reload();
+                    FilterManager.Get().Reload(mWkInfo);
 
                     WorkspaceStatusOptions options = WorkspaceStatusOptions.None;
                     options |= WorkspaceStatusOptions.FindAdded;
@@ -787,6 +793,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
                         PendingChangesSelection.SelectChanges(
                             mPendingChangesTreeView, changesToSelect);
+
+                        DrawAssetOverlay.ClearCache();
                     }
                     finally
                     {
@@ -928,8 +936,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             mMergeLinksListView.Reload();
 
-            if (mPendingMergeLinks.Count == 0)
-                mHasPendingMergeLinksFromGoBackTo = false;
+            if (!HasPendingMergeLinks())
+                mHasPendingMergeLinksFromRevert = false;
         }
 
         void UpdateNotificationPanel()
@@ -1079,7 +1087,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         bool mIsEmptyCheckinCommentWarningNeeded = false;
         bool mNeedsToShowEmptyCommentDialog = false;
         bool mHasPendingCheckinFromPreviousUpdate = false;
-        bool mHasPendingMergeLinksFromGoBackTo = false;
+        bool mHasPendingMergeLinksFromRevert = false;
         bool mKeepItemsLocked;
         string mGluonWarningMessage;
         bool mIsCheckedInSuccessful;
@@ -1102,6 +1110,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         readonly NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
         readonly GluonNewIncomingChangesUpdater mGluonNewIncomingChangesUpdater;
         readonly bool mIsGluonMode;
+        readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
         readonly IHistoryViewLauncher mHistoryViewLauncher;
         readonly WorkspaceWindow mWorkspaceWindow;
         readonly ViewHost mViewHost;

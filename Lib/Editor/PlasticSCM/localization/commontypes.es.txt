@@ -381,7 +381,7 @@ No se ha podido obtener un repositorio desde {0}. Es posible que el ítem sea pr
 No se ha podido cargar el ensamblado {0}.
 
 == CsNotFound ==
-No se ha encontrado el changeset especificado {0}.
+El changeset cargado en su workspace no ha sido encontrado (changeset ID: {0}). Es probable que alguien lo haya borrado. Debe deshacer sus cambios para volver a un estado válido.
 
 == CycleMoveConflict ==
 Conflicto de movido cíclico

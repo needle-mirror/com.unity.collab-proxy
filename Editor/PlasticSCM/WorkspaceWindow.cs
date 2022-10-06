@@ -252,7 +252,7 @@ namespace Unity.PlasticSCM.Editor
             waiter.Execute(
                 /*threadOperationDelegate*/ delegate
                 {
-                    status = GetWorkspaceStatus(mWkInfo);
+                    status = WorkspaceStatusString.GetSelectorData(mWkInfo);
                 },
                 /*afterOperationDelegate*/ delegate
                 {
@@ -265,10 +265,6 @@ namespace Unity.PlasticSCM.Editor
                 });
         }
 
-        static WorkspaceStatusString.Data GetWorkspaceStatus(WorkspaceInfo wkInfo)
-        {
-            return WorkspaceStatusString.GetSelectorData(wkInfo);
-        }
         bool mRequestedRepaint;
 
         UpdateNotifier mUpdateNotifierForTesting;

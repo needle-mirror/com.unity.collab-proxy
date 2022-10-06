@@ -6,13 +6,13 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 {
     internal class MergeCategoryTreeViewItem : TreeViewItem
     {
-        internal MergeCategory Category { get; private set; }
+        internal CategoryGroup Category { get; private set; }
 
         internal MergeCategoryTreeViewItem(
-            int id, int depth, MergeCategory category)
-            : base(id, depth, category.GetHeaderText())
+            int id, int depth, CategoryGroup categoryGroup)
+            : base(id, depth, categoryGroup.GetHeaderText())
         {
-            Category = category;
+            Category = categoryGroup;
         }
     }
 }
