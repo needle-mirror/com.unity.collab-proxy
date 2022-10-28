@@ -3,12 +3,12 @@
 using UnityEditor;
 using UnityEditor.VersionControl;
 
+using Unity.PlasticSCM.Editor.AssetUtils;
+
 namespace Unity.PlasticSCM.Editor.AssetMenu
 {
     internal class ProjectViewAssetSelection : AssetOperations.IAssetSelection
     {
-        internal ProjectViewAssetSelection() { }
-
         internal ProjectViewAssetSelection(Action assetSelectionChangedAction)
         {
             mAssetSelectionChangedAction = assetSelectionChangedAction;
@@ -35,7 +35,19 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             if (Selection.assetGUIDs.Length == 0)
                 return new AssetList();
 
-            return Provider.GetAssetListFromSelection();
+            AssetList result = new AssetList();
+
+            foreach (string guid in Selection.assetGUIDs)
+            {
+                string assetPath = AssetsPath.GetFullPath.ForGuid(guid);
+
+                if (string.IsNullOrEmpty(assetPath))
+                    continue;
+
+                result.Add(new Asset(assetPath));
+            }
+
+            return result;
         }
 
         bool HasSelectedAssets()

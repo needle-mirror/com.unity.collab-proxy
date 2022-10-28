@@ -434,6 +434,9 @@ Conflicts to solve ({0})
 == PendingConflictsExplanation ==
 shows the conflicts that need to be solved manually: happens when the same element has been modified both in 'their changes' and 'your changes'
 
+== SelectTwoDeclarationsToSeeDifferences ==
+Please, select two declarations in order to see the differences.
+
 == DiffExplanation ==
 shows the diffs of this element
 

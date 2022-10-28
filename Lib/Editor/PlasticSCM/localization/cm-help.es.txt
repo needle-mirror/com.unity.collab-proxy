@@ -2678,6 +2678,7 @@ Sintaxis:
 
     cm listusers | lu <repserverspec> [--onlyusers] [--onlygroups]
                       [--filter= <str_filter>]
+    cm listusers | lu <repserverspec> --group=<group_name>
 
     repserverspec       Especificación del servidor de repositorios.
                         (Use 'cm help objectspec' para más información sobre
@@ -2689,6 +2690,9 @@ Opciones:
     --onlygroups    Muestra únicamente los grupos.
     --filter        Muestra únicamente los usuarios o grupos que coinciden con
                     el filtro especificado.
+    --group         Muestra únicamente los usuarios que pertenecen a un grupo
+                    determinado. Esta opción no es compatible con onlyusers,
+                    onlygroups, ni filter.
 
 == CMD_HELP_LISTUSERS ==
 Ejemplos:
@@ -2698,6 +2702,9 @@ Ejemplos:
 
     cm listusers localhost:8084 --onlyusers --filter=m
     (Muestra los usuarios del servidor cuyo nombre contiene 'm'.)
+
+    cm listusers codice@cloud --group=Administrators
+    (Muestra los usuarios del grupo Administrators de la organización 'codice@cloud'.)
 
 == CMD_DESCRIPTION_LOCATION ==
 Muestra la ruta del cliente 'cm'.
@@ -6298,6 +6305,11 @@ Opciones:
                         para obtener la tabla de codificaciones soportadas y su
                         formato (al final de la página en la columna "Name").
     --moveddeleted      Incluye las operaciones de movidos y borrado en la historia.                        
+    --limit             Muestra las N revisiones más recientes para los elementos 
+                        especificados, ordenados por fecha y por changeset id. Si
+                        se proporciona un número negativo, el comando devolverá una
+                        lista vacía. Si se proporciona  un número mayor al número de 
+                        revisiones del elemento solicitado, devolverá las existentes.
 
 == CMD_HELP_REVISION_HISTORY ==
 Notas:
@@ -6318,6 +6330,10 @@ Notas:
         {8} | {server}            Servidor.
         {9} | {repspec}           Especificación de repositorio.
         {10}| {datastatus}        Disponibilidad del dato de la revision.
+        {11}| {path}              Ruta o spec pasada como <item_path>.
+        {12}| {itemid}            Id del elemento.
+        {13}| {size}              Tamaño.
+        {14}| {hash}              Código hash.
         {tab}                     Inserta un tabulador.
         {newline}                 Inserta una nueva línea.
 
@@ -6334,6 +6350,9 @@ Ejemplos
     cm history serverpath:/src/foo/bar.c#br:/main/task001@myserver
     (Muestra la historia de una revisión de una ruta de servidor en la rama
     especificada.)
+
+    cm history bar.c, foo.c --long --limit=2
+    (Muestra las últimas 2 revisiones para los elemetos bar.c and foo.c.)
 
 == CMD_DESCRIPTION_REVISION_TREE ==
 Muestra un árbol de revisiones para el ítem dado.
@@ -6812,12 +6831,16 @@ repositorio.
 
 == CMD_USAGE_SHELVESET_APPLY ==
 Sintaxis:
-    cm shelveset apply shelve_spec [opciones]
+    cm shelveset apply shelve_spec [<change_path>[ ...]] [opciones]
 
     shelve_spec: Restaura los contenidos almancenados en el repositorio
     identificados por "shelve_spec"
+    change_path: Ruta(s) del cambio(s) a aplicar. Es la ruta de servidor,
+    una de las que se imprime con la opción --preview. Cuando no se indica
+    ninguna ruta se aplican todos los cambios del shelve.
 
 Opciones:
+    --preview: Muestra los cambios a aplicar en el workpsace sin aplicarles
     --mount: El punto de montaje del respositorio especificado.
     --encoding=codificación: Especifica la codificación de los ficheros de
       origen (por ejemplo, UTF-8 o Unicode)
@@ -6836,6 +6859,10 @@ repositorio.
 Ejemplo: Aplicar un shelve almacenado en el repositorio:
 
     cm shelveset apply sh:3
+
+Ejemplo: Aplicar solo 1 cambio almacenado en un shelve en el repositorio:
+
+    cm shelveset apply sh:3 /src/foo.c
 
 == CMD_DESCRIPTION_SHOW_FIND_OBJECTS ==
 Muestra la lista de objetos disponibles y sus atributos correspondientes.
@@ -8360,6 +8387,7 @@ Opciones generales:
     --xml: Permite volcar la salida del comando en formato xml. Por defecto la
         salida sale en la pantalla, pero si se especifica un fichero
         (--xml=output.xml) la salida se vuelca en dicho fichero.
+    --pretty: Imprime los cambios del workspace en formato de tabla.
     --encoding: si se utiliza con la opción --xml, permite especificar el
         encoding con el que se guardará la salida del comando. Consulte la
         documentación de la MSDN para obtener la tabla completa de

@@ -7807,6 +7807,7 @@ Jira 參數 (皆為強制):
                           (其中的已新增、已移動和已移除項目)。
     --^xml                 將 XML 格式的輸出列印至標準輸出。
                           可以指定輸出檔案。
+    --^pretty              Prints workspace changes in a nice table format.
     --^encoding            與 --^xml 選項搭配使用，指定要在 XML 輸出中
                           使用的編碼，亦即：utf-8。
                           請參閱 MSDN 文件 (網址為 

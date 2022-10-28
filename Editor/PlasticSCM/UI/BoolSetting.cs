@@ -31,10 +31,7 @@ namespace Unity.PlasticSCM.Editor.UI
         static string GetSettingKey(string boolSettingName)
         {
             return string.Format(
-                boolSettingName, PlayerSettings.productGUID,
-                PREFERENCE_VALUE_KEY);
+                boolSettingName, PlayerSettings.productGUID);
         }
-
-        static string PREFERENCE_VALUE_KEY = "PreferenceValue";
     }
 }

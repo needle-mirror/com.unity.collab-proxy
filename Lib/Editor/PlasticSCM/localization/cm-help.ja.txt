@@ -7807,6 +7807,7 @@ stdin から入力を読み取る:
                           ディレクトリを表示します。
     --^xml                 出力を XML 形式で標準出力に出力します。
                           出力ファイルを指定することができます。
+    --^pretty              Prints workspace changes in a nice table format.
     --^encoding            --^xml オプションとともに使用され、XML 出力で使用する
                           エンコーディング (utf-8 など) を指定します。
                           サポートされるエンコーディングとその形式のテーブルを取得するには、

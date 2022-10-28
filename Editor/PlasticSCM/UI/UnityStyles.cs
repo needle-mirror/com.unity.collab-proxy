@@ -37,41 +37,49 @@ namespace Unity.PlasticSCM.Editor.UI
                 (Color)new Color32(35, 35, 35, 255) :
                 (Color)new Color32(153, 153, 153, 255);
 #if UNITY_2019
-            internal static Color InspectorHeaderBackground = (EditorGUIUtility.isProSkin) ?
+            internal static Color InspectorHeaderBackground = EditorGUIUtility.isProSkin ?
                 new Color(60f / 255, 60f / 255, 60f / 255) :
                 new Color(203f / 255, 203f / 255, 203f / 255);
 #else
             internal static Color InspectorHeaderBackground = Transparent;
 #endif
 #if UNITY_2019_1_OR_NEWER
-            internal static Color InspectorHeaderBackgroundDisabled = (EditorGUIUtility.isProSkin) ?
+            internal static Color InspectorHeaderBackgroundDisabled = EditorGUIUtility.isProSkin ?
                 new Color(58f / 255, 58f / 255, 58f / 255) :
                 new Color(199f / 255, 199f / 255, 199f / 255);
 #else
-            internal static Color InspectorHeaderBackgroundDisabled = (EditorGUIUtility.isProSkin) ?
+            internal static Color InspectorHeaderBackgroundDisabled = EditorGUIUtility.isProSkin ?
                 new Color(60f / 255, 60f / 255, 60f / 255) :
                 new Color(210f / 255, 210f / 255, 210f / 255);
 #endif
             internal static Color TabUnderline = new Color(58f / 255, 121f / 255, 187f / 255);
             internal static Color Link = new Color(0f, 120f / 255, 218f / 255);
-            internal static Color SecondaryLabel = (EditorGUIUtility.isProSkin) ?
+            internal static Color SecondaryLabel = EditorGUIUtility.isProSkin ?
                 new Color(196f / 255, 196f / 255, 196f / 255) :
                 new Color(105f / 255, 105f / 255, 105f / 255);
-            internal static Color BackgroundBar = (EditorGUIUtility.isProSkin) ? 
+            internal static Color BackgroundBar = EditorGUIUtility.isProSkin ? 
                 new Color(35f / 255, 35f / 255, 35f / 255) :
                 new Color(160f / 255, 160f / 255, 160f / 255);
 
-            internal static Color TreeViewBackground = (EditorGUIUtility.isProSkin) ?
+            internal static Color TreeViewBackground = EditorGUIUtility.isProSkin ?
                new Color(48f / 255, 48f / 255, 48f / 255) :
                new Color(194f / 255, 194f / 255, 194f / 255);
 
-            internal static Color CommentsBackground = (EditorGUIUtility.isProSkin) ?
+            internal static Color CommentsBackground = EditorGUIUtility.isProSkin ?
                new Color(60f / 255, 60f / 255, 60f / 255) :
                new Color(160f / 255, 160f / 255, 160f / 255);
 
-            internal static Color ColumnsBackground = (EditorGUIUtility.isProSkin) ?
+            internal static Color ColumnsBackground = EditorGUIUtility.isProSkin ?
               new Color(56f / 255, 56f / 255, 56f / 255) :
               new Color(221f / 255, 221f / 255, 221f / 255);
+
+            internal static Color ToggleOffText = EditorGUIUtility.isProSkin ?
+                new Color(131f / 255, 131f / 255, 131f / 255) :
+                new Color(151f / 255, 151f / 255, 151f / 255);
+
+            internal static Color ToggleHoverText = EditorGUIUtility.isProSkin ?
+                new Color(129f / 255, 180f / 255, 255f / 255) :
+                new Color(7f / 255, 68f / 255, 146f / 255);
         }
 
         internal static class HexColors
@@ -279,6 +287,33 @@ namespace Unity.PlasticSCM.Editor.UI
                 return CreateUnderlineStyle(
                     Colors.InspectorHeaderBackgroundDisabled,
                     UnityConstants.INSPECTOR_ACTIONS_HEADER_BACK_RECTANGLE_HEIGHT);
+            });
+        }
+
+        internal static class ProjectSettings
+        {
+            internal static readonly LazyStyle ToggleOff = new LazyStyle(() =>
+            {
+                GUIStyle result = new GUIStyle(Toggle);
+                result.normal.textColor = Colors.ToggleOffText;
+                result.hover.textColor = Colors.ToggleHoverText;
+                return result;
+            });
+
+            internal static readonly LazyStyle ToggleOn = new LazyStyle(() =>
+            {
+                GUIStyle result = new GUIStyle(Toggle);
+                result.hover.textColor = Colors.ToggleHoverText;
+                return result;
+            });
+
+            static readonly LazyStyle Toggle = new LazyStyle(() =>
+            {
+                GUIStyle result = new GUIStyle(EditorStyles.miniButton);
+                result.fixedHeight = 22;
+                result.fixedWidth = 38;
+                result.fontSize = 12;
+                return result;
             });
         }
 

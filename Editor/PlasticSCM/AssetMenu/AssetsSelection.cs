@@ -6,34 +6,57 @@ using UnityEditor.VersionControl;
 using PlasticGui.WorkspaceWindow.Items;
 using Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
+using Unity.PlasticSCM.Editor.AssetUtils;
 
 namespace Unity.PlasticSCM.Editor.AssetMenu
 {
     internal static class AssetsSelection
     {
-        internal static Asset GetSelectedAsset(AssetList assetList)
+        internal static Asset GetSelectedAsset(
+            string wkPath,
+            AssetList assetList)
         {
             if (assetList.Count == 0)
                 return null;
 
-            return assetList[0];
+            foreach (Asset asset in assetList)
+            {
+                if (AssetsPath.GetFullPathUnderWorkspace.
+                        ForAsset(wkPath, asset.path) == null)
+                    continue;
+
+                return asset;
+            }
+
+            return null;
         }
 
-        internal static string GetSelectedPath(AssetList assetList)
+        internal static string GetSelectedPath(
+            string wkPath,
+            AssetList assetList)
         {
-            if (assetList.Count == 0)
+            Asset result = GetSelectedAsset(wkPath, assetList);
+
+            if (result == null)
                 return null;
 
-            return Path.GetFullPath(assetList[0].path);
+            return Path.GetFullPath(result.path);
         }
 
-        internal static List<string> GetSelectedPaths(AssetList selectedAssets)
+        internal static List<string> GetSelectedPaths(
+            string wkPath,
+            AssetList assetList)
         {
             List<string> result = new List<string>();
 
-            foreach (Asset asset in selectedAssets)
+            foreach (Asset asset in assetList)
             {
-                string fullPath = Path.GetFullPath(asset.path);
+                string fullPath = AssetsPath.GetFullPathUnderWorkspace.
+                    ForAsset(wkPath, asset.path);
+
+                if (fullPath == null)
+                    continue;
+
                 result.Add(fullPath);
             }
 
@@ -41,15 +64,14 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         }
 
         internal static SelectedPathsGroupInfo GetSelectedPathsGroupInfo(
-            AssetList selectedAssets,
-            IAssetStatusCache assetStatusCache)
+            string wkPath,
+            AssetList assetList,
+            IAssetStatusCache statusCache)
         {
             SelectedPathsGroupInfo result = new SelectedPathsGroupInfo();
 
-            if (selectedAssets.Count == 0)
+            if (assetList.Count == 0)
                 return result;
-
-            result.SelectedCount = selectedAssets.Count;
 
             result.IsRootSelected = false;
             result.IsCheckedoutEverySelected = true;
@@ -57,25 +79,19 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             result.IsCheckedinEverySelected = true;
             result.IsChangedEverySelected = true;
 
-            Asset firstAsset = selectedAssets[0];
-            string firstAssetName = GetAssetName(firstAsset);
-            AssetStatus firstStatus = GetAssetStatus(
-                firstAsset,
-                assetStatusCache);
-
-            result.FirstIsControlled = ClassifyAssetStatus.IsControlled(firstStatus);
-            result.FirstIsDirectory = firstAsset.isFolder;
-
-            result.FilterInfo.CommonName = firstAssetName;
-            result.FilterInfo.CommonExtension = Path.GetExtension(firstAssetName);
-            result.FilterInfo.CommonFullPath = firstAsset.assetPath;
-
-            foreach (Asset asset in selectedAssets)
+            foreach (Asset asset in assetList)
             {
+                string fullPath = AssetsPath.GetFullPathUnderWorkspace.
+                    ForAsset(wkPath, asset.path);
+
+                if (fullPath == null)
+                    continue;
+
+                if (MetaPath.IsMetaPath(fullPath))
+                    fullPath = MetaPath.GetPathFromMetaPath(fullPath);
+
+                AssetStatus status = statusCache.GetStatus(fullPath);
                 string assetName = GetAssetName(asset);
-                AssetStatus status = GetAssetStatus(
-                    asset, 
-                    assetStatusCache);
 
                 result.IsCheckedoutEverySelected &= ClassifyAssetStatus.IsCheckedOut(status);
                 result.IsDirectoryEverySelected &= asset.isFolder;
@@ -88,8 +104,18 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 result.FilterInfo.IsAnyIgnoredSelected |= ClassifyAssetStatus.IsIgnored(status);
                 result.FilterInfo.IsAnyHiddenChangedSelected |= ClassifyAssetStatus.IsHiddenChanged(status);
 
+                result.SelectedCount++;
+
                 if (result.SelectedCount == 1)
+                {
+                    result.FirstIsControlled = ClassifyAssetStatus.IsControlled(status);
+                    result.FirstIsDirectory = asset.isFolder;
+
+                    result.FilterInfo.CommonName = assetName;
+                    result.FilterInfo.CommonExtension = Path.GetExtension(assetName);
+                    result.FilterInfo.CommonFullPath = asset.assetPath;
                     continue;
+                }
 
                 if (result.FilterInfo.CommonName != assetName)
                     result.FilterInfo.CommonName = null;
@@ -102,16 +128,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             }
 
             return result;
-        }
-
-        static AssetStatus GetAssetStatus(Asset asset, IAssetStatusCache assetStatusCache)
-        {
-            string assetPath = Path.GetFullPath(asset.assetPath);
-
-            if (MetaPath.IsMetaPath(assetPath))
-                assetPath = MetaPath.GetPathFromMetaPath(assetPath);
-
-            return assetStatusCache.GetStatusForPath(assetPath);
         }
 
         static string GetAssetName(Asset asset)

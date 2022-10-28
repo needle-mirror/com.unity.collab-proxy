@@ -71,50 +71,6 @@ namespace Unity.PlasticSCM.Editor
             mDisableCollabIfEnabledWhenLoaded = true;
         }
 
-        internal void ShowPendingChanges()
-        {
-            ((IAssetMenuOperations)mAssetOperations).ShowPendingChanges();
-        }
-
-        internal void Add()
-        {
-            ((IAssetMenuOperations)mAssetOperations).Add();
-        }
-
-        internal void Checkout()
-        {
-            ((IAssetMenuOperations)mAssetOperations).Checkout();
-        }
-
-        internal void Checkin()
-        {
-            ((IAssetMenuOperations)mAssetOperations).Checkin();
-        }
-
-        internal void Undo()
-        {
-            ((IAssetMenuOperations)mAssetOperations).Undo();
-        }
-
-        internal void ShowDiff()
-        {
-            ((IAssetMenuOperations)mAssetOperations).ShowDiff();
-        }
-
-        internal void ShowHistory()
-        {
-            ((IAssetMenuOperations)mAssetOperations).ShowHistory();
-        }
-
-        internal void AddFilesFilterPatterns(
-            FilterTypes type, 
-            FilterActions action, 
-            FilterOperationType operation)
-        {
-            ((IAssetFilesFilterPatternsMenuOperations)mAssetOperations)
-                .AddFilesFilterPatterns(type, action, operation);
-        }
-
         void PlasticGui.WorkspaceWindow.CheckIncomingChanges.IAutoRefreshIncomingChangesView.IfVisible()
         {
             mViewSwitcher.AutoRefreshIncomingChangesView();
@@ -425,24 +381,19 @@ namespace Unity.PlasticSCM.Editor
 
                 UnityStyles.Initialize(Repaint);
 
-                AssetOperations.IAssetSelection projectViewAssetSelection =
-                    new ProjectViewAssetSelection();
-
-                mAssetOperations =
-                    new AssetOperations(
-                        mWkInfo,
-                        mWorkspaceWindow,
-                        mViewSwitcher,
-                        mViewSwitcher,
-                        viewHost,
-                        mDeveloperNewIncomingChangesUpdater,
-                        PlasticPlugin.AssetStatusCache,
-                        mViewSwitcher,
-                        mViewSwitcher,
-                        this,
-                        projectViewAssetSelection,
-                        mShowDownloadPlasticExeWindow,
-                        mIsGluonMode);
+                AssetMenuItems.BuildOperations(
+                    mWkInfo,
+                    mWorkspaceWindow,
+                    mViewSwitcher,
+                    mViewSwitcher,
+                    viewHost,
+                    mDeveloperNewIncomingChangesUpdater,
+                    PlasticPlugin.AssetStatusCache,
+                    mViewSwitcher,
+                    mViewSwitcher,
+                    mShowDownloadPlasticExeWindow,
+                    this,
+                    mIsGluonMode);
 
                 DrawInspectorOperations.BuildOperations(
                     mWkInfo,
@@ -451,6 +402,7 @@ namespace Unity.PlasticSCM.Editor
                     mViewSwitcher,
                     viewHost,
                     mDeveloperNewIncomingChangesUpdater,
+                    PlasticPlugin.AssetStatusCache,
                     mViewSwitcher,
                     mViewSwitcher,
                     mShowDownloadPlasticExeWindow,
@@ -729,7 +681,7 @@ namespace Unity.PlasticSCM.Editor
                     PlasticLocalization.GetString(
                 PlasticLocalization.Name.Options)),
                 false,
-                () => SettingsService.OpenProjectSettings(UnityConstants.PROJECT_SETTINGS_MENU_TITLE));
+                () => SettingsService.OpenProjectSettings(UnityConstants.PROJECT_SETTINGS_TAB_PATH));
 
             // If the user has the simplified UI key of type .txt in the Assets folder
             // TODO: Remove when Simplified UI is complete
@@ -746,16 +698,6 @@ namespace Unity.PlasticSCM.Editor
                 PlasticLocalization.GetString(PlasticLocalization.Name.EnableForcedCheckout)),
                 false,
                 ForceCheckout_Clicked,
-                null);
-
-            menu.AddSeparator("");
-
-            menu.AddItem(
-                new GUIContent(
-                    PlasticLocalization.GetString(
-                        PlasticLocalization.Name.TurnOffPlasticSCM)),
-                false,
-                TurnOffPlasticButton_Clicked,
                 null);
 
             menu.ShowAsContext();
@@ -954,13 +896,6 @@ namespace Unity.PlasticSCM.Editor
             PlasticSCMWindow.ShowWindow();
         }
 
-        static void TurnOffPlasticButton_Clicked(object obj)
-        {
-            ShowWindow.Plastic();
-            TurnOffPlasticWindow.ShowWindow();
-            PlasticPlugin.Disable();
-        }
-
         static void ForceCheckout_Clicked(object obj)
         {
             PlasticAssetModificationProcessor.SetForceCheckoutOption(
@@ -1040,7 +975,8 @@ namespace Unity.PlasticSCM.Editor
         {
             UnRegisterApplicationFocusHandlers(window);
 
-            PlasticPlugin.WorkspaceOperationsMonitor.UnRegisterWindow();
+            if (PlasticPlugin.WorkspaceOperationsMonitor != null)
+                PlasticPlugin.WorkspaceOperationsMonitor.UnRegisterWindow();
 
             DisposeNewIncomingChanges(window);
 
@@ -1190,7 +1126,6 @@ namespace Unity.PlasticSCM.Editor
 
         bool mIsGluonMode;
         bool mDisableCollabIfEnabledWhenLoaded;
-        AssetOperations mAssetOperations;
 
         LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow =
             new LaunchTool.ShowDownloadPlasticExeWindow();

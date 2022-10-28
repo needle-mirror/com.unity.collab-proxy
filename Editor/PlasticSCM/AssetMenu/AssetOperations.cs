@@ -80,6 +80,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         void IAssetMenuOperations.Add()
         {
             List<string> selectedPaths = GetSelectedPaths.ForOperation(
+                mWkInfo.ClientPath,
                 mAssetSelection.GetSelectedAssets(),
                 mAssetStatusCache,
                 AssetMenuOperations.Add);
@@ -110,6 +111,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         void IAssetMenuOperations.Checkout()
         {
             List<string> selectedPaths = GetSelectedPaths.ForOperation(
+                mWkInfo.ClientPath,
                 mAssetSelection.GetSelectedAssets(),
                 mAssetStatusCache,
                 AssetMenuOperations.Checkout);
@@ -138,6 +140,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         void IAssetMenuOperations.Checkin()
         {
             List<string> selectedPaths = GetSelectedPaths.ForOperation(
+                mWkInfo.ClientPath,
                 mAssetSelection.GetSelectedAssets(),
                 mAssetStatusCache,
                 AssetMenuOperations.Checkin);
@@ -161,6 +164,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         void IAssetMenuOperations.Undo()
         {
             List<string> selectedPaths = GetSelectedPaths.ForOperation(
+                mWkInfo.ClientPath,
                 mAssetSelection.GetSelectedAssets(),
                 mAssetStatusCache,
                 AssetMenuOperations.Undo);
@@ -191,14 +195,15 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         void IAssetMenuOperations.ShowDiff()
         {
             if (mShowDownloadPlasticExeWindow.Show(
-                mWkInfo,
-                mIsGluonMode,
-                TrackFeatureUseEvent.Features.InstallPlasticCloudFromShowDiff,
-                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromFromShowDiff,
-                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromFromShowDiff))
+                    mWkInfo,
+                    mIsGluonMode,
+                    TrackFeatureUseEvent.Features.InstallPlasticCloudFromShowDiff,
+                    TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromFromShowDiff,
+                    TrackFeatureUseEvent.Features.CancelPlasticInstallationFromFromShowDiff))
                 return;
 
             string selectedPath = AssetsSelection.GetSelectedPath(
+                mWkInfo.ClientPath, 
                 mAssetSelection.GetSelectedAssets());
 
             DiffInfo diffInfo = null;
@@ -231,19 +236,18 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         void IAssetMenuOperations.ShowHistory()
         {
             if (mShowDownloadPlasticExeWindow.Show(
-               mWkInfo,
-               mIsGluonMode,
-               TrackFeatureUseEvent.Features.InstallPlasticCloudFromShowHistory,
-               TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromShowHistory,
-               TrackFeatureUseEvent.Features.CancelPlasticInstallationFromShowHistory))
+                   mWkInfo,
+                   mIsGluonMode,
+                   TrackFeatureUseEvent.Features.InstallPlasticCloudFromShowHistory,
+                   TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromShowHistory,
+                   TrackFeatureUseEvent.Features.CancelPlasticInstallationFromShowHistory))
                 return;
 
-            AssetList assetList = mAssetSelection.GetSelectedAssets();
-
             Asset selectedAsset = AssetsSelection.GetSelectedAsset(
-                assetList);
-            string selectedPath = AssetsSelection.GetSelectedPath(
-                assetList);
+                mWkInfo.ClientPath,
+                mAssetSelection.GetSelectedAssets());
+
+            string selectedPath = Path.GetFullPath(selectedAsset.path);
 
             WorkspaceTreeNode node = PlasticGui.Plastic.API.
                 GetWorkspaceTreeNode(selectedPath);
@@ -261,6 +265,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             FilterOperationType operation)
         {
             List<string> selectedPaths = AssetsSelection.GetSelectedPaths(
+                mWkInfo.ClientPath,
                 mAssetSelection.GetSelectedAssets());
 
             string[] rules = FilterRulesGenerator.GenerateRules(

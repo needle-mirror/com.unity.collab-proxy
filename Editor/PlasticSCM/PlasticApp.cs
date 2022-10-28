@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 
+using UnityEditor;
 using UnityEngine;
 
 using Codice.Client.BaseCommands;
@@ -18,7 +19,7 @@ using Codice.CM.ConfigureHelper;
 using Codice.LogWrapper;
 using Codice.Utils;
 using CodiceApp.EventTracking;
-
+using MacUI;
 using PlasticGui;
 using PlasticGui.EventTracking;
 using PlasticGui.WebApi;
@@ -26,8 +27,6 @@ using PlasticPipe.Certificates;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Configuration;
 using Unity.PlasticSCM.Editor.UI;
-using MacUI;
-using UnityEditor;
 
 namespace Unity.PlasticSCM.Editor
 {
@@ -71,9 +70,7 @@ namespace Unity.PlasticSCM.Editor
             {
                 sEventSenderScheduler = EventTracking.Configure(
                     (PlasticWebRestApi)PlasticGui.Plastic.WebRestAPI,
-                    AssetsPath.IsRunningAsUPMPackage() ?
-                        ApplicationIdentifier.UnityPackage : 
-                        ApplicationIdentifier.UnityAssetStorePlugin,
+                    ApplicationIdentifier.UnityPackage,
                     IdentifyEventPlatform.Get());
             }
 

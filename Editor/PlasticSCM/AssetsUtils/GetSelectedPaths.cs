@@ -10,11 +10,13 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
     internal static class GetSelectedPaths
     {
         internal static List<string> ForOperation(
+            string wkPath,
             AssetList assetList,
             IAssetStatusCache assetStatusCache,
             AssetMenuOperations operation)
         {
-            List<string> selectedPaths = AssetsSelection.GetSelectedPaths(assetList);
+            List<string> selectedPaths = AssetsSelection.
+                GetSelectedPaths(wkPath, assetList);
 
             List<string> result = new List<string>(selectedPaths);
 

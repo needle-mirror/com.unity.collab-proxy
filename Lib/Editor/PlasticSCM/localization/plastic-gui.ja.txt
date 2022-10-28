@@ -140,7 +140,7 @@
 計算しています...
 
 == CopyrightTextFormat ==
-Copyright © 2006-{0} Codice Software S.L.All Rights Reserved.
+Copyright © 2006-{0} Unity Technologies. All Rights Reserved.
 
 == FiltersAndConditionalFormat ==
 フィルターと形式
@@ -6035,7 +6035,7 @@ https://plasticscm.com/download/help/code-review-restrictions
 作成者
 
 == PrivacyStatementText ==
-コントローラー：Unity TechnologiesApS。処理の目的：アカウントを作成し、要求されたサービスを提供します。 Unityプライバシーポリシーに記載されているように、アクセス、修正、消去、およびその他のデータ保護の権利を行使することができます。詳細については、{0} を参照してください。
+コントローラー：Unity Technologies ApS。処理の目的：アカウントを作成し、要求されたサービスを提供します。 Unityプライバシーポリシーに記載されているように、アクセス、修正、消去、およびその他のデータ保護の権利を行使することができます。詳細については、{0} を参照してください。
 
 == PrivacyStatement ==
 Unityプライバシーポリシー

@@ -7807,6 +7807,7 @@ Jira 参数（全部为必需参数）：
                           （含有已添加、移动、删除的项）。
     --^xml                 以 XML 格式将输出打印到标准输出。
                           可以指定输出文件。
+    --^pretty              Prints workspace changes in a nice table format.
     --^encoding            与 --^xml 选项结合使用，指定要在 XML 输出
                           中使用的编码（例如：utf-8）。
                           请参阅位于以下网址的 MSDN 文档：

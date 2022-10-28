@@ -7807,6 +7807,7 @@ Plastic Tube와 관련된 명령을 실행합니다.
                           (내부에 있는 추가, 이동, 제거된 항목).
     --^xml                 XML 형식의 출력을 표준 출력으로 출력합니다.
                           출력 파일을 지정할 수 있습니다.
+    --^pretty              Prints workspace changes in a nice table format.
     --^encoding            --^xml 옵션과 함께 사용되며 XML 출력에 사용할
                           인코딩, 즉 UTF-8을 지정합니다.
                           지원되는 인코딩 및 형식에 대한 표를 확인하려면

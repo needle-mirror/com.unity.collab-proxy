@@ -176,7 +176,7 @@ Añadir formato
 Calculando...
 
 == CopyrightTextFormat ==
-Copyright © 2006-{0} Codice Software S.L. Todos los derechos reservados.
+Copyright © 2006-{0} Unity Technologies. Todos los derechos reservados.
 
 == FiltersAndConditionalFormat ==
 Filtros y formato
@@ -7556,30 +7556,6 @@ Keyboard shortcuts:
   Enter: focus the next search result
   Ctrl+Enter: focus the previous one
 
-== TurnOffPlasticSCM ==
-Turn Off Plastic SCM for Unity
-
-== TurnOffPlasticSCMDescrition ==
-Here you can turn off Plastic. It will delete current workspace and Plastic settings, but the files will remain intact.
-
-== TurningOffPlasticSCM ==
-Turning off Plastic SCM
-
-== TurnOffPlasticSCMAreYouSure ==
-Are you sure you want to turn off Plastic SCM?
-
-== TurnOffPlasticSCMClosing ==
-Closing Plastic SCM
-
-== TurnOffPlasticSCMClosingWindow ==
-Closing Plastic SCM window
-
-== TurnOffPlasticSCMCleaning ==
-Cleaning the settings
-
-== TurnOffPlasticSCMDeleting ==
-Deleting the workspace
-
 == DisableForcedCheckout ==
 Disable Manual Checkout for Unity Assets
 
@@ -8139,6 +8115,9 @@ Confirmar quitar cuenta
 == RemoveAccountButton ==
 Quitar cuenta
 
+== EditAccountButton ==
+Modificar cuenta
+
 == AddNewPlasticScmAccount ==
 Añadir una nueva cuenta de Plastic SCM
 
@@ -8439,3 +8418,159 @@ Grupo de Refactorización {0}
 
 == AnalyzingRefactors ==
 Analizando refactors...
+ 
+== WontDeleteOpenWorkspace ==
+El workspace '{0}' permanece abierto y no se puede eliminar
+ 
+== WontDeleteOpenWorkspaces ==
+Los siguientes workspaces permanecen abiertos y no se pueden eliminar:
+
+== LicenseExpiredLinkLabel ==
+Su licencia ha expirado. Puede comprar una licencia en [[http://www.plasticscm.com|plasticscm.com]]
+
+== ExtendedTrialLicenseExpiresTodayLinkLabel ==
+Su licencia de prueba expira hoy. Puede comprar una licencia en [[http://www.plasticscm.com|plasticscm.com]]
+
+== ExtendedTrialLicenseExpiresTomorrowLinkLabel ==
+Su licencia de prueba expira mañana. Puede comprar una licencia en [[http://www.plasticscm.com|plasticscm.com]]
+
+== ExtendedTrialLicenseExpiresInDaysLinkLabel ==
+Su licencia de prueba expira en {0} días. Puede comprar una licencia en [[http://www.plasticscm.com|plasticscm.com]]
+
+== TrialLicenseExpiresTodayLinkLabel ==
+Su licencia de prueba expira hoy. Puede obtener una licencia gratuita de 30 días para 5 usuarios registrándose en [[https://www.plasticscm.com/account/register|plasticscm.com]]. Son sólo 30 segundos!
+
+== TrialLicenseExpiresTomorrowLinkLabel ==
+Su licencia de prueba expira mañana. Puede obtener una licencia gratuita de 30 días para 5 usuarios registrándose en [[https://www.plasticscm.com/account/register|plasticscm.com]]. Son sólo 30 segundos!
+
+== TrialLicenseExpiresInDaysLinkLabel ==
+Su licencia de prueba expira en {0} días. Puede obtener una licencia gratuita de 30 días para 5 usuarios registrándose en [[https://www.plasticscm.com/account/register|plasticscm.com]]. Son sólo 30 segundos!
+
+== LicenseExpiresTodayLinkLabel ==
+Su licencia expira hoy. Visite [[http://www.plasticscm.com|plasticscm.com]] para extender su licencia
+
+== LicenseExpiresTomorrowLinkLabel ==
+Su licencia expira mañana. Visite [[http://www.plasticscm.com|plasticscm.com]] para extender su licencia
+
+== LicenseExpiresInDaysLinkLabel ==
+Su licencia expira en {0} dias. Visite [[http://www.plasticscm.com|plasticscm.com]] para extender su licencia
+
+== CannotConnectToServerLicense ==
+No se pudo conectar al servidor de Plastic SCM. Volviendo a intentar...
+
+== LicenseFileFilter ==
+Licencia PlasticSCM (*.lic)|lic
+
+== TrialLicenseWarningNonAdminPrompt ==
+El usuario actual no es administrador del servidor. Al obtener la licencia de evaluación extendida se mostrará un diálogo para seleccionar la ruta en la que desee almacenarla.
+
+== TrialLicenseSigningUpLabel ==
+Esperando un inicio de sesión válido...
+
+== DifferencesAdornerTooltip ==
+Haz click para ver las diferencias
+
+== UnchangedNameGroup ==
+Sin cambios
+
+== Usings ==
+Usings
+
+== BaseLabel ==
+base
+
+== SrcLabel ==
+origen - sus cambios
+
+== DstLabel ==
+destino - tus cambios
+
+== BaseTooltip ==
+el antecesor común, es la versión padre de los dos ficheros sobre los que estás haciendo el merge. Muestra cómo era el fichero orignalmente
+
+== SrcTooltip ==
+los cambios hechos en el código desde el que estás haciendo el merge (suyo). Muestra las diferencias entre la base y el contribuidor origen
+
+== DstTooltip ==
+los cambios en tu copia local (tuyo). Muestra las diferencias entre la base y el contribuidor destino
+
+== ChangeEditorFont ==
+Cambiar la fuente del editor...
+
+== FontSelection ==
+Selección de fuente
+
+== SelectAFont ==
+Seleccione una fuente
+
+== SelectFontExplanation ==
+Utilice el combo para seleccionar la fuente preferida. Puede visualizarla en el texto de ejemplo.
+
+== RestoreDefaultFont ==
+Fuente por defecto
+
+== BrExTooltipDetailsForCs ==
+por {0} el {1}
+
+== BrExTooltipDetails ==
+Creado por {0} el {1}
+
+== LoadingTooltipDetails ==
+Cargando detalles del tooltip...
+
+== LoadingTooltipComment ==
+Cargando los commentarios...
+
+== ErrorLoadingTooltipDetails ==
+No se ha podido cargar el tooltip
+
+== PlasticZoomInShortcut ==
+ctrl++
+
+== PlasticZoomInNumPadShortcut ==
+ctrl+Add
+
+== PlasticZoomOutShortcut ==
+ctrl+-
+
+== PlasticZoomResetShortcut ==
+ctrl+D0
+
+== PlasticZoomResetNumPadShortcut ==
+ctrl+NumPad0
+
+== PlasticZoomInShortcutMacOS ==
+cmd++
+
+== PlasticZoomInNumPadShortcutMacOS ==
+cmd+Add
+
+== PlasticZoomOutShortcutMacOS ==
+cmd+-
+
+== PlasticZoomResetShortcutMacOS ==
+cmd+D0
+
+== PlasticZoomResetNumPadShortcutMacOS ==
+cmd+NumPad0
+
+== ZoomReset ==
+Resetear Zoom
+
+== Zoom ==
+Zoom
+
+== ZoomLevelLabel ==
+{0:0}%
+
+== OfflineModeTitle ==
+Modo sin conexión
+
+== OfflineModeDescription ==
+El modo sin conexión desactiva todas las funcionalidades de Plastic SCM, incluida la conexión al servidor, para proporcionar un flujo de trabajo ininterrumpido en Unity Editor.
+
+== OfflineModeOn ==
+ON
+
+== OfflineModeOff ==
+OFF

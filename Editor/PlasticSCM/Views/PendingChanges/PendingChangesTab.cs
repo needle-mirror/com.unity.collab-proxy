@@ -26,7 +26,6 @@ using PlasticGui.WorkspaceWindow.Items;
 using PlasticGui.WorkspaceWindow.Open;
 using PlasticGui.WorkspaceWindow.PendingChanges;
 using PlasticGui.WorkspaceWindow.PendingChanges.Changelists;
-
 using Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
@@ -249,7 +248,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return;
 
             if (mDeveloperNewIncomingChangesUpdater != null)
-                mDeveloperNewIncomingChangesUpdater.Update();
+                mDeveloperNewIncomingChangesUpdater.Update(DateTime.Now);
 
             if (mGluonNewIncomingChangesUpdater != null)
                 mGluonNewIncomingChangesUpdater.Update(DateTime.Now);

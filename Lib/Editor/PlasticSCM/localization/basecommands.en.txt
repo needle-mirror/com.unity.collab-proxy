@@ -538,21 +538,6 @@ Uploading file data
 == CheckinStatusValidating ==
 Validating checkin data
 
-== ShelveStatusStarting ==
-Shelve operation starting...
-
-== ShelveStatusUploading ==
-Uploading file data
-
-== ShelveStatusConfirming ==
-Confirming shelve operation
-
-== ShelveStatusRestoringPermissions ==
-Restoring file access
-
-== ShelveStatusFinished ==
-Shelve finished
-
 == CheckoutCannotBeSaved ==
 Content for item {0} cannot be saved.
 
@@ -1616,6 +1601,9 @@ Group
 == GroupKey ==
 Group
 
+== Hash ==
+Hash code
+
 == HiddenChanged ==
 Hidden changed
 
@@ -1657,6 +1645,9 @@ The item {0} has been deleted on source and will be deleted as result of the mer
 
 == ItemFsprotToApply ==
 The item {0} has been changed the filesystem permissions on source
+
+== ItemId ==
+Item ID
 
 == ItemMovedSource ==
 The item {0} has been moved to {1} on source and will be moved as result of the merge
@@ -2169,6 +2160,9 @@ Password correctly set
 == PasswordDoesntMatch ==
 Passwords doesnt match. Password not set.
 
+== ItemPathOrSpec ==
+Item path or spec
+
 == PathInConflictWarningMessage ==
 The item '{0}' has been renamed to '{1}' because the path was already in use during the merge operation
 
@@ -2390,6 +2384,24 @@ The repository '{0}' was correctly shared.
 
 == Shelve ==
 Shelve
+
+== ShelveStatusConfirming ==
+Confirming shelve operation
+
+== ShelveStatusFinished ==
+Shelve finished
+
+== ShelveStatusRestoringPermissions ==
+Restoring file access
+
+== ShelveStatusStarting ==
+Shelve operation starting...
+
+== ShelveStatusUploading ==
+Uploading file data
+
+== Size ==
+Size in bytes
 
 == Skip ==
 Skip

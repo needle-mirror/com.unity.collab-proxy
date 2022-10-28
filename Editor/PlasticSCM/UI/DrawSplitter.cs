@@ -7,14 +7,19 @@ namespace Unity.PlasticSCM.Editor.UI
     {
         internal static void ForHorizontalIndicator()
         {
+            ForWidth(EditorGUIUtility.currentViewWidth);
+        }
+
+        internal static void ForWidth(float width)
+        {
             GUIStyle style = UnityStyles.SplitterIndicator;
 
             Rect splitterRect = GUILayoutUtility.GetRect(
-                EditorGUIUtility.currentViewWidth,
+                width,
                 UnityConstants.SPLITTER_INDICATOR_HEIGHT,
                 style);
 
-            GUI.Label(splitterRect, string.Empty, style);
+            GUI.Label(splitterRect, string.Empty, style);   
         }
     }
 }

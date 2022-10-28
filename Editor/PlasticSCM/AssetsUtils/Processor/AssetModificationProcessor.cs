@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-using UnityEditor;
+﻿using UnityEditor;
 
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.UI;
@@ -12,10 +10,10 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
     {
         internal static bool ForceCheckout { get; private set; }
 
-        /*We need to do a checkout, verifying that the content/date or size has changed. In order
-          to do this checkout we need the changes to have reached the disk. That's why we save the
-          changed files in this array, and when they are reloaded in 
-        AssetPostprocessor.OnPostprocessAllAssets we process them. */
+        /* We need to do a checkout, verifying that the content/date or size has changed. 
+         * In order to do this checkout we need the changes to have reached the disk. 
+         * That's why we save the changed files in this array, and when they are reloaded
+         * in AssetPostprocessor.OnPostprocessAllAssets we process them. */
         internal static string[] ModifiedAssets { get; set; }
 
         static AssetModificationProcessor()
@@ -25,21 +23,27 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
         }
 
         internal static void Enable(
+            string wkPath,
             IAssetStatusCache assetStatusCache)
         {
+            mWkPath = wkPath;
             mAssetStatusCache = assetStatusCache;
-            sIsEnabled = true;
+
+            mIsEnabled = true;
         }
 
         internal static void Disable()
         {
-            sIsEnabled = false;
+            mIsEnabled = false;
+
+            mWkPath = null;
             mAssetStatusCache = null;
         }
 
         internal static void SetForceCheckoutOption(bool isEnabled)
         {
             ForceCheckout = isEnabled;
+
             EditorPrefs.SetBool(
                 UnityConstants.FORCE_CHECKOUT_KEY_NAME,
                 isEnabled);
@@ -47,7 +51,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
         static string[] OnWillSaveAssets(string[] paths)
         {
-            if (!sIsEnabled)
+            if (!mIsEnabled)
                 return paths;
 
             ModifiedAssets = (string[])paths.Clone();
@@ -59,20 +63,26 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
         {
             message = string.Empty;
 
-            if (!sIsEnabled)
-                return true;
-
-            if (assetPath.StartsWith("ProjectSettings/"))
+            if (!mIsEnabled)
                 return true;
 
             if (!ForceCheckout)
                 return true;
 
-            if (MetaPath.IsMetaPath(assetPath))
-                assetPath = MetaPath.GetPathFromMetaPath(assetPath);
+            if (assetPath.StartsWith("ProjectSettings/"))
+                return true;
 
-            AssetOverlays.AssetStatus status = mAssetStatusCache.GetStatusForPath(
-                Path.GetFullPath(assetPath));
+            string assetFullPath = AssetsPath.GetFullPathUnderWorkspace.
+                ForAsset(mWkPath, assetPath);
+
+            if (assetFullPath == null)
+                return true;
+
+            if (MetaPath.IsMetaPath(assetFullPath))
+                assetFullPath = MetaPath.GetPathFromMetaPath(assetFullPath);
+
+            AssetOverlays.AssetStatus status = mAssetStatusCache.
+                GetStatus(assetFullPath);
 
             if (AssetOverlays.ClassifyAssetStatus.IsAdded(status) ||
                 AssetOverlays.ClassifyAssetStatus.IsCheckedOut(status))
@@ -81,7 +91,9 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             return !AssetOverlays.ClassifyAssetStatus.IsControlled(status);
         }
 
-        static bool sIsEnabled;
+        static bool mIsEnabled;
+
         static IAssetStatusCache mAssetStatusCache;
+        static string mWkPath;
     }
 }

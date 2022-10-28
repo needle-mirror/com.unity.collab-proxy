@@ -1,7 +1,10 @@
-﻿using UnityEditor;
+﻿using System;
+
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Commands;
 using Codice.Client.Common.FsNodeReaders;
 using Codice.Client.Common.Threading;
@@ -15,27 +18,50 @@ namespace Unity.PlasticSCM.Editor
 {
     class PlasticProjectSettingsProvider : SettingsProvider
     {
-        public PlasticProjectSettingsProvider(string path, SettingsScope scope = SettingsScope.User)
-            : base(path, scope) { }
+        public PlasticProjectSettingsProvider(
+            string path, SettingsScope scope = SettingsScope.User)
+            : base(path, scope)
+        {
+            label = UnityConstants.PROJECT_SETTINGS_TAB_TITLE;
+        }
 
-        /// <summary>
-        /// When initialized
-        /// </summary>
-        public override void OnActivate(string searchContext, VisualElement rootElement)
+        [SettingsProvider]
+        public static SettingsProvider CreateSettingsProvider()
+        {
+            if (CollabPlugin.IsEnabled())
+                return null;
+
+            if (!FindWorkspace.HasWorkspace(ApplicationDataPath.Get()))
+                return null;
+
+            PlasticApp.InitializeIfNeeded();
+
+            return new PlasticProjectSettingsProvider(
+                UnityConstants.PROJECT_SETTINGS_TAB_PATH, SettingsScope.Project)
+            {
+                keywords = GetSearchKeywordsFromGUIContentProperties<Styles>()
+            };
+        }
+
+        public override void OnActivate(
+            string searchContext,
+            VisualElement rootElement)
         {
             IAutoRefreshView autoRefreshView = GetPendingChangesView();
 
             if (autoRefreshView != null)
                 autoRefreshView.DisableAutoRefresh();
 
-            // Check if FSWatcher should be enabled
-            WorkspaceInfo workspaceInfo = FindWorkspace.InfoForApplicationPath(
+            mIsOfflineModeEnabled = PlasticProjectOfflineMode.IsEnabled();
+
+            mWkInfo = FindWorkspace.InfoForApplicationPath(
                 ApplicationDataPath.Get(), PlasticGui.Plastic.API);
 
-            CheckFsWatcher(workspaceInfo);
+            CheckFsWatcher(mWkInfo);
 
             mInitialOptions = new PendingChangesOptions();
             mInitialOptions.LoadPendingChangesOptions();
+
             SetOptions(mInitialOptions);
         }
 
@@ -68,13 +94,91 @@ namespace Unity.PlasticSCM.Editor
             }
         }
 
-        /// <summary>
-        /// Called every frame for the Projects Setting window/Plastic SCM category
-        /// </summary>
         public override void OnGUI(string searchContext)
         {
-            EditorGUIUtility.labelWidth = 395;
+            DrawSettingsSection(
+                DoOfflineModeSetting);
 
+            if (mIsOfflineModeEnabled)
+                return;
+
+            DrawSplitter.ForWidth(UnityConstants.SETTINGS_GUI_WIDTH);
+
+            DrawSettingsSection(
+                DoPendingChangesSettings);
+        }
+
+        void DoOfflineModeSetting()
+        {
+            DoOfflineModeHeader();
+
+            EditorGUILayout.Space(5);
+
+            EditorGUILayout.HelpBox(
+                Styles.OfflineModeDescription);
+        }
+
+        void DoOfflineModeHeader()
+        {
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.Label(
+                    PlasticLocalization.GetString(
+                        PlasticLocalization.Name.OfflineModeTitle),
+                    EditorStyles.boldLabel,
+                    GUILayout.Height(20));
+
+                EditorGUILayout.Space(8);
+
+                DoOfflineModeButton();
+
+                GUILayout.FlexibleSpace();
+            }
+        }
+
+        void DoOfflineModeButton()
+        {
+            if (!GUILayout.Button(PlasticLocalization.GetString(
+                    mIsOfflineModeEnabled ?
+                        PlasticLocalization.Name.OfflineModeOn :
+                        PlasticLocalization.Name.OfflineModeOff),
+                    mIsOfflineModeEnabled ?
+                        UnityStyles.ProjectSettings.ToggleOn :
+                        UnityStyles.ProjectSettings.ToggleOff))
+            {
+                return;
+            }
+
+            if (!mIsOfflineModeEnabled)
+            {
+                mIsOfflineModeEnabled = true;
+
+                TrackFeatureUseEvent.For(
+                    PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                    TrackFeatureUseEvent.Features.OfflineModeOn);
+
+                PlasticProjectOfflineMode.Enable();
+                CloseWindowIfOpened.Plastic();
+                PlasticPlugin.Disable();
+                return;
+            }
+
+            if (mIsOfflineModeEnabled)
+            {
+                mIsOfflineModeEnabled = false;
+
+                TrackFeatureUseEvent.For(
+                    PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                    TrackFeatureUseEvent.Features.OfflineModeOff);
+
+                PlasticProjectOfflineMode.Disable();
+                PlasticPlugin.Enable();
+                return;
+            }
+        }
+
+        void DoPendingChangesSettings()
+        {
             DoGeneralSettings();
 
             DoFileChangeSettings();
@@ -83,37 +187,21 @@ namespace Unity.PlasticSCM.Editor
 
             DoFileDetectionSetings();
 
+            EditorGUILayout.Space(10);
+
             DoFsWatcherMessage(mFSWatcherEnabled);
-        }
-
-        [SettingsProvider]
-        public static SettingsProvider CreateSettingsProvider()
-        {
-            if (CollabPlugin.IsEnabled())
-                return null;
-
-            if (!FindWorkspace.HasWorkspace(ApplicationDataPath.Get()))
-                return null;
-
-            PlasticProjectSettingsProvider provider = new PlasticProjectSettingsProvider(
-                UnityConstants.PROJECT_SETTINGS_MENU_TITLE, SettingsScope.Project)
-                    {
-                        keywords = GetSearchKeywordsFromGUIContentProperties<Styles>()
-                    };
-            return provider;
         }
 
         void DoGeneralSettings()
         {
-            EditorGUILayout.Space(5);
             GUILayout.Label(
                 PlasticLocalization.GetString(
                         PlasticLocalization.Name.ProjectSettingsGeneral),
                 EditorStyles.boldLabel);
             EditorGUILayout.Space(1);
 
-            mShowCheckouts = EditorGUILayout.Toggle(Styles.showCheckouts, mShowCheckouts);
-            mAutoRefresh = EditorGUILayout.Toggle(Styles.autoRefresh, mAutoRefresh);
+            mShowCheckouts = EditorGUILayout.Toggle(Styles.ShowCheckouts, mShowCheckouts);
+            mAutoRefresh = EditorGUILayout.Toggle(Styles.AutoRefresh, mAutoRefresh);
         }
 
         void DoFileChangeSettings()
@@ -125,8 +213,8 @@ namespace Unity.PlasticSCM.Editor
                 EditorStyles.boldLabel);
             EditorGUILayout.Space(1);
 
-            mShowChangedFiles = EditorGUILayout.Toggle(Styles.showChangedFiles, mShowChangedFiles);
-            mCheckFileContent = EditorGUILayout.Toggle(Styles.checkFileContent, mCheckFileContent);
+            mShowChangedFiles = EditorGUILayout.Toggle(Styles.ShowChangedFiles, mShowChangedFiles);
+            mCheckFileContent = EditorGUILayout.Toggle(Styles.CheckFileContent, mCheckFileContent);
         }
 
         void DoFileVisibililySettings()
@@ -138,11 +226,11 @@ namespace Unity.PlasticSCM.Editor
                 EditorStyles.boldLabel);
             EditorGUILayout.Space(1);
 
-            mUseChangeLists = EditorGUILayout.Toggle(Styles.useChangeLists, mUseChangeLists);
-            mShowPrivateFields = EditorGUILayout.Toggle(Styles.showPrivateFields, mShowPrivateFields);
-            mShowIgnoredFiles = EditorGUILayout.Toggle(Styles.showIgnoredFields, mShowIgnoredFiles);
-            mShowHiddenFiles = EditorGUILayout.Toggle(Styles.showHiddenFields, mShowHiddenFiles);
-            mShowDeletedFiles = EditorGUILayout.Toggle(Styles.showDeletedFilesDirs, mShowDeletedFiles);
+            mUseChangeLists = EditorGUILayout.Toggle(Styles.UseChangeLists, mUseChangeLists);
+            mShowPrivateFields = EditorGUILayout.Toggle(Styles.ShowPrivateFields, mShowPrivateFields);
+            mShowIgnoredFiles = EditorGUILayout.Toggle(Styles.ShowIgnoredFields, mShowIgnoredFiles);
+            mShowHiddenFiles = EditorGUILayout.Toggle(Styles.ShowHiddenFields, mShowHiddenFiles);
+            mShowDeletedFiles = EditorGUILayout.Toggle(Styles.ShowDeletedFilesDirs, mShowDeletedFiles);
         }
 
         void DoFileDetectionSetings()
@@ -154,17 +242,14 @@ namespace Unity.PlasticSCM.Editor
                 EditorStyles.boldLabel);
             EditorGUILayout.Space(1);
 
-            mShowMovedFiles = EditorGUILayout.Toggle(Styles.showMovedFiles, mShowMovedFiles);
-            mMatchBinarySameExtension = EditorGUILayout.Toggle(Styles.matchBinarySameExtension, mMatchBinarySameExtension);
-            mMatchTextSameExtension = EditorGUILayout.Toggle(Styles.matchTextSameExtension, mMatchTextSameExtension);
-            mSimilarityPercent = EditorGUILayout.IntSlider(Styles.similarityPercent, mSimilarityPercent, 0, 100);
+            mShowMovedFiles = EditorGUILayout.Toggle(Styles.ShowMovedFiles, mShowMovedFiles);
+            mMatchBinarySameExtension = EditorGUILayout.Toggle(Styles.MatchBinarySameExtension, mMatchBinarySameExtension);
+            mMatchTextSameExtension = EditorGUILayout.Toggle(Styles.MatchTextSameExtension, mMatchTextSameExtension);
+            mSimilarityPercent = EditorGUILayout.IntSlider(Styles.SimilarityPercent, mSimilarityPercent, 0, 100);
         }
 
-        /*** FS Watcher Message ***/
         void DoFsWatcherMessage(bool isEnabled)
         {
-            EditorGUILayout.Space(45);
-
             GUIContent message = new GUIContent(
                 isEnabled ?
                     GetFsWatcherEnabledMessage() :
@@ -196,15 +281,46 @@ namespace Unity.PlasticSCM.Editor
                     delegate
                     {
                         isFileSystemWatcherEnabled =
-                        IsFileSystemWatcherEnabled(wkInfo);
+                            IsFileSystemWatcherEnabled(wkInfo);
                     },
                     /*afterOperationDelegate*/
                     delegate
                     {
                         if (waiter.Exception != null)
                             return;
+
                         mFSWatcherEnabled = isFileSystemWatcherEnabled;
                     });
+        }
+
+        void SetOptions(PendingChangesOptions options)
+        {
+            mShowCheckouts = IsEnabled(
+                WorkspaceStatusOptions.FindCheckouts, options.WorkspaceStatusOptions);
+            mAutoRefresh = options.AutoRefresh;
+
+            mShowChangedFiles = IsEnabled(
+                WorkspaceStatusOptions.FindChanged, options.WorkspaceStatusOptions);
+            mCheckFileContent = options.CheckFileContentForChanged;
+            
+            mUseChangeLists = options.UseChangeLists;
+
+            mShowPrivateFields = IsEnabled(
+                WorkspaceStatusOptions.FindPrivates, options.WorkspaceStatusOptions);
+            mShowIgnoredFiles = IsEnabled(
+                WorkspaceStatusOptions.ShowIgnored, options.WorkspaceStatusOptions);
+            mShowHiddenFiles = IsEnabled(
+                WorkspaceStatusOptions.ShowHiddenChanges, options.WorkspaceStatusOptions);
+            mShowDeletedFiles = IsEnabled(
+                WorkspaceStatusOptions.FindLocallyDeleted, options.WorkspaceStatusOptions);
+
+            mShowMovedFiles = IsEnabled(
+                WorkspaceStatusOptions.CalculateLocalMoves, options.WorkspaceStatusOptions);
+            mMatchBinarySameExtension =
+                options.MovedMatchingOptions.bBinMatchingOnlySameExtension;
+            mMatchTextSameExtension =
+                options.MovedMatchingOptions.bTxtMatchingOnlySameExtension;
+            mSimilarityPercent = (int)((1 - options.MovedMatchingOptions.AllowedChangesPerUnit) * 100f);
         }
 
         PendingChangesOptions GetOptions()
@@ -250,39 +366,50 @@ namespace Unity.PlasticSCM.Editor
                 false);
         }
 
-        void SetOptions(PendingChangesOptions options)
-        {
-            mShowCheckouts = IsEnabled(
-                WorkspaceStatusOptions.FindCheckouts, options.WorkspaceStatusOptions);
-            mAutoRefresh = options.AutoRefresh;
-
-            mShowChangedFiles = IsEnabled(
-                WorkspaceStatusOptions.FindChanged, options.WorkspaceStatusOptions);
-            mCheckFileContent = options.CheckFileContentForChanged;
-            
-            mUseChangeLists = options.UseChangeLists;
-
-            mShowPrivateFields = IsEnabled(
-                WorkspaceStatusOptions.FindPrivates, options.WorkspaceStatusOptions);
-            mShowIgnoredFiles = IsEnabled(
-                WorkspaceStatusOptions.ShowIgnored, options.WorkspaceStatusOptions);
-            mShowHiddenFiles = IsEnabled(
-                WorkspaceStatusOptions.ShowHiddenChanges, options.WorkspaceStatusOptions);
-            mShowDeletedFiles = IsEnabled(
-                WorkspaceStatusOptions.FindLocallyDeleted, options.WorkspaceStatusOptions);
-
-            mShowMovedFiles = IsEnabled(
-                WorkspaceStatusOptions.CalculateLocalMoves, options.WorkspaceStatusOptions);
-            mMatchBinarySameExtension =
-                options.MovedMatchingOptions.bBinMatchingOnlySameExtension;
-            mMatchTextSameExtension =
-                options.MovedMatchingOptions.bTxtMatchingOnlySameExtension;
-            mSimilarityPercent = (int)((1 - options.MovedMatchingOptions.AllowedChangesPerUnit) * 100f);
-        }
-
         bool IsDirty(PendingChangesOptions currentOptions)
         {
             return !mInitialOptions.AreSameOptions(currentOptions);
+        }
+
+        static void DrawSettingsSection(Action drawSettings)
+        {
+            float originalLabelWidth = EditorGUIUtility.labelWidth;
+
+            try
+            {
+                EditorGUIUtility.labelWidth = UnityConstants.SETTINGS_GUI_WIDTH;
+
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    GUILayout.Space(10);
+
+                    using (new EditorGUILayout.VerticalScope())
+                    {
+                        GUILayout.Space(10);
+
+                        drawSettings();
+
+                        GUILayout.Space(10);
+                    }
+
+                    GUILayout.Space(10);
+                }
+            }
+            finally
+            {
+                EditorGUIUtility.labelWidth = originalLabelWidth;
+            }
+        }
+
+        static IAutoRefreshView GetPendingChangesView()
+        {
+            if (!EditorWindow.HasOpenInstances<PlasticWindow>())
+                return null;
+
+            PlasticWindow window = EditorWindow.
+                GetWindow<PlasticWindow>(null, false);
+
+            return window.GetPendingChangesView();
         }
 
         static string GetFsWatcherEnabledMessage()
@@ -336,26 +463,18 @@ namespace Unity.PlasticSCM.Editor
             return INOTIFY_HELP_URL;
         }
 
-        static bool IsFileSystemWatcherEnabled(WorkspaceInfo wkInfo)
+        static bool IsFileSystemWatcherEnabled(
+            WorkspaceInfo wkInfo)
         {
             return WorkspaceWatcherFsNodeReadersCache.Get().
                 IsWatcherEnabled(wkInfo);
         }
 
-        static bool IsEnabled(WorkspaceStatusOptions option, WorkspaceStatusOptions options)
+        static bool IsEnabled(
+            WorkspaceStatusOptions option,
+            WorkspaceStatusOptions options)
         {
             return (options & option) == option;
-        }
-
-        static IAutoRefreshView GetPendingChangesView()
-        {
-            if (!EditorWindow.HasOpenInstances<PlasticWindow>())
-                return null;
-
-            PlasticWindow window = EditorWindow.
-                GetWindow<PlasticWindow>(null, false);
-
-            return window.GetPendingChangesView();
         }
 
         internal interface IAutoRefreshView
@@ -365,78 +484,82 @@ namespace Unity.PlasticSCM.Editor
             void ForceRefresh();
         }
 
-        /// <summary>
-        /// UI styles and label content
-        /// </summary>
         class Styles
         {
-            internal static GUIContent showCheckouts =
+            internal static GUIContent OfflineModeDescription = 
+                new GUIContent(PlasticLocalization.GetString(
+                    PlasticLocalization.Name.OfflineModeDescription),
+                    Images.GetInfoIcon());
+            internal static GUIContent ShowCheckouts =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesShowCheckouts),
                     PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesShowCheckoutsExplanation));
-            internal static GUIContent autoRefresh =
+            internal static GUIContent AutoRefresh =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesAutoRefresh),
                     PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesAutoRefreshExplanation));
-            internal static GUIContent showChangedFiles =
+            internal static GUIContent ShowChangedFiles =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesFindChanged),
                     PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesFindChangedExplanation));
-            internal static GUIContent checkFileContent =
+            internal static GUIContent CheckFileContent =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesCheckFileContent),
                     PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesCheckFileContentExplanation));
-            internal static GUIContent useChangeLists =
+            internal static GUIContent UseChangeLists =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesGroupInChangeLists), 
                     PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesGroupInChangeListsExplanation));
-            internal static GUIContent showPrivateFields =
+            internal static GUIContent ShowPrivateFields =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesShowPrivateFiles),
                     PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesShowPrivateFilesExplanation));
-            internal static GUIContent showIgnoredFields =
+            internal static GUIContent ShowIgnoredFields =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesShowIgnoredFiles),
                     PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesShowIgnoredFilesExplanation));
-            internal static GUIContent showHiddenFields =
+            internal static GUIContent ShowHiddenFields =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesShowHiddenFiles),
                     PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesShowHiddenFilesExplanation));
-            internal static GUIContent showDeletedFilesDirs =
+            internal static GUIContent ShowDeletedFilesDirs =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesShowDeletedFiles),
                     PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesShowDeletedFilesExplanation));
-            internal static GUIContent showMovedFiles =
+            internal static GUIContent ShowMovedFiles =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesFindMovedFiles),
                     PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesFindMovedFilesExplanation));
-            internal static GUIContent matchBinarySameExtension =
+            internal static GUIContent MatchBinarySameExtension =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesMatchBinarySameExtension),
                     PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesMatchBinarySameExtensionExplanation));
-            internal static GUIContent matchTextSameExtension =
+            internal static GUIContent MatchTextSameExtension =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesMatchTextSameExtension),
                     PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesMatchTextSameExtensionExplanation));
-            internal static GUIContent similarityPercent =
+            internal static GUIContent SimilarityPercent =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesSimilarityPercentage),
                     PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesSimilarityPercentageExplanation));
         }
 
+        bool mIsOfflineModeEnabled;
+
+        WorkspaceInfo mWkInfo;
         PendingChangesOptions mInitialOptions;
 
         bool mShowCheckouts;

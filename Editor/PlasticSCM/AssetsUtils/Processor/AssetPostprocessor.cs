@@ -1,19 +1,38 @@
-﻿using Codice.Client.Common.FsNodeReaders.Watcher;
+﻿using System.Collections.Generic;
+
+using Codice.Client.Common.FsNodeReaders.Watcher;
 
 namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 {
     class AssetPostprocessor : UnityEditor.AssetPostprocessor
     {
+        internal struct PathToMove
+        {
+            internal readonly string SrcPath;
+            internal readonly string DstPath;
+
+            internal PathToMove(string srcPath, string dstPath)
+            {
+                SrcPath = srcPath;
+                DstPath = dstPath;
+            }
+        }
+
         internal static void Enable(
+            string wkPath,
             PlasticAssetsProcessor plasticAssetsProcessor)
         {
+            mWkPath = wkPath;
             mPlasticAssetsProcessor = plasticAssetsProcessor;
+
             mIsEnabled = true;
         }
 
         internal static void Disable()
         {
             mIsEnabled = false;
+
+            mWkPath = null;
             mPlasticAssetsProcessor = null;
         }
 
@@ -44,32 +63,79 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             // 3. Open PlasticSCM window, the asset should appear as added instead of deleted locally
             MonoFileSystemWatcher.IsEnabled = true;
 
-            for (int i = 0; i < movedAssets.Length; i++)
-            {
-                mPlasticAssetsProcessor.MoveOnSourceControl(
-                    movedFromAssetPaths[i],
-                    movedAssets[i]);
-            }
+            mPlasticAssetsProcessor.MoveOnSourceControl(
+                GetPathsToMoveContainedOnWorkspace(
+                    mWkPath, movedAssets, movedFromAssetPaths));
 
-            foreach (string deletedAsset in deletedAssets)
-            {
-                mPlasticAssetsProcessor.DeleteFromSourceControl(
-                    deletedAsset);
-            }
+            mPlasticAssetsProcessor.DeleteFromSourceControl(
+                GetPathsContainedOnWorkspace(mWkPath, deletedAssets));
 
-            mPlasticAssetsProcessor.AddToSourceControl(importedAssets);
+            mPlasticAssetsProcessor.AddToSourceControl(
+                GetPathsContainedOnWorkspace(mWkPath, importedAssets));
 
             if (AssetModificationProcessor.ModifiedAssets == null)
                 return;
 
             mPlasticAssetsProcessor.CheckoutOnSourceControl(
-                AssetModificationProcessor.ModifiedAssets);
+                GetPathsContainedOnWorkspace(
+                    mWkPath, AssetModificationProcessor.ModifiedAssets));
 
             AssetModificationProcessor.ModifiedAssets = null;
         }
 
+        static List<PathToMove> GetPathsToMoveContainedOnWorkspace(
+            string wkPath,
+            string[] movedAssets,
+            string[] movedFromAssetPaths)
+        {
+            List<PathToMove> result = new List<PathToMove>(
+                movedAssets.Length);
+
+            for (int i = 0; i < movedAssets.Length; i++)
+            {
+                string fullSrcPath = AssetsPath.GetFullPathUnderWorkspace.
+                    ForAsset(wkPath, movedFromAssetPaths[i]);
+
+                if (fullSrcPath == null)
+                    continue;
+
+                string fullDstPath = AssetsPath.GetFullPathUnderWorkspace.
+                    ForAsset(wkPath, movedAssets[i]);
+
+                if (fullDstPath == null)
+                    continue;
+
+                result.Add(new PathToMove(
+                    fullSrcPath, fullDstPath));
+            }
+
+            return result;
+        }
+
+        static List<string> GetPathsContainedOnWorkspace(
+            string wkPath, string[] assets)
+        {
+            List<string> result = new List<string>(
+                assets.Length);
+
+            foreach (string asset in assets)
+            {
+                string fullPath = AssetsPath.GetFullPathUnderWorkspace.
+                    ForAsset(wkPath, asset);
+
+                if (fullPath == null)
+                    continue;
+
+                result.Add(fullPath);
+            }
+
+            return result;
+        }
+
         static bool mIsEnabled;
         static bool mIsRepaintInspectorNeededAfterAssetDatabaseRefresh;
+
         static PlasticAssetsProcessor mPlasticAssetsProcessor;
+        static string mWkPath;
     }
 }

@@ -14,11 +14,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
     internal class AssetFilesFilterPatternsMenuBuilder
     {
         internal AssetFilesFilterPatternsMenuBuilder(
-            IAssetFilesFilterPatternsMenuOperations operations,
             int ignoredMenuItemsPriority,
             int hiddenChangesMenuItemsPriority)
         {
-            mOperations = operations;
             mIgnoredMenuItemsPriority = ignoredMenuItemsPriority;
             mHiddenChangesMenuItemsPriority = hiddenChangesMenuItemsPriority;
 
@@ -31,6 +29,12 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 "{0}/{1}",
                 PlasticLocalization.GetString(PlasticLocalization.Name.PrefixPlasticMenu),
                 PlasticLocalization.GetString(PlasticLocalization.Name.MenuAddToHiddenChangesList));
+        }
+
+        internal void SetOperations(
+            IAssetFilesFilterPatternsMenuOperations operations)
+        {
+            mOperations = operations;
         }
 
         internal void UpdateMenuItems(FilterMenuActions actions)
@@ -49,6 +53,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         void IgnoredByName_Click()
         {
+            if (mOperations == null)
+                ShowWindow.Plastic();
+
             mOperations.AddFilesFilterPatterns(
                 FilterTypes.Ignored, FilterActions.ByName,
                 GetIgnoredFilterOperationType());
@@ -56,6 +63,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         void IgnoredByExtension_Click()
         {
+            if (mOperations == null)
+                ShowWindow.Plastic();
+
             mOperations.AddFilesFilterPatterns(
                 FilterTypes.Ignored, FilterActions.ByExtension,
                 GetIgnoredFilterOperationType());
@@ -63,6 +73,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         void IgnoredByFullPath_Click()
         {
+            if (mOperations == null)
+                ShowWindow.Plastic();
+
             mOperations.AddFilesFilterPatterns(
                 FilterTypes.Ignored, FilterActions.ByFullPath,
                 GetIgnoredFilterOperationType());
@@ -70,6 +83,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         void HiddenChangesByName_Click()
         {
+            if (mOperations == null)
+                ShowWindow.Plastic();
+
             mOperations.AddFilesFilterPatterns(
                 FilterTypes.HiddenChanges, FilterActions.ByName,
                 GetHiddenChangesFilterOperationType());
@@ -77,6 +93,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         void HiddenChangesByExtension_Click()
         {
+            if (mOperations == null)
+                ShowWindow.Plastic();
+
             mOperations.AddFilesFilterPatterns(
                 FilterTypes.HiddenChanges, FilterActions.ByExtension,
                 GetHiddenChangesFilterOperationType());
@@ -84,6 +103,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         void HiddenChangesByFullPath_Click()
         {
+            if (mOperations == null)
+                ShowWindow.Plastic();
+
             mOperations.AddFilesFilterPatterns(
                 FilterTypes.HiddenChanges, FilterActions.ByFullPath,
                 GetHiddenChangesFilterOperationType());
@@ -215,8 +237,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 UnityMenuItem.EscapedText(filterPattern));
         }
 
-        readonly int mIgnoredMenuItemsPriority;
-        readonly int mHiddenChangesMenuItemsPriority;
+        IAssetFilesFilterPatternsMenuOperations mOperations;
 
         string mIgnoredSubmenuItem;
         string mHiddenChangesSubmenuItem;
@@ -227,9 +248,10 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         string mIgnoredByExtensionMenuItem;
         string mHiddenChangesByExtensionMenuItem;
 
-        string mIgnoredByFullPathMenuItem;        
+        string mIgnoredByFullPathMenuItem;
         string mHiddenChangesByFullPathMenuItem;
 
-        readonly IAssetFilesFilterPatternsMenuOperations mOperations;
+        readonly int mIgnoredMenuItemsPriority;
+        readonly int mHiddenChangesMenuItemsPriority;
     }
 }

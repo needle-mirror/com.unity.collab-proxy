@@ -1,29 +1,33 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿using UnityEditor;
+using UnityEditor.VersionControl;
 
 using Codice.CM.Common;
 using Codice.Client.BaseCommands.EventTracking;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Items;
+using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.Tool;
 
 namespace Unity.PlasticSCM.Editor.AssetMenu
 {
     internal class AssetMenuItems
     {
-        internal static void Enable()
+        internal static void Enable(
+            WorkspaceInfo wkInfo,
+            IAssetStatusCache assetStatusCache)
         {
-            if (sIsEnabled)
+            if (mIsEnabled)
                 return;
 
-            sIsEnabled = true;
+            mWkInfo = wkInfo;
+            mAssetStatusCache = assetStatusCache;
 
-            sOperations = new AssetMenuRoutingOperations();
+            mIsEnabled = true;
 
-            sAssetSelection = new ProjectViewAssetSelection(UpdateFilterMenuItems);
+            mAssetSelection = new ProjectViewAssetSelection(UpdateFilterMenuItems);
 
-            sFilterMenuBuilder = new AssetFilesFilterPatternsMenuBuilder(
-                sOperations,
+            mFilterMenuBuilder = new AssetFilesFilterPatternsMenuBuilder(
                 IGNORE_MENU_ITEMS_PRIORITY,
                 HIDDEN_MENU_ITEMS_PRIORITY);
 
@@ -32,12 +36,80 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         internal static void Disable()
         {
-            sIsEnabled = false;
+            mIsEnabled = false;
 
             RemoveMenuItems();
 
-            if (sAssetSelection != null)
-                sAssetSelection.Dispose();
+            if (mAssetSelection != null)
+                mAssetSelection.Dispose();
+
+            mWkInfo = null;
+            mAssetStatusCache = null;
+            mAssetSelection = null;
+            mFilterMenuBuilder = null;
+            mOperations = null;
+        }
+
+        internal static void BuildOperations(
+            WorkspaceInfo wkInfo,
+            WorkspaceWindow workspaceWindow,
+            IViewSwitcher viewSwitcher,
+            IHistoryViewLauncher historyViewLauncher,
+            GluonGui.ViewHost viewHost,
+            PlasticGui.WorkspaceWindow.NewIncomingChangesUpdater incomingChangesUpdater,
+            IAssetStatusCache assetStatusCache,
+            IMergeViewLauncher mergeViewLauncher,
+            PlasticGui.Gluon.IGluonViewSwitcher gluonViewSwitcher,
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            EditorWindow parentWindow,
+            bool isGluonMode)
+        {
+            if (!mIsEnabled)
+                Enable(wkInfo, assetStatusCache);
+
+            AssetOperations assetOperations = new AssetOperations(
+                wkInfo,
+                workspaceWindow,
+                viewSwitcher,
+                historyViewLauncher,
+                viewHost,
+                incomingChangesUpdater,
+                mAssetStatusCache,
+                mergeViewLauncher,
+                gluonViewSwitcher,
+                parentWindow,
+                mAssetSelection,
+                showDownloadPlasticExeWindow,
+                isGluonMode);
+
+            mOperations = assetOperations;
+            mFilterMenuBuilder.SetOperations(assetOperations);
+        }
+
+        static void RemoveMenuItems()
+        {
+            mFilterMenuBuilder.RemoveMenuItems();
+
+            HandleMenuItem.RemoveMenuItem(
+                PlasticLocalization.GetString(PlasticLocalization.Name.PrefixPlasticMenu));
+
+            HandleMenuItem.UpdateAllMenus();
+        }
+
+        static void UpdateFilterMenuItems()
+        {
+            AssetList assetList = ((AssetOperations.IAssetSelection)
+                mAssetSelection).GetSelectedAssets();
+
+            SelectedPathsGroupInfo info = AssetsSelection.GetSelectedPathsGroupInfo(
+                mWkInfo.ClientPath, assetList, mAssetStatusCache);
+
+            FilterMenuActions actions =
+                assetList.Count != info.SelectedCount ?
+                new FilterMenuActions() :
+                FilterMenuUpdater.GetMenuActions(info);
+
+            mFilterMenuBuilder.UpdateMenuItems(actions);
         }
 
         static void AddMenuItems()
@@ -85,26 +157,11 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             HandleMenuItem.UpdateAllMenus();
         }
 
-        static void UpdateFilterMenuItems()
-        {
-            SelectedPathsGroupInfo info = AssetsSelection.GetSelectedPathsGroupInfo(
-                ((AssetOperations.IAssetSelection)sAssetSelection).GetSelectedAssets(),
-                PlasticPlugin.AssetStatusCache);
-            sFilterMenuBuilder.UpdateMenuItems(FilterMenuUpdater.GetMenuActions(info));
-        }
-
-        static string GetPlasticMenuItemName(PlasticLocalization.Name name)
-        {
-            return string.Format("{0}/{1}",
-                PlasticLocalization.GetString(PlasticLocalization.Name.PrefixPlasticMenu),
-                PlasticLocalization.GetString(name));
-        }
-
         static void PendingChanges()
         {
             ShowWindow.Plastic();
 
-            ((IAssetMenuOperations)sOperations).ShowPendingChanges();
+            mOperations.ShowPendingChanges();
         }
 
         static bool ValidatePendingChanges()
@@ -114,85 +171,113 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         static void Add()
         {
-            ((IAssetMenuOperations)sOperations).Add();
+            if (mOperations == null)
+                ShowWindow.Plastic();
+
+            mOperations.Add();
         }
 
         static bool ValidateAdd()
         {
-            return ShouldMenuItemBeEnabled(AssetMenuOperations.Add);
+            return ShouldMenuItemBeEnabled(
+                mWkInfo.ClientPath, mAssetSelection, mAssetStatusCache,
+                AssetMenuOperations.Add);
         }
 
         static void Checkout()
         {
-            ((IAssetMenuOperations)sOperations).Checkout();
+            if (mOperations == null)
+                ShowWindow.Plastic();
+
+            mOperations.Checkout();
         }
 
         static bool ValidateCheckout()
         {
-            return ShouldMenuItemBeEnabled(AssetMenuOperations.Checkout);
+            return ShouldMenuItemBeEnabled(
+                mWkInfo.ClientPath, mAssetSelection, mAssetStatusCache,
+                AssetMenuOperations.Checkout);
         }
 
         static void Checkin()
         {
-            WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
-                ApplicationDataPath.Get(), PlasticGui.Plastic.API);
-            
-            if (wkInfo != null)
-            {
-                TrackFeatureUseEvent.For(
-                    PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
-                    TrackFeatureUseEvent.Features.ContextMenuCheckinOption);
-            }
+            TrackFeatureUseEvent.For(
+                PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                TrackFeatureUseEvent.Features.ContextMenuCheckinOption);
 
-            ((IAssetMenuOperations)sOperations).Checkin();
+            if (mOperations == null)
+                ShowWindow.Plastic();
+
+            mOperations.Checkin();
         }
 
         static bool ValidateCheckin()
         {
-            return ShouldMenuItemBeEnabled(AssetMenuOperations.Checkin);
+            return ShouldMenuItemBeEnabled(
+                mWkInfo.ClientPath, mAssetSelection, mAssetStatusCache,
+                AssetMenuOperations.Checkin);
         }
 
         static void Undo()
         {
-            ((IAssetMenuOperations)sOperations).Undo();
+            if (mOperations == null)
+                ShowWindow.Plastic();
+
+            mOperations.Undo();
         }
 
         static bool ValidateUndo()
         {
-            return ShouldMenuItemBeEnabled(AssetMenuOperations.Undo);
+            return ShouldMenuItemBeEnabled(
+                mWkInfo.ClientPath, mAssetSelection, mAssetStatusCache,
+                AssetMenuOperations.Undo);
         }
 
         static void Diff()
         {
-            ((IAssetMenuOperations)sOperations).ShowDiff();
+            if (mOperations == null)
+                ShowWindow.Plastic();
+
+            mOperations.ShowDiff();
         }
 
         static bool ValidateDiff()
         {
-            return ShouldMenuItemBeEnabled(AssetMenuOperations.Diff);
+            return ShouldMenuItemBeEnabled(
+                mWkInfo.ClientPath, mAssetSelection, mAssetStatusCache,
+                AssetMenuOperations.Diff);
         }
 
         static void History()
         {
             ShowWindow.Plastic();
 
-            ((IAssetMenuOperations)sOperations).ShowHistory();
+            mOperations.ShowHistory();
         }
 
         static bool ValidateHistory()
         {
-            return ShouldMenuItemBeEnabled(AssetMenuOperations.History);
+            return ShouldMenuItemBeEnabled(
+                mWkInfo.ClientPath, mAssetSelection, mAssetStatusCache,
+                AssetMenuOperations.History);
         }
 
-        static bool ShouldMenuItemBeEnabled(AssetMenuOperations operation)
+        static bool ShouldMenuItemBeEnabled(
+            string wkPath,
+            AssetOperations.IAssetSelection assetSelection,
+            IAssetStatusCache statusCache,
+            AssetMenuOperations operation)
         {
-            if (sOperations == null)
+            AssetList assetList = assetSelection.GetSelectedAssets();
+
+            if (assetList.Count == 0)
                 return false;
 
             SelectedAssetGroupInfo selectedGroupInfo = SelectedAssetGroupInfo.
-                BuildFromAssetList(
-                    ((AssetOperations.IAssetSelection)sAssetSelection).GetSelectedAssets(),
-                    PlasticPlugin.AssetStatusCache);
+                BuildFromAssetList(wkPath, assetList, statusCache);
+
+            if (assetList.Count != selectedGroupInfo.SelectedCount)
+                return false;
 
             AssetMenuOperations operations = AssetMenuUpdater.
                 GetAvailableMenuOperations(selectedGroupInfo);
@@ -200,20 +285,21 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             return operations.HasFlag(operation);
         }
 
-        static void RemoveMenuItems()
+        static string GetPlasticMenuItemName(PlasticLocalization.Name name)
         {
-            sFilterMenuBuilder.RemoveMenuItems();
-
-            HandleMenuItem.RemoveMenuItem(
-                PlasticLocalization.GetString(PlasticLocalization.Name.PrefixPlasticMenu));
-
-            HandleMenuItem.UpdateAllMenus();
+            return string.Format("{0}/{1}",
+                PlasticLocalization.GetString(PlasticLocalization.Name.PrefixPlasticMenu),
+                PlasticLocalization.GetString(name));
         }
 
-        static AssetMenuRoutingOperations sOperations;
-        static ProjectViewAssetSelection sAssetSelection;
-        static AssetFilesFilterPatternsMenuBuilder sFilterMenuBuilder;
-        static bool sIsEnabled;
+        static IAssetMenuOperations mOperations;
+
+        static ProjectViewAssetSelection mAssetSelection;
+        static AssetFilesFilterPatternsMenuBuilder mFilterMenuBuilder;
+
+        static bool mIsEnabled;
+        static IAssetStatusCache mAssetStatusCache;
+        static WorkspaceInfo mWkInfo;
 
         const int BASE_MENU_ITEM_PRIORITY = 19; // Puts Plastic SCM right below Create menu
 

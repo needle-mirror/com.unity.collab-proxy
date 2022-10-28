@@ -975,7 +975,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return false;
 
             return ClassifyAssetStatus.IsConflicted(
-                assetStatusCache.GetStatusForPath(fullPath));
+                assetStatusCache.GetStatus(fullPath));
         }
 
         bool mExpandCategories;

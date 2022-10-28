@@ -542,21 +542,6 @@ Transmitiendo ficheros
 == CheckinStatusValidating ==
 Validando la operación
 
-== ShelveStatusStarting ==
-Iniciando operación de shelve...
-
-== ShelveStatusUploading ==
-Transmitiendo ficheros
-
-== ShelveStatusConfirming ==
-Confirmando la operación de shelve
-
-== ShelveStatusRestoringPermissions ==
-Restaurando permisos de acceso
-
-== ShelveStatusFinished ==
-Shelve terminado
-
 == CheckoutCannotBeSaved ==
 El contenido del ítem {0} no ha podido salvarse.
 
@@ -1632,6 +1617,9 @@ Grupo
 == HiddenChanged ==
 Cambio oculto
 
+== Hash ==
+Código hash
+
 == Ignored ==
 Ignorado
 
@@ -1670,6 +1658,9 @@ El elemento {0} ha sido borrado en origen y sera borrado como resultado del merg
 
 == ItemFsprotToApply ==
 Se han modificado los permisos del sistema de ficheros para el elemento {0}
+
+== ItemId ==
+Identificador del elemento
 
 == ItemMovedSource ==
 El elemento {0} ha sido movido a {1} en origen y sera movido como resultado del merge
@@ -2177,6 +2168,9 @@ La contraseña se ha cambiado correctamente
 == PasswordDoesntMatch ==
 Las contraseñas no coinciden. El password no se ha modificado.
 
+== ItemPathOrSpec ==
+Ruta o spec al elemento
+
 == PathInConflictWarningMessage ==
 El ítem '{0}' se ha renombrado a '{1}' porque estaba en uso durante la operación de merge
 
@@ -2410,6 +2404,24 @@ El repositorio '{0}' fue compartido correctamente.
 
 == Shelve ==
 Shelve
+
+== ShelveStatusConfirming ==
+Confirmando la operación de shelve
+
+== ShelveStatusFinished ==
+Shelve terminado
+
+== ShelveStatusRestoringPermissions ==
+Restaurando permisos de acceso
+
+== ShelveStatusStarting ==
+Iniciando operación de shelve...
+
+== ShelveStatusUploading ==
+Transmitiendo ficheros
+
+== Size ==
+Tamaño en bytes
 
 == Skip ==
 Saltar

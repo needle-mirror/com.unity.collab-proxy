@@ -8,6 +8,12 @@ namespace Unity.PlasticSCM.Editor
         [MenuItem(MENU_ITEM_NAME, false)]
         static void ShowPanel()
         {
+            if (PlasticProjectOfflineMode.IsEnabled())
+            {
+                PlasticProjectOfflineMode.Disable();
+                PlasticPlugin.Enable();
+            }
+
             ShowWindow.Plastic();
         }
 

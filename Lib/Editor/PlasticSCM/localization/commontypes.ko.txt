@@ -501,7 +501,7 @@ upgrade 명령 중 오류가 발생했습니다: {0}.
 파일이 동일합니다.
 
 == FipsCompliantServerEncryptionNoAllowed ==
-'{0}' 서버가 암호화를 필요로 하지만 FIPS 준수 서버에는 암호화가 허용되지 않습니다. 자세한 정보는 support@codicesoftware.com으로 문의하십시오.
+'{0}' 서버가 암호화를 필요로 하지만 FIPS 준수 서버에는 암호화가 허용되지 않습니다. 자세한 정보는 support@plasticscm.com으로 문의하십시오.
 
 == FormatAndXmlModifiersIncompatible ==
 --xml 및 --format 한정어는 호환되지 않으며 함께 사용할 수 없습니다.
@@ -714,7 +714,7 @@ LDAP 사용자
 라이센스 파일이 없으면 Plastic SCM 서버가 작동하지 않습니다.
 
 == LicenseRemotelyDisabled ==
-관리자가 자동 갱신 라이센스를 비활성화했습니다. 자세한 내용은 support@codicesoftware.com으로 문의하십시오.
+관리자가 자동 갱신 라이센스를 비활성화했습니다. 자세한 내용은 support@plasticscm.com으로 문의하십시오.
 
 == LicenseVersionInvalid ==
 Plastic SCM {1} 버전에서 {0} 라이센스를 사용할 수 없습니다.
@@ -922,13 +922,13 @@ GoupInfoObject를 가져올 수 없습니다.
 조직 '{0}'이(가) 없습니다.
 
 == OrganizationIsDisabled ==
-조직 '{0}'이(가) 비활성화되었습니다. plasticscm.com의 대시보드에서 활성화하십시오. 다른 문의사항이 있으면 언제든지 support@codicesoftware.com로 문의하십시오.
+조직 '{0}'이(가) 비활성화되었습니다. plasticscm.com의 대시보드에서 활성화하십시오. 다른 문의사항이 있으면 언제든지 support@plasticscm.com로 문의하십시오.
 
 == OrganizationIsDeleting ==
-조직 '{0}'을(를) 더 이상 사용할 수 없습니다. 다른 문의사항이 있으면 언제든지 support@codicesoftware.com로 문의하십시오.
+조직 '{0}'을(를) 더 이상 사용할 수 없습니다. 다른 문의사항이 있으면 언제든지 support@plasticscm.com로 문의하십시오.
 
 == OrganizationIsMigrating ==
-현재 Cloud 조직 '{0}'을(를) 업그레이드하고 있습니다. 이 작업은 몇 시간 정도 걸릴 수 있습니다. 나중에 다시 시도해주십시오. 자세한 내용은 support@codicesoftware.com으로 문의하시기 바랍니다.
+현재 Cloud 조직 '{0}'을(를) 업그레이드하고 있습니다. 이 작업은 몇 시간 정도 걸릴 수 있습니다. 나중에 다시 시도해주십시오. 자세한 내용은 support@plasticscm.com으로 문의하시기 바랍니다.
 
 == OrganizationIsMissing ==
 조직이 없습니다. 호출에서 조직을 찾을 수 없습니다.
@@ -937,7 +937,7 @@ GoupInfoObject를 가져올 수 없습니다.
 잘못된 '{0}' 상태가 조직 '{1}'에 있습니다.
 
 == OrganizationMembersEmpty ==
-Cloud 인증 정보를 가져올 수 없습니다. 나중에 다시 시도해주십시오. 문제가 지속되면 support@codicesoftware.com에 문의하시기 바랍니다.
+Cloud 인증 정보를 가져올 수 없습니다. 나중에 다시 시도해주십시오. 문제가 지속되면 support@plasticscm.com에 문의하시기 바랍니다.
 
 == OrphanFoldersDetected ==
 {0}개의 고아 폴더가 트리에서 감지되었습니다. 예상된 고아 폴더는 1개(루트)입니다

@@ -11,6 +11,7 @@ using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.Merge;
 using PlasticGui.WorkspaceWindow.QueryViews;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
+using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.StatusBar;

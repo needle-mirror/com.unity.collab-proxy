@@ -5,11 +5,12 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
     internal static class AssetsProcessors
     {
         internal static void Enable(
+            string wkPath,
             PlasticAssetsProcessor plasticAssetsProcessor,
             IAssetStatusCache assetStatusCache)
         {
-            AssetPostprocessor.Enable(plasticAssetsProcessor);
-            AssetModificationProcessor.Enable(assetStatusCache);
+            AssetPostprocessor.Enable(wkPath, plasticAssetsProcessor);
+            AssetModificationProcessor.Enable(wkPath, assetStatusCache);
         }
 
         internal static void Disable()

@@ -24,7 +24,9 @@ namespace Unity.PlasticSCM.Editor
                 return null;
 
             NewIncomingChangesUpdater updater = new NewIncomingChangesUpdater(
-                new UnityPlasticTimerBuilder(), updateIncomingChanges);
+                new UnityPlasticTimerBuilder(),
+                new CheckIncomingChanges.CalculateIncomingChanges(),
+                updateIncomingChanges);
             updater.SetAutoRefreshIncomingChangesView(
                 autoRefreshIncomingChangesView);
 
@@ -68,7 +70,7 @@ namespace Unity.PlasticSCM.Editor
             if (developerNewIncomingChangesUpdater != null)
             {
                 developerNewIncomingChangesUpdater.Start();
-                developerNewIncomingChangesUpdater.Update();
+                developerNewIncomingChangesUpdater.Update(DateTime.Now);
             }
 
             if (gluonNewIncomingChangesUpdater != null)

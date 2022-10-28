@@ -26,7 +26,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
 
             foreach (UnityEngine.Object obj in inspector.targets)
             {
-                string assetPath = AssetsPath.GetFullPath(obj);
+                string assetPath = AssetsPath.GetFullPath.ForObject(obj);
                 
                 if (string.IsNullOrEmpty(assetPath))
                     continue;

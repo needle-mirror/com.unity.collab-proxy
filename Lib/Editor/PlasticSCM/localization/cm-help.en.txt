@@ -2614,7 +2614,8 @@ Lists users and groups.
 Usage:
 
     cm ^listusers | ^lu <repserverspec> [--^onlyusers] [--^onlygroups]
-                      [--^filter= <str_filter>]
+                      [--^filter=<str_filter>]
+    cm ^listusers | ^lu <repserverspec> --^group=<group_name>
 
     repserverspec       Repository server specification.
                         (Use 'cm ^help ^objectspec' to learn more about specs.)
@@ -2625,6 +2626,8 @@ Options:
     --^onlygroups        Lists only groups.
     --^filter            Lists only users and/or groups that matches the
                         specified filter.
+    --^group             Lists only users from a certain group. This option is
+                        not compatible with ^onlyusers, ^onlygroups, nor ^filter.
 
 == CMD_HELP_LISTUSERS ==
 Examples:
@@ -2634,6 +2637,9 @@ Examples:
 
     cm ^listusers localhost:8084 --^onlyusers --^filter=m
     (Lists only the users in the server that contains "m".)
+
+    cm ^listusers codice@cloud --^group=Administrators
+    (Lists only the users in the group Administrators in the 'codice@cloud' org.)
 
 == CMD_DESCRIPTION_LOCATION ==
 Returns the path of 'cm'.
@@ -5937,7 +5943,7 @@ Usage:
                       [--^symlink] [--^xml[=<output_file>]] [--^encoding=<name>]
                       [--^moveddeleted]
 
-    item_path           Items path. Use a whitespace to separate paths. Use
+    item_path           Item's path. Use a whitespace to separate paths. Use
                         double quotes (" ") to specify paths containing spaces.
                         Paths can be server path revisions too.
                         (Use 'cm ^help ^objectspec' to learn more about specs.)
@@ -5960,6 +5966,11 @@ Options:
                         to get the table of supported encodings and its format, 
                         (at the end of the page, in the "Name" column).
     --^moveddeleted      Include move and remove operations in the history.
+    --^limit             Displays the N most recent revisions for the specified items, 
+                        sorted by date and changeset id. If a negative number is supplied, 
+                        it will return an empty list. If a number higher than the number 
+                        of revisions is supplied, it will return all the available revisions 
+                        regarding that item.
 
 == CMD_HELP_REVISION_HISTORY ==
 Remarks:
@@ -5980,6 +5991,10 @@ Remarks:
         {8} | {^server}            Server.
         {9} | {^repspec}           Repository spec.
         {10}| {^datastatus}        Availability of the revision data.
+        {11}| {^path}              Path or spec passed as <item_path>.
+        {12}| {^itemid}            Item Id.
+        {13}| {^size}              Size.
+        {14}| {^hash}              Hash code.
         {^tab}                     Inserts a tab space.
         {^newline}                 Inserts a new line.
 
@@ -5995,6 +6010,9 @@ Examples:
 
     cm ^history ^serverpath:/src/foo/bar.c#^br:/main/task001@myserver
     (Retrieves the revision history from a server path in a given branch.)
+
+    cm ^history bar.c, foo.c --long --limit=2
+    (Retrieves the 2 last revisions for the bar.c and foo.c items.)
 
 == CMD_DESCRIPTION_REVISION_TREE ==
 Shows the revision tree for an item.
@@ -6503,21 +6521,27 @@ Applies a stored shelveset.
 == CMD_USAGE_SHELVESET_APPLY ==
 Usage:
 
-    cm ^shelveset ^apply <sh_spec> [--^mount] [--^encoding=<name>]
+    cm ^shelveset ^apply <sh_spec> [<change_path>[ ...]] [--^preview] 
+                       [--^mount] [--^encoding=<name>]
                        [--^comparisonmethod=(^ignoreeol | ^ignorewhitespaces| \
                                             ^ignoreeolandwhitespaces | ^recognizeall)]
 
     sh_spec             Shelveset specification. (Use 'cm ^help ^objectspec' to
                         learn more about shelveset specs.)
+    change_path         The change path(s) of the shelve to apply. It's a 
+                        server path, the one printed by the --preview option. 
+                        When no path is set, all changes will be applied.
 
 Options:
 
+    --^preview           Prints the changes to apply on the workspace without
+                         applying them
     --^mount             The mount point for the given repository.
     --^encoding          Specifies the output encoding, i.e.: utf-8.
-                        See the MSDN documentation at
-                        http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
-                        to get the table of supported encodings and its format, 
-                        (at the end of the page, in the "Name" column).
+                         See the MSDN documentation at
+                         http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
+                         to get the table of supported encodings and its format, 
+                         (at the end of the page, in the "Name" column).
     --^comparisonmethod  Sets the comparison method. See Remarks for more info.
 
 == CMD_HELP_SHELVESET_APPLY ==
@@ -6535,6 +6559,9 @@ Examples:
 
     cm ^shelveset ^apply ^sh:3
     (Applies a stored shelve.)
+
+    cm ^shelveset ^apply ^sh:3 /src/foo.c
+    (Applies only the /src/foo.c change stored on the shelve.)
 
 == CMD_DESCRIPTION_SHOW_FIND_OBJECTS ==
 Lists objects and attributes.
@@ -8347,6 +8374,7 @@ Usage:
               [--^short] [--^symlink] [ --^dirwithchanges] [--^xml[=<output_file>]]
               [--^encoding=<name>] [ --^wrp |  --^wkrootrelativepaths]
               [--^fullpaths | --^fp] [<legacy_options>] [<search_types>[ ...]]
+              [--^pretty]
               [--^machinereadable [--^startlineseparator=sep]
                 [--^endlineseparator=sep] [--^fieldseparator=sep]]
 
@@ -8370,6 +8398,7 @@ Options:
                           (added, moved, removed items inside).
     --^xml                 Prints the output in XML format to the standard output.
                           It is possible to specify an output file.
+    --^pretty              Prints workspace changes in a nice table format.
     --^encoding            Used with the --^xml option, specifies the encoding to
                           use in the XML output, i.e.: utf-8.
                           See the MSDN documentation at

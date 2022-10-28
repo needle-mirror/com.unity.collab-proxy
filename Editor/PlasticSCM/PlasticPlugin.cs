@@ -12,7 +12,6 @@ using Unity.PlasticSCM.Editor.CollabMigration;
 using Unity.PlasticSCM.Editor.Inspector;
 using Unity.PlasticSCM.Editor.ProjectDownloader;
 using Unity.PlasticSCM.Editor.SceneView;
-using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor
@@ -30,12 +29,12 @@ namespace Unity.PlasticSCM.Editor
 
         internal static IAssetStatusCache AssetStatusCache 
         { 
-            get { return sAssetStatusCache; } 
+            get { return mAssetStatusCache; } 
         }
 
         internal static WorkspaceOperationsMonitor WorkspaceOperationsMonitor 
         { 
-            get { return sWorkspaceOperationsMonitor; } 
+            get { return mWorkspaceOperationsMonitor; } 
         }
 
         static PlasticPlugin()
@@ -43,6 +42,12 @@ namespace Unity.PlasticSCM.Editor
             CloudProjectDownloader.Initialize();
             MigrateCollabProject.Initialize();
             EditorDispatcher.Initialize();
+
+            if (!FindWorkspace.HasWorkspace(ApplicationDataPath.Get()))
+                return;
+
+            if (PlasticProjectOfflineMode.IsEnabled())
+                return;
 
             CooldownWindowDelayer cooldownInitializeAction = new CooldownWindowDelayer(
                 Enable, UnityConstants.PLUGIN_DELAYED_INITIALIZE_INTERVAL);
@@ -54,15 +59,15 @@ namespace Unity.PlasticSCM.Editor
         /// </summary>
         public static Texture GetPluginIcon()
         {
-            return PlasticNotification.GetIcon(sNotificationStatus);
+            return PlasticNotification.GetIcon(mNotificationStatus);
         }
 
         internal static void Enable()
         {
-            if (sIsEnabled)
+            if (mIsEnabled)
                 return;
 
-            sIsEnabled = true;
+            mIsEnabled = true;
 
             PlasticApp.InitializeIfNeeded();
 
@@ -74,7 +79,7 @@ namespace Unity.PlasticSCM.Editor
 
         internal static void EnableForWorkspace()
         {
-            if (sIsEnabledForWorkspace)
+            if (mIsEnabledForWorkspace)
                 return;
 
             WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
@@ -83,25 +88,30 @@ namespace Unity.PlasticSCM.Editor
             if (wkInfo == null)
                 return;
 
-            sIsEnabledForWorkspace = true;
+            mIsEnabledForWorkspace = true;
 
             PlasticApp.SetWorkspace(wkInfo);
 
             bool isGluonMode = PlasticGui.Plastic.API.IsGluonWorkspace(wkInfo);
 
-            sAssetStatusCache = new AssetStatusCache(wkInfo, isGluonMode);
+            mAssetStatusCache = new AssetStatusCache(wkInfo, isGluonMode);
 
             PlasticAssetsProcessor plasticAssetsProcessor = new PlasticAssetsProcessor();
 
-            sWorkspaceOperationsMonitor = BuildWorkspaceOperationsMonitor(
+            mWorkspaceOperationsMonitor = BuildWorkspaceOperationsMonitor(
                 plasticAssetsProcessor, isGluonMode);
-            sWorkspaceOperationsMonitor.Start();
+            mWorkspaceOperationsMonitor.Start();
 
-            AssetsProcessors.Enable(plasticAssetsProcessor, sAssetStatusCache);
-            AssetMenuItems.Enable();
-            DrawAssetOverlay.Enable();
-            DrawInspectorOperations.Enable();
-            DrawSceneOperations.Enable(sWorkspaceOperationsMonitor);
+            AssetsProcessors.Enable(
+                wkInfo.ClientPath, plasticAssetsProcessor, mAssetStatusCache);
+            AssetMenuItems.Enable(
+                wkInfo, mAssetStatusCache);
+            DrawAssetOverlay.Enable(
+                wkInfo.ClientPath, mAssetStatusCache);
+            DrawInspectorOperations.Enable(
+                wkInfo.ClientPath, mAssetStatusCache);
+            DrawSceneOperations.Enable(
+                wkInfo.ClientPath, mWorkspaceOperationsMonitor, mAssetStatusCache);
         }
 
         internal static void Disable()
@@ -110,10 +120,10 @@ namespace Unity.PlasticSCM.Editor
             {
                 PlasticApp.Dispose();
 
-                if (!sIsEnabledForWorkspace)
+                if (!mIsEnabledForWorkspace)
                     return;
 
-                sWorkspaceOperationsMonitor.Stop();
+                mWorkspaceOperationsMonitor.Stop();
 
                 AssetsProcessors.Disable();
                 AssetMenuItems.Disable();
@@ -123,8 +133,8 @@ namespace Unity.PlasticSCM.Editor
             }
             finally
             {
-                sIsEnabled = false;
-                sIsEnabledForWorkspace = false;
+                mIsEnabled = false;
+                mIsEnabledForWorkspace = false;
             }
         }
 
@@ -132,7 +142,7 @@ namespace Unity.PlasticSCM.Editor
             PlasticWindow plasticWindow,
             PlasticNotification.Status status)
         {
-            sNotificationStatus = status;
+            mNotificationStatus = status;
 
             plasticWindow.SetupWindowTitle(status);
 
@@ -150,10 +160,10 @@ namespace Unity.PlasticSCM.Editor
             return result;
         }
 
-        static PlasticNotification.Status sNotificationStatus;
-        static AssetStatusCache sAssetStatusCache;
-        static WorkspaceOperationsMonitor sWorkspaceOperationsMonitor;
-        static bool sIsEnabled;
-        static bool sIsEnabledForWorkspace;
+        static PlasticNotification.Status mNotificationStatus;
+        static AssetStatusCache mAssetStatusCache;
+        static WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
+        static bool mIsEnabled;
+        static bool mIsEnabledForWorkspace;
     }
 }

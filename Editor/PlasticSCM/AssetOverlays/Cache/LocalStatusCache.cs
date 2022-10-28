@@ -2,12 +2,8 @@
 
 using Codice;
 using Codice.Client.BaseCommands;
-using Codice.Client.BaseCommands.Config;
 using Codice.Client.Commands.WkTree;
-using Codice.Client.Common;
 using Codice.CM.Common;
-
-using PlasticGui;
 using PlasticGui.WorkspaceWindow;
 
 namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
@@ -48,9 +44,6 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
             IgnoredFilesFilter ignoredFilter,
             HiddenChangesFilesFilter hiddenChangesFilter)
         {
-            if (!IsOnWorkspace(fullPath, wkPath))
-                return AssetStatus.None;
-
             WorkspaceTreeNode treeNode = PlasticGui.Plastic.API.GetWorkspaceTreeNode(fullPath);
 
             if (CheckWorkspaceTreeNodeStatus.IsPrivate(treeNode))
@@ -72,11 +65,6 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
                 result |= AssetStatus.HiddenChanged;
 
             return result;
-        }
-
-        static bool IsOnWorkspace(string fullPath, string clientPath)
-        {
-            return PathHelper.IsContainedOn(fullPath, clientPath);
         }
 
         Dictionary<string, AssetStatus> mStatusByPathCache =

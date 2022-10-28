@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Unity.PlasticSCM.Editor.UI
+﻿namespace Unity.PlasticSCM.Editor.UI
 {
     internal static class UnityConstants
     {
@@ -24,6 +22,8 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const float FIRST_COLUMN_WITHOUT_ICON_INDENT = 5f;
         internal const int PENDING_CHANGES_FONT_SIZE = 12;
         internal const int OVERLAY_STATUS_ICON_SIZE = 16;
+
+        internal const int SETTINGS_GUI_WIDTH = 400;
 
         internal const int STATUS_BAR_HEIGHT = 24;
         internal const int STATUS_BAR_ICON_SIZE = 16;
@@ -66,7 +66,8 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal const string PLASTIC_WINDOW_TITLE = "Plastic SCM";
         internal const string LOGIN_WINDOW_TITLE = "Sign in to Plastic SCM";
-        internal const string PROJECT_SETTINGS_MENU_TITLE = "Project/Version Control/Plastic SCM";
+        internal const string PROJECT_SETTINGS_TAB_PATH = "Project/Version Control/Plastic SCM";
+        internal const string PROJECT_SETTINGS_TAB_TITLE = "Plastic SCM Settings";
         internal const float PLASTIC_WINDOW_MIN_SIZE_WIDTH = 600f;
         internal const float PLASTIC_WINDOW_MIN_SIZE_HEIGHT = 350f;
         internal const float PLASTIC_WINDOW_COMMENT_SECTION_HEIGHT = 55f;
@@ -96,7 +97,9 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const string BRANCHES_TABLE_SETTINGS_NAME = "{0}_BranchesListV2_{1}";
         internal const string BRANCHES_DATE_FILTER_SETTING_NAME = "{0}_BranchesDateFilter_{1}";
 
-        internal const string SHOW_BRANCHES_VIEW_KEY_NAME = "ShowBranchesView";
+        internal const string OFFLINE_MODE_ENABLED_KEY_NAME = "{0}_OfflineModeEnabled";
+        internal const string SHOW_BRANCHES_VIEW_KEY_NAME = "{0}_ShowBranchesView";
+
         internal const string SHOW_NOTIFICATION_KEY_NAME = "ShowNotification";
         internal const string FORCE_CHECKOUT_KEY_NAME = "forceCheckoutPlasticSCM";
 

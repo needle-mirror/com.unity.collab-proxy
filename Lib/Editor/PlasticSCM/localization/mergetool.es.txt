@@ -421,6 +421,9 @@ agrupar sin cambios
 == GroupUnchangedTooltip ==
 mostrar las declaraciones con cambios agrupando el resto de declaraciones en grupos de sin cambios
 
+== DiffButton ==
+diff
+
 == ZoomIn ==
 zoom in
 

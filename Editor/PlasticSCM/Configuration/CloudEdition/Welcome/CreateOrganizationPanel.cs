@@ -41,8 +41,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         internal void Dispose()
         {
-            mLoadingSpinner.Dispose();
-
             mCreateButton.clicked -= CreateButton_Clicked;
 
             mOrganizationNameTextField.UnregisterValueChangedCallback(
@@ -271,7 +269,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         Button mBackButton;
         Button mCreateButton;
         VisualElement mGettingDatacentersProgressContainer;
-        LoadingSpinner mLoadingSpinner;
         string mSelectedDatacenter;
 
         IProgressControls mProgressControls;

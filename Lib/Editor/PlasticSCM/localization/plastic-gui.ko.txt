@@ -140,7 +140,7 @@
 계산 중...
 
 == CopyrightTextFormat ==
-Copyright © 2006-{0} Codice Software S.L. All Rights Reserved.
+Copyright © 2006-{0} Unity Technologies. All Rights Reserved.
 
 == FiltersAndConditionalFormat ==
 필터 및 형식
@@ -6023,7 +6023,7 @@ https://plasticscm.com/download/help/code-review-restrictions
 작성자
 
 == PrivacyStatementText ==
-컨트롤러: Codice Software, S.L. 처리 목적: 계정을 생성하고 요청된 서비스를 제공합니다. 귀하는 당사의 개인정보보호정책에 설명된 대로 액세스, 개정, 삭제 및 기타 데이터 보호 권리를 행사할 수 있습니다. 자세한 내용은 {0}을(를) 참조하십시오.
+컨트롤러: Unity Technologies ApS. 처리 목적: 계정을 생성하고 요청된 서비스를 제공합니다. 귀하는 당사의 개인정보보호정책에 설명된 대로 액세스, 개정, 삭제 및 기타 데이터 보호 권리를 행사할 수 있습니다. 자세한 내용은 {0}을(를) 참조하십시오.
 
 == PrivacyStatement ==
 개인정보보호정책

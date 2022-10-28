@@ -140,7 +140,7 @@
 正在計算...
 
 == CopyrightTextFormat ==
-Copyright © 2006-{0} Codice Software S.L.All Rights Reserved.
+Copyright © 2006-{0} Unity Technologies. All Rights Reserved.
 
 == FiltersAndConditionalFormat ==
 篩選和格式

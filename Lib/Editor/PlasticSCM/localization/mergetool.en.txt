@@ -740,6 +740,9 @@ group unchanged
 == GroupUnchangedTooltip ==
 show changed declarations grouping the rest of the declarations into an single, unchanged one
 
+== DiffButton ==
+diff
+
 == ZoomIn ==
 zoom in
 

@@ -1,18 +1,11 @@
-﻿using System;
-using System.IO;
-
-using UnityEditor;
-
-using Codice.CM.Common;
+﻿using Codice.CM.Common;
 
 namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
 {
     internal interface IAssetStatusCache
     {
-        AssetStatus GetStatusForPath(string fullPath);
-        AssetStatus GetStatusForGuid(string guid);
-        LockStatusData GetLockStatusData(string guid);
-        LockStatusData GetLockStatusDataForPath(string path);
+        AssetStatus GetStatus(string fullPath);
+        LockStatusData GetLockStatusData(string fullPath);
         void Clear();
     }
 
@@ -34,7 +27,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
                 ProjectWindow.Repaint);
         }
 
-        AssetStatus IAssetStatusCache.GetStatusForPath(string fullPath)
+        AssetStatus IAssetStatusCache.GetStatus(string fullPath)
         {
             AssetStatus localStatus = mLocalStatusCache.GetStatus(fullPath);
 
@@ -48,29 +41,9 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
             return localStatus | remoteStatus | lockStatus;
         }
 
-        AssetStatus IAssetStatusCache.GetStatusForGuid(string guid)
+        LockStatusData IAssetStatusCache.GetLockStatusData(string fullPath)
         {
-            string fullPath = GetAssetPath(guid);
-
-            if (string.IsNullOrEmpty(fullPath))
-                return AssetStatus.None;
-
-            return ((IAssetStatusCache)this).GetStatusForPath(fullPath);
-        }
-
-        LockStatusData IAssetStatusCache.GetLockStatusDataForPath(string path)
-        {
-            if (string.IsNullOrEmpty(path))
-                return null;
-
-            return mLockStatusCache.GetLockStatusData(path);
-        }
-
-        LockStatusData IAssetStatusCache.GetLockStatusData(string guid)
-        {
-            string fullPath = GetAssetPath(guid);
-
-            return ((IAssetStatusCache)this).GetLockStatusDataForPath(fullPath);
+            return mLockStatusCache.GetLockStatusData(fullPath);
         }
 
         void IAssetStatusCache.Clear()
@@ -78,16 +51,6 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
             mLocalStatusCache.Clear();
             mRemoteStatusCache.Clear();
             mLockStatusCache.Clear();
-        }
-
-        static string GetAssetPath(string guid)
-        {
-            string assetPath = AssetDatabase.GUIDToAssetPath(guid);
-
-            if (string.IsNullOrEmpty(assetPath))
-                return null;
-
-            return Path.GetFullPath(assetPath);
         }
 
         readonly LocalStatusCache mLocalStatusCache;

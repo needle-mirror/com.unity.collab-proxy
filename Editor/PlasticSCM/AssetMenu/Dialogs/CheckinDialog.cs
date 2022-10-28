@@ -130,7 +130,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                     label = string.Concat(label, UnityConstants.TREEVIEW_META_LABEL);
 
                 AssetsOverlays.AssetStatus assetStatus = 
-                    assetStatusCache.GetStatusForPath(path);
+                    assetStatusCache.GetStatus(path);
 
                 Rect selectionRect = EditorGUILayout.GetControlRect();
 

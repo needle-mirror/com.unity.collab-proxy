@@ -12,6 +12,54 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
 {
     internal static class AssetsPath
     {
+        internal static class GetFullPath
+        {
+            internal static string ForObject(Object obj)
+            {
+                string relativePath = AssetDatabase.GetAssetPath(obj);
+
+                if (string.IsNullOrEmpty(relativePath))
+                    return null;
+
+                return Path.GetFullPath(relativePath);
+            }
+
+            internal static string ForGuid(string guid)
+            {
+                string relativePath = GetAssetPath(guid);
+
+                if (string.IsNullOrEmpty(relativePath))
+                    return null;
+
+                return Path.GetFullPath(relativePath);
+            }
+        }
+
+        internal static class GetFullPathUnderWorkspace
+        {
+            internal static string ForAsset(
+                string wkPath,
+                string assetPath)
+            {
+                if (string.IsNullOrEmpty(assetPath))
+                    return null;
+
+                string fullPath = Path.GetFullPath(assetPath);
+
+                if (!PathHelper.IsContainedOn(fullPath, wkPath))
+                    return null;
+
+                return fullPath;
+            }
+
+            internal static string ForGuid(
+                string wkPath,
+                string guid)
+            {
+                return ForAsset(wkPath, GetAssetPath(guid));
+            }
+        }
+
         internal static string GetLayoutsFolderRelativePath()
         {
             return string.Concat(mAssetsFolderLocation, "/Layouts");
@@ -33,23 +81,6 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
                 mProjectFullPath, fullPath).Substring(1);
         }
 
-        internal static string GetFullPath(Object obj)
-        {
-            string relativePath = AssetDatabase.GetAssetPath(obj);
-
-            if (string.IsNullOrEmpty(relativePath))
-                return null;
-
-            return Path.GetFullPath(relativePath);
-        }
-
-        static AssetsPath()
-        {
-            mAssetsFolderLocation = (IsRunningAsUPMPackage()) ?
-                "Packages/com.unity.collab-proxy/Editor/PlasticSCM/Assets" :
-                "Assets/Plugins/PlasticSCM/Editor/Assets";
-        }
-
         internal static bool IsRunningAsUPMPackage()
         {
             string unityPlasticDllPath = Path.GetFullPath(
@@ -61,6 +92,21 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
                     unityPlasticDllPath,
                     // assets relative path when running as a UPM package
                     "../../../Editor/PlasticSCM/Assets")));
+        }
+
+        static string GetAssetPath(string guid)
+        {
+            if (string.IsNullOrEmpty(guid))
+                return null;
+
+            return AssetDatabase.GUIDToAssetPath(guid);
+        }
+
+        static AssetsPath()
+        {
+            mAssetsFolderLocation = (IsRunningAsUPMPackage()) ?
+                "Packages/com.unity.collab-proxy/Editor/PlasticSCM/Assets" :
+                "Assets/Plugins/PlasticSCM/Editor/Assets";
         }
 
         static string mProjectFullPath = ProjectPath.

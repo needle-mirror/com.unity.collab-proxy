@@ -44,7 +44,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             mPlasticWebRestApi = plasticWebRestApi;
 
             mProgressControls = new ProgressControlsForViews();
-            mWorkspaceOperations = new WorkspaceOperations(this, mProgressControls);
+            mWorkspaceOperations = new WorkspaceOperations(this, mProgressControls, null);
             mCreateWorkspaceState = CreateWorkspaceViewState.BuildForProjectDefaults();
 
             Initialize(plasticApi, plasticWebRestApi);

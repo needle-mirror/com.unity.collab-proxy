@@ -4,40 +4,50 @@ using UnityEditor;
 using UnityEngine;
 
 using PlasticGui;
+using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
+using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor.AssetsOverlays
 {
     internal static class DrawAssetOverlay
     {
-        internal static void Enable()
+        internal static void Enable(
+            string wkPath,
+            IAssetStatusCache assetStatusCache)
         {
-            if (sIsEnabled)
+            if (mIsEnabled)
                 return;
 
-            sIsEnabled = true;
+            mWkPath = wkPath;
+            mAssetStatusCache = assetStatusCache;
 
-            sRepaintProjectWindow = ProjectWindow.Repaint;
+            mIsEnabled = true;
+
+            mRepaintProjectWindow = ProjectWindow.Repaint;
 
             EditorApplication.projectWindowItemOnGUI += OnProjectWindowItemGUI;
 
-            sRepaintProjectWindow();
+            mRepaintProjectWindow();
         }
 
         internal static void Disable()
         {
-            sIsEnabled = false;
+            mIsEnabled = false;
 
             EditorApplication.projectWindowItemOnGUI -= OnProjectWindowItemGUI;
 
-            sRepaintProjectWindow();
+            mRepaintProjectWindow();
+
+            mWkPath = null;
+            mAssetStatusCache = null;
         }
 
         internal static void ClearCache()
         {
-            PlasticPlugin.AssetStatusCache.Clear();
+            mAssetStatusCache.Clear();
 
-            sRepaintProjectWindow();
+            mRepaintProjectWindow();
         }
 
         internal static string GetStatusString(AssetStatus assetStatus)
@@ -127,11 +137,17 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             if (Event.current.type != EventType.Repaint)
                 return;
 
-            AssetStatus assetStatus = PlasticPlugin.AssetStatusCache.GetStatusForGuid(guid);
+            string fullPath = AssetsPath.GetFullPathUnderWorkspace.
+                ForGuid(mWkPath, guid);
+
+            if (fullPath == null)
+                return;
+
+            AssetStatus assetStatus = mAssetStatusCache.GetStatus(fullPath);
 
             LockStatusData lockStatusData =
                 ClassifyAssetStatus.IsLockedRemote(assetStatus) ?
-                PlasticPlugin.AssetStatusCache.GetLockStatusData(guid) :
+                mAssetStatusCache.GetLockStatusData(fullPath) :
                 null;
 
             string tooltipText = GetTooltipText(
@@ -222,8 +238,11 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             }
         }
 
-        static Action sRepaintProjectWindow;
-        static bool sIsEnabled;
+        static Action mRepaintProjectWindow;
+
+        static bool mIsEnabled;
+        static IAssetStatusCache mAssetStatusCache;
+        static string mWkPath;
 
         const float OVERLAY_ICON_OFFSET = 20f;
     }
