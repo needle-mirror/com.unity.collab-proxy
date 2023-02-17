@@ -780,9 +780,6 @@ Xlink 不支持撤销删除操作。
 == UpPasswordCorrupt ==
 参数“password”在客户端配置文件中已损坏。
 
-== UpdateMergeNeeded ==
-在更新工作区之前，需要从变更集 {0} 进行合并。
-
 == UpdateWkContentError ==
 无法更新工作区 '{0}' 的内容，因为存在以下错误：{1}
 

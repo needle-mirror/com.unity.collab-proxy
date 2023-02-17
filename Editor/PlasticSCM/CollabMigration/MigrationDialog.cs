@@ -32,7 +32,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
 
         protected override string GetTitle()
         {
-            return "Upgrade your Collaborate project to Plastic SCM";
+            return "Upgrade your Collaborate project to Unity Version Control";
         }
 
         //TODO: localize the strings
@@ -100,13 +100,13 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
         {
             GUILayout.BeginVertical();
 
-            Title("Upgrade your Collaborate project to Plastic SCM");
+            Title("Upgrade your Collaborate project to Unity Version Control");
 
             GUILayout.Space(20);
 
-            Paragraph("Your Unity project has been upgraded (from Collaborate) to Plastic SCM free" +
+            Paragraph("Your Unity project has been upgraded (from Collaborate) to Unity Version Control free" +
                 " of charge by your administrator. Your local workspace will now be converted to a" +
-                " Plastic SCM workspace in just a few minutes. Select “Migrate” to start the conversion process.");
+                " Unity Version Control workspace in just a few minutes. Select “Migrate” to start the conversion process.");
 
             DrawProgressForMigration.For(
                mProgressControls.ProgressData);
@@ -170,7 +170,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
 
         void DoOpenPlasticButton()
         {
-            if (!NormalButton("Open Plastic SCM"))
+            if (!NormalButton("Open Unity Version Control"))
                 return;
 
             TrackFeatureUseEvent.For(
@@ -198,7 +198,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
             if (NormalButton("Migrate"))
             {
                 if (EditorUtility.DisplayDialog(
-                        "Collab migration to Plastic SCM",
+                        "Collab migration to Unity Version Control",
                         "Are you sure to start the migration process?",
                         PlasticLocalization.GetString(PlasticLocalization.Name.YesButton),
                         PlasticLocalization.GetString(PlasticLocalization.Name.NoButton)))
@@ -324,13 +324,13 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
                     mWorkspaceInfo == null)
                 {
                     progressControls.ShowError(
-                        "Failed to convert your workspace to Plastic SCM");
+                        "Failed to convert your workspace to Unity Version Control");
                     TrackWorkspaceMigrationFinishedFailureEvent(mWorkspaceInfo);
                     return;
                 }
 
                 progressControls.ShowSuccess(
-                    "Your workspace has been successfully converted to Plastic SCM");
+                    "Your workspace has been successfully converted to Unity Version Control");
 
                 mIsMigrationCompleted = true;
 

@@ -1,8 +1,8 @@
 # Quick start guide
 
-The Version Control package will allow you to use Plastic SCM for Unity for your projects in the Unity Editor. 
+The Version Control package will allow you to use Unity version control for your projects in the Unity Editor. 
 
-Plastic SCM for Unity integrates Plastic SCM in Unity that will abstract version control complexity. It will also enable you to work collaboratively on more complex projects by providing additional VCS features such as branching, locking, merging, and a standalone GUI.
+Unity VC integrates version control in Unity that will abstract version control complexity. It will also enable you to work collaboratively on more complex projects by providing additional VCS features such as branching, locking, merging, and a standalone GUI.
 
 The Version Control package follows the Unity support schedule. Currently, supported versions are:
 
@@ -11,4 +11,4 @@ The Version Control package follows the Unity support schedule. Currently, suppo
 * 2022.1.0a4
 
 
-[Getting started with Plastic SCM for Unity](StartPlasticForUnity.md)
+[Getting started with Unity version control](StartPlasticForUnity.md)

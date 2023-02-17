@@ -1,5 +1,5 @@
 ﻿== Base ==
-基底: 
+基底
 
 == ChangedResultFile ==
 您是否想要儲存結果檔案?
@@ -17,7 +17,7 @@
 未設定
 
 == Destination ==
-目的地:
+目的地
 
 == ErrorAutomaticOptionNeeded ==
 在無訊息模式中，需要自動合併選項
@@ -96,7 +96,7 @@ SemanticMerge 需要有效的可用 JVM 安裝
 必須指定結果檔案路徑
 
 == Source ==
-來源:
+來源
 
 == UnsolvedPendingConflicts ==
 檔案仍有 {0} 個未解決的衝突。

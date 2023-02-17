@@ -12,6 +12,9 @@ namespace Unity.PlasticSCM.Editor.UI
             string message,
             GuiMessage.GuiMessageType alertType)
         {
+            if (!PlasticPlugin.ConnectionMonitor.IsConnected)
+                return;
+
             EditorUtility.DisplayDialog(
                 BuildDialogTitle(title, alertType),
                 message,
@@ -20,8 +23,14 @@ namespace Unity.PlasticSCM.Editor.UI
 
         void GuiMessage.IGuiMessage.ShowError(string message)
         {
+            if (!PlasticPlugin.ConnectionMonitor.IsConnected)
+                return;
+
             EditorUtility.DisplayDialog(
-                PlasticLocalization.GetString(PlasticLocalization.Name.ErrorPlasticSCM),
+                string.Format(
+                    PlasticLocalization.GetString(PlasticLocalization.Name.ErrorDialogTitle),
+                    PlasticLocalization.GetString(PlasticLocalization.Name.UnityVersionControl)
+                ),
                 message,
                 PlasticLocalization.GetString(PlasticLocalization.Name.CloseButton));
         }

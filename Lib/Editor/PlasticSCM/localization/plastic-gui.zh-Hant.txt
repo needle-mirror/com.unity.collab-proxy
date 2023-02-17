@@ -268,9 +268,6 @@ Designed in Boecillo Park (Valladolid), Spain
 == MainSidebarSyncItemCloudEdition ==
 同步至 Cloud
 
-== MainSidebarCloudItem ==
-Cloud
-
 == MainSidebarMergeItem ==
 合併
 
@@ -492,24 +489,6 @@ GUID
 
 == LocalChangesApplierProgressProcessingNeededPaths ==
 正在處理所需路徑
-
-== CheckinAutoUpdateMergeRequest ==
-分支中有新檔案，需要更新
-
-== CheckinAutoUpdateMergeRequestMessage ==
-自從您在工作區中啟動自己的變更之後，您正在使用的分支上出現的新變更。您需要先取得這些工作區的變更，然後才能簽入您自己的變更。
-
-由於分支中的變更與工作區中的變更並未衝突，您只要在簽入之前更新工作區即可。
-
-您是否要立即更新工作區，並簽入變更?
-
-== UpdateWorkspaceMergeRequest ==
-更新前偵測到衝突
-
-== UpdateWorkspaceMergeRequestMessage ==
-您在工作區中所變更的一些檔案也在分支中遭到修改，且您必須先將其合併後才能繼續。
-
-合併檢視將會開啟，因此您可以合併這些項目與衝突。請將其解決後，再繼續進行更新。
 
 == CheckinMergeRequest ==
 在此分支上的簽入不能繼續。
@@ -2975,9 +2954,6 @@ Plastic SCM 內建差異比對與合併工具 (Xmerge) 的偏好設定:
 == SwitchingToLabel ==
 正在切換至標籤 {0}...
 
-== StatusUnchanged ==
-未變更
-
 == StatusUnderUnresolvedXlink ==
 Xlinked cset '{0}@{1}' 無法使用
 
@@ -3428,6 +3404,19 @@ GameUI 使用狀況
             如果您想繼續連線，但只連線一次而不將金鑰新增至存放區，請點擊 [否]。
             如果您不信任此主機，請選擇 [取消]，以放棄連線。
 
+== NewCertificateMessageUnityVCS ==
+您要連線的伺服器傳送的憑證不在存放區中。如果您是第一次連線到該伺服器，這是正常的。
+
+            憑證詳細資料:
+            - 發行對象:{0}
+            - 發行者:{1}
+            - 截止日期:{3}
+            - 憑證雜湊:{5}
+
+            如果您信任此主機，請選擇 [是]，以將金鑰新增至 Unity Version Control 金鑰存放區 (如果是第一次連線到此伺服器，則建議選擇此選項)。
+            如果您想繼續連線，但只連線一次而不將金鑰新增至存放區，請點擊 [否]。
+            如果您不信任此主機，請選擇 [取消]，以放棄連線。
+
 == ExistingCertificateChangedTitle ==
 伺服器憑證已變更!
 
@@ -3441,6 +3430,19 @@ GameUI 使用狀況
             - 憑證雜湊:{5}
 
             如果您預期發生此變更，而且信任新憑證，請點擊 [是]，以將金鑰新增至 Plastic SCM 金鑰存放區，並在未來信任此憑證。
+            如果您想繼續連線，但只連線一次而不將金鑰新增至存放區，請點擊 [否]。
+            如果您想放棄此連線，請點擊 [取消]。這是唯一保證安全的選擇。
+
+== ExistingCertificateChangedMessageUnityVCS ==
+警告:此主機憑證與您在金鑰存放區中擁有的主機憑證不相符。這可能表示伺服器身分識別已遭洩漏，或正在對您進行中間人攻擊。
+
+            憑證詳細資料:
+            - 發行對象:{0}
+            - 發行者:{1}
+            - 截止日期:{3}
+            - 憑證雜湊:{5}
+
+            如果您預期發生此變更，而且信任新憑證，請點擊 [是]，以將金鑰新增至 Unity Version Control 金鑰存放區，並在未來信任此憑證。
             如果您想繼續連線，但只連線一次而不將金鑰新增至存放區，請點擊 [否]。
             如果您想放棄此連線，請點擊 [取消]。這是唯一保證安全的選擇。
 
@@ -4150,6 +4152,9 @@ Tube 工作中模式
 == WelcomeToPlasticSCM ==
 歡迎使用 Plastic SCM!
 
+== WelcomeToUnityVCS ==
+歡迎使用 Unity VCS!
+
 == WelcomeToGluonTeamEdition ==
 歡迎使用 Gluon!
 
@@ -4602,9 +4607,6 @@ Cloud 儲存庫
 == ChangesetMerge ==
 從變更集 cs:{0} 合併
 
-== OverlappedMerge ==
-更新至最新變更集 cs:{0}/從最新變更集合併
-
 == SwitchBranchButton ==
 切換分支...
 
@@ -4763,6 +4765,12 @@ Plastic 會監看進行變更的工作區，加快作業速度。這會免除進
 
 == PendingChangesFilesystemWatcherDisabledExplanation ==
 這個情況並不正常，並可能會影響效能。Plastic 會使用 Windows API 監看進行變更的工作區。使用這種方法時，不需要查核目錄結構。如果停用這個設定，作業可能變得更慢。請聯絡支援部門以取得協助，除非刻意在 client.conf 中停用這個設定。[[HELP_URL|{0}]]
+
+== PendingChangesFilesystemWatcherEnabledExplanation ==
+Unity Version Control 會監看進行變更的工作區，加快作業速度。這會免除進行查核目錄結構的必要性，不過移動比對仍可能很耗時。
+
+== PendingChangesFilesystemWatcherDisabledExplanation ==
+這個情況並不正常，並可能會影響效能。Unity Version Control 會使用 Windows API 監看進行變更的工作區。使用這種方法時，不需要查核目錄結構。如果停用這個設定，作業可能變得更慢。請聯絡支援部門以取得協助，除非刻意在 client.conf 中停用這個設定。[[HELP_URL|{0}]]
 
 == PendingChangesShowCheckouts ==
 顯示簽出
@@ -5309,6 +5317,9 @@ Gluon
 == SignInToPlasticSCM ==
 登入 Plastic SCM
 
+== SignInToUnityVCS ==
+登入 Unity VCS
+
 == SignInWithGoogle ==
 使用 Google 登入
 
@@ -5425,9 +5436,6 @@ Gluon - Plastic 創作者版
 
 == LaunchButton ==
 啟動
-
-== LaunchGluonButton ==
-啟動 Gluon
 
 == ReplyButton ==
 回覆
@@ -6364,8 +6372,11 @@ Semantic Merge
 == UnitySmartMerge ==
 Unity Smart Merge
 
-== LaunchPlasticButton ==
-Launch Plastic SCM
+== OpenInDesktopApp ==
+Open in Desktop App
+
+== OpenInGluon ==
+Open in Gluon
 
 == ElementNotFound ==
 找不到元素
@@ -6402,3 +6413,30 @@ Launch Plastic SCM
 
 == And ==
  和 {0}
+
+== ErrorDialogTitle ==
+Error - {0}
+
+== InstallUnityVersionControl ==
+Install Unity Version Control
+
+== CreateAUnityVersionControlWorkspace ==
+ Create a Unity Version Control workspace for this project
+
+== LoginOrSignUpUnityVersionControl ==
+ Login or sign up for a Unity Version Control account
+
+== PrefixUnityVersionControlMenu ==
+Assets/Unity Version Control
+
+== UnityInitialCheckinComment ==
+Add packages and project settings to Unity Version Control.
+
+== OfflineModeDescription ==
+Offline mode disables all Unity Version Control functionalities including the server connection to provide an uninterrupted workflow in the Unity Editor
+
+== UnityVersionControl ==
+Unity Version Control
+
+== PlasticConfigurationTitleUnityVCS ==
+Configure the connection to the Unity VCS server

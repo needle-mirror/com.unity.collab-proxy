@@ -8,7 +8,7 @@ using UnityEngine;
 
 using Codice.Client.Common;
 using PlasticGui;
-using PlasticGui.SwitcherWindow.Repositories;
+using PlasticGui.WorkspaceWindow.Home.Repositories;
 using PlasticGui.WebApi;
 using PlasticGui.WorkspaceWindow.Servers;
 using Unity.PlasticSCM.Editor.UI;
@@ -119,7 +119,6 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                 null,
                 new FillRepositoriesTable.SaveLastUsedServer(true),
                 mGuiMessage,
-                null,
                 null,
                 null,
                 this,

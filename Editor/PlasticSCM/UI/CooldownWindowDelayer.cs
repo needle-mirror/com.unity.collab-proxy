@@ -21,7 +21,7 @@ namespace Unity.PlasticSCM.Editor.UI
                 mAction();
                 return;
             }
-
+            
             if (mIsOnCooldown)
             {
                 RefreshCooldown();

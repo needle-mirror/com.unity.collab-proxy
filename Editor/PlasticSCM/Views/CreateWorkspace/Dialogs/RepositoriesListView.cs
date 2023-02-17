@@ -7,7 +7,7 @@ using UnityEngine;
 
 using Codice.CM.Common;
 using PlasticGui;
-using PlasticGui.SwitcherWindow.Repositories;
+using PlasticGui.WorkspaceWindow.Home.Repositories;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Tree;
 

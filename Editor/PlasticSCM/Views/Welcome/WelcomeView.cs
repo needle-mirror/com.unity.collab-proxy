@@ -233,7 +233,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             GUILayout.BeginHorizontal();
 
             DoStepLabel(
-                PlasticLocalization.GetString(PlasticLocalization.Name.CreateAPlasticWorkspace),
+                PlasticLocalization.GetString(PlasticLocalization.Name.CreateAUnityVersionControlWorkspace),
                 Images.GetStep2Icon(),
                 EditorStyles.label);
 
@@ -277,7 +277,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             bool isStep1Completed)
         {
             string result = PlasticLocalization.GetString(
-                PlasticLocalization.Name.LoginOrSignUpPlastic);
+                PlasticLocalization.Name.LoginOrSignUpUnityVersionControl);
 
             if (isStep1Completed)
                 return result;

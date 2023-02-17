@@ -1,5 +1,5 @@
 ﻿== Base ==
-ベース:
+ベース
 
 == ChangedResultFile ==
 結果ファイルを保存しますか?
@@ -17,7 +17,7 @@
 設定されていません
 
 == Destination ==
-同期先:
+同期先
 
 == ErrorAutomaticOptionNeeded ==
 サイレントモードでは自動マージオプションが必要です
@@ -96,7 +96,7 @@ Plastic SCM GUI を再度開くまで変更は有効になりません
 結果のファイルパスが指定されている必要があります
 
 == Source ==
-ソース:
+ソース
 
 == UnsolvedPendingConflicts ==
 ファイルにまだ {0} 件の未解決の競合があります。

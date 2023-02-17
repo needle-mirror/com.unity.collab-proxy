@@ -12,9 +12,9 @@ In Unity, you use a project to design and develop a game. A project stores all o
 
 #### Version Control
 
-A system for managing file changes. You can use Unity in conjunction with most **version control** tools, including **Perforce** , Git, Mercurial, and PlasticSCM. See [Version Control](https://docs.unity3d.com/Manual/VersionControl.html).
+A system for managing file changes. You can use Unity in conjunction with most **version control** tools, including **Perforce** , Git, Mercurial, and perforce. See [Version Control](https://docs.unity3d.com/Manual/VersionControl.html).
 
-## Plastic SCM terms
+## Unity version control terms
 
 #### Checkin
 

@@ -64,10 +64,9 @@
 
         internal const int UNSORT_COLUMN_ID = -1;
 
-        internal const string PLASTIC_WINDOW_TITLE = "Plastic SCM";
-        internal const string LOGIN_WINDOW_TITLE = "Sign in to Plastic SCM";
-        internal const string PROJECT_SETTINGS_TAB_PATH = "Project/Version Control/Plastic SCM";
-        internal const string PROJECT_SETTINGS_TAB_TITLE = "Plastic SCM Settings";
+        internal const string PLASTIC_WINDOW_TITLE = "Unity Version Control";
+        internal const string PROJECT_SETTINGS_TAB_PATH = "Project/Version Control/Unity Version Control";
+        internal const string PROJECT_SETTINGS_TAB_TITLE = "Unity Version Control Settings";
         internal const float PLASTIC_WINDOW_MIN_SIZE_WIDTH = 600f;
         internal const float PLASTIC_WINDOW_MIN_SIZE_HEIGHT = 350f;
         internal const float PLASTIC_WINDOW_COMMENT_SECTION_HEIGHT = 55f;
@@ -80,7 +79,7 @@
         internal const double AUTO_REFRESH_DELAYED_INTERVAL = 0.25;
         internal const double AUTO_REFRESH_PENDING_CHANGES_DELAYED_INTERVAL = 0.1;
         public const double PLUGIN_DELAYED_INITIALIZE_INTERVAL = 0.25;
-
+        
         internal const double NOTIFICATION_CLEAR_INTERVAL = 5;
 
         internal const string PENDING_CHANGES_TABLE_SETTINGS_NAME = "{0}_PendingChangesTreeV3_{1}";
@@ -97,7 +96,7 @@
         internal const string BRANCHES_TABLE_SETTINGS_NAME = "{0}_BranchesListV2_{1}";
         internal const string BRANCHES_DATE_FILTER_SETTING_NAME = "{0}_BranchesDateFilter_{1}";
 
-        internal const string OFFLINE_MODE_ENABLED_KEY_NAME = "{0}_OfflineModeEnabled";
+        internal const string PLASTIC_PLUGIN_IS_ENABLED_KEY_NAME = "{0}_PlasticPluginIsEnabled";
         internal const string SHOW_BRANCHES_VIEW_KEY_NAME = "{0}_ShowBranchesView";
 
         internal const string SHOW_NOTIFICATION_KEY_NAME = "ShowNotification";

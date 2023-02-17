@@ -90,16 +90,6 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
             imageElem.image = Images.GetImage(imageName);
         }
 
-        internal static void SetControlImage(
-            this VisualElement element,
-            string name,
-            PlasticGui.Help.HelpImage imageName)
-        {
-            Image imageElem = element.Query<Image>(name).First();
-            imageElem.image = Images.GetHelpImage(imageName);
-            imageElem.image.wrapMode = UnityEngine.TextureWrapMode.Clamp;
-        }
-
         internal static void SetControlText<T>(
             this VisualElement element,
             string name, PlasticLocalization.Name fieldName,

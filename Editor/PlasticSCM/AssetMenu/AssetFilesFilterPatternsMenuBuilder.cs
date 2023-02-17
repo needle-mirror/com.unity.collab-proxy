@@ -22,12 +22,12 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
             mIgnoredSubmenuItem = string.Format(
                 "{0}/{1}",
-                PlasticLocalization.GetString(PlasticLocalization.Name.PrefixPlasticMenu),
+                PlasticLocalization.GetString(PlasticLocalization.Name.PrefixUnityVersionControlMenu),
                 PlasticLocalization.GetString(PlasticLocalization.Name.MenuAddToIgnoreList));
 
             mHiddenChangesSubmenuItem = string.Format(
                 "{0}/{1}",
-                PlasticLocalization.GetString(PlasticLocalization.Name.PrefixPlasticMenu),
+                PlasticLocalization.GetString(PlasticLocalization.Name.PrefixUnityVersionControlMenu),
                 PlasticLocalization.GetString(PlasticLocalization.Name.MenuAddToHiddenChangesList));
         }
 

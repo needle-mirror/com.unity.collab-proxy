@@ -126,6 +126,21 @@ Can't restore data for {0} because it's not archived. If you're sure data has be
 == CantRevertToDifferentItem ==
 The item can't be reverted because the specified revision '{0}' references another item.
 
+== CantSetAclOnChangesets ==
+Can't set Acl for changesets
+
+== CantSetAclOnItems ==
+Can't set Acl for items
+
+== CantSetAclOnRevisions ==
+Can't set Acl for revisions
+
+== CantSetAclOnShelvesets ==
+Can't set Acl for shelvesets
+
+== CantSetAclOnWorkspaces ==
+Can't set Acl for workspaces
+
 == CantUpdateBaseChangesetBranchWithRevisions ==
 Can't update base changeset for branch because it must be empty.
 
@@ -317,6 +332,9 @@ Expected format not found. Check command usage/help for more information.
 == ErrorReplicatePackageDoesntExist ==
 The package {0} doesn't exist
 
+== ErrorSyncNoAuthorPermission ==
+The synchronize operation needs the chgOwner permission to keep the original owner of the pulled changes. Please ask your administrator to grant you the chgOwner permission for the repository.
+
 == ErrorTwoCsetWithPathDiff ==
 Unable to calculate differences between '{0}' and '{1}'.
 
@@ -394,6 +412,9 @@ The update operation cannot continue. The target changeset must be in the curren
 
 == IncomingChangesCannotCalculateMerge ==
 The incoming changes cannot be calculated. Please check if the workspace changeset was deleted or contact support for further info.
+
+== IncomingChangesCloakedCheckoutsNotSupported ==
+The workspace contains cloaked checkouts. They need to be undone to continue with the Incoming Changes. Please undo the cloaked checkouts and retry the operation.
 
 == IncomingChangesDontMerge ==
 The update operation detected conflicts. The operation cannot continue since it was run with the --dontmerge option.
@@ -822,9 +843,6 @@ Working mode '{0}' is not supported.
 == UpPasswordCorrupt ==
 Parameter 'password' is corrupt in the client config file.
 
-== UpdateMergeNeeded ==
-A merge is needed from changeset {0} before updating the workspace.
-
 == UpdateWkContentError ==
 The content of the workspace '{0}' cannot be updated due to the following error: {1}
 
@@ -925,7 +943,7 @@ Failed to mount the dynamic workspace {0} after {1} seconds.
 Failed to mount the following dynamic workspaces after {0} seconds: {1}.
 
 == GameUiCheckinConflictsError ==
-The checkin operation cannot be completed because some local changes cannot be applied on the current server version. Please check the conflicts between your local changes and the current server version.
+The checkin/shelve operation cannot be completed because some local changes cannot be applied on the current server version. Please check the conflicts between your local changes and the current server version.
 
 == IsNotWk ==
 {0} is not in a workspace.
@@ -944,3 +962,12 @@ ATTR_TYPE_WRONG_VALUE
 
 == Key_Unrecognized ==
 UNRECOGNIZED
+
+== Seconds ==
+seconds
+
+== Minutes ==
+minutes
+
+== Hours ==
+hours

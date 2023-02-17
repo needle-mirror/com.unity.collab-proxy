@@ -7,7 +7,6 @@ using Unity.Plastic.Newtonsoft.Json;
 using Codice.Client.Common.WebApi;
 using Codice.CM.Common;
 using Codice.LogWrapper;
-using PlasticGui.Help.NewVersions;
 using PlasticGui.WebApi.Responses;
 
 namespace Unity.PlasticSCM.Editor.WebApi

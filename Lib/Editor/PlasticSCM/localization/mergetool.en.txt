@@ -37,12 +37,6 @@ Previous not automatic conflict ({0})
 == NextNotAutomaticConflictButtonTooltipPrefix ==
 Next not automatic conflict ({0})
 
-== GtkPendingAutomaticConflictsLabel ==
-{0}/{1}
-
-== GtkPendingNonAutomaticConflictsLabel ==
-Pending non-automatic: {0}/{1}
-
 == PendingAutomaticConflictsLabel ==
 Current conflict: {0} of {1}
 
@@ -76,7 +70,7 @@ Mark as resolved
 == MarkAsUnresolvedButton ==
 Mark as unresolved
 
-== MergetoolUsageTitle ==
+== WinMergetoolUsageTitle ==
 Mergetool usage
 
 == XMergeUsageTitle ==
@@ -87,12 +81,6 @@ Please read below the usage of the tool
 
 == BinMergeToolExitQuestion ==
 Do you want save the selected contributor as the merge result?
-
-== GtkMergetoolUsageHeader ==
-    Usage: gtkmergetool
-
-== MacMergetoolUsageHeader ==
-    Usage: macmergetool
 
 == XMergeUsage ==
 Usage: {0} xmerge [<diffOptions> | <mergeOptions>]
@@ -141,41 +129,6 @@ Usage: {0} xmerge [<diffOptions> | <mergeOptions>]
        {0} xmerge -s=file1.txt -b=file0.txt --destination=file2.txt
        {0} xmerge --base=file0.txt -d=file2.txt --source=file1.txt --automatic --result=result.txt
        {0} xmerge -b=file0.txt -s=file1.txt -d=file2.txt -a -r=result.txt -e=utf7 -i=eol -t=text/csharp -m=onlyone
-
-== MergetoolUsage ==
-    mergeOptions: <sourceFile> [<sourceSymbolicName>] 
-                  <baseFile> [<baseSymbolicName>]
-                  <destinationfile> [<destinationSymbolicName>]
-                  [[<autosave>] <resultFile>]
-                  [<mergeType>]
-                  [<generalOptions>]
-
-        sourceFile:              {-s | --source}=<filename>
-        sourceSymbolicName:      {-sn | --srcsymbolicname}=<symbolicname>
-        baseFile:                {-b | --base}=<filename> 
-        baseSymbolicName:        {-bn | --basesymbolicname}=<symbolicname>
-        destinationFile:         {-d | --destination}=<filename>; 
-        destinationSymbolicName: {-dn | --dstsymbolicname}=<symbolicname>
-        autosave:                -as | --autosave
-        automatic:               -a | --automatic
-        silent:                  --silent
-        resultFile:              {-r | --result}=<filename>
-        mergeType:               {-m | --mergeresolutiontype}={onlyone | onlysrc | onlydst | try | forced}
-
-    generalOptions: [<defaultEncoding>] [<comparisonMethod>] [<resultEncoding>]
-
-        defaultEncoding:     {-e | --defaultencoding}={none |ascii | unicode | bigendian | utf7 | utf8}
-        resultEncoding:      {-re | --resultencoding}={none |ascii | unicode | bigendian | utf7 | utf8}
-        comparisonMethod:    {-i | --ignore}={none | eol | whitespaces | ""eol&whitespaces""}
-
-    remarks:
-          
-        -a | --automatic:    Tries to resolve the merge automatically.
-                             If the merge can't be resolved automatically (requires user interaction), the merge tool is shown.
-        --silent:            This option must be used combined with the --automatic option.
-                             When a merge can't be resolved automatically, this option causes the tool to return immediately
-                             with a non-zero exit code (no merge tool is shown).
-                             If the tool was able to resolve the merge automatically, the program returns exit code 0.
 
 == WinMergetoolUsage ==
 Usage: mergetool [<diffOptions> | <mergeOptions>]
@@ -698,6 +651,9 @@ Convert tabs to spaces while editing
 == EditorOptionsWhistespaces ==
 View whitespaces
 
+== EditorOptionsEOL ==
+View line endings
+
 == EditorOptionsTabs ==
 Tabs
 
@@ -1173,3 +1129,37 @@ Cmd+Shift+OemPlus
 
 == PlasticLastConflictShortcutForLinux ==
 Ctrl+Shift+OemPlus
+
+== BinMergeUsageTitle ==
+BinMerge Tool Usage
+
+== BinMergeUsage ==
+Usage: {0} binmerge <mergeOptions>
+
+    mergeOptions: <generalFiles> <baseFile> [<baseSymbolicName>] [[<automatic>] <resultFile>] [<mergeType>] [<generalOptions>]
+
+        baseFile:             {{-b | --base}}=<filename>
+        baseSymbolicName:     {{-bn | --basesymbolicname}}=<symbolicname>
+        automatic:            -a | --automatic
+        resultFile:           {{-r | --result}}=<filename>
+        mergeType:            {{-m | --mergeresolutiontype}}={{onlyone | onlysrc | onlydst | try | forced}}
+
+    generalFiles:<sourceFile> [<srcSymbolicName>] <destination> [<dstSymbolicName>]
+
+        sourceFile:           {{-s | --source}}=<filename>
+        srcSymbolicName:      {{-sn | --srcsymbolicname}}=<symbolicname>
+        destinationFile:      {{-d | --destination}}=<filename>
+        dstSymbolicName:      {{-dn | --dstsymbolicname}}=<symbolicname>
+
+
+    Examples:
+
+        {0} binmerge --source=file1.png --destination=file2.png
+        {0} binmerge --base=file0.txt --source=file1.txt --destination=file2.txt
+        {0} binmerge --base=file0.txt --source=file1.txt --destination=file2.txt  --automatic --result=result.txt
+        {0} binmerge -s=file1.png -d=file2.png
+        {0} binmerge -b=file0.txt -s=file1.txt -d=file2.txt
+        {0} binmerge -b=file0.txt -s=file1.txt -d=file2.txt -a -r=result.txt -m=onlyone
+
+== BinMergeToolUnsupportedFileTypeForDiff ==
+Unsupported file types for binary diff. Only images are supported

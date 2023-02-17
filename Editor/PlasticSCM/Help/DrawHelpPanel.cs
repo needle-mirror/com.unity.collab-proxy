@@ -72,13 +72,6 @@ namespace Unity.PlasticSCM.Editor.Help
         {
             using (new EditorGUILayout.HorizontalScope())
             {
-                Texture image = Images.GetHelpImage(helpPanel.Image);
-
-                var imgRect = GUILayoutUtility.GetRect(
-                    image.width, image.width, image.height, image.height);
-
-                GUI.DrawTexture(imgRect, image, ScaleMode.ScaleToFit);
-
                 using (new EditorGUILayout.VerticalScope())
                 {
                     GUIStyle helpParagraph = UnityStyles.Paragraph;
@@ -160,7 +153,6 @@ namespace Unity.PlasticSCM.Editor.Help
                     break;
                 case HelpLink.LinkType.Help:
                     helpPanel.Show(
-                        PlasticGui.Help.HelpImage.GenericBuho,
                         content == "sample1" ?
                             TestingHelpData.GetSample1() :
                             TestingHelpData.GetSample2());

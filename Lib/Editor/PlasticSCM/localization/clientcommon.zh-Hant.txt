@@ -780,9 +780,6 @@ Xlink 不支援取消刪除作業。
 == UpPasswordCorrupt ==
 用戶端設定檔案中的參數 'password' 已損毀。
 
-== UpdateMergeNeeded ==
-需要先從變更集 {0} 進行合併，才能更新工作區。
-
 == UpdateWkContentError ==
 無法更新工作區 '{0}' 的內容，因為發生下列錯誤: {1}
 

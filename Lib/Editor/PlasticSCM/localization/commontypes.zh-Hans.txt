@@ -203,9 +203,6 @@ SEID 数据中的格式错误：{0}。
 == CantRevertRootItem ==
 无法还原根项
 
-== CantSetAclOnRevsOrWks ==
-无法设置修订或工作区的 ACL
-
 == CantSetAclItemsRevs ==
 无法设置修订或项的 ACL
 

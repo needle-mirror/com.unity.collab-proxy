@@ -19,7 +19,7 @@ namespace Unity.PlasticSCM.Editor.Configuration
                 PlasticLocalization.GetString(
                     PlasticLocalization.Name.NewCertificateTitle),
                 PlasticLocalization.GetString(
-                    PlasticLocalization.Name.NewCertificateMessage),
+                    PlasticLocalization.Name.NewCertificateMessageUnityVCS),
                 serverCertificate);
         }
 
@@ -29,7 +29,7 @@ namespace Unity.PlasticSCM.Editor.Configuration
                 PlasticLocalization.GetString(
                     PlasticLocalization.Name.ExistingCertificateChangedTitle),
                 PlasticLocalization.GetString(
-                    PlasticLocalization.Name.ExistingCertificateChangedMessage),
+                    PlasticLocalization.Name.ExistingCertificateChangedMessageUnityVCS),
                 serverCertificate);
         }
 

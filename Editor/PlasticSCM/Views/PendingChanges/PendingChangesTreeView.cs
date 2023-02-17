@@ -214,7 +214,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             base.RowGUI(args);
         }
 
-        internal void BuildModel(List<ChangeInfo> changes, CheckedStateManager checkedStateManager)
+        internal void BuildModel(List<ChangeInfo> changes, PendingChangesViewCheckedStateManager checkedStateManager)
         {
             mTreeViewItemIds.Clear();
 

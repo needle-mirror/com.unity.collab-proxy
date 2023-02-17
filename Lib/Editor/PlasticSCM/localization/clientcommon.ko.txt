@@ -780,9 +780,6 @@ Xlink에는 삭제 취소 작업이 지원되지 않습니다.
 == UpPasswordCorrupt ==
 클라이언트 구성 파일에서 매개 변수 'password'가 손상되었습니다.
 
-== UpdateMergeNeeded ==
-워크스페이스를 업데이트하기 전에 변경 세트 {0}에서 병합해야 합니다.
-
 == UpdateWkContentError ==
 다음 오류로 인해 워크스페이스 '{0}'의 내용을 업데이트할 수 없습니다: {1}
 

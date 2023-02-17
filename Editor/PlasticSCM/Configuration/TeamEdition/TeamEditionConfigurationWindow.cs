@@ -22,7 +22,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
             window.mRestApi = restApi;
             window.mWelcomeView = welcomeView;
             window.titleContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.WelcomeToPlasticSCM));
+                PlasticLocalization.GetString(PlasticLocalization.Name.WelcomeToUnityVCS));
             window.minSize = window.maxSize = new Vector2(650, 300);
             window.Show();
         }
@@ -134,7 +134,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
             VisualElement root = rootVisualElement;
 
             root.Query<Label>("plasticConfigurationTitle").First().text =
-                PlasticLocalization.GetString(PlasticLocalization.Name.PlasticConfigurationTitle);
+                PlasticLocalization.GetString(PlasticLocalization.Name.PlasticConfigurationTitleUnityVCS);
 
             root.SetControlText<Label>(
                 "plasticConfigurationExplanation",

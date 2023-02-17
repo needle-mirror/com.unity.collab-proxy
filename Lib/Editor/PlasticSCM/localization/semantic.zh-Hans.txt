@@ -1,5 +1,5 @@
 ﻿== Base ==
-基项：
+基项
 
 == ChangedResultFile ==
 是否要保存结果文件？
@@ -17,7 +17,7 @@
 未配置
 
 == Destination ==
-目标：
+目标
 
 == ErrorAutomaticOptionNeeded ==
 在静默模式中，需要自动合并选项
@@ -96,7 +96,7 @@ SemanticMerge 需要有效的 JVM 安装
 必须指定结果文件路径
 
 == Source ==
-源：
+源
 
 == UnsolvedPendingConflicts ==
 该文件仍然有 {0} 个未解决的冲突。

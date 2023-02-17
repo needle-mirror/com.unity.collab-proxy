@@ -4,14 +4,16 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-using Codice.Client.BaseCommands;
 using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Common;
 using Codice.Client.Common.FsNodeReaders.Watcher;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.LogWrapper;
+using GluonCheckIncomingChanges = PlasticGui.Gluon.WorkspaceWindow.CheckIncomingChanges;
 using GluonGui;
+using GluonNewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncomingChangesUpdater;
+using PlasticAssetModificationProcessor = Unity.PlasticSCM.Editor.AssetUtils.Processor.AssetModificationProcessor;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.NotificationBar;
 using Unity.PlasticSCM.Editor.AssetMenu;
@@ -27,10 +29,6 @@ using Unity.PlasticSCM.Editor.UI.StatusBar;
 using Unity.PlasticSCM.Editor.Views.CreateWorkspace;
 using Unity.PlasticSCM.Editor.Views.Welcome;
 using Unity.PlasticSCM.Editor.WebApi;
-
-using GluonCheckIncomingChanges = PlasticGui.Gluon.WorkspaceWindow.CheckIncomingChanges;
-using GluonNewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncomingChangesUpdater;
-using PlasticAssetModificationProcessor = Unity.PlasticSCM.Editor.AssetUtils.Processor.AssetModificationProcessor;
 
 namespace Unity.PlasticSCM.Editor
 {
@@ -96,8 +94,6 @@ namespace Unity.PlasticSCM.Editor
 
         void OnEnable()
         {
-            PlasticPlugin.Enable();
-
             wantsMouseMove = true;
 
             if (mException != null)
@@ -111,6 +107,10 @@ namespace Unity.PlasticSCM.Editor
 
             RegisterApplicationFocusHandlers(this);
 
+            if (!PlasticPlugin.ConnectionMonitor.IsConnected)
+                return;
+
+            PlasticPlugin.Enable();
             InitializePlastic();
         }
 
@@ -165,6 +165,9 @@ namespace Unity.PlasticSCM.Editor
             if (mWkInfo == null)
                 return;
 
+            if (!PlasticPlugin.ConnectionMonitor.IsConnected)
+                return;
+
             // We don't want to auto-refresh the views when the window
             // is focused due to a right mouse button click because
             // if there is no internet connection a dialog appears and
@@ -179,6 +182,12 @@ namespace Unity.PlasticSCM.Editor
 
         void OnGUI()
         {
+            if (!PlasticPlugin.ConnectionMonitor.IsConnected)
+            {
+                DoNotConnectedArea();
+                return;
+            }
+
             if (mException != null)
             {
                 DoExceptionErrorArea();
@@ -461,6 +470,9 @@ namespace Unity.PlasticSCM.Editor
             if (mException != null)
                 return;
 
+            if (!PlasticPlugin.ConnectionMonitor.IsConnected)
+                return;
+
             Reload.IfWorkspaceConfigChanged(
                 PlasticGui.Plastic.API, mWkInfo, mIsGluonMode,
                 ExecuteFullReload);
@@ -495,6 +507,9 @@ namespace Unity.PlasticSCM.Editor
             if (mWkInfo == null)
                 return;
 
+            if (!PlasticPlugin.ConnectionMonitor.IsConnected)
+                return;
+
             NewIncomingChanges.StopUpdater(
                 mDeveloperNewIncomingChangesUpdater,
                 mGluonNewIncomingChangesUpdater);
@@ -509,6 +524,23 @@ namespace Unity.PlasticSCM.Editor
             DisposeNotificationBarUpdater(this);
 
             InitializePlastic();
+        }
+
+        void DoNotConnectedArea()
+        {
+            string labelText = PlasticLocalization.GetString(
+                PlasticLocalization.Name.NotConnectedTryingToReconnect);
+
+            string buttonText = PlasticLocalization.GetString(
+                PlasticLocalization.Name.TryNowButton);
+
+            GUI.enabled = !PlasticPlugin.ConnectionMonitor.IsTryingReconnection;
+
+            DrawActionHelpBox.For(
+                Images.GetInfoDialogIcon(), labelText, buttonText,
+                PlasticPlugin.ConnectionMonitor.CheckConnection);
+
+            GUI.enabled = true;
         }
 
         void DoExceptionErrorArea()
@@ -641,8 +673,8 @@ namespace Unity.PlasticSCM.Editor
             GenericMenu menu = new GenericMenu();
 
             string openToolText = isGluonMode ?
-                PlasticLocalization.GetString(PlasticLocalization.Name.LaunchGluonButton) :
-                PlasticLocalization.GetString(PlasticLocalization.Name.LaunchPlasticButton);
+                PlasticLocalization.GetString(PlasticLocalization.Name.OpenInGluon) :
+                PlasticLocalization.GetString(PlasticLocalization.Name.OpenInDesktopApp);
 
             menu.AddItem(
                 new GUIContent(openToolText),

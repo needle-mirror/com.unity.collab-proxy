@@ -56,7 +56,7 @@ Mostrar las diferencias semánticas en modo visual
 Ignorar cambios de formato
 
 == SkipFormatChangesButtonTooltip ==
-Ignorar cambios de indentaciones y saltos de línea cuando las diferencias semánticas son calculadas
+Ignorar espacios en blanco y saltos de línea cuando las diferencias semánticas son calculadas
 
 == ReformatButton ==
 Formatear

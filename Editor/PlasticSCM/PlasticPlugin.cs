@@ -1,8 +1,10 @@
 using System;
+using System.Threading.Tasks;
 
 using UnityEditor;
 using UnityEngine;
 
+using Codice.Client.Common.Connection;
 using Codice.CM.Common;
 using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetsOverlays;
@@ -37,6 +39,11 @@ namespace Unity.PlasticSCM.Editor
             get { return mWorkspaceOperationsMonitor; } 
         }
 
+        internal static PlasticConnectionMonitor ConnectionMonitor
+        {
+            get { return mPlasticConnectionMonitor; }
+        }
+
         static PlasticPlugin()
         {
             CloudProjectDownloader.Initialize();
@@ -46,7 +53,7 @@ namespace Unity.PlasticSCM.Editor
             if (!FindWorkspace.HasWorkspace(ApplicationDataPath.Get()))
                 return;
 
-            if (PlasticProjectOfflineMode.IsEnabled())
+            if (!PlasticPluginIsEnabledPreference.IsEnabled())
                 return;
 
             CooldownWindowDelayer cooldownInitializeAction = new CooldownWindowDelayer(
@@ -56,13 +63,18 @@ namespace Unity.PlasticSCM.Editor
 
         /// <summary>
         /// Open the Plastic SCM window.
-        /// Also, it disables the offline mode if it is enabled.
+        /// Also, it enables the plugin IsEnabled preference if it is disabled.
         /// </summary>
         public static void OpenPlasticWindowDisablingOfflineModeIfNeeded()
         {
-            if (PlasticProjectOfflineMode.IsEnabled())
+            // It's pending to rename the OpenPlasticWindowDisablingOfflineModeIfNeeded
+            // method to OpenPlasticWindowAndEnablePluginIfNeeded. We cannot do it now
+            // because it's a public method and this rename breaks the API validation
+            // check. We will do it when we change the major version number to v3.0.0.
+
+            if (!PlasticPluginIsEnabledPreference.IsEnabled())
             {
-                PlasticProjectOfflineMode.Disable();
+                PlasticPluginIsEnabledPreference.Enable();
                 Enable();
             }
 
@@ -107,6 +119,9 @@ namespace Unity.PlasticSCM.Editor
 
             PlasticApp.SetWorkspace(wkInfo);
 
+            HandleCredsAliasAndServerCert.InitializeHostUnreachableExceptionListener(
+                mPlasticConnectionMonitor);
+
             bool isGluonMode = PlasticGui.Plastic.API.IsGluonWorkspace(wkInfo);
 
             mAssetStatusCache = new AssetStatusCache(wkInfo, isGluonMode);
@@ -127,10 +142,15 @@ namespace Unity.PlasticSCM.Editor
                 wkInfo.ClientPath, mAssetStatusCache);
             DrawSceneOperations.Enable(
                 wkInfo.ClientPath, mWorkspaceOperationsMonitor, mAssetStatusCache);
+
+            Task.Run(() => EnsureServerConnection(wkInfo, mPlasticConnectionMonitor));
         }
 
         internal static void Disable()
         {
+            if (!mIsEnabled)
+                return;
+
             try
             {
                 PlasticApp.Dispose();
@@ -175,9 +195,36 @@ namespace Unity.PlasticSCM.Editor
             return result;
         }
 
+        static void EnsureServerConnection(
+            WorkspaceInfo wkInfo,
+            PlasticConnectionMonitor plasticConnectionMonitor)
+        {
+            RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(wkInfo);
+
+            plasticConnectionMonitor.SetRepositorySpecForEventTracking(repSpec);
+
+            try
+            {
+                // set the PlasticConnectionMonitor initially to have a valid connection
+                // then check that the server connection is valid. If failed, we call
+                // PlasticConnectionMonitor.OnConnectionError that fires the Plugin disable
+                // and the reconnection mechanism
+
+                plasticConnectionMonitor.SetAsConnected();
+
+                if (!PlasticGui.Plastic.API.CheckServerConnection(repSpec.Server))
+                    throw new Exception(string.Format("Failed to connect to {0}", repSpec.Server));
+            }
+            catch (Exception ex)
+            {
+                plasticConnectionMonitor.OnConnectionError(ex, repSpec.Server);
+            }
+        }
+
         static PlasticNotification.Status mNotificationStatus;
         static AssetStatusCache mAssetStatusCache;
         static WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
+        static PlasticConnectionMonitor mPlasticConnectionMonitor = new PlasticConnectionMonitor();
         static bool mIsEnabled;
         static bool mIsEnabledForWorkspace;
     }

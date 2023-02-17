@@ -108,8 +108,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         {
             if (Event.current.type == EventType.Layout)
             {
-                mHasPendingDirectoryConflicts =
-                    MergeTreeResultParser.GetUnsolvedDirectoryConflictsCount(mResultConflicts) > 0;
+                mHasPendingDirectoryConflicts = mMergeChangesTree != null &&
+                    MergeChangesTreeParser.GetUnsolvedDirectoryConflictsCount(mMergeChangesTree) > 0;
                 mIsOperationRunning = mProgressControls.IsOperationRunning();
             }
 
@@ -244,23 +244,22 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         }
 
         void MergeViewLogic.IMergeView.UpdateData(
-            MergeTreeResult resultConflicts,
             MergeChangesTree mergeChangesTree,
             ExplainMergeData explainMergeData,
             MergeSolvedFileConflicts solvedFileConflicts,
-            MountPointWithPath rootMountPoint,
             bool isIncomingMerge,
             bool isMergeTo,
-            bool isUpdateMerge,
             bool mergeHasFinished)
         {
             HideMessage();
 
-            ShowProcessMergesButton(MergeViewTexts.GetProcessMergeButtonText(
-                MergeTreeResultParser.GetFileConflictsCount(resultConflicts) > 0,
-                true));
+            ShowProcessMergesButton(
+                MergeViewTexts.GetProcessMergeButtonText(
+                    MergeChangesTreeParser.HasFileConflicts(mergeChangesTree),
+                    true));
 
-            mResultConflicts = resultConflicts;
+            mMergeChangesTree = mergeChangesTree;
+
             mConflictResolutionStates.Clear();
 
             UpdateFileConflictsTree(
@@ -268,10 +267,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 mIncomingChangesTreeView,
                 mResolveChangeset);
 
-            UpdateOverview(
-                resultConflicts,
-                solvedFileConflicts,
-                rootMountPoint);
+            UpdateOverview(mergeChangesTree, solvedFileConflicts);
         }
 
         void MergeViewLogic.IMergeView.UpdateSolvedDirectoryConflicts()
@@ -358,6 +354,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 mSwitcher,
                 mGuiMessage,
                 selectedPaths,
+                null,
                 MergeContributorType.MergeContributors,
                 RefreshAsset.BeforeLongAssetOperation,
                 () => AfterProcessMerges(RefreshAsset.AfterLongAssetOperation),
@@ -375,6 +372,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 mSwitcher,
                 mGuiMessage,
                 selectedPaths,
+                null,
                 MergeContributorType.KeepSource,
                 RefreshAsset.BeforeLongAssetOperation,
                 () => AfterProcessMerges(RefreshAsset.AfterLongAssetOperation),
@@ -392,6 +390,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                 mSwitcher,
                 mGuiMessage,
                 selectedPaths,
+                null,
                 MergeContributorType.KeepDestination,
                 RefreshAsset.BeforeLongAssetOperation,
                 () => AfterProcessMerges(RefreshAsset.AfterLongAssetOperation),
@@ -545,6 +544,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
             DirectoryConflictResolutionInfo.FromDirectoryConflict(
                 selectedDirectoryConflict.GetMount(),
                 selectedDirectoryConflict.DirectoryConflict,
+                false,
                 out conflictUserInfo,
                 out conflictActions);
 
@@ -723,6 +723,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     switcher,
                     guiMessage,
                     new List<string>(),
+                    null,
                     MergeContributorType.MergeContributors,
                     beforeProcessMergesAction,
                     afterProcessMergesAction,
@@ -790,26 +791,17 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
         }
 
         void UpdateOverview(
-            MergeTreeResult resultConflicts,
-            MergeSolvedFileConflicts solvedFileConflicts,
-            MountPointWithPath rootMountPoint)
+            MergeChangesTree mergeChangesTree,
+            MergeSolvedFileConflicts solvedFileConflicts)
         {
-            if (resultConflicts == null || rootMountPoint == null)
-            {
-                mChangesSummary = new MergeViewTexts.ChangesToApplySummary();
-                mFileConflictCount = 0;
-                mDirectoryConflictCount = 0;
-                return;
-            }
+            mChangesSummary = MergeChangesTreeParser.
+                GetChangesToApplySummary(mergeChangesTree);
 
-            mChangesSummary = MergeTreeResultParser.
-                GetChangesToApplySummary(resultConflicts);
+            mFileConflictCount = MergeChangesTreeParser.GetUnsolvedFileConflictsCount(
+                mergeChangesTree, solvedFileConflicts);
 
-            mFileConflictCount = MergeTreeResultParser.GetUnsolvedFileConflictsCount(
-                resultConflicts, rootMountPoint.Id, solvedFileConflicts);
-
-            mDirectoryConflictCount = MergeTreeResultParser.GetUnsolvedDirectoryConflictsCount(
-                resultConflicts);
+            mDirectoryConflictCount = MergeChangesTreeParser.GetUnsolvedDirectoryConflictsCount(
+                mergeChangesTree);
         }
 
         static void DoInfoMessage(string message)
@@ -895,7 +887,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
 
         IncomingChangesTreeView mIncomingChangesTreeView;
 
-        MergeTreeResult mResultConflicts;
+        MergeChangesTree mMergeChangesTree;
 
         Dictionary<DirectoryConflict, ConflictResolutionState> mConflictResolutionStates =
             new Dictionary<DirectoryConflict, ConflictResolutionState>();

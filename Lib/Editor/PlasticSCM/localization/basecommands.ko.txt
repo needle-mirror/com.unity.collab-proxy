@@ -828,9 +828,6 @@ http://gnuwin32.sourceforge.net/packages/patch.htm
 == CmdSetselectorEndwithdot ==
 표준 입력에서 한 행이 '.'으로 끝나는 선택기 구성을 읽는 중
 
-== CmdSetselectorNotinworkspace ==
-현재 디렉터리가 등록된 워크스페이스에 없습니다
-
 == CmdStatusIncompatibleOptionsShortAndXml ==
 --short는 상세 상태 정보를 로드하지 않기 때문에 --short 옵션과 --xml 옵션을 함께 사용할 수 없습니다.
 
@@ -2375,9 +2372,6 @@ Plastic SCM 서버({0})가 Plastic Tube에 연결되지 않았습니다.
 == UnsupportedMergeType ==
 지원되지 않는 병합 유형
 
-== UpdateAskForMerge ==
-브랜치의 가장 최근 변경사항과 로컬 변경사항 간에 충돌이 있습니다. 병합을 진행하시겠습니까? (Y/N)
-
 == UpdateDeletedSelectorObjectSkipped ==
 워크스페이스를 유효한 브랜치 구성으로 업데이트할 수 없습니다. 다른 사용자가 워크스페이스에 설정된 임시 저장이나 레이블을 삭제했을 수 있습니다. 워크스페이스를 기존 브랜치, 변경 세트, 레이블 또는 임시 저장 세트로 전환하십시오.
 
@@ -2454,10 +2448,10 @@ Plastic이 워크스페이스를 업데이트 중입니다. 잠시만 기다려�
 {0} 리포지토리가 존재하지 않으며, 생성될 것입니다
 
 == WorkspacestatusAddGrp ==
-추가된 항목(AD = 추가됨, PR = 비공개, IG = 무시 항목)
+추가된 항목(AD = 추가됨, CP = 복사됨(신규), PR = 비공개, IG = 무시 항목)
 
 == WorkspacestatusChGrp ==
-수정된 항목(CH = 변경됨, CO = 체크아웃됨, CP = 복사됨(신규), RP = 교체됨)
+수정된 항목(CH = 변경됨, CO = 체크아웃됨, RP = 교체됨)
 
 == WorkspacestatusMvGrp ==
 이동된 항목(MV = 이동됨, LM = 로컬에서 이동됨)

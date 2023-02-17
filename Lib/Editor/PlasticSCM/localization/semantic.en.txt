@@ -1,5 +1,5 @@
 == Base ==
-Base: 
+Base
 
 == ChangedResultFile ==
 Do you want to save the result file?
@@ -17,7 +17,7 @@ configured!
 not configured
 
 == Destination ==
-Destination: 
+Destination
 
 == ErrorAutomaticOptionNeeded ==
 In silent mode the automatic merge option is needed
@@ -96,13 +96,105 @@ You have already resolved {0} conflict(s) that will be lost. Are you sure you wa
 A result file path must be specified
 
 == Source ==
-Source: 
+Source
 
 == UnsolvedPendingConflicts ==
 The file still has {0} unsolved conflicts.
 
 == UnexpectedError ==
 An unexpected error has occurred.
+
+== UsageDescription ==
+Please read below the usage of the tool
+
+== UsageAvalonia ==
+Usage: {0} semanticmerge [<mergeOptions>]
+
+      mergeOptions: <files> [-a|--automatic] [--silent] [--merge-decl] [--process-all-merges]
+                    [--include-format-change] [--log-external-parser]
+                    [<contributorSymbolicNames>] [<generalOptions>] [<contributorExtendedInfo>]
+
+      files: {{<sortedFiles> | <unsortedFiles>}}
+            sortedFiles: <filename1> <filename2> <filename3> <filename4> <fileparamorder>
+                  fileparamorder:    {{-fpo | --fileparamorder}}=<list of keys separated by a semicolon>
+                                     The default value is --fileparamorder=s;d;b;r
+
+            unsortedFiles: <sourceFile> <destinationFile> <baseFile> <resultFile>
+                  sourceFile:        {{-s | --source}}=<filename>
+                  destinationFile:   {{-d | --destination}}=<filename>
+                  baseFile:          {{-b | --base}}=<filename>
+                  resultFile:        {{-r | --result}}=<filename>
+
+      -a | --automatic:        Automatically merge without user interaction unless conflicts are found.
+
+      --silent:                This option must be used combined with the --automatic option.
+                               When a merge can't be solved automatically, this option causes the tool to return immediately
+                               with a non-zero exit code (no semanticmerge tool is shown).
+                               If the tool was able to solve the merge automatically, the program returns exit code 0.
+
+      --merge-decl:            Merge automatically as many declarations* as possible.
+
+      --process-all-merges:    Merge automatically as many declarations* as possible and
+                               run the external text based tool for each non-automatic merge declaration.
+
+        *A declaration is the statement that defines any of the supported syntax elements: classes, methods, attributes, etc.
+         Depending on the element type (e.g. classes, methods), they include a body where the element is implemented.
+
+      --include-format-change: Include changes where only indentation and EOLs have been modified.
+                               This includes differences in white spaces and tabs at the beginning of lines and
+                               differences in EOLs. It also includes white lines at the beginning of declarations.
+                               By default all these differences are ignored to simplify the merge/diff.
+
+      --log-external-parser:   Enable logging the file contents to debug external parsers.
+
+      contributorSymbolicNames: <srcSymbolicName> <dstSymbolicName> <baseSymbolicName>
+            srcSymbolicName:     {{-sn | --srcsymbolicname}}=<symbolicname>
+            dstSymbolicName:     {{-dn | --dstsymbolicname}}=<symbolicname>
+            baseSymbolicName:    {{-bn | --basesymbolicname}}=<symbolicname>
+			
+
+      generalOptions: [<defaultEncoding>] [<resultEncoding>] [<fileLanguage>] [<virtualMachine>]
+                      [<externalMergeTool>] [<external2WayMerge>] [<externalDiffTool>]
+                      [<tabSpaces>] [<extrainfofile>] [<progress>]
+            defaultEncoding:     {{-e | --defaultencoding}}=<encoding>
+            resultEncoding:      {{-re | --resultencoding}}=<encoding>
+            encoding:            {{ascii | ansi | unicode | bigendian | utf7 | utf8 | utf8bom | utf32be | utf32le}}
+			fileLanguage:        {{-l | --fileslanguage}}={{csharp | vb | java | cplusplus | php}}
+            virtualMachine:      {{-vm | --virtualmachine}}=<path to the Java Virtual Machine executable>
+            tabSpaces:           {{-ts   | --tabspaces}}={{4 | <user_defined>}}
+            extrainfofile:       {{-ei   | --extrainfofile}}={{path to a file containing extra merge information}}
+            progress:            {{-pg   | --progress}}={{string representing the progress in the whole merge process}} 
+			
+
+      contributorExtendedInfo: <contributorOwnerName> <contributorBranchName>
+                               <contributorChangeset> <contributorComment>
+
+      contributorOwnerName: <srcOwnerName> <dstOwnerName> <baseOwnerName>
+        srcOwnerName:        {{-so | --srcowner}}=<ownername>
+        dstOwnerName:        {{-do | --dstowner}}=<ownername>
+        baseOwnerName:       {{-bo | --baseowner}}=<ownername>
+
+      contributorBranchName: <srcBranchName>; <dstBranchName> <baseBranchName>
+        srcBranchName:       {{-sb | --srcbranch}}=<name>
+        dstBranchName:       {{-db | --dstbranch}}=<branchname>
+        baseBranchName:      {{-bb | --basebranch}}=<branchname>
+
+      contributorChangeset: <srcChangeset> <dstChangeset> <baseChangeset>
+        srcChangeset:        {{-sc | --srccset}}=<changeset>
+        dstChangeset:        {{-dc | --dstcset}}=<changeset>
+        baseChangeset:       {{-bc | --basecset}}=<changeset>
+
+      contributorComment: <srcComment> <dstComment> <baseComment>
+        srcComment:          {{-sm | --srccomment}}=<changeset>
+        dstComment:          {{-dm | --dstcomment}}=<changeset>
+        baseComment:         {{-bm | --basecomment}}=<changeset>
+
+
+      Examples:
+
+        {0} semanticmerge -b=base.cs -d=dst.cs -s=src.cs -r=result.cs
+
+        {0} semanticmerge base.cs dst.cs src.cs result.cs --fileparamorder=b;d;s;r
 
 == Usage ==
       Usage: semanticmerge [<configureversioncontrol> | <mergeOptions>]
@@ -501,14 +593,26 @@ Back
 == FindMatchesButton ==
 find _matches
 
+== FindMatchesButtonNoUnderscore ==
+find matches
+
 == DiffMatchButton ==
 _diff
+
+== DiffMatchButtonNoUnderscore ==
+diff
 
 == MatchButton ==
 _match
 
+== MatchButtonNoUnderscore ==
+match
+
 == UnMatchButton ==
 _unmatch
+
+== UnMatchButtonNoUnderscore ==
+unmatch
 
 == SelectElementToMatch ==
 Select an element to match
@@ -644,3 +748,53 @@ This is the current file. To change file use the conflict navigation buttons and
 
 == Ready ==
 Ready
+
+== UnparsedFilesError ==
+Some of the files couldn't be parsed.
+Please continue with the external tool.
+
+== UnrebuiltFilesError ==
+Some of the files couldn't have their structure properly recognized.
+Please continue with the external tool.
+
+== ParsingErrorsDescription ==
+The following parsing errors have been found, the trees could be inconsistent:
+
+== ConfirmRestartMergeTitle ==
+Confirm restarting merge
+
+== AndText ==
+and
+
+== Automatic ==
+automatic
+
+== AutomaticallySolvedConflictSemanticMerge ==
+automatically solved using {0}
+
+== ManuallySolvedConflictSemanticMerge ==
+manually solved using {0}
+
+== SolvedConflictSemanticMerge ==
+solved using {0}
+
+== KeepSourceActionText ==
+keep src
+
+== KeepDestinationActionText ==
+keep dst
+
+== KeepBothActionText ==
+keep both
+
+== RenameActionText ==
+rename
+
+== MergeActionText ==
+merge
+
+== TwoWayMergeActionText ==
+2 merge
+
+== ChangePositionActionText ==
+change position

@@ -98,7 +98,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mStatusBar = statusBar;
             mParentWindow = parentWindow;
             mGuiMessage = new UnityPlasticGuiMessage();
-            mCheckedStateManager = new CheckedStateManager();
+            mCheckedStateManager = new PendingChangesViewCheckedStateManager();
 
             mNewChangesInWk = NewChangesInWk.Build(
                 mWkInfo,
@@ -298,11 +298,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         {
             return DependenciesDialog.IncludeDependencies(
                 mWkInfo, changesDependencies, operation, mParentWindow);
-        }
-
-        CheckinMergeNeededData IPendingChangesView.CheckinMergeNeeded()
-        {
-            return CheckinMergeNeededDialog.Merge(mWkInfo, mParentWindow);
         }
 
         SearchMatchesData IPendingChangesView.AskForMatches(string changePath)
@@ -1104,7 +1099,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         readonly IAssetStatusCache mAssetStatusCache;
 
         readonly PendingChangesOperations mPendingChangesOperations;
-        readonly CheckedStateManager mCheckedStateManager;
+        readonly PendingChangesViewCheckedStateManager mCheckedStateManager;
         readonly GuiMessage.IGuiMessage mGuiMessage;
         readonly NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
         readonly GluonNewIncomingChangesUpdater mGluonNewIncomingChangesUpdater;

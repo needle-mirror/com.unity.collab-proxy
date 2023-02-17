@@ -64,6 +64,6 @@ namespace Unity.Cloud.Collaborate
 
         static GUIContent mButtonGUIContent = new GUIContent(
             string.Empty, PlasticLocalization.GetString(
-                PlasticLocalization.Name.PlasticSCM));
+                PlasticLocalization.Name.UnityVersionControl));
     }
 }

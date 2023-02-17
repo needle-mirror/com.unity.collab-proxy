@@ -19,12 +19,6 @@ Plastic SCM 合併工具
 == NextNotAutomaticConflictButtonTooltip ==
 下一個非自動衝突 (Ctrl + PageDown)
 
-== GtkPendingAutomaticConflictsLabel ==
-{0}/{1}
-
-== GtkPendingNonAutomaticConflictsLabel ==
-暫止非自動:{0}/{1}
-
 == PendingAutomaticConflictsLabel ==
 目前衝突:{1} 之 {0}
 
@@ -58,49 +52,8 @@ Plastic SCM 合併工具
 == MarkAsUnresolvedButton ==
 標記為未解決
 
-== MergetoolUsageTitle ==
+== WinMergetoolUsageTitle ==
 Mergetool 用法
-
-== GtkMergetoolUsageHeader ==
-    用法：gtkmergetool
-
-== MacMergetoolUsageHeader ==
-    用法：macmergetool
-    
-== MergetoolUsage ==
-    mergeOptions:<sourceFile> [<sourceSymbolicName>]
-                  <baseFile> [<baseSymbolicName>]
-                  <destinationfile> [<destinationSymbolicName>]
-                  [[<autosave>] <resultFile>]
-                  [<mergeType>]
-                  [<generalOptions>]
-
-        sourceFile:{-s | --source}=<filename>
-        sourceSymbolicName:{-sn | --srcsymbolicname}=<symbolicname>
-        baseFile:{-b | --base}=<filename>
-        baseSymbolicName:{-bn | --basesymbolicname}=<symbolicname>
-        destinationFile:{-d | --destination}=<filename>;
-        destinationSymbolicName:{-dn | --dstsymbolicname}=<symbolicname>
-        autosave:-as | --autosave
-        automatic:-a | --automatic
-        silent:--silent
-        resultFile:{-r | --result}=<filename>
-        mergeType:{-m | --mergeresolutiontype}={onlyone | onlysrc | onlydst | try | forced}
-
-    generalOptions:[<defaultEncoding>] [<comparisonMethod>] [<resultEncoding>]
-
-        defaultEncoding:{-e | --defaultencoding}={none |ascii | unicode | bigendian | utf7 | utf8}
-        resultEncoding:{-re | --resultencoding}={none |ascii | unicode | bigendian | utf7 | utf8}
-        comparisonMethod:{-i | --ignore}={none | eol | whitespaces | ""eol&whitespaces""}
-
-    備註:
-          
-        -a | --automatic:自動嘗試解決合併。
-                             如果無法自動解決合併 (需要使用者操作)，則顯示合併工具。
-        --silent:此選項必須搭配 --automatic 選項使用。
-                             當無法自動解決合併時，此選項會導致工具立即傳回
-                             非零退出碼 (不顯示合併工具)。
-                             如果工具能夠自動解決合併，則程式會傳回退出碼 0。
 
 == WinMergetoolUsage ==
 用法：mergetool [<diffOptions> | <mergeOptions>]
@@ -987,3 +940,6 @@ XMerge...
 
 == FileTooLargeToDisplay ==
 檔案太大而無法顯示內容。
+
+== BinMergeToolUnsupportedFileTypeForDiff ==
+二進位差異比對不支援的檔案類型。僅支援影像

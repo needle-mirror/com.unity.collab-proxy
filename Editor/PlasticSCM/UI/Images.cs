@@ -45,7 +45,6 @@ namespace Unity.PlasticSCM.Editor.UI
             NotOnDisk,
             IconRepository,
             IconPlasticView,
-            IconPlasticViewNotify,
             IconPlasticNotifyIncoming,
             IconPlasticNotifyConflict,
             Loading,
@@ -60,23 +59,6 @@ namespace Unity.PlasticSCM.Editor.UI
             IconBranch,
             IconUndo,
             Refresh
-        }
-
-        internal static Texture2D GetHelpImage(HelpImage image)
-        {
-            // We use the dark version for both the light/dark skins since it matches the grey background better
-            string helpImageFileName = string.Format(
-                "d_{0}.png",
-                HelpImageName.FromHelpImage(image));
-
-            string imageRelativePath = GetImageFileRelativePath(helpImageFileName);
-            Texture2D result = TryLoadImage(imageRelativePath, imageRelativePath);
-
-            if (result != null)
-                return result;
-
-            mLog.WarnFormat("Image not found: {0}", helpImageFileName);
-            return GetEmptyImage();
         }
 
         internal static Texture2D GetImage(Name image)

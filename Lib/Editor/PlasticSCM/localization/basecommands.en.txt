@@ -502,6 +502,12 @@ Changeset
 == CheckedOutKey ==
 Checked-out
 
+== CheckedOutChangedKey ==
+Checked-out (changed)
+
+== CheckedOutUnchangedKey ==
+Checked-out (unchanged)
+
 == CheckinParallelMsg ==
 Multi-thread checkin
 
@@ -544,6 +550,33 @@ Content for item {0} cannot be saved.
 == CherryPick ==
 Cherry pick
 
+== CherrypickChangeDeleteConflictName ==
+Change/Not loaded conflict
+
+== CherrypickChangeDeleteConflictExplanationForAdded ==
+An item has been added on the source, but the destination is not loading its parent
+
+== CherrypickChangeDeleteConflictExplanationForChangedFileOnMissingDir ==
+A file has been modified on the source, but the destination is not loading one of its parent
+
+== CherrypickChangeDeleteConflictExplanationForChangedMissingFile ==
+A file has been modified on the source, but the destination is not loading it
+
+== CherrypickChangeDeleteConflictSrcActionForAddedItemOnMissingDir ==
+Keep source changes (load the directory and add the new item)
+
+== CherrypickChangeDeleteConflictDstActionForAdd ==
+Keep destination changes (discard the add)
+
+== CherrypickChangeDeleteConflictSrcActionForChangedFileOnMissingDir ==
+Keep source changes (load the directory and add the file with the source content)
+
+== CherrypickChangeDeleteConflictSrcActionForChangedMissingFile ==
+Keep source changes (add the file with the new content)
+
+== CherrypickChangeDeleteConflictDstActionForChange ==
+Keep destination changes (discard the change)
+
 == Chgowner ==
 controls the change owner operation
 
@@ -579,6 +612,9 @@ Destination repository '{0}' created.
 
 == CmUndoIncompatibleFlags ==
 The flags '--silent' and '--machinereadable' are not compatible.
+
+== CmUncoIncompatibleFlag ==
+The '--keepchanges' option is not compatible with dynamic workspaces.
 
 == CmdApiInvalidPort ==
 Incorrect port number: {0}
@@ -902,9 +938,6 @@ Repository: {0}
 
 == CmdSetselectorEndwithdot ==
 Reading selector config from stdin, end with '.' in a single line
-
-== CmdSetselectorNotinworkspace ==
-Current directory is not in a registered workspace
 
 == CmdStatusIncompatibleOptionsShortAndXml ==
 The --short and --xml options cannot be used together since --short does not load detailed status information.
@@ -1956,7 +1989,7 @@ Moved
 Added {0}
 
 == MovedAddedConflictExplanation ==
-An item has been moved on the source and a item with the same name has been added on the destination on the same location.
+An item has been moved on the source and an item with the same name has been added on the destination on the same location.
 
 == MovedAddedConflictSourceOperation ==
 Moved from {0} to {1}
@@ -2385,6 +2418,15 @@ The repository '{0}' was correctly shared.
 == Shelve ==
 Shelve
 
+== ShelvePendingChangesQuestion ==
+There are pending changes in your workspace. You can shelve the pending changes and continue with the operation or cancel it. If you continue with the switch operation, your pending changes won't be lost, they can be recovered from the created shelve. Do you want to continue with the switch operation? (y/n)
+
+== ShelvePendingChangesShelvesetComment ==
+Shelve created during switch operation (from cs:{0})
+
+== ShelvePendingChangesShelvesetCommentPartialWorkspace ==
+Shelve created during switch operation
+
 == ShelveStatusConfirming ==
 Confirming shelve operation
 
@@ -2540,9 +2582,6 @@ The repository '{0}' was correctly unshared.
 == UnsupportedMergeType ==
 Unsupported merge type
 
-== UpdateAskForMerge ==
-There are conflicts between the latest changes in branch and your local changes. Do you want to perform the merge? (y/n)
-
 == UpdateDeletedSelectorObjectSkipped ==
 Unable to update your workspace to a valid branch configuration. It is likely that somebody else deleted the shelve or the label your workspace is set. Please switch your workspace to an existing branch, changeset, label or shelveset.
 
@@ -2619,10 +2658,10 @@ Which rename do you want to use? [1|2]
 Repository {0} does not exist. It will be created
 
 == WorkspacestatusAddGrp ==
-Added items (AD = added, PR = private, IG = ignored)
+Added items (AD = added, CP = copied (new), PR = private, IG = ignored)
 
 == WorkspacestatusChGrp ==
-Modified items (CH = changed, CO = checked-out, CP = copied (new), RP = replaced)
+Modified items (CH = changed, CO = checked-out, RP = replaced)
 
 == WorkspacestatusMvGrp ==
 Moved items (MV = moved, LM = locally moved)

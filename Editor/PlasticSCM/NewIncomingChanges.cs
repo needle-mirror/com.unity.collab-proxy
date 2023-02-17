@@ -20,9 +20,6 @@ namespace Unity.PlasticSCM.Editor
             CheckIncomingChanges.IAutoRefreshIncomingChangesView autoRefreshIncomingChangesView,
             CheckIncomingChanges.IUpdateIncomingChanges updateIncomingChanges)
         {
-            if (!ClientConfig.Get().GetClientConfigData().IsIncomingChangesEnabled())
-                return null;
-
             NewIncomingChangesUpdater updater = new NewIncomingChangesUpdater(
                 new UnityPlasticTimerBuilder(),
                 new CheckIncomingChanges.CalculateIncomingChanges(),
@@ -46,9 +43,6 @@ namespace Unity.PlasticSCM.Editor
             GluonCheckIncomingChanges.IUpdateIncomingChanges updateIncomingChanges,
             GluonCheckIncomingChanges.ICalculateIncomingChanges calculateIncomingChanges)
         {
-            if (!ClientConfig.Get().GetClientConfigData().IsGluonIncomingChangesEnabled())
-                return null;
-
             GluonNewIncomingChangesUpdater updater = new GluonNewIncomingChangesUpdater(
                 wkInfo,
                 new UnityPlasticTimerBuilder(),

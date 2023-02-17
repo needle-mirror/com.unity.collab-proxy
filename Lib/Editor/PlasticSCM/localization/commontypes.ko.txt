@@ -203,9 +203,6 @@ ID가 {1}(리포지토리 {2})인 브랜치 {0}의 부모를 찾을 수 없습�
 == CantRevertRootItem ==
 루트 항목은 되돌릴 수 없습니다
 
-== CantSetAclOnRevsOrWks ==
-개정이나 워크스페이스에 ACL을 설정할 수 없습니다
-
 == CantSetAclItemsRevs ==
 개정이나 항목에 ACL을 설정할 수 없습니다
 

@@ -268,9 +268,6 @@ Designed in Boecillo Park (Valladolid), Spain
 == MainSidebarSyncItemCloudEdition ==
 Cloud に同期
 
-== MainSidebarCloudItem ==
-Cloud
-
 == MainSidebarMergeItem ==
 マージ
 
@@ -492,24 +489,6 @@ GUID
 
 == LocalChangesApplierProgressProcessingNeededPaths ==
 必要なパスを処理しています
-
-== CheckinAutoUpdateMergeRequest ==
-ブランチ内の新しいファイル (更新が必要)。
-
-== CheckinAutoUpdateMergeRequestMessage ==
-ワークスペース内で独自の変更を開始した後に、操作しているブランチに新しい変更が出現しました。変更をチェックインする前に、これらの変更をワークスペースに取り込む必要があります。
-
-ブランチ内の変更はワークスペース内の変更と競合しないため、チェックインする前にワークスペースを単純に更新できます。
-
-ワークスペースを更新し、変更を今すぐチェックインしますか?
-
-== UpdateWorkspaceMergeRequest ==
-更新前に競合が検出されました
-
-== UpdateWorkspaceMergeRequestMessage ==
-ワークスペースで変更した一部のファイルはブランチ内でも修正されたため、続行する前にマージが必要です。
-
-競合のある項目をマージできるようにマージビューが開きます。これらを解決してから更新に進んでください。
 
 == CheckinMergeRequest ==
 このブランチのチェックインを続行できません。
@@ -2975,9 +2954,6 @@ Unix ライクなファイルシステムにのみ適用されます
 == SwitchingToLabel ==
 ラベル {0} に切り替えています...
 
-== StatusUnchanged ==
-変更なし
-
 == StatusUnderUnresolvedXlink ==
 Xlink された cset '{0}@{1}' は使用できません
 
@@ -3428,6 +3404,19 @@ ACL をプッシュ中 ({0} %)
             ストアにキーを追加せずにこのまま 1 回だけ接続する場合は、「いいえ」をクリックします。
             このホストを信頼しない場合は、「キャンセル」をクリックして接続を中止します。
 
+== NewCertificateMessageUnityVCS ==
+接続先のサーバーから、ストアにない証明書が送信されました。このサーバーに初めて接続する場合、これは正常な動作です。
+
+            証明書の詳細:
+            - 発行先:{0}
+            - 発行元:{1}
+            - 有効期限:{3}
+            - 証明書ハッシュ:{5}
+
+            このホストを信頼する場合は、「はい」をクリックして Unity Version Control キーストアにキーを追加します (このサーバーに初めて接続する場合は推奨)。
+            ストアにキーを追加せずにこのまま 1 回だけ接続する場合は、「いいえ」をクリックします。
+            このホストを信頼しない場合は、「キャンセル」をクリックして接続を中止します。
+
 == ExistingCertificateChangedTitle ==
 サーバー証明書が変更されています!
 
@@ -3441,6 +3430,19 @@ ACL をプッシュ中 ({0} %)
             - 証明書ハッシュ:{5}
 
             この変更を予期しており、新しい証明書を信頼する場合は、「はい」をクリックして Plastic SCM キーストアにキーを追加し、今後この証明書を信頼します。
+            ストアにキーを追加せずにこのまま 1 回だけ接続する場合は、「いいえ」をクリックします。
+            この接続を中止する場合は、「キャンセル」をクリックします。これは唯一の保証された安全な選択肢です。
+
+== ExistingCertificateChangedMessageUnityVCS ==
+警告:このホスト証明書は、キーストアにある証明書と一致していません。これは、サーバーの ID が侵害されたか、中間者攻撃を受けていることを意味している可能性があります。
+
+            証明書の詳細:
+            - 発行先:{0}
+            - 発行元:{1}
+            - 有効期限:{3}
+            - 証明書ハッシュ:{5}
+
+            この変更を予期しており、新しい証明書を信頼する場合は、「はい」をクリックして Unity Version Control キーストアにキーを追加し、今後この証明書を信頼します。
             ストアにキーを追加せずにこのまま 1 回だけ接続する場合は、「いいえ」をクリックします。
             この接続を中止する場合は、「キャンセル」をクリックします。これは唯一の保証された安全な選択肢です。
 
@@ -4150,6 +4152,9 @@ Plastic SCM Cloud Edition へようこそ!
 == WelcomeToPlasticSCM ==
 Plastic SCM へようこそ!
 
+== WelcomeToUnityVCS ==
+Unity VCS へようこそ!
+
 == WelcomeToGluonTeamEdition ==
 Gluon へようこそ!
 
@@ -4602,9 +4607,6 @@ SSL を使用
 == ChangesetMerge ==
 変更セット cs:{0} からマージ
 
-== OverlappedMerge ==
-最新の変更セット cs:{0} への更新/からのマージ
-
 == SwitchBranchButton ==
 ブランチを切り替え...
 
@@ -4763,6 +4765,12 @@ Plastic は、操作をより高速にするためにワークスペースの変
 
 == PendingChangesFilesystemWatcherDisabledExplanation ==
 これは正常な動作ではなく、パフォーマンスに影響を及ぼす可能性があります。Plastic は、Windows API を使用してワークスペースの変更を監視します。これにより、ディレクトリ構造を調べる必要がなくなります。無効になっている場合、操作の速度が大幅に低下する可能性があります。client.conf で意図的に無効にしている場合以外は、サポートにお問い合わせください。[[HELP_URL|{0}]]
+
+== PendingChangesFilesystemWatcherEnabledExplanationUnityVCS ==
+Unity Version Control は、操作をより高速にするためにワークスペースの変更を監視します。これによりディレクトリ構造を調べる必要がなくなりますが、それでも移動の照合には時間がかかることがあります。
+
+== PendingChangesFilesystemWatcherDisabledExplanationUnityVCS ==
+これは正常な動作ではなく、パフォーマンスに影響を及ぼす可能性があります。Unity Version Control は、Windows API を使用してワークスペースの変更を監視します。これにより、ディレクトリ構造を調べる必要がなくなります。無効になっている場合、操作の速度が大幅に低下する可能性があります。client.conf で意図的に無効にしている場合以外は、サポートにお問い合わせください。[[HELP_URL|{0}]]
 
 == PendingChangesShowCheckouts ==
 チェックアウトを表示
@@ -5309,6 +5317,9 @@ plasticscm.com アカウントを作成
 == SignInToPlasticSCM ==
 Plastic SCM にサインイン
 
+== SignInToUnityVCS ==
+Unity VCS にサインイン
+
 == SignInWithGoogle ==
 Google でサインイン
 
@@ -5425,9 +5436,6 @@ Gluon - アーティスト向け Plastic
 
 == LaunchButton ==
 起動
-
-== LaunchGluonButton ==
-Gluon を起動
 
 == ReplyButton ==
 返信
@@ -6364,8 +6372,11 @@ Semantic Merge
 == UnitySmartMerge ==
 Unity Smart Merge
 
-== LaunchPlasticButton ==
-Launch Plastic SCM
+== OpenInDesktopApp ==
+Open in Desktop App
+
+== OpenInGluon ==
+Open in Gluon
 
 == ElementNotFound ==
 要素が見つかりませんでした
@@ -6402,3 +6413,30 @@ Launch Plastic SCM
 
 == And ==
  および {0}
+
+== ErrorDialogTitle ==
+Error - {0}
+
+== InstallUnityVersionControl ==
+Install Unity Version Control
+
+== CreateAUnityVersionControlWorkspace ==
+ Create a Unity Version Control workspace for this project
+
+== LoginOrSignUpUnityVersionControl ==
+ Login or sign up for a Unity Version Control account
+
+== PrefixUnityVersionControlMenu ==
+Assets/Unity Version Control
+
+== UnityInitialCheckinComment ==
+Add packages and project settings to Unity Version Control.
+
+== OfflineModeDescription ==
+Offline mode disables all Unity Version Control functionalities including the server connection to provide an uninterrupted workflow in the Unity Editor
+
+== UnityVersionControl ==
+Unity Version Control
+
+== PlasticConfigurationTitleUnityVCS ==
+Configure the connection to the Unity VCS server

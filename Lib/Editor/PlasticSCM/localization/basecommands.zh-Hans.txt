@@ -828,9 +828,6 @@ http://gnuwin32.sourceforge.net/packages/patch.htm
 == CmdSetselectorEndwithdot ==
 正在从 stdin 读取选择器配置，在一行中以“.”结尾
 
-== CmdSetselectorNotinworkspace ==
-当前目录不在已注册的工作区中
-
 == CmdStatusIncompatibleOptionsShortAndXml ==
 --short 和 --xml 选项不能一起使用，因为 --short 不会加载详细的状态信息。
 
@@ -2375,9 +2372,6 @@ Plastic SCM 服务器 ({0}) 未连接到 Plastic Tube。
 == UnsupportedMergeType ==
 不支持的合并类型
 
-== UpdateAskForMerge ==
-分支中的最新更改与您的本地更改之间存在冲突。是否要执行合并？(y/n)
-
 == UpdateDeletedSelectorObjectSkipped ==
 无法将您的工作区更新为有效的分支配置。可能其他人删除了您的工作区所设置的搁置或标签。请将您的工作区切换到现有的分支、变更集、标签或搁置集。
 
@@ -2454,10 +2448,10 @@ Plastic 正在更新您的工作区。请稍等片刻...
 存储库 {0} 不存在。系统将创建此存储库
 
 == WorkspacestatusAddGrp ==
-已添加项（AD = 已添加、PR = 私有、IG = 已忽略）
+已添加项（AD = 已添加、CP = 已复制（新）、PR = 私有、IG = 已忽略）
 
 == WorkspacestatusChGrp ==
-已修改项（CH = 已更改、CO = 已签出、CP = 已复制（新）、RP = 已替换）
+已修改项（CH = 已更改、CO = 已签出、RP = 已替换）
 
 == WorkspacestatusMvGrp ==
 已移动项（MV = 已移动、LM = 已在本地移动）

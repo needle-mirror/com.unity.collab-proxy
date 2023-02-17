@@ -7,7 +7,7 @@ using Codice.Client.Common;
 using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WebApi;
-using PlasticGui.SwitcherWindow.Repositories;
+using PlasticGui.WorkspaceWindow.Home.Repositories;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs;
@@ -182,7 +182,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                 PlasticLocalization.GetString(PlasticLocalization.Name.WorkPreferenceQuestion));
 
             if (DoRadioButton(
-                PlasticLocalization.GetString(PlasticLocalization.Name.WorkPreferenceAnswerPlastic),
+                PlasticLocalization.GetString(PlasticLocalization.Name.WorkPreferenceAnswerUnityVCS),
                 state.WorkspaceMode == CreateWorkspaceViewState.WorkspaceModes.Developer,
                 !state.ProgressData.IsOperationRunning,
                 RADIO_BUTTON_MARGIN))
@@ -280,7 +280,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
         {
             string linkText = PlasticLocalization.GetString(PlasticLocalization.Name.HereLink);
             string labelText = string.Format(
-                PlasticLocalization.GetString(PlasticLocalization.Name.LearnMoreDifferences),
+                PlasticLocalization.GetString(PlasticLocalization.Name.LearnMoreDifferencesUnityVCS),
                 UnityStyles.HexColors.LINK_COLOR,
                 linkText);
 

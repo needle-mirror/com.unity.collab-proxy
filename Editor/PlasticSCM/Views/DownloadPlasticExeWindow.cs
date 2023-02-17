@@ -33,7 +33,7 @@ namespace Unity.PlasticSCM.Editor.Views
             window.mCancelInstallFrom = cancelInstallFrom;
 
             window.titleContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.PlasticSCM));
+                PlasticLocalization.GetString(PlasticLocalization.Name.UnityVersionControl));
 
             if (EditionToken.IsCloudEdition())
                 window.minSize = window.maxSize = new Vector2(700, 160);
@@ -112,7 +112,7 @@ namespace Unity.PlasticSCM.Editor.Views
             // then we can check for exe existing
             if (mCancelButton.enabledSelf && IsExeAvailable.ForMode(mIsGluonMode))
             {
-                mMessageLabel.text = "Plastic SCM installed. You can now use the feature.";
+                mMessageLabel.text = "Unity Version Control installed. You can now use the feature.";
                 mCancelButton.text =
                     PlasticLocalization.GetString(PlasticLocalization.Name.CloseButton);
                 mRequireMessageLabel.AddToClassList("display-none");
@@ -135,7 +135,7 @@ namespace Unity.PlasticSCM.Editor.Views
             mProgressControlsContainer = root.Q<VisualElement>("progressControlsContainer");
 
             root.Q<Label>("title").text =
-                PlasticLocalization.GetString(PlasticLocalization.Name.InstallPlasticSCM);
+                PlasticLocalization.GetString(PlasticLocalization.Name.InstallUnityVersionControl);
 
             mDownloadCloudEditionButton.text =
                 PlasticLocalization.GetString(PlasticLocalization.Name.DownloadCloudEdition);

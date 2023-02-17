@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Codice.Client.Common.Servers;
 using Codice.Client.Common;
 using Codice.Utils;
+using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.Views.Welcome;
 
 using Codice.CM.Common;
@@ -43,7 +44,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             CloudEditionWelcomeWindow window = GetWindow<CloudEditionWelcomeWindow>();
 
             window.titleContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.SignInToPlasticSCM));
+                PlasticLocalization.GetString(PlasticLocalization.Name.SignInToUnityVCS));
             window.minSize = window.maxSize = new Vector2(500, 460);
 
             window.mWelcomeView = welcomeView;
@@ -264,7 +265,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         string GetWindowTitle()
         {
             return mIsOnSignIn ?
-                PlasticLocalization.GetString(PlasticLocalization.Name.SignInToPlasticSCM) :
+                PlasticLocalization.GetString(PlasticLocalization.Name.SignInToUnityVCS) :
                 PlasticLocalization.GetString(PlasticLocalization.Name.SignUp);
         }
 

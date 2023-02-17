@@ -18,6 +18,9 @@ namespace Unity.PlasticSCM.Editor.Configuration
         {
             AskCredentialsToUser.DialogData result = null;
 
+            if (!PlasticPlugin.ConnectionMonitor.IsConnected)
+                return result;
+
             GUIActionRunner.RunGUIAction(delegate
             {
                 result = CredentialsDialog.RequestCredentials(
@@ -29,6 +32,9 @@ namespace Unity.PlasticSCM.Editor.Configuration
 
         void AskCredentialsToUser.IGui.ShowSaveProfileErrorMessage(string message)
         {
+            if (!PlasticPlugin.ConnectionMonitor.IsConnected)
+                return;
+
             GUIActionRunner.RunGUIAction(delegate
             {
                 GuiMessage.ShowError(string.Format(
@@ -42,6 +48,9 @@ namespace Unity.PlasticSCM.Editor.Configuration
             string cloudServer)
         {
             AskCredentialsToUser.DialogData result = null;
+
+            if (!PlasticPlugin.ConnectionMonitor.IsConnected)
+                return result;
 
             GUIActionRunner.RunGUIAction(delegate
             {

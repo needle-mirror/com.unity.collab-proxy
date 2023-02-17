@@ -209,9 +209,6 @@ Can't retrieve wkTree for wk '{0}' on '{1}'
 == CantRevertRootItem ==
 The root item can't be reverted
 
-== CantSetAclOnRevsOrWks ==
-Can't set Acl for revision or workspaces
-
 == CantSetAclItemsRevs ==
 Can't set Acl for revisions or items
 
@@ -262,6 +259,11 @@ The destination branch is not empty.
 
 == CheckinRevNoCo ==
 Revision {0} must be checked out in repository {1} to perform a check in!.
+
+== CheckinNotLoadedItem==
+The item '{0}' is not loaded on the changeset you are working on (cs:{1}).
+You most likely updated the workspace with the item cloaked, so it wasn't unloaded.
+Please retry the check-in operation excluding this item, then update the entire workspace to fix any inconsistency.
 
 == ChooseLanguage ==
 Choose a language (type a number)
@@ -781,6 +783,10 @@ The following merge operations cannot be applied: {0}
 
 == MergeToFoundConflicts ==
 The "Merge-to" operation cannot be executed because the merge from changeset cs:{0} to branch br:{1} has conflicts.
+It is necessary to run a "Merge from" operation from a workspace to resolve those conflicts.
+
+== MergeToFoundEncryptedConflicts ==
+The "Merge-to" operation cannot be executed because the merge from changeset cs:{0} to branch br:{1} has file conflicts that cannot be resolved as they are encrypted.
 It is necessary to run a "Merge from" operation from a workspace to resolve those conflicts.
 
 == MergeTypeNotFound ==

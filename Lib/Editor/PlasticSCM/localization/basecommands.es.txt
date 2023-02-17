@@ -506,6 +506,12 @@ Changeset
 == CheckedOutKey ==
 Desprotegido
 
+== CheckedOutChangedKey ==
+Desprotegido (cambiado)
+
+== CheckedOutUnchangedKey ==
+Desprotegido (sin cambios)
+
 == CheckinParallelMsg ==
 Checkin multihilo
 
@@ -548,6 +554,33 @@ El contenido del ítem {0} no ha podido salvarse.
 == CherryPick ==
 Cherry pick
 
+== CherrypickChangeDeleteConflictName ==
+Conflicto de cambiado y no cargado
+
+== CherrypickChangeDeleteConflictExplanationForAdded ==
+Un ítem ha sido añadido en el origen, pero el destino no carga su padre
+
+== CherrypickChangeDeleteConflictExplanationForChangedFileOnMissingDir ==
+Un fichero ha sido modificado en el origen, pero el destino no carga su padre
+
+== CherrypickChangeDeleteConflictExplanationForChangedMissingFile ==
+Un fichero ha sido modificado en el origen, pero el destino no lo carga
+
+== CherrypickChangeDeleteConflictSrcActionForAddedItemOnMissingDir ==
+Mantener los cambios en origen (cargar el directorio y añadir el ítem)
+
+== CherrypickChangeDeleteConflictDstActionForAdd ==
+Mantener los cambios en destino (descartar el añadido)
+
+== CherrypickChangeDeleteConflictSrcActionForChangedFileOnMissingDir ==
+Mantener los cambios en origen (cargar el directorio y añadir el fichero con el contenido de origen)
+
+== CherrypickChangeDeleteConflictSrcActionForChangedMissingFile ==
+Mantener los cambios en origen (añadir el fichero con el contenido de origen)
+
+== CherrypickChangeDeleteConflictDstActionForChange ==
+Mantener los cambios en destino (descartar el cambio)
+
 == Chgowner ==
 controla la operación de cambiar el propietario
 
@@ -583,6 +616,9 @@ El repositorio destino '{0}' ha sido creado.
 
 == CmUndoIncompatibleFlags ==
 Las opciones '--silent' y '--machinereadable' no son compatibles.
+
+== CmUncoIncompatibleFlag ==
+La opción '--keepchanges' no es compatible con workspaces dinámicos.
 
 == CmdApiPressEnterToExit ==
 API REST cliente de Plastic SCM: Pulse <ENTER> para salir.
@@ -915,9 +951,6 @@ Servidor de repositorios: {0}
 
 == CmdRepoResultCheckdb ==
 Repositorio: {0}
-
-== CmdSetselectorNotinworkspace ==
-El directorio actual no pertenece a ningún espacio de trabajo
 
 == CmdStatusIncompatibleOptionsShortAndXml ==
 Las opciones --short y --xml no se pueden usar juntas porque --short no carga información detallada del estado.
@@ -2405,6 +2438,15 @@ El repositorio '{0}' fue compartido correctamente.
 == Shelve ==
 Shelve
 
+== ShelvePendingChangesQuestion ==
+Existen cambios pendientes en su espacio de trabajo. Puede hacer un shelve con los cambios pendientes y continuar con la operación o cancelarla. Si continúa con la operación sus cambios pendientes no se perderán, podrá recuperarlos del shelve creado. ¿Desea continuar con la operación? (s/n)
+
+== ShelvePendingChangesShelvesetComment ==
+Shelve creado como parte de la operación de cambio del espacio de trabajo (desde cs:{0})
+
+== ShelvePendingChangesShelvesetCommentPartialWorkspace ==
+Shelve creado como parte de la operación de cambio del espacio de trabajo
+
 == ShelveStatusConfirming ==
 Confirmando la operación de shelve
 
@@ -2560,9 +2602,6 @@ El repositorio '{0}' dejó de ser compartido correctamente.
 == UnsupportedMergeType ==
 Tipo de merge no soportado
 
-== UpdateAskForMerge ==
-Existen conflictos entre los últimos cambios de la rama y sus cambios locales. ¿Desea realizar un merge? (s/n)
-
 == UpdateDeletedSelectorObjectSkipped ==
 No se pudo actualizar su espacio de trabajo a una rama válida. Es posible que otro usuario haya borrado el shelve o la etiqueta a la que apuntaba su espacio de trabajo. Por favor, cambie su espacio de trabajo para que apunte a una rama, etiqueta, changeset o shelve existente.
 
@@ -2639,10 +2678,10 @@ Que renombrado desea utilizar? [1|2]
 El repositorio {0} no existe. Será creado.
 
 == WorkspacestatusAddGrp ==
-Elementos añadidos (AD = añadido, PR = privado, IG = ignorado)
+Elementos añadidos (AD = añadido, CP = copiado (nuevo), PR = privado, IG = ignorado)
 
 == WorkspacestatusChGrp ==
-Elementos modificados (CH = cambiado, CO = checkout, CP = copiado (nuevo), RP = reemplazado)
+Elementos modificados (CH = cambiado, CO = checkout, RP = reemplazado)
 
 == WorkspacestatusMvGrp ==
 Elementos movidos (MV = movido, LM = movido local)

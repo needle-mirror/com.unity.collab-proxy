@@ -828,9 +828,6 @@ http://gnuwin32.sourceforge.net/packages/patch.htm
 == CmdSetselectorEndwithdot ==
 stdin からセレクター設定を読み取っています。1 行の末尾には '.' を付けてください
 
-== CmdSetselectorNotinworkspace ==
-現在のディレクトリは登録されたワークスペース内にはありません
-
 == CmdStatusIncompatibleOptionsShortAndXml ==
 --short オプションと --xml オプションを一緒に使用することはできません。--short では詳細なステータス情報がロードされないためです。
 
@@ -2372,9 +2369,6 @@ Plastic SCM サーバー ({0}) は Plastic Tube に接続されていません�
 == UnsupportedMergeType ==
 サポートされていないマージタイプ
 
-== UpdateAskForMerge ==
-ブランチの最新の変更とローカルの変更との間に競合があります。マージを実行しますか? (y/n)
-
 == UpdateDeletedSelectorObjectSkipped ==
 ワークスペースを有効なブランチ設定に更新できません。おそらく、ワークスペースに設定されたシェルブまたはラベルが他のユーザーによって削除されています。ワークスペースを、存在するブランチ、変更セット、ラベル、またはシェルブセットに切り替えてください。
 
@@ -2451,10 +2445,10 @@ Plastic がワークスペースを更新しています。しばらくお待ち
 リポジトリ {0} は存在しません。新規作成されます
 
 == WorkspacestatusAddGrp ==
-追加済み項目 (AD = 追加済み、PR = 非公開、IG = 無視)
+追加済み項目 (AD = 追加済み、CP = コピー済み (新規)、PR = 非公開、IG = 無視)
 
 == WorkspacestatusChGrp ==
-変更済み項目 (CH = 変更済み、CO = チェックアウト済み、CP = コピー済み (新規)、RP = 置換済み)
+変更済み項目 (CH = 変更済み、CO = チェックアウト済み、RP = 置換済み)
 
 == WorkspacestatusMvGrp ==
 移動済み項目 (MV = 移動済み、LM = ローカルで移動済み)

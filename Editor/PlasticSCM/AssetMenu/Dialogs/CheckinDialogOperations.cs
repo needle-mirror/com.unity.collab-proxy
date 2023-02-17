@@ -49,8 +49,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                     progressControls.HideProgress();
                     ((IPlasticDialogCloser)dialog).CloseDialog();
 
-                    if (waiter.Exception is CmClientMergeNeededException ||
-                        waiter.Exception is CmClientUpdateMergeNeededException)
+                    if (waiter.Exception is CmClientMergeNeededException)
                     {
                         // we need to explicitly call EditorWindow.Close() to ensure
                         // that the dialog is closed before asking the user

@@ -19,12 +19,6 @@ Plastic SCM 병합 툴
 == NextNotAutomaticConflictButtonTooltip ==
 다음 비자동 충돌(Ctrl + PageDown)
 
-== GtkPendingAutomaticConflictsLabel ==
-{0}/{1}
-
-== GtkPendingNonAutomaticConflictsLabel ==
-대기 중인 비자동: {0}/{1}
-
 == PendingAutomaticConflictsLabel ==
 현재 충돌: {0}/{1}
 
@@ -58,49 +52,8 @@ Plastic SCM 병합 툴
 == MarkAsUnresolvedButton ==
 미해결로 표시
 
-== MergetoolUsageTitle ==
+== WinMergetoolUsageTitle ==
 Mergetool 사용
-
-== GtkMergetoolUsageHeader ==
-    사용법: gtkmergetool
-
-== MacMergetoolUsageHeader ==
-    사용법: macmergetool
-    
-== MergetoolUsage ==
-    mergeOptions: <sourceFile> [<sourceSymbolicName>] 
-                  <baseFile> [<baseSymbolicName>]
-                  <destinationfile> [<destinationSymbolicName>]
-                  [[<autosave>] <resultFile>]
-                  [<mergeType>]
-                  [<generalOptions>]
-
-        sourceFile:              {-s | --source}=<filename>
-        sourceSymbolicName:      {-sn | --srcsymbolicname}=<symbolicname>
-        baseFile:                {-b | --base}=<filename> 
-        baseSymbolicName:        {-bn | --basesymbolicname}=<symbolicname>
-        destinationFile:         {-d | --destination}=<filename>; 
-        destinationSymbolicName: {-dn | --dstsymbolicname}=<symbolicname>
-        autosave:                -as | --autosave
-        automatic:               -a | --automatic
-        silent:                  --silent
-        resultFile:              {-r | --result}=<filename>
-        mergeType:               {-m | --mergeresolutiontype}={onlyone | onlysrc | onlydst | try | forced}
-
-    generalOptions: [<defaultEncoding>] [<comparisonMethod>] [<resultEncoding>]
-
-        defaultEncoding:     {-e | --defaultencoding}={none |ascii | unicode | bigendian | utf7 | utf8}
-        resultEncoding:      {-re | --resultencoding}={none |ascii | unicode | bigendian | utf7 | utf8}
-        comparisonMethod:    {-i | --ignore}={none | eol | whitespaces | ""eol&whitespaces""}
-
-    비고:
-          
-        -a | --automatic:    자동 병합 해결을 시도합니다.
-                             병합을 자동으로 해결할 수 없는 경우(사용자 상호작용 필요) 병합 툴이 표시됩니다.
-        --silent:            이 옵션은 --automatic 옵션과 함께 사용해야 합니다.
-                             병합을 자동으로 해결할 수 없는 경우 이 옵션으로 인해 툴에서
-                             0이 아닌 종료 코드를 즉시 반환합니다(병합 툴이 표시되지 않음).
-                             툴에서 자동으로 병합을 해결할 수 있는 경우 프로그램에서 종료 코드 0을 반환합니다.
 
 == WinMergetoolUsage ==
 사용법: mergetool [<diffOptions> | <mergeOptions>]
@@ -987,3 +940,6 @@ XMerge 실행에 필요한 정보가 부족합니다
 
 == FileTooLargeToDisplay ==
 내용을 표시하기에 파일이 너무 큽니다.
+
+== BinMergeToolUnsupportedFileTypeForDiff ==
+바이너리 비교를 지원하지 않는 파일입니다. 이미지만 지원됩니다

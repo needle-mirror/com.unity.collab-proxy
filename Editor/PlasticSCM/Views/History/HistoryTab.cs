@@ -8,7 +8,7 @@ using UnityEngine;
 using Codice.Client.BaseCommands.EventTracking;
 using Codice.CM.Common;
 using Codice.Client.Common;
-
+using Codice.Utils;
 using GluonGui;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
@@ -116,7 +116,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         void IRefreshableView.Refresh()
         {
-            mHistoryViewLogic.RefreshForItem(mRepSpec, mItemId);
+            mHistoryViewLogic.RefreshForItem(mRepSpec, mItemId, new CancelToken());
         }
 
         List<RepObjectInfo> HistoryViewLogic.IHistoryView.GetSelectedRevisions()

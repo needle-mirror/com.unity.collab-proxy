@@ -215,9 +215,6 @@ No se pudo obtener el tree de workspace de '{0}' en '{1}'
 == CantRevertRootItem ==
 La operación de revert no está disponile para el ítem raiz.
 
-== CantSetAclOnRevsOrWks ==
-No se pudo establecer la ACL para revisiones o para workspaces
-
 == CantSetAclItemsRevs ==
 No se pudo establecer la ACL para revisiones o para ítems
 
@@ -268,6 +265,11 @@ La rama destino no está vacía.
 
 == CheckinRevNoCo ==
 La revisión {0} debe estar desprotegida en el repositorio {1} para poder protegerla.
+
+== CheckinNotLoadedItem==
+El ítem '{0}' no se encuentra en el changeset al que apunta el workspace (cs:{1}).
+Probablemente estaba cloaked cuando se actualizo el workspace, por lo que no se descargó.
+Por favor reintente la operación de check-in sin incluir el elemento, después actualice el workspace para arreglar cualquier inconsistencia.
 
 == ChooseLanguage ==
 Seleccione un idioma (teclee un número).
@@ -786,10 +788,12 @@ No se ha podido localizar una revisión destino para la operación de merge.
 La siguientes operaciones de merge no pueden ser aplicadas: {0}
 
 == MergeToFoundConflicts ==
+La operación de "Merge-to" no se puede ejecutar porque el merge desde el changeset cs:{0} a la rama br:{1} tiene conflictos.
+Es necesario llevar a cabo una operación de "Merge from" desde un workspace para resolver dichos conflictos.
 
-      La operación de "Merge-to" no se puede ejecutar porque el merge desde el changeset cs:{0} a la rama br:{1} tiene conflictos.
-      Es necesario llevar a cabo una operación de "Merge from" desde un workspace para resolver dichos conflictos.
-    
+== MergeToFoundEncryptedConflicts ==
+La operación de "Merge-to" no se puede ejecutar porque el merge desde el changeset cs:{0} a la rama br:{1} tiene conflictos de fichero que no se puede resolver por estar encriptados.
+Es necesario llevar a cabo una operación de "Merge from" desde un workspace para resolver dichos conflictos.
 
 == MergeTypeNotFound ==
 No fue encontrado el tipo de merge

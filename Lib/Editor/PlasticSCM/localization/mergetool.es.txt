@@ -37,12 +37,6 @@ Anterior conflicto no automático ({0})
 == NextNotAutomaticConflictButtonTooltipPrefix ==
 Siguiente conflicto no automático ({0})
 
-== GtkPendingAutomaticConflictsLabel ==
-{0}/{1}
-
-== GtkPendingNonAutomaticConflictsLabel ==
-Pendientes de resolver: {0}/{1}
-
 == PendingAutomaticConflictsLabel ==
 Conflicto actual: {0} de {1}
 
@@ -379,6 +373,9 @@ Cambiar tabuladores por espacios al editar
 == EditorOptionsWhistespaces ==
 Ver espacios en blanco
 
+== EditorOptionsEOL ==
+Ver finales de línea
+
 == EditorOptionsTabs ==
 Tabulador
 
@@ -517,7 +514,7 @@ Argumento duplicado: {0}.
 == MergeTypeError ==
 {0} no es un método de resolución de merge válido
 
-== MergetoolUsageTitle ==
+== WinMergetoolUsageTitle ==
 Sintaxis herramienta de merge
 
 == XMergeUsageTitle ==
@@ -948,3 +945,37 @@ Cmd+Shift+OemPlus
 
 == PlasticLastConflictShortcutForLinux ==
 Ctrl+Shift+OemPlus
+
+== BinMergeUsageTitle ==
+Sintaxis herramienta de BinMerge
+
+== BinMergeUsage ==
+Uso: {0} binmerge <opciones>
+
+    opciones: <ficheros> <ficheroBase> [<nombreBase>] [[<automatic>] <ficheroResultado>] [<mergeType>] [<opciones>]
+
+        baseFile:              {{-b | --base}}=<filename>
+        baseSymbolicName:      {{-bn | --basesymbolicname}}=<symbolicname>
+        automatic:             -a | --automatic
+        resultFile:            {{-r | --result}}=<filename>
+        mergeType:             {{-m | --mergeresolutiontype}}={{onlyone | onlysrc | onlydst | try | forced}}
+
+    ficheros: <origen> [<nombreOrigen>] <destino> [<nombreDestino>]
+
+        origen:                {{-s | --source}}=<nombreFichero>
+        nombreOrigen:          {{-sn | --srcsymbolicname}}=<nombre>
+        destino:               {{-d | --destination}}=<nombreFichero>
+        nombreDestino:         {{-dn | --dstsymbolicname}}=<nombre>
+
+
+    Examples:
+
+        {0} binmerge --source=file1.png --destination=file2.png
+        {0} binmerge --base=file0.txt --source=file1.txt --destination=file2.txt
+        {0} binmerge --base=file0.txt --source=file1.txt --destination=file2.txt  --automatic --result=result.txt
+        {0} binmerge -s=file1.png -d=file2.png
+        {0} binmerge -b=file0.txt -s=file1.txt -d=file2.txt
+        {0} binmerge -b=file0.txt -s=file1.txt -d=file2.txt -a -r=result.txt -m=onlyone
+
+== BinMergeToolUnsupportedFileTypeForDiff ==
+Tipo de ficheros no soportado para obtener diferencias. Sólo están soportados ficheros de imágenes

@@ -52,7 +52,7 @@ namespace Unity.PlasticSCM.Editor
             if (autoRefreshView != null)
                 autoRefreshView.DisableAutoRefresh();
 
-            mIsOfflineModeEnabled = PlasticProjectOfflineMode.IsEnabled();
+            mIsPluginEnabled = PlasticPluginIsEnabledPreference.IsEnabled();
 
             mWkInfo = FindWorkspace.InfoForApplicationPath(
                 ApplicationDataPath.Get(), PlasticGui.Plastic.API);
@@ -97,9 +97,9 @@ namespace Unity.PlasticSCM.Editor
         public override void OnGUI(string searchContext)
         {
             DrawSettingsSection(
-                DoOfflineModeSetting);
+                DoIsEnabledSetting);
 
-            if (mIsOfflineModeEnabled)
+            if (!mIsPluginEnabled)
                 return;
 
             DrawSplitter.ForWidth(UnityConstants.SETTINGS_GUI_WIDTH);
@@ -108,71 +108,65 @@ namespace Unity.PlasticSCM.Editor
                 DoPendingChangesSettings);
         }
 
-        void DoOfflineModeSetting()
-        {
-            DoOfflineModeHeader();
-
-            EditorGUILayout.Space(5);
-
-            EditorGUILayout.HelpBox(
-                Styles.OfflineModeDescription);
-        }
-
-        void DoOfflineModeHeader()
+        void DoIsEnabledSetting()
         {
             using (new EditorGUILayout.HorizontalScope())
             {
+                string message = PlasticLocalization.GetString(
+                    mIsPluginEnabled ?
+                        PlasticLocalization.Name.UnityVCSIsEnabled :
+                        PlasticLocalization.Name.UnityVCSIsDisabled);
+
                 GUILayout.Label(
-                    PlasticLocalization.GetString(
-                        PlasticLocalization.Name.OfflineModeTitle),
+                    message,
                     EditorStyles.boldLabel,
                     GUILayout.Height(20));
 
                 EditorGUILayout.Space(8);
 
-                DoOfflineModeButton();
+                DoIsEnabledButton();
 
                 GUILayout.FlexibleSpace();
             }
         }
 
-        void DoOfflineModeButton()
+        void DoIsEnabledButton()
         {
             if (!GUILayout.Button(PlasticLocalization.GetString(
-                    mIsOfflineModeEnabled ?
-                        PlasticLocalization.Name.OfflineModeOn :
-                        PlasticLocalization.Name.OfflineModeOff),
-                    mIsOfflineModeEnabled ?
-                        UnityStyles.ProjectSettings.ToggleOn :
-                        UnityStyles.ProjectSettings.ToggleOff))
+                    mIsPluginEnabled ?
+                        PlasticLocalization.Name.DisableButton :
+                        PlasticLocalization.Name.EnableButton),
+                    UnityStyles.ProjectSettings.ToggleOn))
             {
                 return;
             }
 
-            if (!mIsOfflineModeEnabled)
+            if (!mIsPluginEnabled)
             {
-                mIsOfflineModeEnabled = true;
+                mIsPluginEnabled = true;
 
                 TrackFeatureUseEvent.For(
                     PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
-                    TrackFeatureUseEvent.Features.OfflineModeOn);
+                    TrackFeatureUseEvent.Features.UnityPackage.EnableManually);
 
-                PlasticProjectOfflineMode.Enable();
+                PlasticPlugin.Enable();
+                PlasticPluginIsEnabledPreference.Enable();
+
+                return;
+            }
+
+            if (mIsPluginEnabled)
+            {
+                mIsPluginEnabled = false;
+
+                TrackFeatureUseEvent.For(
+                    PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                    TrackFeatureUseEvent.Features.UnityPackage.DisableManually);
+
+                PlasticPlugin.ConnectionMonitor.Stop();
+                PlasticPluginIsEnabledPreference.Disable();
                 CloseWindowIfOpened.Plastic();
                 PlasticPlugin.Disable();
-                return;
-            }
-
-            if (mIsOfflineModeEnabled)
-            {
-                mIsOfflineModeEnabled = false;
-
-                TrackFeatureUseEvent.For(
-                    PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
-                    TrackFeatureUseEvent.Features.OfflineModeOff);
-
-                PlasticProjectOfflineMode.Disable();
-                PlasticPlugin.Enable();
                 return;
             }
         }
@@ -436,7 +430,7 @@ namespace Unity.PlasticSCM.Editor
         {
             if (PlatformIdentifier.IsWindows() || PlatformIdentifier.IsMac())
                 return PlasticLocalization.GetString(
-                    PlasticLocalization.Name.PendingChangesFilesystemWatcherEnabledExplanation);
+                    PlasticLocalization.Name.PendingChangesFilesystemWatcherEnabledExplanationUnityVCS);
 
             return PlasticLocalization.GetString(
             PlasticLocalization.Name.PendingChangesINotifyEnabledExplanation);
@@ -447,7 +441,7 @@ namespace Unity.PlasticSCM.Editor
             if (PlatformIdentifier.IsWindows() || PlatformIdentifier.IsMac())
             {
                 return PlasticLocalization.GetString(
-                    PlasticLocalization.Name.PendingChangesFilesystemWatcherDisabledExplanation)
+                    PlasticLocalization.Name.PendingChangesFilesystemWatcherDisabledExplanationUnityVCS)
                     .Replace("[[HELP_URL|{0}]]", "{0}");
             }
 
@@ -486,10 +480,6 @@ namespace Unity.PlasticSCM.Editor
 
         class Styles
         {
-            internal static GUIContent OfflineModeDescription = 
-                new GUIContent(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.OfflineModeDescription),
-                    Images.GetInfoIcon());
             internal static GUIContent ShowCheckouts =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesShowCheckouts),
@@ -557,7 +547,7 @@ namespace Unity.PlasticSCM.Editor
                         PlasticLocalization.Name.PendingChangesSimilarityPercentageExplanation));
         }
 
-        bool mIsOfflineModeEnabled;
+        bool mIsPluginEnabled;
 
         WorkspaceInfo mWkInfo;
         PendingChangesOptions mInitialOptions;

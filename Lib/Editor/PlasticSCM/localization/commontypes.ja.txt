@@ -199,9 +199,6 @@ ID {1} (リポジトリ {2}) のブランチ {0} の親を見つけることが�
 == CantRevertRootItem ==
 ルート項目を元に戻せません
 
-== CantSetAclOnRevsOrWks ==
-リビジョンまたはワークスペースに ACL を設定できません
-
 == CantSetAclItemsRevs ==
 リビジョンまたは項目に ACL を設定できません
 

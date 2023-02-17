@@ -24,8 +24,7 @@ Usage:
                        to display all the available permissions.)
     objectspec         The object whose permissions will be set.
                        The valid objects for this command are:
-                       repserver, repository, branch, changeset, label, item,
-                       and attribute.
+                       repserver, repository, branch, label, and attribute.
                        (Use 'cm ^help ^objectspec' to learn more about specs.)
 
 Special usage for secured paths:
@@ -1263,9 +1262,9 @@ Usage:
     (Deletes one or more code reviews.)
 
 
-    spec        It can be either a changeset spec or a branch spec. It will be
-                the target of the new code review. (Use 'cm ^help ^objectspec'
-                to learn more about changeset or branch specs.)
+    spec        It can be either a changeset spec, a shelve spec or a branch spec. 
+                It will be the target of the new code review. (Use 'cm ^help 
+                ^objectspec' to learn more about changeset or branch specs.)
     title       A text string to be used as title of the new code review.
     id          The code review identification number. A GUID can be used as
                 well.
@@ -1404,6 +1403,7 @@ Usage:
             [--^comparisonmethod=(^ignoreeol | ^ignorewhitespaces | 
                 ^ignoreeolandwhitespaces | ^recognizeall)] 
             [--^clean]
+            [--^integration]
             [--^format=<str_format>] [--^dateformat=<str_format>]
 
         Shows differences between a 'source' changeset or shelveset, and a
@@ -1428,6 +1428,7 @@ Usage:
             [--^comparisonmethod=(^ignoreeol | ^ignorewhitespaces | 
                 ^ignoreeolandwhitespaces | ^recognizeall)] 
             [--^clean]
+            [--^integration]
             [--^format=<str_format>] [--^dateformat=<str_format>]
             [--^fullpaths | --^fp]
 
@@ -1467,6 +1468,9 @@ Options:
     --^clean             Does not take into account the differences generated
                         because of a merge, but only the differences created by
                         simple checkins.
+    --^integration       Shows the branch changes that are pending to be merged into 
+                        its parent branch. It takes into account any rebase or 
+                        prior merge already done from/to its parent branch.
     --^format            Retrieves the output message in a specific format. See
                         Remarks for more info.
     --^dateformat        Format used to output dates.
@@ -1524,6 +1528,7 @@ Examples:
 
     cm ^diff ^br:/main/task001
     cm ^diff ^br:/main/task001 \doc\readme.txt
+    cm ^diff ^br:/main/task001 --^integration
 
   Comparing changeset trees:
 
@@ -3043,6 +3048,7 @@ Usage:
                            --^mergeresultfile=<path> --^solvedconflictsfile=<path>]
                            [--^nointeractiveresolution]
                            [--^machinereadable [--^startlineseparator=<sep>]
+                           [--^xml] [--^encoding]
                              [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
 
     source_spec           Specification of the source object to merge from:
@@ -3093,7 +3099,7 @@ Options:
                               destination).
     --^noprintoperations       Silently resolves merges without showing
                               information about the resolution.
-    --^silent                  Does not show any output.
+    --^silent                  No output is shown unless an error happens.
     --^to | --^destination      Performs a merge-to operation to the specified
                               branch (by entering a branch spec or brspec)
                               with full conflict resolution. 
@@ -3151,6 +3157,15 @@ Options:
                               This way, a directory conflict won't be solved.
     --^machinereadable         (Mainly used by plugins. See Remarks for more info.)
                               Outputs the result in an easy-to-parse format.
+    --^xml                     Prints the output in XML format to the standard output.
+                              It is possible to specify an output file. This option
+                              cannot be combined with '--^format' nor '--^resolveconflict'.
+    --^encoding                Used with the '--^xml' option, specifies the encoding to
+                              use in the XML output, i.e.: utf-8.
+                              See the MSDN documentation at
+                              http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
+                              to get the table of supported encodings and its format, 
+                              (at the end of the page, in the "Name" column).
     --^startlineseparator      Used with the '--^machinereadable' flag, specifies
                               how the lines should start. (Default: empty string.)
     --^endlineseparator        Used with the '--^machinereadable' flag, specifies
@@ -4710,6 +4725,7 @@ Sets a branch as the working branch.
 Usage:
 
     cm ^switch <branch_spec> [--^report | --^silent] [--^workspace=<path>]
+                             [--^noinput]
     (Sets the working branch and updates the workspace.)
 
     cm ^switch <branch_spec> --^configure <+|-path>[ ...] [--^silent]
@@ -4739,6 +4755,8 @@ Options:
     --^ignorecase        Ignores casing on the paths. With this flag, option
                         '--^configure' works for "/Data/Textures" even if the user
                         writes "/data/teXtures".
+    --^noinput           Skips the interactive question to continue the
+                        operation shelving the pending changes.                        
     --^workspace=path    Path where the workspace is located.
 
 == CMD_HELP_PARTIAL_SWITCH ==
@@ -4766,6 +4784,7 @@ Undoes the checkout on an item.
 Usage:
 
     cm ^partial ^undocheckout | ^unco <item_path>[ ...] [--^silent]
+        [--^keepchanges | -^k]
 
     item_path           Items to apply the operation. Use double quotes (" ")
                         to specify paths containing spaces. Use a whitespace to
@@ -4775,6 +4794,10 @@ Usage:
 Options:
 
     --^silent            Does not show any output.
+    --^keepchanges (-^k)  Undoes the checkout and preserves the local changes.
+                       Sample: undo the checkout of a file leave it as locally
+                       changed with the same content on disk that it was.
+                       This option cannot be used with dynamic workspaces.
 
 == CMD_HELP_PARTIAL_UNCO ==
 Remarks:
@@ -4944,6 +4967,7 @@ Usage:
 
     cm ^partial ^update [<item_path>[ ...]] [--^changeset=<number>]
                       [--^silent | --^report] [--^dontmerge]
+                      [--^xml[=<output_file>]]
                       [--^machinereadable [--^startlineseparator=<sep>]
                         [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
 
@@ -4957,7 +4981,9 @@ Usage:
 Options:
 
     --^changeset          Updates the partial workspace to a specific changeset.
-    --^silent             Does not show any output.
+    --^silent             No output is shown unless an error happens.
+    --^xml                Prints the output in XML format to the standard 
+                         output. It is possible to specify an output file.
     --^report             Prints a list of the applied changes when the command
                          is finished. Using '--^silent' will override this setting.
     --^dontmerge          Does not merge the file conflicts, it just skips them.
@@ -5008,6 +5034,12 @@ Examples:
     cm ^partial ^update xlink/first.png --^changeset=4
     (Updates 'xlink/first.png' item to the content it loaded in the changeset 4
     of the Xlinked repository.)
+	
+    cm ^partial ^update . --^changeset=2 --^xml=output.xml 2>errors.txt 
+    (Updates all current directory children items to the content they loaded 
+	in the changeset 2, reporting the result in XML format. The output is stored
+    in a file named 'output.xml' and errors are redirected to the file 'errors.txt'.
+    NOTE: redirection syntax rely on the shell.)
 
 == CMD_DESCRIPTION_PATCH ==
 Generates a patch file from a spec or applies a generated patch to the current
@@ -6272,7 +6304,8 @@ filter paths are no longer supported.
 
 Usage:
     cm ^setselector | ^sts [--^file=<selector_file>] [--^ignorechanges]
-                         [--^forcedetailedprogress] [<wk_path> | <wk_spec>]
+                           [--^forcedetailedprogress] [<wk_path> | <wk_spec>]
+                           [--^noinput]
 
 Options:
 
@@ -6281,7 +6314,9 @@ Options:
                              shown if there are pending changes detected when
                              updating the workspace.
     --^forcedetailedprogress  Forces detailed progress even when standard output
-                             is redirected. 
+                             is redirected.
+    --^noinput                Skips the interactive questions to continue the
+                             operation with pending changes or to shelve them.
     wk_path                  Path of the workspace to set the selector.
     wk_spec                  Workspace specification. (Use 'cm ^help ^objectspec'
                              to learn more about workspace specs.)
@@ -6332,6 +6367,7 @@ Usage:
     cm ^shelve [<item_path>+] [--^all] [--^dependencies] 
               [-^c=str_comment | -^commentsfile=<comments_file>]
               [--^encoding=name] [--^comparisonmethod=comp_method]
+              [--^summaryformat]
     (Shelves the contents.)
 
     cm ^shelve --^apply=<sh_spec> [--^mount]
@@ -6363,6 +6399,11 @@ Options:
                         to get the table of supported encodings and its format, 
                         (at the end of the page, in the "Name" column).
     --^comparisonmethod  Sets the comparison method. See remarks for more info.
+
+    --^summaryformat     Just prints the shelveset spec created for the main repo,
+                        skipping shelvesets of xlinked repos and any other output
+                        messages. For automation purposes.
+
     --^mount             The mount point for the given repository.
 
 == CMD_HELP_SHELVE ==
@@ -6444,6 +6485,7 @@ Usage:
 
     cm ^shelveset ^create | ^mk [<item_path>[ ...]] [--^all] [--^dependencies]
                              [-^c=<str_comment> | -^commentsfile=<comments_file>]
+                             [--^summaryformat]
 
 Options:
 
@@ -6454,6 +6496,9 @@ Options:
                         given paths, will also be included.
     --^dependencies      Includes local change dependencies into the items to
                         shelve.
+    --^summaryformat     Just prints the shelveset spec created for the main repo,
+                        skipping shelvesets of xlinked repos and any other output
+                        messages. For automation purposes.
     -^c                  Applies the specified comment to the created shelve.
     -^commentsfile       Applies the comment in the specified file to the created
                         shelve.
@@ -7368,6 +7413,8 @@ Usage:
     cm ^switch (<brspec> | <csetspec> | <lbspec> | <shspec>)
               [--^workspace=<path>] [--^repository=<name>]
               [--^forcedetailedprogress]
+              [--^silent] [--^verbose] [--^xml[=<output_file>]] [--^encoding=<name>]
+              [--^forcedetailedprogress] [--^noinput]
 
     (Use 'cm ^help ^objectspec' to learn more about branch, changeset, label,
     and shelveset specifications.)
@@ -7378,6 +7425,18 @@ Options:
     --^repository            Switches to the specified repository.
     --^forcedetailedprogress Forces detailed progress even when standard
                             output is redirected.
+    --^noinput               Skips the interactive questions to continue the
+                            operation with pending changes or to shelve them.
+    --^silent                No output is shown unless an error happens.
+    --^verbose               Shows additional information.
+    --^xml                   Prints the output in XML format to the standard output.
+                            It is possible to specify an output file.
+    --^encoding              Used with the --^xml option, specifies the encoding to
+                            use in the XML output, i.e.: utf-8.
+                            See the MSDN documentation at
+                            http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
+                            to get the table of supported encodings and its format,
+                            (at the end of the page, in the "Name" column).
 
 == CMD_HELP_SWITCH ==
 Remarks:
@@ -7600,8 +7659,9 @@ Undoes the checkout of an item.
 Usage:
 
     cm ^undocheckout | ^unco <item_path>[ ...] [-^a | --^all] [--^symlink] [--^silent]
+                           [--^keepchanges | -^k]
                            [--^machinereadable [--^startlineseparator=<sep>] 
-                            [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
+                           [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
 
     item_path           Items to apply the operation. Use a whitespace to separate
                         paths. Use double quotes (" ") to specify paths
@@ -7624,6 +7684,10 @@ Options:
                          specifies how the lines should end.
     --^fieldseparator     Used with the '--^machinereadable' flag,
                          specifies how the fields should be separated.
+     --^keepchanges (-^k)  Undoes the checkout and preserves the local changes.
+                         Sample: undo the checkout of a file leave it as locally
+                         changed with the same content on disk that it was.
+                         This option cannot be used with dynamic workspaces.
 
 == CMD_HELP_UNCO ==
 Remarks:
@@ -8022,7 +8086,7 @@ Usage:
               [--^silent] [--^verbose] [--^xml[=<output_file>]] [--^encoding=<name>]
               [--^machinereadable [--^startlineseparator=<sep>]
                 [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
-              [--^forcedetailedprogress]
+              [--^forcedetailedprogress] [--^noinput]
 
     item_path           Path to update.
                         Use . to apply update to current directory.
@@ -8049,6 +8113,8 @@ Options:
     --^ignorechanges         Ignores the pending changes warning message that is
                             shown if there are pending changes detected when
                             updating the workspace.
+    --^noinput               Skips the interactive questions to continue the
+                            operation with pending changes or to shelve them. 
     --^override              Overrides changed files outside Plastic SCM control.
                             Their content will be overwritten with the server
                             content.
@@ -8059,7 +8125,7 @@ Options:
                             before starting. If you always checkout before
                             modifying a file, you can use this check and speed
                             up the operation.
-    --^silent                Does not show any output.
+    --^silent                No output is shown unless an error happens.
     --^verbose               Shows additional information.
     --^xml                   Prints the output in XML format to the standard output.
                             It is possible to specify an output file.
@@ -8416,6 +8482,16 @@ Options:
                           specifies how the lines should end.
     --^fieldseparator      Used with the '--^machinereadable' flag,
                           specifies how the fields should be separated.
+    --^iscochanged         Shows whether contents of a checked-out file have 
+                          changed or not. This flag is only available with 
+                          "--^compact", "--^xml" and "--^machinereadable" options.
+                          If this flag is not set, the "--^compact", "--^xml" or 
+                          "--^machinereadable" options will show just "^CO" 
+                          status for a checked-out file with its contents
+                          changed.
+                          If this flag is set, the "--^compact", "--^xml" or 
+                          "--^machinereadable" options will show "^CO+CH" status
+                          for a checked-out file with its contents changed.
 
 Legacy options:
 

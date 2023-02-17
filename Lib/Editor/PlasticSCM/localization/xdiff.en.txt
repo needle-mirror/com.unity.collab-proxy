@@ -56,7 +56,7 @@ Show the semantic differences in visual mode
 Skip format changes
 
 == SkipFormatChangesButtonTooltip ==
-Ignore indentation and EOL changes when the semantic differences are calculated
+Ignore whitespaces and EOL changes when the semantic differences are calculated
 
 == ReformatButton ==
 Reformat

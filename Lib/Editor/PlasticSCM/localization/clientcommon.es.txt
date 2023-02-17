@@ -123,6 +123,21 @@ No se pueden restaurar los datos para {0} porque esa revisión no está archivad
 == CantRevertToDifferentItem ==
 La operación de revert no puede ser realizada porque la revisión especificada '{0}' hace referencia a otro ítem.
 
+== CantSetAclOnChangesets ==
+No se puede establecer la ACL para changesets
+
+== CantSetAclOnItems ==
+No se puede establecer la ACL para ítems
+
+== CantSetAclOnRevisions ==
+No se puede establecer la ACL para revisiones
+
+== CantSetAclOnShelvesets ==
+No se puede establecer la ACL para shelvesets
+
+== CantSetAclOnWorkspaces ==
+No se puede establecer la ACL para workspaces
+
 == CantUpdateBaseChangesetBranchWithRevisions ==
 Para poder modificar la base de una rama, ésta debe estar vacía.
 
@@ -316,6 +331,9 @@ Formato no esperado. Revisa la ayuda del comando para más información.
 == ErrorReplicatePackageDoesntExist ==
 El paquete de replicación {0} no existe
 
+== ErrorSyncNoAuthorPermission ==
+La operación de sincronizar necesita el permiso chgOwner para conservar el autor de los cambios importados. Por favor pida a su administrador que le otorgue el permiso chgOwner en el repositorio.
+
 == ErrorTwoCsetWithPathDiff ==
 No se pudo calcular las diferencias entre '{0}' y '{1}'.
 
@@ -384,6 +402,9 @@ hace 1 hora
 
 == IncomingChangesCannotCalculateMerge ==
 Los cambios a actualizar no se pueden calcular. Por favor, revise si el changeset cargado en el workspace fue borrado o bien contacte con soporte para obtener más información.
+
+== IncomingChangesCloakedCheckoutsNotSupported ==
+El espacio de trabajo contiene cambios pendientes cloaked. Es necesario deshacerlos para continuar con la Incoming Changes. Por favor deshaga los cambios pendientes cloaked y reintente la operación.
 
 == IncomingChangesDontMerge ==
 La operación de update detectó conflictos con los cambios del servidor. La operación no puede continuar ya que se lanzó con la opción --dontmerge.
@@ -815,9 +836,6 @@ El modo de trabajo '{0}' no está soportado.
 == UpPasswordCorrupt ==
 El parámetro 'password' es incorrecto en el fichero de configuración del cliente.
 
-== UpdateMergeNeeded ==
-Se necesita realizar una operación de merge desde el changeset {0} para poder actualizar el espacio de trabajo.
-
 == UpdateWkContentError ==
 El contenido del espacio de trabajo '{0}' no ha podido actualizarse debido al siguiente error: {1}
 
@@ -918,10 +936,19 @@ No se ha podido montar el espacio de trabajo dinámico {0} después de {1} segun
 Los siguientes espacios de trabajo dinámicos todavía no están montados después de {0} segundos: {1}.
 
 == GameUiCheckinConflictsError ==
-La operación de checkin no puede ser completada porque algunos cambios locales no se pueden aplicar en la versión actual del servidor. Por favor, compruebe los conflictos entre sus cambios locales y la versión actual del servidor.
+La operación de checkin/shelve no puede ser completada porque algunos cambios locales no se pueden aplicar en la versión actual del servidor. Por favor, compruebe los conflictos entre sus cambios locales y la versión actual del servidor.
 
 == IsNotWk ==
 {0} no está en un espacio de trabajo.
 
 == CmdPatchFileNotFound ==
 El fichero que contiene el patch no ha sido encontrado.
+
+== Seconds ==
+segundos
+
+== Minutes ==
+minutos
+
+== Hours ==
+horas

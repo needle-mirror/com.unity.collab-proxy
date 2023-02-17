@@ -268,9 +268,6 @@ Designed in Boecillo Park (Valladolid), Spain
 == MainSidebarSyncItemCloudEdition ==
 Cloud에 동기화
 
-== MainSidebarCloudItem ==
-Cloud
-
 == MainSidebarMergeItem ==
 병합
 
@@ -492,24 +489,6 @@ GUID
 
 == LocalChangesApplierProgressProcessingNeededPaths ==
 필요한 경로 처리 중
-
-== CheckinAutoUpdateMergeRequest ==
-브랜치의 새 파일이며 업데이트해야 합니다.
-
-== CheckinAutoUpdateMergeRequestMessage ==
-워크스페이스에서 자체적인 변경사항을 시작한 이후 현재 작업 중인 브랜치에 새로운 변경사항이 표시되었습니다. 변경사항을 체크인하기 전에 이러한 변경사항을 워크스페이스로 가져와야 합니다.
-
-브랜치의 변경사항이 워크스페이스의 변경사항과 충돌하지 않으므로 체크인하기 전에 워크스페이스를 업데이트할 수 있습니다.
-
-지금 워크스페이스를 업데이트하고 변경사항을 체크인하시겠습니까?
-
-== UpdateWorkspaceMergeRequest ==
-업데이트 전에 감지된 충돌
-
-== UpdateWorkspaceMergeRequestMessage ==
-워크스페이스에서 변경한 파일 중 일부가 브랜치에서도 수정되었으며, 계속하기 전에 이를 병합해야 합니다.
-
-충돌이 있는 항목을 병합할 수 있도록 병합 뷰가 열립니다. 문제를 해결한 다음 업데이트를 진행하십시오.
 
 == CheckinMergeRequest ==
 이 브랜치에서 체크인을 진행할 수 없습니다.
@@ -2963,9 +2942,6 @@ Unix 유사 파일 시스템에만 적용
 == SwitchingToLabel ==
 {0} 레이블로 전환 중...
 
-== StatusUnchanged ==
-변경되지 않음
-
 == StatusUnderUnresolvedXlink ==
 Xlink 체인지 세트 '{0}@{1}'을(를) 사용할 수 없습니다
 
@@ -3416,6 +3392,19 @@ ACL 내보내기 진행 중({0}%)
             키를 저장소에 추가하지 않고 일회성으로 연결하려는 경우 "아니요"를 클릭합니다.
             이 호스트를 신뢰하지 않는 경우 "취소"를 클릭하여 연결을 중단합니다.
 
+== NewCertificateMessageUnityVCS ==
+연결하려는 서버에서 저장소에 없는 인증서를 보냈습니다. 이 서버에 처음 연결하는 경우 이는 정상입니다.
+
+            인증서 세부사항:
+            - 발급 대상: {0}
+            - 발급자: {1}
+            - 만료일: {3}
+            - 인증서 해시: {5}
+
+            이 호스트를 신뢰하는 경우 "예"를 클릭하여 Unity Version Control 키 저장소에 키를 추가합니다(이 서버에 처음 연결하는 경우 권장).
+            키를 저장소에 추가하지 않고 일회성으로 연결하려는 경우 "아니요"를 클릭합니다.
+            이 호스트를 신뢰하지 않는 경우 "취소"를 클릭하여 연결을 중단합니다.
+
 == ExistingCertificateChangedTitle ==
 서버 인증서가 변경되었습니다.
 
@@ -3429,6 +3418,19 @@ ACL 내보내기 진행 중({0}%)
             - 인증서 해시: {5}
 
             이러한 인증서 변경을 알고 있고 새 인증서를 신뢰하는 경우 "예"를 클릭하여 Plastic SCM 키 저장소에 키를 추가하고, 이후 이 인증서를 신뢰하십시오.
+            키를 저장소에 추가하지 않고 일회성으로 연결하려는 경우 "아니요"를 클릭합니다.
+            이 연결을 중단하려면 "취소"를 클릭합니다. 이는 유일하게 안전이 보장되는 선택입니다.
+
+== ExistingCertificateChangedMessageUnityVCS ==
+경고: 이 호스트의 인증서가 키 저장소에 있는 인증서와 일치하지 않습니다. 서버 ID가 손상되었거나 중간자 공격이 진행 중이기 때문일 수 있습니다.
+
+            인증서 세부사항:
+            - 발급 대상: {0}
+            - 발급자: {1}
+            - 만료일: {3}
+            - 인증서 해시: {5}
+
+            이러한 인증서 변경을 알고 있고 새 인증서를 신뢰하는 경우 "예"를 클릭하여 Unity Version Control 키 저장소에 키를 추가하고, 이후 이 인증서를 신뢰하십시오.
             키를 저장소에 추가하지 않고 일회성으로 연결하려는 경우 "아니요"를 클릭합니다.
             이 연결을 중단하려면 "취소"를 클릭합니다. 이는 유일하게 안전이 보장되는 선택입니다.
 
@@ -4138,6 +4140,9 @@ Plastic SCM Cloud Edition을 시작합니다.
 == WelcomeToPlasticSCM ==
 Plastic SCM을 시작합니다.
 
+== WelcomeToUnityVCS ==
+Unity VCS을 시작합니다.
+
 == WelcomeToGluonTeamEdition ==
 Gluon을 시작합니다.
 
@@ -4590,9 +4595,6 @@ cs:{0} 체인지 세트에서 차감식 병합
 == ChangesetMerge ==
 cs:{0} 체인지 세트에서 병합
 
-== OverlappedMerge ==
-최신 체인지 세트 cs:{0}(으)로 업데이트/병합
-
 == SwitchBranchButton ==
 브랜치 전환...
 
@@ -4751,6 +4753,12 @@ Plastic에서는 작업 속도를 높이기 위해 워크스페이스에서 변�
 
 == PendingChangesFilesystemWatcherDisabledExplanation ==
 이는 정상적이지 않으며 성능에 영향을 미칠 수 있습니다. Plastic에서는 Windows API를 사용하여 워크스페이스에서 변경사항을 감시합니다. 이렇게 하면 디렉터리 구조를 살펴볼 필요가 없습니다. 이 기능이 비활성화되면 작업 속도가 훨씬 느려질 수 있습니다. client.conf에서 의도적으로 비활성화된 경우가 아니라면 지원팀에 도움을 요청하십시오. [[HELP_URL|{0}]]
+
+== PendingChangesFilesystemWatcherEnabledExplanationUnityVCS ==
+Unity Version Control에서는 작업 속도를 높이기 위해 워크스페이스에서 변경사항을 감시합니다. 이렇게 하면 디렉터리 구조를 살펴볼 필요가 없지만 이동 일치 판정에 많은 시간이 소요될 수 있습니다.
+
+== PendingChangesFilesystemWatcherDisabledExplanationUnityVCS ==
+이는 정상적이지 않으며 성능에 영향을 미칠 수 있습니다. Unity Version Control에서는 Windows API를 사용하여 워크스페이스에서 변경사항을 감시합니다. 이렇게 하면 디렉터리 구조를 살펴볼 필요가 없습니다. 이 기능이 비활성화되면 작업 속도가 훨씬 느려질 수 있습니다. client.conf에서 의도적으로 비활성화된 경우가 아니라면 지원팀에 도움을 요청하십시오. [[HELP_URL|{0}]]
 
 == PendingChangesShowCheckouts ==
 체크아웃 표시
@@ -5297,6 +5305,9 @@ plasticscm.com 계정 생성
 == SignInToPlasticSCM ==
 Plastic SCM에 로그인
 
+== SignInToUnityVCS ==
+Unity VCS에 로그인
+
 == SignInWithGoogle ==
 Google로 로그인
 
@@ -5413,9 +5424,6 @@ Gluon - 아티스트용 Plastic
 
 == LaunchButton ==
 실행
-
-== LaunchGluonButton ==
-Gluon 실행
 
 == ReplyButton ==
 응답
@@ -6340,8 +6348,11 @@ Single Sign On으로 로그인
 == EmailNotSent ==
 이메일을 보낼 수 없습니다
 
-== LaunchPlasticButton ==
-Launch Plastic SCM
+== OpenInDesktopApp ==
+Open in Desktop App
+
+== OpenInGluon ==
+Open in Gluon
 
 == ElementNotFound ==
 요소를 찾을 수 없습니다
@@ -6378,3 +6389,30 @@ Launch Plastic SCM
 
 == And ==
  및 {0}
+
+== ErrorDialogTitle ==
+Error - {0}
+
+== InstallUnityVersionControl ==
+Install Unity Version Control
+
+== CreateAUnityVersionControlWorkspace ==
+ Create a Unity Version Control workspace for this project
+
+== LoginOrSignUpUnityVersionControl ==
+ Login or sign up for a Unity Version Control account
+
+== PrefixUnityVersionControlMenu ==
+Assets/Unity Version Control
+
+== UnityInitialCheckinComment ==
+Add packages and project settings to Unity Version Control.
+
+== OfflineModeDescription ==
+Offline mode disables all Unity Version Control functionalities including the server connection to provide an uninterrupted workflow in the Unity Editor
+
+== UnityVersionControl ==
+Unity Version Control
+
+== PlasticConfigurationTitleUnityVCS ==
+Configure the connection to the Unity VCS server

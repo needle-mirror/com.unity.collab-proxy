@@ -292,14 +292,6 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal static class ProjectSettings
         {
-            internal static readonly LazyStyle ToggleOff = new LazyStyle(() =>
-            {
-                GUIStyle result = new GUIStyle(Toggle);
-                result.normal.textColor = Colors.ToggleOffText;
-                result.hover.textColor = Colors.ToggleHoverText;
-                return result;
-            });
-
             internal static readonly LazyStyle ToggleOn = new LazyStyle(() =>
             {
                 GUIStyle result = new GUIStyle(Toggle);
@@ -311,7 +303,7 @@ namespace Unity.PlasticSCM.Editor.UI
             {
                 GUIStyle result = new GUIStyle(EditorStyles.miniButton);
                 result.fixedHeight = 22;
-                result.fixedWidth = 38;
+                result.fixedWidth = 85;
                 result.fontSize = 12;
                 return result;
             });

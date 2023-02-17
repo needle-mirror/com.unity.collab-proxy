@@ -45,7 +45,8 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
 
         internal static void ClearCache()
         {
-            mAssetStatusCache.Clear();
+            if (mAssetStatusCache != null)
+                mAssetStatusCache.Clear();
 
             mRepaintProjectWindow();
         }

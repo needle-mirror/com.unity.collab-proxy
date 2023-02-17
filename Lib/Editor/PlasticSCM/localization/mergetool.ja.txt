@@ -19,12 +19,6 @@ Plastic SCM マージツール
 == NextNotAutomaticConflictButtonTooltip ==
 次の非自動競合 (Ctrl + PageDown)
 
-== GtkPendingAutomaticConflictsLabel ==
-{0}/{1}
-
-== GtkPendingNonAutomaticConflictsLabel ==
-保留中の非自動:{0}/{1}
-
 == PendingAutomaticConflictsLabel ==
 現在の競合:{0}/{1}
 
@@ -58,49 +52,8 @@ Plastic SCM マージツール
 == MarkAsUnresolvedButton ==
 未解決としてマーク
 
-== MergetoolUsageTitle ==
+== WinMergetoolUsageTitle ==
 Mergetool の使用方法
-
-== GtkMergetoolUsageHeader ==
-    使用方法:gtkmergetool
-
-== MacMergetoolUsageHeader ==
-    使用方法:macmergetool
-    
-== MergetoolUsage ==
-    mergeOptions:<sourceFile> [<sourceSymbolicName>]
-                  <baseFile> [<baseSymbolicName>]
-                  <destinationfile> [<destinationSymbolicName>]
-                  [[<autosave>] <resultFile>]
-                  [<mergeType>]
-                  [<generalOptions>]
-
-        sourceFile:{-s | --source}=<filename>
-        sourceSymbolicName:{-sn | --srcsymbolicname}=<symbolicname>
-        baseFile:{-b | --base}=<filename>
-        baseSymbolicName:{-bn | --basesymbolicname}=<symbolicname>
-        destinationFile:{-d | --destination}=<filename>;
-        destinationSymbolicName:{-dn | --dstsymbolicname}=<symbolicname>
-        autosave:-as | --autosave
-        automatic:-a | --automatic
-        silent:--silent
-        resultFile:{-r | --result}=<filename>
-        mergeType:{-m | --mergeresolutiontype}={onlyone | onlysrc | onlydst | try | forced}
-
-    generalOptions:[<defaultEncoding>] [<comparisonMethod>] [<resultEncoding>]
-
-        defaultEncoding:{-e | --defaultencoding}={none |ascii | unicode | bigendian | utf7 | utf8}
-        resultEncoding:{-re | --resultencoding}={none |ascii | unicode | bigendian | utf7 | utf8}
-        comparisonMethod:{-i | --ignore}={none | eol | whitespaces | ""eol&whitespaces""}
-
-    備考:
-          
-        -a | --automatic:マージを自動的に解決しようとします。
-                             マージを自動的に解決できない (ユーザーの対応が必要な) 場合は、マージツールが表示されます。
-        --silent:このオプションは、--automatic オプションと組み合わせて使用する必要があります。
-                             マージを自動的に解決できない場合、このオプションが原因でツールがゼロ以外の終了コードと共に
-                             即座に返されます (マージツールは表示されません)。
-                             ツールがマージを自動的に解決できた場合、プログラムは終了コード 0 を返します。
 
 == WinMergetoolUsage ==
 使用方法:mergetool [<diffOptions> | <mergeOptions>]
@@ -987,3 +940,6 @@ XMerge を実行するのに十分な情報がありません
 
 == FileTooLargeToDisplay ==
 コンテンツを表示するにはファイルが大きすぎます。
+
+== BinMergeToolUnsupportedFileTypeForDiff ==
+ファイルタイプでバイナリ差分がサポートされていません。サポートされるのは画像 のみです。

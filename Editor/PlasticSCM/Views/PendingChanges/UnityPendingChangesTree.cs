@@ -85,7 +85,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         internal void BuildChangeCategories(
             WorkspaceInfo wkInfo,
             List<ChangeInfo> changes,
-            CheckedStateManager checkedStateManager)
+            PendingChangesViewCheckedStateManager checkedStateManager)
         {
             mMetaCache.Build(changes);
 

@@ -87,9 +87,6 @@ namespace Unity.PlasticSCM.Editor
                 new CredentialsUiImpl());
             ClientEncryptionServiceProvider.SetEncryptionPasswordProvider(
                 new MissingEncryptionPasswordPromptHandler());
-
-            DiffMergeToolConfigFactory.Get().SetDiffMergeToolConfig(
-                    GetDiffMergeToolConfig.ForPlatform());
         }
 
         internal static void SetWorkspace(WorkspaceInfo wkInfo)
@@ -117,8 +114,11 @@ namespace Unity.PlasticSCM.Editor
             if (sEventSenderScheduler != null)
             {
                 sPingEventLoop.Stop();
-                sEventSenderScheduler.End();
-        }
+                // Launching and forgetting to avoid a timeout when sending events files and no
+                // network connection is available.
+                // This will be refactored once a better mechanism to send event is in place
+                sEventSenderScheduler.EndAndSendEventsAsync();
+            }
 
             WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
                 ApplicationDataPath.Get(), PlasticGui.Plastic.API);

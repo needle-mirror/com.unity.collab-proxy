@@ -7,7 +7,7 @@ To invite team members to contribute to your project:
 
 ![Invite members to project](images/InviteMembers.png)
 
-2. In the Plastic SCM cloud dashboard, click Add new user. 
+1. In your DevOps version control dashboard, click Add new user. 
 
 You can also send invitations and add different permission types for each user.
 

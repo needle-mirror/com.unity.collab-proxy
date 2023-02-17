@@ -91,7 +91,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             mFilterMenuBuilder.RemoveMenuItems();
 
             HandleMenuItem.RemoveMenuItem(
-                PlasticLocalization.GetString(PlasticLocalization.Name.PrefixPlasticMenu));
+                PlasticLocalization.GetString(PlasticLocalization.Name.PrefixUnityVersionControlMenu));
 
             HandleMenuItem.UpdateAllMenus();
         }
@@ -288,7 +288,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         static string GetPlasticMenuItemName(PlasticLocalization.Name name)
         {
             return string.Format("{0}/{1}",
-                PlasticLocalization.GetString(PlasticLocalization.Name.PrefixPlasticMenu),
+                PlasticLocalization.GetString(PlasticLocalization.Name.PrefixUnityVersionControlMenu),
                 PlasticLocalization.GetString(name));
         }
 

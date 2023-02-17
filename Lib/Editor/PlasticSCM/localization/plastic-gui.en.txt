@@ -307,9 +307,6 @@ Sync Repositories
 == MainSidebarSyncItemCloudEdition ==
 Sync to Cloud
 
-== MainSidebarCloudItem ==
-Cloud
-
 == MainSidebarMergeItem ==
 Merge
 
@@ -324,6 +321,12 @@ About Plastic SCM
 
 == MainSidebarAboutGluonItem ==
 About Gluon
+
+== MainSidebarUpdateVersionItem ==
+Update Plastic SCM
+
+== MainSidebarInstallVersionItem ==
+Install new version
 
 == MainSidebarRepositoriesItem ==
 Repositories
@@ -558,24 +561,6 @@ Browse...
 
 == LocalChangesApplierProgressProcessingNeededPaths ==
 Processing needed paths
-
-== CheckinAutoUpdateMergeRequest ==
-New files in the branch, update needed.
-
-== CheckinAutoUpdateMergeRequestMessage ==
-New changes appeared in the branch that you are working on after you started your own changes in the workspace. You need to get these changes into your workspace before checking in your changes.
-
-Since the changes in the branch don't conflict with your changes in the workspace, you can simply update the workspace before checking in.
-
-Do you want to update the workspace and checkin your changes now?
-
-== UpdateWorkspaceMergeRequest ==
-Conflicts detected before updating
-
-== UpdateWorkspaceMergeRequestMessage ==
-Some files you have changed in your workspace were modified as well in the branch and you need to merge them before continuing.
-
-A merge view will open so that you can merge the items with conflicts. Please resolve them and then proceed with the update.
 
 == CheckinMergeRequest ==
 Checkin on this branch cannot proceed.
@@ -1566,8 +1551,11 @@ Cloak
 == HiddenChanged ==
 Hidden changed
 
-== SwitcherMainWindowTitle ==
-Plastic SCM - Switcher
+== WorkspaceExplorerDialogTitle ==
+Available Plastic SCM workspaces
+
+== WorkspaceExplorerDialogExplanation ==
+Please select a workspace from the list below:
 
 == MainWindowTitle ==
 Plastic SCM - wk: {0} - {1} - {2}: {3}@{4}
@@ -2910,8 +2898,14 @@ Comments
 == OtherOptions ==
 Other options
 
-== UserProfileOptions ==
-User profile
+== DevOpsUserProfileOptions ==
+DevOps user profile
+
+== DevOpsUserProfileOptionsExplanation ==
+This tab lets you configure your user profile to receive notifications via email or Slack. This way, the DevOps plugs can notify you.
+
+== LearnMoreDevOpsMergebot ==
+Learn more about DevOps Mergebots
 
 == DynamicWorkspaces ==
 Dynamic Workspaces
@@ -3238,9 +3232,6 @@ Switching to changeset {0}...
 
 == SwitchingToLabel ==
 Switching to label {0}...
-
-== StatusUnchanged ==
-Unchanged
 
 == StatusUnderUnresolvedXlink ==
 The xlinked cset '{0}@{1}' is not available
@@ -3692,6 +3683,19 @@ The server you are connecting to has sent a certificate which is not in the stor
             If you want to carry on connecting just once, without adding the key to the store, click "No".
             If you do not trust this host, click "Cancel" to abandon the connection.
 
+== NewCertificateMessageUnityVCS ==
+The server you are connecting to has sent a certificate which is not in the store. This is normal if it is the first time connecting to this server.
+
+            Certificate details:
+            - Issued to: {0}
+            - Issued by: {1}
+            - Expiration date: {3}
+            - Certificate hash: {5}
+
+            If you trust this host, click "Yes" to add the key to the Unity Version Control key store (recommended if it is the first time connecting to this server).
+            If you want to carry on connecting just once, without adding the key to the store, click "No".
+            If you do not trust this host, click "Cancel" to abandon the connection.
+
 == ExistingCertificateChangedTitle ==
 Server certificate has changed!
 
@@ -3705,6 +3709,19 @@ WARNING: This host certificate does NOT match the one you have in the key store.
             - Certificate hash: {5}
 
             If you were expecting this change and trust the new certificate, click "Yes" to add the key to the Plastic SCM key store and trust this certificate in the future.
+            If you want to carry on connecting just once, without adding the key to the store, click "No".
+            If you want to abandon this connection, click "Cancel". This is the ONLY guaranteed safe choice.
+
+== ExistingCertificateChangedMessageUnityVCS ==
+WARNING: This host certificate does NOT match the one you have in the key store. It may mean that the server identity has been compromised or a man-in-the-middle attack is being performed on you.
+
+            Certificate details:
+            - Issued to: {0}
+            - Issued by: {1}
+            - Expiration date: {3}
+            - Certificate hash: {5}
+
+            If you were expecting this change and trust the new certificate, click "Yes" to add the key to the Unity Version Control key store and trust this certificate in the future.
             If you want to carry on connecting just once, without adding the key to the store, click "No".
             If you want to abandon this connection, click "Cancel". This is the ONLY guaranteed safe choice.
 
@@ -4423,6 +4440,9 @@ Welcome to Plastic SCM Cloud Edition!
 == WelcomeToPlasticSCM ==
 Welcome to Plastic SCM!
 
+== WelcomeToUnityVCS ==
+Welcome to Unity VCS!
+
 == WelcomeToGluonTeamEdition ==
 Welcome to Gluon!
 
@@ -4698,7 +4718,13 @@ uploading {0} blocks in parallel
 Skip merge tracking
 
 == SkipDiffMergeTrackingTooltip ==
-Do not group file changes by merge source. Each file is displayed once, with its 'total' changes
+Do not group changes by merge source. Each file is displayed once, with its 'total' changes
+
+== PendingToIntegrate ==
+Show pending to integrate
+
+== PendingToIntegrateTooltip ==
+Shows the branch changes that are pending to be merged into its parent branch. It takes into account any rebase or prior merge already done from/to its parent branch
 
 == FetchNoDataCheckButton ==
 Do not replicate data (you need to be the admin of your server)
@@ -4868,6 +4894,9 @@ Cherry pick from branch {0}
 == ChangesetCherryPick ==
 Cherry pick from changeset cs:{0}
 
+== ApplyShelveset ==
+Apply shelveset sh:{0}
+
 == LabelMerge ==
 Merge from label {0}
 
@@ -4879,9 +4908,6 @@ Subtractive merge from changeset interval (from cs:{0} to cs:{1})
 
 == ChangesetMerge ==
 Merge from changeset cs:{0}
-
-== OverlappedMerge ==
-Update-to/merge-from latest changeset cs:{0}
 
 == SwitchBranchButton ==
 Switch branch...
@@ -5044,6 +5070,12 @@ Plastic watches the workspace for changes to make the operation faster. This rem
 
 == PendingChangesFilesystemWatcherDisabledExplanation ==
 This is not normal and can affect performance. Plastic watches the workspace for changes using the Windows API. This way it doesn't need to walk the directory structure. If it is disabled, the operation can be much slower. Contact support for help unless it was disabled in client.conf intentionally. [[HELP_URL|{0}]]
+
+== PendingChangesFilesystemWatcherEnabledExplanationUnityVCS ==
+Unity Version Control watches the workspace for changes to make the operation faster. This removes the need to walk the directory structure, although move matching can still consume time.
+
+== PendingChangesFilesystemWatcherDisabledExplanationUnityVCS ==
+This is not normal and can affect performance. Unity Version Control watches the workspace for changes using the Windows API. This way it doesn't need to walk the directory structure. If it is disabled, the operation can be much slower. Contact support for help unless it was disabled in client.conf intentionally. [[HELP_URL|{0}]]
 
 == PendingChangesShowCheckouts ==
 Show checkouts
@@ -5575,6 +5607,12 @@ Gluon
 == ReloadButton ==
 Reload
 
+== NotConnectedTryingToReconnect ==
+Not connected. Trying to re-connect...
+
+== TryNowButton ==
+Try now
+
 == OpenGUIButton ==
 Open GUI
 
@@ -5634,6 +5672,9 @@ Sign in
 
 == SignInToPlasticSCM ==
 Sign in to Plastic SCM
+
+== SignInToUnityVCS ==
+Sign in to Unity VCS
 
 == SignInWithGoogle ==
 Sign in with Google
@@ -5751,9 +5792,6 @@ Super simple GUI for artists in game dev, or anyone who prefers to simply checki
 
 == LaunchButton ==
 Launch
-
-== LaunchGluonButton ==
-Launch Gluon
 
 == InviteMembers ==
 Invite Members to Organization
@@ -6765,8 +6803,8 @@ Cannot remove PlasticSCM menu item: {0} Method MenuType.RemoveMenuItem not found
 == ErrorUpdatePlasticSCMMenus ==
 Cannot update all menus: Method EditorUtility.Internal_UpdateAllMenus not found
 
-== ErrorPlasticSCM ==
-Error - Plastic SCM
+== ErrorDialogTitle ==
+Error - {0}
 
 == CheckoutButton ==
 Checkout
@@ -6807,8 +6845,8 @@ New
 == WorkPreferenceQuestion ==
 How do you prefer to work?
 
-== WorkPreferenceAnswerPlastic ==
-I need branching, merging, and the ability to push/pull (Plastic workspace)
+== WorkPreferenceAnswerUnityVCS ==
+I need branching, merging, and the ability to push/pull (Unity VCS workspace)
 
 == WorkPreferenceAnswerGluon ==
 I only need to checkin my work (Gluon workspace)
@@ -6816,8 +6854,8 @@ I only need to checkin my work (Gluon workspace)
 == CreateWorkspace ==
 Create workspace
 
-== LearnMoreDifferences ==
-Learn more about the differences between Plastic/Gluon workspaces <color=\"{0}\">{1}</color>
+== LearnMoreDifferencesUnityVCS ==
+Learn more about the differences between Unity VCS/Gluon workspaces <color=\"{0}\">{1}</color>
 
 == HereLink ==
 here.
@@ -6906,14 +6944,14 @@ Installing...
 == SkippingDownloadFileExists ==
 Skipping download. File {0} already exists
 
-== InstallPlasticSCM ==
-Install Plastic SCM
+== InstallUnityVersionControl ==
+Install Unity Version Control
 
 == LoginOrSignUp ==
 Login or sign up
 
-== CreateAPlasticWorkspace ==
- Create a Plastic workspace for this project
+== CreateAUnityVersionControlWorkspace ==
+ Create a Unity Version Control workspace for this project
 
 == NextStepsToSetup ==
  Next steps to complete setup
@@ -6921,8 +6959,8 @@ Login or sign up
 == DownloadAndInstall ==
  Download and install Plastic SCM (about 190MB)
 
-== LoginOrSignUpPlastic ==
- Login or sign up for a Plastic account
+== LoginOrSignUpUnityVersionControl ==
+ Login or sign up for a Unity Version Control account
 
 == WhichVersionInstall ==
 Which version do you want to install?
@@ -6942,8 +6980,8 @@ Download Enterprise Edition
 == NeedEnterprise ==
 Need Plastic Enterprise?
 
-== PrefixPlasticMenu ==
-Assets/Plastic SCM
+== PrefixUnityVersionControlMenu ==
+Assets/Unity Version Control
 
 == PendingChangesPlasticMenu ==
 Show pending changes view
@@ -7005,14 +7043,17 @@ Configure Gluon
 == LaunchBranchExplorer ==
 Launch branch explorer
 
-== LaunchPlasticButton ==
-Launch Plastic SCM
+== OpenInDesktopApp ==
+Open in Desktop App
+
+== OpenInGluon ==
+Open in Gluon
 
 == CannotWriteCloudProjectId ==
 Cannot write cloudProjectId: Method PlayerSettings.SetCloudProjectId not found
 
-== PlasticConfigurationTitle ==
-Configure the connection to the Plastic SCM server
+== PlasticConfigurationTitleUnityVCS ==
+Configure the connection to the Unity VCS server
 
 == PlasticConfigurationExplanation ==
 Enter the server name or IP and the credentials
@@ -7051,7 +7092,7 @@ Some files you're trying to checkin are in conflict. You can resolve conflicts u
 Show incoming changes view
 
 == UnityInitialCheckinComment ==
-Add packages and project settings to Plastic SCM.
+Add packages and project settings to Unity Version Control.
 
 == UnityInitialCheckinProgress ==
 Checking in the packages and project settings files...
@@ -7577,13 +7618,13 @@ Pending merge links will be committed when you checkin your changes or reverted 
 {0} pending merge links
 
 == NewReleaseProgressDownloading ==
-Downloading installer - {0} / {1} ({2} left)
+Downloading update - {0} / {1} ({2} left)
 
 == NewReleaseProgressDownloadFinished ==
 Finished downloading. Ready to install.
 
 == NewReleaseProgressRestartAndUpgrade ==
-Restart now to upgrade to version {0}
+New version {0} ready to install
 
 == RestartAndUpgradeButton ==
 Restart and Upgrade
@@ -7823,7 +7864,7 @@ You're invited to check out the new Gluon GUI - a sneak peek at the work we've b
 This release is cross-platform, includes a dark theme and provides better syntax highlighting. Many more improvements are coming soon, let us know what you think!
 
 == WelcomeToNewGluonGuiSecondText ==
-This release is feature complete, cross-platform and includes a dark theme. It also includes support for changelists. Try out the new experience and switch back at any time. Let us know what you think!
+This release is feature complete, cross-platform and includes a dark theme. It also includes support for changelists. Let us know what you think!
 
 == GetStartedButton ==
 Let's get started!
@@ -7881,6 +7922,9 @@ Details
 
 == Download ==
 Download
+
+== DownloadUpdate ==
+Download update
 
 == CalculatingSize ==
 Calculating directory size...
@@ -8247,7 +8291,7 @@ View changes
 Exit without saving
 
 == OperationInProgressOnWk ==
-There is an operation in progress on workspace '{0}'. 
+There is an operation in progress on workspace '{0}'.
 Please wait for it to finish.
 
 == ExitButton ==
@@ -8420,12 +8464,18 @@ Refactor Group {0}
 
 == AnalyzingRefactors ==
 Analyzing refactors...
- 
+
 == WontDeleteOpenWorkspace ==
 The workspace '{0}' is currently open and will not be deleted
- 
+
 == WontDeleteOpenWorkspaces ==
 The following workspaces are currently open and will not be deleted:
+
+== WontDeleteRepositoryWithActiveWorkspace ==
+The repository '{0}' could not be deleted because it is being used by an open workspace
+
+== WontDeleteRepositoriesWithActiveWorkspaces ==
+The following repositories could not be deleted because they are being used by open workspace:
 
 == LicenseExpiredLinkLabel ==
 Your license has expired. Visit [[http://www.plasticscm.com|plasticscm.com]] to buy a license
@@ -8565,14 +8615,59 @@ Zoom
 == ZoomLevelLabel ==
 {0:0}%
 
-== OfflineModeTitle ==
-Offline mode
+== UnityVCSIsEnabled ==
+Unity VCS is enabled
 
-== OfflineModeDescription ==
-Offline mode disables all Plastic SCM functionalities including the server connection to provide an uninterrupted workflow in the Unity Editor
+== UnityVCSIsDisabled ==
+Unity VCS is disabled
 
-== OfflineModeOn ==
-ON
+== DisableButton ==
+Disable
 
-== OfflineModeOff ==
-OFF
+== EnableButton ==
+Enable
+
+== DeletedRepositoryHeader ==
+This repository is deleted
+
+== ShowDeletedRepositoriesToggle ==
+Show deleted repositories
+
+== ShowDeletedRepositoriesToggleExplanation ==
+Deleted repositories are kept for 7 days on the cloud. During this period deleted repositories can be restored, after this period the repository is automatically removed.
+
+== BrExTooltipTaskDetails ==
+Assigned to {0}
+
+== BrExTooltipBranchDetails ==
+Branch created by {0}
+
+== NewVersionWindowTitle ==
+New version available for update!
+
+== ViewAllReleaseNotes ==
+View all release notes
+
+== ConfirmCancelDownloadTitle ==
+Cancel download
+
+== ConfirmCancelDownloadMessage ==
+Are you sure you want to cancel the download operation?
+
+== MainSidebarCheckForUpdatesItem ==
+Check for updates
+
+== NoNewVersionDescription ==
+No new updates found
+
+== NoNewVersionTitle ==
+You are up to date!
+
+== CheckingNewUpdates ==
+Checking for new updates...
+
+== NothingCheckedForMerge ==
+No changes are checked. Please check at least one change to apply.
+
+== UnityVersionControl ==
+Unity Version Control

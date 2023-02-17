@@ -15,8 +15,8 @@ using Codice.Client.GameUI.Checkin;
 using PlasticGui;
 using PlasticGui.Configuration.CloudEdition;
 using PlasticGui.Help.Conditions;
-using PlasticGui.SwitcherWindow.Repositories;
-using PlasticGui.SwitcherWindow.Workspaces;
+using PlasticGui.WorkspaceWindow.Home.Repositories;
+using PlasticGui.WorkspaceWindow.Home.Workspaces;
 using PlasticGui.WebApi;
 using Unity.PlasticSCM.Editor.UI.Progress;
 
@@ -411,8 +411,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                     return true;
 
                 // Check the check-in exceptions for plastic
-                return exception is CmClientMergeNeededException
-                    || exception is CmClientUpdateMergeNeededException;
+                return exception is CmClientMergeNeededException;
             }
         }
 

@@ -24,8 +24,8 @@ Sintaxis:
                         los permisos disponibles.)
     objectspec          Objeto sobre el que configurar los permisos.
                         Este objeto puede ser uno de los siguientes:
-                        servidor de repositorios, repserver, repositorio, rama,
-                        changeset, etiqueta, ítem o atributo.
+                        servidor de repositorios, repositorio, rama, etiqueta
+                        o atributo.
                         (Use 'cm help objectspec' para más información sobre
                         las especificaciones de objetos.)
 
@@ -1300,10 +1300,10 @@ Sintaxis:
     (Borra una o más revisiones de código.)
 
 
-    spec        Puede ser una especificación de changeset o una especificación
-                de rama. Creará la nueva revisión de código de dicha
-                especificación. (Use 'cm help objectspec' para más información
-                sobre especificaciones de changeset o rama.)
+    spec        Puede ser una especificación de changeset, una especificación de 
+                shelve o una especificación de rama. Creará la nueva revisión de 
+                código de dicha especificación. (Use 'cm help objectspec' para más 
+                información sobre especificaciones de changeset o rama.)
     title       Cadena de texto que se usará como título de la revisión de
                 código.
     id          Número de identificación de la revisión de código. También se
@@ -1446,6 +1446,7 @@ Sintaxis:
             [--comparisonmethod=(ignoreeol | ignorewhitespaces | 
                 ignoreeolandwhitespaces | recognizeall)] 
             [--clean]
+            [--integration]
             [--format=<str_format>] [--dateformat=<str_format>]
 
         Muestra las diferencias entre un changeset o un shelveset 'origen' y un
@@ -1470,6 +1471,7 @@ Sintaxis:
             [--comparisonmethod=(ignoreeol | ignorewhitespaces | 
                 ignoreeolandwhitespaces | recognizeall)] 
             [--clean]
+            [--integration]
             [--format=<str_format>] [--dateformat=<str_format>]
             [--fullpaths | --fp]
 
@@ -1506,6 +1508,9 @@ Opciones:
                         Consulte las Notas para más información.
     --clean             Omite las diferencias que provienen de un merge mostrando
                         solo las diferencias creadas en los checkins.
+    --integration       Muestra los cambios de la rama que están pendientes de 
+                        integrar en su rama padre. Tiene en cuenta los rebases 
+                        y los merges a la rama padre ya realizados.
     --format            Muestra el mensaje de salida en el formato indicado.
                         Consulte las Notas para más información.
     --dateformat        Configura el formato de salida para la impresión de fechas.
@@ -1566,6 +1571,7 @@ Ejemplos:
 
     cm diff br:/main/task001
     cm diff br:/main/task001 \doc\readme.txt
+    cm diff br:/main/task001 --integration
 
   Comparar changesets:
 
@@ -3122,6 +3128,7 @@ Sintaxis:
                            --mergeresultfile=<path> --solvedconflictsfile=<path>]
                            [--nointeractiveresolution]
                            [--machinereadable [--startlineseparator=<sep>]
+                           [--xml] [--encoding]
                              [--endlineseparator=<sep>] [--fieldseparator=<sep>]]
 
     source_spec           Especificación del objeto origen de la mezcla (merge).
@@ -3173,7 +3180,7 @@ Opciones:
     --printcontributors       Muestra los contribuidores (base, origen y destino).
     --noprintoperations       Resuelve las mezclas (merges) sin mostrar
                               información sobre la resolución.
-    --silent                  No muestra ninguna salida.
+    --silent                  Solo se imprimen mensajes en caso de error.
     --to | --destination      Realiza una operación de merge-to a la rama de
                               especificada con resolución completa de conflictos.
                               (Use 'cm help objectspec' para más información sobre
@@ -3236,6 +3243,15 @@ Opciones:
     --machinereadable         (Usado principalmente por plugins. Consulte las
                               Notas para más información.)
                               Muestra el resultado en un formato fácil de parsear.
+    --xml                     Imprime el resultado en formato XML a la salida estándar.
+                              También es posible especificar un fichero de salida. No
+                              puede combinarse con --format ni --resolveconflict.
+    --encoding                Usado con la opción --xml, especifica el encoding que se
+                              usará en la salida XML, por ejemplo, utf-8.
+                              Consulte la documentación de MSDN en
+                              http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
+                              para obtener la tabla de codificaciones soportadas y su
+                              formato (al final de la página en la columna "Name").
     --startlineseparator      Usado con '--machinereadable', indica cómo deben
                               empezar las líneas del resultado. (Por defecto,
                               una cadena de texto vacía.)
@@ -4725,7 +4741,7 @@ repositorio.
 Ejemplo: Aplicar un shelve almacenado en el repositorio:
 
     cm partial shelveset apply sh:3	
-	
+
 == CMD_DESCRIPTION_PARTIAL_SHELVESET_DELETE ==
 Borra un shelveset.
 
@@ -4742,7 +4758,7 @@ El comando partial shelveset delete borra un shelveset creado anteriormente.
 Ejemplo: 
 
     cm partial shelveset delete sh:3
-	(Elimina un shelveset almacenado en el repositorio.)
+    (Elimina un shelveset almacenado en el repositorio.)
 
 
 == CMD_DESCRIPTION_PARTIAL_SWITCH ==
@@ -4751,7 +4767,7 @@ Establece la rama especificada como rama de trabajo.
 == CMD_USAGE_PARTIAL_SWITCH ==
 Sintaxis:
 
-    cm switch branch_spec [--report | --silent] [--workspace=path]
+    cm switch branch_spec [--report | --silent] [--workspace=path] [--noinput]
     (Establece la rama de trabajo y actualiza el workspace.)
     
     cm switch branch_spec --configure <+|-ruta>+ [--silent]
@@ -4780,6 +4796,8 @@ Opciones:
                              configurar. Con esta opción el comando funcionará
                              para "/Data/Textures" incluso si el usuario indica
                              "/data/teXtures".
+    --noinput               Ignora las pregunta interactiva para continuar la
+                            operación haciendolos shelve a los cambios pendientes.
     --workspace=path        Ruta del espacio de trabajo a cambiar.
     --forcedetailedprogress Fuerza mostrar progreso detallado incluso cuando se
                             redirige la salida estándar.
@@ -4813,7 +4831,7 @@ Deshace la desprotección de un ítem.
 == CMD_USAGE_PARTIAL_UNCO ==
 Sintaxis:
 
-    cm partial undocheckout | unco <ruta>+ [--silent]
+    cm partial undocheckout | unco <ruta>+ [--silent] [--keepchanges | -k]
 
     ruta                Ítems sobre los que aplicar la operación, separados por
                         espacios. 
@@ -4823,6 +4841,10 @@ Sintaxis:
 Opciones:
 
     --silent            No muestra ninguna salida.
+    --keepchanges (-k)  Deshace la desprotección dejando los cambios locales.
+                        Ejemplo: un checkout lo deja como changed con el 
+                        contenido en disco que tenia antes de hacer el unco.
+                        Esta opción no puede utilizarse con workspaces dinámicos.
 
 == CMD_HELP_PARTIAL_UNCO ==
 Notas:
@@ -5001,7 +5023,8 @@ Sintaxis:
 
     cm partial update [<ruta>+]
                       [--changeset=número]
-                      [--silent | --report]
+                      [--silent | --report] [--dontmerge]
+                      [--xml[=<output_file>]]
                       [--machinereadable [--startlineseparator=<sep>]
                         [--endlineseparator=<sep>] [--fieldseparator=<sep>]]
 
@@ -5016,7 +5039,9 @@ Opciones:
 
     --changeset           Actualiza el espacio de trabajo parcial al changeset 
                           especificado.
-    --silent              No muestra salida.
+    --silent              No muestra salida a no ser que ocurra un error.
+    --xml                 Imprime por defecto a la salida estándar en formato 
+                          XML. Se permite especificar un fichero de salida.
     --report              Imprime una lista de los cambios efectuados una vez que
                           termina la operación. Esta opción no tiene efecto si se 
                           utiliza la opción --silent.
@@ -5068,6 +5093,13 @@ Ejemplos:
     cm partial update xlink/first.png --changeset=4
     (Actualiza el fichero xlink/first.png al contenido que cargaba en el
     changeset 4 del repositorio del xlink.)
+	
+    cm partial update . --changeset=2 --xml=output.xml 2>errors.txt 
+    (Actualiza todos los hijos del directorio actual al contenido que cargaba en el
+    changeset 2 del repositorio e informa del resultado en formato XML. La salida 
+    la almacena en un archivo output.xml y los potenciales errores los redirige 
+    al archivo errors.txt.
+    NOTA: la redirección puede variar dependiendo de la consola empleada.)
 
 == CMD_DESCRIPTION_PATCH ==
 Genera un parche a partir de una spec o aplica un parche generado en el workspace actual.
@@ -6591,7 +6623,7 @@ Establece un selector para un espacio de trabajo.
 
 == CMD_USAGE_SETSELECTOR ==
 Sintaxis:
-    cm setselector [opciones] [wk_ruta | wk_spec]
+    cm setselector [opciones] [wk_ruta | wk_spec] [--noinput]
 
     wk_ruta                 Ruta del espacio de trabajo sobre el que establecer el
                             selector.
@@ -6606,7 +6638,9 @@ Opciones:
                             muestra si existen cambios pendientes cuando se 
                             actualiza el espacio de trabajo.
     --forcedetailedprogress Fuerza mostrar progreso detallado incluso cuando se
-                            redirige la salida estándar. 
+                            redirige la salida estándar.
+    --noinput               Ignora las preguntas interactivas para continuar la
+                            operación con cambios pendientes o haciendolos shelve.
 
 == CMD_HELP_SETSELECTOR ==
 Notas:
@@ -6666,6 +6700,11 @@ Opciones:
       ítems a guardar.
     -c=comentarios: Añade un comentario al shelve creado en la operación.
     --commentsfile=comment.txt: Carga el comentario del fichero especificado.
+    --summaryformat: El comando imprime sólamente la especificación del 
+      objeto creado en el repositorio principal, omitiendo los objetos
+      que pudieran crearse en repositorios 'xlinked'. También se omite
+      cualquier otro mensaje que el comando pudiera imprimir.
+      Opción diseñada para implementar automatizaciones.
     --mount: El punto de montaje del respositorio especificado.
     --encoding=codificación: Especifica la codificación de los ficheros de
       origen (por ejemplo, UTF-8 o Unicode)
@@ -6760,6 +6799,8 @@ Opciones:
       ítems a guardar.
     -c=comentarios: Añade un comentario al shelve creado en la operación.
     --commentsfile=comment.txt: Carga el comentario del fichero especificado.
+    --summaryformat: El comando imprime sólamente la especificación del 
+      objeto creado en el repositorio principal.
 
 == CMD_HELP_SHELVESET ==
 Ejemplos:
@@ -7414,13 +7455,30 @@ Actualiza el espacio de trabajo a la rama, etiqueta, changeset o shelve especifi
 == CMD_USAGE_SWITCH ==
 Sintaxis:
 
-    cm switch brspec | csetspec | lbspec | shspec [--repository=name]
-              [--workspace=path]
+    cm switch brspec | csetspec | lbspec | shspec
+              [--workspace=path] [--repository=name]
+              [--forcedetailedprogress] [--noinput]
+              [--silent] [--verbose] [--xml[=<output_file>]] [--encoding=<name>]
 
 Opciones:
 
-    --workspace         Ruta del espacio de trabajo a cambiar.
-    --repository        Repositorio al que se va a cambiar.
+    --workspace             Ruta del espacio de trabajo a cambiar.
+    --repository            Repositorio al que se va a cambiar.
+    --forcedetailedprogress Fuerza mostrar progreso detallado incluso cuando se
+                            redirige la salida estándar.
+    --noinput               Ignora las preguntas interactivas para continuar la
+                            operación con cambios pendientes o haciendolos shelve.   
+    --silent                Solo se imprimen mensajes en caso de error.
+    --verbose               Muestra información adicional.
+    --xml                   Imprime el resultado en formato XML a la salida
+                            estándar. También es posible especificar un fichero
+                            de salida.
+    --encoding              Usado con la opción --xml, especifica el encoding
+                            que se usará en la salida XML, por ejemplo, utf-8.
+                            Consulte la documentación de MSDN en
+                            http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
+                            para obtener la tabla de codificaciones soportadas y
+                            su formato (al final de la página en la columna "Name").
 
     Usa 'cm help objectspec' para aprender más sobre cómo indicar
     especificaciones de changesets, ramas y etiquetas.
@@ -7651,6 +7709,7 @@ Deshace la desprotección de un ítem.
 Sintaxis:
 
     cm undocheckout | unco <item_path>+ [--all] [--symlink] [--silent]
+         [--keepchanges | -k]
 
     item_path        Especificación de los ítems para deshacer la desprotección,
                      separados por comas.
@@ -7660,13 +7719,18 @@ Sintaxis:
 
 Opciones:
 
-    --all (-a)       Los ítems especificados que han sido cambiados, movidos y
-                     borrados localmente también serán deshechos.
+    --all (-a)         Los ítems especificados que han sido cambiados, movidos
+                       y borrados localmente también serán deshechos.
 
-    --symlink        Deshace la protección del fichero de link y no al elemento
-                     al que apunta.
+    --symlink          Deshace la protección del fichero de link y no al
+                       elemento al que apunta.
 
-    --silent         No muestra salida.
+    --silent           No muestra salida.
+
+    --keepchanges (-k) Deshace la desprotección dejando los cambios locales.
+                       Ejemplo: un checkout lo deja como changed con el 
+                       contenido en disco que tenia antes de hacer el unco.
+                       Esta opción no puede utilizarse con workspaces dinámicos.
 
 == CMD_HELP_UNCO ==
 Notas:
@@ -7999,7 +8063,7 @@ Sintaxis:
               [--silent] [--verbose] [--xml[=output_file]] [--encoding=name]
               [--machinereadable [--startlineseparator=<sep>]
                 [--endlineseparator=<sep>] [--fieldseparator=<sep>]]
-              [--forcedetailedprogress]
+              [--forcedetailedprogress] [--noinput]
 
     ruta                    Ruta a actualizar.
                             Use . para aplicar la actualización al directorio actual.
@@ -8027,6 +8091,8 @@ Opciones:
     --ignorechanges         Si existen cambios pendientes durante la actualización
                             del espacio de trabajo, se ignorarán y se continuará
                             con la actualización.
+    --noinput               Ignora las preguntas interactivas para continuar la
+                            operación con cambios pendientes o haciendolos shelve.                            
     --override              Ignoran los ficheros cambiados fuera del control de
                             Plastic SCM. Su contenido se sobrescribirá con el
                             contenido del servidor.
@@ -8038,7 +8104,7 @@ Opciones:
                             acelerar la actualización cuando siempre se
                             desprotegen (checkout) ficheros antes de
                             modificarlos.
-    --silent                No muestra ninguna salida.
+    --silent                Solo se imprimen mensajes en caso de error.
     --verbose               Muestra información adicional.
     --xml                   Imprime el resultado en formato XML a la salida
                             estándar. También es posible especificar un fichero
@@ -8399,6 +8465,16 @@ Opciones generales:
     --fullpaths, --fp: Fuerza al comando a imprimir rutas absolutas,
         sobreescribiendo cualquier otra configuración acerca de impresión
         de rutas.
+    --iscochanged: Incluye información sobre si el contenido de un fichero en
+        checkout ha sido o modificado o no. Esta opción sólo está disponible en
+        combinación con las opciones "--compact", "--xml" y 
+        "--machinereadable".
+        Si no se especifica la opción "--iscochanged", las opciones 
+        "--compact", "--xml" o "--machinereadable" sólamente mostrarán el 
+        estado "CO" para un fichero en checkout cuyo contenido ha cambiado.
+        Si se especifica la opción "--iscochanged", las opciones "--compact",
+        "--xml" o "--machinereadable" mostrarán el estado "CO+CH" para un 
+        fichero en checkout cuyo contenido ha cambiado.
 
 Opciones del viejo formato:
 

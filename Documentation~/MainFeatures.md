@@ -6,7 +6,7 @@ The **Pending Changes** tab allows you to view all pending changes in your works
 
 ![Pending changes tab](images/PendingChanges.png)
 
-**Note** : You can check in a specific file using the Plastic SCM contextual menu in the project view or the **Checkin** button in the **Inspector** window.
+**Note** : You can check in a specific file using the version control contextual menu in the project view or the **Checkin** button in the **Inspector** window.
 
 ![Inspector window](images/InspectorWindow.png)
 
@@ -16,7 +16,7 @@ In the example below, the user adds a GameScene. They can check in the scene usi
 
 ## Incoming Changes
 
-The **Incoming Changes** tab allows you to view all incoming changes and conflicts and update your local project. Any changes made to your project prompts an "**Incoming changes**" notification at the top right of the Plastic SCM window.
+The **Incoming Changes** tab allows you to view all incoming changes and conflicts and update your local project. Any changes made to your project prompts an "**Incoming changes**" notification at the top right of the version control window.
 
 **Tip** : Check the **Incoming Changes** tab frequently to avoid facing future change conflicts in your team.
 

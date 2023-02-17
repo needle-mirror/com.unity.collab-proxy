@@ -13,11 +13,6 @@ namespace Unity.PlasticSCM.Editor.Help
 
         internal bool Visible { get; private set; }
 
-        internal PlasticGui.Help.HelpImage Image
-        {
-            get { return mHelpImage; }
-        }
-
         internal HelpData Data
         {
             get { return mHelpData; }
@@ -33,11 +28,11 @@ namespace Unity.PlasticSCM.Editor.Help
             mWindow = window;
         }
 
-        internal void Show(PlasticGui.Help.HelpImage helpImage, HelpData helpData)
+        internal void Show(HelpData helpData)
         {
             ClearData();
 
-            UpdateData(helpImage, helpData);
+            UpdateData(helpData);
 
             Visible = true;
 
@@ -72,15 +67,13 @@ namespace Unity.PlasticSCM.Editor.Help
 
         void ClearData()
         {
-            mHelpImage = PlasticGui.Help.HelpImage.GenericBuho;
             mHelpData = null;
             mHelpGUIContent = null;
             mFormattedLinks = null;
         }
 
-        void UpdateData(PlasticGui.Help.HelpImage helpImage, HelpData helpData)
+        void UpdateData(HelpData helpData)
         {
-            mHelpImage = helpImage;
             mHelpData = helpData;
 
             string formattedHelpText;
@@ -112,7 +105,6 @@ namespace Unity.PlasticSCM.Editor.Help
             return null;
         }
 
-        PlasticGui.Help.HelpImage mHelpImage;
         HelpData mHelpData;
 
         GUIContent mHelpGUIContent;

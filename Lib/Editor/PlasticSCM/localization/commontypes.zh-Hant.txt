@@ -203,9 +203,6 @@ SEID 資料的格式錯誤: {0}。
 == CantRevertRootItem ==
 無法恢復根項目
 
-== CantSetAclOnRevsOrWks ==
-無法為修訂或工作區設定 ACL
-
 == CantSetAclItemsRevs ==
 無法為修訂或項目設定 ACL
 

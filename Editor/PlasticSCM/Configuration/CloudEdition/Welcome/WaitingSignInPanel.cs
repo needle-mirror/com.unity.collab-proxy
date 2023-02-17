@@ -55,7 +55,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         void BuildComponents()
         {
             this.SetControlText<Label>("signInToPlasticSCM",
-                PlasticLocalization.Name.SignInToPlasticSCM);
+                PlasticLocalization.Name.SignInToUnityVCS);
 
             this.SetControlText<Label>("completeSignInOnBrowser",
                 PlasticLocalization.Name.CompleteSignInOnBrowser);
