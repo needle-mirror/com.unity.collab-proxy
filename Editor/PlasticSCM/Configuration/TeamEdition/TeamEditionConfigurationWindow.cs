@@ -126,7 +126,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
         void HideCredentialsValidationError()
         {
             mCredentialsLabel.RemoveFromClassList("error");
-            mCredentialsLabel.AddToClassList("visibility-hidden");
+            mCredentialsLabel.Hide();
         }
 
         void BuildComponents()
@@ -173,7 +173,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
 
             mLoadingSpinner = new LoadingSpinner();
             mSpinnerContainer.Add(mLoadingSpinner);
-            mSpinnerContainer.AddToClassList("visibility-hidden");
+            mSpinnerContainer.Hide();
 
             mCheckConnectionButton = root.Query<Button>("check").First();
             mCheckConnectionButton.clicked += CheckConnectionButton_Clicked;
@@ -228,63 +228,63 @@ namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
         void ShowServerNotificationMessage(string message)
         {
             mConnectedLabel.text = message;
-            mConnectedLabel.RemoveFromClassList("visibility-hidden");
+            mConnectedLabel.Show();
         }
 
         void ShowServerValidationError(string message)
         {
             mConnectedLabel.text = message;
             mConnectedLabel.AddToClassList("error");
-            mConnectedLabel.RemoveFromClassList("visibility-hidden");
+            mConnectedLabel.Show();
         }
 
         void ShowCredentialsNotificationMessage(string message)
         {
             mCredentialsLabel.text = message;
-            mCredentialsLabel.RemoveFromClassList("visibility-hidden");
+            mCredentialsLabel.Show();
         }
 
         void ShowCheckCredentialsError(string message)
         {
             mCredentialsLabel.text = message;
             mCredentialsLabel.AddToClassList("error");
-            mCredentialsLabel.RemoveFromClassList("visibility-hidden");
+            mCredentialsLabel.Show();
         }
 
         void HideValidation()
         {
             mConnectedLabel.RemoveFromClassList("error");
-            mConnectedLabel.AddToClassList("visibility-hidden");
+            mConnectedLabel.Hide();
         }
 
         void ShowProgress(string text)
         {
             mSpinnerLabel.text = text;
 
-            mSpinnerContainer.RemoveFromClassList("visibility-hidden");
-            mSpinnerLabel.RemoveFromClassList("visibility-hidden");
+            mSpinnerContainer.Show();
+            mSpinnerLabel.Show();
             mLoadingSpinner.Start();
         }
 
         void HideProgress()
         {
             mLoadingSpinner.Stop();
-            mSpinnerContainer.AddToClassList("visibility-hidden");
-            mSpinnerLabel.AddToClassList("visibility-hidden");
+            mSpinnerContainer.Hide();
+            mSpinnerLabel.Hide();
         }
 
         void UpdatePasswordEntries(bool bIsPasswordRequired)
         {
             if (!bIsPasswordRequired)
             {
-                mPasswordTextField.AddToClassList("display-none");
+                mPasswordTextField.Collapse();
                 mUserTextField.SetEnabled(false);
                 mUserTextField.value = Environment.UserName;
                 return;
             }
 
             mUserTextField.SetEnabled(true);
-            mPasswordTextField.RemoveFromClassList("display-none");
+            mPasswordTextField.Show();
             mUserTextField.SelectAll();
             mUserTextField.FocusWorkaround();
         }

@@ -6,6 +6,7 @@ using PlasticGui;
 using PlasticGui.WebApi;
 using Unity.PlasticSCM.Editor.UI.UIElements;
 using PlasticGui.Configuration.CloudEdition.Welcome;
+using PlasticGui.Configuration.OAuth;
 using System.Collections.Generic;
 using Codice.Client.Common.Servers;
 using Codice.Client.Common;
@@ -19,11 +20,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 {
     internal interface IWelcomeWindowNotify
     {
-        void SuccessForConfigure(List<string> organizations, bool canCreateAnOrganization);
-        void SuccessForSSO(string organization);
-        void SuccessForCredentials(string userName, string password);
-        void SuccessForProfile(string userName);
-        void SignUpNeeded(string user, string password);
+        void SuccessForConfigure(List<string> organizations);
         void Back();
     }
 
@@ -45,7 +42,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
             window.titleContent = new GUIContent(
                 PlasticLocalization.GetString(PlasticLocalization.Name.SignInToUnityVCS));
-            window.minSize = window.maxSize = new Vector2(500, 460);
+            window.minSize = window.maxSize = new Vector2(450, 300);
 
             window.mWelcomeView = welcomeView;
 
@@ -129,9 +126,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             if (mSignInPanel != null)
                 mSignInPanel.Dispose();
 
-            if (mSSOSignUpPanel != null)
-                mSSOSignUpPanel.Dispose();
-
             if (mOrganizationPanel != null)
                 mOrganizationPanel.Dispose();
         }
@@ -144,8 +138,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         {
             ShowOrganizationPanel(
                 GetWindowTitle(),
-                organizations,
-                canCreateAnOrganization);
+                organizations);
 
             Focus();
 
@@ -155,15 +148,13 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         internal void ShowOrganizationPanel(
             string title,
-            List<string> organizations,
-            bool canCreateAnOrganization)
+            List<string> organizations)
         {
             mOrganizationPanel = new OrganizationPanel(
                 this,
                 sRestApi,
                 title,
-                organizations,
-                canCreateAnOrganization);
+                organizations);
 
             ReplaceRootPanel(mOrganizationPanel);
         }
@@ -196,13 +187,11 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         }
 
         void IWelcomeWindowNotify.SuccessForConfigure(
-            List<string> organizations,
-            bool canCreateAnOrganization)
+            List<string> organizations)
         {
             ShowOrganizationPanel(
                 GetWindowTitle(),
-                organizations,
-                canCreateAnOrganization);
+                organizations);
         }
 
         internal void FillUserAndToken(
@@ -214,59 +203,22 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         }
 
         internal void ShowOrganizationPanelFromAutoLogin(
-            List<string> organizations,
-            bool canCreateAnOrganization)
+            List<string> organizations)
         {
             ShowOrganizationPanel(
                 GetWindowTitle(),
-                organizations,
-                canCreateAnOrganization);
-        }
-
-        void IWelcomeWindowNotify.SuccessForSSO(string organization)
-        {
-            // empty implementation
-        }
-
-        void IWelcomeWindowNotify.SuccessForCredentials(string userName, string password)
-        {
-            // empty implementation
-        }
-
-        void IWelcomeWindowNotify.SuccessForProfile(string userName)
-        {
-            // empty implementation
-        }
-
-        void IWelcomeWindowNotify.SignUpNeeded(
-            string user,
-            string password)
-        {
-            SwitchToSignUpPage(user, password);
+                organizations);
         }
 
         void IWelcomeWindowNotify.Back()
         {
             rootVisualElement.Clear();
-            rootVisualElement.Add(mTabView);
+            rootVisualElement.Add(mSignInPanel);
         }
 
-        void SwitchToSignUpPage(
-            string user,
-            string password)
+        internal string GetWindowTitle()
         {
-            mSSOSignUpPanel.SetSignUpData(user, password);
-
-            rootVisualElement.Clear();
-            rootVisualElement.Add(mTabView);
-            mTabView.SwitchContent(mSSOSignUpPanel);
-        }
-
-        string GetWindowTitle()
-        {
-            return mIsOnSignIn ?
-                PlasticLocalization.GetString(PlasticLocalization.Name.SignInToUnityVCS) :
-                PlasticLocalization.GetString(PlasticLocalization.Name.SignUp);
+            return PlasticLocalization.Name.SignInToUnityVCS.GetString();
         }
 
         internal static string GetPlasticConfigFileToSaveOrganization()
@@ -294,49 +246,26 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             VisualElement root = rootVisualElement;
 
             root.Clear();
-            mTabView = new TabView();
 
             mSignInPanel = new SignInPanel(
                 this,
                 sRestApi,
                 sCmConnection);
 
-            mSSOSignUpPanel = new SSOSignUpPanel(
-                this,
-                sRestApi,
-                sCmConnection);
+            titleContent = new GUIContent(GetWindowTitle());
 
-            mTabView.AddTab(
-                PlasticLocalization.GetString(PlasticLocalization.Name.SignIn),
-                mSignInPanel).clicked += () =>
-                {
-                    mIsOnSignIn = true;
-                    titleContent = new GUIContent(GetWindowTitle());
-                };
-            mTabView.AddTab(
-                PlasticLocalization.GetString(PlasticLocalization.Name.SignUp),
-                mSSOSignUpPanel).clicked += () =>
-                {
-                    mIsOnSignIn = false;
-                    titleContent = new GUIContent(GetWindowTitle());
-                };
-
-            root.Add(mTabView);
+            root.Add(mSignInPanel);
             if (sAutoLogin)
                 mSignInPanel.SignInWithUnityIdButtonAutoLogin();
         }
 
-        internal TabView mTabView;
-
         OrganizationPanel mOrganizationPanel;
         SignInPanel mSignInPanel;
-        SSOSignUpPanel mSSOSignUpPanel;
         WelcomeView mWelcomeView;
 
         string mUserName;
         string mAccessToken;
-       
-        bool mIsOnSignIn = true;
+
         static IPlasticWebRestApi sRestApi;
         static CmConnection sCmConnection;
         static bool sAutoLogin = false;

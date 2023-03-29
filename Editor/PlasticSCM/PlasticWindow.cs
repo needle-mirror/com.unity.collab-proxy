@@ -41,6 +41,8 @@ namespace Unity.PlasticSCM.Editor
         internal ViewSwitcher ViewSwitcherForTesting { get { return mViewSwitcher; } }
         internal CmConnection CmConnectionForTesting { get { return CmConnection.Get(); } }
 
+        internal bool ShowWelcomeViewForTesting;
+
         internal void SetupWindowTitle(PlasticNotification.Status status)
         {
             Texture windowIcon = PlasticNotification.GetIcon(status);
@@ -215,7 +217,7 @@ namespace Unity.PlasticSCM.Editor
                 }
 
                 bool isPlasticExeAvailable = IsExeAvailable.ForMode(mIsGluonMode);
-                bool clientNeedsConfiguration = UnityConfigurationChecker.NeedsConfiguration();
+                bool clientNeedsConfiguration = UnityConfigurationChecker.NeedsConfiguration() || ShowWelcomeViewForTesting;
 
                 var welcomeView = GetWelcomeView();
 

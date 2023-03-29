@@ -1,6 +1,24 @@
 # Changelog
 All notable changes to this package will be documented in this file.
 
+## [2.0.3] - 2023-03-29
+
+Unity Version Control is now available as part of the Version Control Package! You can enable Unity Version Control via Window > Unity Version Control to get started!
+If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
+Removing a previously added Plastic SCM Asset Store Plug-In:
+- Select the PlasticSCM folder in the Assets\Plugins folder on the Project tab, then click Edit > Delete
+- Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
+
+### Changed
+- Changed the icons for Unity Version Control rebranding
+- Changed onboarding workflow
+
+### Fixed
+- Fixed blurry icons in the Unity Version Control window and toolbar button
+- Fixed Pending Changes tab not always opening its selected item's location in Project window
+- Fixed "Checked-out (changed)" status icon not showing up on Pending Changes tab
+- Fixed issue that prevented new packages from being installed unless user enters play mode
+
 ## [2.0.1] - 2023-02-17
 
 Unity Version Control is now available as part of the Version Control Package! You can enable Unity Version Control via Window > Unity Version Control to get started!

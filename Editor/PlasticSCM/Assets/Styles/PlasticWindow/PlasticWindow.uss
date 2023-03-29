@@ -1,31 +1,4 @@
-﻿/* Basic Classes */
-.display-none {
-    display: none;
-}
-
-.row {
-    flex-direction: row;
-}
-
-.column {
-    flex-direction: column;
-}
-
-.flex-container {
-    display: flex;
-}
-
-.grow {
-    flex-grow: 1;
-}
-
-.horizontally-centered {
-    justify-content: center;
-}
-
-.hidden {
-    visibility: hidden;
-}
+﻿@import "../Base.uss";
 
 /* Plastic Window Tabview */
 #TabView {

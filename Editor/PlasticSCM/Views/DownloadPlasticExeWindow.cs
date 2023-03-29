@@ -115,9 +115,9 @@ namespace Unity.PlasticSCM.Editor.Views
                 mMessageLabel.text = "Unity Version Control installed. You can now use the feature.";
                 mCancelButton.text =
                     PlasticLocalization.GetString(PlasticLocalization.Name.CloseButton);
-                mRequireMessageLabel.AddToClassList("display-none");
-                mDownloadCloudEditionButton.AddToClassList("display-none");
-                mDownloadEnterpriseButton.AddToClassList("display-none");
+                mRequireMessageLabel.Collapse();
+                mDownloadCloudEditionButton.Collapse();
+                mDownloadEnterpriseButton.Collapse();
             }
         }
 
@@ -143,7 +143,7 @@ namespace Unity.PlasticSCM.Editor.Views
 
             if (EditionToken.IsCloudEdition())
             {
-                mDownloadEnterpriseButton.AddToClassList("display-none");
+                mDownloadEnterpriseButton.Collapse();
                 DownloadPlasticExeWindow window = GetWindow<DownloadPlasticExeWindow>();
             }
             else

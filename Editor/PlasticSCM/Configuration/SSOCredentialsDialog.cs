@@ -1,14 +1,17 @@
-﻿using UnityEngine;
+﻿using System;
 
+using UnityEngine;
 using UnityEditor;
 
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Codice.CM.Common;
+using Codice.Client.Common.OAuth;
 using Codice.Client.Common.Connection;
 using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
 using PlasticGui.Configuration.CloudEdition.Welcome;
+using PlasticGui.Configuration.OAuth;
 using System.Collections.Generic;
 using PlasticGui.WebApi.Responses;
 using PlasticGui.Configuration.CloudEdition;
@@ -139,23 +142,29 @@ namespace Unity.PlasticSCM.Editor.Configuration
             }
         }
 
-        internal void OAuthSignInForConfigure(string ssoProviderName)
+        internal void OAuthSignInForConfigure(Uri signInUrl, Guid state, IGetOauthToken getOauthToken)
         {
             OAuthSignIn mSignIn = new OAuthSignIn();
 
             mSignIn.ForConfigure(
-                PlasticGui.Plastic.WebRestAPI,
-                ssoProviderName,
+                signInUrl,
+                state,
                 mProgressControls,
                 this,
-                GetWindow<PlasticWindow>().CmConnectionForTesting);
+                GetWindow<PlasticWindow>().CmConnectionForTesting,
+                getOauthToken,
+                PlasticGui.Plastic.WebRestAPI);
         }
 
         void DoUnityIDButton()
         {
             if (NormalButton("Sign in with Unity ID"))
             {
-                OAuthSignInForConfigure(SsoProvider.UNITY_URL_ACTION);
+                Guid state = Guid.NewGuid();
+                OAuthSignInForConfigure(
+                    GetCloudSsoProviders.BuildAuthInfoForUnityId(string.Empty, state).SignInUrl,
+                    state,
+                    new GetCloudSsoToken(PlasticGui.Plastic.WebRestAPI));
             }
         }
 

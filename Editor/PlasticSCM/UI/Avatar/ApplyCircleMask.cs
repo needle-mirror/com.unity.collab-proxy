@@ -6,15 +6,12 @@ namespace Unity.PlasticSCM.Editor.UI.Avatar
     {
         internal static Texture2D For(Texture2D sourceImage)
         {
-            int width = sourceImage.width;
-            int height = sourceImage.height;
-
             int centerx = sourceImage.width / 2;
             int centery = sourceImage.height / 2;
 
             int radius = sourceImage.width / 2;
 
-            Texture2D result = new Texture2D(height, width);
+            Texture2D result = Images.GetNewTextureFromTexture(sourceImage);
 
             for (int i = (centerx - radius); i < centerx + radius; i++)
             {

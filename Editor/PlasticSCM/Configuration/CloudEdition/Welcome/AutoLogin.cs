@@ -6,7 +6,7 @@ using UnityEngine;
 
 using Codice.Client.Common.Threading;
 using Codice.LogWrapper;
-using PlasticGui.Configuration.CloudEdition.Welcome;
+using PlasticGui.Configuration.OAuth;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.WebApi;
@@ -56,7 +56,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             string accessToken)
         {
             mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseSuccess;
-            ChooseOrganization(organizations, canCreateAnOrganization);
+            ChooseOrganization(organizations);
         }
 
         void OAuthSignIn.INotify.SuccessForSSO(string organization)
@@ -150,19 +150,18 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         void GetOrganizationList()
         {
             OAuthSignIn.GetOrganizationsFromAccessToken(
-                PlasticGui.Plastic.WebRestAPI,
-                new ProgressControlsForDialogs(),
-                this,
                 string.Empty,
                 CloudProjectSettings.userName,
                 AccessToken,
-                OAuthSignIn.Mode.Configure
+                OAuthSignIn.Mode.Configure,
+                new ProgressControlsForDialogs(),
+                this,
+                PlasticGui.Plastic.WebRestAPI
             );
         }
 
         void ChooseOrganization(
-            List<string> organizations,
-            bool canCreateAnOrganization)
+            List<string> organizations)
         {
             mPlasticWindow = GetPlasticWindow();
 
@@ -177,7 +176,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 mCloudEditionWelcomeWindow.JoinOrganizationAndWelcomePage(organizations[0]);
                 return;
             }
-            mCloudEditionWelcomeWindow.ShowOrganizationPanelFromAutoLogin(organizations, canCreateAnOrganization);
+            mCloudEditionWelcomeWindow.ShowOrganizationPanelFromAutoLogin(organizations);
         }
 
         static PlasticWindow GetPlasticWindow()

@@ -56,10 +56,7 @@ namespace Unity.PlasticSCM.Editor.UI.Avatar
 
         static Texture2D GetTexture(byte[] rawImage)
         {
-            Texture2D result = new Texture2D(32, 32);
-
-            result.LoadImage(rawImage);
-
+            Texture2D result = Images.GetNewTextureFromBytes(32, 32, rawImage);
             Texture2D maskImage = ApplyCircleMask.For(result);
 
             UnityEngine.Object.DestroyImmediate(result, true);

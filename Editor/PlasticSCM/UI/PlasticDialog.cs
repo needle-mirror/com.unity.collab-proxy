@@ -56,7 +56,7 @@ namespace Unity.PlasticSCM.Editor.UI
             }
 
             EditorUtility.DisplayDialog(
-                PlasticLocalization.GetString(PlasticLocalization.Name.PlasticSCM),
+                PlasticLocalization.GetString(PlasticLocalization.Name.UnityVersionControl),
                 PlasticLocalization.GetString(PlasticLocalization.Name.PluginModalInformation),
                 PlasticLocalization.GetString(PlasticLocalization.Name.CloseButton));
             return ResponseType.None;

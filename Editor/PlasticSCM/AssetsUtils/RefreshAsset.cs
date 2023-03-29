@@ -1,4 +1,6 @@
-﻿using Unity.PlasticSCM.Editor.AssetUtils.Processor;
+﻿using UnityEditor.PackageManager;
+
+using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 
 namespace Unity.PlasticSCM.Editor.AssetUtils
 {
@@ -14,6 +16,11 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
             UnityEditor.AssetDatabase.AllowAutoRefresh();
 
             UnityAssetDatabase();
+
+            // Client is an API to interact with package manager
+            // Client.Resolve() will resolve any pending packages added or removed from the project.
+            // https://docs.unity3d.com/ScriptReference/PackageManager.Client.html
+            Client.Resolve();
         }
 
         internal static void UnityAssetDatabase()

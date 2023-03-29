@@ -2,12 +2,11 @@
 using System.IO;
 using System.Linq;
 
+using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 using Codice.Client.BaseCommands;
-using Codice.Client.Commands;
-using Codice.Client.Common;
 using Codice.CM.Common;
 
 using PlasticGui;
@@ -57,6 +56,11 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
         }
 
+        protected override void SingleClickedItem(int id)
+        {
+            SelectionChanged(new [] { id });
+        }
+
         protected override void SelectionChanged(IList<int> selectedIds)
         {
             mHeaderState.UpdateItemColumnHeader(this);
@@ -77,6 +81,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             }
 
             UnityEditor.Selection.objects = assets.ToArray();
+
+            if (assets.Count == 1)
+                EditorGUIUtility.PingObject(assets[0]);
         }
 
         protected void SelectionChanged()

@@ -6,9 +6,11 @@ Unity VC integrates version control in Unity that will abstract version control 
 
 The Version Control package follows the Unity support schedule. Currently, supported versions are:
 
-* 2021.1.15f1
-* 2021.2.0b6
-* 2022.1.0a4
+* 2020.3
+* 2021.3
+* 2022.2
+* 2023.1
+* 2023.2
 
 
 [Getting started with Unity version control](StartPlasticForUnity.md)

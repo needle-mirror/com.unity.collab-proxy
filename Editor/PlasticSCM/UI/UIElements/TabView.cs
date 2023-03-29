@@ -68,8 +68,8 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
 
         void BuildComponents()
         {
-            mTabArea = this.Query<VisualElement>("TabArea").First();
-            mContentArea = this.Query<VisualElement>("ContentArea").First();
+            mTabArea = this.Query<VisualElement>("TabArea");
+            mContentArea = this.Query<VisualElement>("ContentArea");
         }
 
         void InitializeLayoutAndStyles()

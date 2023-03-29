@@ -5,7 +5,7 @@
         <Label name="message" />
         <VisualElement name="progressControlsContainer" />
         <VisualElement name="footer">
-            <VisualElement class="flex-grow" />
+            <VisualElement class="grow-max" />
             <Button name="downloadCloudEdition" />
             <Button name="downloadEnterpriseEdition" />
             <Button name="cancel" />

@@ -10,10 +10,17 @@
         <Label name="emailNotification" class="alert-label"/>
         <TextField name="password" password="true"/>
         <Label name="passwordNotification" class="alert-label"/>
-        <VisualElement class="row flex-end">
+
+        <VisualElement class="row align-end">
             <Button name="back" class="classic-button"/>
             <Button name="signIn" class="classic-button"/>
         </VisualElement>
+
         <VisualElement name="progressContainer"/>
+
+        <VisualElement name="signUpNeededNotificationContainer" class="collapse row">
+            <Label name="signUpNeededNotificationLabel"/>
+            <Button name="signUpButton" class="anchor"/>
+        </VisualElement>
     </VisualElement>
 </UXML>

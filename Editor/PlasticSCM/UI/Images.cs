@@ -7,6 +7,7 @@ using UnityEngine;
 using Codice.LogWrapper;
 using PlasticGui.Help;
 using Unity.PlasticSCM.Editor.AssetUtils;
+using UnityEditor.VersionControl;
 
 namespace Unity.PlasticSCM.Editor.UI
 {
@@ -63,33 +64,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal static Texture2D GetImage(Name image)
         {
-            string imageFileName = image.ToString().ToLower() + ".png";
-            string imageFileName2x = image.ToString().ToLower() + "@2x.png";
-
-            string darkImageFileName = string.Format("d_{0}", imageFileName);
-            string darkImageFileName2x = string.Format("d_{0}", imageFileName2x);
-
-            string imageFileRelativePath = GetImageFileRelativePath(imageFileName);
-            string imageFileRelativePath2x = GetImageFileRelativePath(imageFileName2x);
-
-            string darkImageFileRelativePath = GetImageFileRelativePath(darkImageFileName);
-            string darkImageFileRelativePath2x = GetImageFileRelativePath(darkImageFileName2x);
-
-            Texture2D result = null;
-
-            if (EditorGUIUtility.isProSkin)
-                result = TryLoadImage(darkImageFileRelativePath, darkImageFileRelativePath2x);
-
-            if (result != null)
-                return result;
-
-            result = TryLoadImage(imageFileRelativePath, imageFileRelativePath2x);
-
-            if (result != null)
-                return result;
-
-            mLog.WarnFormat("Image not found: {0}", imageFileName);
-            return GetEmptyImage();
+            return LoadImage(image, false);
         }
 
         internal static Texture GetFileIcon(string path)
@@ -119,7 +94,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetPrivatedOverlayIcon()
         {
             if (mPrivatedOverlayIcon == null)
-                mPrivatedOverlayIcon = GetImage(Name.IconPrivateOverlay);
+                mPrivatedOverlayIcon = GetOverlay(Name.IconPrivateOverlay);
 
             return mPrivatedOverlayIcon;
         }
@@ -127,7 +102,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetAddedOverlayIcon()
         {
             if (mAddedOverlayIcon == null)
-                mAddedOverlayIcon = GetImage(Name.IconAddedOverlay);
+                mAddedOverlayIcon = GetOverlay(Name.IconAddedOverlay);
 
             return mAddedOverlayIcon;
         }
@@ -135,7 +110,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetDeletedLocalOverlayIcon()
         {
             if (mDeletedLocalOverlayIcon == null)
-                mDeletedLocalOverlayIcon = GetImage(Name.IconDeletedLocalOverlay);
+                mDeletedLocalOverlayIcon = GetOverlay(Name.IconDeletedLocalOverlay);
 
             return mDeletedLocalOverlayIcon;
         }
@@ -143,7 +118,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetDeletedRemoteOverlayIcon()
         {
             if (mDeletedRemoteOverlayIcon == null)
-                mDeletedRemoteOverlayIcon = GetImage(Name.IconDeletedRemoteOverlay);
+                mDeletedRemoteOverlayIcon = GetOverlay(Name.IconDeletedRemoteOverlay);
 
             return mDeletedRemoteOverlayIcon;
         }
@@ -151,7 +126,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetCheckedOutOverlayIcon()
         {
             if (mCheckedOutOverlayIcon == null)
-                mCheckedOutOverlayIcon = GetImage(Name.IconCheckedOutLocalOverlay);
+                mCheckedOutOverlayIcon = GetOverlay(Name.IconCheckedOutLocalOverlay);
 
             return mCheckedOutOverlayIcon;
         }
@@ -159,7 +134,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetOutOfSyncOverlayIcon()
         {
             if (mOutOfSyncOverlayIcon == null)
-                mOutOfSyncOverlayIcon = GetImage(Name.IconOutOfSyncOverlay);
+                mOutOfSyncOverlayIcon = GetOverlay(Name.IconOutOfSyncOverlay);
 
             return mOutOfSyncOverlayIcon;
         }
@@ -167,7 +142,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetConflictedOverlayIcon()
         {
             if (mConflictedOverlayIcon == null)
-                mConflictedOverlayIcon = GetImage(Name.IconConflictedOverlay);
+                mConflictedOverlayIcon = GetOverlay(Name.IconConflictedOverlay);
 
             return mConflictedOverlayIcon;
         }
@@ -175,7 +150,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetConflictResolvedOverlayIcon()
         {
             if (mConflictResolvedOverlayIcon == null)
-                mConflictResolvedOverlayIcon = GetImage(Name.IconConflictResolvedOverlay);
+                mConflictResolvedOverlayIcon = GetOverlay(Name.IconConflictResolvedOverlay);
 
             return mConflictResolvedOverlayIcon;
         }
@@ -183,7 +158,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetLockedLocalOverlayIcon()
         {
             if (mLockedLocalOverlayIcon == null)
-                mLockedLocalOverlayIcon = GetImage(Name.IconLockedLocalOverlay);
+                mLockedLocalOverlayIcon = GetOverlay(Name.IconLockedLocalOverlay);
 
             return mLockedLocalOverlayIcon;
         }
@@ -191,7 +166,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetLockedRemoteOverlayIcon()
         {
             if (mLockedRemoteOverlayIcon == null)
-                mLockedRemoteOverlayIcon = GetImage(Name.IconLockedRemoteOverlay);
+                mLockedRemoteOverlayIcon = GetOverlay(Name.IconLockedRemoteOverlay);
 
             return mLockedRemoteOverlayIcon;
         }
@@ -199,7 +174,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetIgnoredOverlayIcon()
         {
             if (mIgnoredverlayIcon == null)
-                mIgnoredverlayIcon = GetImage(Name.IgnoredOverlay);
+                mIgnoredverlayIcon = GetOverlay(Name.IgnoredOverlay);
 
             return mIgnoredverlayIcon;
         }
@@ -361,7 +336,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
             return mStep2Icon;
         }
-        
+
         internal static Texture2D GetMergeLinkIcon()
         {
             if (mMergeLinkIcon == null)
@@ -409,7 +384,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
             return mRepositoryIcon;
         }
-                
+
         internal static Texture GetFileIcon()
         {
             if (mFileIcon == null)
@@ -458,6 +433,60 @@ namespace Unity.PlasticSCM.Editor.UI
                 mColumnsBackgroundTexture = GetTextureFromColor(UnityStyles.Colors.ColumnsBackground);
 
             return mColumnsBackgroundTexture;
+        }
+
+        internal static Texture2D GetNewTextureFromTexture(Texture2D texture)
+        {
+            Texture2D result = new Texture2D(texture.width, texture.height);
+            result.ignoreMipmapLimit = texture.ignoreMipmapLimit;
+
+            return result;
+        }
+
+        internal static Texture2D GetNewTextureFromBytes(int width, int height, byte[] bytes)
+        {
+            Texture2D result = new Texture2D(width, height);
+
+            result.LoadImage(bytes);
+            result.ignoreMipmapLimit = true; // ignore global quality settings
+
+            return result;
+        }
+
+        static Texture2D GetOverlay(Name image)
+        {
+            return LoadImage(image, true);
+        }
+
+        static Texture2D LoadImage(Name image, bool preferFulResImage)
+        {
+            string imageFileName = image.ToString().ToLower() + ".png";
+            string imageFileName2x = image.ToString().ToLower() + "@2x.png";
+
+            string darkImageFileName = string.Format("d_{0}", imageFileName);
+            string darkImageFileName2x = string.Format("d_{0}", imageFileName2x);
+
+            string imageFileRelativePath = GetImageFileRelativePath(imageFileName);
+            string imageFileRelativePath2x = GetImageFileRelativePath(imageFileName2x);
+
+            string darkImageFileRelativePath = GetImageFileRelativePath(darkImageFileName);
+            string darkImageFileRelativePath2x = GetImageFileRelativePath(darkImageFileName2x);
+
+            Texture2D result = null;
+
+            if (EditorGUIUtility.isProSkin)
+                result = TryLoadImage(darkImageFileRelativePath, darkImageFileRelativePath2x, preferFulResImage);
+
+            if (result != null)
+                return result;
+
+            result = TryLoadImage(imageFileRelativePath, imageFileRelativePath2x, preferFulResImage);
+
+            if (result != null)
+                return result;
+
+            mLog.WarnFormat("Image not found: {0}", imageFileName);
+            return GetEmptyImage();
         }
 
         static Texture2D GetEmptyImage()
@@ -581,11 +610,14 @@ namespace Unity.PlasticSCM.Editor.UI
                 imageFileName);
         }
 
-        static Texture2D TryLoadImage(string imageFileRelativePath, string image2xFilePath)
+        static Texture2D TryLoadImage(
+            string imageFileRelativePath, string image2xFilePath, bool preferFulResImage)
         {
             bool isImageAvailable = File.Exists(Path.GetFullPath(imageFileRelativePath));
-            
-            if ((EditorGUIUtility.pixelsPerPoint > 1f || !isImageAvailable) && File.Exists(image2xFilePath))
+            bool isImage2XAvailable = File.Exists(Path.GetFullPath(image2xFilePath));
+
+            if ((EditorGUIUtility.pixelsPerPoint > 1f || !isImageAvailable || preferFulResImage) &&
+                isImage2XAvailable)
                 return LoadTextureFromFile(image2xFilePath);
 
             if (isImageAvailable)
@@ -605,9 +637,7 @@ namespace Unity.PlasticSCM.Editor.UI
                 mImagesByPathCache.Remove(path);
             }
 
-            byte[] fileData = File.ReadAllBytes(path);
-            result = new Texture2D(1, 1);
-            result.LoadImage(fileData); //auto-resizes the texture dimensions
+            result = GetNewTextureFromBytes(0, 0, File.ReadAllBytes(path));
 
             mImagesByPathCache.Add(path, result);
 
@@ -616,8 +646,10 @@ namespace Unity.PlasticSCM.Editor.UI
 
         static Dictionary<string, Texture2D> mImagesByPathCache =
             new Dictionary<string, Texture2D>();
+
         static Dictionary<string, Texture2D> mImagesFromEditorGUICache =
             new Dictionary<string, Texture2D>();
+
         static Dictionary<string, Texture2D> mImagesFromAssetPreviewCache =
             new Dictionary<string, Texture2D>();
 
@@ -648,7 +680,7 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mTreeviewBackgroundTexture;
         static Texture2D mColumnsBackgroundTexture;
         static Texture2D mCommentBackground;
-        
+
         static Texture2D mUndoIcon;
         static Texture2D mPlasticIcon;
         static Texture2D mBranchIcon;
@@ -670,7 +702,7 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mDeletedIcon;
         static Texture2D mMovedIcon;
         static Texture2D mRepositoryIcon;
-        
+
         static readonly ILog mLog = LogManager.GetLogger("Images");
     }
 }

@@ -31,12 +31,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
         {
             using (new EditorGUILayout.HorizontalScope())
             {
-                EditorGUI.DrawRect(GUILayoutUtility.GetRect(56f, 56f), Color.white);
 
-                var plasticIconRect = GUILayoutUtility.GetRect(36f, 36f);
-                plasticIconRect.x -= 46f;
-                plasticIconRect.y += 10f;
-                GUI.DrawTexture(plasticIconRect, Images.GetPlasticIcon());
+               DoIconArea();
 
                 using (new EditorGUILayout.VerticalScope())
                 {
@@ -61,7 +57,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
         {
             using (new EditorGUILayout.HorizontalScope())
             {
-                GUILayout.Space(95f);
+                GUILayout.Space(70f);
 
                 UserChoseToNotDisplayWarningAgain = TitleToggle(
                     PlasticLocalization.GetString(
@@ -140,6 +136,24 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             }
 
             CancelButtonAction();
+        }
+
+        void DoIconArea()
+        {
+            GUILayout.BeginVertical();
+            GUILayout.Space(10);
+
+            Rect iconRect = GUILayoutUtility.GetRect(
+                GUIContent.none, GUIStyle.none,
+                GUILayout.Width(60), GUILayout.Height(60));
+            iconRect.x -= 10;
+
+            GUI.DrawTexture(
+                iconRect,
+                Images.GetPlasticIcon(),
+                ScaleMode.ScaleToFit);
+
+            GUILayout.EndVertical();
         }
 
         internal static bool ShouldContinueWithCheckin(

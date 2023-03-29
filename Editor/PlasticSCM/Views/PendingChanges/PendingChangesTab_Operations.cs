@@ -297,6 +297,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 changesToUndo,
                 dependenciesCandidates,
                 mPendingMergeLinks.Count,
+                false,
                 RefreshAsset.UnityAssetDatabase,
                 null);
         }

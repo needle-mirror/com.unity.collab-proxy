@@ -44,7 +44,13 @@ namespace Unity.PlasticSCM.Editor.Configuration
             });
         }
 
-        AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForSSOCredentials(
+        AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForOidcCredentials(
+            string server)
+        {
+            throw new NotImplementedException("OIDC authentication not supported yet.");
+        }
+
+        AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForSsoCredentials(
             string cloudServer)
         {
             AskCredentialsToUser.DialogData result = null;

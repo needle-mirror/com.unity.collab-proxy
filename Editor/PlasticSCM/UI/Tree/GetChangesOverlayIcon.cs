@@ -73,19 +73,19 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                     changeInfo.ChangeTypes, ChangeTypes.Added))
                 return ForAdded();
 
-            switch (type)
-            {
-                case ItemIconImageType.Ignored:
-                    return ForIgnored();
-                case ItemIconImageType.Private:
-                    return ForPrivated();
-                case ItemIconImageType.Deleted:
-                    return ForDeleted();
-                case ItemIconImageType.CheckedOut:
-                    return ForCheckedOut();
-                default:
-                    return null;
-            }
+            if (type.HasFlag(ItemIconImageType.Ignored))
+                return ForIgnored();
+
+            if (type.HasFlag(ItemIconImageType.Deleted))
+                return ForDeleted();
+
+            if (type.HasFlag(ItemIconImageType.CheckedOut))
+                return ForCheckedOut();
+
+            if (type.HasFlag(ItemIconImageType.Private))
+                return ForPrivated();
+
+            return null;
         }
 
         static Texture ForConflict(bool isResolved)

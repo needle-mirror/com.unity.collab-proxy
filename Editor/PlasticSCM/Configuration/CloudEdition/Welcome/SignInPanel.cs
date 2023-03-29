@@ -1,13 +1,16 @@
-﻿using UnityEngine;
+﻿using System;
+
+using UnityEngine;
 using UnityEngine.UIElements;
 
 using Codice.Client.Common;
+using Codice.Client.Common.OAuth;
 using PlasticGui;
-using PlasticGui.WebApi.Responses;
 using PlasticGui.WebApi;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.UIElements;
 using PlasticGui.Configuration.CloudEdition.Welcome;
+using PlasticGui.Configuration.OAuth;
 
 namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 {
@@ -32,6 +35,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mSignInWithUnityIdButton.clicked -= SignInWithUnityIdButton_Clicked;
             mSignInWithEmailButton.clicked -= SignInWithEmailButton_Clicked;
             mPrivacyPolicyStatementButton.clicked -= PrivacyPolicyStatementButton_Clicked;
+            mSignUpButton.clicked -= SignUpButton_Clicked;
 
             if (mSignInWithEmailPanel != null)
                 mSignInWithEmailPanel.Dispose();
@@ -50,6 +54,11 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mParentWindow.ReplaceRootPanel(mSignInWithEmailPanel);
         }
 
+        void SignUpButton_Clicked()
+        {
+            Application.OpenURL(UnityUrl.DevOps.GetSignUp());
+        }
+
         internal void SignInWithUnityIdButton_Clicked()
         {
             mWaitingSignInPanel = new WaitingSignInPanel(
@@ -59,8 +68,14 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 mCmConnection);
 
             mParentWindow.ReplaceRootPanel(mWaitingSignInPanel);
-            mWaitingSignInPanel.OAuthSignInForConfigure(SsoProvider.UNITY_URL_ACTION);
+
+            Guid state = Guid.NewGuid();
+            mWaitingSignInPanel.OAuthSignInForConfigure(
+                GetCloudSsoProviders.BuildAuthInfoForUnityId(string.Empty, state).SignInUrl,
+                state,
+                new GetCloudSsoToken(mRestApi));
         }
+
         internal void SignInWithUnityIdButtonAutoLogin()
         {
             mWaitingSignInPanel = new WaitingSignInPanel(
@@ -74,46 +89,66 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         void PrivacyPolicyStatementButton_Clicked()
         {
-            // TODO: update when dll is avaiable PlasticGui.Configuration.CloudEdition.Welcome
-            //       SignUp.PRIVACY_POLICY_URL
             Application.OpenURL(SignUp.PRIVACY_POLICY_URL);
         }
 
         void BuildComponents()
         {
-            this.SetControlImage("iconUnity",
-                Images.Name.ButtonSsoSignInUnity);
+            BuildSignUpArea();
+            BuildSignInUnityIdArea();
+            BuildSignInEmailArea();
+            BuildPrivatePolicyArea();
+        }
 
-            mSignInWithUnityIdButton = this.Query<Button>("unityIDButton").First();
-            mSignInWithUnityIdButton.text = PlasticLocalization.GetString(
-                PlasticLocalization.Name.SignInWithUnityID);
-            mSignInWithUnityIdButton.clicked += SignInWithUnityIdButton_Clicked;
-
-
-            this.SetControlImage("iconEmail",
-                Images.Name.ButtonSsoSignInEmail);
-
-            mSignInWithEmailButton = this.Query<Button>("emailButton").First();
-            mSignInWithEmailButton.text = PlasticLocalization.GetString(
-                PlasticLocalization.Name.SignInWithEmail);
-            mSignInWithEmailButton.clicked += SignInWithEmailButton_Clicked;
-
-            this.SetControlText<Label>("privacyStatementText",
+        void BuildPrivatePolicyArea()
+        {
+            this.SetControlText<Label>(
+                "privacyStatementText",
                 PlasticLocalization.Name.PrivacyStatementText,
                 PlasticLocalization.GetString(PlasticLocalization.Name.PrivacyStatement));
 
-            mPrivacyPolicyStatementButton = this.Query<Button>("privacyStatement").First();
-            mPrivacyPolicyStatementButton.text = PlasticLocalization.GetString(
-                PlasticLocalization.Name.PrivacyStatement);
+            mPrivacyPolicyStatementButton = this.Query<Button>("privacyStatement");
+            mPrivacyPolicyStatementButton.text = PlasticLocalization.Name.PrivacyStatement.GetString();
             mPrivacyPolicyStatementButton.clicked += PrivacyPolicyStatementButton_Clicked;
+        }
+
+        void BuildSignInEmailArea()
+        {
+            this.SetControlImage(
+                "iconEmail",
+                Images.Name.ButtonSsoSignInEmail);
+
+            mSignInWithEmailButton = this.Query<Button>("emailButton");
+            mSignInWithEmailButton.text = PlasticLocalization.Name.SignInWithEmail.GetString();
+            mSignInWithEmailButton.clicked += SignInWithEmailButton_Clicked;
+        }
+
+        void BuildSignInUnityIdArea()
+        {
+            this.SetControlImage(
+                "iconUnity",
+                Images.Name.ButtonSsoSignInUnity);
+
+            mSignInWithUnityIdButton = this.Query<Button>("unityIDButton");
+            mSignInWithUnityIdButton.text = PlasticLocalization.Name.SignInWithUnityID.GetString();
+            mSignInWithUnityIdButton.clicked += SignInWithUnityIdButton_Clicked;
+        }
+
+        void BuildSignUpArea()
+        {
+            Label signUpLabel = this.Query<Label>("signUpLabel");
+            signUpLabel.text = PlasticLocalization.Name.LoginOrSignUp.GetString();
+
+            mSignUpButton = this.Query<Button>("signUpButton");
+            mSignUpButton.text = PlasticLocalization.Name.SignUpButton.GetString();
+            mSignUpButton.clicked += SignUpButton_Clicked;
         }
 
         void InitializeLayoutAndStyles()
         {
             AddToClassList("grow");
+            
             this.LoadLayout(typeof(SignInPanel).Name);
-
-            this.LoadStyle("SignInSignUp");
             this.LoadStyle(typeof(SignInPanel).Name);
         }
 
@@ -122,6 +157,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         Button mSignInWithUnityIdButton;
         Button mSignInWithEmailButton;
         Button mPrivacyPolicyStatementButton;
+        Button mSignUpButton;
 
         readonly CloudEditionWelcomeWindow mParentWindow;
         readonly IPlasticWebRestApi mRestApi;

@@ -1,6 +1,4 @@
 ﻿using PlasticGui;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.UIElements;
 using UnityEditor;
@@ -146,9 +144,9 @@ namespace Unity.PlasticSCM.Editor
                 mUpdateNotificationLabel.text = notification;
 
             if (show)
-                mUpdateNotification.RemoveFromClassList("display-none");
+                mUpdateNotification.Show();
             else
-                mUpdateNotification.AddToClassList("display-none");
+                mUpdateNotification.Collapse();
         }
 
         // Tabview variables

@@ -1,11 +1,4 @@
-﻿.display-none {
-    display: none;
-}
-
-.flex-container {
-    display: flex;
-    flex-direction: row;
-}
+﻿@import "Base.uss";
 
 #Status {
     color: red;

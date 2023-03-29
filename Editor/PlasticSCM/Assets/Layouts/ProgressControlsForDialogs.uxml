@@ -1,6 +1,6 @@
 <UXML xmlns="UnityEngine.UIElements">
-    <VisualElement class="flex-container">
-        <VisualElement name="UndefinedProgress" class="display-none" />
+    <VisualElement class="flex-container row">
+        <VisualElement name="UndefinedProgress" class="collapse" />
         <Label name="Progress" />
         <Label name="Status" />
         <Label name="Percentage" />

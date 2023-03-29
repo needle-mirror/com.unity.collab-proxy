@@ -1,7 +1,10 @@
-﻿using Codice.Client.Common;
+﻿using System;
+
+using Codice.Client.Common;
+using Codice.Client.Common.OAuth;
 
 using PlasticGui;
-using PlasticGui.Configuration.CloudEdition.Welcome;
+using PlasticGui.Configuration.OAuth;
 using PlasticGui.WebApi;
 using Unity.PlasticSCM.Editor.UI.UIElements;
 using UnityEngine.UIElements;
@@ -27,16 +30,21 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             BuildComponents();
         }
 
-        internal void OAuthSignInForConfigure(string ssoProviderName)
+        internal void OAuthSignInForConfigure(
+            Uri signInUrl,
+            Guid state,
+            IGetOauthToken getToken)
         {
             mSignIn = new OAuthSignIn();
 
             mSignIn.ForConfigure(
-                mRestApi,
-                ssoProviderName,
+                signInUrl,
+                state,
                 mProgressControls,
                 mNotify,
-                mCmConnection);
+                mCmConnection,
+                getToken,
+                mRestApi);
 
             ShowWaitingSpinner();
         }
@@ -64,7 +72,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
             mProgressControls = new UI.Progress.ProgressControlsForDialogs();
 
-            mCancelButton = this.Query<Button>("cancelButton").First();
+            mCancelButton = this.Query<Button>("cancelButton");
             mCancelButton.text = PlasticLocalization.GetString(
                 PlasticLocalization.Name.CancelButton);
             mCancelButton.clicked += CancelButton_Clicked;
@@ -73,8 +81,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         void InitializeLayoutAndStyles()
         {
             this.LoadLayout(typeof(WaitingSignInPanel).Name);
-
-            this.LoadStyle("SignInSignUp");
             this.LoadStyle(typeof(WaitingSignInPanel).Name);
         }
 
@@ -85,7 +91,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             spinner.Start();
 
             var checkinMessageLabel = new Label(mProgressControls.ProgressData.ProgressMessage);
-            checkinMessageLabel.style.paddingLeft = 10;
+            checkinMessageLabel.style.paddingLeft = 20;
             mProgressContainer.Add(checkinMessageLabel);
         }
 

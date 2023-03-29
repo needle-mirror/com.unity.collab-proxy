@@ -1,3 +1,5 @@
+@import "Base.uss";
+
 .sign-in-buttons {
     margin-top: 5px;
     margin-bottom: 5px;
@@ -14,6 +16,10 @@
     background-color: black;
 }
 
-#emailButton {
-    color: black;
+#signUpLabel{
+    margin-top: 3px;
+}
+
+#privacyStatement {
+    align-self: flex-start;
 }

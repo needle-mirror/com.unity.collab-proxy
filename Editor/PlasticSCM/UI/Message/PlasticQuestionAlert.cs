@@ -55,7 +55,7 @@ namespace Unity.PlasticSCM.Editor.UI.Message
         protected override string GetTitle()
         {
             return PlasticLocalization.GetString(
-                PlasticLocalization.Name.PlasticSCM);
+                PlasticLocalization.Name.UnityVersionControl);
         }
 
         void DoMessageArea()

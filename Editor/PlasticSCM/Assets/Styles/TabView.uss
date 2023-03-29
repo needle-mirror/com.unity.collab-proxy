@@ -1,14 +1,8 @@
+@import "Base.uss";
+
 #TabView,
 #ContentArea {
     height: 100%;
-}
-
-.flex-container {
-    display: flex;
-}
-
-.row {
-    flex-direction: row;
 }
 
 #TabArea {

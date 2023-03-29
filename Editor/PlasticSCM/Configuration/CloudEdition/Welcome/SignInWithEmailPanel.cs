@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
-using Unity.PlasticSCM.Editor.UI.UIElements;
+
+using UnityEngine;
 using UnityEngine.UIElements;
 
 using PlasticGui;
 using PlasticGui.Configuration.CloudEdition.Welcome;
 using PlasticGui.Configuration.CloudEdition;
 using PlasticGui.WebApi;
+using Unity.PlasticSCM.Editor.UI.UIElements;
 
 namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 {
@@ -31,6 +33,84 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         {
             mSignInButton.clicked -= SignInButton_Clicked;
             mBackButton.clicked -= BackButton_Clicked;
+            mSignUpButton.clicked -= SignUpButton_Clicked;
+        }
+
+        void Login.INotify.SuccessForConfigure(
+            List<string> organizations,
+            bool canCreateAnOrganization,
+            string userName,
+            string password)
+        {
+            mNotify.SuccessForConfigure(
+                organizations);
+        }
+
+        void Login.INotify.SuccessForSSO(
+            string organization)
+        {
+            // Do nothing
+        }
+
+        void Login.INotify.SuccessForProfile(
+            string userName)
+        {
+            // Do nothing
+        }
+
+        void Login.INotify.SuccessForCredentials(string userName, string password)
+        {
+            // Do nothing
+        }
+
+        void Login.INotify.SuccessForHomeView(string userName)
+        {
+            // Do nothing
+        }
+
+        void Login.INotify.ValidationFailed(
+            Login.ValidationResult validationResult)
+        {
+            if (validationResult.UserError != null)
+            {
+                mEmailNotificationLabel.text = validationResult.UserError;
+            }
+
+            if (validationResult.PasswordError != null)
+            {
+                mPasswordNotificationLabel.text = validationResult.PasswordError;
+            }
+        }
+
+        void Login.INotify.SignUpNeeded(
+            Login.Data loginData)
+        {
+            ShowSignUpNeeded();
+        }
+
+        void ShowSignUpNeeded()
+        {
+            mSignUpNeededNotificationContainer.Show();
+        }
+
+        void HideSignUpNeeded()
+        {
+            mSignUpNeededNotificationContainer.Collapse();
+        }
+
+        void Login.INotify.Error(
+            string message)
+        {
+            HideSignUpNeeded();
+            mProgressControls.ShowError(message);
+        }
+
+        void CleanNotificationLabels()
+        {
+            mEmailNotificationLabel.text = string.Empty;
+            mPasswordNotificationLabel.text = string.Empty;
+
+            HideSignUpNeeded();
         }
 
         void SignInButton_Clicked()
@@ -54,68 +134,15 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mNotify.Back();
         }
 
-        void Login.INotify.SuccessForConfigure(
-            List<string> organizations,
-            bool canCreateAnOrganization,
-            string userName,
-            string password)
+        void InitializeLayoutAndStyles()
         {
-            mNotify.SuccessForConfigure(
-                organizations,
-                canCreateAnOrganization);
+            this.LoadLayout(typeof(SignInWithEmailPanel).Name);
+            this.LoadStyle(typeof(SignInWithEmailPanel).Name);
         }
-
-        void Login.INotify.SuccessForSSO(
-            string organization)
+        
+        void SignUpButton_Clicked()
         {
-            mNotify.SuccessForSSO(organization);
-        }
-
-        void Login.INotify.SuccessForProfile(
-            string userName)
-        {
-            mNotify.SuccessForProfile(userName);
-        }
-
-        void Login.INotify.SuccessForCredentials(string userName, string password)
-        {
-            mNotify.SuccessForCredentials(userName, password);
-        }
-
-        void Login.INotify.SuccessForHomeView(string userName)
-        {
-        }
-
-        void Login.INotify.ValidationFailed(
-            Login.ValidationResult validationResult)
-        {
-            if (validationResult.UserError != null)
-            {
-                mEmailNotificationLabel.text = validationResult.UserError;
-            }
-
-            if (validationResult.PasswordError != null)
-            {
-                mPasswordNotificationLabel.text = validationResult.PasswordError;
-            }
-        }
-
-        void Login.INotify.SignUpNeeded(
-            Login.Data loginData)
-        {
-            mNotify.SignUpNeeded(loginData.User, loginData.ClearPassword);
-        }
-
-        void Login.INotify.Error(
-            string message)
-        {
-            mProgressControls.ShowError(message);
-        }
-
-        void CleanNotificationLabels()
-        {
-            mEmailNotificationLabel.text = string.Empty;
-            mPasswordNotificationLabel.text = string.Empty;
+            Application.OpenURL(UnityUrl.DevOps.GetSignUp());
         }
 
         void BuildComponents()
@@ -126,10 +153,13 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mPasswordNotificationLabel = this.Q<Label>("passwordNotification");
             mSignInButton = this.Q<Button>("signIn");
             mBackButton = this.Q<Button>("back");
+            mSignUpButton = this.Q<Button>("signUpButton");
             mProgressContainer = this.Q<VisualElement>("progressContainer");
+            mSignUpNeededNotificationContainer = this.Q<VisualElement>("signUpNeededNotificationContainer");
 
             mSignInButton.clicked += SignInButton_Clicked;
             mBackButton.clicked += BackButton_Clicked;
+            mSignUpButton.clicked += SignUpButton_Clicked;
             mEmailField.FocusOnceLoaded();
 
             mProgressControls = new ProgressControlsForDialogs(new VisualElement[] { mSignInButton });
@@ -145,14 +175,10 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 PlasticLocalization.Name.SignIn);
             this.SetControlText<Button>("back",
                 PlasticLocalization.Name.BackButton);
-        }
-
-        void InitializeLayoutAndStyles()
-        {
-            this.LoadLayout(typeof(SignInWithEmailPanel).Name);
-
-            this.LoadStyle("SignInSignUp");
-            this.LoadStyle(typeof(SignInWithEmailPanel).Name);
+            this.SetControlText<Label>("signUpNeededNotificationLabel",
+                PlasticLocalization.Name.SignUpNeededNoArgs);
+            this.SetControlText<Button>("signUpButton",
+                PlasticLocalization.Name.SignUp);
         }
 
         TextField mEmailField;
@@ -163,8 +189,10 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         Button mSignInButton;
         Button mBackButton;
+        Button mSignUpButton;
 
         VisualElement mProgressContainer;
+        VisualElement mSignUpNeededNotificationContainer;
 
         IProgressControls mProgressControls;
 

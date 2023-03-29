@@ -1,4 +1,6 @@
-﻿#windowContainer {
+﻿@import "Base.uss";
+
+#windowContainer {
     height: 100%;
     flex-grow: 1;
     flex-direction: row;
@@ -23,4 +25,8 @@
 #signIn,
 #back {
     width: 125px;
+}
+
+#signUpNeededNotificationLabel{
+    color: red;
 }

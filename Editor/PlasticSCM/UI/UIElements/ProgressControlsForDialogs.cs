@@ -33,15 +33,15 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
         {
             if (mData.IsWaitingAsyncResult)
             {
-                mUndefinedProgress.RemoveFromClassList("display-none");
-                mPercentageLabel.RemoveFromClassList("display-none");
+                mUndefinedProgress.Show();
+                mPercentageLabel.Show();
                 mLoadingSpinner.Start();
                 EditorApplication.update += UpdatePercent;
             }
             else
             {
-                mUndefinedProgress.AddToClassList("display-none");
-                mPercentageLabel.AddToClassList("display-none");
+                mUndefinedProgress.Collapse();
+                mPercentageLabel.Collapse();
                 mLoadingSpinner.Stop();
                 EditorApplication.update -= UpdatePercent;
             }
