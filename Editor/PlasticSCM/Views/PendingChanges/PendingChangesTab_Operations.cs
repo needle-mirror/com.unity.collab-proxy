@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using Codice.Client.Commands.CheckIn;
 using Codice.Client.BaseCommands;
 using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Common;
@@ -227,7 +228,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mPendingChangesOperations.Shelve(
                 changesToShelve,
                 dependenciesCandidates,
-                CommentText);
+                CommentText,
+                ShowShelveSuccess);
         }
 
         void PartialUndo()
@@ -325,6 +327,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 PlasticLocalization.GetString(PlasticLocalization.Name.CheckinCompleted), 
                 UnityEditor.MessageType.None,
                 Images.GetStepOkIcon());
+        }
+
+        void ShowShelveSuccess(CheckinResult checkinResult)
+        {
+            ((IProgressControls)mProgressControls).ShowSuccess(
+                PlasticLocalization.Name.ShelveCreatedMessage.GetString(
+                    checkinResult.CreatedChangesets.ToArray()));
         }
 
         void DelayedClearCheckinSuccess()

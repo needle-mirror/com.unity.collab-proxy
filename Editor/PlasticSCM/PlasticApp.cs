@@ -32,8 +32,6 @@ namespace Unity.PlasticSCM.Editor
 {
     internal static class PlasticApp
     {
-        internal static bool IsUnitTesting { get; set; }
-
         internal static void InitializeIfNeeded()
         {
             if (mIsInitialized)
@@ -43,14 +41,14 @@ namespace Unity.PlasticSCM.Editor
 
             ConfigureLogging();
 
-            if (!IsUnitTesting)
+            if (!PlasticPlugin.IsUnitTesting)
                 GuiMessage.Initialize(new UnityPlasticGuiMessage());
 
             RegisterExceptionHandlers();
 
             InitLocalization();
 
-            if (!IsUnitTesting)
+            if (!PlasticPlugin.IsUnitTesting)
                 ThreadWaiter.Initialize(new UnityThreadWaiterBuilder());
 
             ServicePointConfigurator.ConfigureServicePoint();
@@ -66,7 +64,7 @@ namespace Unity.PlasticSCM.Editor
             PlasticGuiConfig.SetConfigFile(
                 PlasticGuiConfig.UNITY_GUI_CONFIG_FILE);
 
-            if (!IsUnitTesting)
+            if (!PlasticPlugin.IsUnitTesting)
             {
                 sEventSenderScheduler = EventTracking.Configure(
                     (PlasticWebRestApi)PlasticGui.Plastic.WebRestAPI,

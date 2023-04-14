@@ -82,10 +82,6 @@
     color: #FF0000;
 }
 
-Button {
-    cursor: link;
-}
-
 .anchor {
     color: #2196F3;
     padding: 0px;
@@ -98,10 +94,6 @@ Button {
     padding: 7px;
     margin-top: 10px;
     height: 30px;
-}
-
-Label {
-    white-space: normal;
 }
 
 .alert-label {
@@ -126,6 +118,14 @@ Label {
 
 .sub-section {
     margin-left: 10px;
+}
+
+Button {
+    cursor: link;
+}
+
+Label {
+    white-space: normal;
 }
 
 TextField {

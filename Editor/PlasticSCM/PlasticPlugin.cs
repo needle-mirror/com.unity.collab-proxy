@@ -44,6 +44,8 @@ namespace Unity.PlasticSCM.Editor
             get { return mPlasticConnectionMonitor; }
         }
 
+        internal static bool IsUnitTesting { get; set; }
+
         static PlasticPlugin()
         {
             CloudProjectDownloader.Initialize();
@@ -199,6 +201,9 @@ namespace Unity.PlasticSCM.Editor
             WorkspaceInfo wkInfo,
             PlasticConnectionMonitor plasticConnectionMonitor)
         {
+            if (IsUnitTesting)
+                return;
+                
             RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(wkInfo);
 
             plasticConnectionMonitor.SetRepositorySpecForEventTracking(repSpec);

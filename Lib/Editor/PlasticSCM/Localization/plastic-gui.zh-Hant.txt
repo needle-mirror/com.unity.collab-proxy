@@ -131,7 +131,7 @@ Copyright © 2006-{0} Unity Technologies. All Rights Reserved.
 版本資訊
 
 == WebsiteLink ==
-https://www.plasticscm.com
+https://unity.com
 
 == ReleaseNotesUrlPreffix ==
 https://www.plasticscm.com/download/releasenotes/
@@ -2702,7 +2702,7 @@ Xlinked cset '{0}@{1}' 無法使用
 您的變更已簽入至暫時的變更集 (擱置)。這些變更可立即套用至任何分支。您是否要復原在此工作區中的變更?
 
 == ShelveCreatedMessage ==
-您的暫止的變更已擱置到: {0}
+您的暫止的變更已擱置到 {0}
 
 == NewCertificateTitle ==
 伺服器 SSL 憑證不在存放區中

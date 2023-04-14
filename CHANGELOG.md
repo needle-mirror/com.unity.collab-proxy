@@ -1,6 +1,18 @@
 # Changelog
 All notable changes to this package will be documented in this file.
 
+## [2.0.4] - 2023-04-14
+Unity Version Control is now available as part of the Version Control Package! You can enable Unity Version Control via Window > Unity Version Control to get started!
+If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
+Removing a previously added Plastic SCM Asset Store Plug-In:
+- Select the PlasticSCM folder in the Assets\Plugins folder on the Project tab, then click Edit > Delete
+- Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
+
+### Fixed
+- Fixed 'Texture2D' does not contain a definition for 'ignoreMipmapLimit' error when installing Unity Version Control on previous Unity Editor Versions
+- Fixed broken sign in dialog style when waiting for user to complete sign in
+- Fixed NullReferenceException when opening a new project and the user doesn't have a Unity Version Control organization linked to a Unity ID
+
 ## [2.0.3] - 2023-03-29
 
 Unity Version Control is now available as part of the Version Control Package! You can enable Unity Version Control via Window > Unity Version Control to get started!

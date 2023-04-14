@@ -57,11 +57,11 @@ Remarks:
         (Use 'cm ^help ^objectspec' to learn how to specify objects.)
         The '^acl' command uses a special type of spec: secured paths.
 
-        - Secured paths specs:
-            ^path:server_path[#tag]
-            Examples: ^path:/src/foo.c
-                      ^path:/doc/pdf
-                      ^path:/doc/pdf#documents
+        Secured paths specs: ^path:server_path[#tag]
+        Examples: 
+            - ^path:/src/foo.c
+            - ^path:/doc/pdf
+            - ^path:/doc/pdf#documents
 
     Permission action:
         Use -^allowed and -^denied to specify what permissions to set.
@@ -288,9 +288,9 @@ Usage:
 
     cm ^admin <command> [options]
 
-Available commands:
+Commands:
 
-    ^readonly
+    - ^readonly
 
     To get more information about each command run:
     cm ^admin <command> --^usage
@@ -313,19 +313,17 @@ Usage:
 
     cm ^admin ^readonly (^enter | ^leave | ^status) [<server>]
 
-Actions:
+Options:
 
     ^enter   The server enters read-only mode. Write operations will be rejected.
     ^leave   The server leaves read-only mode.
     ^status  Shows the server read-only mode status.
-
-Options:
-    server  Executes the command in the specified server (server:port). (Use 
-            'cm ^help ^objectspec' to learn more about server specs.)
-            If no server is specified, the command works with the server of the
-            current workspace.
-            If the current path is not in a workspace, the command works with
-            the default server defined in the client.conf config file.
+    server   Executes the command in the specified server (server:port). (Use 
+             'cm ^help ^objectspec' to learn more about server specs.)
+             If no server is specified, the command works with the server of the
+             current workspace.
+             If the current path is not in a workspace, the command works with
+             the default server defined in the client.conf config file.
 
 == CMD_HELP_ADMIN_READONLY ==
 Remarks:
@@ -611,12 +609,12 @@ Usage:
 
 Commands:
 
-    ^create | ^mk
-    ^delete | ^rm
-    ^set
-    ^unset
-    ^rename
-    ^edit
+    - ^create | ^mk
+    - ^delete | ^rm
+    - ^set
+    - ^unset
+    - ^rename
+    - ^edit
 
     To get more information about each command run:
     cm ^attribute <command> --^usage
@@ -638,8 +636,6 @@ Groups pending changes in changelists.
 == CMD_USAGE_CHANGELIST ==
 Usage:
 
-    a) Management of changelists objects:
-
        cm ^changelist | ^clist [--^symlink]
        (Displays all changelists.)
 
@@ -654,8 +650,6 @@ Usage:
        cm ^changelist | ^clist ^edit <clist_name> [<action_name> <action_value>]
                              [--^persistent | --^notpersistent] [--^symlink]
        (Edits the selected changelist.)
-
-    b) Management of contents of a given changelist:
 
        cm ^changelist | ^clist <clist_name> (^add | ^rm) <path_name>[ ...]
                              [--^symlink]
@@ -749,9 +743,9 @@ Usage:
 
 Commands:
 
-    ^move        | ^mv
-    ^delete      | ^rm
-    ^editcomment | ^edit
+    - ^move        | ^mv
+    - ^delete      | ^rm
+    - ^editcomment | ^edit
 
     To get more information about each command run:
     cm ^changeset <command> --^usage
@@ -905,10 +899,11 @@ Usage:
 
 Options:
 
-    repserverspec       Repositories server.
-    repspec             Repository.
-
-    (Use 'cm ^help ^objectspec' to learn more about repserver and rep specs.)
+    repserverspec   Repositories server.
+                    (Use 'cm ^help ^objectspec' to learn more about repserver
+                    specs.)
+    repspec         Repository.
+                    (Use 'cm ^help ^objectspec' to learn more about rep specs.)
 
 == CMD_HELP_CHECKDB ==
 Remarks:
@@ -1140,6 +1135,7 @@ Usage:
     ^type <selector_file> | cm ^checkselectorsyntax | ^css -
     (Windows. Checks selector file from standard input.)
 
+Options:
 
     --^file     The file to read a selector from.
 
@@ -1166,10 +1162,12 @@ Usage:
 
     cm ^changerevisiontype | ^chgrevtype | ^crt <item_path>[ ...] --^type=(^bin | ^txt)
 
+Options:
+
     item_path           Items to change revision type. Use double quotes (" ")
                         to specify paths containing spaces. Use a whitespace to
                         separate item paths.
-    --^type              Target revisions type. Choose '^bin' or '^txt'.
+    --^type             Target revisions type. Choose '^bin' or '^txt'.
 
 == CMD_HELP_CHGREVTYPE ==
 Remarks:
@@ -1200,11 +1198,6 @@ Usage:
                          [--^name=<new_name>] [--^script=<script_path>]
                          [--^filter=<str_filter>] [--^server=<repserverspec>]
 
-    subtype_type        Trigger execution and trigger operation.
-                        (Use 'cm ^showtriggertypes' to see a list of trigger
-                        types.)
-    position_number     Position occupied by the trigger to be modified.
-
 Options:
 
     --^position          New position of the specified trigger.
@@ -1221,6 +1214,10 @@ Options:
                         one configured on the client.
                         (Use 'cm ^help ^objectspec' to learn more about server
                         specs.)
+    subtype_type        Trigger execution and trigger operation.
+                        (Use 'cm ^showtriggertypes' to see a list of trigger
+                        types.)
+    position_number     Position occupied by the trigger to be modified.
 
 == CMD_HELP_TRIGGER_EDIT ==
 Remarks:
@@ -2173,9 +2170,6 @@ Examples:
 Gets the status of an item.
 
 == CMD_USAGE_GETSTATUS ==
-This is an automation command, meant to be used to automate 'cm' only.
-It is not as user-friendly as it should be.
-
 Usage:
 
     cm ^getstatus | ^gs <item_path>[ ...] [--^format=<str_format>] [--^stats]
@@ -2229,9 +2223,6 @@ Examples:
 Gets branches linked with a task.
 
 == CMD_USAGE_GETTASKBRANCHES ==
-This is an automation command, meant to be used to automate 'cm' only.
-It is not as user-friendly as it should be.
-
 Usage:
 
     cm ^gettaskbranches | ^gtb <task_name> [--^format=<str_format>] 
@@ -2291,9 +2282,6 @@ Examples:
 Gets workspace info from a path.
 
 == CMD_USAGE_GWP ==
-This is an automation command, meant to be used to automate 'cm' only.
-It is not as user-friendly as it should be.
-
 Usage:
 
     cm ^getworkspacefrompath | ^gwp <item_path> [--^format=<str_format>] [--^extended]
@@ -2391,7 +2379,7 @@ Options:
                                   and "^systemDiskUsage".
                                   It must be a value between "1" and "3600".
                                   (Default: 5 seconds).
-     --^systemdisplaytimeinterval  Time interval (in seconds) between the
+    --^systemdisplaytimeinterval  Time interval (in seconds) between the
                                   system performance samples. This option is 
                                   available for the following tests: 
                                   "^systemNetworkUsage" and "^systemDiskUsage".
@@ -2514,9 +2502,6 @@ Examples:
 Links a changeset to a task.
 
 == CMD_USAGE_LINKTASK ==
-This is an automation command, meant to be used to automate 'cm' only.
-It is not as user friendly as it should be.
-
 Usage:
 
     cm ^linktask | ^lt <csetspec> <ext_prefix> <task_name>
@@ -2656,8 +2641,8 @@ Usage:
 
 Commands:
 
-    ^list | ^ls
-    ^unlock
+    - ^list | ^ls
+    - ^unlock
 
     To get more information about each command run:
     cm ^lock <command> --^usage
@@ -2989,9 +2974,6 @@ Examples:
 Changes the selector to a date.
 
 == CMD_USAGE_MANIPULATESELECTOR ==
-This is an automation command, meant to be used to automate 'cm' only.
-It is not as user friendly as it should be.
-
 Usage:
 
     cm ^manipulateselector | ^ms [<wk_path> | <wk_spec>] --^atdate=<sel_date>
@@ -3333,12 +3315,12 @@ Usage:
 
 Commands:
 
-    ^create | ^mk
-    ^delete | ^rm
-    ^rename
-    ^history
-    ^showmain
-    ^showmerges
+    - ^create | ^mk
+    - ^delete | ^rm
+    - ^rename
+    - ^history
+    - ^showmain
+    - ^showmerges
 
     To get more information about each command run:
     cm ^branch <command> --^usage
@@ -3503,8 +3485,7 @@ Examples:
 
 == CMD_DESCRIPTION_BRANCH_SHOWMAIN ==
 Shows the main branch of a repository.
-This is an automation command, meant to be used to automate 'cm' only.
-Most likely, the main branch of your repository is '/main'.
+Spoiler: The main branch of your repository is '/main' by default.
 
 == CMD_USAGE_BRANCH_SHOWMAIN ==
 Usage:
@@ -3569,9 +3550,6 @@ Examples:
 Shows branches pending to be merged.
 
 == CMD_USAGE_BRANCH_SHOWMERGES ==
-This is an automation command, meant to be used to automate 'cm' only.
-It is not as user friendly as it should be.
-
 Usage:
 
     cm ^branch | ^br ^showmerges <item_path>[ ...]
@@ -3620,11 +3598,11 @@ Usage:
 
 Commands:
 
-    ^create | ^mk
-    ^delete | ^rm
-    ^list   | ^ls
-    ^rename
-    ^add
+    - ^create | ^mk
+    - ^delete | ^rm
+    - ^list   | ^ls
+    - ^rename
+    - ^add
 
     To get more information about each command run:
     cm ^repository <command> --^usage
@@ -3902,9 +3880,9 @@ Usage:
 
 Commands:
 
-    ^create | ^mk
-    ^delete | ^rm
-    ^rename
+    - ^create | ^mk
+    - ^delete | ^rm
+    - ^rename
 
     To get more information about each command run:
     cm ^label <command> --^usage
@@ -4009,24 +3987,17 @@ Examples:
     cm ^label ^rename ^lb:BL001 BL002
     (Renames the label 'BL001' to 'BL002'.)
 
-== CMD_DESCRIPTION_OBLITERATE ==
-DEPRECATED
-
-== CMD_USAGE_OBLITERATE ==
-DEPRECATED.
-
-== CMD_HELP_OBLITERATE ==
-DEPRECATED.
-
 == CMD_DESCRIPTION_OBJECTSPEC ==
 Describes how to write object specs.
 
 == CMD_USAGE_OBJECTSPEC ==
 Usage:
+
     cm ^objectspec
-    To get all the information about how to build object specs.
+    (To get all the information about how to build object specs.)
 
 == CMD_HELP_OBJECTSPEC ==
+
 Several Unity VCS commands expect 'object specs' as input to refer to a
 given object (typically a branch, changeset, repository, etc).
 
@@ -4152,17 +4123,17 @@ Usage:
 
 Commands:
 
-    ^configure
-    ^add
-    ^undo
-    ^co     | ^checkout
-    ^unco   | ^undocheckout
-    ^ci     | ^checkin
-    ^mv     | ^move
-    ^rm     | ^remove
-    ^stb    | ^switch
-    ^upd    | ^update
-    ^shelve | ^shelveset
+    - ^configure
+    - ^add
+    - ^undo
+    - ^co     | ^checkout
+    - ^unco   | ^undocheckout
+    - ^ci     | ^checkin
+    - ^mv     | ^move
+    - ^rm     | ^remove
+    - ^stb    | ^switch
+    - ^upd    | ^update
+    - ^shelve | ^shelveset
 
     To get more information about each command run:
     cm ^partial <command> --^usage
@@ -4549,9 +4520,9 @@ Usage:
 
 Commands:
 
-    ^create | ^mk
-    ^apply
-    ^delete | ^rm
+    - ^create | ^mk
+    - ^apply
+    - ^delete | ^rm
 
     To get more information about each command run:
     cm ^partial ^shelveset <command> --^usage
@@ -4820,17 +4791,6 @@ Usage:
                     [--^silent | --^machinereadable [--^startlineseparator=<sep>]
                                 [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
 
-    path                    Path of the files or directories to apply the
-                            operation to. Use double quotes (" ") to specify
-                            paths containing spaces. Use a whitespace to
-                            separate paths.
-                            If no path is specified, by default the undo
-                            operation will take all of the files in the current
-                            directory.
-    filter                  Applies the specified filter or filters to the given
-                            paths. Use a whitespace to separate filters. See the
-                            Filters section for more information.
-
 Options:
 
     --^symlink               Applies the undo operation to the symlink and not
@@ -4844,16 +4804,6 @@ Options:
                             how the lines should end.
     --^fieldseparator        Used with the '--^machinereadable' flag, specifies
                             how the fields should be separated.
-
-Filters:
-
-    If no flag is specified, by default, all changes are undone, but the
-    paths can be filtered using one or more of the flags below.
-    If a file or directory matches one or more of the specified kinds of change,
-    all of the changes on said file or directory will be undone.
-    For example, if you specify both '--^checkedout' and '--^moved', if a file is
-    both checkedout and moved, both changes will be undone.
-
     --^checkedout            Select checked-out files and directories.
     --^unchanged             Select files whose content is unchanged.
     --^changed               Select locally changed or checked-out files and
@@ -4861,6 +4811,16 @@ Filters:
     --^deleted               Select deleted files and directories.
     --^moved                 Select moved files and directories.
     --^added                 Select added files and directories.
+    path                    Path of the files or directories to apply the
+                            operation to. Use double quotes (" ") to specify
+                            paths containing spaces. Use a whitespace to
+                            separate paths.
+                            If no path is specified, by default the undo
+                            operation will take all of the files in the current
+                            directory.
+    filter                  Applies the specified filter or filters to the given
+                            paths. Use a whitespace to separate filters. See the
+                            Filters section for more information.
 
 == CMD_HELP_PARTIAL_UNDO ==
 Remarks:
@@ -4895,6 +4855,15 @@ Remarks:
 
     If dirpath is a workspace path, every change in the workspace will be
     undone.
+
+Filters:
+
+    If no flag is specified, by default, all changes are undone, but the
+    paths can be filtered using one or more of the flags below.
+    If a file or directory matches one or more of the specified kinds of change,
+    all of the changes on said file or directory will be undone.
+    For example, if you specify both '--^checkedout' and '--^moved', if a file is
+    both checkedout and moved, both changes will be undone.
 
 Examples:
 
@@ -5040,24 +5009,23 @@ Usage:
 
     cm ^patch <source_spec> [<source_spec>] [--^output=<output_file>]
              [--^tool=<path_to_diff>]
-    Generates a patch file that contains the differences of a branch,
+    (Generates a patch file that contains the differences of a branch,
     a changeset, or the differences between changesets. It also tracks
-    differences of text and binary files.
+    differences of text and binary files.)
 
     cm ^patch --^apply <patch_file> [--^tool=<path_to_patch>]
-    Allows to apply the contents of a generated patch file in the current
-    workspace.
-
-    source_spec     Full spec of a changeset or a branch. (Use 
-                    'cm ^help ^objectspec' to learn more about specs.)
-    output_file     File to save the patch content. It no file is specified,
-                    the patch content will be printed on standard output.
-    patch_file      Patch file to apply in the current workspace.
+    (Allows to apply the contents of a generated patch file in the current
+    workspace.)
 
 Options:
 
     --^output        Sets the output file of the patch command.
     --^tool          Sets the application to use (diff or patch).
+    source_spec     Full spec of a changeset or a branch. (Use 
+                    'cm ^help ^objectspec' to learn more about specs.)
+    output_file     File to save the patch content. It no file is specified,
+                    the patch content will be printed on standard output.
+    patch_file      Patch file to apply in the current workspace.
 
 == CMD_HELP_PATCH ==
 Limitations:
@@ -5103,9 +5071,9 @@ Usage:
 
 Commands:
 
-    ^list   | ^ls
-    ^create | ^mk
-    ^delete | ^rm
+    - ^list   | ^ls
+    - ^create | ^mk
+    - ^delete | ^rm
 
     To get more information about each command run:
     cm ^profile <command> --^usage
@@ -5166,17 +5134,17 @@ Creates a new server connection profile.
 Usage:
 
     cm ^profile [^create | ^mk]
-     (Creates a new profile interactively.)
+    (Creates a new profile interactively.)
 
     cm ^profile [^create | ^mk] --^server=<server_addr> --^username=<username>
                      --^password=<password> --^workingmode=<workingmode>
-     (Creates a new server connection profile using a user/password
-     authentication mode.)
+    (Creates a new server connection profile using a user/password
+    authentication mode.)
 
     cm ^profile [^create | ^mk] --^server=<server_addr> --^username=<username>
                      --^token=<token> --^workingmode=SSOWorkingMode
-     (Creates a new server connection profile using Single Sign On authentication
-     mode.)
+    (Creates a new server connection profile using Single Sign On authentication
+    mode.)
 
 Options:
 
@@ -6058,8 +6026,8 @@ Usage:
 
 Commands:
 
-    ^controlled (optional)
-    ^private
+    - ^controlled (optional)
+    - ^private
 
     To get more information about each command run:
     cm ^remove <command> --^usage
@@ -6442,9 +6410,9 @@ Usage:
 
 Commands:
 
-    ^create | ^mk
-    ^delete | ^rm
-    ^apply
+    - ^create | ^mk
+    - ^delete | ^rm
+    - ^apply
 
     To get more information about each command run:
     cm ^shelveset <command> --^usage
@@ -7347,7 +7315,7 @@ Usage:
 
 Commands:
 
-    ^bundle
+    - ^bundle
 
     To get more information about each command run:
     cm ^support <command> --^usage
@@ -7403,27 +7371,32 @@ Usage:
               [--^silent] [--^verbose] [--^xml[=<output_file>]] [--^encoding=<name>]
               [--^forcedetailedprogress] [--^noinput]
 
-    (Use 'cm ^help ^objectspec' to learn more about branch, changeset, label,
-    and shelveset specifications.)
-
 Options:
 
-    --^workspace             Path where the workspace is located.
-    --^repository            Switches to the specified repository.
-    --^forcedetailedprogress Forces detailed progress even when standard
-                            output is redirected.
-    --^noinput               Skips the interactive questions to continue the
-                            operation with pending changes or to shelve them.
-    --^silent                No output is shown unless an error happens.
-    --^verbose               Shows additional information.
-    --^xml                   Prints the output in XML format to the standard output.
-                            It is possible to specify an output file.
-    --^encoding              Used with the --^xml option, specifies the encoding to
-                            use in the XML output, i.e.: utf-8.
-                            See the MSDN documentation at
-                            http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
-                            to get the table of supported encodings and its format,
-                            (at the end of the page, in the "Name" column).
+    --^workspace              Path where the workspace is located.
+    --^repository             Switches to the specified repository.
+    --^forcedetailedprogress  Forces detailed progress even when standard
+                              output is redirected.
+    --^noinput                Skips the interactive questions to continue the
+                              operation with pending changes or to shelve them.
+    --^silent                 No output is shown unless an error happens.
+    --^verbose                Shows additional information.
+    --^xml                    Prints the output in XML format to the standard output.
+                              It is possible to specify an output file.
+    --^encoding               Used with the --^xml option, specifies the encoding to
+                              use in the XML output, i.e.: utf-8.
+                              See the MSDN documentation at
+                              http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
+                              to get the table of supported encodings and its format,
+                              (at the end of the page, in the "Name" column).
+    brspec                    Target branch.
+                              (Use 'cm ^help ^objectspec' to learn more about branch specs.)
+    csetspec                  Target changeset.
+                              (Use 'cm ^help ^objectspec' to learn more about changeset specs.)
+    lbspec                    Target label.
+                              (Use 'cm ^help ^objectspec' to learn more about label specs.)
+    shspec                    Target shelveset.
+                              (Use 'cm ^help ^objectspec' to learn more about shelveset specs.)
 
 == CMD_HELP_SWITCH ==
 Remarks:
@@ -7440,11 +7413,9 @@ Examples:
     cm ^switch ^sh:2
 
 == CMD_DESCRIPTION_SWITCH_TO_BRANCH ==
-Sets a branch as the working branch.
+This command is deprecated. Use cm switch instead. Sets a branch as the working branch. 
 
 == CMD_USAGE_SWITCH_TO_BRANCH ==
-This command is deprecated. Use cm switch instead.
-
 Usage:
 
     cm ^switchtobranch [options] [branch_spec]
@@ -7475,6 +7446,7 @@ Examples:
     cm ^switchtobranch --^label=BL050
     (Read-only configuration. The command loads the contents of the labeled
     changeset.)
+
 
 == CMD_DESCRIPTION_SYNC ==
 Synchronize with Git.
@@ -7542,11 +7514,11 @@ Usage:
 
 Commands:
 
-    ^create | ^mk
-    ^delete | ^rm
-    ^edit
-    ^list   | ^ls
-    ^showtypes
+    - ^create | ^mk
+    - ^delete | ^rm
+    - ^edit
+    - ^list   | ^ls
+    - ^showtypes
 
     To get more information about each command run:
     cm ^trigger <command> --^usage
@@ -7602,12 +7574,14 @@ Usage:
 
     cm ^tube ^connect
     (Connects the Unity VCS server to Plastic Tube.)
+	
     cm ^tube ^disconnect
     (Disconnects the Unity VCS server from Plastic Tube.)
+	
     cm ^tube ^status
     (Shows if the Unity VCS server is connected to Plastic Tube.)
 
-Options
+Options:
 
     -^u                Tube user (the plasticscm.com user).
     -^p                User password.
@@ -7650,31 +7624,31 @@ Usage:
                            [--^machinereadable [--^startlineseparator=<sep>] 
                            [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
 
+Options:
+
+    -^a | --^all           Undoes all of the changes in the specified items. If
+                           the item(s) were checked out, the checkout will be
+                           reverted. If the item(s) were locally modified, the
+                           modifications will be reverted.
+    --^symlink             Applies the undocheckout operation to the link and not
+                           to the target.
+    --^silent              Does not show any output.
+    --^machinereadable     Outputs the result in an easy-to-parse format.
+    --^startlineseparator  Used with the '--^machinereadable' flag,
+                           specifies how the lines should start.
+    --^endlineseparator    Used with the '--^machinereadable' flag,
+                           specifies how the lines should end.
+    --^fieldseparator      Used with the '--^machinereadable' flag,
+                           specifies how the fields should be separated.
+    --^keepchanges (-^k)   Undoes the checkout and preserves the local changes.
+                           Sample: undo the checkout of a file leave it as locally
+                           changed with the same content on disk that it was.
+                           This option cannot be used with dynamic workspaces.
     item_path           Items to apply the operation. Use a whitespace to separate
                         paths. Use double quotes (" ") to specify paths
                         containing spaces.
                         Use . to apply the operation to current directory.
 
-Options:
-
-    -^a | --^all           Undoes all of the changes in the specified items. If
-                         the item(s) were checked out, the checkout will be
-                         reverted. If the item(s) were locally modified, the
-                         modifications will be reverted.
-    --^symlink            Applies the undocheckout operation to the link and not
-                         to the target.
-    --^silent             Does not show any output.
-    --^machinereadable    Outputs the result in an easy-to-parse format.
-    --^startlineseparator Used with the '--^machinereadable' flag,
-                         specifies how the lines should start.
-    --^endlineseparator   Used with the '--^machinereadable' flag,
-                         specifies how the lines should end.
-    --^fieldseparator     Used with the '--^machinereadable' flag,
-                         specifies how the fields should be separated.
-     --^keepchanges (-^k)  Undoes the checkout and preserves the local changes.
-                         Sample: undo the checkout of a file leave it as locally
-                         changed with the same content on disk that it was.
-                         This option cannot be used with dynamic workspaces.
 
 == CMD_HELP_UNCO ==
 Remarks:
@@ -7864,15 +7838,6 @@ Usage:
             [--^silent | --^machinereadable [--^startlineseparator=<sep>]
                             [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
 
-    path        Path of the files or directories to apply the operation to.
-                Use double quotes (" ") to specify paths containing spaces.
-                Use a whitespace to separate paths.
-                If no path is specified, by default the undo operation will take
-                all of the files in the current directory.
-    filter      Applies the specified filter or filters to the given paths. Use
-                a whitespace to separate filters. See the Filters section for
-                more information.
-
 Options:
 
     --^symlink               Applies the undo operation to the symlink and not
@@ -7886,23 +7851,14 @@ Options:
                             how the lines should end.
     --^fieldseparator        Used with the '--^machinereadable' flag, specifies
                             how the fields should be separated.
-Filters:
-
-    The paths can be filtered using one or more of the filters below. Each of
-    those filters refers to a type of change:
-    --^checkedout    Selects checked-out files and directories.
-    --^unchanged     Selects files whose content is unchanged.
-    --^changed       Selects locally changed or checked-out files and directories.
-    --^deleted       Selects deleted files and directories.
-    --^moved         Selects moved files and directories.
-    --^added         Selects added files and directories.
-
-    If the path matches one or more of the specified kinds of changes, those
-    types of changes will be undone on that said path.
-    For example, if you specify both '--^checkedout' and '--^moved', if a file
-    is both checkedout and moved, both changes will be undone.
-
-    If no filter is specified, all kinds of changes are undone.
+    path        Path of the files or directories to apply the operation to.
+                Use double quotes (" ") to specify paths containing spaces.
+                Use a whitespace to separate paths.
+                If no path is specified, by default the undo operation will take
+                all of the files in the current directory.
+    filter      Applies the specified filter or filters to the given paths. Use
+                a whitespace to separate filters. See the Filters section for
+                more information.
 
 == CMD_HELP_UNDO ==
 Remarks:
@@ -7943,6 +7899,24 @@ Remarks:
       These commands are also equivalent when executed from the /src directory:
         cm ^undo .
         cm ^undo /src file.txt code.cs
+
+Filters:
+
+    The paths can be filtered using one or more of the filters below. Each of
+    those filters refers to a type of change:
+    --^checkedout    Selects checked-out files and directories.
+    --^unchanged     Selects files whose content is unchanged.
+    --^changed       Selects locally changed or checked-out files and directories.
+    --^deleted       Selects deleted files and directories.
+    --^moved         Selects moved files and directories.
+    --^added         Selects added files and directories.
+
+    If the path matches one or more of the specified kinds of changes, those
+    types of changes will be undone on that said path.
+    For example, if you specify both '--^checkedout' and '--^moved', if a file
+    is both checkedout and moved, both changes will be undone.
+
+    If no filter is specified, all kinds of changes are undone.
 
 
 Deleted items:
@@ -8195,11 +8169,11 @@ Usage:
 
 Commands:
 
-    ^list   | ^ls
-    ^create | ^mk
-    ^delete | ^rm
-    ^move   | ^mv
-    ^rename
+    - ^list   | ^ls
+    - ^create | ^mk
+    - ^delete | ^rm
+    - ^move   | ^mv
+    - ^rename
 
     To get more information about each command run:
     cm ^workspace <command> --^usage
@@ -8443,7 +8417,7 @@ Options:
     --^short               Lists only paths that contains changes.
     --^symlink             Applies the operation to the symlink and not to the
                           target.
-     --^dirwithchanges     Shows directories that contain changes inside them
+    --^dirwithchanges     Shows directories that contain changes inside them
                           (added, moved, removed items inside).
     --^xml                 Prints the output in XML format to the standard output.
                           It is possible to specify an output file.
@@ -8452,9 +8426,9 @@ Options:
                           use in the XML output, i.e.: utf-8.
                           See the MSDN documentation at
                           http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
-                          to get the table of supported encodings and its format, 
+                          to get the table of supported encodings and its format
                           (at the end of the page, in the "Name" column).
-     --^wrp                Print workspace root relative paths instead of
+    --^wrp                Print workspace root relative paths instead of
                           current directory relative paths.
     --^fullpaths, --^fp     Force printing absolute paths, overriding any other
                           path printing setting.
@@ -8765,14 +8739,14 @@ Usage:
     (Returns autocomplete suggestions for 'shell_line' to be inserted at
      'cursor_position'.)
 
-    shell_line      The line the user has written into the shell when the
-                    autocompletion was requested.
-                    In Bash, it is at the COMP_LINE environment variable.
-                    In PowerShell, it is at the $wordToComplete variable.
-    cursor_position The position of the cursor when the autocompletion was
-                    requested.
-                    In Bash, it is at the COMP_POINT environment variable.
-                    In PowerShell, it is at the $cursorPosition variable.
+    shell_line       The line the user has written into the shell when the
+                     autocompletion was requested.
+                     In Bash, it is at the COMP_LINE environment variable.
+                     In PowerShell, it is at the $wordToComplete variable.
+    cursor_position  The position of the cursor when the autocompletion was
+                     requested.
+                     In Bash, it is at the COMP_POINT environment variable.
+                     In PowerShell, it is at the $cursorPosition variable.
 
 == CMD_HELP_AUTOCOMPLETE ==
 

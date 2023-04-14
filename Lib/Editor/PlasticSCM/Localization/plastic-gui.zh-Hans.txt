@@ -131,7 +131,7 @@ Copyright © 2006-{0} Unity Technologies. All Rights Reserved.
 发行说明
 
 == WebsiteLink ==
-https://www.plasticscm.com
+https://unity.com
 
 == ReleaseNotesUrlPreffix ==
 https://www.plasticscm.com/download/releasenotes/
@@ -2702,7 +2702,7 @@ Unity VCS 内置差异比较和合并工具 (Xmerge) 的首选项：
 您的更改已签入到临时变更集（搁置）。这些更改现在可以应用于任何分支。是否要撤销工作区中的这些更改？
 
 == ShelveCreatedMessage ==
-待定更改已搁置到：{0}
+待定更改已搁置到 {0}
 
 == NewCertificateTitle ==
 服务器 SSL 证书不在存储库中

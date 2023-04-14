@@ -84,6 +84,8 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 mRestApi,
                 mCmConnection);
 
+            mWaitingSignInPanel.OnAutoLogin();
+
             mParentWindow.ReplaceRootPanel(mWaitingSignInPanel);
         }
 

@@ -706,15 +706,6 @@ namespace Unity.PlasticSCM.Editor
                 false,
                 () => SettingsService.OpenProjectSettings(UnityConstants.PROJECT_SETTINGS_TAB_PATH));
 
-            // If the user has the simplified UI key of type .txt in the Assets folder
-            // TODO: Remove when Simplified UI is complete
-            if (AssetDatabase.FindAssets("simplifieduikey t:textasset", new[] { "Assets" }).Any())
-                menu.AddItem(new GUIContent("Try Simplified UI"),
-                    false,
-                    TrySimplifiedUIButton_Clicked,
-                    null);
-
-            //TODO: Localization
             menu.AddItem(
                 new GUIContent(PlasticAssetModificationProcessor.ForceCheckout ?
                 PlasticLocalization.GetString(PlasticLocalization.Name.DisableForcedCheckout) :
@@ -912,11 +903,6 @@ namespace Unity.PlasticSCM.Editor
             Application.OpenURL("https://www.plasticscm.com/dashboard/cloud/" +
                 organization +
                 "/users-and-groups");
-        }
-
-        static void TrySimplifiedUIButton_Clicked(object obj)
-        {
-            PlasticSCMWindow.ShowWindow();
         }
 
         static void ForceCheckout_Clicked(object obj)

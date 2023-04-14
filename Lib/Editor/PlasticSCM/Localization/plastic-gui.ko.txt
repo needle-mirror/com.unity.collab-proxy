@@ -131,7 +131,7 @@ Copyright © 2006-{0} Unity Technologies. All Rights Reserved.
 릴리스 노트
 
 == WebsiteLink ==
-https://www.plasticscm.com
+https://unity.com
 
 == ReleaseNotesUrlPreffix ==
 https://www.plasticscm.com/download/releasenotes/
@@ -2702,7 +2702,7 @@ ACL 내보내기 진행 중({0}%)
 변경사항이 임시 체인지 세트(임시 저장)에 체크인되었습니다. 해당 변경사항을 이제 모든 브랜치에 적용할 수 있습니다. 워크스페이스에서 해당 변경사항을 실행 취소하시겠습니까?
 
 == ShelveCreatedMessage ==
-대기 중인 변경사항이 다음에 임시 저장되었습니다: {0}
+대기 중인 변경사항이 다음에 임시 저장되었습니다 {0}
 
 == NewCertificateTitle ==
 서버 SSL 인증서가 저장소에 없습니다

@@ -170,7 +170,7 @@ Filters & format
 Release Notes
 
 == WebsiteLink ==
-https://www.plasticscm.com
+https://unity.com
 
 == ReleaseNotesUrlPreffix ==
 https://www.plasticscm.com/download/releasenotes/
@@ -725,7 +725,7 @@ Delete
 View shelve
 
 == ShelveMenuItemApplyShelveInWorkspace ==
-Apply shelve in my workspace...
+Apply shelveset in my workspace...
 
 == ShelveMenuItemDeleteShelve ==
 Delete
@@ -1242,6 +1242,9 @@ Shelve
 
 == ShowShelvesButton ==
 Show shelves
+
+== HideShelvesButton ==
+Hide shelves
 
 == ShowShelvesViewTooltip ==
 Show the shelves view
@@ -1854,7 +1857,7 @@ Check-in conflicts
 == CheckinConflictsExplanation ==
 The check-in operation found the following conflicts that can't be checked in.
 Click "OK" to continue the operation for the items not in conflict.
-Click "Cancel" to abort the entire operation.
+ Click "Cancel" to abort the entire operation.
 
 == CheckinConflictsToMergeTitle ==
 Files need merging
@@ -3019,7 +3022,7 @@ Undo changes after shelve
 Your changes have been checked into a temporary changeset (shelve). These changes can be applied now to any branch. Do you want to undo these changes in the workspace?
 
 == ShelveCreatedMessage ==
-Your pending changes have been shelved to: {0}
+The changes are shelved under {0}
 
 == NewCertificateTitle ==
 Server SSL certificate is not in the store
@@ -4128,6 +4131,9 @@ Display full branch names
 == Shelve ==
 Shelve
 
+== Shelveset ==
+Shelveset
+
 == AnnotateDialogTitle ==
 Annotate
 
@@ -4772,6 +4778,9 @@ Sign up
 
 == SignIn ==
 Sign in
+
+== SignInToAddNewAccount ==
+Sign in to
 
 == SignInToUnityVCS ==
 Sign in to Unity VCS
@@ -6739,9 +6748,6 @@ Preferences…
 == AppMenuPlasticWebsite ==
 Unity DevOps Version Control Website…
 
-== AppMenuSemanticMergeWebsite ==
-SemanticMerge Website…
-
 == NoComment ==
 No comment has been set
 
@@ -6765,33 +6771,6 @@ You cannot invite members to the organization because you are not the administra
 
 == CalculatingViewLayout ==
 Calculating view layout
-
-== SwitchToLegacyGui ==
-Switch to Legacy GUI
-
-== WelcomeToNewGui ==
-Welcome to the new Unity Version Control GUI!
-
-== WelcomeToNewGluonGui ==
-Welcome to the new Gluon GUI!
-
-== WelcomeToNewGuiFirstText ==
-You're invited to check out the new Unity VCS GUI - a sneak peek at the work we've been doing to continuously improve the Unity VCS experience for all users, regardless of experience level.
-
-== WelcomeToNewGluonGuiFirstText ==
-You're invited to check out the new Gluon GUI - a sneak peek at the work we've been doing to continuously improve the Unity VCS experience for all users, regardless of experience level.
-
-== WelcomeToNewGuiSecondText ==
-This release is cross-platform, includes a dark theme and provides better syntax highlighting. Many more improvements are coming soon, let us know what you think!
-
-== WelcomeToNewGluonGuiSecondText ==
-This release is feature complete, cross-platform and includes a dark theme. It also includes support for changelists. Let us know what you think!
-
-== GetStartedButton ==
-Let's get started!
-
-== SwitchToLegacyGuiHelp ==
-You can switch back to the "legacy" GUI here
 
 == ConfirmRevertToChangesetTitle ==
 Confirm Revert
@@ -7136,11 +7115,20 @@ Hide Notification
 == NoCheckinComment ==
 <No check-in comment>
 
+== NoShelvesetComment ==
+<No shelveset comment>
+
 == HistoryRevisionDetailsFormatString ==
 {0} {1} on {2} by {3}
 
 == HistoryHeaderDetailsStringFormat ==
 by {0} on {1}
+
+== ShelveDetailsFormatString ==
+{0} by {1}
+
+== ShelveDetailsWithRepositoryFormatString ==
+{0} by {1} on {2}
 
 == ExpandCollapseComment ==
 Expand/collapse comment
@@ -7685,3 +7673,10 @@ Visit https://dashboard.unity3d.com to sign up.
 
 == LoadingOrganizations ==
 Loading organizations...
+
+== More ==
+More
+
+
+== SigningIn ==
+Signing in...

@@ -5,9 +5,7 @@ using UnityEditor;
 using UnityEngine;
 
 using Codice.LogWrapper;
-using PlasticGui.Help;
 using Unity.PlasticSCM.Editor.AssetUtils;
-using UnityEditor.VersionControl;
 
 namespace Unity.PlasticSCM.Editor.UI
 {
@@ -16,7 +14,6 @@ namespace Unity.PlasticSCM.Editor.UI
         internal enum Name
         {
             None,
-
             IconPlastic,
             IconCloseButton,
             IconPressedCloseButton,
@@ -437,20 +434,31 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal static Texture2D GetNewTextureFromTexture(Texture2D texture)
         {
-            Texture2D result = new Texture2D(texture.width, texture.height);
-            result.ignoreMipmapLimit = texture.ignoreMipmapLimit;
+            Texture2D result = new Texture2D(texture.width, texture.height, TextureFormat.BGRA32, false);
+
+            // To keep images consistent throughout the plugin,
+            // manually set the filter mode
+            result.filterMode = FilterMode.Bilinear;
 
             return result;
         }
 
         internal static Texture2D GetNewTextureFromBytes(int width, int height, byte[] bytes)
         {
-            Texture2D result = new Texture2D(width, height);
+            Texture2D result = new Texture2D(width, height, TextureFormat.RGBA32, false);
 
             result.LoadImage(bytes);
-            result.ignoreMipmapLimit = true; // ignore global quality settings
+
+            // To keep images consistent throughout the plugin,
+            // manually set the filter mode
+            result.filterMode = FilterMode.Bilinear;
 
             return result;
+        }
+
+        static Texture2D GetNewTextureFromFile(string path)
+        {
+            return GetNewTextureFromBytes(1, 1, File.ReadAllBytes(path));
         }
 
         static Texture2D GetOverlay(Name image)
@@ -637,7 +645,11 @@ namespace Unity.PlasticSCM.Editor.UI
                 mImagesByPathCache.Remove(path);
             }
 
-            result = GetNewTextureFromBytes(0, 0, File.ReadAllBytes(path));
+            // Don't use AssetDatabase to load as it will
+            // pick filtering mode from the asset itself
+            // which leads to inconsistent filtering between
+            // images.
+            result = GetNewTextureFromFile(path);
 
             mImagesByPathCache.Add(path, result);
 

@@ -49,33 +49,20 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             ShowWaitingSpinner();
         }
 
+        internal void OnAutoLogin()
+        {
+            mCompleteOnBrowserLabel.visible = false;
+            mCancelButton.visible = false;
+
+            mProgressControls.ProgressData.ProgressMessage =
+                PlasticLocalization.Name.SigningIn.GetString();
+
+            ShowWaitingSpinner();
+        }
+
         internal void Dispose()
         {
             mCancelButton.clicked -= CancelButton_Clicked;
-        }
-
-        void CancelButton_Clicked()
-        {
-            mSignIn.Cancel();
-            mParentNotify.Back();
-        }
-
-        void BuildComponents()
-        {
-            this.SetControlText<Label>("signInToPlasticSCM",
-                PlasticLocalization.Name.SignInToUnityVCS);
-
-            this.SetControlText<Label>("completeSignInOnBrowser",
-                PlasticLocalization.Name.CompleteSignInOnBrowser);
-
-            mProgressContainer = this.Q<VisualElement>("progressContainer");
-
-            mProgressControls = new UI.Progress.ProgressControlsForDialogs();
-
-            mCancelButton = this.Query<Button>("cancelButton");
-            mCancelButton.text = PlasticLocalization.GetString(
-                PlasticLocalization.Name.CancelButton);
-            mCancelButton.clicked += CancelButton_Clicked;
         }
 
         void InitializeLayoutAndStyles()
@@ -95,8 +82,34 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mProgressContainer.Add(checkinMessageLabel);
         }
 
+        void CancelButton_Clicked()
+        {
+            mSignIn.Cancel();
+            mParentNotify.Back();
+        }
+
+        void BuildComponents()
+        {
+            this.SetControlText<Label>("signInToPlasticSCM",
+                PlasticLocalization.Name.SignInToUnityVCS);
+
+            mCompleteOnBrowserLabel = this.Q<Label>("completeSignInOnBrowser");
+            mCompleteOnBrowserLabel.text = PlasticLocalization.Name.CompleteSignInOnBrowser.GetString();
+
+            mProgressContainer = this.Q<VisualElement>("progressContainer");
+
+            mProgressControls = new UI.Progress.ProgressControlsForDialogs();
+
+            mCancelButton = this.Query<Button>("cancelButton");
+            mCancelButton.text = PlasticLocalization.GetString(
+                PlasticLocalization.Name.CancelButton);
+            mCancelButton.visible = true;
+            mCancelButton.clicked += CancelButton_Clicked;
+        }
+
         Button mCancelButton;
         VisualElement mProgressContainer;
+        Label mCompleteOnBrowserLabel;
 
         OAuthSignIn mSignIn;
 

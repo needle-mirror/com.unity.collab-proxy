@@ -170,7 +170,7 @@ Filtros y formato
 Notas de versión
 
 == WebsiteLink ==
-https://www.plasticscm.com
+https://unity.com
 
 == ReleaseNotesUrlPreffix ==
 https://www.plasticscm.com/download/releasenotes/
@@ -725,7 +725,7 @@ Borrar
 Ver shelve
 
 == ShelveMenuItemApplyShelveInWorkspace ==
-Applicar shelve en mi workspace...
+Applicar shelveset en mi workspace...
 
 == ShelveMenuItemDeleteShelve ==
 Borrar
@@ -1245,6 +1245,9 @@ Mostrar shelves
 
 == ShowShelvesViewTooltip ==
 Mostrar la vista de shelves
+
+== HideShelvesButton ==
+Ocultar shelves
 
 == ShowLinkedTasksButton ==
 Mostrar tareas
@@ -3019,7 +3022,7 @@ Undo changes after shelve
 Your changes have been checked into a temporary changeset (shelve). These changes can be applied now to any branch. Do you want to undo these changes in the workspace?
 
 == ShelveCreatedMessage ==
-Your pending changes have been shelved to: {0}
+The changes are shelved under {0}
 
 == NewCertificateTitle ==
 Server SSL certificate is not in the store
@@ -4771,6 +4774,9 @@ Crear cuenta
 
 == SignIn ==
 Inicia sesión
+
+== SignInToAddNewAccount ==
+Inicia sesión en
 
 == SignInToUnityVCS ==
 Inicia sesión en Unity VCS
@@ -6739,9 +6745,6 @@ Preferences…
 == AppMenuPlasticWebsite ==
 Unity DevOps Version Control Website…
 
-== AppMenuSemanticMergeWebsite ==
-SemanticMerge Website…
-
 == NoComment ==
 No se ha establecido comentario
 
@@ -6765,33 +6768,6 @@ You cannot invite members to the organization because you are not the administra
 
 == CalculatingViewLayout ==
 Calculando disposición de la vista
-
-== SwitchToLegacyGui ==
-Cambiar a la GUI clásica
-
-== WelcomeToNewGui ==
-Bienvenido a la nueva GUI de Unity Version Control
-
-== WelcomeToNewGluonGui ==
-Bienvenido a la nueva GUI de Gluon
-
-== WelcomeToNewGuiFirstText ==
-Estás invitado a probar la nueva GUI de Unity VCS: un adelanto del trabajo que hemos estado haciendo para mejorar continuamente la experiencia de Unity VCS para todos los usuarios, independientemente del nivel de experiencia.
-
-== WelcomeToNewGluonGuiFirstText ==
-Estás invitado a probar la nueva GUI de Gluon: un adelanto del trabajo que hemos estado haciendo para mejorar continuamente la experiencia de Unity VCS para todos los usuarios, independientemente del nivel de experiencia.
-
-== WelcomeToNewGuiSecondText ==
-Esta versión es multiplataforma, incluye un tema oscuro y proporciona un mejor resaltado de sintaxis. ¡Pronto habrá muchas más mejoras, haznos saber lo que piensas!
-
-== WelcomeToNewGluonGuiSecondText ==
-Esta versión tiene todas las funcionalidades, es multiplataforma e incluye tema oscuro. También incluye soporte para changelists. ¡Haznos saber lo que piensas!
-
-== GetStartedButton ==
-¡Empecemos!
-
-== SwitchToLegacyGuiHelp ==
-Puedes cambiar a la GUI clásica desde aquí
 
 == ConfirmRevertToChangesetTitle ==
 Confirmación de volver atras
@@ -7136,11 +7112,20 @@ Ocultar Notificación
 == NoCheckinComment ==
 <Sin comentario de check-in>
 
+== NoShelvesetComment ==
+<Sin comentario de shelveset>
+
 == HistoryRevisionDetailsFormatString ==
 {0} {1} en {2} por {3}
 
 == HistoryHeaderDetailsStringFormat ==
 por {0} el {1}
+
+== ShelveDetailsFormatString ==
+{0} por {1}
+
+== ShelveDetailsWithRepositoryFormatString ==
+{0} por {1} en {2}
 
 == ExpandCollapseComment ==
 Expandir/contraer comentario
@@ -7679,3 +7664,9 @@ Unity Dashboard
 
 == LoadingOrganizations ==
 Cargando organizaciones...
+
+== More ==
+Más
+
+== SigningIn ==
+Iniciando sesión...

@@ -131,7 +131,7 @@ Copyright © 2006-{0} Unity Technologies. All Rights Reserved.
 リリースノート
 
 == WebsiteLink ==
-https://www.plasticscm.com
+https://unity.com
 
 == ReleaseNotesUrlPreffix ==
 https://www.plasticscm.com/download/releasenotes/
@@ -2702,7 +2702,7 @@ ACL をプッシュ中 ({0} %)
 変更が一時変更セット (シェルブ) にチェックインされました。これらの変更は今すぐ任意のブランチに適用できます。ワークスペース内のこれらの変更を取り消しますか?
 
 == ShelveCreatedMessage ==
-保留中の変更が以下にシェルブされました:{0}
+保留中の変更が以下にシェルブされました {0}
 
 == NewCertificateTitle ==
 サーバーの SSL 証明書がストアにありません

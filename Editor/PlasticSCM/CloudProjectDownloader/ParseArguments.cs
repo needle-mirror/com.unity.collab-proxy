@@ -21,6 +21,9 @@ namespace Unity.PlasticSCM.Editor.ProjectDownloader
             if (!args.TryGetValue(CLOUD_ORGANIZATION, out data))
                 return null;
 
+            if (data == null)
+                return null;
+
             return GetOrganizationNameFromData(data);
         }
 

@@ -16,8 +16,8 @@ namespace Unity.PlasticSCM.Editor
     internal class PlasticConnectionMonitor :
         HandleCredsAliasAndServerCert.IHostUnreachableExceptionListener
     {
-        internal bool IsTryingReconnection { get{ return mIsTryingReconnection; } }
-        internal bool IsConnected { get{ return mIsConnected; } }
+        internal bool IsTryingReconnection { get { return mIsTryingReconnection; } }
+        internal bool IsConnected { get { return PlasticPlugin.IsUnitTesting || mIsConnected; } }
 
         internal void CheckConnection()
         {
