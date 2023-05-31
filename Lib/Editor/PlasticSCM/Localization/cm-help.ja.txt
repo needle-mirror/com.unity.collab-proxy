@@ -712,10 +712,10 @@ stdin から入力を読み取る:
     cm ^changeset ^move ^cs:15@myrepo ^br:/main/scm005@myrepo
     cm ^changeset ^delete ^cs:2b55f8aa-0b29-410f-b99c-60e573a309ca@devData
 
-== CMD_DESCRIPTION_CHANGESET_EDIT_COMMENT ==
+== CMD_DESCRIPTION_CHANGESET_EDITCOMMENT ==
 変更セットのコメントを変更します。
 
-== CMD_USAGE_CHANGESET_EDIT_COMMENT ==
+== CMD_USAGE_CHANGESET_EDITCOMMENT ==
 使用方法:
 
     cm ^changeset ^editcomment | ^edit <変更セット指定> <新しいコメント>
@@ -728,7 +728,7 @@ stdin から入力を読み取る:
     新しいコメント      ターゲットの変更セットに追加される新しい
                         コメント。
 
-== CMD_HELP_CHANGESET_EDIT_COMMENT ==
+== CMD_HELP_CHANGESET_EDITCOMMENT ==
 備考:
 
     - ターゲットの変更セット指定が有効である必要があります。
@@ -3868,15 +3868,6 @@ Jira のパラメーター (すべて必須):
     cm ^label ^rename ^lb:BL001 BL002
     (ラベル名を「BL001」から「BL002」に変更します。)
 
-== CMD_DESCRIPTION_OBLITERATE ==
-非推奨
-
-== CMD_USAGE_OBLITERATE ==
-非推奨。
-
-== CMD_HELP_OBLITERATE ==
-非推奨。
-
 == CMD_DESCRIPTION_OBJECTSPEC ==
 オブジェクト指定の記述方法について説明します。
 
@@ -4331,10 +4322,10 @@ stdin から入力を読み取る:
     cm ^partial ^move .\design .\marketing
     (ディレクトリを名前変更します。)
 
-== CMD_DESCRIPTION_PARTIAL_RM ==
+== CMD_DESCRIPTION_PARTIAL_REMOVE ==
 ファイルまたはディレクトリをバージョン管理から削除します。
 
-== CMD_USAGE_PARTIAL_RM ==
+== CMD_USAGE_PARTIAL_REMOVE ==
 使用方法:
 
     cm ^partial ^remove | ^rm <項目パス>[ ...][--^nodisk]
@@ -4347,7 +4338,7 @@ stdin から入力を読み取る:
 
     --^nodisk        バージョン管理から項目を削除しますが、ディスク上には保持します。
 
-== CMD_HELP_PARTIAL_RM ==
+== CMD_HELP_PARTIAL_REMOVE ==
 備考:
 
     項目はディスクから削除されます。削除された項目はソースコード管理の親
@@ -4421,10 +4412,10 @@ stdin から入力を読み取る:
     (/main/task を作業中のブランチとして設定し、/art/images フォルダーを
     ロードするようにワークスペースを設定します。)
 
-== CMD_DESCRIPTION_PARTIAL_UNCO ==
+== CMD_DESCRIPTION_PARTIAL_UNDOCHECKOUT ==
 項目のチェックアウトを取り消します。
 
-== CMD_USAGE_PARTIAL_UNCO ==
+== CMD_USAGE_PARTIAL_UNDOCHECKOUT ==
 使用方法:
 
     cm ^partial ^undocheckout | ^unco <項目パス>[ ...][--^silent]
@@ -4438,7 +4429,7 @@ stdin から入力を読み取る:
 
     --^silent            出力を表示しません。
 
-== CMD_HELP_PARTIAL_UNCO ==
+== CMD_HELP_PARTIAL_UNDOCHECKOUT ==
 備考:
 
     項目がチェックアウト済みになっていて、それをチェックインしたくない場合は、このコマンドを

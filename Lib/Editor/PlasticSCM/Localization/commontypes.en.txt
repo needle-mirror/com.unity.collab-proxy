@@ -697,6 +697,12 @@ Item path not in workspace: {0}.
 == ItemsAlreadyLocked ==
 These items are exclusively checked out by: {0}
 
+== ItemSmartLockDifferentBranchOutOfDate ==
+Cannot checkout '{0}' because you don't load the latest version in the branch '{1}'. You will need to undo your changes and merge from '{1}' or re-create your current branch '{2}' from latest changeset in '{1}' and lock. If you really need to preserve your changes, backup them manually.
+
+== ItemSmartLockRetainedOutOfDate ==
+Cannot checkout '{0}' because there is already an existing lock retained in branch '{1}'. You can only checkout the file from that branch or when the lock is released (branch '{1}' is merged in '{2}'). If you really need to preserve your changes, backup them manually.
+
 == LabelDoesntexist ==
 The specified label {0} does not exist.
 
@@ -741,6 +747,9 @@ Your auto-renewal license has been disabled by an administrator. Please contact 
 
 == LicenseVersionInvalid ==
 Can't use a {0} license with a {1} edition of Plastic SCM.
+
+== ListLocksByRepNotSupported ==
+The server {0} doesn't support listing locks by repository. Please upgrade the server.
 
 == LkNotFound ==
 Couldn't find a link of type {0}.
@@ -1045,6 +1054,9 @@ The diff with local changes cannot be calculated because some local changes cann
 
 == PrunedTreeNotAllowed ==
 You don't have permissions to read the whole content inside the path '{0}' in the cs:{1}. The current operations needs to read the whole tree in order to continue. Please, review your path permissions and try again.
+
+== PurgeCanOnlyBeExecutedByItsOwner ==
+Only the author can execute the purge.
 
 == PushAllNotAllowedWithMissingData ==
 Can't push the repository because the data of some of its revisions is missing (probably replicated with --nodata). Please hydrate the branches without data and try again (check the help of cm replicate hydrate).
@@ -1610,6 +1622,12 @@ Failed to resolve the cloud server for organization {0}. {1}
 
 == BackupInProgress ==
 The backup of the {0} database is in progress. Only read operations are allowed on it.
+
+== OrganizationReadonlyEnabled ==
+The organization '{0}' is in readonly mode. Only read operations are allowed on any of its repositories or configuration.
+
+== ServerReadonlyEnabled ==
+The server is in readonly mode. Only read operations are allowed on any of its repositories or configuration.
 
 == OrganizationMigratedError ==
 The organization '{0}' was migrated to a new server.

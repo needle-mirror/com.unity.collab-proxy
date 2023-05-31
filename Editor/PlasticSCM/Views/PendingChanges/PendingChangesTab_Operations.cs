@@ -229,6 +229,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 changesToShelve,
                 dependenciesCandidates,
                 CommentText,
+                () => {},
                 ShowShelveSuccess);
         }
 

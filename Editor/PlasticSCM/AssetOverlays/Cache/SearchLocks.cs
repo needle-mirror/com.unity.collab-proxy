@@ -53,12 +53,9 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
             if (candidates.Count == 0)
                 return;
 
-            string lockServer = string.IsNullOrEmpty(lockRule.LockServer) ?
-                repSpec.Server : lockRule.LockServer;
-
             Dictionary<Guid, LockInfo> serverlocksByItem =
                 ServerLocks.GetServerLocksByItem(
-                    lockServer, locksByItemByServer);
+                    repSpec.Server, locksByItemByServer);
 
             if (serverlocksByItem == null || serverlocksByItem.Count == 0)
                 return;

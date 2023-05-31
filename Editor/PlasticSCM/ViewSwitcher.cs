@@ -518,7 +518,7 @@ namespace Unity.PlasticSCM.Editor
             SetSelectedView(SelectedTab.Changesets);
         }
 
-        void ShowHistoryView(
+        internal void ShowHistoryView(
             RepositorySpec repSpec,
             long itemId,
             string path,

@@ -703,6 +703,12 @@ La ruta del ítem no está en un espacio de trabajo: {0}.
 == ItemsAlreadyLocked ==
 Ya existe un checkout exclusivo sobre los siguientes elementos: {0}
 
+== ItemSmartLockDifferentBranchOutOfDate ==
+No se pudo hacer checkout de '{0}' porque no tienes la última version de la rama '{1}'. Necesitas deshacer tus cambios y hacer merge de '{1}' o re-crear tu rama actual '{2}' de el último changeset de '{1}' y aplicar el checkout exclusivo. Si realmente necesitas conservar tus cambios, sálvalos manualmente en otra ubicación.
+
+== ItemSmartLockRetainedOutOfDate ==
+No se pudo hacer checkout de '{0}' porque hay ya un checkout exclusivo retenido en la rama '{1}'. Sólo puedes hacer checkout de el fichero desde esa rama o bien cuando el checkout exclusivo sea liberado (rama '{1}' es mergeada en '{2}'). Si realmente necesitas conservar tus cambios, sálvalos manualmente en otra ubicación.
+
 == LabelDoesntexist ==
 La etiqueta {0} especificada no existe.
 
@@ -747,6 +753,9 @@ Su licencia de auto-renovación ha sido deshabilitada por un administrador. Por 
 
 == LicenseVersionInvalid ==
 No se puede utilizar una licencia {0} con una edición {1} de Plastic SCM.
+
+== ListLocksByRepNotSupported ==
+El servidor {0} no soporta listar locks por repositorio. Por favor, actualice el servidor.
 
 == LkNotFound ==
 No se puede encontrar un enlace de tipo {0}.
@@ -1051,6 +1060,9 @@ El diff con cambios locales no se puedo calcular porque algunos cambios locales 
 
 == PrunedTreeNotAllowed ==
 No tiene permisos para leer todo el contenido bajo la ruta '{0}' en el cs:{1}. La operación actual necesita leer el contenido completo para poder continuar. Por favor, revise sus permisos de path e inténtelo de nuevo más tarde.
+
+== PurgeCanOnlyBeExecutedByItsOwner ==
+Sólo el autor puede ejecutar su purge.
 
 == PushAllNotAllowedWithMissingData ==
 No se puede hacer push del repositorio, porque faltan datos en algunas ramas (que probablemente fueron replicadas con --nodata). Por favor, hidrate las ramas sin datos y vuelva a intentarlo (revise la ayuda de cm replicate hydrate).
@@ -1613,6 +1625,12 @@ No se ha podido obtener el servidor cloud para la organización {0}. {1}
 
 == BackupInProgress ==
 El backup de la base de datos {0} está en progreso. Solo están permitidas operaciones de lectura en ella.
+
+== OrganizationReadonlyEnabled ==
+La organización '{0}' está en modo de solo lectura. Solo están permitidas operaciones de lectura en sus repositorios o configuración.
+
+== ServerReadonlyEnabled ==
+El servidor está en modo de solo lectura. Solo están permitidas operaciones de lectura en sus repositorios o configuración.
 
 == OrganizationMigratedError ==
 La organizacion '{0}' fue migrada a otro servidor.

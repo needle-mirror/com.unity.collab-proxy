@@ -28,16 +28,16 @@
 == PreviewRequestError ==
 프리뷰를 로드하는 중 오류가 발생했습니다. 
 
-== ZoomIn ==
+== ZoomInTooltip ==
 확대
 
-== ZoomOut ==
+== ZoomOutTooltip ==
 축소
 
-== ZoomOriginalSize ==
+== ZoomOriginalSizeTooltip ==
 1:1
 
-== ZoomToFit ==
+== ZoomToFitTooltip ==
 크기에 맞추기
 
 == ImageDiffOnionSkinMode ==

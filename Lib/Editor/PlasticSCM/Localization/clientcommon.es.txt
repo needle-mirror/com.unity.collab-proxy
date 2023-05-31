@@ -292,8 +292,8 @@ El parámetro "--branches" no está bien formado. Por favor, compruebe que no ha
 == ErrorArchiveCantRetrieveData ==
 No se puede obtener el volumen externo de almacenamiento de datos, por favor configure externaldata.conf con los paths adecuados para encontrar los volúmenes archivados. Nombre base de fichero: {0}. Comentario de volumen: {1}. Fichero: {2}
 
-== ErrorArchiveCantRetrieveTrimmedData ==
-No se puede obtener el contenido del fichero '{0}' porque la revisión (id:{1}) fue recortada y su contenido ya no está disponible.
+== ErrorArchiveCantRetrievePurgedData ==
+No se puede obtener el contenido del fichero '{0}' porque la revisión (id:{1}) fue purgada y su contenido ya no está disponible.
 
 == ErrorCannotRenameDynamicWk ==
 Los espacios de trabajo dinámicos no pueden ser renombrados.

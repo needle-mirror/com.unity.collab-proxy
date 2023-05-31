@@ -28,16 +28,16 @@
 == PreviewRequestError ==
 プレビューのロードエラー:
 
-== ZoomIn ==
+== ZoomInTooltip ==
 拡大
 
-== ZoomOut ==
+== ZoomOutTooltip ==
 縮小
 
-== ZoomOriginalSize ==
+== ZoomOriginalSizeTooltip ==
 1:1
 
-== ZoomToFit ==
+== ZoomToFitTooltip ==
 サイズに合わせて大きさを変更
 
 == ImageDiffOnionSkinMode ==

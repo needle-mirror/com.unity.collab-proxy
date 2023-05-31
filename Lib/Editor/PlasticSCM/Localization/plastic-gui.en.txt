@@ -725,7 +725,10 @@ Delete
 View shelve
 
 == ShelveMenuItemApplyShelveInWorkspace ==
-Apply shelveset in my workspace...
+Apply shelve in my workspace...
+
+== ShelveMenuItemOpenShelveInNewWindow ==
+Open shelve in a new window
 
 == ShelveMenuItemDeleteShelve ==
 Delete
@@ -1492,13 +1495,13 @@ Deleting label{0}...
 Deleting labels{0}...
 
 == DeletingShelvesSingular ==
-Deleting shelveset...
+Deleting shelve...
 
 == DeletingShelvesPlural ==
 Deleting shelves...
 
-== ApplyingShelveset ==
-Applying shelveset...
+== ApplyingShelve ==
+Applying shelve...
 
 == DeletingAttributesSingular ==
 Deleting attribute {0}...
@@ -1869,6 +1872,9 @@ Otherwise, click "Cancel".
 
 == EditAttributeExplanation ==
 You can give a new name to the attribute and change its comment text.
+
+== EmptyAttributes ==
+No attributes applied yet
 
 == ResetQueryButton ==
 Reset query
@@ -2313,7 +2319,7 @@ No matches found
 Container folder
 
 == CheckinComment ==
-Your check-in comment...
+Add a comment to your check-in or shelve...
 
 == BrowseForFolderTitle ==
 Browse for folder
@@ -2459,6 +2465,9 @@ Would you like to restart the application now to apply the new language setting?
 == RestartNow ==
 Restart now
 
+== RestartMessageTitle ==
+Restart application
+
 == SelectLanguage ==
 Select language
 
@@ -2469,7 +2478,10 @@ Display error for same file name with different case
 Applies only to Unix-like filesystems
 
 == ShowEmptyCommentWarning ==
-Warn about empty comment in Pending changes view
+Remind to add a comment before the following actions
+
+== ShowEmptyShelveCommentWarning ==
+Remind to add a comment before creating a new shelve
 
 == ShowEmptyCommentWarning_ForGluon ==
 Warn about empty comment in Checkin view
@@ -3019,7 +3031,34 @@ You have pending merge links in the workspace. The shelve operation doesn't shel
 Undo changes after shelve
 
 == UndoChangesAfterShelveRequestMessage ==
-Your changes have been checked into a temporary changeset (shelve). These changes can be applied now to any branch. Do you want to undo these changes in the workspace?
+Do you want to keep or delete (undo) these changes from the pending changes list after shelving?
+
+== UndoChangesAfterShelve ==
+Undo changes
+
+== KeepChangesAfterShelve ==
+Keep changes
+
+== AskAlwaysAfterShelve ==
+Ask always
+
+== UndoChangesAfterShelveExplanation ==
+Selected changes will be deleted from the pending changes list after shelving
+
+== KeepChangesAfterShelveExplanation ==
+Selected changes will be kept in the pending changes list after shelving
+
+== AskAlwaysAfterShelveExplanation ==
+Always ask what to do before creating the shelve
+
+== UndoChangesAfterShelveDefaultBehavior ==
+Set default behaviour for pending changes after shelving
+
+== ShelveSettingsHint ==
+You can change the shelve settings from the main {0} menu under {1}
+
+== ShelveSettingsHintPreferences ==
+preferences
 
 == ShelveCreatedMessage ==
 The changes are shelved under {0}
@@ -3772,9 +3811,9 @@ Check that:
  * The changeset is not the source of a merge link
  * The changeset has no children
  * The changeset is not labelled
- * No shelvesets were created from the changeset
+ * No shelves were created from the changeset
 
-Note, you can find shelvesets created from a given changeset by running the following query from the cli or Shelves view:
+Note, you can find shelves created from a given changeset by running the following query from the cli or Shelves view:
 
     find shelve where parent=changesetspec
 
@@ -4062,8 +4101,8 @@ Cherry pick from branch {0}
 == ChangesetCherryPick ==
 Cherry pick from changeset cs:{0}
 
-== ApplyShelveset ==
-Apply shelveset sh:{0}
+== ApplyShelve ==
+Apply shelve sh:{0}
 
 == LabelMerge ==
 Merge from label {0}
@@ -4130,9 +4169,6 @@ Display full branch names
 
 == Shelve ==
 Shelve
-
-== Shelveset ==
-Shelveset
 
 == AnnotateDialogTitle ==
 Annotate
@@ -4779,8 +4815,8 @@ Sign up
 == SignIn ==
 Sign in
 
-== SignInToAddNewAccount ==
-Sign in to
+== SignInToUnityVersionControl ==
+Sign in to Unity Version Control
 
 == SignInToUnityVCS ==
 Sign in to Unity VCS
@@ -4875,6 +4911,9 @@ Terms of Service
 
 == PrivacyPolicy ==
 Privacy Policy
+
+== LoginWithYourMail ==
+or login with your email address
 
 == Email ==
 Email:
@@ -5511,12 +5550,6 @@ Author
 
 == PrivacyStatementText ==
 Controller: Unity Technologies ApS. Purpose of the processing: Create your account and provide the requested services. You may exercise your rights of access, rectification, erasure and other data protection rights as described in the Unity Privacy Policy. For additional information please see the Unity {0}
-
-== PrivacyStatementTextFirstLine ==
-Controller: Unity Technologies ApS. Purpose of the processing: Create your account and provide the requested services. You may exercise your rights of access, rectification, erasure and other data protection rights as described in the Unity Privacy Policy.
-
-== PrivacyStatementTextSecondLine ==
-For additional information please see the Unity {0}
 
 == PrivacyStatement ==
 Privacy Statement
@@ -6544,6 +6577,9 @@ F5
 == PlasticPreferencesShortcutForMacOS ==
 Cmd+,
 
+== PlasticPreferencesShortcut ==
+Ctrl+,
+
 == BranchExplorerSearchFieldShortcutsTooltipForWindows ==
 Keyboard shortcuts:
   Enter: focus the next search result
@@ -6748,7 +6784,7 @@ Preferences…
 == AppMenuPlasticWebsite ==
 Unity DevOps Version Control Website…
 
-== NoComment ==
+== NoCommentSet ==
 No comment has been set
 
 == CannotGetComment ==
@@ -6974,7 +7010,7 @@ Unity ID
 Welcome to Unity Version Control - Part of the Unity family
 
 == DontHaveOrganization ==
-Don't have a Unity VCS organization?
+Don't have an UVCS organization?
 
 == ForgotPassword ==
 Forgot password?
@@ -7086,7 +7122,7 @@ Remove account
 Edit account
 
 == AddNewPlasticScmAccount ==
-Add a new Unity VCS account
+Add a new Unity DevOps Version Control account
 
 == BrowseRepositoryDialogExplanation ==
 Select a path
@@ -7112,11 +7148,8 @@ Show Notification
 == HideNotification ==
 Hide Notification
 
-== NoCheckinComment ==
-<No check-in comment>
-
-== NoShelvesetComment ==
-<No shelveset comment>
+== NoComment ==
+<No comment>
 
 == HistoryRevisionDetailsFormatString ==
 {0} {1} on {2} by {3}
@@ -7228,10 +7261,40 @@ Exit
 missing changeset (this link cannot be checked in)
 
 == NoCheckinCommentTitle ==
-No check-in comment
+Check-in comment is empty!
 
 == NoCheckinCommentMessage ==
 The comment field is empty. You'll create a changeset that has no check-in comment. Do you want to continue?
+
+== NoShelveCommentTitle ==
+Shelve comment is empty!
+
+== NoShelveCommentMessage ==
+Please add a comment to easily identify your shelves later
+
+== DontAskMeAgainWithAction ==
+Don't ask me again. You can change this setting later in {0}
+
+== ShelveOptions ==
+shelve options
+
+== CommentOptions ==
+comment options
+
+== AddComment ==
+Add comment
+
+== SkipAndShelve ==
+Skip & Shelve
+
+== SkipAndCheckin ==
+Skip & Check in
+
+== AddCheckinComment ==
+Please add a comment for your check-in
+
+== AddShelveComment ==
+Please add a comment for your shelve
 
 == DontAskMeAgain ==
 Don't ask me again
@@ -7524,6 +7587,12 @@ cmd+D0
 == PlasticZoomResetNumPadShortcutMacOS ==
 cmd+NumPad0
 
+== PlasticToggleShelvesViewShortcut ==
+Shift+Ctrl+H
+
+== PlasticToggleShelvesViewShortcutMacOS ==
+cmd+Shift+H
+
 == ZoomReset ==
 Reset Zoom
 
@@ -7677,6 +7746,8 @@ Loading organizations...
 == More ==
 More
 
-
 == SigningIn ==
 Signing in...
+
+== ShowEmbeddedShelveDiffTooltip ==
+Always open shelves in current window

@@ -293,8 +293,8 @@ Incorrect "--branches" parameter. Please check that there aren't whitespaces bet
 == ErrorArchiveCantRetrieveData ==
 Can't retrieve archived volume, please configure the externaldata.conf file with the right paths to locate the archived data. Base file name: {0}. Comment: {1}. File: {2}
 
-== ErrorArchiveCantRetrieveTrimmedData ==
-Can't retrieve the content of the file '{0}' because the revision (id:{1}) was trimmed and its content is no longer available.
+== ErrorArchiveCantRetrievePurgedData ==
+Can't retrieve the content of the file '{0}' because the revision (id:{1}) was purged and its content is no longer available.
 
 == ErrorCannotRenameDynamicWk ==
 Dynamic workspaces cannot be renamed.

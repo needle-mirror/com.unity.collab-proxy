@@ -1977,9 +1977,6 @@ n;否
 == NotMergedFile ==
 未合并文件 {0} / {1}：{2}
 
-== Obliterate ==
-控制删除操作
-
 == Of ==
 /
 

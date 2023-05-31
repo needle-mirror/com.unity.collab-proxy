@@ -133,9 +133,6 @@ Unicode
 == UnicodeBigEndianEncoding ==
 Unicode Big-Endian
 
-== Utf7Encoding ==
-UTF-7
-
 == Utf8Encoding ==
 UTF-8
 

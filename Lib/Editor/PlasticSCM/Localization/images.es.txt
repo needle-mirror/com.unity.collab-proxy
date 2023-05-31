@@ -11,7 +11,7 @@ Atributos
 Directorio
 
 == FsPropertiesSize ==
-Tamaño
+TamaÃ±o
 
 == FsPropertiesCreated ==
 Creado
@@ -20,7 +20,7 @@ Creado
 Modificado
 
 == FsPropertiesLastAccess ==
-Último acceso
+Ãšltimo acceso
 
 == FsPropertiesFileAttributes ==
 Atributos

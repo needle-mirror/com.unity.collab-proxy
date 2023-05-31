@@ -36,6 +36,8 @@ namespace Unity.PlasticSCM.Editor.Views.History
         IOpenMenuOperations,
         IHistoryViewMenuOperations
     {
+        internal HistoryListView Table { get { return mHistoryListView; } }
+        
         internal HistoryTab(
             WorkspaceInfo wkInfo,
             IWorkspaceWindow workspaceWindow,
@@ -112,6 +114,14 @@ namespace Unity.PlasticSCM.Editor.Views.History
             TreeHeaderSettings.Save(
                 mHistoryListView.multiColumnHeader.state,
                 UnityConstants.HISTORY_TABLE_SETTINGS_NAME);
+        }
+
+        internal void SetLaunchToolForTesting(
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            LaunchTool.IProcessExecutor processExecutor)
+        {
+            mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
+            mProcessExecutor = processExecutor;
         }
 
         void IRefreshableView.Refresh()
@@ -420,12 +430,13 @@ namespace Unity.PlasticSCM.Editor.Views.History
         string mPath;
         bool mIsDirectory;
 
+        LaunchTool.IProcessExecutor mProcessExecutor;
+        LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
+
         readonly WorkspaceInfo mWkInfo;
         readonly HistoryViewLogic mHistoryViewLogic;
         readonly ProgressControlsForViews mProgressControls;
         readonly IWorkspaceWindow mWorkspaceWindow;
-        readonly LaunchTool.IProcessExecutor mProcessExecutor;
-        readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
         readonly RepositorySpec mRepSpec;
         readonly bool mIsGluonMode;
         readonly EditorWindow mParentWindow;

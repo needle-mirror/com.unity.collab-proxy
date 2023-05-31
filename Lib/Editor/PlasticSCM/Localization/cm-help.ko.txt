@@ -712,10 +712,10 @@ https://www.plasticscm.com/download/help/securityguide
     cm ^changeset ^move ^cs:15@myrepo ^br:/main/scm005@myrepo
     cm ^changeset ^delete ^cs:2b55f8aa-0b29-410f-b99c-60e573a309ca@devData
 
-== CMD_DESCRIPTION_CHANGESET_EDIT_COMMENT ==
+== CMD_DESCRIPTION_CHANGESET_EDITCOMMENT ==
 체인지 세트의 코멘트를 수정합니다.
 
-== CMD_USAGE_CHANGESET_EDIT_COMMENT ==
+== CMD_USAGE_CHANGESET_EDITCOMMENT ==
 사용법:
 
     cm ^changeset ^editcomment | ^edit <체인지 세트 사양> <새 코멘트>
@@ -728,7 +728,7 @@ https://www.plasticscm.com/download/help/securityguide
     새 코멘트         대상 체인지 세트에 추가될
                         새 코멘트.
 
-== CMD_HELP_CHANGESET_EDIT_COMMENT ==
+== CMD_HELP_CHANGESET_EDITCOMMENT ==
 비고:
 
     - 대상 체인지 세트 사양이 반드시 유효해야 합니다.
@@ -3868,15 +3868,6 @@ Jira 매개 변수(모두 필수):
     cm ^label ^rename ^lb:BL001 BL002
     (레이블 'BL001'의 이름을 'BL002'로 변경합니다.)
 
-== CMD_DESCRIPTION_OBLITERATE ==
-사용되지 않습니다
-
-== CMD_USAGE_OBLITERATE ==
-사용되지 않습니다.
-
-== CMD_HELP_OBLITERATE ==
-사용되지 않습니다.
-
 == CMD_DESCRIPTION_OBJECTSPEC ==
 객체 사양을 작성하는 방법을 설명합니다.
 
@@ -4331,10 +4322,10 @@ Jira 매개 변수(모두 필수):
     cm ^partial ^move .\design .\marketing
     (디렉터리의 이름을 변경합니다.)
 
-== CMD_DESCRIPTION_PARTIAL_RM ==
+== CMD_DESCRIPTION_PARTIAL_REMOVE ==
 버전 제어에서 파일 또는 디렉터리를 삭제합니다.
 
-== CMD_USAGE_PARTIAL_RM ==
+== CMD_USAGE_PARTIAL_REMOVE ==
 사용법:
 
     cm ^partial ^remove | ^rm <항목 경로>[ ...] [--^nodisk]
@@ -4347,7 +4338,7 @@ Jira 매개 변수(모두 필수):
 
     --^nodisk        항목이 버전 제어에서는 제거되지만, 디스크에서는 유지됩니다.
 
-== CMD_HELP_PARTIAL_RM ==
+== CMD_HELP_PARTIAL_REMOVE ==
 비고:
 
     디스크에서 항목이 삭제됩니다. 삭제된 항목이 소스 코드 제어의 부모 디렉터리에서
@@ -4421,10 +4412,10 @@ Jira 매개 변수(모두 필수):
     (/main/task를 작업 브랜치로 설정하고 /art/images 폴더를 로드하도록
     워크스페이스를 구성합니다.)
 
-== CMD_DESCRIPTION_PARTIAL_UNCO ==
+== CMD_DESCRIPTION_PARTIAL_UNDOCHECKOUT ==
 항목의 체크아웃을 취소합니다.
 
-== CMD_USAGE_PARTIAL_UNCO ==
+== CMD_USAGE_PARTIAL_UNDOCHECKOUT ==
 사용법:
 
     cm ^partial ^undocheckout | ^unco <항목 경로>[ ...] [--^silent]
@@ -4438,7 +4429,7 @@ Jira 매개 변수(모두 필수):
 
     --^silent            어떤 내용도 출력하지 않습니다.
 
-== CMD_HELP_PARTIAL_UNCO ==
+== CMD_HELP_PARTIAL_UNDOCHECKOUT ==
 비고:
 
     항목이 체크아웃되고 이를 체크인하지 않으려는 경우, 이 명령을 사용해 체크아웃을

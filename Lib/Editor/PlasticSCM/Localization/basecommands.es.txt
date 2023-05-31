@@ -2162,9 +2162,6 @@ Reemplazado {0}
 == NotMergedFile ==
 No mezclado el fichero {0} de {1}: {2}
 
-== Obliterate ==
-controla la operación de obliterar
-
 == Of ==
 de
 
@@ -2510,6 +2507,9 @@ Estado
 == StatusKey ==
 Estado
 
+== StatusLocked ==
+Locked
+
 == StatusPerfWarningChanged ==
 El cálculo de cambiados tardó demasiado. Notas de rendimiento: {0}
 
@@ -2518,6 +2518,9 @@ El cálculo de movidos tardó demasiado. Hay demasiados privados y borrados. Not
 
 == StatusPerfWarningPrivates ==
 Hay demasiados privados y eso puede ralentizar la operación. Cómo ignorar privados: {0}
+
+== StatusRetained ==
+Retained
 
 == SubtractiveIntervalMerge ==
 Merge sustractivo de intervalo
@@ -2549,8 +2552,8 @@ a
 == Total ==
 Total
 
-== Trimmed ==
-Trimmed
+== Purged ==
+Purged
 
 == TubeStatusConnected ==
 El servidor de Unity VCS ({0}) está conectado a Plastic Tube.

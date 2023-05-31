@@ -13,7 +13,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
 {
     internal class HistoryListViewMenu
     {
-        internal interface IMenuOperations
+        public interface IMenuOperations
         {
             long GetSelectedChangesetId();
         }
@@ -93,7 +93,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
             mOperations.RevertToThisRevision();
         }
 
-        void UpdateMenuItems(GenericMenu menu)
+        internal void UpdateMenuItems(GenericMenu menu)
         {
             SelectedHistoryGroupInfo info =
                 mOperations.GetSelectedHistoryGroupInfo();

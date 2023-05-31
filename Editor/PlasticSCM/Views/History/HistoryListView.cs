@@ -190,6 +190,19 @@ namespace Unity.PlasticSCM.Editor.Views.History
             return result;
         }
 
+        internal List<RepObjectInfo> GetAllRepObjectInfos()
+        {
+            List<RepObjectInfo> result = new List<RepObjectInfo>();
+
+            foreach (KeyValuePair<RepObjectInfo, int> item
+                in mListViewItemIds.GetInfoItems())
+            {
+                result.Add(item.Key);
+            }
+
+            return result;
+        }
+
         internal List<HistoryRevision> GetSelectedHistoryRevisions()
         {
             return GetSelectedRepObjectInfos().OfType<HistoryRevision>().ToList();

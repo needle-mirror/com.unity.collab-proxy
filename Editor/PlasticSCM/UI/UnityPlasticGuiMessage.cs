@@ -109,6 +109,19 @@ namespace Unity.PlasticSCM.Editor.UI
                 PlasticLocalization.GetString(PlasticLocalization.Name.NoButton));
         }
 
+        GuiMessage.GuiMessageResponseButton GuiMessage.IGuiMessage.ShowQuestionWithCheckBox(
+            string title,
+            string message,
+            string positiveButtonText,
+            string neutralButtonText,
+            string negativeButtonText,
+            MultiLinkLabelData dontShowAgainContent,
+            out bool checkBoxValue)
+        {
+            checkBoxValue = false;
+            return ((GuiMessage.IGuiMessage)this).ShowQuestion(title, message, positiveButtonText, neutralButtonText, negativeButtonText);
+        }
+
         static GuiMessage.GuiMessageResponseButton GetResponse(int dialogResult)
         {
             switch (dialogResult)

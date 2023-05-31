@@ -725,7 +725,10 @@ Borrar
 Ver shelve
 
 == ShelveMenuItemApplyShelveInWorkspace ==
-Applicar shelveset en mi workspace...
+Applicar shelve en mi workspace...
+
+== ShelveMenuItemOpenShelveInNewWindow ==
+Abrir shelve en una nueva ventana
 
 == ShelveMenuItemDeleteShelve ==
 Borrar
@@ -1492,13 +1495,13 @@ Deleting label{0}...
 Deleting labels{0}...
 
 == DeletingShelvesSingular ==
-Deleting shelveset...
+Deleting shelve...
 
 == DeletingShelvesPlural ==
 Deleting shelves...
 
-== ApplyingShelveset ==
-Applying shelveset...
+== ApplyingShelve ==
+Applying shelve...
 
 == DeletingChangeset ==
 Deleting changeset...
@@ -1869,6 +1872,9 @@ Otherwise click "Cancel".
 
 == EditAttributeExplanation ==
 Puedes renombrar el atributo y cambiar el texto de su comentario.
+
+== EmptyAttributes ==
+No hay ningún atributo
 
 == ResetQueryButton ==
 Reset query
@@ -2313,7 +2319,7 @@ No matches found
 Container folder
 
 == CheckinComment ==
-Your check-in comment...
+Añade un comentario de check-in o shelve...
 
 == BrowseForFolderTitle ==
 Browse for folder
@@ -2459,6 +2465,9 @@ Quiere reiniciar la aplicación ahora para aplicar el nuevo idioma?
 == RestartNow ==
 Reiniciar ahora
 
+== RestartMessageTitle ==
+Reiniciar aplicación
+
 == SelectLanguage ==
 Seleccione un idioma
 
@@ -2469,7 +2478,10 @@ Display error for same file name with different case
 Applies only to Unix-like filesystems
 
 == ShowEmptyCommentWarning ==
-Avisar de comentarios vacíos en la vista de Cambios pendientes
+Recordar añadir un comentario antes de realizar las siguientes acciones
+
+== ShowEmptyShelveCommentWarning ==
+Recordar añadir un comentario antes de crear un nuevo shelve
 
 == ShowEmptyCommentWarning_ForGluon ==
 Avisar de comentarios vacíos en la vista de Checkin
@@ -3019,7 +3031,34 @@ You have pending merge links in the workspace. The shelve operation doesn't shel
 Undo changes after shelve
 
 == UndoChangesAfterShelveRequestMessage ==
-Your changes have been checked into a temporary changeset (shelve). These changes can be applied now to any branch. Do you want to undo these changes in the workspace?
+¿Quieres mantener o eliminar (deshacer) estos cambios de la pending changes después de crear el shelve?
+
+== UndoChangesAfterShelve ==
+Deshacer cambios
+
+== KeepChangesAfterShelve ==
+Mantener cambios
+
+== AskAlwaysAfterShelve ==
+Preguntar siempre
+
+== UndoChangesAfterShelveExplanation ==
+Los cambios seleccionados se eliminarán de la lista de cambios pendintes después crear un shelve
+
+== KeepChangesAfterShelveExplanation ==
+Los cambios seleccionados se mantendrán en la lista de cambios pendintes después crear un shelve
+
+== AskAlwaysAfterShelveExplanation ==
+Preguntar siempre qué hacer antes de crear un shelve
+
+== UndoChangesAfterShelveDefaultBehavior ==
+Establecer el comportamiento por defecto en la vista de cambios pendientes tras crear un shelve
+
+== ShelveSettingsHint ==
+Puedes cambiar la configuración de shelves desde la vista de {0} bajo {1}
+
+== ShelveSettingsHintPreferences ==
+preferencias
 
 == ShelveCreatedMessage ==
 The changes are shelved under {0}
@@ -3772,9 +3811,9 @@ Check that:
  * The changeset is not the source of a merge link
  * The changeset has no children
  * The changeset is not labelled
- * No shelvesets were created from the changeset
+ * No shelves were created from the changeset
 
-Note, you can find shelvesets created from a given changeset by running the following query from the cli or Shelves view:
+Note, you can find shelves created from a given changeset by running the following query from the cli or Shelves view:
 
     find shelve where parent=changesetspec
 
@@ -4062,8 +4101,8 @@ Cherry pick from branch {0}
 == ChangesetCherryPick ==
 Cherry pick from changeset cs:{0}
 
-== ApplyShelveset ==
-Aplicando shelveset sh:{0}
+== ApplyShelve ==
+Aplicando shelve sh:{0}
 
 == LabelMerge ==
 Merge from label {0}
@@ -4775,8 +4814,8 @@ Crear cuenta
 == SignIn ==
 Inicia sesión
 
-== SignInToAddNewAccount ==
-Inicia sesión en
+== SignInToUnityVersionControl ==
+Inicia sesión en Unity Version Control
 
 == SignInToUnityVCS ==
 Inicia sesión en Unity VCS
@@ -4872,6 +4911,9 @@ Términos de servicio
 
 == PrivacyPolicy ==
 Política de privacidad
+
+== LoginWithYourMail ==
+o accede con tu correo electrónico
 
 == Email ==
 Email:
@@ -5507,13 +5549,7 @@ Detalles
 Autor
 
 == PrivacyStatementText ==
-Controlador: Unity Technologies ApS. Finalidad del tratamiento: Crear su cuenta y prestar los servicios solicitados. Puede ejercer sus derechos de acceso, rectificación, borrado y otros derechos de protección de datos como se describe en la Política de privacidad de Unity. para obtener información adicional, consulte la {0}
-
-== PrivacyStatementTextFirstLine ==
-Controlador: Unity Technologies ApS. Finalidad del tratamiento: Crear su cuenta y prestar los servicios solicitados. Puede ejercer sus derechos de acceso, rectificación, borrado y otros derechos de protección de datos como se describe en la Política de privacidad de Unity.
-
-== PrivacyStatementTextSecondLine ==
-Para obtener información adicional, consulte la {0}
+Controlador: Unity Technologies ApS. Finalidad del tratamiento: Crear su cuenta y prestar los servicios solicitados. Puede ejercer sus derechos de acceso, rectificación, borrado y otros derechos de protección de datos como se describe en la Política de privacidad de Unity. Para obtener información adicional, consulte la {0}
 
 == PrivacyStatement ==
 Política de privacidad de Unity
@@ -6541,6 +6577,9 @@ F5
 == PlasticPreferencesShortcutForMacOS ==
 Cmd+,
 
+== PlasticPreferencesShortcut ==
+Ctrl+,
+
 == BranchExplorerSearchFieldShortcutsTooltipForWindows ==
 Keyboard shortcuts:
   Enter: focus the next search result
@@ -6745,7 +6784,7 @@ Preferences…
 == AppMenuPlasticWebsite ==
 Unity DevOps Version Control Website…
 
-== NoComment ==
+== NoCommentSet ==
 No se ha establecido comentario
 
 == CannotGetComment ==
@@ -6971,7 +7010,7 @@ Unity ID
 Bienvenido a Unity Version Control - Parte de la familia de Unity
 
 == DontHaveOrganization ==
-¿No tienes una organización de Unity VCS?
+¿No tienes una organización de UVCS?
 
 == ForgotPassword ==
 ¿Olvidaste tu contraseña?
@@ -7083,7 +7122,7 @@ Quitar cuenta
 Modificar cuenta
 
 == AddNewPlasticScmAccount ==
-Añadir una nueva cuenta de Unity VCS
+Añadir una nueva cuenta de Unity DevOps Version Control
 
 == BrowseRepositoryDialogExplanation ==
 Seleccione una ruta
@@ -7109,11 +7148,8 @@ Mostrar Notificación
 == HideNotification ==
 Ocultar Notificación
 
-== NoCheckinComment ==
-<Sin comentario de check-in>
-
-== NoShelvesetComment ==
-<Sin comentario de shelveset>
+== NoComment ==
+<Sin comentario>
 
 == HistoryRevisionDetailsFormatString ==
 {0} {1} en {2} por {3}
@@ -7225,10 +7261,40 @@ Salir
 changeset borrado (no se puede hacer check-in de este merge link)
 
 == NoCheckinCommentTitle ==
-Comentario en blanco
+El comentario de check-in está vacío!
 
 == NoCheckinCommentMessage ==
 No se ha introducido ningún comentario para la operación de protección. ¿Desea continuar (ok) o volver atrás y especificar uno en el recuadro de comentarios (cancelar)?
+
+== NoShelveCommentTitle ==
+El comentario de shelve está vacío!
+
+== NoShelveCommentMessage ==
+Por favor, añade un comentario para identificar fácilmente tus shelves más tarde
+
+== DontAskMeAgainWithAction ==
+No preguntar de nuevo. Puedes cambiar esta configuración más tarde en {0}
+
+== ShelveOptions ==
+preferencias de shelves
+
+== CommentOptions ==
+preferencias de comentarios
+
+== AddComment ==
+Añadir comentario
+
+== SkipAndShelve ==
+Skip & Shelve
+
+== SkipAndCheckin ==
+Skip & Check in
+
+== AddCheckinComment ==
+Por favor, añade un comentario de check-in
+
+== AddShelveComment ==
+Por favor, añade un comentario de shelve
 
 == DontAskMeAgain ==
 No preguntar de nuevo
@@ -7521,6 +7587,12 @@ cmd+D0
 == PlasticZoomResetNumPadShortcutMacOS ==
 cmd+NumPad0
 
+== PlasticToggleShelvesViewShortcut ==
+Shift+Ctrl+H
+
+== PlasticToggleShelvesViewShortcutMacOS ==
+cmd+Shift+H
+
 == ZoomReset ==
 Resetear Zoom
 
@@ -7670,3 +7742,6 @@ Más
 
 == SigningIn ==
 Iniciando sesión...
+
+== ShowEmbeddedShelveDiffTooltip ==
+Siempre abrir los shelves en la ventana actual

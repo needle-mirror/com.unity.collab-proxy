@@ -2151,9 +2151,6 @@ Replaced {0}
 == NotMergedFile ==
 Not merged file {0} of {1}: {2}
 
-== Obliterate ==
-controls the obliterate operation
-
 == Of ==
 of
 
@@ -2490,6 +2487,9 @@ Status
 == StatusKey ==
 Status
 
+== StatusLocked ==
+Locked
+
 == StatusPerfWarningChanged ==
 Finding changed files took too long. Perf tips: {0}
 
@@ -2498,6 +2498,9 @@ Calculating moved files took too long. You have too many private/removed files. 
 
 == StatusPerfWarningPrivates ==
 You have too many privates and this can affect performance. Learn how to ignore private files: {0}
+
+== StatusRetained ==
+Retained
 
 == SubtractiveIntervalMerge ==
 Subtractive interval merge
@@ -2529,8 +2532,8 @@ to
 == Total ==
 Total
 
-== Trimmed ==
-Trimmed
+== Purged ==
+Purged
 
 == TubeStatusConnected ==
 The Unity VCS server ({0}) is connected to Plastic Tube.

@@ -712,10 +712,10 @@ https://www.plasticscm.com/download/help/securityguide
     cm ^changeset ^move ^cs:15@myrepo ^br:/main/scm005@myrepo
     cm ^changeset ^delete ^cs:2b55f8aa-0b29-410f-b99c-60e573a309ca@devData
 
-== CMD_DESCRIPTION_CHANGESET_EDIT_COMMENT ==
+== CMD_DESCRIPTION_CHANGESET_EDITCOMMENT ==
 修改变更集的注释。
 
-== CMD_USAGE_CHANGESET_EDIT_COMMENT ==
+== CMD_USAGE_CHANGESET_EDITCOMMENT ==
 用法：
 
     cm ^changeset ^editcomment | ^edit <变更集规格> <新注释>
@@ -728,7 +728,7 @@ https://www.plasticscm.com/download/help/securityguide
     新注释         要添加到目标变更集的
                         新注释。
 
-== CMD_HELP_CHANGESET_EDIT_COMMENT ==
+== CMD_HELP_CHANGESET_EDITCOMMENT ==
 备注：
 
     - 目标变更集规格必须有效。
@@ -3868,15 +3868,6 @@ Jira 参数（全部为必需参数）：
     cm ^label ^rename ^lb:BL001 BL002
     （将标签 'BL001' 重命名为 'BL002'。）
 
-== CMD_DESCRIPTION_OBLITERATE ==
-已弃用
-
-== CMD_USAGE_OBLITERATE ==
-已弃用。
-
-== CMD_HELP_OBLITERATE ==
-已弃用。
-
 == CMD_DESCRIPTION_OBJECTSPEC ==
 描述如何编写对象规格。
 
@@ -4331,10 +4322,10 @@ Jira 参数（全部为必需参数）：
     cm ^partial ^move .\design .\marketing
     （重命名目录。）
 
-== CMD_DESCRIPTION_PARTIAL_RM ==
+== CMD_DESCRIPTION_PARTIAL_REMOVE ==
 从版本控制中删除一个文件或目录。
 
-== CMD_USAGE_PARTIAL_RM ==
+== CMD_USAGE_PARTIAL_REMOVE ==
 用法：
 
     cm ^partial ^remove | ^rm <项路径>[ ...][--^nodisk]
@@ -4347,7 +4338,7 @@ Jira 参数（全部为必需参数）：
 
     --^nodisk        从版本控制中删除相应的项，但是将该项保留在磁盘上。
 
-== CMD_HELP_PARTIAL_RM ==
+== CMD_HELP_PARTIAL_REMOVE ==
 备注：
 
     磁盘中会删除项。删除的项会从源代码管理
@@ -4421,10 +4412,10 @@ Jira 参数（全部为必需参数）：
     （将 /main/task 设置为工作分支，并配置工作区来
     加载 /art/images 文件夹。）
 
-== CMD_DESCRIPTION_PARTIAL_UNCO ==
+== CMD_DESCRIPTION_PARTIAL_UNDOCHECKOUT ==
 撤销项的签出。
 
-== CMD_USAGE_PARTIAL_UNCO ==
+== CMD_USAGE_PARTIAL_UNDOCHECKOUT ==
 用法：
 
     cm ^partial ^undocheckout | ^unco <项路径>[ ...][--^silent]
@@ -4438,7 +4429,7 @@ Jira 参数（全部为必需参数）：
 
     --^silent            不显示任何输出。
 
-== CMD_HELP_PARTIAL_UNCO ==
+== CMD_HELP_PARTIAL_UNDOCHECKOUT ==
 备注：
 
     如果已签出某个项并且不想将这个项签入，则可以

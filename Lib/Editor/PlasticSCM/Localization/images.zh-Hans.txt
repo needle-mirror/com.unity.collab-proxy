@@ -28,16 +28,16 @@
 == PreviewRequestError ==
 加载预览时出错：
 
-== ZoomIn ==
+== ZoomInTooltip ==
 放大
 
-== ZoomOut ==
+== ZoomOutTooltip ==
 缩小
 
-== ZoomOriginalSize ==
+== ZoomOriginalSizeTooltip ==
 1:1
 
-== ZoomToFit ==
+== ZoomToFitTooltip ==
 缩放到合适大小
 
 == ImageDiffOnionSkinMode ==

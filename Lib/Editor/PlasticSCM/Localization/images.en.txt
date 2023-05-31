@@ -28,16 +28,16 @@ File attributes
 == PreviewRequestError ==
 Error loading preview: 
 
-== ZoomIn ==
+== ZoomInTooltip ==
 Zoom in
 
-== ZoomOut ==
+== ZoomOutTooltip ==
 Zoom out
 
-== ZoomOriginalSize ==
-1:1
+== ZoomOriginalSizeTooltip ==
+Original size
 
-== ZoomToFit ==
+== ZoomToFitTooltip ==
 Zoom to fit
 
 == ImageDiffOnionSkinMode ==

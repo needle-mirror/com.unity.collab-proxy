@@ -799,10 +799,10 @@ Ejemplos:
     cm changeset move cs:15@myrepo br:/main/scm005@myrepo
     cm changeset delete cs:2b55f8aa-0b29-410f-b99c-60e573a309ca@devData
 
-== CMD_DESCRIPTION_CHANGESET_EDIT_COMMENT ==
+== CMD_DESCRIPTION_CHANGESET_EDITCOMMENT ==
 Modifica el comentario de un changeset.
 
-== CMD_USAGE_CHANGESET_EDIT_COMMENT ==
+== CMD_USAGE_CHANGESET_EDITCOMMENT ==
 Sintaxis:
 
     cm changeset editcomment | edit <csetspec> <new_comment>
@@ -814,7 +814,7 @@ Opciones:
                         especificaciones de changesets.)
     new_comment         El nuevo comentario que se aplicará al changeset indicado.
 
-== CMD_HELP_CHANGESET_EDIT_COMMENT ==
+== CMD_HELP_CHANGESET_EDITCOMMENT ==
 Notas:
 
     - La especificación del changeset debe ser válida.
@@ -4094,15 +4094,6 @@ Ejemplos:
    cm label rename lb:BL001 BL002
    (La etiqueta 'BL001' se renombra a 'BL002')
 
-== CMD_DESCRIPTION_OBLITERATE ==
-DEPRECATED
-
-== CMD_USAGE_OBLITERATE ==
-
-
-== CMD_HELP_OBLITERATE ==
-
-
 == CMD_DESCRIPTION_OBJECTSPEC ==
 Explica cómo escribir object specs (especificaciones de objetos).
 
@@ -4570,10 +4561,10 @@ Examples:
     cm partial move .\diseño .\marketing
     (Renombra un directorio.)
 
-== CMD_DESCRIPTION_PARTIAL_RM ==
+== CMD_DESCRIPTION_PARTIAL_REMOVE ==
 Borra un ítem del control de versiones.
 
-== CMD_USAGE_PARTIAL_RM ==
+== CMD_USAGE_PARTIAL_REMOVE ==
 Sintaxis:
 
     cm partial remove | rm <ruta>+ [--nodisk]
@@ -4586,7 +4577,7 @@ Opciones:
     --nodisk            Borra del control de versiones, pero mantiene el ítem en
                         disco.
 
-== CMD_HELP_PARTIAL_RM ==
+== CMD_HELP_PARTIAL_REMOVE ==
 Notas:
 
     Los ítems se borran de disco. Los ítems borrados son borrados del directorio
@@ -4826,10 +4817,10 @@ Ejemplos:
     (Establece /main/task como rama de trabajo y configura el directorio
     /art/images.)
 
-== CMD_DESCRIPTION_PARTIAL_UNCO ==
+== CMD_DESCRIPTION_PARTIAL_UNDOCHECKOUT ==
 Deshace la desprotección de un ítem.
 
-== CMD_USAGE_PARTIAL_UNCO ==
+== CMD_USAGE_PARTIAL_UNDOCHECKOUT ==
 Sintaxis:
 
     cm partial undocheckout | unco <ruta>+ [--silent] [--keepchanges | -k]
@@ -4847,7 +4838,7 @@ Opciones:
                         contenido en disco que tenia antes de hacer el unco.
                         Esta opción no puede utilizarse con workspaces dinámicos.
 
-== CMD_HELP_PARTIAL_UNCO ==
+== CMD_HELP_PARTIAL_UNDOCHECKOUT ==
 Notas:
 
     Si un ítem está desprotegido y no quieres protegerlo, puede deshacer la 
@@ -8893,3 +8884,70 @@ Ejemplos:
                   --port=8084 --clientconf=clientconf_exp.conf
     (configura el cliente de Unity VCS con los parámetros especificados, y creará el fichero
     de configuración 'client.conf' en el directorio especificado).
+
+== CMD_DESCRIPTION_PURGE ==
+Este comando permite al usuario inspeccionar, registrar y ejecutar purgas sobre un repositorio. Las revisiones purgadas ya no son accesibles para el repositorio en cuestión, ayudando de esta manera a liberar espacio.
+
+ADVERTENCIA: Las acciones de purga son irreversibles. Una vez son ejecutadas, ya NO podrá cargar las revisiones purgadas - ya sea cambiando su workspace o al mostrar las diferencias de una rama o changeset.
+
+== CMD_USAGE_PURGE ==
+Sintaxis:
+    cm purge <comandos> [opciones]
+
+Comandos:
+
+    - register
+    - execute
+    - show
+    - history
+
+    Para obtener más información sobre cada comando:
+    cm purge <command> --^usage
+    cm purge <command> --^help
+
+== CMD_HELP_PURGE ==
+TO BE DONE
+
+== CMD_DESCRIPTION_PURGE_REGISTER ==
+Calcula y registra una acción de purga.
+
+Se considerarán candidatas para la purga aquellas revisiones anteriores a la(s) fecha(s) seleccionadas durante el registro. Como regla, siempre preservamos revisiones etiquetadas así como al menos una revisión en todas las cabezas de rama.
+
+Puede utilizar el comando "cm purge show" para verificar las revisiones seleccionadas antes de ejecutar la purga mediante el comando "cm purge execute".
+
+== CMD_USAGE_PURGE_REGISTER ==
+TO BE DONE
+
+== CMD_HELP_PURGE_REGISTER ==
+TO BE DONE
+
+== CMD_DESCRIPTION_PURGE_EXECUTE ==
+Ejecuta una acción de purga registrada previamente.
+
+ADVERTENCIA: Las acciones de purga son irreversibles. Una vez son ejecutadas, ya NO podrá cargar las revisiones purgadas - ya sea cambiando su workspace o al mostrar las diferencias de una rama o changeset. Use este comando bajo su propia responsabilidad.
+
+Asegúrese de comprobar la historia del fichero para confirmar cuáles de las revisiones/changesets no son relevantes. No dude en utilizar el comando "cm purge show" antes de ejecutar la purga para verificar que ninguna revisión inesperada esté seleccionada para su eliminación.
+
+== CMD_USAGE_PURGE_EXECUTE ==
+TO BE DONE
+
+== CMD_HELP_PURGE_EXECUTE ==
+TO BE DONE
+
+== CMD_DESCRIPTION_PURGE_SHOW ==
+TO BE DONE
+
+== CMD_USAGE_PURGE_SHOW ==
+TO BE DONE
+
+== CMD_HELP_PURGE_SHOW ==
+TO BE DONE
+
+== CMD_DESCRIPTION_PURGE_HISTORY ==
+TO BE DONE
+
+== CMD_USAGE_PURGE_HISTORY ==
+TO BE DONE
+
+== CMD_HELP_PURGE_HISTORY ==
+TO BE DONE

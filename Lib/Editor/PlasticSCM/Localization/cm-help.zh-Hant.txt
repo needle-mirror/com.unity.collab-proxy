@@ -712,10 +712,10 @@ https://www.plasticscm.com/download/help/securityguide
     cm ^changeset ^move ^cs:15@myrepo ^br:/main/scm005@myrepo
     cm ^changeset ^delete ^cs:2b55f8aa-0b29-410f-b99c-60e573a309ca@devData
 
-== CMD_DESCRIPTION_CHANGESET_EDIT_COMMENT ==
+== CMD_DESCRIPTION_CHANGESET_EDITCOMMENT ==
 修改變更集的註解。
 
-== CMD_USAGE_CHANGESET_EDIT_COMMENT ==
+== CMD_USAGE_CHANGESET_EDITCOMMENT ==
 用法：
 
     cm ^changeset ^editcomment | ^edit <變更集規格> <新_註解>
@@ -728,7 +728,7 @@ https://www.plasticscm.com/download/help/securityguide
     新_註解         將新增至鎖定目標之變更集的
                         新註解。
 
-== CMD_HELP_CHANGESET_EDIT_COMMENT ==
+== CMD_HELP_CHANGESET_EDITCOMMENT ==
 備註：
 
     - 鎖定目標的變更集規格必須有效。
@@ -3868,15 +3868,6 @@ Jira 參數 (皆為強制):
     cm ^label ^rename ^lb:BL001 BL002
     (將標籤 'BL001' 重新命名成 'BL002'。)
 
-== CMD_DESCRIPTION_OBLITERATE ==
-已棄用
-
-== CMD_USAGE_OBLITERATE ==
-已棄用。
-
-== CMD_HELP_OBLITERATE ==
-已棄用。
-
 == CMD_DESCRIPTION_OBJECTSPEC ==
 描述如何寫入物件規格。
 
@@ -4331,10 +4322,10 @@ Jira 參數 (皆為強制):
     cm ^partial ^move .\design .\marketing
     (重新命名目錄。)
 
-== CMD_DESCRIPTION_PARTIAL_RM ==
+== CMD_DESCRIPTION_PARTIAL_REMOVE ==
 從版本控制刪除檔案或目錄。
 
-== CMD_USAGE_PARTIAL_RM ==
+== CMD_USAGE_PARTIAL_REMOVE ==
 用法：
 
     cm ^partial ^remove | ^rm <項目_路徑>[ ...][--^nodisk]
@@ -4347,7 +4338,7 @@ Jira 參數 (皆為強制):
 
     --^nodisk        從版本控制移除，但將項目保留在磁碟上。
 
-== CMD_HELP_PARTIAL_RM ==
+== CMD_HELP_PARTIAL_REMOVE ==
 備註：
 
     會從磁碟刪除項目。會從原始程式碼控制的上層目錄中
@@ -4421,10 +4412,10 @@ Jira 參數 (皆為強制):
     (將 /main/task 設為工作分支，並設定工作區可
     載入 /art/images 資料夾。)
 
-== CMD_DESCRIPTION_PARTIAL_UNCO ==
+== CMD_DESCRIPTION_PARTIAL_UNDOCHECKOUT ==
 復原項目的簽出。
 
-== CMD_USAGE_PARTIAL_UNCO ==
+== CMD_USAGE_PARTIAL_UNDOCHECKOUT ==
 用法：
 
     cm ^partial ^undocheckout | ^unco <項目_路徑>[ ...][--^silent]
@@ -4438,7 +4429,7 @@ Jira 參數 (皆為強制):
 
     --^silent            不顯示任何輸出。
 
-== CMD_HELP_PARTIAL_UNCO ==
+== CMD_HELP_PARTIAL_UNDOCHECKOUT ==
 備註：
 
     如果項目已簽出，而且您不想將其簽入，您可以使用此命令復原
