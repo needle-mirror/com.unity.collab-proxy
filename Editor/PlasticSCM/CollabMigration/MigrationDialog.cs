@@ -4,8 +4,8 @@ using UnityEditor;
 using UnityEngine;
 
 using Codice.Client.BaseCommands;
-using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.BaseCommands.Sync;
+using Codice.Client.Common.EventTracking;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.LogWrapper;

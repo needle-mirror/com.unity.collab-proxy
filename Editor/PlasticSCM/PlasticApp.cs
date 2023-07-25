@@ -6,7 +6,6 @@ using UnityEditor;
 using UnityEngine;
 
 using Codice.Client.BaseCommands;
-using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Common;
 using Codice.Client.Common.Connection;
 using Codice.Client.Common.Encryption;

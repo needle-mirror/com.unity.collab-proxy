@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-using Codice.Client.BaseCommands.EventTracking;
 using Codice.CM.Common;
+using Codice.Client.Common.EventTracking;
 using PlasticGui;
 using PlasticGui.Gluon.WorkspaceWindow.Views.IncomingChanges;
 using Unity.PlasticSCM.Editor.Tool;

@@ -2,7 +2,7 @@
 using UnityEditor.VersionControl;
 
 using Codice.CM.Common;
-using Codice.Client.BaseCommands.EventTracking;
+using Codice.Client.Common.EventTracking;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Items;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;

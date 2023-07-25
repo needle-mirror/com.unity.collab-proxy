@@ -4,8 +4,8 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Common;
+using Codice.Client.Common.EventTracking;
 using Codice.Client.Common.FsNodeReaders.Watcher;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;

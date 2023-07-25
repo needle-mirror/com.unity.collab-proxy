@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
+using Codice;
 using Codice.Client.BaseCommands;
 using Codice.Client.Commands;
 using Codice.Client.Commands.WkTree;
@@ -264,11 +265,23 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             List<string> paths = ExtractPathsToProcess(
                 pathsToProcess, lockObj);
 
-            if (paths.Count == 0)
+            List<string> result = new List<string>();
+
+            foreach (string path in paths)
+            {
+                WorkspaceTreeNode node =
+                    plasticApi.GetWorkspaceTreeNode(path);
+
+                if (node != null &&
+                    !CheckWorkspaceTreeNodeStatus.IsCheckedOut(node))
+                    result.Add(path);
+            }
+
+            if (result.Count == 0)
                 return;
 
             plasticApi.Checkout(
-                paths.ToArray(),
+                result.ToArray(),
                 CheckoutModifiers.ProcessSymlinks);
         }
 
@@ -483,12 +496,14 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     WorkspaceTreeNode nodeMeta =
                         plasticApi.GetWorkspaceTreeNode(metaPath);
 
-                    if (node != null && ChangedFileChecker.IsChanged(
-                        node.LocalInfo, path, false))
+                    if (node != null &&
+                        !CheckWorkspaceTreeNodeStatus.IsCheckedOut(node) &&
+                        ChangedFileChecker.IsChanged(node.LocalInfo, path, false))
                         result.Add(path);
 
-                    if (nodeMeta != null && ChangedFileChecker.IsChanged(
-                        nodeMeta.LocalInfo, metaPath, false))
+                    if (nodeMeta != null &&
+                        !CheckWorkspaceTreeNodeStatus.IsCheckedOut(nodeMeta) &&
+                        ChangedFileChecker.IsChanged(nodeMeta.LocalInfo, metaPath, false))
                         result.Add(metaPath);
                 }
 

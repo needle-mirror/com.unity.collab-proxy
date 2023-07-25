@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 
-using Codice.Client.BaseCommands.EventTracking;
+using Codice.Client.Common.EventTracking;
 using Codice.CM.Common;
 using Codice.LogWrapper;
 using Codice.Utils;

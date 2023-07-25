@@ -3,7 +3,6 @@ using UnityEngine;
 
 using PlasticGui;
 using Unity.PlasticSCM.Editor;
-using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.Cloud.Collaborate
 {
@@ -12,9 +11,7 @@ namespace Unity.Cloud.Collaborate
     {
         static ToolbarBootstrap()
         {
-            CooldownWindowDelayer cooldownInitializeAction = new CooldownWindowDelayer(
-                ToolbarButton.InitializeIfNeeded, UnityConstants.PLUGIN_DELAYED_INITIALIZE_INTERVAL);
-            cooldownInitializeAction.Ping();
+            ToolbarButton.InitializeIfNeeded();
         }
     }
 
@@ -46,20 +43,17 @@ namespace Unity.Cloud.Collaborate
 
         public override void OnGUI(Rect rect)
         {
-            using (new EditorGUI.DisabledScope(EditorApplication.isPlaying))
+            Texture icon = PlasticPlugin.GetPluginStatusIcon();
+            EditorGUIUtility.SetIconSize(new Vector2(16, 16));
+
+            mButtonGUIContent.image = icon;
+
+            if (GUI.Button(rect, mButtonGUIContent, "AppCommand"))
             {
-                Texture icon = PlasticPlugin.GetPluginStatusIcon();
-                EditorGUIUtility.SetIconSize(new Vector2(16, 16));
-
-                mButtonGUIContent.image = icon;
-
-                if (GUI.Button(rect, mButtonGUIContent, "AppCommand"))
-                {
-                    PlasticPlugin.OpenPlasticWindowDisablingOfflineModeIfNeeded();
-                }
-
-                EditorGUIUtility.SetIconSize(Vector2.zero);
+                PlasticPlugin.OpenPlasticWindowDisablingOfflineModeIfNeeded();
             }
+
+            EditorGUIUtility.SetIconSize(Vector2.zero);
         }
 
         static GUIContent mButtonGUIContent = new GUIContent(

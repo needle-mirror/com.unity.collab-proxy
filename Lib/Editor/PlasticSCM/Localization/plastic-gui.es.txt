@@ -232,6 +232,9 @@ Cargando changesets...
 == LoadingShelves ==
 Cargando shelves...
 
+== LoadingLocks ==
+Cargando locks...
+
 == LoadingSyncViewDetails ==
 Cargando detalles de la vista de sincronización...
 
@@ -1249,6 +1252,15 @@ Mostrar shelves
 == ShowShelvesViewTooltip ==
 Mostrar la vista de shelves
 
+== NoShelvesCreatedExplanation ==
+Aún no se han creado shelves
+
+== NoLocksCreatedExplanation ==
+Aún no se han creado bloqueos en ficheros
+
+== NoShelvesMatchQueryExplanation ==
+No hay Shelves que coincidan con tu consulta
+
 == HideShelvesButton ==
 Ocultar shelves
 
@@ -1499,6 +1511,18 @@ Deleting shelve...
 
 == DeletingShelvesPlural ==
 Deleting shelves...
+
+== RemovingLocksSingular ==
+Borrando bloqueo...
+
+== RemovingLocksPlural ==
+Borrando bloqueos...
+
+== ReleasingLocksSingular ==
+Liberando bloqueo...
+
+== ReleasingLocksPlural ==
+Liberando bloqueos...
 
 == ApplyingShelve ==
 Applying shelve...
@@ -2712,6 +2736,9 @@ Sync Repositories
 == ShelvesViewTitle ==
 Shelves
 
+== LocksViewTitle ==
+Bloqueos de fichero
+
 == HistoryViewTitle ==
 History of {0}
 
@@ -2753,6 +2780,9 @@ There are {0} directory conflicts that must be resolved before updating the work
 
 == CreatedByColumn ==
 Created by
+
+== OwnerColumn ==
+Owner
 
 == UnresolvedXlink ==
 unresolved xlink
@@ -3981,6 +4011,9 @@ Toggle details
 == ShowDetails ==
 Show details
 
+== ShowLocks ==
+Mostrar locks
+
 == ToggleDetailsButtonTooltip ==
 Hide/show details area
 
@@ -4309,6 +4342,12 @@ Mostrar ficheros ignorados
 
 == PendingChangesShowIgnoredFilesExplanation ==
 Muestra los ficheros ignorados anteriormente al añadirlos a ignore.conf.
+
+== PendingChangesShowCloakedFiles ==
+Mostrar ficheros cloaked
+
+== PendingChangesShowCloakedFilesExplanation ==
+Muestra los ficheros cloaked anteriormente al añadirlos a cloaked.conf.
 
 == PendingChangesShowHiddenFiles ==
 Mostrar ficheros ocultos
@@ -6091,6 +6130,9 @@ Conflicted
 == StatusLockedMe ==
 Locked by me
 
+== StatusRetained ==
+Retained by '{0}'
+
 == StatusLockedRemote ==
 Locked remote
 
@@ -7128,7 +7170,7 @@ Añadir una nueva cuenta de Unity DevOps Version Control
 Seleccione una ruta
 
 == EmptyRepositoryHeader ==
-El repositorio todavía está vacío
+El repositorio está vacío
 
 == WorkspaceNotOnDisk ==
 <no está en disco>
@@ -7734,6 +7776,9 @@ Descubre la nueva experiencia de Code Review con múltiples revisores en el
 == UnityDashboard ==
 Unity Dashboard
 
+== WebAdmin ==
+Web Admin
+
 == LoadingOrganizations ==
 Cargando organizaciones...
 
@@ -7745,3 +7790,78 @@ Iniciando sesión...
 
 == ShowEmbeddedShelveDiffTooltip ==
 Siempre abrir los shelves en la ventana actual
+
+== EmptyLabelsMessage ==
+Aún no se han creado etiquetas
+
+== EmptyLabelsMatchQueryMessage ==
+No hay etiquetas que coincidan con tu consulta
+
+== EmptyAttributesMessage ==
+Aún no se han creado atributos
+
+== EmptyAttributesMatchQueryMessage ==
+No hay atributos que coincidan con tu consulta
+
+== EmptyCodeReviewsMessage ==
+Aún no se han creado revisiones de código
+
+== EmptyCodeReviewsMatchQueryMessage ==
+No hay revisiones de código que coincidan con tu consulta
+
+== EmptyWkExplorerMessage ==
+El espacio de trabajo esta vacío
+
+== EmptyPendingChangesMessage ==
+No se han encontrado cambios pendientes
+
+== EmptyIncomingChangesMessage ==
+No se han encontrado cambios entrantes
+
+== EmptySyncViewMessage ==
+Aún no se han creado vistas de sincronización
+
+== LockInfoDetailsFormatString == 
+{0} {1} en {2} por {3}
+
+== LockMenuItemReleaseLock ==
+Liberar
+
+== LockMenuItemRemoveLock ==
+Borrar
+
+== ConfirmReleaseLocksTitle ==
+Confirma desbloqueo
+
+== ReleaseLocksMessageSingular ==
+Liberando 1 bloqueo. ¿Está seguro?
+
+== ReleaseLocksMessagePlural ==
+Liberando {0} bloqueos. ¿Está seguro?
+
+== ReleaseLocksButton ==
+Liberar
+
+== ConfirmRemoveLocksTitle ==
+Confirma borrado
+
+== RemoveLocksMessageSingular ==
+Borrando 1 bloqueo. ¿Está seguro?
+
+== RemoveLocksMessagePlural ==
+Liberando {0} bloqueos. ¿Está seguro?
+
+== RemoveLocksButton ==
+Borrar
+
+== ConfigureLockRules ==
+Configurar reglas
+
+== DiscoverNewSmartLocks ==
+Nueva funcionalidad: Smart Locks. Ahora los artistas pueden bloquear archivos de forma segura entre ramas.
+
+== PurgedRevision ==
+Revisión purgada
+
+== PurgedRevisionMessage ==
+El contenido no se pudo mostrar, esta revisión ha sido eliminada permanentemente.

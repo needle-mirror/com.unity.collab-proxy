@@ -80,13 +80,21 @@ Error: no se pudo crear el directorio para las pruebas de disco. {0}
 No se pudo crear el symlink.
 
 == CannotCreateWindowsSymlink ==
-No se puede crear un symlink de '{0}' a '{1}'. Puede activar el 'modo de programador' en su versión de Windows. También puede desactivar completamente la creación de symlinks agregando '<EnableSymlinkSupportOnWindows>no</EnableSymlinkSupportOnWindows>' a su client.conf.
+No se pudo crear el symlink.
+Ruta del symlink: {0}
+Ruta del objetivo: {1}
+Pista: active el 'Modo de programador' en Windows.
+A) Escriba 'para desarrolladores' en la barra de búsqueda de Cortana, en la barra de tareas, y active interruptor del 'Modo de programador'.
+B) Otra opción es desactivar la creación de symlinks completamente agregando lo siguiente a su fichero client.conf: <EnableSymlinkSupportOnWindows>no</EnableSymlinkSupportOnWindows>
 
 == CannotCreateXlink ==
 No puede crearse el xlink porque ya hay un ítem en la ruta especificada: {0}
 
 == CannotDecryptData ==
 El dato {0} está cifrado. Se necesita la información de cifrado para poder leerlo.
+
+== CannotDeleteChangesetItemsLocked ==
+El changeset cs:{0} no se puede borrar hasta que se liberen los siguientes checkouts exclusivos: {1}
 
 == CannotDiffDstCsetNotComplete ==
 No se pueden mostrar diferencias entre el changeset {0} y el changeset {1}. El changeset destino {1} no ha sido replicado en este repositorio. Asegúrese de que también ha replicado la rama que contiene este changeset.
@@ -106,8 +114,17 @@ No se puede editar el tipo de xlink.
 == CannotEditXlinkWithChanges ==
 No se puede editar el xlink porque contiene checkouts.
 
+== CannotReleaseLocks ==
+No se pueden liberar los siguientes locks porque el usuario actual no es el administrador ni el propietario de los locks: {0}
+
 == CannotRemoveIostatsFolder ==
 Error: no se pudo borrar el directorio para las pruebas de disco. {0}
+
+== CannotRetrieveArchivedData ==
+No se puede obtener el contenido de la revisión {0} en el repositorio {1} porque fue archivada y su contenido no está disponible en el servidor.
+
+== CannotRetrievePurgedData ==
+No se puede obtener el contenido de la revisión {0} en el repositorio {1} porque fue purgada y su contenido ya no está disponible.
 
 == CannotSaveDataNotCo ==
 Los datos sólo puede ser guardados en revisiones desprotegidas.
@@ -755,7 +772,7 @@ Su licencia de auto-renovación ha sido deshabilitada por un administrador. Por 
 No se puede utilizar una licencia {0} con una edición {1} de Plastic SCM.
 
 == ListLocksByRepNotSupported ==
-El servidor {0} no soporta listar locks por repositorio. Por favor, actualice el servidor.
+El servidor {0} no soporta listar locks por repositorio. Por favor, actualice el servidor para usar la funcionalidad de Smart Locks.
 
 == LkNotFound ==
 No se puede encontrar un enlace de tipo {0}.
@@ -945,6 +962,9 @@ Es necesario ser administrador del servidor para ejecutar un comando de administ
 == OnlyAdminCanFetchWithNoData ==
 Únicamente el administrador del servidor puede realizar una importación sin datos.
 
+== OnlyAdminCanCreateRemoveLocks ==
+Únicamente el administrador del servidor puede crear o eliminar locks.
+
 == OnlyAdminCanRenewLicense ==
 Únicamente el administrador del servidor puede renovar la licencia.
 
@@ -1062,7 +1082,10 @@ El diff con cambios locales no se puedo calcular porque algunos cambios locales 
 No tiene permisos para leer todo el contenido bajo la ruta '{0}' en el cs:{1}. La operación actual necesita leer el contenido completo para poder continuar. Por favor, revise sus permisos de path e inténtelo de nuevo más tarde.
 
 == PurgeCanOnlyBeExecutedByItsOwner ==
-Sólo el autor puede ejecutar su purge.
+Sólo el autor puede ejecutar la purga.
+
+== PurgeCanOnlyBeDeletedByItsOwner ==
+Sólo el autor y el administrador pueden borrar la purga.
 
 == PushAllNotAllowedWithMissingData ==
 No se puede hacer push del repositorio, porque faltan datos en algunas ramas (que probablemente fueron replicadas con --nodata). Por favor, hidrate las ramas sin datos y vuelva a intentarlo (revise la ayuda de cm replicate hydrate).
@@ -1253,6 +1276,9 @@ Un objeto no puede heredar los permisos de sí mismo. Recursividad detectada.
 
 == SecurityCantMergeChange ==
 No tiene permisos para realizar el merge. No tiene permiso de lectura para algunos cambios en el contribuidor de origen.
+
+== SecurityCantUpdateReviewStatus ==
+No tiene permisos para actualizar el estado de la review. Sólo un revisor o el administrador del servidor de repositorios puede actualizar el estado.
 
 == SecurityCantRunExecquery ==
 Sólo los administradores pueden ejecutar 'execquery'. No es un administrador y por tanto no puede ejecutar 'execquery'.

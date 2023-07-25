@@ -77,13 +77,21 @@ Error: unable to create folder for disk test. {0}
 Cannot create symlink.
 
 == CannotCreateWindowsSymlink ==
-Cannot create symlink from '{0}' to '{1}'. You can enable 'developer mode' in your Windows version. Or you can fully disable symlink creation by setting '<EnableSymlinkSupportOnWindows>no</EnableSymlinkSupportOnWindows>' in your client.conf.
+Cannot create symlink.
+Symlink path: {0}
+Target path: {1}
+Hint: please enable 'Developer Mode' on Windows.
+A) Enter 'For developers' into the Cortana search box in the taskbar, and switch 'Developer Mode' on.
+B) Otherwise, you can disable symlink creation altogether by adding the following to your client.conf file: <EnableSymlinkSupportOnWindows>no</EnableSymlinkSupportOnWindows>.
 
 == CannotCreateXlink ==
 Can't create the xlink because the entry already exists: {0}
 
 == CannotDecryptData ==
 The data {0} is encrypted. The encryption info is needed in order to read it.
+
+== CannotDeleteChangesetItemsLocked ==
+The changeset cs:{0} cannot be deleted until the following locked items are released: {1}
 
 == CannotDiffDstCsetNotComplete ==
 Cannot show differences between changeset {0} and changeset {1}. The destination changeset {1} has not been replicated to this repository. Make sure that you replicated the branch containing this changeset.
@@ -103,8 +111,17 @@ Can't edit the xlink type.
 == CannotEditXlinkWithChanges ==
 Can't edit the xlink because it contains checkouts.
 
+== CannotReleaseLocks ==
+Cannot release the following locked items since the current user is not the administrator nor the owner of the locks: {0}
+
 == CannotRemoveIostatsFolder ==
 Error: unable to remove disk test folder. {0}
+
+== CannotRetrieveArchivedData ==
+Cannot retrieve the content of the revision {0} at repository {1} because it was archived, and its content is not available on the server.
+
+== CannotRetrievePurgedData ==
+Cannot retrieve the content of the revision {0} at repository {1} because it was purged, and its content is not available on the server.
 
 == CannotSaveDataNotCo ==
 Data can only be saved for a checked out revision.
@@ -749,7 +766,7 @@ Your auto-renewal license has been disabled by an administrator. Please contact 
 Can't use a {0} license with a {1} edition of Plastic SCM.
 
 == ListLocksByRepNotSupported ==
-The server {0} doesn't support listing locks by repository. Please upgrade the server.
+The server {0} doesn't support listing locks by repository. Please upgrade the server to use Smart Locks feature.
 
 == LkNotFound ==
 Couldn't find a link of type {0}.
@@ -939,6 +956,9 @@ Only the server administrator can execute an admin command.
 == OnlyAdminCanFetchWithNoData ==
 Only the server administrator can fetch with no data.
 
+== OnlyAdminCanCreateRemoveLocks ==
+Only the server administrator can create or remove locks.
+
 == OnlyAdminCanRenewLicense ==
 Only the server administrator can renew the license.
 
@@ -1057,6 +1077,9 @@ You don't have permissions to read the whole content inside the path '{0}' in th
 
 == PurgeCanOnlyBeExecutedByItsOwner ==
 Only the author can execute the purge.
+
+== PurgeCanOnlyBeDeletedByItsOwner ==
+Only the author or the administrator can delete the purge.
 
 == PushAllNotAllowedWithMissingData ==
 Can't push the repository because the data of some of its revisions is missing (probably replicated with --nodata). Please hydrate the branches without data and try again (check the help of cm replicate hydrate).
@@ -1247,6 +1270,9 @@ An object can't inherit from its own ACL. Recursion found.
 
 == SecurityCantMergeChange ==
 You don't have permissions to perform this merge. You don't have read permission for certain changes in the source contributor.
+
+== SecurityCantUpdateReviewStatus ==
+You don't have permission to update the status of the review. Only a reviewer or the repository server administrator can do it.
 
 == SecurityCantRunExecquery ==
 Only administrators can execute 'execquery'. You're not an administrator so you can't run 'execquery'.

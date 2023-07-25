@@ -4,7 +4,7 @@ using UnityEngine;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
 using Codice.CM.Client.Gui;
-using Codice.Client.BaseCommands.EventTracking;
+using Codice.Client.Common.EventTracking;
 using Codice.CM.Common;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs

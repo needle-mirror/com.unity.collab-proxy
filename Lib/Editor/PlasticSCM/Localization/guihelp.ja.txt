@@ -504,7 +504,7 @@ Cloud でホストされたリポジトリを、直接チェックイン/更新 
 == PlasticWkExplPendingChangesUnityFirstTime ==
 [title]Unity で作業するための便利なヒント[/title]
 
-* ロックを設定しましょう。おそらく、.prefab を排他的にロックしたいとお考えのことでしょう。[action:WebAdminOpenInLocks]WebAdmin に移動して、ロックを設定しましょう[/action]。
+* ロックを設定しましょう。おそらく、.prefab を排他的にロックしたいとお考えのことでしょう。[action:OpenLocksInDashboard]WebAdmin に移動して、ロックを設定しましょう[/action]。
 * チェックアウトを使用しましょう。ロックするためには、ファイルを編集前にチェックアウト (ロック) する必要があります。チェックアウトは、「ファイルを変更しようとしている」ことを Unity VCS に知らせるためのアクションです。これは各ファイルの右クリックメニューから実行できます。
 * 無視するファイルを設定しましょう。バージョン管理に追加したくないファイルがある場合、[action:IgnoreConfCreateUnity]こちらをクリック[/action]して、Unity 用の ignore.conf を作成しましょう。[link:https://plasticscm.com/download/help/ignored-hidden-etc]ignore.conf についての詳細はこちらをご覧ください[/link]。
 

@@ -450,11 +450,11 @@ Ejemplos:
     (Muestra las anotaciones del fichero (usando una especificacion de ruta de
     servidor) comenzando por el changeset 73666.)
 
-== CMD_DESCRIPTION_APPLY_LOCAL ==
+== CMD_DESCRIPTION_APPLYLOCAL ==
 Busca cambios locales (movidos localmente, borrados localmente y modificados
 localmente) y los aplica para que Unity VCS pueda monitorizarlos.
 
-== CMD_USAGE_APPLY_LOCAL ==
+== CMD_USAGE_APPLYLOCAL ==
 Sintaxis:
 
     cm applylocal | al [--dependencies] [<item_path>[ ...]]
@@ -476,7 +476,7 @@ Opciones:
     --fieldseparator      Usado con '--machinereadable', indica cómo deben
                           separarse los campos de cada línea resultante.
 
-== CMD_HELP_APPLY_LOCAL ==
+== CMD_HELP_APPLYLOCAL ==
 Notas:
 
     - Si no se especifican las opciones --dependencies y <item_path>, la operación
@@ -1200,10 +1200,10 @@ Ejemplos:
     cat myselector.txt | cm checkselectorsyntax
     (Comprueba la sintaxis del fichero 'myselector.txt' desde la entrada estándar.)
 
-== CMD_DESCRIPTION_CHGREVTYPE ==
+== CMD_DESCRIPTION_CHANGEREVISIONTYPE ==
 Cambia el tipo de revisión (binario o texto) de un ítem.
 
-== CMD_USAGE_CHGREVTYPE ==
+== CMD_USAGE_CHANGEREVISIONTYPE ==
 Sintaxis:
 
     cm changerevisiontype | chgrevtype | crt <item_path>[ ...] --type=(bin | txt)
@@ -1214,7 +1214,7 @@ Sintaxis:
                         ítems.
     --type              Tipo de revisión: 'bin' (binario) o 'txt' (texto).
 
-== CMD_HELP_CHGREVTYPE ==
+== CMD_HELP_CHANGEREVISIONTYPE ==
 Notas:
 
     Este comando solo se puede aplicar a ficheros y no a directorios.
@@ -1937,10 +1937,10 @@ Ejemplos:
     cm fileinfo proj_specs.docx --fields=ServerPath,RevisionChangeset --xml
     cm fileinfo samples.ogg --format="{ServerPath}[{Owner}] -> {Size}"
 
-== CMD_DESCRIPTION_FIND_QUERY ==
+== CMD_DESCRIPTION_FIND ==
 Obtiene una serie de objetos en base a unos criterios de búsqueda.
 
-== CMD_USAGE_FIND_QUERY ==
+== CMD_USAGE_FIND ==
 Sintaxis:
 
     cm find <object_type> 
@@ -1988,7 +1988,7 @@ Opciones:
                         para obtener la tabla de codificaciones soportadas y
                         su formato (al final de la página en la columna "Name").
 
-== CMD_HELP_FIND_QUERY ==
+== CMD_HELP_FIND ==
 Notas:
 
     Si no se especifica ningún repositorio, la búsqueda se realiza sobre el
@@ -2336,17 +2336,17 @@ Ejemplos:
     cm gtb 4311 --format="br:{name}"
     cm gtb 4311 --format="br:{name} {date}" --dateformat="yyyy/MM/dd HH:mm:ss"
 
-== CMD_DESCRIPTION_GETWWI ==
+== CMD_DESCRIPTION_GETWORKSPACEINFO ==
 Muestra información del selector del espacio de trabajo.
 
-== CMD_USAGE_GETWWI ==
+== CMD_USAGE_GETWORKSPACEINFO ==
 Sintaxis:
 
     cm wi [<wk_path>]
 
     wk_path         Ruta en disco del workspace a consultar.
 
-== CMD_HELP_GETWWI ==
+== CMD_HELP_GETWORKSPACEINFO ==
 Notas:
     El comando 'wi' muestra la configuración actual del espacio de trabajo
     (repositorio, rama o etiqueta.)
@@ -2354,10 +2354,10 @@ Notas:
 Ejemplos:
     cm wi c:\mywk
 
-== CMD_DESCRIPTION_GWP ==
+== CMD_DESCRIPTION_GETWORKSPACEFROMPATH ==
 Obtiene información del espacio de trabajo a partir de una ruta.
 
-== CMD_USAGE_GWP ==
+== CMD_USAGE_GETWORKSPACEFROMPATH ==
 Este comando está pensado para la automatización de otros comandos. Con lo que,
 es posible, que no resulte muy intuitivo.
 
@@ -2374,7 +2374,7 @@ Opciones:
                     dynamic además del resto de campos. Consulte las Notas para 
                     más información.
 
-== CMD_HELP_GWP ==
+== CMD_HELP_GETWORKSPACEFROMPATH ==
 Notas:
 
     Este comando muestra información del espacio de trabajo de la ruta indicada.
@@ -2608,11 +2608,13 @@ Muestra los bloqueos de un servidor.
 == CMD_USAGE_LOCK_LIST ==
 Sintaxis:
 
-    cm lock list | ls [<revspec> [ ...]] [--server=<server>]
+    cm lock list | ls [<revspec> [ ...]] [--server=<server>] [--anystatus]
+                      [--repository] [--anystatus]
                       [--onlycurrentuser] [--onlycurrentworkspace]
                       [--ignorecase]
                       [--machinereadable [--startlineseparator=<sep>]
-                        [--endlineseparator=<sep>] [--fieldseparator=<sep>]]
+                        [--endlineseparator=<sep>] [--fieldseparator=<sep>]
+                        [--smartlocks]]
 
     revspec             Si se especifican una o más revisiones, el comando
                         mostrará una línea de bloqueo por cada revisión solo si
@@ -2633,6 +2635,12 @@ Opciones:
                             client.conf.
                             (Use 'cm help objectspec' para más información sobre
                             las especificaciones de servidores.)
+    --repository            Especificación del repositorio. Esta opción lista sólo
+                            los bloqueos del repositorio especificado.
+                            (Use 'cm help objectspec' para más información sobre
+                            las especificaciones de repositorios.)
+    --anystatus             Muestra los locks sin filtrar por estado.
+                            Por defecto, sólo se muestran los locks es estado Locked.                           
     --onlycurrentuser       Filtra el resultado mostrando solo los bloqueos
                             llevados a cabo por el usuario actual.
     --onlycurrentworkspace  Filtra el resultado mostrando solo los bloqueos
@@ -2643,6 +2651,11 @@ Opciones:
                             ejemplo, con esta opción, el comando funcionará tanto
                             con "/src/foo.c" como con "/sRc/fOO.c".
     --machinereadable       Muestra el resultado en un formato fácil de parsear.
+    --smartlocks            Usado con '--^machinereadable', muestra todos los campos
+                            de los smart locks. Sin él, sólo muestra los campos de
+                            que mostraba anteriormente. Está opción es necesario para
+                            manterner la compatibilidad con plugins o integraciones
+                            antiguas que necesitan el formato anterior.
     --startlineseparator    Usado con '--machinereadable', indica cómo deben
                             empezar las líneas del resultado.
     --endlineseparator      Usado con '--machinereadable', indica cómo deben
@@ -2661,21 +2674,38 @@ Notas:
     bloqueos en ese servidor en concreto.
 
     El comando muestra una línea por cada bloqueo en el servidor especificado:
+        - Repositorio del elemento bloqueado.
+        - Item id del elemento bloqueado.
+        - GUID del elemento bloqueado (sólo se imprime con --machinereadable).
+        - Fecha de cuando se realizó el bloqueo.
+        - Rama de destino donde el bloqueo será liberado.
+        - Revision id del elemento bloqueado en la rama de destino.
+        - Rama donde se realizó el bloqueo.
+        - Revision id del elemento que mantiene el bloqueo.
+        - Estado del bloqueo (Locked o Retained)
+        - Nombre del usuario que realizó el bloqueo.
+        - Nombre del espacio de trabajo donde se realizó el bloqueo.
+        - Ruta del elemento bloqueado (formato de ruta de servidor).
+    
+    Para el formato --machinereadable sin --smartlocks, los campos mostrados son:
         - GUID del elemento bloqueado.
         - Nombre del usuario que realizó el bloqueo.
         - Nombre del espacio de trabajo donde se realizó el bloqueo.
         - Ruta del elemento bloqueado (formato de ruta de servidor).
-
+        
 Ejemplos:
 
     cm lock list
     cm lock ls --server=myserver:8084
+    cm lock ls --repository=repo@myserver:8084 --anystatus
     cm lock ls serverpath:/src/foo.c#cs:99@default@localhost:8084
     cm lock ls revid:3521@default itemid:2381@secondary --onlycurrentuser
     cm lock ls --onlycurrentuser
     cm lock ls --onlycurrentuser --onlycurrentworkspace
     cm lock list --machinereadable --startlineseparator=">" \
       --endlineseparator="<" --fieldseparator=","
+    cm lock list --machinereadable --smartlocks --startlineseparator=">" \
+        --endlineseparator="<" --fieldseparator=","        
 
 == CMD_DESCRIPTION_LISTUSERS ==
 Lista usuarios y grupos.
@@ -2743,11 +2773,11 @@ Comandos:
 == CMD_HELP_LOCK ==
 Ejemplos:
 
-    cm lock list
     cm lock
-    (La opción 'list' es opcional si no hay argumentos.)
-    cm lock ls serverpath:/src/foo.c#cs:99@default@localhost:8084
-    cm lock unlock 91961b14-3dfe-4062-8c4c-f33a81d201f5
+    (Si no se especifica un subcomando, se ejecuta por omisión el subcomando 'list'.)
+    cm lock list --anystatus
+    cm lock unlock itemid:56@myrep@localhost:8084
+    cm lock create /main/task@myrep itemid:56@myrep
 
 == CMD_DESCRIPTION_LOG ==
 Obtiene información sobre revisiones en changesets.
@@ -2757,6 +2787,7 @@ Sintaxis:
 
     cm log [<csetspec> | <repspec>] [--from=<csetspec_from>] [--allbranches]
            [--ancestors] [--csformat=<str_format>] [--itemformat=<str_format>]
+           [--dateformat=<str_date_format>]
            [--xml[=<output_file>]] [--encoding=<name>]
            [--repositorypaths | --fullpaths | --fp]
 
@@ -2790,8 +2821,9 @@ Opciones:
                         especificado. Consulte las Notas para más información.
                         No puede combinarse con --xml.
     --itemformat        Muestra información del ítem en el formato especificado.
-                        Consulte las Notas para más información..
+                        Consulte las Notas para más información.
                         No puede combinarse con --xml.
+    --dateformat        Configura el formato de salida para la impresión de fechas.
     --xml               Imprime el resultado en formato XML a la salida estándar.
                         También es posible especificar un fichero de salida. No
                         puede combinarse con --csformat o --itemformat.
@@ -2859,6 +2891,12 @@ Notas:
         --csformat="{newline}Changeset {changesetid} creado en {date};{tab} ítems cambiados: {items}."
         --itemformat="{newline}El ítem {path} se creó en la rama {branch}."
 
+    --dateformat:
+        Para especificar el formato en el que se escribirán las fechas en pantalla.
+        Consulte los formatos soportados:
+        https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
+
+
 Ejemplos:
 
     cm log
@@ -2892,10 +2930,10 @@ Ejemplos:
     ejecutar el comando porque se está indicando una especificación completa de
     changeset.)
 
-== CMD_DESCRIPTION_LS ==
+== CMD_DESCRIPTION_LIST ==
 Lista el contenido de árbol.
 
-== CMD_USAGE_LS ==
+== CMD_USAGE_LIST ==
 Sintaxis:
 
     cm ls | dir [<paths>[ ...]] [--format=<str_format>] [--symlink]
@@ -2935,7 +2973,7 @@ Opciones:
                         para obtener la tabla de codificaciones soportadas y su
                         formato (al final de la página en la columna "Name").
 
-== CMD_HELP_LS ==
+== CMD_HELP_LIST ==
 Notas:
 
     - Es posible especificar rutas con metacaracteres (*, ?, ...).
@@ -4188,11 +4226,15 @@ Hay distintos tipos de specs de revisiones:
         cm cat revid:1230@rep:myrep@repserver:myserver:8084
 
 == Item spec ==
-Se usa muy raras veces.
-    item:path
+Hay distintos tipos de specs de ítem. Se usan principamente con los
+comandos relacionados con bloqueos (checkout exclusivo).
 
-    Ejemplo:
-        cm find revision "where item='item:.'"
+    item:item_path
+    item:itemid:item_id[@rep_spec]
+
+    Ejemplos:
+        cm lock unlock item:audio.wav
+        cm lock unlock itemid:1234@rep:myrep@repserver:myserver:8084
 
 == Attribute spec ==
     att:att_name[@repspec]
@@ -6295,10 +6337,10 @@ Notas:
       cm revert dir#cs:0
       cm revert C:\mywks\dir\file1.txt#cs:23456
 
-== CMD_DESCRIPTION_REVISION_HISTORY ==
+== CMD_DESCRIPTION_HISTORY ==
 Muestra la historia de un ítem.
 
-== CMD_USAGE_REVISION_HISTORY ==
+== CMD_USAGE_HISTORY ==
 Sintaxis:
 
     cm history | hist <item_path>[ ...] [--long | --format=<str_format>]
@@ -6335,7 +6377,7 @@ Opciones:
                         lista vacía. Si se proporciona  un número mayor al número de 
                         revisiones del elemento solicitado, devolverá las existentes.
 
-== CMD_HELP_REVISION_HISTORY ==
+== CMD_HELP_HISTORY ==
 Notas:
 
     Este comando muestra una lista de revisiones para el ítem indicado, e
@@ -6402,10 +6444,10 @@ Ejemplos:
     (Efectúa la operación sobre el fichero de symlink
     y no sobre el que apunta.)
 
-== CMD_DESCRIPTION_RM ==
+== CMD_DESCRIPTION_REMOVE ==
 Use este comando para borrar ficheros y directorios.
 
-== CMD_USAGE_RM ==
+== CMD_USAGE_REMOVE ==
 Sintaxis:
 
     cm remove | em comando [opciones]
@@ -6419,16 +6461,16 @@ Comandos:
     cm remove comando --usage
     cm remove comando --help
 
-== CMD_HELP_RM ==
+== CMD_HELP_REMOVE ==
 Ejemplos:
 
     cm remove \fichero_controlado.txt
     cm remove private \fichero_privado.txt
 
-== CMD_DESCRIPTION_RM_CONTROLLED ==
+== CMD_DESCRIPTION_REMOVE_CONTROLLED ==
 Borra un ítem del control de versiones.
 
-== CMD_USAGE_RM_CONTROLLED ==
+== CMD_USAGE_REMOVE_CONTROLLED ==
 Sintaxis:
 
     cm remove [opciones] rutas
@@ -6439,7 +6481,7 @@ Opciones:
 
     -R: Descender recursivamente dentro de directorios.
 
-== CMD_HELP_RM_CONTROLLED ==
+== CMD_HELP_REMOVE_CONTROLLED ==
 Notas:
 
     El ítem nunca borra del disco.
@@ -6456,14 +6498,14 @@ Ejemplos:
     cm remove src (borra el directorio 'src')
     cm remove c:\workspace\fichero.txt
 
-== CMD_DESCRIPTION_RM_PRIVATE ==
+== CMD_DESCRIPTION_REMOVE_PRIVATE ==
 Borra ficheros y directorios privados.
 
 Advertencia: este comando elimina permanentemente ficheros y directorios, y no
 son recuperables. Es recomendable utilizar antes la opción '--dry-run' para
 comprobar qué ficheros y directorios serán afectados por el comando.
 
-== CMD_USAGE_RM_PRIVATE ==
+== CMD_USAGE_REMOVE_PRIVATE ==
 Sintaxis:
 
     cm remove | rm private <ruta>+ [-r] [--verbose] [--dry-run]
@@ -6481,7 +6523,7 @@ Opciones:
     --verbose           Muestra todos las rutas afectadas.
     --dry-run           Ejecuta el comando sin hacer cambios en disco.
 
-== CMD_HELP_RM_PRIVATE ==
+== CMD_HELP_REMOVE_PRIVATE ==
 Notas:
 
     Si la ruta especificada corresponde a un fichero o directorio privados, este
@@ -7694,10 +7736,10 @@ Ejemplos:
     cm tube disconnect
     cm tube status
 
-== CMD_DESCRIPTION_UNCO ==
+== CMD_DESCRIPTION_UNDOCHECKOUT ==
 Deshace la desprotección de un ítem.
 
-== CMD_USAGE_UNCO ==
+== CMD_USAGE_UNDOCHECKOUT ==
 Sintaxis:
 
     cm undocheckout | unco <item_path>+ [--all] [--symlink] [--silent]
@@ -7724,7 +7766,7 @@ Opciones:
                        contenido en disco que tenia antes de hacer el unco.
                        Esta opción no puede utilizarse con workspaces dinámicos.
 
-== CMD_HELP_UNCO ==
+== CMD_HELP_UNDOCHECKOUT ==
 Notas:
 
     Si se desean descartar los cambios realizados en un ítem desprotegido
@@ -7761,10 +7803,10 @@ Deshacer 'changelist'. Ejemplo:
       (El comando listará los paths en el changelist llamado 'pending_to_review'
       y dicha lista será redirigida a la entrada del comando 'uncheckout').
 
-== CMD_DESCRIPTION_UNCOUNCHANGED ==
+== CMD_DESCRIPTION_UNDOCHECKOUTUNCHANGED ==
 Deshace la desprotección en elementos que no han cambiado.
 
-== CMD_USAGE_UNCOUNCHANGED ==
+== CMD_USAGE_UNDOCHECKOUTUNCHANGED ==
 Sintaxis:
 
     cm uncounchanged [opciones]
@@ -7773,7 +7815,7 @@ Opciones:
 
     -R|-r|--recursive   Descender recursivamente dentro de directorios.
 
-== CMD_HELP_UNCOUNCHANGED ==
+== CMD_HELP_UNDOCHECKOUTUNCHANGED ==
 Notas:
 
     Este comando se aplica desde la raíz del workspace recursivamente.
@@ -8008,31 +8050,33 @@ Deshace los bloqueos en los elementos de un servidor.
 == CMD_USAGE_LOCK_UNLOCK ==
 Sintaxis:
 
-    cm lock unlock [<repserverspec>] <guid>[ ...]
+    cm lock unlock <itemspec>[ ...] [--remove]
 
-    repserverspec       Especificación del servidor de repositorio.
-                        (Use 'cm help objectspec' para más información sobre las
-                        especificaciones de servidores de repositorio.)
-    guid                Lista de GUIDs de ítems a desbloquear. Use un
-                        espacio en blanco para separar GUIDs.
+    --remove            Elimina completamente el bloqueo para el elemento
+                        específicado. Si esta opción no se espefica,
+                        simplemente se libera el bloqueo actual.
+    itemspec            Una o más especificaciones de ítem.(Use 'cm help objectspec'
+                        para más información sobre especificaciones de ítem.)
 
 == CMD_HELP_LOCK_UNLOCK ==
 Notas:
 
-    - El comando usa el servidor especificado para desbloquear los ítems.
-    - Si no se especifica ningún servidor, el comando intentará obtener un
-      servidor del espacio de trabajo actual.
-    - Si con los pasos anteriores no se pudo obtener ningún servidor, el comando
-      utilizará el servidor de la configuración actual del cliente de Unity VCS.
-    - Únicamente el administrador del servidor puede ejecutar el comando 'cm unlock'.
-    - Para especificar un GUID, indique los 32 dígitos separados por guiones con
-      el siguiente formato (y, opcionalmente, incluidos entre llaves):
-        {00000000-0000-0000-0000-000000000000}
-        o
-        00000000-0000-0000-0000-000000000000
+    - Sólo el administrador del servidor puede ejecutar 'cm unlock --remove'
+      para elminar bloqueos.
+    - Sólo el administrador del servidor puede liberar bloqueos que pertenecen
+      a otros usuarios. Cualquier usuario puede liberar su propios bloqueos.
 
 Ejemplos:
 
+    cm lock unlock itemid:56@myrep@DIGITALIS:8084
+    (Libera el bloqueo del ítem id 56 en el repo 'myrep@DIGITALIS'.)
+
+    cm lock unlock item:/workspace/foo.psd item:/workspace/bar.psd
+    (Libera el bloqueo de los items especificados.)
+
+    cm lock unlock itemid:56@myrep itemid:89@myrep --remove
+    (Elimina el bloqueo de los items especificados.)
+    
     cm lock unlock 91961b14-3dfe-4062-8c4c-f33a81d201f5
     (Deshace el bloqueo del ítem indicado.)
 
@@ -8043,6 +8087,41 @@ Ejemplos:
     cm lock unlock tardis@cloud 4740c4fa-56af-3dfe-de10-8711fa248635 \
       71263c17-5eaf-5271-4d2c-a25f72e101d4
     (Deshace los bloqueos de los ítems indicados del servidor cloud 'tardis'.)
+
+== CMD_DESCRIPTION_LOCK_CREATE ==
+Crea bloqueos en los elementos de un servidor.
+
+== CMD_USAGE_LOCK_CREATE ==
+Sintaxis:
+
+    cm lock create | mk <branchspec> <itemspec>[ ...]
+
+    branchspec          La rama donde los bloqueos serán creados.
+                        (Use 'cm help objectspec' para más información sobre
+                        especificaciones de rama.)
+    itemspec            Una o más especificaciones de ítem.
+                        (Use 'cm help objectspec' para más información sobre
+                        especificaciones de ítem.)
+                        
+== CMD_HELP_LOCK_CREATE ==
+Notas:
+
+    - Sólo el administrador del servidor puede crear bloqueos.
+    - Todos los bloqueos creados con este comando son inicializados en el
+      estado Retained.
+    - Si la revisión cargada en la rama especificada (por cada elemento
+      especificado) coincide con la revision cargada en la rama de destino
+      (/main por defecto), el lock no será creado.
+    - El repositorio de la branchspec debe ser el mismo que el de todos las
+      itemspecs especificadas.
+
+Ejemplos:
+
+    cm lock create /main/task@myrep itemid:56@myrep
+    (Crea bloqueo para el ítem id 56 en la rama /main/task@myrep.)
+
+    cm lock create br:/main/task item:/workspace/foo.psd item:/workspace/bar.psd
+    (Crea bloqueos para los items especificados en la rama /main/task.)
 
 == CMD_DESCRIPTION_UPDATE ==
 Actualiza el espacio de trabajo.
@@ -8900,26 +8979,66 @@ Comandos:
     - execute
     - show
     - history
+    - unregister
 
     Para obtener más información sobre cada comando:
     cm purge <command> --^usage
     cm purge <command> --^help
 
 == CMD_HELP_PURGE ==
-TO BE DONE
+Examples:
+
+    cm purge register ".mkv" "1955-Nov-05 6:00 AM" --repository=timemachine
+    (registra una acción de purga para el repositorio 'timemachine')
+
+    cm purge history
+    (enumera el GUID y el statu de todas las acciones de purga registradas
+    anteriormente en el servidor)
+
+    cm purge show 545ec81b-23ea-462c-91f4-d7c62a6e8817 --verbose
+    (muestra en detalle los metadatos de la acción de purga dado su ID,
+    incluyendo los elementos y revisiones afectados por la purga)
+
+    cm purge execute 545ec81b-23ea-462c-91f4-d7c62a6e8817
+    (inicia una acción de purga previamente registrada)
+
+    cm purge unregister 545ec81b-23ea-462c-91f4-d7c62a6e8817
+    (las purgas que no hayan sido ejecutadas pueden eliminarse del registro)
 
 == CMD_DESCRIPTION_PURGE_REGISTER ==
-Calcula y registra una acción de purga.
-
-Se considerarán candidatas para la purga aquellas revisiones anteriores a la(s) fecha(s) seleccionadas durante el registro. Como regla, siempre preservamos revisiones etiquetadas así como al menos una revisión en todas las cabezas de rama.
-
-Puede utilizar el comando "cm purge show" para verificar las revisiones seleccionadas antes de ejecutar la purga mediante el comando "cm purge execute".
+Calcula y registra una acción de purga. Se considerarán candidatas para la purga aquellas revisiones anteriores a la(s) fecha(s) seleccionadas durante el registro. Como regla, siempre preservamos revisiones etiquetadas así como al menos una revisión en todas las cabezas de rama. Puede utilizar el comando "cm purge show" para verificar las revisiones seleccionadas antes de ejecutar la purga mediante el comando "cm purge execute".
 
 == CMD_USAGE_PURGE_REGISTER ==
-TO BE DONE
+Sintaxis:
+    cm purge register (<extension> <before_date>)... [--repository=<rep_spec>]
+
+Opciones:
+
+    --repository          El repositorio donde se pretende aplicar la purga.
+                          No es necesario bajo de la ruta de un espacio de trabajo salvo para
+                          elegir uno diferente.
+    extensión             Extensión del tipo de fichero a ser purgado. Note que las revisiones de
+                          elementos renombrados se considerarán también para su eliminación.
+    antes_de_fecha        Sólo aquellas revisiones anteriores a esta fecha se considerarán para
+                          su eliminación.
 
 == CMD_HELP_PURGE_REGISTER ==
-TO BE DONE
+Ejemplos:
+
+    cm purge register ".mkv" "1955-Nov-05 6:00 AM"
+    (registra una acción de purga sobre las revisiones de ficheros Matroska creadas antes de una fecha)
+
+    cm purge register ".mkv" "6:00 AM"
+    (puede especificar sólamente la fecha o la hora)
+
+    cm purge register ".mkv" "6:00Z"
+    (puede especificar una hora UTC en vez de una hora local)
+
+    cm purge register ".mkv" "1955-Nov-05" --repository=timemachine
+    (puede especificar un repositorio diferente para registrar la purga)
+
+    cm purge register ".mkv" "1955-Nov-05" ".mp3" "1955-Nov-12"
+    (puede proporcionar varias parejas de extensión y fecha a la vez)
 
 == CMD_DESCRIPTION_PURGE_EXECUTE ==
 Ejecuta una acción de purga registrada previamente.
@@ -8929,25 +9048,117 @@ ADVERTENCIA: Las acciones de purga son irreversibles. Una vez son ejecutadas, ya
 Asegúrese de comprobar la historia del fichero para confirmar cuáles de las revisiones/changesets no son relevantes. No dude en utilizar el comando "cm purge show" antes de ejecutar la purga para verificar que ninguna revisión inesperada esté seleccionada para su eliminación.
 
 == CMD_USAGE_PURGE_EXECUTE ==
-TO BE DONE
+Sintaxis:
+    cm purge execute <purge_guid> [--server=<server>]
+
+Opciones:
+
+    --server              Permite especificar en que servidor se consultarán
+                          las acciones de purga.
+    purge_guid            El GUID devuelto por el comando "cm purge register".
 
 == CMD_HELP_PURGE_EXECUTE ==
-TO BE DONE
+Ejemplos:
+
+    cm purge execute be5b9145-1bd9-4c43-bd90-f2ff727bbf13
+    (Ejecuta una purga dado su ID)
+
+    cm purge execute be5b9145-1bd9-4c43-bd90-f2ff727bbf13 --server=myorg@cloud
+    (Puede especificar un servidor concreto si así lo necesita)
 
 == CMD_DESCRIPTION_PURGE_SHOW ==
-TO BE DONE
+Proporciona un informe del estado de la purga y sus contenidos.
 
 == CMD_USAGE_PURGE_SHOW ==
-TO BE DONE
+Sintaxis:
+    cm purge show <purge_guid> [--verbose | --server=<server>]
+
+Opciones:
+
+    --server              Permite especificar en que servidor se consultarán
+                          las acciones de purga.
+    --verbose             Expande el informe incluyendo los elementos y
+                          revisiones involucrados en la purga.
+    purge_guid            El GUID devuelto por el comando "cm purge register".
 
 == CMD_HELP_PURGE_SHOW ==
-TO BE DONE
+Ejemplos:
+
+    cm purge show be5b9145-1bd9-4c43-bd90-f2ff727bbf13
+    (Proporciona un breve informe del estado de la purga)
+
+    cm purge show be5b9145-1bd9-4c43-bd90-f2ff727bbf13 --verbose
+    (Proporciona información adicional por extensión purgada,
+    incluyendo elementos y revisiones)
+
+    cm purge show be5b9145-1bd9-4c43-bd90-f2ff727bbf13 --server=myorg@cloud
+    (Puede especificar un servidor diferente si así lo desea)
 
 == CMD_DESCRIPTION_PURGE_HISTORY ==
-TO BE DONE
+Permite a los usuarios comprobar el estado de todas las purgas registradas en el servidor en algún momento.
+
+También es útil para obtener algunos datos sobre ellas que se preservan para posibles consultas, tales como el autor, la fecha de ejecución o el tamaño del almacenamiento y los tipos afectados por la purga.
 
 == CMD_USAGE_PURGE_HISTORY ==
-TO BE DONE
+Sintaxis:
+    cm purge history [--verbose | --server=<server>]
+                     [--sort=(desc|asc)]
+                     [--skip=<skip> | --limit=<limit>]
+
+Opciones:
+
+    --server             Permite especificar en que servidor se consultarán
+                         las acciones de purga.
+    --verbose            Por omisión, sólo se muestra el ID y el estado para
+                         cada purga. Esta opción también incluye información
+                         más detallada.
+    --sort               Especifica un orden para las purgas mostradas en el
+                         resultado. Este puede ser descendente (desc) o
+                         ascendente (asc).
+    --skip               Especifica un número de entradas a omitir que no se
+                         verán reflejadas en el resultado.
+    --limit              Especifica el número máximo de entradas que se
+                         mostrarán simultáneamente.
 
 == CMD_HELP_PURGE_HISTORY ==
-TO BE DONE
+Ejemplos:
+
+    cm purge history
+    (muestra el ID y el estado para todas las purgas registradas en el servidor)
+
+    cm purge history --server=stoltz@cloud
+    (puede esplicitar un servidor para usar uno diferente si así lo necesita)
+
+    cm purge history --verbose
+    (incluye datos más detallados asociados a las purgas mostradas)
+
+    cm purge history --sort=asc
+    (muestra la historia empezando por las purgas más antiguas)
+
+    cm purge history --skip=0  --limit=20
+    cm purge history --skip=20 --limit=20
+    cm purge history --skip=40 --limit=20
+    (en lugar de mostrar todo a la vez, puede paginar los resultados)
+
+== CMD_DESCRIPTION_PURGE_UNREGISTER ==
+Las acciones de purga puede eliminarse del registro si decide no ejecutarlas.
+Recuerde que no es posible eliminar aquellas purgas que ya se hayan iniciado.
+
+== CMD_USAGE_PURGE_UNREGISTER ==
+Sintaxis:
+    cm purge unregister <purge_guid> [--server=<server>]
+
+Opciones:
+
+    --server              Permite especificar en que servidor se consultarán
+                          las acciones de purga.
+    purge_guid            El GUID devuelto por el comando "cm purge register".
+
+== CMD_HELP_PURGE_UNREGISTER ==
+Ejemplos:
+
+    cm purge unregister 545ec81b-23ea-462c-91f4-d7c62a6e8817
+    (las purgas que no hayan sido ejecutadas pueden eliminarse del registro)
+
+    cm purge unregister 545ec81b-23ea-462c-91f4-d7c62a6e8817 --server=myorg@cloud
+    (puede especificar un servidor diferente para eliminar la purga de su registro)

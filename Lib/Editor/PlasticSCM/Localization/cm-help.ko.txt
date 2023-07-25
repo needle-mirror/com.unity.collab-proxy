@@ -435,11 +435,11 @@ https://www.plasticscm.com/download/help/securityguide
     cm ^blame ^serverpath:/src/client/checkin/Checkin.cs#^cs:73666
     (서버 경로를 사용하여 체인지 세트 73666에서부터 파일에 주석을 답니다.)
 
-== CMD_DESCRIPTION_APPLY_LOCAL ==
+== CMD_DESCRIPTION_APPLYLOCAL ==
 로컬 변경사항(로컬에서 이동, 삭제, 변경)을 확인하고
 이를 적용하여 Unity VCS이 변경사항을 추적합니다.
 
-== CMD_USAGE_APPLY_LOCAL ==
+== CMD_USAGE_APPLYLOCAL ==
 사용법:
 
     cm ^applylocal | ^al [--^dependencies] [<항목 경로>[ ...]]
@@ -461,7 +461,7 @@ https://www.plasticscm.com/download/help/securityguide
     --^fieldseparator      '--^machinereadable' 플래그와 함께 사용되며, 필드를 구분할 방법을
                           지정합니다.
 
-== CMD_HELP_APPLY_LOCAL ==
+== CMD_HELP_APPLYLOCAL ==
 비고:
 
     --^dependencies 및 <항목 경로>를 지정하지 않은 경우, 작업에
@@ -1100,10 +1100,10 @@ https://www.plasticscm.com/download/help/securityguide
     ^cat myselector.txt | cm ^checkselectorsyntax
     (표준 입력에서 'myselector.txt'의 구문을 검사합니다.)
 
-== CMD_DESCRIPTION_CHGREVTYPE ==
+== CMD_DESCRIPTION_CHANGEREVISIONTYPE ==
 항목 개정 유형(바이너리 또는 텍스트)을 변경합니다.
 
-== CMD_USAGE_CHGREVTYPE ==
+== CMD_USAGE_CHANGEREVISIONTYPE ==
 사용법:
 
     cm ^changerevisiontype | ^chgrevtype | ^crt <항목 경로>[ ...] --^type=(^bin | ^txt)
@@ -1113,7 +1113,7 @@ https://www.plasticscm.com/download/help/securityguide
                         공백을 사용하십시오.
     --^type              대상 개정 유형. '^bin' 또는 '^txt' 중에 선택하십시오.
 
-== CMD_HELP_CHGREVTYPE ==
+== CMD_HELP_CHANGEREVISIONTYPE ==
 비고:
 
     이 명령은 디렉터리가 아닌 파일에만 적용할 수 있습니다.
@@ -1813,10 +1813,10 @@ Git 빠른 익스포트 데이터를 리포지토리로 임포트합니다.
     cm ^fileinfo proj_specs.docx --^fields=^ServerPath,^RevisionChangeset --^xml
     cm ^fileinfo samples.ogg --^format="{^ServerPath}[{^Owner}] -> {^Size}"
 
-== CMD_DESCRIPTION_FIND_QUERY ==
+== CMD_DESCRIPTION_FIND ==
 SQL과 같은 쿼리를 실행하여 Unity VCS 객체를 찾습니다.
 
-== CMD_USAGE_FIND_QUERY ==
+== CMD_USAGE_FIND ==
 사용법:
 
     cm ^find <객체 유형>
@@ -1854,7 +1854,7 @@ SQL과 같은 쿼리를 실행하여 Unity VCS 객체를 찾습니다.
                         MSDN 문서를 확인하십시오.
                         페이지 마지막 "Name"열에 있습니다.
 
-== CMD_HELP_FIND_QUERY ==
+== CMD_HELP_FIND ==
 비고:
 
     리포지토리가 지정되지 않으면 워크스페이스에 구성된
@@ -2188,10 +2188,10 @@ SQL과 같은 쿼리를 실행하여 Unity VCS 객체를 찾습니다.
     cm ^gtb 4311 --^format="^br:{^name}"
     cm ^gtb 4311 --^format="^br:{^name} {^date}" --^dateformat="yyyy/MM/dd HH:mm:ss"
 
-== CMD_DESCRIPTION_GETWWI ==
+== CMD_DESCRIPTION_GETWORKSPACEINFO ==
 워크스페이스 선택기에 관한 정보를 표시합니다.
 
-== CMD_USAGE_GETWWI ==
+== CMD_USAGE_GETWORKSPACEINFO ==
 사용법:
 
     cm ^wi [<워크스페이스 경로>]
@@ -2200,7 +2200,7 @@ SQL과 같은 쿼리를 실행하여 Unity VCS 객체를 찾습니다.
 
     워크스페이스 경로             기기의 워크스페이스 경로.
 
-== CMD_HELP_GETWWI ==
+== CMD_HELP_GETWORKSPACEINFO ==
 비고:
     '^wi' 명령은 워크스페이스(리포지토리, 브랜치, 레이블)의 작업 구성을
     표시합니다.
@@ -2208,10 +2208,10 @@ SQL과 같은 쿼리를 실행하여 Unity VCS 객체를 찾습니다.
 예:
     cm ^wi c:\mywk
 
-== CMD_DESCRIPTION_GWP ==
+== CMD_DESCRIPTION_GETWORKSPACEFROMPATH ==
 경로에서 워크스페이스 정보를 가져옵니다.
 
-== CMD_USAGE_GWP ==
+== CMD_USAGE_GETWORKSPACEFROMPATH ==
 이는 'cm'만 자동화할 때 사용하는 자동화 명령입니다.
 주의해야 하는 만큼 사용자 친화적이지 않은 명령입니다.
 
@@ -2225,7 +2225,7 @@ SQL과 같은 쿼리를 실행하여 Unity VCS 객체를 찾습니다.
     --^format            특정 형식으로 출력 메시지를 가져옵니다. 자세한 내용은
                         비고를 확인하십시오.
 
-== CMD_HELP_GWP ==
+== CMD_HELP_GETWORKSPACEFROMPATH ==
 비고:
 
     이 명령은 경로에 위치한 워크스페이스에 관한 정보를 표시합니다.
@@ -2708,10 +2708,10 @@ Jira 매개 변수(모두 필수):
     표시합니다. 전체 체인지 세트 사양이 지정되었으므로, 워크스페이스를
     지정하지 않아도 명령을 실행할 수 있습니다.)
 
-== CMD_DESCRIPTION_LS ==
+== CMD_DESCRIPTION_LIST ==
 트리의 내용을 나열합니다.
 
-== CMD_USAGE_LS ==
+== CMD_USAGE_LIST ==
 사용법:
 
     cm ^ls | ^dir [<경로>[ ...]] [--^format=<문자열 형식>] [--^symlink]
@@ -2746,7 +2746,7 @@ Jira 매개 변수(모두 필수):
                         MSDN 문서를 확인하십시오.
                         페이지 마지막 "Name"열에 있습니다.
 
-== CMD_HELP_LS ==
+== CMD_HELP_LIST ==
 비고:
 
     - 경로를 메타 문자로 입력할 수 있습니다.
@@ -5412,10 +5412,10 @@ SQL 쿼리를 실행합니다. SQL 스토리지가 필요합니다.
     cm ^revert dir#^cs:0
     cm ^revert C:\mywks\dir\file1.txt#23456
 
-== CMD_DESCRIPTION_REVISION_HISTORY ==
+== CMD_DESCRIPTION_HISTORY ==
 파일 또는 디렉터리 내역을 표시합니다.
 
-== CMD_USAGE_REVISION_HISTORY ==
+== CMD_USAGE_HISTORY ==
 사용법:
 
     cm ^history | ^hist <항목 경로>[ ...] [--^long | --^format=<문자열 형식>]
@@ -5442,7 +5442,7 @@ SQL 쿼리를 실행합니다. SQL 스토리지가 필요합니다.
                         MSDN 문서를 확인하십시오.
                         페이지 마지막 "Name"열에 있습니다.
 
-== CMD_HELP_REVISION_HISTORY ==
+== CMD_HELP_HISTORY ==
 비고:
 
     이 명령은 특정 항목의 개정 목록과 각 개정의 레이블, 브랜치 및 코멘트 정보를
@@ -5499,10 +5499,10 @@ SQL 쿼리를 실행합니다. SQL 스토리지가 필요합니다.
     (대상이 아닌 링크 파일에 내역 작업을 적용합니다.
     UNIX 환경에서 사용할 수 있습니다.)
 
-== CMD_DESCRIPTION_RM ==
+== CMD_DESCRIPTION_REMOVE ==
 사용자의 파일 및 디렉터리 삭제를 허용합니다.
 
-== CMD_USAGE_RM ==
+== CMD_USAGE_REMOVE ==
 사용법:
 
     cm ^remove | ^rm <명령> [옵션]
@@ -5516,16 +5516,16 @@ SQL 쿼리를 실행합니다. SQL 스토리지가 필요합니다.
     cm ^remove <명령> --^usage
     cm ^remove <명령> --^help
 
-== CMD_HELP_RM ==
+== CMD_HELP_REMOVE ==
 예:
 
     cm ^remove \path\controlled_file.txt
     cm ^remove ^private \path\private_file.txt
 
-== CMD_DESCRIPTION_RM_CONTROLLED ==
+== CMD_DESCRIPTION_REMOVE_CONTROLLED ==
 버전 제어에서 파일 또는 디렉터리를 삭제합니다.
 
-== CMD_USAGE_RM_CONTROLLED ==
+== CMD_USAGE_REMOVE_CONTROLLED ==
 사용법:
 
     cm ^remove | ^rm <항목 경로>[ ...] [--^format=<문자열 형식>]
@@ -5544,7 +5544,7 @@ SQL 쿼리를 실행합니다. SQL 스토리지가 필요합니다.
     --^nodisk            버전 제어에서는 제거하지만 항목이 디스크에서
                         유지됩니다.
 
-== CMD_HELP_RM_CONTROLLED ==
+== CMD_HELP_REMOVE_CONTROLLED ==
 비고:
 
     디스크에서 항목이 삭제됩니다. 삭제된 항목이 소스 코드 제어의 부모 디렉터리에서
@@ -5580,14 +5580,14 @@ SQL 쿼리를 실행합니다. SQL 스토리지가 필요합니다.
     cm ^remove c:\workspace\file.txt --^nodisk
     (버전 제어에서 'file.txt'를 제거하지만 디스크에서는 유지됩니다.)
 
-== CMD_DESCRIPTION_RM_PRIVATE ==
+== CMD_DESCRIPTION_REMOVE_PRIVATE ==
 비공개 파일 또는 디렉터리를 삭제합니다.
 
 경고: 명령을 사용하여 삭제된 파일은 영구히 삭제되며
 복원할 수 없습니다. '--^dry-run' 옵션을 사용하여
 해당 명령의 영향을 받는 파일을 확인하는 것이 좋습니다.
 
-== CMD_USAGE_RM_PRIVATE ==
+== CMD_USAGE_REMOVE_PRIVATE ==
 사용법:
 
     cm ^remove | ^rm ^private <경로>[ ...] [-^R | -^r | --^recursive] [--^ignored]
@@ -5605,7 +5605,7 @@ SQL 쿼리를 실행합니다. SQL 스토리지가 필요합니다.
     --^verbose           영향을 받는 경로를 모두 출력합니다.
     --^dry-run           디스크 내용을 변경하지 않고 명령을 실행합니다.
 
-== CMD_HELP_RM_PRIVATE ==
+== CMD_HELP_REMOVE_PRIVATE ==
 비고:
 
     경로가 비공개 파일 또는 디렉터리인 경우 디스크에서 삭제됩니다.
@@ -7016,10 +7016,10 @@ Plastic Tube와 관련된 명령을 실행합니다.
     cm ^tube ^disconnect
     cm ^tube ^status
 
-== CMD_DESCRIPTION_UNCO ==
+== CMD_DESCRIPTION_UNDOCHECKOUT ==
 항목의 체크아웃을 취소합니다.
 
-== CMD_USAGE_UNCO ==
+== CMD_USAGE_UNDOCHECKOUT ==
 사용법:
 
     cm ^undocheckout | ^unco <항목 경로>[ ...] [-^a | --^all] [--^symlink] [--^silent]
@@ -7048,7 +7048,7 @@ Plastic Tube와 관련된 명령을 실행합니다.
     --^fieldseparator     '--^machinereadable' 플래그와 함께 사용되며,
                          필드를 구분할 방법을 지정합니다.
 
-== CMD_HELP_UNCO ==
+== CMD_HELP_UNDOCHECKOUT ==
 비고:
 
     항목이 체크아웃되고 이를 체크인하지 않으려는 경우 이 명령을 사용해 체크아웃을
@@ -7103,10 +7103,10 @@ Plastic Tube와 관련된 명령을 실행합니다.
     형식으로 출력하며, 지정된 문자열로 행을 시작 및 종료하고
     필드를 구분합니다.)
 
-== CMD_DESCRIPTION_UNCOUNCHANGED ==
+== CMD_DESCRIPTION_UNDOCHECKOUTUNCHANGED ==
 변경 없이 체크아웃된 항목의 체크아웃을 취소합니다.
 
-== CMD_USAGE_UNCOUNCHANGED ==
+== CMD_USAGE_UNDOCHECKOUTUNCHANGED ==
 사용법:
 
     cm ^uncounchanged | ^unuc <항목 경로>[ ...] [-^R | -^r | --^recursive]
@@ -7124,7 +7124,7 @@ Plastic Tube와 관련된 명령을 실행합니다.
                          적용합니다.
     --^silent            어떤 내용도 출력하지 않습니다.
 
-== CMD_HELP_UNCOUNCHANGED ==
+== CMD_HELP_UNDOCHECKOUTUNCHANGED ==
 비고:
 
     이 명령은 루트 워크스페이스에서 재귀적으로 적용됩니다.

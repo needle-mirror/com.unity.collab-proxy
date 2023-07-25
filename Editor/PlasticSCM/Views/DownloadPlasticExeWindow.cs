@@ -2,8 +2,8 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Common;
+using Codice.Client.Common.EventTracking;
 using Codice.CM.Common;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI.UIElements;

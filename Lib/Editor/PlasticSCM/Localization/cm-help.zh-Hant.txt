@@ -435,11 +435,11 @@ https://www.plasticscm.com/download/help/securityguide
     cm ^blame ^serverpath:/src/client/checkin/Checkin.cs#^cs:73666
     (使用伺服器路徑針對以變更集 73666 開始的檔案進行標註。)
 
-== CMD_DESCRIPTION_APPLY_LOCAL ==
+== CMD_DESCRIPTION_APPLYLOCAL ==
 檢查本地變更 (本地移動、本地刪除，以及本地變更)
 並加以套用，這樣 Unity VCS 就會開始追蹤這些變更。
 
-== CMD_USAGE_APPLY_LOCAL ==
+== CMD_USAGE_APPLYLOCAL ==
 用法：
 
     cm ^applylocal | ^al [--^dependencies] [<項目_路徑>[ ...]]
@@ -461,7 +461,7 @@ https://www.plasticscm.com/download/help/securityguide
     --^fieldseparator      搭配 '--^machinereadable' 標誌使用，指定應如何
                           分隔欄位。
 
-== CMD_HELP_APPLY_LOCAL ==
+== CMD_HELP_APPLYLOCAL ==
 備註：
 
     如果未指定 --^dependencies 和 <項目_路徑>，該作業會涉及
@@ -1100,10 +1100,10 @@ https://www.plasticscm.com/download/help/securityguide
     ^cat myselector.txt | cm ^checkselectorsyntax
     (從標準輸入檢查 'myselector.txt' 的語法。)
 
-== CMD_DESCRIPTION_CHGREVTYPE ==
+== CMD_DESCRIPTION_CHANGEREVISIONTYPE ==
 變更項目修訂類型 (二進位或文字)。
 
-== CMD_USAGE_CHGREVTYPE ==
+== CMD_USAGE_CHANGEREVISIONTYPE ==
 用法：
 
     cm ^changerevisiontype | ^chgrevtype | ^crt <項目_路徑>[ ...]--^type=(^bin | ^txt)
@@ -1113,7 +1113,7 @@ https://www.plasticscm.com/download/help/securityguide
                         分隔項目路徑。
     --^type              目標修訂類型。選擇 '^bin' 或 '^txt'。
 
-== CMD_HELP_CHGREVTYPE ==
+== CMD_HELP_CHANGEREVISIONTYPE ==
 備註：
 
     此命令只能套用至檔案，而無法套用至目錄。
@@ -1813,10 +1813,10 @@ https://www.plasticscm.com/download/help/securityguide
     cm ^fileinfo proj_specs.docx --^fields=^ServerPath,^RevisionChangeset --^xml
     cm ^fileinfo samples.ogg --^format="{^ServerPath}[{^Owner}] -> {^Size}"
 
-== CMD_DESCRIPTION_FIND_QUERY ==
+== CMD_DESCRIPTION_FIND ==
 執行類似 SQL 的查詢，以尋找 Unity VCS 物件。
 
-== CMD_USAGE_FIND_QUERY ==
+== CMD_USAGE_FIND ==
 用法：
 
     cm ^find <物件_類型>
@@ -1854,7 +1854,7 @@ https://www.plasticscm.com/download/help/securityguide
                         )，以取得可支援之編碼及其格式的表格 
                         (在頁尾的 [名稱] 欄中)。
 
-== CMD_HELP_FIND_QUERY ==
+== CMD_HELP_FIND ==
 備註：
 
     如果未指定任何儲存庫，將會在工作區中設定的
@@ -2188,10 +2188,10 @@ https://www.plasticscm.com/download/help/securityguide
     cm ^gtb 4311 --^format="^br:{^name}"
     cm ^gtb 4311 --^format="^br:{^name} {^date}" --^dateformat="yyyy/MM/dd HH:mm:ss"
 
-== CMD_DESCRIPTION_GETWWI ==
+== CMD_DESCRIPTION_GETWORKSPACEINFO ==
 顯示關於工作區選擇器的資訊。
 
-== CMD_USAGE_GETWWI ==
+== CMD_USAGE_GETWORKSPACEINFO ==
 用法：
 
     cm ^wi [<工作區_路徑>]
@@ -2200,7 +2200,7 @@ https://www.plasticscm.com/download/help/securityguide
 
     工作區_路徑             機器上的工作區路徑。
 
-== CMD_HELP_GETWWI ==
+== CMD_HELP_GETWORKSPACEINFO ==
 備註：
     '^wi' 命令會顯示工作區 (儲存庫、分支，及/或標籤)
     的作用中設定。
@@ -2208,10 +2208,10 @@ https://www.plasticscm.com/download/help/securityguide
 範例：
     cm ^wi c:\mywk
 
-== CMD_DESCRIPTION_GWP ==
+== CMD_DESCRIPTION_GETWORKSPACEFROMPATH ==
 從路徑取得工作區資訊。
 
-== CMD_USAGE_GWP ==
+== CMD_USAGE_GETWORKSPACEFROMPATH ==
 這是自動化命令，目的僅限用於自動化 'cm'。
 方便使用的程度並不高。
 
@@ -2225,7 +2225,7 @@ https://www.plasticscm.com/download/help/securityguide
     --^format            以指定的格式擷取輸出訊息。如需
                         詳細資訊，請參閱備註。
 
-== CMD_HELP_GWP ==
+== CMD_HELP_GETWORKSPACEFROMPATH ==
 備註：
 
     此命令會顯示位於路徑中的工作區相關資訊。
@@ -2707,10 +2707,10 @@ Jira 參數 (皆為強制):
     相關資訊。執行此命令時不需要任何工作區，因為
     已指定了完整的變更集規格。)
 
-== CMD_DESCRIPTION_LS ==
+== CMD_DESCRIPTION_LIST ==
 列出樹狀目錄的內容。
 
-== CMD_USAGE_LS ==
+== CMD_USAGE_LIST ==
 用法：
 
     cm ^ls | ^dir [<路徑>[ ...]] [--^format=<字串_格式>] [--^symlink]
@@ -2745,7 +2745,7 @@ Jira 參數 (皆為強制):
                         )，以取得可支援之編碼及其格式的表格 
                         (在頁尾的 [名稱] 欄中)。
 
-== CMD_HELP_LS ==
+== CMD_HELP_LIST ==
 備註：
 
     - 路徑輸入可使用中繼字元。
@@ -5412,10 +5412,10 @@ Jira 參數 (皆為強制):
     cm ^revert dir#^cs:0
     cm ^revert C:\mywks\dir\file1.txt#23456
 
-== CMD_DESCRIPTION_REVISION_HISTORY ==
+== CMD_DESCRIPTION_HISTORY ==
 顯示檔案或目錄的歷程記錄。
 
-== CMD_USAGE_REVISION_HISTORY ==
+== CMD_USAGE_HISTORY ==
 用法：
 
     cm ^history | ^hist <項目_路徑>[ ...][--^long | --^format=<字串_格式>]
@@ -5442,7 +5442,7 @@ Jira 參數 (皆為強制):
                         )，以取得可支援之編碼及其格式的表格 
                         (在頁尾的 [名稱] 欄中)。
 
-== CMD_HELP_REVISION_HISTORY ==
+== CMD_HELP_HISTORY ==
 備註：
 
     此命令會顯示指定項目的修訂清單和標籤、分支，
@@ -5499,10 +5499,10 @@ Jira 參數 (皆為強制):
     (將作業套用至連結檔案，而不是套用至目標；此功能適用於 
     UNIX 環境。)
 
-== CMD_DESCRIPTION_RM ==
+== CMD_DESCRIPTION_REMOVE ==
 可讓使用者刪除檔案和目錄。
 
-== CMD_USAGE_RM ==
+== CMD_USAGE_REMOVE ==
 用法：
 
     cm ^remove | ^rm <命令> [選項]
@@ -5516,16 +5516,16 @@ Jira 參數 (皆為強制):
     cm ^remove <命令> --^usage
     cm ^remove <命令> --^help
 
-== CMD_HELP_RM ==
+== CMD_HELP_REMOVE ==
 範例：
 
     cm ^remove \path\controlled_file.txt
     cm ^remove ^private \path\private_file.txt
 
-== CMD_DESCRIPTION_RM_CONTROLLED ==
+== CMD_DESCRIPTION_REMOVE_CONTROLLED ==
 從版本控制刪除檔案或目錄。
 
-== CMD_USAGE_RM_CONTROLLED ==
+== CMD_USAGE_REMOVE_CONTROLLED ==
 用法：
 
     cm ^remove | ^rm <項目_路徑>[ ...][--^format=<字串_格式>]
@@ -5544,7 +5544,7 @@ Jira 參數 (皆為強制):
     --^nodisk            從版本控制移除，但將項目保留在
                         磁碟上。
 
-== CMD_HELP_RM_CONTROLLED ==
+== CMD_HELP_REMOVE_CONTROLLED ==
 備註：
 
     會從磁碟刪除項目。會從原始程式碼控制的上層目錄中
@@ -5580,14 +5580,14 @@ Jira 參數 (皆為強制):
     cm ^remove c:\workspace\file.txt --^nodisk
     (從版本控制移除 'file.txt'，但將它保留在磁碟上。)
 
-== CMD_DESCRIPTION_RM_PRIVATE ==
+== CMD_DESCRIPTION_REMOVE_PRIVATE ==
 刪除私人檔案或目錄。
 
 警告：使用此命令刪除的檔案會永久刪除，而且無法
 復原。建議您使用 '--^dry-run' 選項檢查
 哪些檔案會受到此命令影響。
 
-== CMD_USAGE_RM_PRIVATE ==
+== CMD_USAGE_REMOVE_PRIVATE ==
 用法：
 
     cm ^remove | ^rm ^private <路徑>[ ...][-^R | -^r | --^recursive] [--^ignored]
@@ -5605,7 +5605,7 @@ Jira 參數 (皆為強制):
     --^verbose           列印所有受影響的路徑。
     --^dry-run           執行此命令，而不在磁碟上進行任何變更。
 
-== CMD_HELP_RM_PRIVATE ==
+== CMD_HELP_REMOVE_PRIVATE ==
 備註：
 
     如果路徑是私人檔案或目錄，則會從磁碟中將其刪除。
@@ -7016,10 +7016,10 @@ Jira 參數 (皆為強制):
     cm ^tube ^disconnect
     cm ^tube ^status
 
-== CMD_DESCRIPTION_UNCO ==
+== CMD_DESCRIPTION_UNDOCHECKOUT ==
 復原項目簽出。
 
-== CMD_USAGE_UNCO ==
+== CMD_USAGE_UNDOCHECKOUT ==
 用法：
 
     cm ^undocheckout | ^unco <項目_路徑>[ ...][-^a | --^all] [--^symlink] [--^silent]
@@ -7048,7 +7048,7 @@ Jira 參數 (皆為強制):
     --^fieldseparator     搭配 '--^machinereadable' 標誌使用，
                          指定應如何分隔欄位。
 
-== CMD_HELP_UNCO ==
+== CMD_HELP_UNDOCHECKOUT ==
 備註：
 
     如果項目已簽出，而且您不想將其簽入，您可以使用此命令復原
@@ -7103,10 +7103,10 @@ Jira 參數 (皆為強制):
     列印結果、起始行和結尾行，以及使用
     指定的字串來分隔欄位。)
 
-== CMD_DESCRIPTION_UNCOUNCHANGED ==
+== CMD_DESCRIPTION_UNDOCHECKOUTUNCHANGED ==
 復原未變更的已簽出項目。
 
-== CMD_USAGE_UNCOUNCHANGED ==
+== CMD_USAGE_UNDOCHECKOUTUNCHANGED ==
 用法：
 
     cm ^uncounchanged | ^unuc <項目_路徑>[ ...][-^R | -^r | --^recursive]
@@ -7124,7 +7124,7 @@ Jira 參數 (皆為強制):
                         套用至目標。
     --^silent            不顯示任何輸出。
 
-== CMD_HELP_UNCOUNCHANGED ==
+== CMD_HELP_UNDOCHECKOUTUNCHANGED ==
 備註：
 
     此命令會從工作區根目錄以遞迴的方式套用。

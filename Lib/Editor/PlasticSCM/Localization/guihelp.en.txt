@@ -506,7 +506,7 @@ instead of merging files one by one.
 == PlasticWkExplPendingChangesUnityFirstTime ==
 [title]Useful tips to work with Unity[/title]
 
-* Configure locking. Most likely you want the .prefabs to be exclusively locked. Go to the [action:WebAdminOpenInLocks]WebAdmin and configure locks[/action].
+* Configure locking. Most likely you want the .prefabs to be exclusively locked. Go to the [action:OpenLocksInDashboard]WebAdmin and configure locks[/action].
 * Use checkouts. Locking requires that you checkout (lock) the files before editing. Checkout is the action to tell Unity VCS "I'm going to modify the file". It is available from the right-click menu of each file.
 * Configure the files to ignore. There are files that you don't want to add to version control. [action:IgnoreConfCreateUnity]Click here[/action] to create a ignore.conf for Unity. [link:https://plasticscm.com/download/help/ignored-hidden-etc]Learn more about ignore.conf[/link].
 
@@ -640,6 +640,28 @@ branches together.
 
 [link:https://plasticscm.com/download/help/syncview]Learn more about the SyncView here[/link].
 
+== PlasticSmartLocksGeneralHelp ==
+[title]We just released Smart Locks![/title]
+
+Smart locks will keep track of your repository making sure that only the latest revision of a file can get locked, avoiding merge conflicts for non-mergeable assets.
+Configure and manage all lock rules via [action:OpenConfigureLockRulesPage]{configuresource}[/action].
+
+[bold]How to lock files:[/bold]
+1. Lock and checkout file (right click on a file) in your workspace. 
+2. File is locked and teammates can't checkout file until you checkin. 
+
+Note: If no existing lock rules matching that file extension, add lock rule in the dialog.
+[italic]You must have configuration permissions[/italic].
+
+[bold]How to release locks:[/bold]
+1. Checkin file to release lock.
+2. Status is set to 'Retained' - Teammates can only checkout latest revision.
+
+Note: The status 'Retained' is kept until the file is merged back to the destination branch.
+Alternatively, an administrator can Remove a lock to allow teammates to Lock and Checkout any file revision in the [action:OpenLocksView]Lock list[/action].
+
+[link:https://docs.unity.com/devops/en/manual/smart-locks]Learn more about Smart Locks[/link]
+
 == CodeReviewWindowGeneralHelp ==
 [title]Review like a pro![/title]
 
@@ -765,18 +787,6 @@ Just type [windows]CTRL-F[/windows][macos]Command-F[/macos][linux]CTRL-F[/linux]
 Remember, you have context menus available (just right click).
 
 There are many useful actions there.
-
-== GluonWkExplTipHowToLockFiles ==
-[title]Do you know how to lock files?[/title]
-
-Locking happens automatically on [bold]Checkout[/bold].
-
-1. Just right click a file.
-2. Select Checkout.
-
-The server will lock the file during checkout if locks are configured for this file type.
-
-[link:https://plasticscm.com/download/help/locking]Read more about locking here[/link].
 
 == GluonWkExplTipUseHistory ==
 [title]Did you know the history of the selected file is always available?[/title]

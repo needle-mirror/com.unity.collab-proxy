@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-using Codice.Client.BaseCommands.EventTracking;
+using Codice.Client.Common.EventTracking;
 using Codice.CM.Common;
 using PlasticGui.WorkspaceWindow.QueryViews.Changesets;
 using PlasticGui;

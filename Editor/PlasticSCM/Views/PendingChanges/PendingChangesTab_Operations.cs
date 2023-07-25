@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 using Codice.Client.Commands.CheckIn;
 using Codice.Client.BaseCommands;
-using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Common;
+using Codice.Client.Common.EventTracking;
 using Codice.CM.Common;
 using GluonGui.WorkspaceWindow.Views.Checkin.Operations;
 using PlasticGui;

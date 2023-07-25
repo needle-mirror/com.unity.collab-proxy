@@ -17,7 +17,8 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
         DeletedOnServer = 1 << 9,
         Locked          = 1 << 10,
         LockedRemote    = 1 << 11,
-        HiddenChanged   = 1 << 12,
+        LockedRetained  = 1 << 12,
+        HiddenChanged   = 1 << 13,
     }
 
     internal class LockStatusData

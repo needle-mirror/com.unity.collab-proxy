@@ -4,8 +4,8 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Commands;
+using Codice.Client.Common.EventTracking;
 using Codice.Client.Common.FsNodeReaders;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;

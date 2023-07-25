@@ -3,7 +3,7 @@ using System.Threading;
 
 using UnityEditor;
 
-using Codice.Client.BaseCommands.EventTracking;
+using Codice.Client.Common.EventTracking;
 using Codice.Client.Common.Connection;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;

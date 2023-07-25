@@ -504,7 +504,7 @@ Unity VCS 非常擅长于检测和跟踪移动。
 == PlasticWkExplPendingChangesUnityFirstTime ==
 [title]与 Unity 结合使用时的有用提示[/title]
 
-* 配置锁定。很有可能您希望以独占方式锁定 .prefabs。请转到 [action:WebAdminOpenInLocks]WebAdmin 并配置锁[/action]。
+* 配置锁定。很有可能您希望以独占方式锁定 .prefabs。请转到 [action:OpenLocksInDashboard]WebAdmin 并配置锁[/action]。
 * 使用签出。为了锁定，您必须在编辑之前签出（锁定）文件。签出操作相当于告诉 Unity VCS“我要修改文件”。每个文件的右键菜单中都提供了此操作。
 * 配置要忽略的文件。有些文件您不想添加到版本控制下。[action:IgnoreConfCreateUnity]单击此处[/action]可为 Unity 创建一个 ignore.conf。[link:https://plasticscm.com/download/help/ignored-hidden-etc]了解有关 ignore.conf 的更多信息[/link]。
 

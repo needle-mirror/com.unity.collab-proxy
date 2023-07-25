@@ -435,11 +435,11 @@ stdin から入力を読み取る:
     cm ^blame ^serverpath:/src/client/checkin/Checkin.cs#^cs:73666
     (サーバーパスを使用して変更セット 73666 で始まるファイルに注釈を付けます。)
 
-== CMD_DESCRIPTION_APPLY_LOCAL ==
+== CMD_DESCRIPTION_APPLYLOCAL ==
 ローカルの変更 (ローカルでの移動、ローカルでの削除、ローカルでの変更) を確認して
 それらを適用し、Unity VCS がそれらの変更の追跡を開始できるようにします。
 
-== CMD_USAGE_APPLY_LOCAL ==
+== CMD_USAGE_APPLYLOCAL ==
 使用方法:
 
     cm ^applylocal | ^al [--^dependencies] [<項目パス>[ ...]]
@@ -461,7 +461,7 @@ stdin から入力を読み取る:
     --^fieldseparator      '--^machinereadable' フラグとともに使用され、そのフィールドをどのように区切る
                           必要があるかを指定します。
 
-== CMD_HELP_APPLY_LOCAL ==
+== CMD_HELP_APPLYLOCAL ==
 備考:
 
     --^dependencies と <項目パス> が指定されていない場合、操作にはそのワークスペース内の
@@ -1100,10 +1100,10 @@ stdin から入力を読み取る:
     ^cat myselector.txt | cm ^checkselectorsyntax
     (標準の入力から 'myselector.txt' の構文をチェックします。)
 
-== CMD_DESCRIPTION_CHGREVTYPE ==
+== CMD_DESCRIPTION_CHANGEREVISIONTYPE ==
 項目のリビジョンタイプ (バイナリまたはテキスト) を変更します。
 
-== CMD_USAGE_CHGREVTYPE ==
+== CMD_USAGE_CHANGEREVISIONTYPE ==
 使用方法:
 
     cm ^changerevisiontype | ^chgrevtype | ^crt <項目パス>[ ...]--^type=(^bin | ^txt)
@@ -1113,7 +1113,7 @@ stdin から入力を読み取る:
                         項目パスを区切ります。
     --^type              ターゲットリビジョンタイプ。'^bin' または '^txt' を選択します。
 
-== CMD_HELP_CHGREVTYPE ==
+== CMD_HELP_CHANGEREVISIONTYPE ==
 備考:
 
     このコマンドはディレクトリではなく、ファイルにのみ適用できます。
@@ -1813,10 +1813,10 @@ Git 高速エクスポートデータをリポジトリにインポートしま�
     cm ^fileinfo proj_specs.docx --^fields=^ServerPath,^RevisionChangeset --^xml
     cm ^fileinfo samples.ogg --^format="{^ServerPath}[{^Owner}] -> {^Size}"
 
-== CMD_DESCRIPTION_FIND_QUERY ==
+== CMD_DESCRIPTION_FIND ==
 SQL のようなクエリを実行して Unity VCS のオブジェクトを探します。
 
-== CMD_USAGE_FIND_QUERY ==
+== CMD_USAGE_FIND ==
 使用方法:
 
     cm ^find <オブジェクトタイプ>
@@ -1854,7 +1854,7 @@ SQL のようなクエリを実行して Unity VCS のオブジェクトを探�
                         にある MSDN のドキュメントを参照してください
                         (ページの最後、「名前」列)。
 
-== CMD_HELP_FIND_QUERY ==
+== CMD_HELP_FIND ==
 備考:
 
     リポジトリが指定されていない場合、検索はワークスペースに設定された
@@ -2188,10 +2188,10 @@ stdin から入力を読み取る:
     cm ^gtb 4311 --^format="^br:{^name}"
     cm ^gtb 4311 --^format="^br:{^name} {^date}" --^dateformat="yyyy/MM/dd HH:mm:ss"
 
-== CMD_DESCRIPTION_GETWWI ==
+== CMD_DESCRIPTION_GETWORKSPACEINFO ==
 ワークスペースセレクターに関する情報を表示します。
 
-== CMD_USAGE_GETWWI ==
+== CMD_USAGE_GETWORKSPACEINFO ==
 使用方法:
 
     cm ^wi [<ワークスペースパス>]
@@ -2200,7 +2200,7 @@ stdin から入力を読み取る:
 
     ワークスペースパス  マシン上のワークスペースのパス。
 
-== CMD_HELP_GETWWI ==
+== CMD_HELP_GETWORKSPACEINFO ==
 備考:
     「^wi」コマンドはワークスペースの作業中の設定 (リポジトリ、
     ブランチ、ラベル) を表示します。
@@ -2208,10 +2208,10 @@ stdin から入力を読み取る:
 例:
     cm ^wi c:\mywk
 
-== CMD_DESCRIPTION_GWP ==
+== CMD_DESCRIPTION_GETWORKSPACEFROMPATH ==
 パスからワークスペースの情報を取得します。
 
-== CMD_USAGE_GWP ==
+== CMD_USAGE_GETWORKSPACEFROMPATH ==
 これは「cm」を自動化する目的のためだけに使用する自動化コマンドです。
 使い勝手については十分ではありません。
 
@@ -2225,7 +2225,7 @@ stdin から入力を読み取る:
     --^format            出力メッセージを特定の形式で取得します。詳細については
                         「備考」を参照してください。
 
-== CMD_HELP_GWP ==
+== CMD_HELP_GETWORKSPACEFROMPATH ==
 備考:
 
     このコマンドは、パス内にあるワークスペースに関する情報を表示します。
@@ -2708,10 +2708,10 @@ Jira のパラメーター (すべて必須):
     表示します。完全な変更セット指定が指定されたため、コマンドを実行するのに
     ワークスペースは不要です。)
 
-== CMD_DESCRIPTION_LS ==
+== CMD_DESCRIPTION_LIST ==
 ツリーのコンテンツをリストします。
 
-== CMD_USAGE_LS ==
+== CMD_USAGE_LIST ==
 使用方法:
 
     cm ^ls | ^dir [<パス>[ ...]] [--^format=<文字列形式>] [--^symlink]
@@ -2746,7 +2746,7 @@ Jira のパラメーター (すべて必須):
                         にある MSDN のドキュメントを参照してください
                         (ページの最後、「名前」列)。
 
-== CMD_HELP_LS ==
+== CMD_HELP_LIST ==
 備考:
 
     - パスはメタ文字で入力できます。
@@ -5412,10 +5412,10 @@ SQL クエリを実行します。SQL ストレージが必要です。
     cm ^revert dir#^cs:0
     cm ^revert C:\mywks\dir\file1.txt#23456
 
-== CMD_DESCRIPTION_REVISION_HISTORY ==
+== CMD_DESCRIPTION_HISTORY ==
 ファイルまたはディレクトリの履歴を表示します。
 
-== CMD_USAGE_REVISION_HISTORY ==
+== CMD_USAGE_HISTORY ==
 使用方法:
 
     cm ^history | ^hist <項目パス>[ ...][--^long | --^format=<文字列形式>]
@@ -5442,7 +5442,7 @@ SQL クエリを実行します。SQL ストレージが必要です。
                         にある MSDN のドキュメントを参照してください
                         (ページの最後、「名前」列)。
 
-== CMD_HELP_REVISION_HISTORY ==
+== CMD_HELP_HISTORY ==
 備考:
 
     このコマンドは、指定された項目のリビジョンのリストと、各リビジョンのラベル、
@@ -5499,10 +5499,10 @@ SQL クエリを実行します。SQL ストレージが必要です。
     (ターゲットにではなくリンクファイルに操作を適用します。UNIX 環境で
     有効です。)
 
-== CMD_DESCRIPTION_RM ==
+== CMD_DESCRIPTION_REMOVE ==
 ユーザーにファイルとディレクトリの削除を許可します。
 
-== CMD_USAGE_RM ==
+== CMD_USAGE_REMOVE ==
 使用方法:
 
     cm ^remove | ^rm <コマンド> [オプション]
@@ -5516,16 +5516,16 @@ SQL クエリを実行します。SQL ストレージが必要です。
     cm ^remove <コマンド> --^usage
     cm ^remove <コマンド> --^help
 
-== CMD_HELP_RM ==
+== CMD_HELP_REMOVE ==
 例:
 
     cm ^remove \path\controlled_file.txt
     cm ^remove ^private \path\private_file.txt
 
-== CMD_DESCRIPTION_RM_CONTROLLED ==
+== CMD_DESCRIPTION_REMOVE_CONTROLLED ==
 ファイルまたはディレクトリをバージョン管理から削除します。
 
-== CMD_USAGE_RM_CONTROLLED ==
+== CMD_USAGE_REMOVE_CONTROLLED ==
 使用方法:
 
     cm ^remove | ^rm <項目パス>[ ...][--^format=<文字列形式>]
@@ -5544,7 +5544,7 @@ SQL クエリを実行します。SQL ストレージが必要です。
     --^nodisk            バージョン管理から項目を削除しますが、ディスク上には
                         保持します。
 
-== CMD_HELP_RM_CONTROLLED ==
+== CMD_HELP_REMOVE_CONTROLLED ==
 備考:
 
     項目はディスクから削除されます。削除された項目はソースコード管理の親
@@ -5580,14 +5580,14 @@ stdin から入力を読み取る:
     cm ^remove c:\workspace\file.txt --^nodisk
     (「file.txt」をバージョン管理から削除しますが、ディスク上には保持します。)
 
-== CMD_DESCRIPTION_RM_PRIVATE ==
+== CMD_DESCRIPTION_REMOVE_PRIVATE ==
 非公開ファイルまたはディレクトリを削除します。
 
 警告: コマンドを使用して削除されたファイルは完全に消去され、
 復元できません。「--^dry-run」オプションを使用して、コマンドの影響を受けるファイルを
 確認することをお勧めします。
 
-== CMD_USAGE_RM_PRIVATE ==
+== CMD_USAGE_REMOVE_PRIVATE ==
 使用方法:
 
     cm ^remove | ^rm ^private <パス>[ ...][-^R | -^r | --^recursive] [--^ignored]
@@ -5605,7 +5605,7 @@ stdin から入力を読み取る:
     --^verbose           影響を受けるすべてのパスを出力します。
     --^dry-run           ディスクに変更を加えずにコマンドを実行します。
 
-== CMD_HELP_RM_PRIVATE ==
+== CMD_HELP_REMOVE_PRIVATE ==
 備考:
 
     パスが非公開のファイルまたはディレクトリである場合は、ディスクから削除されます。
@@ -7016,10 +7016,10 @@ Plastic Tube に関連するコマンドを実行します。
     cm ^tube ^disconnect
     cm ^tube ^status
 
-== CMD_DESCRIPTION_UNCO ==
+== CMD_DESCRIPTION_UNDOCHECKOUT ==
 項目のチェックアウトを取り消します。
 
-== CMD_USAGE_UNCO ==
+== CMD_USAGE_UNDOCHECKOUT ==
 使用方法:
 
     cm ^undocheckout | ^unco <項目パス>[ ...][-^a | --^all] [--^symlink] [--^silent]
@@ -7048,7 +7048,7 @@ Plastic Tube に関連するコマンドを実行します。
     --^fieldseparator     「--^machinereadable」フラグとともに使用され、
                           フィールドをどのように区切る必要があるかを指定します。
 
-== CMD_HELP_UNCO ==
+== CMD_HELP_UNDOCHECKOUT ==
 備考:
 
     項目がチェックアウト済みになっていて、それをチェックインしたくない場合は、このコマンドを
@@ -7103,10 +7103,10 @@ stdin から入力を読み取る:
     解析しやすい形式で出力します。指定された文字列で行を開始および終了し、
     フィールドを区切ります。)
 
-== CMD_DESCRIPTION_UNCOUNCHANGED ==
+== CMD_DESCRIPTION_UNDOCHECKOUTUNCHANGED ==
 変更されていないチェックアウト済み項目を取り消します。
 
-== CMD_USAGE_UNCOUNCHANGED ==
+== CMD_USAGE_UNDOCHECKOUTUNCHANGED ==
 使用方法:
 
     cm ^uncounchanged | ^unuc <項目パス>[ ...][-^R | -^r | --^recursive]
@@ -7124,7 +7124,7 @@ stdin から入力を読み取る:
                         適用します。
     --^silent            出力を表示しません。
 
-== CMD_HELP_UNCOUNCHANGED ==
+== CMD_HELP_UNDOCHECKOUTUNCHANGED ==
 備考:
 
     このコマンドは、ワークスペースのルートから再帰的に適用されます。

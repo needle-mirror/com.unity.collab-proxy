@@ -54,7 +54,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
                 return;
 
             Dictionary<Guid, LockInfo> serverlocksByItem =
-                ServerLocks.GetServerLocksByItem(
+                ServerLocks.GetLocksForServerByItemGuid(
                     repSpec.Server, locksByItemByServer);
 
             if (serverlocksByItem == null || serverlocksByItem.Count == 0)

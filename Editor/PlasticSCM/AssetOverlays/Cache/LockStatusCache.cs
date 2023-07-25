@@ -198,8 +198,17 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
                 LockInfo lockInfo,
                 LockOwnerNameResolver nameResolver)
             {
-                AssetStatus status = CheckWorkspaceTreeNodeStatus.IsCheckedOut(node) ?
-                    AssetStatus.Locked : AssetStatus.LockedRemote;
+                AssetStatus status = AssetStatus.None;
+                // Filter the locks that are Retained since the plugin doesn't support them yet.
+                if (lockInfo.Status == LockInfo.LockStatus.Retained)
+                {
+                    status = AssetStatus.LockedRetained;
+                }
+                else
+                {
+                    status = CheckWorkspaceTreeNodeStatus.IsCheckedOut(node) ?
+                        AssetStatus.Locked : AssetStatus.LockedRemote;
+                }
 
                 return new LockStatusData(
                     status,

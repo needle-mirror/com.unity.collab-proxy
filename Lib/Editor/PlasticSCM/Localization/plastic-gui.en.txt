@@ -232,6 +232,9 @@ Loading changesets...
 == LoadingShelves ==
 Loading shelves...
 
+== LoadingLocks ==
+Loading locks...
+
 == LoadingSyncViewDetails ==
 Loading sync view details...
 
@@ -1252,6 +1255,15 @@ Hide shelves
 == ShowShelvesViewTooltip ==
 Show the shelves view
 
+== NoShelvesCreatedExplanation ==
+There are no shelves created yet
+
+== NoShelvesMatchQueryExplanation ==
+There are no shelves that match your query
+
+== NoLocksCreatedExplanation ==
+There are no file locks created yet
+
 == ShowLinkedTasksButton ==
 Show tasks
 
@@ -1499,6 +1511,18 @@ Deleting shelve...
 
 == DeletingShelvesPlural ==
 Deleting shelves...
+
+== RemovingLocksSingular ==
+Removing lock...
+
+== RemovingLocksPlural ==
+Removing locks...
+
+== ReleasingLocksSingular ==
+Releasing lock...
+
+== ReleasingLocksPlural ==
+Releasing locks...
 
 == ApplyingShelve ==
 Applying shelve...
@@ -2634,6 +2658,9 @@ Deleted on server
 == StatusLocked ==
 Locked by '{0}'
 
+== StatusRetained ==
+Retained by '{0}'
+
 == StatusCheckedOutChanged ==
 Checked-out (changed)
 
@@ -2712,6 +2739,9 @@ Sync Repositories
 == ShelvesViewTitle ==
 Shelves
 
+== LocksViewTitle ==
+File locks
+
 == HistoryViewTitle ==
 History of {0}
 
@@ -2753,6 +2783,9 @@ There are {0} directory conflicts that must be resolved before updating the work
 
 == CreatedByColumn ==
 Created by
+
+== OwnerColumn ==
+Owner
 
 == UnresolvedXlink ==
 unresolved xlink
@@ -3981,6 +4014,9 @@ Toggle details
 == ShowDetails ==
 Show details
 
+== ShowLocks ==
+Show locks
+
 == ToggleDetailsButtonTooltip ==
 Hide/show details area
 
@@ -4309,6 +4345,12 @@ Show ignored files
 
 == PendingChangesShowIgnoredFilesExplanation ==
 Show files that you previously ignored by adding them to ignore.conf.
+
+== PendingChangesShowCloakedFiles ==
+Show cloaked files
+
+== PendingChangesShowCloakedFilesExplanation ==
+Show files that you previously cloaked by adding them to cloaked.conf.
 
 == PendingChangesShowHiddenFiles ==
 Show hidden files
@@ -7128,7 +7170,7 @@ Add a new Unity DevOps Version Control account
 Select a path
 
 == EmptyRepositoryHeader ==
-This repository is still empty
+This repository is empty
 
 == WorkspaceNotOnDisk ==
 <not on disk>
@@ -7734,6 +7776,9 @@ Discover the new Code Review experience with multiple reviewers on the
 == UnityDashboard ==
 Unity Dashboard
 
+== WebAdmin ==
+Web Admin
+
 == UserNotFoundSignUp ==
 User account not found.
 
@@ -7751,3 +7796,78 @@ Signing in...
 
 == ShowEmbeddedShelveDiffTooltip ==
 Always open shelves in current window
+
+== EmptyLabelsMessage ==
+There are no labels created yet
+
+== EmptyLabelsMatchQueryMessage ==
+There are no labels that match your query
+
+== EmptyAttributesMessage ==
+There are no attributes created yet
+
+== EmptyAttributesMatchQueryMessage ==
+There are no attributes that match your query
+
+== EmptyCodeReviewsMessage ==
+There are no code reviews created yet
+
+== EmptyCodeReviewsMatchQueryMessage ==
+There are no code reviews that match your query
+
+== EmptyWkExplorerMessage ==
+The workspace is empty
+
+== EmptyPendingChangesMessage ==
+There are no pending changes found
+
+== EmptyIncomingChangesMessage ==
+There are no incoming changes found
+
+== EmptySyncViewMessage ==
+There are no cloud syncs created yet
+
+== LockInfoDetailsFormatString == 
+{0} {1} on {2} by {3}
+
+== LockMenuItemReleaseLock ==
+Release
+
+== LockMenuItemRemoveLock ==
+Remove
+
+== ConfirmReleaseLocksTitle ==
+Confirm release
+
+== ReleaseLocksMessageSingular ==
+Releasing 1 lock. Are you sure?
+
+== ReleaseLocksMessagePlural ==
+Releasing {0} locks. Are you sure?
+
+== ReleaseLocksButton ==
+Release
+
+== ConfirmRemoveLocksTitle ==
+Confirm remove
+
+== RemoveLocksMessageSingular ==
+Removing 1 lock. Are you sure?
+
+== RemoveLocksMessagePlural ==
+Removing {0} locks. Are you sure?
+
+== RemoveLocksButton ==
+Remove
+
+== ConfigureLockRules ==
+Configure rules
+
+== DiscoverNewSmartLocks ==
+New feature: Smart Locks. Artists can now lock files safely among branches. 
+
+== PurgedRevision ==
+Purged revision
+
+== PurgedRevisionMessage ==
+The content can't be displayed, this revision has been permanently deleted.

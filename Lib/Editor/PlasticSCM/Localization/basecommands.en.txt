@@ -954,8 +954,28 @@ The --short and --xml options cannot be used together since --short does not loa
 == CmdUnexpectedOption ==
 {0}: Unexpected option {1}
 
+== CmdInvalidValueForOption ==
+Invalid value for option: {0}={1}
+
+== CmdServerCannotBeInferred ==
+Could not infer which server must be used to run this command.
+Please provide one explicitly using the --server=<server> option.
+
+== CmdRepositoryCannotBeInferred ==
+Could not infer which repository must be used to run this command.
+Please provide one explicitly using the --repository=<repository> option.
+
 == CmdUpdated ==
 {0} updated correctly
+
+== CmdUpdateReportItemMessage ==
+{0} updating '{1}': {2}
+
+== CmdUpdateReportWarningSeverity ==
+Warning
+
+== CmdUpdateReportErrorSeverity ==
+Error
 
 == CommandFinishedSuccesfully ==
 Command finished successfully
@@ -1203,6 +1223,9 @@ The destination revision was not found to promote a merge
 
 == DiffNotDownloadedRevision ==
 Revision {0} could not be downloaded from the server. Please try again selecting a different file and then coming back to this one.
+
+== DifferentRepositorySpecs ==
+Can't specify objects from different repositories
 
 == DirConflictCannotBeApplied ==
 The conflict {0} with source:'{1}' and destination:'{2}' can't be applied because of the error: '{3}'.
@@ -2220,6 +2243,59 @@ Performing switch operation...
 == PermissionKey ==
 Permission
 
+== Purge ==
+controls the ability to register, query and execute purges
+
+== PurgeNotFound ==
+Purge not found: '{0}'.
+Please check that it is the right ID, and be sure to have the required permissions.
+
+== PurgeNotReadyToRun ==
+The requested purge action is not ready to be executed.
+
+== PurgeIsGettingReady ==
+Now calculating revisions to purge... Please wait.
+
+== PurgeCannotBeDeleted ==
+This purge cannot be deleted from the registry anymore.
+
+== PurgeIsWaitingToRun ==
+The requested purge action is already waiting to run.
+
+== PurgeIsRunning ==
+The requested purge action is already running.
+
+== PurgeIsAlreadyBeingDeleted ==
+The purge is being deleted from the registry. You cannot execute it nor delete it again.
+
+== PurgeWasAlreadyExecuted ==
+The requested purge action was already executed.
+
+== PurgeAuthorIsNotYou ==
+You are not the purge author. Only the purge author is allowed to execute or unregister it.
+
+== PurgeRunAreYouSure ==
+This operation cannot be undone or canceled. You will permanently lose the revisions of these files.
+Tip: if you want to inspect all the affected revisions, do NOT continue and run this command:
+  $ cm purge show {0} --verbose --server={1}
+Are you sure you want to execute the purge? (y/n)
+
+== PurgeRunSucceeded ==
+The purge action is now running.
+
+== PurgeRunFailed ==
+The purge action failed to start.
+
+== PurgeDeletionSucceeded ==
+The purge action was unregistered.
+
+== PurgeDeletionFailed ==
+Failed to unregister the purge action.
+
+== PurgeInvalidId ==
+The input purge ID is invalid: {0}
+Example of valid ID:           0131098b-2ff3-44a7-bfd3-233c13225103
+
 == Private ==
 Private
 
@@ -2240,6 +2316,12 @@ Processing directory operations (downloading revisions)
 
 == ProcessingDirectoryOperationsUpdatingWorkspace ==
 Processing directory operations (updating workspace)
+
+== PurgeNotAnExtension ==
+'{0}' is not a file extension. Did you mean this?: '.{0}'.
+
+== PurgeBeforeDateInvalidSetInFuture ==
+Invalid date '{0}' for file type '{1}': it is set in the future.
 
 == PushingAcls ==
 Pushing ACLs

@@ -5,10 +5,10 @@ using UnityEditor;
 using UnityEditor.VersionControl;
 
 using Codice.Client.BaseCommands;
-using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Commands;
 using Codice.Client.Commands.WkTree;
 using Codice.Client.Common;
+using Codice.Client.Common.EventTracking;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using GluonGui;
@@ -124,7 +124,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                     mGuiMessage,
                     selectedPaths.ToArray(),
                     false,
-                    RefreshAsset.VersionControlCache);
+                    RefreshAsset.VersionControlCache,
+                    mWkInfo);
                 return;
             }
 
@@ -134,7 +135,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 mProgressControls,
                 selectedPaths,
                 mNewIncomingChangesUpdater,
-                RefreshAsset.VersionControlCache);
+                RefreshAsset.VersionControlCache,
+                mWkInfo);
         }
 
         void IAssetMenuOperations.Checkin()

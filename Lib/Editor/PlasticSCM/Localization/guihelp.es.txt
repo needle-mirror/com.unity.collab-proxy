@@ -508,7 +508,7 @@ fichero.
 == PlasticWkExplPendingChangesUnityFirstTime ==
 [title]Consejos útiles para trabajar con Unity[/title]
 
-* Configura el bloqueo. Es muy posible que quieras que los ficheros .prefabs estén bloqueados de manera exclusiva. Para ello, ve a [action:WebAdminOpenInLocks]WebAdmin y configura los bloqueos[/action].
+* Configura el bloqueo. Es muy posible que quieras que los ficheros .prefabs estén bloqueados de manera exclusiva. Para ello, ve a [action:OpenLocksInDashboard]WebAdmin y configura los bloqueos[/action].
 * Usa checkouts (desprotecciones). Para bloquear un fichero tienes que hacer checkout: desproteger para editar. Desproteger es la acción de decirle a Unity VCS "Voy a modificar el fichero". Esta acción está disponible desde el menú contextual (clic derecho) de cada fichero.
 * Configura los ficheros a ignorar. Hay ficheros que no quieres añadir al control de versiones. [action:IgnoreConfCreateUnity]Haz clic aquí[/action] para crear el fichero ignore.conf para Unity. [link:https://plasticscm.com/download/help/ignored-hidden-etc] Lee más sobre cómo configurar el fichero ignore.conf[/link].
 
@@ -642,6 +642,28 @@ las que tengan ese nombre a la vez.
 
 [link:https://plasticscm.com/download/help/syncview]Aprende más sobre la {viewname} aquí[/link].
 
+== PlasticSmartLocksGeneralHelp ==
+[title]Acabamos de lanzar los bloquos inteligentes![/title]
+
+Los bloqueos inteligentes harán un seguimiento de su repositorio asegurándose de que sólo la última revisión de un archivo puede ser bloqueada, evitando conflictos de merge para los activos no mergeables.
+Configure y gestione todas las reglas de bloqueo a través de [action:OpenConfigureLockRulesPage]{configuresource}[/action].
+
+[bold]Cómo bloquear ficheros:[/bold]
+1. [bold]Bloquear y checkout[/bold] de un fichero (click derecho en el fichero) en tu espacio de trabajo.
+2. El archivo está bloqueado y los compañeros de equipo no pueden hacer checkout hasta que te registres. 
+
+Nota: Si no existen reglas de bloqueo que coincidan con esa extensión de archivo, añadida regla de bloqueo en el diálogo.
+[italic]Debe tener permisos de configuración[/italic].
+
+[bold]Cómo liberar bloqueos:[/bold]
+1. Subir cambios de un fichero para liberar el bloqueo.
+2. El estado es 'Retained' - Los compañeros de equipo sólo pueden hacer checkout sobre la última revisión.
+
+Nota: El estado ‘Retained’ se mantiene hasta que el archivo es mergeado contra la rama de destino.
+Alternativamente, un administrador puede eliminar el bloqueo para permitir a los compañeros de equipo Bloquear y hacer Checkout de cualquier revisión de archivo en la [action:OpenLocksView]Lista de Bloqueos[/action].
+
+[link:https://docs.unity.com/devops/en/manual/smart-locks]Saber más sobre los Bloqueos Inteligentes[/link]
+
 == CodeReviewWindowGeneralHelp ==
 [title]¡Revisa como un profesional![/title]
 
@@ -767,18 +789,6 @@ Usa las teclas [windows]CTRL-F[/windows][macos]Command-F[/macos][linux]CTRL-F[/l
 Recuerda que dispones de menús contextuales (clic derecho).
 
 Podrás ejecutar acciones muy útiles desde ellos.
-
-== GluonWkExplTipHowToLockFiles ==
-[title]¿Sabes cómo bloquear ficheros?[/title]
-
-Un bloqueo se produce automáticamente con un [bold]Checkout[/bold].
-
-1. Haz clic derecho en un fichero.
-2. Selecciona "Checkout".
-
-El servidor bloqueará el fichero durante la desprotección si el bloqueo está configurado para ese tipo de fichero.
-
-[link:https://plasticscm.com/download/help/locking]Aprende más sobre bloqueos[/link].
 
 == GluonWkExplTipUseHistory ==
 [title]¿Sabías que la historia del archivo seleccionado está siempre disponible?[/title]

@@ -435,11 +435,11 @@ https://www.plasticscm.com/download/help/securityguide
     cm ^blame ^serverpath:/src/client/checkin/Checkin.cs#^cs:73666
     （使用服务器路径对变更集 73666 中开始的文件进行批注。）
 
-== CMD_DESCRIPTION_APPLY_LOCAL ==
+== CMD_DESCRIPTION_APPLYLOCAL ==
 检查是否有本地更改（本地移动、本地删除和本地更改）
 并应用这些更改，以便 Unity VCS 开始跟踪这些更改。
 
-== CMD_USAGE_APPLY_LOCAL ==
+== CMD_USAGE_APPLYLOCAL ==
 用法：
 
     cm ^applylocal | ^al [--^dependencies] [<项路径>[ ...]]
@@ -461,7 +461,7 @@ https://www.plasticscm.com/download/help/securityguide
     --^fieldseparator      与 '--^machinereadable' 标志结合使用，指定
                           应如何分隔字段。
 
-== CMD_HELP_APPLY_LOCAL ==
+== CMD_HELP_APPLYLOCAL ==
 备注：
 
     如果未指定 --^dependencies 和 <项路径>，则该操作涉及
@@ -1100,10 +1100,10 @@ https://www.plasticscm.com/download/help/securityguide
     ^cat myselector.txt | cm ^checkselectorsyntax
     （在标准输入中检查 'myselector.txt' 的语法。）
 
-== CMD_DESCRIPTION_CHGREVTYPE ==
+== CMD_DESCRIPTION_CHANGEREVISIONTYPE ==
 更改某个项的修订类型（二进制或文本）。
 
-== CMD_USAGE_CHGREVTYPE ==
+== CMD_USAGE_CHANGEREVISIONTYPE ==
 用法：
 
     cm ^changerevisiontype | ^chgrevtype | ^crt <项路径>[ ...]--^type=(^bin | ^txt)
@@ -1113,7 +1113,7 @@ https://www.plasticscm.com/download/help/securityguide
                         对各个项路径进行分隔。
     --^type              目标修订类型。选择 '^bin' 或 '^txt'。
 
-== CMD_HELP_CHGREVTYPE ==
+== CMD_HELP_CHANGEREVISIONTYPE ==
 备注：
 
     此命令只能应用于文件，而不能应用于目录。
@@ -1813,10 +1813,10 @@ https://www.plasticscm.com/download/help/securityguide
     cm ^fileinfo proj_specs.docx --^fields=^ServerPath,^RevisionChangeset --^xml
     cm ^fileinfo samples.ogg --^format="{^ServerPath}[{^Owner}] -> {^Size}"
 
-== CMD_DESCRIPTION_FIND_QUERY ==
+== CMD_DESCRIPTION_FIND ==
 运行类似 SQL 的查询以查找 Unity VCS 对象。
 
-== CMD_USAGE_FIND_QUERY ==
+== CMD_USAGE_FIND ==
 用法：
 
     cm ^find <对象类型>
@@ -1854,7 +1854,7 @@ https://www.plasticscm.com/download/help/securityguide
                         以查看包含受支持编码及其格式的表格
                         （位于页面末尾的“名称”列中）。
 
-== CMD_HELP_FIND_QUERY ==
+== CMD_HELP_FIND ==
 备注：
 
     如果未指定存储库，则在工作区中配置的存储库上
@@ -2188,10 +2188,10 @@ https://www.plasticscm.com/download/help/securityguide
     cm ^gtb 4311 --^format="^br:{^name}"
     cm ^gtb 4311 --^format="^br:{^name} {^date}" --^dateformat="yyyy/MM/dd HH:mm:ss"
 
-== CMD_DESCRIPTION_GETWWI ==
+== CMD_DESCRIPTION_GETWORKSPACEINFO ==
 显示有关工作区选择器的信息。
 
-== CMD_USAGE_GETWWI ==
+== CMD_USAGE_GETWORKSPACEINFO ==
 用法：
 
     cm ^wi [<工作区路径>]
@@ -2200,7 +2200,7 @@ https://www.plasticscm.com/download/help/securityguide
 
     工作区路径             工作区在机器上的路径。
 
-== CMD_HELP_GETWWI ==
+== CMD_HELP_GETWORKSPACEINFO ==
 备注：
     '^wi' 命令显示工作区（存储库、分支和/或标签）
     的工作配置。
@@ -2208,10 +2208,10 @@ https://www.plasticscm.com/download/help/securityguide
 示例：
     cm ^wi c:\mywk
 
-== CMD_DESCRIPTION_GWP ==
+== CMD_DESCRIPTION_GETWORKSPACEFROMPATH ==
 从路径获取工作区信息。
 
-== CMD_USAGE_GWP ==
+== CMD_USAGE_GETWORKSPACEFROMPATH ==
 这是一个自动化命令，仅用于自动执行 'cm'。
 此命令的用户友好度不如预期。
 
@@ -2225,7 +2225,7 @@ https://www.plasticscm.com/download/help/securityguide
     --^format            检索特定格式的输出消息。请参阅
                         “备注”以了解更多信息。
 
-== CMD_HELP_GWP ==
+== CMD_HELP_GETWORKSPACEFROMPATH ==
 备注：
 
     此命令显示有关路径中的工作区的信息。
@@ -2708,10 +2708,10 @@ Jira 参数（全部为必需参数）：
     的相关信息。无需工作区也可运行此命令，因为
     已指定完整变更集规格。）
 
-== CMD_DESCRIPTION_LS ==
+== CMD_DESCRIPTION_LIST ==
 列出树的内容。
 
-== CMD_USAGE_LS ==
+== CMD_USAGE_LIST ==
 用法：
 
     cm ^ls | ^dir [<路径>[ ...]] [--^format=<格式字符串>] [--^symlink]
@@ -2746,7 +2746,7 @@ Jira 参数（全部为必需参数）：
                         以查看包含受支持编码及其格式的表格
                         （位于页面末尾的“名称”列中）。
 
-== CMD_HELP_LS ==
+== CMD_HELP_LIST ==
 备注：
 
     - 可以使用元字符来键入路径。
@@ -5412,10 +5412,10 @@ Jira 参数（全部为必需参数）：
     cm ^revert dir#^cs:0
     cm ^revert C:\mywks\dir\file1.txt#23456
 
-== CMD_DESCRIPTION_REVISION_HISTORY ==
+== CMD_DESCRIPTION_HISTORY ==
 显示文件或目录的历史记录。
 
-== CMD_USAGE_REVISION_HISTORY ==
+== CMD_USAGE_HISTORY ==
 用法：
 
     cm ^history | ^hist <项路径>[ ...][--^long | --^format=<格式字符串>]
@@ -5442,7 +5442,7 @@ Jira 参数（全部为必需参数）：
                         以查看包含受支持编码及其格式的表格
                         （位于页面末尾的“名称”列中）。
 
-== CMD_HELP_REVISION_HISTORY ==
+== CMD_HELP_HISTORY ==
 备注：
 
     此命令将显示给定项的修订列表，以及每个修订的标签、
@@ -5499,10 +5499,10 @@ Jira 参数（全部为必需参数）：
     （将操作应用于链接文件而不是目标；适用于
     UNIX 环境。）
 
-== CMD_DESCRIPTION_RM ==
+== CMD_DESCRIPTION_REMOVE ==
 允许用户删除文件和目录。
 
-== CMD_USAGE_RM ==
+== CMD_USAGE_REMOVE ==
 用法：
 
     cm ^remove | ^rm <命令> [选项]
@@ -5516,16 +5516,16 @@ Jira 参数（全部为必需参数）：
     cm ^remove <命令> --^usage
     cm ^remove <命令> --^help
 
-== CMD_HELP_RM ==
+== CMD_HELP_REMOVE ==
 示例：
 
     cm ^remove \path\controlled_file.txt
     cm ^remove ^private \path\private_file.txt
 
-== CMD_DESCRIPTION_RM_CONTROLLED ==
+== CMD_DESCRIPTION_REMOVE_CONTROLLED ==
 从版本控制中删除一个文件或目录。
 
-== CMD_USAGE_RM_CONTROLLED ==
+== CMD_USAGE_REMOVE_CONTROLLED ==
 用法：
 
     cm ^remove | ^rm <项路径>[ ...][--^format=<格式字符串>]
@@ -5544,7 +5544,7 @@ Jira 参数（全部为必需参数）：
     --^nodisk            从版本控制中删除相应的项，但是将该项保留在
                         磁盘上。
 
-== CMD_HELP_RM_CONTROLLED ==
+== CMD_HELP_REMOVE_CONTROLLED ==
 备注：
 
     磁盘中会删除项。删除的项会从源代码管理
@@ -5580,14 +5580,14 @@ Jira 参数（全部为必需参数）：
     cm ^remove c:\workspace\file.txt --^nodisk
     （从版本控制中删除 'file.txt'，但将其保留在磁盘上。）
 
-== CMD_DESCRIPTION_RM_PRIVATE ==
+== CMD_DESCRIPTION_REMOVE_PRIVATE ==
 删除一个私有文件或目录。
 
 警告：使用该命令删除的文件将被永久擦除而无法
 恢复。建议使用 '--^dry-run' 选项来检查
 哪些文件将受到该命令的影响。
 
-== CMD_USAGE_RM_PRIVATE ==
+== CMD_USAGE_REMOVE_PRIVATE ==
 用法：
 
     cm ^remove | ^rm ^private <路径>[ ...][-^R | -^r | --^recursive] [--^ignored]
@@ -5605,7 +5605,7 @@ Jira 参数（全部为必需参数）：
     --^verbose           打印所有受影响的路径。
     --^dry-run           运行此命令而不在磁盘上进行任何更改。
 
-== CMD_HELP_RM_PRIVATE ==
+== CMD_HELP_REMOVE_PRIVATE ==
 备注：
 
     如果路径是私有文件或目录，则会从磁盘上将其删除。
@@ -7016,10 +7016,10 @@ Jira 参数（全部为必需参数）：
     cm ^tube ^disconnect
     cm ^tube ^status
 
-== CMD_DESCRIPTION_UNCO ==
+== CMD_DESCRIPTION_UNDOCHECKOUT ==
 撤销项的签出。
 
-== CMD_USAGE_UNCO ==
+== CMD_USAGE_UNDOCHECKOUT ==
 用法：
 
     cm ^undocheckout | ^unco <项路径>[ ...][-^a | --^all] [--^symlink] [--^silent]
@@ -7048,7 +7048,7 @@ Jira 参数（全部为必需参数）：
     --^fieldseparator     与 '--^machinereadable' 标志结合使用，
                          指定应如何分隔字段。
 
-== CMD_HELP_UNCO ==
+== CMD_HELP_UNDOCHECKOUT ==
 备注：
 
     如果已签出某个项并且不想将这个项签入，则可以
@@ -7103,10 +7103,10 @@ Jira 参数（全部为必需参数）：
     格式打印结果，以指定的字符串作为行的开头和结尾以及
     对各字段进行分隔。）
 
-== CMD_DESCRIPTION_UNCOUNCHANGED ==
+== CMD_DESCRIPTION_UNDOCHECKOUTUNCHANGED ==
 撤销未更改的已签出项。
 
-== CMD_USAGE_UNCOUNCHANGED ==
+== CMD_USAGE_UNDOCHECKOUTUNCHANGED ==
 用法：
 
     cm ^uncounchanged | ^unuc <项路径>[ ...][-^R | -^r | --^recursive]
@@ -7124,7 +7124,7 @@ Jira 参数（全部为必需参数）：
                         目标。
     --^silent            不显示任何输出。
 
-== CMD_HELP_UNCOUNCHANGED ==
+== CMD_HELP_UNDOCHECKOUTUNCHANGED ==
 备注：
 
     此命令是从工作区根目录以递归方式应用的。

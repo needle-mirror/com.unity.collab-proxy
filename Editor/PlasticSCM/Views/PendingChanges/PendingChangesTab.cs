@@ -6,9 +6,9 @@ using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 using Codice.Client.BaseCommands;
-using Codice.Client.BaseCommands.EventTracking;
 using Codice.Client.Commands;
 using Codice.Client.Common;
+using Codice.Client.Common.EventTracking;
 using Codice.Client.Common.FsNodeReaders;
 using Codice.Client.Common.Threading;
 using Codice.CM.Client.Gui;

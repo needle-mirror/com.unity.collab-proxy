@@ -504,7 +504,7 @@ Unity VCS 相當擅長偵測和追蹤移動。
 == PlasticWkExplPendingChangesUnityFirstTime ==
 [title]使用 Unity 的實用秘訣[/title]
 
-* 設定鎖定。您很可能會想要讓 .prefabs 獨佔鎖定。移至 [action:WebAdminOpenInLocks]WebAdmin 並設定鎖定[/action]。
+* 設定鎖定。您很可能會想要讓 .prefabs 獨佔鎖定。移至 [action:OpenLocksInDashboard]WebAdmin 並設定鎖定[/action]。
 * 使用簽出。鎖定會要求您在進行編輯前簽出 (鎖定) 檔案。簽出是告訴 Unity VCS「我即將修改檔案」的動作。每個檔案的右鍵功能表都會提供此選項。
 * 設定要忽略的檔案。您會有一些不想要新增至版本控制的檔案。[action:IgnoreConfCreateUnity]按一下這裡[/action]來為 Unity 建立 ignore.conf。[link:https://plasticscm.com/download/help/ignored-hidden-etc]深入瞭解 ignore.conf[/link]。
 

@@ -967,8 +967,28 @@ Desprotección de {0} eliminada correctamente
 == CmdUnexpectedOption ==
 {0}: Opción no esperada {1}
 
+== CmdInvalidValueForOption ==
+El valor asignado a esta opción es inválido: {0}={1}
+
+== CmdServerCannotBeInferred ==
+No se pudo inferir que servidor debe usarse para ejecutar este comando.
+Por favor, proporcione uno explícitamente utilizando la opción --server=<server>.
+
+== CmdRepositoryCannotBeInferred ==
+No se pudo inferir que repositorio debe usarse para ejecutar este comando.
+Por favor, proporcione uno explícitamente utilizando la opción --repository=<repository>.
+
 == CmdUpdated ==
 {0} actualizado correctamente
+
+== CmdErrorUpdateProcessingItem ==
+{0} al actualizar '{1}': {2}
+
+== CmdUpdateReportWarningSeverity ==
+Warning
+
+== CmdUpdateReportErrorSeverity ==
+Error
 
 == CommandFinishedSuccesfully ==
 El comando ha terminado correctamente
@@ -1216,6 +1236,9 @@ No fue encontrada la revisión de destino para promocionar a merge
 
 == DiffNotDownloadedRevision ==
 La revisión {0} no se pudo bajar del servidor. Por favor inténtelo de nuevo seleccionando otro fichero y después volviendo a seleccionar este.
+
+== DifferentRepositorySpecs ==
+No se pueden especificar objetos de diferentes repositorios.
 
 == DirConflictCannotBeApplied ==
 El conflicto {0} con origen:'{1}' y destino:'{2}' no se ha podido aplicar debido al error:'{3}'.
@@ -2228,6 +2251,59 @@ Realizando operación...
 == PermissionKey ==
 Permiso
 
+== Purge ==
+controla la capacidad de registrar, consultar y ejecutar purgas
+
+== PurgeNotFound ==
+Purge no encontrado: '{0}'.
+Por favor, compruebe que es el ID correcto. Asegúrese también de tener los permisos necesarios.
+
+== PurgeNotReadyToRun ==
+La acción de purga solicitada no está lista para ejecutarse.
+
+== PurgeIsGettingReady ==
+Calculando revisiones involucradas en la purga... Espere por favor.
+
+== PurgeCannotBeDeleted ==
+Esta purga ya no puede eliminarse del registro.
+
+== PurgeIsWaitingToRun ==
+La acción de purga solicitada ya está a la espera para ser ejecutada.
+
+== PurgeIsRunning ==
+La acción de purga solicitada ya se está ejecutando.
+
+== PurgeIsAlreadyBeingDeleted ==
+La purga está siendo borrada del registro. No es posible ejecutarla o borrarla de nuevo.
+
+== PurgeWasAlreadyExecuted ==
+La acción de purga solicitada ya se ha ejecutado.
+
+== PurgeAuthorIsNotYou ==
+Usted no es el autor de la purga. Sólo el autor puede ejecutarla o eliminarla del registro.
+
+== PurgeRunAreYouSure ==
+Esta operación no puede deshacerse ni cancelarse. Se perderán permanentementelas revisiones de estos ficheros.
+Consejo: si desea inspeccionar todas las revisiones afectadas, NO continue y ejecute el siguiente comando:
+  $ cm purge show {0} --verbose --server={1}
+¿Seguro que desea ejecutar la purga? (s/n)
+
+== PurgeRunSucceeded ==
+La acción de purga ha comenzado a ejecutarse.
+
+== PurgeRunFailed ==
+La acción de purga no pudo comenzar su ejecución.
+
+== PurgeDeletionSucceeded ==
+La acción de purga ha sido eliminada del registro.
+
+== PurgeDeletionFailed ==
+No se pudo eliminar la acción de purga del registro.
+
+== PurgeInvalidId ==
+El ID de purga introducido es inválido: {0}
+Ejemplo de ID válido:                   0131098b-2ff3-44a7-bfd3-233c13225103
+
 == Private ==
 Privado
 
@@ -2248,6 +2324,12 @@ Procesando operaciones de directorio (descargando revisiones)
 
 == ProcessingDirectoryOperationsUpdatingWorkspace ==
 Procesando operaciones de directorio (actualizando el espacio de trabajo)
+
+== PurgeNotAnExtension ==
+El argumento no es una extensión de fichero: '{0}'. ¿Se refiere a esto?: '.{0}'.
+
+== PurgeBeforeDateInvalidSetInFuture ==
+Fecha inválida '{0}' para el tipo de fichero '{1}': es una fecha futura.
 
 == PushingAcls ==
 Escribiendo ACLs

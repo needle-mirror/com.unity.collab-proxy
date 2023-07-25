@@ -55,87 +55,87 @@ Remarks:
     repositories, branches, labels and/or server paths.
 
     Object specs:
-        (Use 'cm ^help ^objectspec' to learn how to specify objects.)
-        The '^acl' command uses a special type of spec: secured paths.
+    (Use 'cm ^help ^objectspec' to learn how to specify objects.)
+    The '^acl' command uses a special type of spec: secured paths.
 
-        Secured paths specs: ^path:server_path[#tag]
-        Examples: 
-            - ^path:/src/foo.c
-            - ^path:/doc/pdf
-            - ^path:/doc/pdf#documents
+    Secured paths specs: ^path:server_path[#tag]
+    Examples: 
+    - ^path:/src/foo.c
+    - ^path:/doc/pdf
+    - ^path:/doc/pdf#documents
 
     Permission action:
-        Use -^allowed and -^denied to specify what permissions to set.
-        Use -^overrideallowed and -^overridedenied arguments to specify what
-        permissions to override.
+    Use -^allowed and -^denied to specify what permissions to set.
+    Use -^overrideallowed and -^overridedenied arguments to specify what
+    permissions to override.
 
-        Each action requires a permission list separated by commas.
+    Each action requires a permission list separated by commas.
 
     Permission names:
-        Each permission name is preceded by + or - symbol.
-        The + symbol sets the permission and the - symbol clears it.
-        To see the permissions of an object, use the 'cm ^showacl' command.
+    Each permission name is preceded by + or - symbol.
+    The + symbol sets the permission and the - symbol clears it.
+    To see the permissions of an object, use the 'cm ^showacl' command.
 
     Overridden permissions:
-        Overriding a permission using -^overrideallowed and -^overridedenied
-        allows you to bypass inheritance.
-        It is helpful to bypass permissions set at the repository or server
-        level.
-        Example:
-            cm ^acl --^user=vio -^allowed=+^ci -^overrideallowed=+^ci ^br:qa@test
-            (Allows user 'vio' to checkin on the branch 'qa' on repo 'test'
-            even if she has the permission denied at the repo level.)
+    Overriding a permission using -^overrideallowed and -^overridedenied
+    allows you to bypass inheritance.
+    It is helpful to bypass permissions set at the repository or server
+    level.
+    Example:
+    cm ^acl --^user=vio -^allowed=+^ci -^overrideallowed=+^ci ^br:qa@test
+    (Allows user 'vio' to checkin on the branch 'qa' on repo 'test'
+    even if she has the permission denied at the repo level.)
 
     Server path permissions (a.k.a. secured paths):
-        - It is possible to specify permissions for a given server path.
-        - These permissions are checked during the checkin operation.
-        - These permissions can also be checked during the update operation,
-          and can be used as a way to prevent certain directories and files to
-          be downloaded to the workspace.
-        - For every item to checkin, the server tries to match the item path
-          with a secured path. If it matches, the checkin operation checks
-          whether the item has permissions to be checked in.
+    - It is possible to specify permissions for a given server path.
+    - These permissions are checked during the checkin operation.
+    - These permissions can also be checked during the update operation,
+      and can be used as a way to prevent certain directories and files to
+      be downloaded to the workspace.
+    - For every item to checkin, the server tries to match the item path
+      with a secured path. If it matches, the checkin operation checks
+      whether the item has permissions to be checked in.
 
-        The permissions that can be defined for a secured path are the
-        following:
-            '^ci', '^change', '^add', '^move', '^rm', '^read'
+    The permissions that can be defined for a secured path are the
+    following:
+        '^ci', '^change', '^add', '^move', '^rm', '^read'
 
-        If the permissions check is not successful for any of the involved
-        items, the checkin operation will be rolled back.
+    If the permissions check is not successful for any of the involved
+    items, the checkin operation will be rolled back.
 
-        To set secured path permissions to a group of branches, use the
-        --^branches option.
-        Example:
-          cm ^acl --^user=jo -^denied=+^ci ^path:/src#rule0 --^branches=main,main/rel0
+    To set secured path permissions to a group of branches, use the
+    --^branches option.
+    Example:
+      cm ^acl --^user=jo -^denied=+^ci ^path:/src#rule0 --^branches=main,main/rel0
 
-        To edit the ACL associated to the secured path, the tag is useful.
-        Example:
-          cm ^acl --^user=jo -^denied=+^rm ^path:/src#rule0
-          (Without the tag, the list of branches would need to be specified
-          again.)
+    To edit the ACL associated to the secured path, the tag is useful.
+    Example:
+      cm ^acl --^user=jo -^denied=+^rm ^path:/src#rule0
+      (Without the tag, the list of branches would need to be specified
+      again.)
 
-        The list of branches of the secured path can be edited.
-        Example:
-          cm ^acl ^path:/src#rule0 --^branches=-main,+main/rel1
-          (Removes 'main' from the list and adds 'main/rel1'.)
+    The list of branches of the secured path can be edited.
+    Example:
+      cm ^acl ^path:/src#rule0 --^branches=-main,+main/rel1
+      (Removes 'main' from the list and adds 'main/rel1'.)
 
-        To remove a secured path, use the --^delete argument.
-        Example:
-          cm ^acl --^user=jo --^delete ^path:/src#rule0
+    To remove a secured path, use the --^delete argument.
+    Example:
+      cm ^acl --^user=jo --^delete ^path:/src#rule0
 
     Inheritance:
-        Inheritance is an option that comes from the days of Plastic SCM 3.0.
-        It is advanced, but almost deprecated.
-        It lets an object inherit its permissions from any other object,
-        overriding the default inheritance relationships.
+    Inheritance is an option that comes from the days of Plastic SCM 3.0.
+    It is advanced, but almost deprecated.
+    It lets an object inherit its permissions from any other object,
+    overriding the default inheritance relationships.
 
-        Use the option -^cut to cut the inheritance chain.
-        Use the option -^cutncpy to cut and copy the current inherited
-        permissions. (This is inspired on the Windows filesystem permissions
-        where you can cut inheritance but retain the actual permissions.)
+    Use the option -^cut to cut the inheritance chain.
+    Use the option -^cutncpy to cut and copy the current inherited
+    permissions. (This is inspired on the Windows filesystem permissions
+    where you can cut inheritance but retain the actual permissions.)
 
-        The -^inherit option allows the user to inherit from an object spec.
-        Example: '-^inherit=object_spec'
+    The -^inherit option allows the user to inherit from an object spec.
+    Example: '-^inherit=object_spec'
 
 Examples:
 
@@ -424,11 +424,11 @@ Examples:
     cm ^blame ^serverpath:/src/client/checkin/Checkin.cs#^cs:73666
     (Annotates the file starting in changeset 73666 using a server path.)
 
-== CMD_DESCRIPTION_APPLY_LOCAL ==
+== CMD_DESCRIPTION_APPLYLOCAL ==
 Checks for local changes (locally moved, locally deleted, and locally changed)
 and applies them, so that Unity VCS starts tracking those changes.
 
-== CMD_USAGE_APPLY_LOCAL ==
+== CMD_USAGE_APPLYLOCAL ==
 Usage:
 
     cm ^applylocal | ^al [--^dependencies] [<item_path>[ ...]]
@@ -450,7 +450,7 @@ Options:
     --^fieldseparator      Used with the '--^machinereadable' flag, specifies how
                           the fields should be separated.
 
-== CMD_HELP_APPLY_LOCAL ==
+== CMD_HELP_APPLYLOCAL ==
 Remarks:
 
     - If --^dependencies and <item_path> are not specified, the operation involves
@@ -631,54 +631,54 @@ Groups pending changes in changelists.
 == CMD_USAGE_CHANGELIST ==
 Usage:
 
-       cm ^changelist | ^clist [--^symlink]
-       (Displays all changelists.)
+    cm ^changelist | ^clist [--^symlink]
+    (Displays all changelists.)
 
-       cm ^changelist | ^clist ^create <clist_name>
-          [<clist_desc>] [--^persistent | --^notpersistent] [--^symlink]
-       (Creates a changelist.)
+    cm ^changelist | ^clist ^create <clist_name>
+        [<clist_desc>] [--^persistent | --^notpersistent] [--^symlink]
+    (Creates a changelist.)
 
-       cm ^changelist | ^clist ^delete <clist_name> [--^symlink]
-       (Deletes the selected changelist. If this changelist contains pending
-       changes, then these will be moved to the ^default changelist.)
+    cm ^changelist | ^clist ^delete <clist_name> [--^symlink]
+    (Deletes the selected changelist. If this changelist contains pending
+    changes, then these will be moved to the ^default changelist.)
 
-       cm ^changelist | ^clist ^edit <clist_name> [<action_name> <action_value>]
-                             [--^persistent | --^notpersistent] [--^symlink]
-       (Edits the selected changelist.)
+    cm ^changelist | ^clist ^edit <clist_name> [<action_name> <action_value>]
+                          [--^persistent | --^notpersistent] [--^symlink]
+    (Edits the selected changelist.)
 
-       cm ^changelist | ^clist <clist_name> (^add | ^rm) <path_name>[ ...]
-                             [--^symlink]
-       (Edits the selected changelist by adding ('^add') or removing ('^rm') the
-       change(s) that match with the given path_name(s). Use a whitespace to 
-       separate path_names. Use double quotes (" ") to specify paths containing
-       spaces. The status of the paths must be '^Added' or '^Checked-out'.)
+    cm ^changelist | ^clist <clist_name> (^add | ^rm) <path_name>[ ...]
+                          [--^symlink]
+    (Edits the selected changelist by adding ('^add') or removing ('^rm') the
+    change(s) that match with the given path_name(s). Use a whitespace to 
+    separate path_names. Use double quotes (" ") to specify paths containing
+    spaces. The status of the paths must be '^Added' or '^Checked-out'.)
 
 Options:
 
     clist_name          The name of the changelist. A path to a file containing 
-                        the name can be used instead. More info at --^namefile.
+                       the name can be used instead. More info at --^namefile.
     clist_desc          The description of the changelist. A path to a file 
-                        containing the description can be used instead. More 
-                        info at --^descriptionfile.
+                       containing the description can be used instead. More 
+                       info at --^descriptionfile.
     action_name         Choose between '^rename' or '^description' to edit the 
-                        changelist.
+                       changelist.
     action_value        Applies the new name or new description when editing
-                        the changelist.
-    --^persistent        The changelist will remain in the workspace even if its
-                        contents are checked-in or reverted.
-    --^notpersistent     (Default) The changelist will not remain in the
-                        workspace even if its contents are checked-in or
-                        reverted.
-    --^symlink           Applies the operation to the symlink and not to the
-                        target.
-    --^namefile          A valid path to a file containing the name of the 
-                        changelist. Bear in mind the file must exist and its 
-                        content cannot be neither empty nor multiline.
-    --^newnamefile       A valid path to a file containing the new name of the 
-                        changelist when renaming. Bear in mind the file must exist 
-                        and its content cannot be neither empty nor multiline.
-    --^descriptionfile   A valid path to a file containing the description for the 
-                        changelist. Bear in mind the file must exist.
+                       the changelist.
+    --^persistent       The changelist will remain in the workspace even if its
+                       contents are checked-in or reverted.
+    --^notpersistent    (Default) The changelist will not remain in the
+                       workspace even if its contents are checked-in or
+                       reverted.
+    --^symlink          Applies the operation to the symlink and not to the
+                       target.
+    --^namefile         A valid path to a file containing the name of the 
+                       changelist. Bear in mind the file must exist and its 
+                       content cannot be neither empty nor multiline.
+    --^newnamefile      A valid path to a file containing the new name of the 
+                       changelist when renaming. Bear in mind the file must exist 
+                       and its content cannot be neither empty nor multiline.
+    --^descriptionfile  A valid path to a file containing the description for the 
+                       changelist. Bear in mind the file must exist.
 
 == CMD_HELP_CHANGELIST ==
 Remarks:
@@ -886,6 +886,8 @@ Remarks:
     - The command also checks whether the configured user is valid or not.
 
 == CMD_DESCRIPTION_CHECKDB ==
+> **This command is deprecated.** 
+
 Checks the repositories integrity.
 
 == CMD_USAGE_CHECKDB ==
@@ -962,13 +964,13 @@ Remarks:
       pending changes in the workspace.
     - The checkin operation is always applied recursively from the given path.
     - To checkin an item:
-      - The item must be under source code control.
-      - If the item is private (not under source code control), the --^private
-        flag is necessary in order to checkin it.
-      - The item must be checked out.
-      - If the item is changed but not checked out, the --^applychanged flag 
-        is not necessary unless <item_path> is a directory or it contains
-        wildcards ('*').
+        - The item must be under source code control.
+        - If the item is private (not under source code control), the --^private
+          flag is necessary in order to checkin it.
+        - The item must be checked out.
+        - If the item is changed but not checked out, the --^applychanged flag 
+          is not necessary unless <item_path> is a directory or it contains
+          wildcards ('*').
 
     Revision content should be different from previous revision in order to be
     checked in.
@@ -1150,10 +1152,10 @@ Examples:
     ^cat myselector.txt | cm ^checkselectorsyntax
     (Checks the syntax of 'myselector.txt' from standard input.)
 
-== CMD_DESCRIPTION_CHGREVTYPE ==
+== CMD_DESCRIPTION_CHANGEREVISIONTYPE ==
 Changes an item revision type (binary or text).
 
-== CMD_USAGE_CHGREVTYPE ==
+== CMD_USAGE_CHANGEREVISIONTYPE ==
 Usage:
 
     cm ^changerevisiontype | ^chgrevtype | ^crt <item_path>[ ...] --^type=(^bin | ^txt)
@@ -1165,7 +1167,7 @@ Options:
                         separate item paths.
     --^type             Target revisions type. Choose '^bin' or '^txt'.
 
-== CMD_HELP_CHGREVTYPE ==
+== CMD_HELP_CHANGEREVISIONTYPE ==
 Remarks:
 
     This command can only be applied to files, not directories.
@@ -1291,9 +1293,9 @@ Remarks:
 
     Output format parameters (--^format option):
 
-        This command accepts a format string to show the output.
-	
-        The output parameters of this command are the following:
+    This command accepts a format string to show the output.
+
+    The output parameters of this command are the following:
 
     {0}  id
     {1}  guid
@@ -1305,7 +1307,7 @@ Examples:
 
     cm ^codereview ^cs:1856@myrepo@myserver:8084 "My code review" --^assignee=dummy
     cm ^codereview ^br:/main/task001@myrepo@myserver:8084 "My code review" \
-    --^status=^"Rework required" --^assignee=newbie --^format="{^id} -> {^guid}"
+        --^status=^"Rework required" --^assignee=newbie --^format="{^id} -> {^guid}"
 
     cm ^codereview 1367 -^e --^assignee=new_assignee
     cm ^codereview -^e 27658884-5dcc-49b7-b0ef-a5760ae740a3 --^status=Reviewed
@@ -1565,8 +1567,8 @@ Remarks:
     The metrics are: number of changed, added, and deleted lines.
 
     Output format parameters (--^format option):
-        This command accepts a format string to show the output.
-        The output parameters of this command are the following:
+    This command accepts a format string to show the output.
+    The output parameters of this command are the following:
     {0}  Number of changed lines.
     {1}  Number of added lines.
     {2}  Number of deleted lines.
@@ -1580,7 +1582,7 @@ Remarks:
 Examples:
 
     cm ^diffmetrics file.txt#^cs:2 file.txt#^br:/main/scm0211 \
-    --^format="There are {0} changed, {1} added and {2} deleted lines."
+        --^format="There are {0} changed, {1} added and {2} deleted lines."
     (Retrieves diffmetrics results formatted.)
 
     cm ^dm file.txt#^cs:2 file.txt#^cs:3 --^encoding=utf-8 --^comparisonmethod=^ignorewhitespaces
@@ -1635,7 +1637,7 @@ Remarks:
 Examples:
 
     cm ^fast-export repo@localhost:8087 repo.fe.00 --^import-marks=marks.cm \
-      --^export-marks=marks.cm
+        --^export-marks=marks.cm
     (Exports the repository 'repo' in the local server into the 'repo.fe.00'
     file in Git fast-export format and creates the marks files to perform
     incremental exports later.)
@@ -1713,7 +1715,7 @@ Examples:
     to perform incremental imports later.)
 
     cm ^fast-import repo@server:8084 repo.fast-export --^import-marks=repo.marks \
-      --^export-marks=repo.marks
+        --^export-marks=repo.marks
     (Imports the contents of the 'repo.fast-export' file. Only the new
     changesets that were not in the marks file are imported. The same marks
     file is used to save the list of changesets again for the next
@@ -1822,36 +1824,36 @@ Remarks:
 
 
     Output format parameters (--^format option):
-	
-        This command accepts a format string to show the output.
-	
-        The output parameters of this command are the following:
-	
-        - {^ClientPath}
-        - {^RelativePath}
-        - {^ServerPath}
-        - {^Size}
-        - {^Hash}
-        - {^Owner}
-        - {^RevisionHeadChangeset}
-        - {^RevisionChangeset}
-        - {^Status}
-        - {^Type}
-        - {^Changelist}
-        - {^IsLocked}
-        - {^LockedBy}
-        - {^LockedWhere}
-        - {^IsUnderXlink}
-        - {^UnderXlinkTarget}
-        - {^UnderXlinkPath}
-        - {^UnderXlinkWritable}
-        - {^UnderXlinkRelative}
-        - {^IsXlink}
-        - {^XlinkTarget}
-        - {^XlinkName}
-        - {^XlinkWritable}
-        - {^XlinkRelative}
-        - {^RepSpec}
+
+    This command accepts a format string to show the output.
+
+    The output parameters of this command are the following:
+
+    - {^ClientPath}
+    - {^RelativePath}
+    - {^ServerPath}
+    - {^Size}
+    - {^Hash}
+    - {^Owner}
+    - {^RevisionHeadChangeset}
+    - {^RevisionChangeset}
+    - {^Status}
+    - {^Type}
+    - {^Changelist}
+    - {^IsLocked}
+    - {^LockedBy}
+    - {^LockedWhere}
+    - {^IsUnderXlink}
+    - {^UnderXlinkTarget}
+    - {^UnderXlinkPath}
+    - {^UnderXlinkWritable}
+    - {^UnderXlinkRelative}
+    - {^IsXlink}
+    - {^XlinkTarget}
+    - {^XlinkName}
+    - {^XlinkWritable}
+    - {^XlinkRelative}
+    - {^RepSpec}
 
     Please note that '--^format' and '--^xml' options are mutually exclusive, so
     they can't be used at the same time.
@@ -1864,10 +1866,10 @@ Examples:
     cm ^fileinfo proj_specs.docx --^fields=^ServerPath,^RevisionChangeset --^xml
     cm ^fileinfo samples.ogg --^format="{^ServerPath}[{^Owner}] -> {^Size}"
 
-== CMD_DESCRIPTION_FIND_QUERY ==
+== CMD_DESCRIPTION_FIND ==
 Runs SQL-like queries to find Unity VCS objects.
 
-== CMD_USAGE_FIND_QUERY ==
+== CMD_USAGE_FIND ==
 Usage:
 
     cm ^find <object_type> 
@@ -1913,7 +1915,7 @@ Options:
                         You can also read the 'cm ^find' guide:
                         https://www.plasticscm.com/download/help/cmfind
 
-== CMD_HELP_FIND_QUERY ==
+== CMD_HELP_FIND ==
 Remarks:
 
     If no repository is specified, the search is made on the repository
@@ -1970,9 +1972,9 @@ Options:
     -^R | -^r | --^recursive  Recursively finds in directories.
     --^checkcontent           Compares files by content.
     --^onlychanged            Finds only changed files; checkouts will not be
-                        obtained.
+                             obtained.
     path                      (Default: current directory.)
-                        Initial path to find changed files.
+                             Initial path to find changed files.
 
 == CMD_HELP_FINDCHANGED ==
 Remarks:
@@ -2053,9 +2055,9 @@ Options:
 
     -^R | -^r | --^recursive  Recursively finds in directories.
     --^exclusions             This option allows cutting the search inside the ignored
-                        paths, defined by the file ignore.conf.
+                             paths, defined by the file ignore.conf.
     path                      (Default: current directory.)
-                        Initial path to find private files.
+                             Initial path to find private files.
 
 == CMD_HELP_FINDPRIVATE ==
 Remarks:
@@ -2081,7 +2083,7 @@ Usage:
 
     cm ^getconfig [^setfileasreadonly] [^location] [^extensionworkingmode]
                  [^extensionprefix] [^defaultrepserver]
-    
+
 Options:
 
     ^setfileasreadonly       Returns whether the protected files are left as
@@ -2172,7 +2174,7 @@ Usage:
 Options:
 
     --^format                 Retrieves the output message in a specific format. See
-                        Remarks for more info.
+                             Remarks for more info.
     --^stats                  Prints some statistics about the get status process.
     -^R | -^r | --^recursive  Shows recursively the status in directories.
     item_path                 Item or items to get status from. Use double quotes
@@ -2183,9 +2185,9 @@ Options:
 Remarks:
 
     Output format parameters (--^format option):
-        This command accepts a format string to show the output.
+    This command accepts a format string to show the output.
 
-        The output parameters of this command are the following:
+    The output parameters of this command are the following:
 
     {0}  Item path.
     {1}  Item status:
@@ -2201,14 +2203,13 @@ Reading input from stdin:
     The '^getstatus' command can read paths from stdin. To do this, pass a
     single dash "-".
     Example: 
-	    cm ^getstatus -
+    cm ^getstatus -
 
     Paths will be read until an empty line is entered.
     This allows you to use pipe to specify which paths to get the status for.
     Example:
-
-      dir /S /B *.c | cm ^getstatus --^format="Path {0} Status {1}" -
-      (In Windows, gets the status of all .c files in the workspace.)
+    dir /S /B *.c | cm ^getstatus --^format="Path {0} Status {1}" -
+    (In Windows, gets the status of all .c files in the workspace.)
 
 Examples:
 
@@ -2240,9 +2241,9 @@ Remarks:
 
     Output format parameters (--^format option):
     
-        This command accepts a format string to show the output.
+    This command accepts a format string to show the output.
     
-        The output parameters of this command are the following:
+    The output parameters of this command are the following:
     {^tab}        Inserts a tab space.
     {^newline}    Inserts a new line.
     {^name}       Branch name.
@@ -2259,10 +2260,10 @@ Examples:
     cm ^gtb 4311 --^format="^br:{^name}"
     cm ^gtb 4311 --^format="^br:{^name} {^date}" --^dateformat="yyyy/MM/dd HH:mm:ss"
 
-== CMD_DESCRIPTION_GETWWI ==
+== CMD_DESCRIPTION_GETWORKSPACEINFO ==
 Shows info about the workspace selector.
 
-== CMD_USAGE_GETWWI ==
+== CMD_USAGE_GETWORKSPACEINFO ==
 Usage:
 
     cm ^workspaceinfo | ^wi [<wk_path>]
@@ -2271,7 +2272,7 @@ Options:
 
     wk_path             Path of a workspace on the machine.
 
-== CMD_HELP_GETWWI ==
+== CMD_HELP_GETWORKSPACEINFO ==
 Remarks:
     The '^wi' command shows the working configuration of a workspace (repository,
     branch, and/or label).
@@ -2279,10 +2280,10 @@ Remarks:
 Examples:
     cm ^wi c:\mywk
 
-== CMD_DESCRIPTION_GWP ==
+== CMD_DESCRIPTION_GETWORKSPACEFROMPATH ==
 Gets workspace info from a path.
 
-== CMD_USAGE_GWP ==
+== CMD_USAGE_GETWORKSPACEFROMPATH ==
 Usage:
 
     cm ^getworkspacefrompath | ^gwp <item_path> [--^format=<str_format>] [--^extended]
@@ -2294,15 +2295,15 @@ Options:
                         and ^dynamic on top of the others. See Remarks for more info.
     item_path           File or folder on disk.
 
-== CMD_HELP_GWP ==
+== CMD_HELP_GETWORKSPACEFROMPATH ==
 Remarks:
 
     This command shows information about the workspace that is located in path.
 
     Output format parameters (--^format option):
-        This command accepts a format string to show the output.
+    This command accepts a format string to show the output.
 
-        The output parameters of this command are the following:
+    The output parameters of this command are the following:
     {0} | {^wkname}          Workspace name.
     {1} | {^wkpath}          Workspace path.
     {2} | {^machine}         Client machine name.
@@ -2315,7 +2316,7 @@ Remarks:
 
 Examples:
 
-    cm ^gwp c:\myworkspace\code\file1.cpp --^format="Workspace name: {^wkname}"
+    cm ^getworkspacefrompath c:\myworkspace\code\file1.cpp --^format="Workspace name: {^wkname}"
     cm ^gwp . --^format="Name: {^wkname} | Type: {^type}, {^dynamic}"
 
 == CMD_DESCRIPTION_HELP ==
@@ -2403,21 +2404,21 @@ Remarks:
 
     Available tests:
     --^serveruploadtest    (Default) Measures the data upload speed from
-                                   Unity VCS client to the server.
+                           Unity VCS client to the server.
     --^serverdownloadtest  (Default) Measures the data download speed from
-                                   Unity VCS server to the client.
+                           Unity VCS server to the client.
     --^disktest            (Default) Measures the disk read speed and disk
-                                   write speed.
+                           write speed.
     --^systemnetworkusage  Shows the current usage of system network
-                                   resources.
-                                   (It shows Network Interface performance counters
-                                   provided by Microsoft Windows).
-                                   Available in Microsoft Windows only.
+                           resources.
+                           (It shows Network Interface performance counters
+                           provided by Microsoft Windows).
+                           Available in Microsoft Windows only.
     --^systemdiskusage     Shows the current usage of system physical
-                                   disks.
-                                   (It shows Network Interface performance counters
-                                   provided by Microsoft Windows).
-                                   Available in Microsoft Windows only.
+                           disks.
+                           (It shows Network Interface performance counters
+                           provided by Microsoft Windows).
+                           Available in Microsoft Windows only.
 
 Examples:
 
@@ -2450,19 +2451,19 @@ Jira parameters (all are mandatory):
 Examples:
 
     cm ^issuetracker jira ^status ^get 11 --^user=user@mail.es --^password=pwd \
-      --^host=https://user.atlassian.net --^projectkey=PRJ
+        --^host=https://user.atlassian.net --^projectkey=PRJ
     (Gets the status of the issue 11 for the 'PRJ' project.)
 
     cm ^issuetracker jira ^status ^update 11 "Done" --^user=user@mail.es \
-      --^password=pwd --^host=https://user.atlassian.net --^projectkey=PRJ
+        --^password=pwd --^host=https://user.atlassian.net --^projectkey=PRJ
     (Updates the status to 'Done' of the issue 11 for the 'PRJ' project.)
     
     cm ^issuetracker jira ^status ^find "Done" --^user=user@mail.es --^password=pwd \
-      --^host=https://user.atlassian.net --^projectkey=PRJ
+        --^host=https://user.atlassian.net --^projectkey=PRJ
     (Gets the task ids whose status is set to 'Done' for the 'PRJ' project.)
     
     cm ^issuetracker jira ^connection ^check --^user=user@mail.es --^password=pwd \
-      --^host=https://user.atlassian.net --^projectkey=PRJ
+        --^host=https://user.atlassian.net --^projectkey=PRJ
     (Checks whether the configuration parameters are valid or not.)
 
 == CMD_DESCRIPTION_LICENSEINFO ==
@@ -2527,10 +2528,12 @@ Shows locks on a server.
 Usage:
 
     cm ^lock ^list | ^ls [<revspec> [ ...]] [--^server=<server>]
+                      [--^repository] [--^anystatus]
                       [--^onlycurrentuser] [--^onlycurrentworkspace]
-                      [--^ignorecase]
+                      [--^ignorecase] 
                       [--^machinereadable [--^startlineseparator=<sep>]
-                        [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
+                        [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]
+                        [--^smartlocks]]
 
 Options:
 
@@ -2540,6 +2543,13 @@ Options:
                             client.conf file.
                             (Use 'cm ^help ^objectspec' to learn more about
                             server specs.)
+    --^repository            Repository specification.
+                            This option will only list the locks of the specified
+                            repository.
+                            (Use 'cm ^help ^objectspec' to learn more about
+                            repository specs.)
+    --^anystatus             Shows locks in any status (Locked or Retained).
+                            By default, only locks in Locked status are shown.
     --^onlycurrentuser       Filters the results showing only the locks performed
                             by the current user.
     --^onlycurrentworkspace  Filters the results showing only the locks performed
@@ -2554,6 +2564,11 @@ Options:
                             the lines should end.
     --^fieldseparator        Used with the '--^machinereadable' flag, specifies how
                             the fields should be separated.
+    --^smartlocks            Used with the '--^machinereadable' flag, shows all the
+                            smart lock fields. Otherwise, it only shows the legacy locks
+                            fields. This parameter is needed to avoid breaking
+                            compatibility with older integrations / plugins that expect
+                            the old format.                            
     revspec                 If one or more are present, this command will display
                             one lock line for each specified revision if its
                             associated item is locked in the server. Otherwise,
@@ -2572,21 +2587,39 @@ Remarks:
     A '--^server=<server>' can be used to set the default server to query.
 
     The command shows a line for every lock in the specified server:
-        - GUID of the locked item.
-        - User name who performed the lock.
-        - Workspace name where the lock was performed.
-        - Path of the locked item (server path format).
+    - Repository of the locked item.
+    - Item id of the locked item.
+    - GUID of the locked item (this is only printed with the --^machinereadable flag).
+    - Date of the lock.
+    - Destination branch where the lock will be released.
+    - Revision id of the item loaded in the destination branch.
+    - Holder branch where the lock was performed.
+    - Revision id of the item that currently holds the lock.
+    - Status of the lock (Locked or Retained)
+    - User name who performed the lock.
+    - Workspace name where the lock was performed.
+    - Path of the locked item (server path format).
+    
+    For the --^machinereadable without the --^smartlocks option, the
+    printed fields are:
+    - GUID of the locked item.
+    - User name who performed the lock.
+    - Workspace name where the lock was performed.
+    - Path of the locked item (server path format).
 
 Examples:
 
     cm ^lock ^list
     cm ^lock ^list --^server=myserver:8084
+    cm ^lock ^list --^repository=repo@myserver:8084 --^anystatus
     cm ^lock ^ls ^serverpath:/src/foo.c#^cs:99@default@localhost:8084
     cm ^lock ^list ^revid:3521@default ^itemid:2381@secondary --^onlycurrentuser
     cm ^lock ^ls --^onlycurrentuser
     cm ^lock ^ls --^onlycurrentuser --^onlycurrentworkspace
     cm ^lock ^list --^machinereadable --^startlineseparator=">" \
-      --^endlineseparator="<" --^fieldseparator=","
+        --^endlineseparator="<" --^fieldseparator=","
+    cm ^lock ^list --^machinereadable --^smartlocks --^startlineseparator=">" \
+        --^endlineseparator="<" --^fieldseparator=","        
 
 == CMD_DESCRIPTION_LISTUSERS ==
 Lists users and groups.
@@ -2646,6 +2679,7 @@ Commands:
 
     - ^list | ^ls
     - ^unlock
+    - ^create | ^mk
 
     To get more information about each command run:
     cm ^lock <command> --^usage
@@ -2654,11 +2688,11 @@ Commands:
 == CMD_HELP_LOCK ==
 Examples:
 
-    cm ^lock ^list
     cm ^lock
-    (The subcommand '^list' is the default.)
-    cm ^lock ^ls ^serverpath:/src/foo.c#^cs:99@default@localhost:8084
-    cm ^lock ^unlock 91961b14-3dfe-4062-8c4c-f33a81d201f5
+    (The '^list' subcommand is the default.)
+    cm ^lock ^list --^anystatus
+    cm ^lock ^unlock ^itemid:56@myrep@localhost:8084
+    cm ^lock ^create /main/task@myrep ^itemid:56@myrep
 
 == CMD_DESCRIPTION_LOG ==
 Gets info about revisions in changesets.
@@ -2668,6 +2702,7 @@ Usage:
 
     cm ^log [<csetspec> | <repspec>] [--^from=<csetspec_from>] [--^allbranches]
            [--^ancestors] [--^csformat=<str_format>] [--^itemformat=<str_format>]
+           [--^dateformat=<str_date_format>]
            [--^xml[=<output_file>]] [--^encoding=<name>]
            [--^repositorypaths | --^fullpaths | --^fp]
 
@@ -2694,6 +2729,7 @@ Options:
     --^itemformat        Retrieves the item info in a specific format. See
                         Remarks for more info. This option cannot be combined
                         with '--^xml'.
+    --^dateformat        Sets the output format to print dates.
     --^xml               Prints the output in XML format to the standard output.
                         It is possible to specify an output file. This option
                         cannot be combined with '--^csformat' and '--^itemformat'.
@@ -2767,6 +2803,11 @@ Remarks:
     - --^csformat="{^newline}Changeset {^changesetid} created on {^date};{^tab} changed items: {^items}."
     - --^itemformat="{^newline}The item {^path} was changed in the branch {^branch}."
 
+    Date format parameters (--^dateformat):
+        To specify the output format in which dates will be printed.
+        See the supported formats specified at:
+        https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
+
 Examples:
 
     cm ^log
@@ -2778,7 +2819,7 @@ Examples:
     where the changeset was created.)
 
     cm ^log ^cs:16 --^csformat="{^newline}Changeset {^changesetid} created on \
-      {^date};{^tab} changed items: {^items}."
+        {^date};{^tab} changed items: {^items}."
     (Shows the information in the specified format.)
 
     cm ^log --^from=^cs:20 ^cs:50
@@ -2799,10 +2840,10 @@ Examples:
     from the changeset 21. No workspace is required to run the command, because
     the full changeset spec was specified.)
 
-== CMD_DESCRIPTION_LS ==
+== CMD_DESCRIPTION_LIST ==
 Lists the contents of a tree.
 
-== CMD_USAGE_LS ==
+== CMD_USAGE_LIST ==
 Usage:
 
     cm ^ls | ^dir [<paths>[ ...]] [--^format=<str_format>] [--^symlink]
@@ -2838,7 +2879,7 @@ Options:
                         paths. Use double quotes (" ") to specify paths 
                         containing spaces.
 
-== CMD_HELP_LS ==
+== CMD_HELP_LIST ==
 Remarks:
 
     - Path can be typed with meta-characters.
@@ -2852,23 +2893,23 @@ Remarks:
       the root path ("/") is assumed.
 
     The default format string is:
-	
-      "{^size,10} {^date:dd/MM/yyyy} {^date:HH:mm}\
-       {^type,-6} {^location,-12} {^checkout,-5} {^name}\
-       {^symlinktarget}"
+
+    "{^size,10} {^date:dd/MM/yyyy} {^date:HH:mm}\
+    {^type,-6} {^location,-12} {^checkout,-5} {^name}\
+    {^symlinktarget}"
 
     Output format parameters (--^format option):
-        
-        This command accepts a format string to show the output.
+
+    This command accepts a format string to show the output.
     
-        The output parameters of this command are the following:
+    The output parameters of this command are the following:
     - {^size}
     - {^formattedsize}
     - {^date}
     - {^type}
-      - ^dir: directory,
-      - ^txt: text file,
-      - ^File: file.
+        - ^dir: directory,
+        - ^txt: text file,
+        - ^File: file.
     - {^location} (Example: ^br:branch#cset)
     - {^checkout}
     - {^name}
@@ -2891,8 +2932,8 @@ Remarks:
     - {^guid} (Will take longer to resolve)
     - {^itemguid}
     - {^transformed} (Show applied rule for transformed items. Check the
-                         Administrator Guide to learn about Transformable workspaces:
-       https://www.plasticscm.com/download/help/adminguide)
+      Administrator Guide to learn about Transformable workspaces:
+      https://www.plasticscm.com/download/help/adminguide)
 
     You can customize the '^ls' format setting the PLASTIC_LS_FORMAT environment
     variable.
@@ -2958,16 +2999,16 @@ Remarks:
     If the type is not specified, lists all the triggers on the server.
 
     Output format parameters (--^format option):
-    
-        This command accepts a format string to show the output.
-    
-        The output parameters of this command are the following:
-        {0}  Trigger position.
-        {1}  Trigger name.
-        {2}  Trigger path.
-        {3}  Trigger owner.
-        {4}  Trigger type.
-        {5}  Trigger filter.
+
+    This command accepts a format string to show the output.
+
+    The output parameters of this command are the following:
+    {0}  Trigger position.
+    {1}  Trigger name.
+    {2}  Trigger path.
+    {3}  Trigger owner.
+    {4}  Trigger type.
+    {5}  Trigger filter.
 
 Examples:
     cm ^trigger list after-mklabel
@@ -3170,22 +3211,22 @@ Remarks:
     - Branch specification (brspec):
         - cm merge [^br:/]br_name
         - Example: cm merge ^br:/main/task001
-            (Merges from the last changeset on this branch.)
+          (Merges from the last changeset on this branch.)
 
     - Label specification (lbspec):
         - cm merge ^lb:lb_name
         - Example: cm merge ^lb:BL001
-            (Merges from the labeled changeset.)
+          (Merges from the labeled changeset.)
 
     - Changeset specification (csetspec):
         - cm merge ^cs:cs_number
         - Example: cm merge ^cs:25
-            (Merges from the given changeset content.)
+          (Merges from the given changeset content.)
 
     - Shelve specification (shspec):
         - cm merge ^sh:shelve_number
         - Example: cm merge ^sh:2
-            (Merges from the given shelve content.)
+          (Merges from the given shelve content.)
 
     To automatically resolve directory conflicts, use '--^automaticresolution'
     option and specify the type of conflict followed by the contributor
@@ -3227,33 +3268,33 @@ Remarks:
     ^onlysrc  Automatic merge if only source contributor modified the item.
     ^onlydst  Automatic merge if only destination contributor modified the item.
     ^try      Automatic merge if only one contributor has modified the
-                     conflictive piece of code (each conflict).
+              conflictive piece of code (each conflict).
     ^forced   Always try to solve all non-automatic conflicts.
 
     These are the options that are mainly used by plugins and integrations:
-	
-        - '--^resolveconflict' to solve a directory conflict. You also have to
-          use the following options:
-              - '--^conflict' is the index of the conflict that you want to 
-                solve, starting at 1.
-              - '--^resolutionoption' indicates the conflict resolution to 
-                 use. This can be:
-                    - '^src' to keep the source change and discard the 
-                      destination change
-                    - '^dst' to keep the destination change and discard the 
-                      source change
-                    - '^rename' (only if the conflict type supports this 
-                      resolution), to rename the destination to the given name
-                      provided with the '--^resolutioninfo' option.
-                        - '--^resolutioninfo' to provide the name to use on a 
-                          '^rename' resolution
-              - '--^mergeresultfile' and '--^solvedconflictsfile', both used to 
-                store the merge info between different calls.
-        - '--^nointeractiveresolution' indicates the merge to not ask the user for
-          manual conflict resolution.
-        - '--^machinereadable' and '--^startlineseparator', '--^endlineseparator',
-          '--^fieldseparator' options to print the output on a machine-readable 
-          way (easier-to-parse).
+
+    - '--^resolveconflict' to solve a directory conflict. You also have to
+      use the following options:
+        - '--^conflict' is the index of the conflict that you want to 
+          solve, starting at 1.
+        - '--^resolutionoption' indicates the conflict resolution to 
+           use. This can be:
+            - '^src' to keep the source change and discard the 
+              destination change
+            - '^dst' to keep the destination change and discard the 
+              source change
+            - '^rename' (only if the conflict type supports this 
+              resolution), to rename the destination to the given name
+              provided with the '--^resolutioninfo' option.
+                - '--^resolutioninfo' to provide the name to use on a 
+                  '^rename' resolution
+        - '--^mergeresultfile' and '--^solvedconflictsfile', both used to 
+          store the merge info between different calls.
+    - '--^nointeractiveresolution' indicates the merge to not ask the user for
+      manual conflict resolution.
+    - '--^machinereadable' and '--^startlineseparator', '--^endlineseparator',
+      '--^fieldseparator' options to print the output on a machine-readable 
+      way (easier-to-parse).
 
     Set the PLASTICEDITOR environment variable to specify an editor for
     entering comments. If the PLASTICEDITOR environment variable is set, and
@@ -3296,11 +3337,11 @@ Examples:
     'main' head')
 
     cm ^merge --^machinereadable --^startlineseparator=start@_@line \
-      --^endlineseparator=new@_@line --^fieldseparator=def#_#sep \
-      --^mergeresultfile=C:\Users\Borja\AppData\Local\Temp\2tmp4D6C.tmp \
-      --^solvedconflictsfile=C:\Users\Borja\AppData\Local\Temp\2tmp4D6D.tmp \
+        --^endlineseparator=new@_@line --^fieldseparator=def#_#sep \
+        --^mergeresultfile=C:\Users\Borja\AppData\Local\Temp\2tmp4D6C.tmp \
+        --^solvedconflictsfile=C:\Users\Borja\AppData\Local\Temp\2tmp4D6D.tmp \
         --^resolveconflict --^conflict=1 --^resolutionoption=rename \
-      --^resolutioninfo=bin_dst ^br:/main/task --^merge
+        --^resolutioninfo=bin_dst ^br:/main/task --^merge
     (Example for plugins and integrations)
 
 == CMD_DESCRIPTION_ATTRIBUTE_CREATE ==
@@ -3587,19 +3628,19 @@ Options:
 Remarks:
 
     Output format parameters (--^format option):
-        This command accepts a format string to show the output.
-        The output parameters of this command are the following:
-        - {^id}                Branch id.
-        - {^comment}           Comment.
-        - {^date}              Date.
-        - {^name}              Name.
-        - {^owner}             Owner.
-        - {^parent}            Parent branch name.
-        - {^parentid}          Parent branch id.
-        - {^repid}             Repository id.
-        - {^repository}        Repository.
-        - {^repname}           Repository name.
-        - {^repserver}         Repository server.
+    This command accepts a format string to show the output.
+    The output parameters of this command are the following:
+    - {^id}                Branch id.
+    - {^comment}           Comment.
+    - {^date}              Date.
+    - {^name}              Name.
+    - {^owner}             Owner.
+    - {^parent}            Parent branch name.
+    - {^parentid}          Parent branch id.
+    - {^repid}             Repository id.
+    - {^repository}        Repository.
+    - {^repname}           Repository name.
+    - {^repserver}         Repository server.
 
 Examples:
 
@@ -3676,7 +3717,7 @@ Usage:
 Options:
 
     repspec  Repository specification.
-                       (Use 'cm ^help ^objectspec' to learn more about rep specs.)
+             (Use 'cm ^help ^objectspec' to learn more about rep specs.)
 
 == CMD_HELP_REPOSITORY_DELETE ==
 Remarks:
@@ -3712,10 +3753,10 @@ Options:
 Remarks:
 
     Output format parameters (--^format option):
+
+    This command accepts a format string to show the output.
     
-        This command accepts a format string to show the output.
-    
-        The output parameters of this command are the following:
+    The output parameters of this command are the following:
     {^repid} | {0}      Repository identifier.
     {^repname} | {1}    Repository name.
     {^repserver} | {2}  Server name.
@@ -3754,8 +3795,8 @@ Usage:
 Options:
 
     repspec    Repository to be renamed.
-                        (Use 'cm ^help ^objectspec' to learn more about repository
-                        specifications.)
+               (Use 'cm ^help ^objectspec' to learn more about repository
+               specifications.)
     new_name   New name for the repository.
 
 == CMD_HELP_REPOSITORY_RENAME ==
@@ -3785,8 +3826,8 @@ Options:
     db_file        The name of the database file on the database backend.
     rep_name       The name of the repository.
     repserverspec  The repository server specification.
-                        (Use 'cm ^help ^objectspec' to learn more about repository
-                        server specifications.)
+                   (Use 'cm ^help ^objectspec' to learn more about repository
+                   server specifications.)
 
 == CMD_HELP_REPOSITORY_ADD ==
 Remarks:
@@ -3813,11 +3854,11 @@ Usage:
 Options:
 
     --^position    New position of the specified trigger.
-                        This position must not be in use by another trigger of
-                        the same type.
+                  This position must not be in use by another trigger of
+                  the same type.
     --^filter      Checks only items that matches the specified filter.
     --^server      Creates the trigger on the specified server.
-                        If no server is specified, executes the command on the
+                  If no server is specified, executes the command on the
                   one configured on the client. (Use 'cm ^help ^objectspec'
                   to learn more about repository server specifications.)
     subtype-type   Trigger execution and trigger operation.
@@ -4027,18 +4068,18 @@ Usage:
 
 == CMD_HELP_OBJECTSPEC ==
 
-    Several Unity VCS commands expect 'object specs' as input to refer to a
-    given object (typically a branch, changeset, repository, etc).
+Several Unity VCS commands expect 'object specs' as input to refer to a
+given object (typically a branch, changeset, repository, etc).
 
-    This documentation describes the different "specs" available and how to
-    build them.
+This documentation describes the different "specs" available and how to
+build them.
 
-    Each spec type begins with a unique tag, for example "^rep:" or "^cs:". The tag
-    must be specified for commands that take a general object spec, for example 
-    "cm ^setowner object_spec", but can often be omitted for commands that take only
-    a single type of spec, for example, "cm ^getfile revision_spec".
+Each spec type begins with a unique tag, for example "^rep:" or "^cs:". The tag
+must be specified for commands that take a general object spec, for example 
+"cm ^setowner object_spec", but can often be omitted for commands that take only
+a single type of spec, for example, "cm ^getfile revision_spec".
 
-Repository server spec (repserverspec): 
+Repository server spec (repserverspec):
 
     ^repserver:name:port
 
@@ -4051,7 +4092,7 @@ Repository server spec (repserverspec):
         historical reasons. Long ago, we had separate workspace and repository
         servers, and the naming survived.
 
-Repository spec (repspec): 
+Repository spec (repspec):
 
     ^rep:rep_name@[repserverspec]
 
@@ -4059,9 +4100,9 @@ Repository spec (repspec):
         cm ^showowner ^rep:codice@localhost:6060
         (Here the "^rep:" is required because ^showowner admits not only repos
         but also other types of objects. So it needs the user to indicate the
-         object type.)
+        object type.)
 
-Branch spec (brspec): 
+Branch spec (brspec):
 
     ^br:[/]br_name[@repspec]
 
@@ -4078,7 +4119,7 @@ Branch spec (brspec):
         our branches as /main, /main/task001, and so on. But now, we prefer the
         shorter form main, main/task001 which makes commands more compact.
 
-Changeset spec (csetspec): 
+Changeset spec (csetspec):
 
     ^cs:cs_number|cs_guid[@repspec]
 
@@ -4087,7 +4128,7 @@ Changeset spec (csetspec):
     Examples:
         cm ^ls /code --^tree=ae1390ed-7ce9-4ec3-a155-e5a61de0dc77@code@skull:7070
 
-Label spec (labelspec): 
+Label spec (labelspec):
 
     ^lb:lb_name[@repspec]
 
@@ -4112,28 +4153,32 @@ Revision spec:
 
         cm ^cat ^revid:1230@^rep:myrep@^repserver:myserver:8084
 
-Item spec: 
+Item spec:
 
-    ^item:path
+    There are different types of item specs:
 
-    Example:
-        cm ^find ^revision "^where ^item='^item:.'"
+    - ^item: item_path
+    - ^item: ^itemid:item_id[@rep_spec]
 
-Attribute spec: 
+    Examples:
+        cm ^lock ^unlock ^item:audio.wav
+        cm ^lock ^unlock ^itemid:1234@^rep:myrep@^repserver:myserver:8084
+
+Attribute spec:
 
     ^att:att_name[@repspec]
 
     Example:
         cm ^attribute ^set ^att:merged@code@doe:8084 ^cs:25@code@doe:8084 done
 
-Shelve spec: 
+Shelve spec:
 
     ^sh:sh_number[@repspec]
 
     Example:
         cm ^diff ^sh:2 ^sh:4
 
-Workspace specs: 
+Workspace specs:
 
     ^wk:name@clientmachine
 
@@ -4143,7 +4188,7 @@ Workspace specs:
     Examples:
         cm ^showselector ^wk:codebase@modok
 
-    Side note: 
+    Side note:
         These specs come from the old days of Plastic SCM 2.x where 'workspace
         servers' existed as a way to store workspace metadata in a centralized
         way. Were deprecated due to performance issues.
@@ -4488,14 +4533,14 @@ Remarks:
     If the source path is a file, the destination path can be a file or a 
     directory. In the first case, the file will be renamed; otherwise, the item 
     will be moved.
-	
+
     If source path is a directory, the destination path must be a directory.
 
     The item to move or rename must exist.
 
     Format:
-        {0}             Source path.
-        {1}             Destination path.
+    {0}   Source path.
+    {1}   Destination path.
 
 Examples:
 
@@ -4783,9 +4828,9 @@ Options:
 
     --^silent            Does not show any output.
     --^keepchanges (-^k)  Undoes the checkout and preserves the local changes.
-                       Sample: undo the checkout of a file leave it as locally
-                       changed with the same content on disk that it was.
-                       This option cannot be used with dynamic workspaces.
+                        Sample: undo the checkout of a file leave it as locally
+                        changed with the same content on disk that it was.
+                        This option cannot be used with dynamic workspaces.
     item_path            Items to apply the operation. Use double quotes (" ")
                         to specify paths containing spaces. Use a whitespace to
                         separate paths. Use . to apply the operation to current
@@ -4799,8 +4844,8 @@ Remarks:
     out. The item will be updated to the state it had before checking it out.
 
     Requirements: 
-      - The item must be under source code control.
-      - The item must be checked out.
+    - The item must be under source code control.
+    - The item must be checked out.
 
 Examples:
 
@@ -4871,18 +4916,18 @@ Remarks:
         - test_a.py
         - test_b.py
 
-        cm ^partial ^undo
-        cm ^partial ^undo *
-        cm ^partial ^undo file.txt code.cs /test
-        cm ^partial ^undo .
-        cm ^partial ^undo /src file.txt code.cs
+    cm ^partial ^undo
+    cm ^partial ^undo *
+    cm ^partial ^undo file.txt code.cs /test
+    cm ^partial ^undo .
+    cm ^partial ^undo /src file.txt code.cs
 
     If you want the operation to be recursive, you must specify the '-^r' flag.
 
     To undo all of the changes below a directory (including changes affecting
     the directory itself):
 
-        cm ^partial ^undo dirpath -^r
+    cm ^partial ^undo dirpath -^r
 
     If dirpath is a workspace path, every change in the workspace will be
     undone.
@@ -5133,9 +5178,9 @@ Remarks:
 
     Output format parameters (--^format option):
 
-        This command accepts a format string to show the output.
-    
-        The output parameters of this command are the following:
+    This command accepts a format string to show the output.
+
+    The output parameters of this command are the following:
     {^index} | {0}           Profile index in the profiles list
     {^name} | {1}            Profile name
     {^server} | {2}          Profile server
@@ -5209,12 +5254,12 @@ Examples:
     (Creates a new connection profile interactively.)
 
     cm ^profile ^create --^server=plastic.domain.com:8087 --^username=sergio
-      --^password=thisissupersecret --^workingmode=LDAPWorkingMode
+        --^password=thisissupersecret --^workingmode=LDAPWorkingMode
     (Creates a new connection profile to connect to 'plastic.domain.com:8087'
     using user 'sergio' and password 'thisissupersecret' through LDAP working mode.)
 
     cm ^profile ^create --^server=plastic.domain.com:8087 --^username=sergio
-      --^token="TOKENAMoKJ9iAA(...)12fssoprov:unityid" --workingmode=^SSOWorkingMode
+        --^token="TOKENAMoKJ9iAA(...)12fssoprov:unityid" --workingmode=^SSOWorkingMode
     (Creates a new connection profile to connect to 'plastic.domain.com:8087'
     using user 'sergio' and the specified token through Single Sign On working mode.)
 
@@ -5439,36 +5484,36 @@ Usage:
     cm ^pull <src_br_spec> <dst_rep_spec>
             [--^preview] [--^nodata] [TranslateOptions]
             [--^user=<usr_name> [--^password=<pwd>] | AuthOptions]
-     (Direct server-to-server replication. Pulls a branch from a repository.)
+    (Direct server-to-server replication. Pulls a branch from a repository.)
 
     cm ^pull <dst_rep_spec> --^package=<pack_file> [AuthOptions]
-     (Package based replication. Imports the package in the destination repository.)
+    (Package based replication. Imports the package in the destination repository.)
 
     cm ^pull ^hydrate <dst_br_spec> [<src_rep_spec>]
                     [--^user=<usr_name> [--^password=<pwd>] | AuthOptions]
-     (Introduces the missing data for all the changesets of a branch previously
-     replicated with '--^nodata'. If a repo to obtain the data is not specified,
-     Unity VCS tries to use the "replication source" (origin of the replicated
-     branch)).
+    (Introduces the missing data for all the changesets of a branch previously
+    replicated with '--^nodata'. If a repo to obtain the data is not specified,
+    Unity VCS tries to use the "replication source" (origin of the replicated
+    branch)).
 
     cm ^pull ^hydrate <dst_cs_spec> [<src_rep_spec>]
-                    [--^user=<usr_name> [--^password=<pwd>] | AuthOptions]
-     (Introduces the missing data for a changeset previously replicated with
-     '--^nodata'. If a repo to obtain the data is not specified, Unity VCS tries
-     to use the "replication source").
+        [--^user=<usr_name> [--^password=<pwd>] | AuthOptions]
+    (Introduces the missing data for a changeset previously replicated with
+    '--^nodata'. If a repo to obtain the data is not specified, Unity VCS tries
+    to use the "replication source").
 
 Options:
 
     --^preview      Gives information about what changes will be pulled but
-                        no changes are actually performed. This option is useful
-                        to check the data that will be transferred before
-                        replicating changes.
+                   no changes are actually performed. This option is useful
+                   to check the data that will be transferred before
+                   replicating changes.
     --^nodata       Replicates the branch changes without replicating the
-                        data. This option is not allowed with package
-                        replication.
+                   data. This option is not allowed with package
+                   replication.
     --^user, --^password  Credentials to use if the authentication mode is
-                        different in source and destination and there is not a
-                        profile to authenticate to destination.
+                   different in source and destination and there is not a
+                   profile to authenticate to destination.
     --^package      Specifies the previously created package file to import
                    for package based replication. Useful to move data between
                    servers when there is no direct network connection. Refer to
@@ -5583,14 +5628,14 @@ Remarks:
 
     1) Direct communication between servers: The destination server will fetch
        the data from the source server, automatically synchronizing data for
-        the specified branch. It requires the user running the command to be 
-        authenticated by the remote server, either using the default authentication
-        in the client.conf file, or specifiying the '--^authmode' and '--^authdata'
-        modifiers, or '--^authmode' and '--^user' and '--^password' if the authentication
-        mode is ^UPWorkingMode.
+       the specified branch. It requires the user running the command to be 
+       authenticated by the remote server, either using the default authentication
+       in the client.conf file, or specifiying the '--^authmode' and '--^authdata'
+       modifiers, or '--^authmode' and '--^user' and '--^password' if the authentication
+       mode is ^UPWorkingMode.
     2) Import a previously generated package with push and the '--^package' option.
-        This mode requires using a package file previously generated with the push
-    command.
+       This mode requires using a package file previously generated with the push
+       command.
 
     Keep in mind that pull replication works in an indirect way. When executed,
     the command asks the destination repository to connect to the source and
@@ -5606,7 +5651,7 @@ Examples:
     both servers are configured with the same authentication mode.)
 
     cm ^pull ^br:/main@project1@remoteserver:8084 projectx@myserver:8084 \
-      --^authmode=^LDAPWorkingMode --^authdata=::0:dave:fPBea2rPsQaagEW3pKNveA
+        --^authmode=^LDAPWorkingMode --^authdata=::0:dave:fPBea2rPsQaagEW3pKNveA
     (Pulls the same branch as before, but now the remote server is configured
     to authenticate users with Active Directory. For instance, I am connecting
     from a Linux machine to a Windows server configured to use Active Directory
@@ -5614,7 +5659,7 @@ Examples:
     password and pass it as LDAP to the server.)
 
     cm ^pull ^br:/main@project1@remoteserver:8084 projectx@myserver:8084 \
-      --^authmode=^UPWorkingMode --^user=dave --^password=mysecret
+        --^authmode=^UPWorkingMode --^user=dave --^password=mysecret
     (Pulls the same branch, but now users are authenticated on the remote
     server, taking advantage of the user/password database included in
     Unity VCS.)
@@ -5648,16 +5693,16 @@ Usage:
 Options:
 
     --^preview       Gives information about what changes will be pushed,
-                        but no changes are actually performed. This option is
-                        useful to check the data that will be transferred before
-                        replicating changes.
+                    but no changes are actually performed. This option is
+                    useful to check the data that will be transferred before
+                    replicating changes.
     --^package       Specifies path for exporting replication package for
                     package based replication. 
                     Useful to move data between servers when there is no 
                     direct network connection.
     --^user, --^password  Credentials to use if the authentication mode is
-                        different in source and destination and there is not a
-                        profile to authenticate to destination.
+                    different in source and destination and there is not a
+                    profile to authenticate to destination.
     src_br_spec      The branch to push to a remote repository.
                     (Use 'cm ^help ^objectspec' to learn more about branch specs.)
     dst_rep_spec     The destination repository.
@@ -5670,7 +5715,7 @@ Translate options:
     Mode:
 
     --^trmode=(^copy|^name|^table --^trtable=<translation_table_file>)
-        The source and destination repositories may use different authentication
+      The source and destination repositories may use different authentication
       modes. The '--^trmode' option specifies how to translate the user names from
       the source to the destination. The '--^trmode' must be one of the following
       values:
@@ -5786,7 +5831,7 @@ Examples:
     both servers are configured with the same authentication mode.)
 
     cm ^push ^br:/main@project1@myserver:8084 projectx@remoteserver:8084 \
-      --^authmode=^LDAPWorkingMode --^authdata=::0:dave:fPBea2rPsQaagEW3pKNveA
+        --^authmode=^LDAPWorkingMode --^authdata=::0:dave:fPBea2rPsQaagEW3pKNveA
     (Replicates same branch as before, but now the remote server is configured
     to authenticate users with Active Directory. For instance, I am connecting
     from a Linux machine to a Windows server configured to use Active Directory
@@ -5794,7 +5839,7 @@ Examples:
     password and pass it as LDAP to the server.)
 
     cm ^push ^br:/main@project1@myserver:8084 projectx@remoteserver:8084 \
-      --^authmode=^UPWorkingMode --^user=dave --^password=mysecret
+        --^authmode=^UPWorkingMode --^user=dave --^password=mysecret
     (Replicates the same branch, but now users are authenticated on the remote
     server, taking advantage of the user/password database included in
     Unity VCS.)
@@ -5914,23 +5959,23 @@ Examples:
     'project@192.168.111.200:9095'.)
 
     cm ^clone project@ldapserver:8084 --authmode=^LDAPWorkingMode \
-     --^authdata=::0:dave:fPBea2rPsQaagEW3pKNveA
+        --^authdata=::0:dave:fPBea2rPsQaagEW3pKNveA
     (Clones 'project' repository from 'ldapserver:8084' using LDAP
     authentication against the remote repository.)
 
     cm ^clone project@upserver:8084 --authmode=^UPWorkingMode \
-     --^authdata=dave:fPBea2rPsQaagEW3pKNveA==
+        --^authdata=dave:fPBea2rPsQaagEW3pKNveA==
     (Clones 'project' repository from 'upserver:8084' using UPWorkingMode
     authentication against the remote repository.)
 
     cm ^clone project@upserver:8084 --authmode=^UPWorkingMode \
-     --^user=<user> --^password=<pwd>
+        --^user=<user> --^password=<pwd>
     (Clones 'project' repository from 'upserver:8084' using UPWorkingMode
     authentication against the remote repository but specifying the 
     ^user and ^password instead of the ^authdata.)
 
     cm ^clone project@ldapserver:8084 --authfile=credentials.txt \
-      --^trmode=table --^trtable=table.txt
+        --^trmode=table --^trtable=table.txt
     (Clones 'project' repository from 'ldapserver:8084' using an authentication
     file against the remote repository, and translating users following the
     specified translation table.)
@@ -5953,7 +5998,7 @@ Usage:
 Options:
 
     revspec    Specification of the changeset that contains the
-                        revision which content will be loaded in the workspace.
+               revision which content will be loaded in the workspace.
                (Use 'cm ^help ^objectspec' to learn more about revision specs.)
 
 == CMD_HELP_REVERT ==
@@ -5966,10 +6011,10 @@ Examples:
     cm ^revert dir#^cs:0
     cm ^revert C:\mywks\dir\file1.txt#23456
 
-== CMD_DESCRIPTION_REVISION_HISTORY ==
+== CMD_DESCRIPTION_HISTORY ==
 Displays the history of a file or directory.
 
-== CMD_USAGE_REVISION_HISTORY ==
+== CMD_USAGE_HISTORY ==
 Usage:
 
     cm ^history | ^hist <item_path>[ ...] [--^long | --^format=<str_format>]
@@ -6004,7 +6049,7 @@ Options:
                         Paths can be server path revisions too.
                         (Use 'cm ^help ^objectspec' to learn more about specs.)
 
-== CMD_HELP_REVISION_HISTORY ==
+== CMD_HELP_HISTORY ==
 Remarks:
 
     This command shows a list of revisions for a given item, and label, branch,
@@ -6047,6 +6092,8 @@ Examples:
     (Retrieves the 2 last revisions for the bar.c and foo.c items.)
 
 == CMD_DESCRIPTION_REVISION_TREE ==
+> **This command is deprecated.** 
+
 Shows the revision tree for an item.
 
 == CMD_USAGE_REVISION_TREE ==
@@ -6067,10 +6114,10 @@ Examples:
     cm ^tree link --^symlink
     (Applies the operation to the symlink file and not to the target.)
 
-== CMD_DESCRIPTION_RM ==
+== CMD_DESCRIPTION_REMOVE ==
 Allows the user to delete files and directories.
 
-== CMD_USAGE_RM ==
+== CMD_USAGE_REMOVE ==
 Usage:
 
     cm ^remove | ^rm <command> [options]
@@ -6084,16 +6131,16 @@ Commands:
     cm ^remove <command> --^usage
     cm ^remove <command> --^help
 
-== CMD_HELP_RM ==
+== CMD_HELP_REMOVE ==
 Examples:
 
     cm ^remove \path\controlled_file.txt
     cm ^remove ^private \path\private_file.txt
 
-== CMD_DESCRIPTION_RM_CONTROLLED ==
+== CMD_DESCRIPTION_REMOVE_CONTROLLED ==
 Deletes a file or directory from version control.
 
-== CMD_USAGE_RM_CONTROLLED ==
+== CMD_USAGE_REMOVE_CONTROLLED ==
 Usage:
 
     cm ^remove | ^rm <item_path>[ ...] [--^format=<str_format>]
@@ -6111,7 +6158,7 @@ Options:
                         paths containing spaces. Use a whitespace to separate
                         paths.
 
-== CMD_HELP_RM_CONTROLLED ==
+== CMD_HELP_REMOVE_CONTROLLED ==
 Remarks:
 
     Items are deleted from disk. Removed items are removed from the parent
@@ -6147,14 +6194,14 @@ Examples:
     cm ^remove c:\workspace\file.txt --^nodisk
     (Removes 'file.txt' from version control, but keeps it on disk.)
 
-== CMD_DESCRIPTION_RM_PRIVATE ==
+== CMD_DESCRIPTION_REMOVE_PRIVATE ==
 Deletes a private file or directory.
 
 Warning: files deleted using the command are permanently erased, and are not
 recoverable. It is recommended that you use the '--^dry-run' option to check
 which files will be affected by the command.
 
-== CMD_USAGE_RM_PRIVATE ==
+== CMD_USAGE_REMOVE_PRIVATE ==
 Usage:
 
     cm ^remove | ^rm ^private <path>[ ...] [-^R | -^r | --^recursive] [--^ignored]
@@ -6171,7 +6218,7 @@ Options:
                         quotes (" ") to specify paths containing spaces. Use a
                         whitespace to separate paths.
 
-== CMD_HELP_RM_PRIVATE ==
+== CMD_HELP_REMOVE_PRIVATE ==
 Remarks:
 
     If the path is a private file or directory, it will be deleted from disk.
@@ -6615,7 +6662,7 @@ Options:
 == CMD_HELP_SHOW_FIND_OBJECTS ==
 Remarks:
 
-Available objects and attributes: 
+    Available objects and attributes:
 
     - ^attribute.
     - ^attributetype.
@@ -6644,27 +6691,26 @@ Available objects and attributes:
 
     Examples:
 
-                  cm ^find ^attribute "^where ^type = 'status'"
-                  (Finds all attributes of type 'status'.)
+    cm ^find ^attribute "^where ^type = 'status'"
+    (Finds all attributes of type 'status'.)
 
-                  cm ^find ^attribute "^where ^date > '^this ^week'"
-                  (Finds all attributes applied during the current week.)
+    cm ^find ^attribute "^where ^date > '^this ^week'"
+    (Finds all attributes applied during the current week.)
 
-                  cm ^find ^attribute "^where ^value = 'resolved' ^and ^owner = '^me'"
-                  (Finds all attributes with value 'resolved' applied by me.)
+    cm ^find ^attribute "^where ^value = 'resolved' ^and ^owner = '^me'"
+    (Finds all attributes with value 'resolved' applied by me.)
 
-                  cm ^find ^attribute "^where ^srcobj = '^item:readme.txt'"
-                  (Finds the attributes applied to the item 'readme.txt'.)
+    cm ^find ^attribute "^where ^srcobj = '^item:readme.txt'"
+    (Finds the attributes applied to the item 'readme.txt'.)
 
-                  cm ^find ^attribute "^where ^srcobj = '^br:/main/scm23343'"
-                  (Finds the attributes applied to the branch scm23343.)
+    cm ^find ^attribute "^where ^srcobj = '^br:/main/scm23343'"
+    (Finds the attributes applied to the branch scm23343.)
 
-                  cm ^find ^attribute "^where ^srcobj = '^rev:readme.txt#^br:/main/task002'"
-                  (Finds the attributes applied to the specified revision.)
+    cm ^find ^attribute "^where ^srcobj = '^rev:readme.txt#^br:/main/task002'"
+    (Finds the attributes applied to the specified revision.)
 
-                  cm ^find ^attribute "^where ^srcobj = '^rev:^revid:1126'"
-                  (Finds the attributes applied to the specified revision id.)
-
+    cm ^find ^attribute "^where ^srcobj = '^rev:^revid:1126'"
+    (Finds the attributes applied to the specified revision id.)
 
 ^attributetype:
     You can find attribute types by filtering using the following fields:
@@ -6690,24 +6736,24 @@ Available objects and attributes:
 
     Examples:
 
-                  cm ^find ^attributetype "^where ^name ^like 'st%'"
-                  (Finds all attribute where name starts with 'st'.)
+    cm ^find ^attributetype "^where ^name ^like 'st%'"
+    (Finds all attribute where name starts with 'st'.)
 
-                  cm ^find ^attribute "^where ^date > '^today'"
-                  (Finds all attributes applied today.)
+    cm ^find ^attribute "^where ^date > '^today'"
+    (Finds all attributes applied today.)
 
-                  cm ^find ^attributetype "^where ^comment != ''" --^xml
-                  (Finds all attribute types that have a comment and prints the 
-                  output in XML format to the standard output.)
+    cm ^find ^attributetype "^where ^comment != ''" --^xml
+    (Finds all attribute types that have a comment and prints the 
+    output in XML format to the standard output.)
 
-                  cm ^find ^attributetype "^where ^source = '^item:readme.txt'"
-                  (Finds all attribute types in item 'readme.txt'.)
+    cm ^find ^attributetype "^where ^source = '^item:readme.txt'"
+    (Finds all attribute types in item 'readme.txt'.)
 
-                  cm ^find ^attributetype "^where ^source = '^cs:30'"
-                  (Finds all attribute types in changeset '30'.)
+    cm ^find ^attributetype "^where ^source = '^cs:30'"
+    (Finds all attribute types in changeset '30'.)
 
-                  cm ^find ^attributetype "^where ^source = '^lb:v0.14.1'"
-                  (Finds all attribute types in label 'v0.14.1'.)
+    cm ^find ^attributetype "^where ^source = '^lb:v0.14.1'"
+    (Finds all attribute types in label 'v0.14.1'.)
 
 ^branch:
     You can find branches by filtering using the following fields:
@@ -6740,25 +6786,25 @@ Available objects and attributes:
     - ^ReplSrcServer
 
     Examples:
-                    cm ^find ^branch "^where ^name ^like 'scm23%'"
-                    (Finds branches which name starts with 'scm23'.)
+    cm ^find ^branch "^where ^name ^like 'scm23%'"
+    (Finds branches which name starts with 'scm23'.)
 
-                    cm ^find ^branch "^where ^date > '^one ^week ^ago'"
-                    (Finds branches created during the last week.)
+    cm ^find ^branch "^where ^date > '^one ^week ^ago'"
+    (Finds branches created during the last week.)
 
-                    cm ^find ^branch "^where ^changesets >= '^today'"
-                    (Finds branches with changesets created today.)
+    cm ^find ^branch "^where ^changesets >= '^today'"
+    (Finds branches with changesets created today.)
 
-                    cm ^find ^branch "^where ^attribute = 'status' ^and ^attrvalue = 'failed'"
-                    (Finds branches that have the attribute 'status' and which 
-                    value is 'failed'.)
-                    
-                     cm ^find ^branch "^where ^owner != '^me' ^and ^parent != '^br:/main'"
-                     (Finds branches created by other than me and which parent 
-                     branch is not '/main'.)
+    cm ^find ^branch "^where ^attribute = 'status' ^and ^attrvalue = 'failed'"
+    (Finds branches that have the attribute 'status' and which 
+    value is 'failed'.)
 
-                    cm ^find ^branch "^where ^id = 2029607"
-                    (Finds the branch which id is 2029607.)
+     cm ^find ^branch "^where ^owner != '^me' ^and ^parent != '^br:/main'"
+     (Finds branches created by other than me and which parent 
+     branch is not '/main'.)
+
+    cm ^find ^branch "^where ^id = 2029607"
+    (Finds the branch which id is 2029607.)
 
 ^changeset:
     You can find changesets by filtering using the following fields:
@@ -6793,30 +6839,30 @@ Available objects and attributes:
 
     Examples:
 
-                            cm ^find ^changeset "^where ^branch = '/main/scm23119'"
-                            (Finds all changesets in branch 'scm23119'.)
+    cm ^find ^changeset "^where ^branch = '/main/scm23119'"
+    (Finds all changesets in branch 'scm23119'.)
 
-                            cm ^find ^changeset "^where ^attribute = 'status'"
-                            (Finds the changesets with the attribute 'status'.)
+    cm ^find ^changeset "^where ^attribute = 'status'"
+    (Finds the changesets with the attribute 'status'.)
 
-                            cm ^find ^changeset "^where ^date >= '6/8/2018' ^and ^owner != '^me'"
-                            (Finds all changesets with creation date equal or
-                            greater than 6/8/2018 and created by others than me.)
+    cm ^find ^changeset "^where ^date >= '6/8/2018' ^and ^owner != '^me'"
+    (Finds all changesets with creation date equal or
+    greater than 6/8/2018 and created by others than me.)
 
-                            cm ^find ^changeset "^where ^guid = '1b30674f-14cc-4fd7-962b-676c8a6f5cb6'"
-                            (Finds the changeset with the specified guid.)
+    cm ^find ^changeset "^where ^guid = '1b30674f-14cc-4fd7-962b-676c8a6f5cb6'"
+    (Finds the changeset with the specified guid.)
 
-                            cm ^find ^changeset "^where ^comment = ''"
-                            (Finds the changesets with no comments.)
+    cm ^find ^changeset "^where ^comment = ''"
+    (Finds the changesets with no comments.)
 
-                            cm ^find ^changeset "^where ^onlywithrevisions = 'false'"
-                            (Finds changesets with no revisions.)
+    cm ^find ^changeset "^where ^onlywithrevisions = 'false'"
+    (Finds changesets with no revisions.)
 
-                            cm ^find ^changeset "^where ^changesetid = 29 ^and ^returnparent = 'true'"
-                            (Finds the parent of changeset 29.)
+    cm ^find ^changeset "^where ^changesetid = 29 ^and ^returnparent = 'true'"
+    (Finds the parent of changeset 29.)
 
-                            cm ^find ^changeset "^where ^parent = 548"
-                            (Finds all changesets which parent is cset 548.)
+    cm ^find ^changeset "^where ^parent = 548"
+    (Finds all changesets which parent is cset 548.)
 
 ^label:
     You can find labels by filtering using the following fields:
@@ -6850,29 +6896,25 @@ Available objects and attributes:
 
     Examples:
 
-                    cm ^find ^label "^where ^name ^like '7.0.16.%'"
-                    (Finds the labels with a name that starts with '7.0.16.'.)
+    cm ^find ^label "^where ^name ^like '7.0.16.%'"
+    (Finds the labels with a name that starts with '7.0.16.'.)
 
-                    cm ^find ^label "^where ^date >= '^this ^month' ^and \
-                      ^attribute = 'publish-status' ^and ^attrvalue != 'PUBLISHED'"
-                    (Finds the labels created this month with an attribute 'publish-status'
-                    set to a value other than 'PUBLISHED'.)
-                    
-                    cm ^find ^label "^where ^branch = '/main'"
-                    (Finds all labels applied to the main branch.)
+    cm ^find ^label "^where ^date >= '^this ^month' ^and \
+        ^attribute = 'publish-status' ^and ^attrvalue != 'PUBLISHED'"
+    (Finds the labels created this month with an attribute 'publish-status'
+    set to a value other than 'PUBLISHED'.)
 
-                    cm ^find ^label "^where ^changeset = 111733"
-                    (Finds the labels applied to changeset 111733.)
+    cm ^find ^label "^where ^branch = '/main'"
+    (Finds all labels applied to the main branch.)
+
+    cm ^find ^label "^where ^changeset = 111733"
+    (Finds the labels applied to changeset 111733.)
 
 ^merge:
     You can find merges by filtering using the following fields:
 
-    ^srcbranch    : branch spec.
+    ^srcbranch     branch spec.
                    Use 'cm ^help ^objectspec' to learn how to specify this object.
-
-                   Example:
-
-
     ^srcchangeset  changeset id (integer).
     ^dstbranch     branch spec. Use 'cm ^help ^objectspec' to learn how to
                    specify this object.
@@ -6894,17 +6936,17 @@ Available objects and attributes:
 
     Examples:
 
-                      cm ^find ^merge "^where ^srcbranch = '^br:/main'"
-                      (Finds merges from the main branch.)
+    cm ^find ^merge "^where ^srcbranch = '^br:/main'"
+    (Finds merges from the main branch.)
 
-                      cm ^find ^merge "^where ^dstchangeset = 108261" \
-                        --^format="{^srcbranch} {^srcchangeset} {^dstbranch} {^dstchangeset} {^owner}"
-                      (Finds the merges to changeset 108261 and prints the
-                      formatted output showing the source (branch and cset id),
-                      the destination (branch and cset id), and the merge owner.)
+    cm ^find ^merge "^where ^dstchangeset = 108261" \
+        --^format="{^srcbranch} {^srcchangeset} {^dstbranch} {^dstchangeset} {^owner}"
+    (Finds the merges to changeset 108261 and prints the
+    formatted output showing the source (branch and cset id),
+    the destination (branch and cset id), and the merge owner.)
 
-                      cm ^find ^merge "^where ^type = '^cherrypick' ^and ^owner = '^me'"
-                      (Finds all my cherry picks.)
+    cm ^find ^merge "^where ^type = '^cherrypick' ^and ^owner = '^me'"
+    (Finds all my cherry picks.)
 
 ^replicationlog:
     You can find replication log by filtering using the following fields:
@@ -6920,12 +6962,12 @@ Available objects and attributes:
 
     Examples:
 
-                         cm ^find ^replicationlog "^where ^branch = '/main/gm22358'"
-                         (Finds the replication logs of branch 'gm22358'.)
+    cm ^find ^replicationlog "^where ^branch = '/main/gm22358'"
+    (Finds the replication logs of branch 'gm22358'.)
 
-                         cm ^find ^replicationlog "^where ^package = 'T' ^and ^server ^like '%cloud%'"
-                         (Finds the replication logs created from package which
-                         server name contains 'cloud'.)
+    cm ^find ^replicationlog "^where ^package = 'T' ^and ^server ^like '%cloud%'"
+    (Finds the replication logs created from package which
+    server name contains 'cloud'.)
 
 ^review:
     You can find code reviews by filtering using the following fields:
@@ -6955,15 +6997,14 @@ Available objects and attributes:
 
     Examples:
 
-                    cm ^find ^review "^where ^status = 'pending' ^and ^assignee = '^me'"
-                    (Finds all my pending reviews.)
+    cm ^find ^review "^where ^status = 'pending' ^and ^assignee = '^me'"
+    (Finds all my pending reviews.)
 
-                    cm ^find ^review "^where ^target = '^br:/main/scm17932'"
-                    (Finds the reviews related to branch 'scm17932'.)
+    cm ^find ^review "^where ^target = '^br:/main/scm17932'"
+    (Finds the reviews related to branch 'scm17932'.)
 
-                    cm ^find ^review "^where ^targettype = '^changeset'"
-                    (Finds the reviews which target type is changeset.)
-
+    cm ^find ^review "^where ^targettype = '^changeset'"
+    (Finds the reviews which target type is changeset.)
 
 ^revision:
     You can find revisions by filtering using the following fields:
@@ -7004,29 +7045,29 @@ Available objects and attributes:
 
     Examples:
 
-                              cm ^find ^revision "^where ^changeset >= 111756"
-                              (Finds the revisions created in changeset 111756 
-                              and later.)
+    cm ^find ^revision "^where ^changeset >= 111756"
+    (Finds the revisions created in changeset 111756 
+    and later.)
 
-                              cm ^find ^revision "^where ^item = 'readme.txt' ^or ^itemid = 2250"
-                              (Finds the revisions of item 'readme.txt' plus 
-                              item id 2250.)
+    cm ^find ^revision "^where ^item = 'readme.txt' ^or ^itemid = 2250"
+    (Finds the revisions of item 'readme.txt' plus 
+    item id 2250.)
 
-                              cm ^find ^revision "^where ^item = 'readme.txt' ^or ^item = 2250"
-                              (Gets the same revisions as the previous example.)
+    cm ^find ^revision "^where ^item = 'readme.txt' ^or ^item = 2250"
+    (Gets the same revisions as the previous example.)
 
-                              cm ^find ^revision "^where ^attribute = 'status' ^and ^attrvalue != 'open'"
-                              (Finds the revisions with attribute 'status' which
-                              value is other than 'open'.)
+    cm ^find ^revision "^where ^attribute = 'status' ^and ^attrvalue != 'open'"
+    (Finds the revisions with attribute 'status' which
+    value is other than 'open'.)
 
-                              cm ^find ^revision "^where ^archived = 'true'"
-                              (Finds the revisions that are archived in an 
-                              external storage.)
+    cm ^find ^revision "^where ^archived = 'true'"
+    (Finds the revisions that are archived in an 
+    external storage.)
 
-                              cm ^find ^revision "^where ^type = '^txt' and \
-                                ^size > 300000 ^and ^owner = '^me' and ^date >= '2 ^months ^ago'"
-                              (Finds the text revisions created by me two months
-                              ago and with size greater than about 3MB.)
+    cm ^find ^revision "^where ^type = '^txt' and \
+        ^size > 300000 ^and ^owner = '^me' and ^date >= '2 ^months ^ago'"
+    (Finds the text revisions created by me two months
+    ago and with size greater than about 3MB.)
 
 ^shelve:
     You can find shelves by filtering using the following fields:
@@ -7052,15 +7093,15 @@ Available objects and attributes:
 
     Examples:
 
-                    cm ^find ^shelve "^where ^owner != '^me' ^and ^date >= '^1 ^years ^ago'"
-                    (Finds the shelves created by others than me during the last
-                    year.)
+    cm ^find ^shelve "^where ^owner != '^me' ^and ^date >= '^1 ^years ^ago'"
+    (Finds the shelves created by others than me during the last
+    year.)
 
-                    cm ^find ^shelve "^where ^shelveid = 2"
-                    (Finds the shelve with name 2.)
+    cm ^find ^shelve "^where ^shelveid = 2"
+    (Finds the shelve with name 2.)
 
-                    cm ^find ^shelve "^where ^id >= 3848"
-                    (Finds the shelves which object id is greater than 3848.)
+    cm ^find ^shelve "^where ^id >= 3848"
+    (Finds the shelves which object id is greater than 3848.)
 
 Replication related fields:
     Many objects track replication data, meaning Unity VCS tracks where they were
@@ -7068,7 +7109,7 @@ Replication related fields:
 
     The fields you can use are:
     ^ReplSrcServer       repspec. Stands for "replication source server". 
-                            Server where the object was replicated from.
+                         Server where the object was replicated from.
      ^ReplSrcRepository  string. Stands for "replication source repo". It is
                          the repository where the object was replicated from.
      ^ReplLogId          integer. ID of the replication operation. In Unity VCS,
@@ -7086,23 +7127,23 @@ Replication related fields:
 
     Examples:
 
-                            cm ^find ^branch "^where ^replsrcserver='skull.codicefactory.com:9095'"
-                            (Finds the branches replicated from server 'skull'.)
+    cm ^find ^branch "^where ^replsrcserver='skull.codicefactory.com:9095'"
+    (Finds the branches replicated from server 'skull'.)
 
-                            cm ^find ^branch "^where ^replsrcserver = 'skull.codicefactory.com:9095' \
-                              ^and ^replsrcrepository = 'codice'"
-                            (Finds the branches replicated from server 'skull'
-                            and from repository 'codice'.)
+    cm ^find ^branch "^where ^replsrcserver = 'skull.codicefactory.com:9095' \
+        ^and ^replsrcrepository = 'codice'"
+    (Finds the branches replicated from server 'skull'
+    and from repository 'codice'.)
 
-                            cm ^find ^revision "^where ^repllogid = 2019974"
+    cm ^find ^revision "^where ^repllogid = 2019974"
     (Finds the revisions replicated from replica 2019974.)
 
-                            cm ^find ^label "^where ^replsrcdate >= '^one ^month ^ago' \
-                              ^and ^date >= '15 ^days ^ago'"
-                            (Finds the labels created 15 days ago and were 
-                            replicated one month ago.)
-                     
-                            cm ^find ^replicationlog "^where ^date > '^one ^week ^ago'"
+    cm ^find ^label "^where ^replsrcdate >= '^one ^month ^ago' \
+        ^and ^date >= '15 ^days ^ago'"
+    (Finds the labels created 15 days ago and were 
+    replicated one month ago.)
+
+    cm ^find ^replicationlog "^where ^date > '^one ^week ^ago'"
     (returns the following line:)
     - 8780433 27/09/2018 8:49:38 codice@BACKYARD:8087 F mbarriosc
 
@@ -7110,17 +7151,17 @@ Replication related fields:
     check that the replicated branch was created before it was 
     replicated over:)
 
-                            cm ^find ^branch "^where ^repllogid = 8780433"
+    cm ^find ^branch "^where ^repllogid = 8780433"
     (returns the following line:)
     - 8780443 26/09/2018 12:20:55 /main/scm23078 maria codice T
 
-                            cm ^find ^replicationsource
+    cm ^find ^replicationsource
     (returns the following two lines:) 
     - 7860739 codice@AFRODITA:8087 d9c4372a-dc55-4fdc-ad3d-baeb2e975f27
     - 8175854 codice@BACKYARD:8087 66700d3a-036b-4b9a-a26f-adfc336b14f9
 
     (Now, you can find the changesets replicated from codice@AFRODITA:8087:)
-                            cm ^find ^changesets "^where ^replsrcid = 7860739"
+    cm ^find ^changesets "^where ^replsrcid = 7860739"
 
 Date constants:
     You can use date formats that follow your machine localization settings.
@@ -7179,20 +7220,20 @@ Usage:
 
 Options:
 
-      --^extended        Shows ACL hierarchy tree.
-      --^xml             Prints the output in XML format to the standard output.
-                        It is possible to specify an output file.
-      --^encoding        Used with the '--^xml' option, specifies the encoding to
-                        use in the XML output, i.e.: utf-8.
-                        See the MSDN documentation at
-                        http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
-                        to get the table of supported encodings and its format, 
-                        (at the end of the page, in the "Name" column).
-    object_spec        Specification of the object to show the ACL of.
-                      The valid objects for this command are:
-                      repserver, repository, branch, changeset, label, item,
-                      and attribute. 
-                      (Use 'cm ^help ^objectspec' to learn more about specs.)
+    --^extended    Shows ACL hierarchy tree.
+    --^xml         Prints the output in XML format to the standard output.
+                  It is possible to specify an output file.
+    --^encoding    Used with the '--^xml' option, specifies the encoding to
+                  use in the XML output, i.e.: utf-8.
+                  See the MSDN documentation at
+                  http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
+                  to get the table of supported encodings and its format, 
+                  (at the end of the page, in the "Name" column).
+    object_spec    Specification of the object to show the ACL of.
+                  The valid objects for this command are:
+                  repserver, repository, branch, changeset, label, item,
+                  and attribute. 
+                  (Use 'cm ^help ^objectspec' to learn more about specs.)
 
 == CMD_HELP_SHOWACL ==
 Examples:
@@ -7560,20 +7601,20 @@ Usage:
 
     cm ^tube ^connect
     (Connects the Unity VCS server to Plastic Tube.)
-	
+
     cm ^tube ^disconnect
     (Disconnects the Unity VCS server from Plastic Tube.)
-	
+
     cm ^tube ^status
     (Shows if the Unity VCS server is connected to Plastic Tube.)
 
 Options:
 
-    -^u                Tube user (the plasticscm.com user).
-    -^p                User password.
-    -^a                Sets the access mode.
-    rep_spec          Repository specification. (Use 'cm ^help ^objectspec' to
-                      learn more about repository specs.)
+    -^u          Tube user (the plasticscm.com user).
+    -^p          User password.
+    -^a          Sets the access mode.
+    rep_spec     Repository specification. (Use 'cm ^help ^objectspec' to
+                learn more about repository specs.)
 
 == CMD_HELP_TUBE ==
 Remarks:
@@ -7599,10 +7640,10 @@ Examples:
     cm ^tube ^disconnect
     cm ^tube ^status
 
-== CMD_DESCRIPTION_UNCO ==
+== CMD_DESCRIPTION_UNDOCHECKOUT ==
 Undoes the checkout of an item.
 
-== CMD_USAGE_UNCO ==
+== CMD_USAGE_UNDOCHECKOUT ==
 Usage:
 
     cm ^undocheckout | ^unco <item_path>[ ...] [-^a | --^all] [--^symlink] [--^silent]
@@ -7631,12 +7672,12 @@ Options:
                            changed with the same content on disk that it was.
                            This option cannot be used with dynamic workspaces.
     item_path              Items to apply the operation. Use a whitespace to separate
-                        paths. Use double quotes (" ") to specify paths
+                           paths. Use double quotes (" ") to specify paths
                            containing spaces. Use . to apply the operation to
                            the current directory.
 
 
-== CMD_HELP_UNCO ==
+== CMD_HELP_UNDOCHECKOUT ==
 Remarks:
 
     If an item is checked out and you do not want to checkin it, you can undo
@@ -7644,8 +7685,8 @@ Remarks:
     out. The item will be updated to the state it had before checking it out.
 
     Requirements:
-      - The item must be under source code control.
-      - The item must be checked out.
+    - The item must be under source code control.
+    - The item must be checked out.
 
 Reading input from stdin:
 
@@ -7657,8 +7698,8 @@ Reading input from stdin:
     Paths will be read until an empty line is entered.
     This allows you to use pipe to specify for which files to undo the checkout.
     Example:
-      dir /S /B *.c | cm ^undocheckout --^all -
-      (In Windows, undoes the checkout of all .c files in the workspace.)
+    dir /S /B *.c | cm ^undocheckout --^all -
+    (In Windows, undoes the checkout of all .c files in the workspace.)
 
 Examples:
 
@@ -7685,15 +7726,15 @@ Examples:
     simplified, easier-to-parse format.)
 
     cm ^unco . --^machinereadable --^startlineseparator=">" --^endlineseparator="<" \
-      --^fieldseparator=","
+        --^fieldseparator=","
     (Undoes checkouts in the current directory, and prints the result in a
     simplified, easier to parse format, starting and ending the lines, and
     separating the fields, with the specified strings.)
 
-== CMD_DESCRIPTION_UNCOUNCHANGED ==
+== CMD_DESCRIPTION_UNDOCHECKOUTUNCHANGED ==
 Undoes non-changed checked out items.
 
-== CMD_USAGE_UNCOUNCHANGED ==
+== CMD_USAGE_UNDOCHECKOUTUNCHANGED ==
 Usage:
 
     cm ^uncounchanged | ^unuc <item_path>[ ...] [-^R | -^r | --^recursive]
@@ -7703,14 +7744,14 @@ Options:
 
     -^R | -^r | --^recursive  Undoes unchanged items recursively in the specified paths.
     --^symlink                Applies the uncounchanged operation to the link and not
-                        to the target.
+                              to the target.
     --^silent                 Does not show any output.
     item_path                 Items to apply the operation. Use a whitespace to separate
                               paths. Use double quotes (" ") to specify paths
                               containing spaces. Use . to apply the operation to current
                               directory.
 
-== CMD_HELP_UNCOUNCHANGED ==
+== CMD_HELP_UNDOCHECKOUTUNCHANGED ==
 Remarks:
 
     This command is applied from the root of the workspace recursively.
@@ -7798,8 +7839,8 @@ Reading input from stdin:
     Paths will be read until an empty line is entered.
     This allows you to use pipe to specify for which files to undo changes.
     Example:
-      dir /S /B *.c | cm ^undochange -
-      (In Windows, undoes the changes of all .c files in the workspace.)
+    dir /S /B *.c | cm ^undochange -
+    (In Windows, undoes the changes of all .c files in the workspace.)
 
 Examples:
 
@@ -7871,21 +7912,21 @@ Remarks:
 
     - Consider the following scenario:
 
-          /src
-          |- file.txt
-          |- code.cs
-          \- /test
-             |- test_a.py
-             \- test_b.py
+    - /src
+        - file.txt
+        - code.cs
+        - /test
+            - test_a.py
+            - test_b.py
 
-      These commands are equivalent when executed from the /src directory:
-        cm ^undo
-        cm ^undo *
-        cm ^undo file.txt code.cs /test
+    These commands are equivalent when executed from the /src directory:
+    cm ^undo
+    cm ^undo *
+    cm ^undo file.txt code.cs /test
 
-      These commands are also equivalent when executed from the /src directory:
-        cm ^undo .
-        cm ^undo /src file.txt code.cs
+    These commands are also equivalent when executed from the /src directory:
+    cm ^undo .
+    cm ^undo /src file.txt code.cs
 
 Filters:
 
@@ -7981,46 +8022,70 @@ Examples:
     change.)
 
 == CMD_DESCRIPTION_LOCK_UNLOCK ==
-Undoes item locks on a lockserver.
+Undoes item locks on a server.
 
 == CMD_USAGE_LOCK_UNLOCK ==
 Usage:
 
-    cm ^lock ^unlock [<repserverspec>] <guid>[ ...]
+    cm ^lock ^unlock <itemspec>[ ...] [--^remove]
 
 Options:
-
-    repserverspec   Repository server specification. (Use 'cm ^help ^objectspec'
-                    to learn more about repserver specs.)
-    guid            A list of item GUIDs to be unlocked. Use a whitespace to
-                    separate GUIDs.
+    --^remove            Removes the locks completely for the specified items.
+                        If this option is not specified, it only releases the
+                        Locked status.
+    itemspec            One or more item specs. (Use 'cm ^help ^objectspec'
+                        to learn more about itemspecs.)
 
 == CMD_HELP_LOCK_UNLOCK ==
 Remarks:
 
-    - The command uses the specified server to unlock the items.
-    - If no server is specified, the command tries to obtain a server from the
-      current workspace.
-    - If no server was calculated on the previous steps, the server is obtained
-      from the current Unity VCS client configuration.
-    - Only the administrator of the server can run the 'cm ^unlock' command.
-    - To specify a GUID, the format should be the 32-digit separated by
-      hyphens format (optionally enclosed in curly braces):
-       - {00000000-0000-0000-0000-000000000000}
-       - 00000000-0000-0000-0000-000000000000
+    - Only the administrator of the server can run the 'cm ^unlock --^remove'
+      command to delete locks.
+    - Only the administrator can release locks that belong to other users.
+      Users can release their own locks.
 
 Examples:
 
-    cm ^lock ^unlock 91961b14-3dfe-4062-8c4c-f33a81d201f5
-    (Undoes the selected item lock.)
+    cm ^lock ^unlock ^itemid:56@myrep@DIGITALIS:8084
+    (Releases the lock for the item id 56 in the repo 'myrep@DIGITALIS'.)
 
-    cm ^lock ^unlock DIGITALIS:8084 2340b4fa-47aa-4d0e-bb00-0311af847865 \
-      bcb98a61-2f62-4309-9a26-e21a2685e075
-    (Undoes the selected item locks on lockserver named 'DIGITALIS'.)
+    cm ^lock ^unlock ^item:/home/user/workspace/foo.psd ^item:/home/user/workspace/bar.psd
+    (Releases the selected item locks.)
 
-    cm ^lock ^unlock tardis@cloud 4740c4fa-56af-3dfe-de10-8711fa248635 \
-      71263c17-5eaf-5271-4d2c-a25f72e101d4
-    (Undoes the selected item locks on cloud lockserver named 'tardis'.)
+    cm ^lock ^unlock ^itemid:56@myrep ^itemid:89@myrep --^remove
+    (Removes the selected items locks.)
+
+== CMD_DESCRIPTION_LOCK_CREATE ==
+Create item locks on a server.
+
+== CMD_USAGE_LOCK_CREATE ==
+Usage:
+
+    cm ^lock ^create | ^mk <branchspec> <itemspec>[ ...]
+    
+    branchspec          The branch where the locks will be created. 
+                        (Use 'cm ^help ^objectspec' to learn more about branchspecs.)
+    itemspec            One or more item specs. (Use 'cm ^help ^objectspec'
+                        to learn more about itemspecs.)
+
+== CMD_HELP_LOCK_CREATE ==
+Remarks:
+
+    - Only the administrator can create locks.
+    - All locks created with this command are created in Retained status.
+    - If the revision loaded in the specified branch (for each item) is the
+      same loaded in the lock destination branch (/main by default),
+      then no lock is created.
+    - The repspec or the branchspec must be the same of all the itemspecs
+      specified.
+
+Examples:
+
+    cm ^lock ^create /main/task@myrep ^itemid:56@myrep
+    (Creates a lock for the item id 56 in the branch /main/task@myrep.)
+
+    cm ^lock ^create br:/main/task item:/workspace/foo.psd ^item:/workspace/bar.psd
+    (Creates a lock for the selected item in the branch /main/task.)
 
 == CMD_DESCRIPTION_UPDATE ==
 Updates the workspace and downloads latest changes.
@@ -8293,14 +8358,14 @@ Remarks:
         This command accepts a format string to show the output.
         The output parameters of this command are the following:
 
-        {0} | {^wkname}          Workspace name.
-        {1} | {^machine}         Client machine name.
-        {2} | {^path}            Workspace path.
-        {3} | {^wkid}            Workspace unique identifier.
-        {4} | {^wkspec}          Workspace specification using the format:
-                               'wkname@machine'.
-        {^tab}                   Inserts a tab space.
-        {^newline}               Inserts a new line.
+        {0} | {^wkname}    Workspace name.
+        {1} | {^machine}   Client machine name.
+        {2} | {^path}      Workspace path.
+        {3} | {^wkid}      Workspace unique identifier.
+        {4} | {^wkspec}    Workspace specification using the format:
+                           'wkname@machine'.
+        {^tab}             Inserts a tab space.
+        {^newline}         Inserts a new line.
 
 Examples:
 
@@ -8475,7 +8540,7 @@ Search types:
     --^cloaked                      Prints cloaked items.
     --^controlledchanged            This flag substitutes the following options:
                                     '--^added', '--^checkout', '--^copied',
-                                     '--^replaced', '--^deleted', '--^moved'.
+                                    '--^replaced', '--^deleted', '--^moved'.
     --^all                          This flag replaces the following parameters:
                                     '--^controlledchanged', '--^changed',
                                     '--^localdeleted', '--^localmoved', '--^private'.
@@ -8704,7 +8769,7 @@ Usage:
 
     cm ^autocomplete --^line <shell_line> --^position <cursor_position>
     (Returns autocomplete suggestions for 'shell_line' to be inserted at
-     'cursor_position'.)
+    'cursor_position'.)
 
 Options:
 
@@ -8807,7 +8872,7 @@ Remarks:
     - ADWorkingMode (Active Directory)
     - UPWorkingMode (User and password)
     - SSOWorkingMode (Single Sign On)
-                        
+
     Client configuration:
 
     If this parameter is not specified, the default directory for
@@ -8817,11 +8882,11 @@ Remarks:
     AuthParameters:
 
     - ^LDAPWorkingMode and ^UPWorkingMode
-      - --^user=<user>
-      - --^password=<password>
+        - --^user=<user>
+        - --^password=<password>
     - ^SSOWorkingMode
-      - --^user=<user>
-      - --^token=<token>
+        - --^user=<user>
+        - --^token=<token>
 
 Examples:
 
@@ -8829,12 +8894,12 @@ Examples:
     (runs the interactive Unity VCS client configuration command)
 
     cm ^configure --^language=^en --^workingmode=^LDAPWorkingMode --^user=^jack --^password=^01234 \
-                 --^server=^plastic.mymachine.com --^port=^8084
+        --^server=^plastic.mymachine.com --^port=^8084
     (configures the Unity VCS client with the specified parameters and creates the 'client.conf'
     configuration file in the default directory)
 
     cm ^configure --^language=^en --^workingmode=^NameWorkingMode --^server=^plastic.mymachine.com \
-                 --^port=^8084 --^clientconf=^clientconf_exp.conf
+        --^port=^8084 --^clientconf=^clientconf_exp.conf
     (configures the Unity VCS client with the specified parameters and creates the 'client.conf'
     configuration file in the specified path)
 
@@ -8851,7 +8916,7 @@ Examples:
 == CMD_DESCRIPTION_PURGE ==
 Allows the user to inspect, register and execute repository purges. Purged revisions are no longer accessible for that repository, thus helping to free space.
 
-WARNING: Purge actions are irreversible. Once they are executed, you will NOT be able to load purged content anymore - either by switching a workspace or when showing branch or changeset differences. Use it under your own responsibility.
+Warning: Purge actions are irreversible. Once they are executed, you will not be able to load purged revisions anymore—either by switching a workspace or when showing branch or changeset differences. Use this under your own responsibility.
 
 == CMD_USAGE_PURGE ==
 Usage:
@@ -8863,54 +8928,179 @@ Commands:
     - ^execute
     - ^show
     - ^history
+    - ^unregister
 
     To get more information about each command run:
     cm ^purge <command> --^usage
     cm ^purge <command> --^help
 
 == CMD_HELP_PURGE ==
-TO BE DONE
+Examples:
+
+    cm ^purge ^register ".mkv" "1955-Nov-05 6:00 AM" --^repository=timemachine
+    (registers a purge action for the 'timemachine' repository)
+
+    cm ^purge ^history
+    (lists the ID and status of all the purge actions ever registerd in the server)
+
+    cm ^purge ^show 545ec81b-23ea-462c-91f4-d7c62a6e8817 --^verbose
+    (shows in detail the purge action metadata for a given ID,
+    including items and revisions affected by the purge)
+
+    cm ^purge ^execute 545ec81b-23ea-462c-91f4-d7c62a6e8817
+    (starts a previously registered purge action)
+
+    cm ^purge ^unregister 545ec81b-23ea-462c-91f4-d7c62a6e8817
+    (purges that were not executed can be deleted from the registry)
 
 == CMD_DESCRIPTION_PURGE_REGISTER ==
 Computes and registers a purge action.
 
-File revisions older than the selected date(s) would be considered for purging and, as a rule, we will always keep at least a revision in every branch head and labeled revisions.
-
-You can use the "cm ^purge ^show" command to revise the selected revisions prior to run it with the "cm ^purge ^execute" command.
+File revisions older than the selected date(s) would be considered for purging and, as a rule, we will keep at least a revision in every branch head and labeled revisions. You can use the "cm ^purge ^show" command to check the selected revisions prior to run it with the "cm ^purge ^execute" command.
 
 == CMD_USAGE_PURGE_REGISTER ==
-TO BE DONE
+Usage:
+    cm ^purge ^register (<extension> <before_date>)... [--^repository=<rep_spec>]
+
+Options:
+
+    --^repository          Repository where the purge is intended to be applied.
+                          It is not necessary within a workspace path but to pick a different one.
+    extension             Extension of the file type to be purged. Note that revisions of renamed
+                          items will also be considered for its removal.
+    before_date           Only revisions older than this date will be considered for its removal.
 
 == CMD_HELP_PURGE_REGISTER ==
-TO BE DONE
+Examples:
+
+    cm ^purge ^register ".mkv" "1955-Nov-05 6:00 AM"
+    (registers a purge action over revisions of Matroska files created before a certain date)
+
+    cm ^purge ^register ".mkv" "6:00 AM"
+    (you can specify just the date or just the time)
+
+    cm ^purge ^register ".mkv" "6:00Z"
+    (you can specify the time in UTC instead of local time)
+
+    cm ^purge ^register ".mkv" "1955-Nov-05 6:00 AM" --^repository=timemachine
+    (you can specify a different repository to register the purge)
 
 == CMD_DESCRIPTION_PURGE_EXECUTE ==
 Executes a purge action previously registered.
 
-WARNING: Purge actions are irreversible. Once they are executed, you will NOT be able to load purged content anymore - either by switching a workspace or when showing branch or changeset differences. Use it under your own responsibility.
+Warning: Purge actions are irreversible. Once they are executed, you will not be able to load purged revisions anymore—either by switching a workspace or when showing branch or changeset differences. Use this under your own responsibility.
 
-Please ensure you check the file history to confirm which revisions/^changesets are not relevant. Do not hesitate to use the "cm ^purge ^show" command prior to the purge execution in order to verify no unexpected content is selected for its removal.
+Please ensure you check the file history to confirm which revisions/changesets are not relevant. Do not hesitate to use the cm ^purge ^show command prior to the purge execution in order to verify no unexpected revision is selected for its removal.
 
 == CMD_USAGE_PURGE_EXECUTE ==
-TO BE DONE
+Usage:
+    cm ^purge ^execute <purge_guid> [--^server=<server>]
+
+Options:
+
+    --^server              Allows to specify the server where purge actions
+                          will be executed.
+    purge_guid             The GUID returned by the "cm ^purge ^register" command.
 
 == CMD_HELP_PURGE_EXECUTE ==
-TO BE DONE
+Examples:
+
+    cm ^purge ^execute be5b9145-1bd9-4c43-bd90-f2ff727bbf13
+    (Executes a purge given its ID).
+
+    cm ^purge ^execute be5b9145-1bd9-4c43-bd90-f2ff727bbf13 --^server=myorg@cloud
+    (You can specify a precise server if you need it).
 
 == CMD_DESCRIPTION_PURGE_SHOW ==
-TO BE DONE
+Provides a report of the purge status and contents.
 
 == CMD_USAGE_PURGE_SHOW ==
-TO BE DONE
+Usage:
+    cm ^purge ^show <purge_guid> [--^verbose | --^server=<server>]
+
+Options:
+
+    --^server              Allows to specify the server where purge actions
+                          will be queried.
+    --^verbose             Extends the report to include the items and revisions
+                          involved in the purge.
+    purge_guid            The GUID returned by the "cm ^purge ^register" command.
 
 == CMD_HELP_PURGE_SHOW ==
-TO BE DONE
+Examples:
+
+    cm ^purge ^show be5b9145-1bd9-4c43-bd90-f2ff727bbf13
+    (Provides a brief report of the purge status)
+
+    cm ^purge ^show be5b9145-1bd9-4c43-bd90-f2ff727bbf13 --^verbose
+    (Provides additional information per purged extension,
+    including items and revisions)
+
+    cm ^purge ^show be5b9145-1bd9-4c43-bd90-f2ff727bbf13 --^server=myorg@cloud
+    (You can specify a different server if you wish)
 
 == CMD_DESCRIPTION_PURGE_HISTORY ==
-TO BE DONE
+Allows the user to check the state of all the purges registed in the server at some point.
+
+Also, it is useful to get information about them that are preserved for query purposes, such as the author, the date of execution or the storage size and the types affected by the purge.
 
 == CMD_USAGE_PURGE_HISTORY ==
-TO BE DONE
+Usage:
+    cm ^purge ^history [--^verbose | --^server=<server>]
+                     [--^sort=(^desc|^asc)]
+                     [--^skip=<skip> | --^limit=<limit>]
+
+Options:
+
+    --^server              Allows to specify the server where purge actions
+                          will be queried.
+    --^verbose             By default, only the ID and the status is shown per
+                          purge. This option includes more detailed information.
+    --^sort                Specifies an ordering for purges shown in the result.
+                          It can be descending (^desc) or ascending (^asc).
+    --^skip                Specifies a number of entries to skip so they are not
+                          reflected in the result.
+    --^limit               Specifies the maximum number of entries to show at once.
 
 == CMD_HELP_PURGE_HISTORY ==
-TO BE DONE
+Examples:
+
+    cm ^purge ^history
+    (Shows the ID and status for all purges ever registered in the server).
+
+    cm ^purge ^history --^server=stoltz@cloud
+    (You can override the server to use different one if needed).
+
+    cm ^purge ^history --^verbose
+    (Includes more detailed data associated to the shown purges).
+
+    cm ^purge ^history --^sort=^asc
+    (Shows the history starting from the oldest purges).
+
+    cm ^purge ^history --^skip=0  --^limit=20
+    cm ^purge ^history --^skip=20 --^limit=20
+    cm ^purge ^history --^skip=40 --^limit=20
+    (Instead of showing everything at once, you can paginate results).
+
+== CMD_DESCRIPTION_PURGE_UNREGISTER ==
+Purge actions can be deleted from the registry if you decide to not run them.
+Remember that it is not possible to unregister purges that were already executed.
+
+== CMD_USAGE_PURGE_UNREGISTER ==
+Usage:
+    cm ^purge ^unregister <purge_guid> [--^server=<server>]
+
+Options:
+
+    --^server              Allows to specify the server where purge actions
+                          will be queried.
+    purge_guid            The GUID returned by the "cm ^purge ^register" command.
+
+== CMD_HELP_PURGE_UNREGISTER ==
+Examples:
+
+    cm ^purge ^unregister 545ec81b-23ea-462c-91f4-d7c62a6e8817
+    (purges that were not executed can be deleted from the registry)
+
+    cm ^purge ^unregister 545ec81b-23ea-462c-91f4-d7c62a6e8817 --^server=myorg@cloud
+    (you can specify a different server to unregister the purge)
