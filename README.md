@@ -17,7 +17,7 @@ Option 2: clone elsewhere and link with the `packages/manifest.json` file in the
 ```
 "com.unity.collab-proxy": "file:/some/path/to/package"
 ```
-To add testing support also add the testables section to the manifest. Your manifest should look like this:
+To add testing support also add the testibles section to the manifest. Your manifest should look like this:
 ```json
 {
   "dependencies": {
@@ -31,11 +31,7 @@ To add testing support also add the testables section to the manifest. Your mani
 }
 ```
 
-Once you have fetched the package, run `msbuild` on the `.ServerSource/Source/` directory to ensure the proxy sever is created.
-
-**For internal testers:**
-
-Simply add the git url into the `packages/manifest.json` file:
+**For internal testers:** simply add the git url into the `packages/manifest.json` file:
 ```
 "com.unity.collab-proxy": "git://git@github.cds.internal.unity3d.com:unity/com.unity.cloud.collaborate.git"
 ```
@@ -43,8 +39,6 @@ If you need a specific revisision:
 ```
 "com.unity.collab-proxy": "git://git@github.cds.internal.unity3d.com:unity/com.unity.cloud.collaborate.git#<rev>"
 ```
-Once you have fetched the package, run `msbuild` on the `.ServerSource/Source/` directory to ensure the proxy sever is created.
-
 If you need more information, read the [Documentation](https://docs.unity3d.com/Manual/upm-dependencies.html#Git) for package dependencies from git.
 
 Code style is as dictated in [Unity Meta](https://github.cds.internal.unity3d.com/unity/unity-meta).
@@ -67,33 +61,34 @@ Here are some files and folders of note:
   ├── Third Party Notices.md
   ├── QAReport.md
   ├── Editor/
-  │   ├── Unity.SourceControl.asmdef
-  │   ├── Assets/
-  │   │   ├── Icons/
-  │   │   ├── Layouts/
-  │   │   ├── Styles/
-  │   │   └── UiConstants.cs
-  │   ├── Models/
-  │   │   ├── Api/
-  │   │   │   └── ISourceControlProvider.cs
-  │   │   └── Providers/
-  │   │       └── Collab.cs
-  │   ├── Views/
-  │   │   └── Adaptors/
-  │   ├── Presenters/
-  │   ├── Common/
-  │   ├── Settings/
-  │   ├── Components/
-  │   ├── Utilities/
-  │   └── UserInterface/
-  │       ├── Bootstrap.cs
-  │       ├── WindowCache.cs
-  │       ├── ToolbarButton.cs
-  │       └── CollaborateWindow.cs
+  │   └── Collaborate
+  │       ├── Unity.CollabProxy.Editor.asmdef
+  │       ├── Assets/
+  │       │   ├── Icons/
+  │       │   ├── Layouts/
+  │       │   ├── Styles/
+  │       │   └── UiConstants.cs
+  │       ├── Models/
+  │       │   ├── Api/
+  │       │   │   └── ISourceControlProvider.cs
+  │       │   └── Providers/
+  │       │       └── Collab.cs
+  │       ├── Views/
+  │       ├── Presenters/
+  │       ├── Common/
+  │       ├── Settings/
+  │       ├── Components/
+  │       ├── Utilities/
+  │       └── UserInterface/
+  │           ├── Bootstrap.cs
+  │           ├── WindowCache.cs
+  │           ├── ToolbarButton.cs
+  │           └── CollaborateWindow.cs
   ├── Tests/
-  │   ├── .tests.json
-  │   └── Editor/
-  │       └── Unity.CollabProxy.EditorTests.asmdef
+  │   ├── Collaborate
+  │   │   └── Editor/
+  │   │       └── Unity.CollabProxy.EditorTests.asmdef
+  │   └── .tests.json
   └── Documentation~/
        ├── unity-cloud-collaborate.md
        └── Images/
