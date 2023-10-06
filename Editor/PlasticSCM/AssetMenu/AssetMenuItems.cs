@@ -6,6 +6,7 @@ using Codice.Client.Common.EventTracking;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Items;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
+using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.Tool;
 
@@ -56,6 +57,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             IViewSwitcher viewSwitcher,
             IHistoryViewLauncher historyViewLauncher,
             GluonGui.ViewHost viewHost,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
             PlasticGui.WorkspaceWindow.NewIncomingChangesUpdater incomingChangesUpdater,
             IAssetStatusCache assetStatusCache,
             IMergeViewLauncher mergeViewLauncher,
@@ -73,6 +75,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 viewSwitcher,
                 historyViewLauncher,
                 viewHost,
+                workspaceOperationsMonitor,
                 incomingChangesUpdater,
                 mAssetStatusCache,
                 mergeViewLauncher,

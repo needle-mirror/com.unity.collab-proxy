@@ -2299,7 +2299,7 @@ Unity VCS 內建差異比對與合併工具 (Xmerge) 的偏好設定:
 == StatusDeletedOnServer ==
 已在伺服器上刪除
 
-== StatusLocked ==
+== StatusLockedBy ==
 已由 '{0}' 鎖定
 
 == StatusCheckedOutChanged ==

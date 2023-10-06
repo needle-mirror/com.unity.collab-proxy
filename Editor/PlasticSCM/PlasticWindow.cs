@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 using UnityEditor;
 using UnityEngine;
@@ -246,7 +247,9 @@ namespace Unity.PlasticSCM.Editor
                     mViewSwitcher,
                     mShowDownloadPlasticExeWindow,
                     mProcessExecutor,
-                    mIsGluonMode);
+                    mIsGluonMode,
+                    mIsUGOSubscription,
+                    mUpgradePlanUrl);
 
                 mViewSwitcher.TabViewGUI();
 
@@ -383,6 +386,7 @@ namespace Unity.PlasticSCM.Editor
                     mViewSwitcher,
                     mViewSwitcher,
                     viewHost,
+                    PlasticPlugin.WorkspaceOperationsMonitor,
                     mDeveloperNewIncomingChangesUpdater,
                     PlasticPlugin.AssetStatusCache,
                     mViewSwitcher,
@@ -397,6 +401,7 @@ namespace Unity.PlasticSCM.Editor
                     mViewSwitcher,
                     mViewSwitcher,
                     viewHost,
+                    PlasticPlugin.WorkspaceOperationsMonitor,
                     mDeveloperNewIncomingChangesUpdater,
                     PlasticPlugin.AssetStatusCache,
                     mViewSwitcher,
@@ -414,6 +419,8 @@ namespace Unity.PlasticSCM.Editor
 
                 InitializeNotificationBarUpdater(
                     mWkInfo, mStatusBar.NotificationBar);
+
+                GetSubscriptionDetails(mWkInfo);
             }
             catch (Exception ex)
             {
@@ -461,6 +468,52 @@ namespace Unity.PlasticSCM.Editor
                 ScreenResolution.Get());
             mNotificationBarUpdater.Start();
             mNotificationBarUpdater.SetWorkspace(wkInfo);
+        }
+
+        void GetSubscriptionDetails(WorkspaceInfo wkInfo)
+        {
+            mIsUGOSubscription = false;
+            mUpgradePlanUrl = string.Empty;
+
+            RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(wkInfo);
+
+            if (repSpec == null)
+            {
+                return;
+            }
+
+            string organizationName = ServerOrganizationParser.GetOrganizationFromServer(repSpec.Server);
+
+            Task.Run(
+                () =>
+                {
+                    string authToken = AuthToken.GetForServer(repSpec.Server);
+
+                    if (string.IsNullOrEmpty(authToken))
+                        return null;
+
+                    return WebRestApiClient.PlasticScm.GetSubscriptionDetails(
+                        organizationName,
+                        authToken);
+                }).ContinueWith(
+                t =>
+                {
+                    if (t.Result == null)
+                    {
+                        mLog.DebugFormat("Error getting Subscription details for organization {0}", organizationName);
+                        return;
+                    }
+
+                    if (t.Result.OrganizationName != organizationName)
+                    {
+                        mLog.DebugFormat("Not requested organization ({0}) subscription has been received", t.Result.OrganizationName);
+                        return;
+                    }
+
+                    mIsUGOSubscription = t.Result.OrderSource == UGO_ORDER_SOURCE;
+                    mUpgradePlanUrl = t.Result.ExtraData.ContainsKey(UGO_CONSUMPTION_URL_KEY) && t.Result.IsAdmin ?
+                        t.Result.ExtraData[UGO_CONSUMPTION_URL_KEY].ToString() : UnityUrl.UnityDashboard.Get();
+                });
         }
 
         void OnApplicationActivated()
@@ -598,7 +651,9 @@ namespace Unity.PlasticSCM.Editor
             ViewSwitcher viewSwitcher,
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             LaunchTool.IProcessExecutor processExecutor,
-            bool isGluonMode)
+            bool isGluonMode,
+            bool isUGOSubscription,
+            string upgradePlanUrl)
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
@@ -613,7 +668,9 @@ namespace Unity.PlasticSCM.Editor
                 viewSwitcher,
                 showDownloadPlasticExeWindow,
                 processExecutor,
-                isGluonMode);
+                isGluonMode,
+                isUGOSubscription,
+                upgradePlanUrl);
 
             EditorGUILayout.EndHorizontal();
         }
@@ -654,7 +711,7 @@ namespace Unity.PlasticSCM.Editor
               () => LaunchTool.OpenBranchExplorer(
                 showDownloadPlasticExeWindow,
                 processExecutor,
-                wkInfo, 
+                wkInfo,
                 isGluonMode));
 
             menu.ShowAsContext();
@@ -669,8 +726,8 @@ namespace Unity.PlasticSCM.Editor
             GenericMenu menu = new GenericMenu();
 
             string openToolText = isGluonMode ?
-                PlasticLocalization.GetString(PlasticLocalization.Name.OpenInGluon) :
-                PlasticLocalization.GetString(PlasticLocalization.Name.OpenInDesktopApp);
+                PlasticLocalization.Name.OpenInGluon.GetString() :
+                PlasticLocalization.Name.OpenInDesktopApp.GetString();
 
             menu.AddItem(
                 new GUIContent(openToolText),
@@ -684,16 +741,14 @@ namespace Unity.PlasticSCM.Editor
             menu.AddSeparator("");
 
             menu.AddItem(
-                new GUIContent(
-                    PlasticLocalization.GetString(
-                PlasticLocalization.Name.Options)),
+                new GUIContent(PlasticLocalization.Name.Options.GetString()),
                 false,
                 () => SettingsService.OpenProjectSettings(UnityConstants.PROJECT_SETTINGS_TAB_PATH));
 
             menu.AddItem(
                 new GUIContent(PlasticAssetModificationProcessor.ForceCheckout ?
-                PlasticLocalization.GetString(PlasticLocalization.Name.DisableForcedCheckout) :
-                PlasticLocalization.GetString(PlasticLocalization.Name.EnableForcedCheckout)),
+                PlasticLocalization.Name.DisableForcedCheckout.GetString() :
+                PlasticLocalization.Name.EnableForcedCheckout.GetString()),
                 false,
                 ForceCheckout_Clicked,
                 null);
@@ -706,7 +761,9 @@ namespace Unity.PlasticSCM.Editor
             ViewSwitcher viewSwitcher,
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             LaunchTool.IProcessExecutor processExecutor,
-            bool isGluonMode)
+            bool isGluonMode,
+            bool isUGOSubscription,
+            string upgradePlanUrl)
         {
             //TODO: Codice - beta: hide the diff button until the behavior is implemented
             /*GUILayout.Button(PlasticLocalization.GetString(
@@ -755,7 +812,7 @@ namespace Unity.PlasticSCM.Editor
                     LaunchTool.OpenWorkspaceConfiguration(
                         showDownloadPlasticExeWindow,
                         processExecutor,
-                        wkInfo, 
+                        wkInfo,
                         isGluonMode);
             }
             else
@@ -777,12 +834,20 @@ namespace Unity.PlasticSCM.Editor
 
             if (PlasticGui.Plastic.API.IsCloud(repSpec.Server))
             {
-                Texture2D inviteUsersIcon = Images.GetInviteUsersIcon();
-                string inviteUsersTooltip = PlasticLocalization.GetString(PlasticLocalization.Name.InviteMembers);
-
-                if (DrawToolbarButton(inviteUsersIcon, inviteUsersTooltip))
+                if (DrawToolbarButton(
+                    Images.GetInviteUsersIcon(),
+                    PlasticLocalization.Name.InviteMembers.GetString()))
                 {
                     InviteMembersToOrganization(repSpec);
+                }
+
+                if (isUGOSubscription)
+                {
+                    if (DrawToolbarTextButton(
+                        PlasticLocalization.Name.UpgradePlan.GetString()))
+                    {
+                        UpgradePlan(upgradePlanUrl);
+                    }
                 }
             }
 
@@ -801,8 +866,20 @@ namespace Unity.PlasticSCM.Editor
         {
             return GUILayout.Button(
                 new GUIContent(icon, tooltip),
-                EditorStyles.toolbarButton, 
+                EditorStyles.toolbarButton,
                 GUILayout.Width(26));
+        }
+
+        static bool DrawToolbarTextButton(string text)
+        {
+            return GUILayout.Button(
+                new GUIContent(text, string.Empty),
+                EditorStyles.toolbarButton);
+        }
+
+        static void UpgradePlan(string upgradePlanUrl)
+        {
+            Application.OpenURL(upgradePlanUrl);
         }
 
         static void InviteMembersToOrganization(RepositorySpec repSpec)
@@ -862,7 +939,7 @@ namespace Unity.PlasticSCM.Editor
                         OpenUnityDashboardInviteUsersUrl(organizationName);
                         return;
                     }
-                  
+
                     if (response.IsCurrentUserAdmin)
                     {
                         OpenUnityDashboardInviteUsersUrl(response.OrganizationName);
@@ -1097,11 +1174,16 @@ namespace Unity.PlasticSCM.Editor
 
         bool mIsGluonMode;
         bool mDisableCollabIfEnabledWhenLoaded;
+        bool mIsUGOSubscription;
+        string mUpgradePlanUrl;
 
         LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow =
             new LaunchTool.ShowDownloadPlasticExeWindow();
         LaunchTool.IProcessExecutor mProcessExecutor =
             new LaunchTool.ProcessExecutor();
+
+        const string UGO_CONSUMPTION_URL_KEY = "consumptionUrl";
+        const string UGO_ORDER_SOURCE = "UGO";
 
         static readonly ILog mLog = LogManager.GetLogger("PlasticWindow");
     }

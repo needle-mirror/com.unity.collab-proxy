@@ -420,6 +420,7 @@ namespace Unity.PlasticSCM.Editor
                     this,
                     this,
                     mShowDownloadPlasticExeWindow,
+                    mWorkspaceOperationsMonitor,
                     mDeveloperNewIncomingChangesUpdater,
                     mGluonNewIncomingChangesUpdater,
                     mAssetStatusCache,

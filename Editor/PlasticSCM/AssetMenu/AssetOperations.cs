@@ -20,6 +20,7 @@ using PlasticGui.WorkspaceWindow.Items;
 using Unity.PlasticSCM.Editor.AssetMenu.Dialogs;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
+using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs;
@@ -45,6 +46,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             IViewSwitcher viewSwitcher,
             IHistoryViewLauncher historyViewLauncher,
             ViewHost viewHost,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
             NewIncomingChangesUpdater newIncomingChangesUpdater,
             IAssetStatusCache assetStatusCache,
             IMergeViewLauncher mergeViewLauncher,
@@ -59,6 +61,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             mViewSwitcher = viewSwitcher;
             mHistoryViewLauncher = historyViewLauncher;
             mViewHost = viewHost;
+            mWorkspaceOperationsMonitor = workspaceOperationsMonitor;
             mNewIncomingChangesUpdater = newIncomingChangesUpdater;
             mAssetStatusCache = assetStatusCache;
             mMergeViewLauncher = mergeViewLauncher;
@@ -148,16 +151,17 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 AssetMenuOperations.Checkin);
 
             if (!CheckinDialog.CheckinPaths(
-                mWkInfo,
-                selectedPaths,
-                mAssetStatusCache,
-                mIsGluonMode,
-                mParentWindow,
-                mWorkspaceWindow,
-                mViewHost,
-                mGuiMessage,
-                mMergeViewLauncher,
-                mGluonViewSwitcher))
+                    mWkInfo,
+                    selectedPaths,
+                    mAssetStatusCache,
+                    mIsGluonMode,
+                    mParentWindow,
+                    mWorkspaceWindow,
+                    mViewHost,
+                    mWorkspaceOperationsMonitor,
+                    mGuiMessage,
+                    mMergeViewLauncher,
+                    mGluonViewSwitcher))
                 return;
 
             RefreshAsset.UnityAssetDatabase();
@@ -171,7 +175,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 mAssetStatusCache,
                 AssetMenuOperations.Undo);
 
-            SaveAssets.ForPathsWithoutConfirmation(selectedPaths);
+            SaveAssets.ForPathsWithoutConfirmation(
+                 selectedPaths, mWorkspaceOperationsMonitor);
 
             if (mIsGluonMode)
             {
@@ -311,6 +316,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         readonly IHistoryViewLauncher mHistoryViewLauncher;
         readonly IWorkspaceWindow mWorkspaceWindow;
         readonly ViewHost mViewHost;
+        readonly WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
         readonly NewIncomingChangesUpdater mNewIncomingChangesUpdater;
         readonly IAssetStatusCache mAssetStatusCache;
         readonly IMergeViewLauncher mMergeViewLauncher;

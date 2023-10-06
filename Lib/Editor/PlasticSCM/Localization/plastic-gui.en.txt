@@ -2655,11 +2655,14 @@ Out of date
 == StatusDeletedOnServer ==
 Deleted on server
 
-== StatusLocked ==
+== StatusLockedBy ==
 Locked by '{0}'
 
-== StatusRetained ==
+== StatusRetainedBy ==
 Retained by '{0}'
+
+== StatusRetained ==
+Retained
 
 == StatusCheckedOutChanged ==
 Checked-out (changed)
@@ -4991,6 +4994,9 @@ Invite Members to Organization
 == InviteOtherTeamMembers ==
 Invite other team members
 
+== UpgradePlan ==
+Upgrade Plan
+
 == ReplyButton ==
 Reply
 
@@ -6151,7 +6157,7 @@ Checked out
 == StatusConflicted ==
 Conflicted
 
-== StatusLockedMe ==
+== StatusLockedByMe ==
 Locked by me
 
 == StatusLockedRemote ==
@@ -6160,8 +6166,8 @@ Locked remote
 == AssetOverlayTooltipStatus ==
 {0} by:
 
-== AssetOverlayTooltipWorkspace ==
-workspace {0}
+== AssetOverlayTooltipOn ==
+on {0}
 
 == ErrorGettingCredentialsCloudProject ==
 Error getting credentials to download Cloud Project: {0} ({1})
@@ -6305,13 +6311,13 @@ Shift+Cmd+O
 Shift+Ctrl+O
 
 == PlasticOpenInNewWindowShortcutForWindows ==
-Shift+O
+Ctrl+O
 
 == PlasticOpenInNewWindowShortcutForMacOS ==
-Shift+O
+Cmd+O
 
 == PlasticOpenInNewWindowShortcutForLinux ==
-Shift+O
+Ctrl+O
 
 == PlasticOpenInExplorerShortcutForWindows ==
 Shift+Ctrl+S
@@ -6636,6 +6642,87 @@ Cmd+R
 
 == PlasticRefreshShortcutForLinux ==
 F5
+
+== PlasticShowItemsViewShortcutForMacOS ==
+Alt+Cmd+E
+
+== PlasticShowPendingChangesViewShortcutForMacOS ==
+Alt+Cmd+P
+
+== PlasticShowBranchExplorerViewShortcutForMacOS ==
+Alt+Cmd+X
+
+== PlasticShowChangesetsViewShortcutForMacOS ==
+Alt+Cmd+C
+
+== PlasticShowBranchesViewShortcutForMacOS ==
+Alt+Cmd+B
+
+== PlasticShowLabelsViewShortcutForMacOS ==
+Alt+Cmd+L
+
+== PlasticShowAttributesViewShortcutForMacOS ==
+Alt+Cmd+A
+
+== PlasticShowReviewsViewShortcutForMacOS ==
+Alt+Cmd+V
+
+== PlasticShowSyncViewShortcutForMacOS ==
+Alt+Cmd+S
+
+== PlasticCheckinActionShortcutForMacOS ==
+Shift+Cmd+I
+
+== PlasticMergeActionShortcutForMacOS ==
+Shift+Cmd+M
+
+== PlasticSwitchToActionShortcutForMacOS ==
+Shift+Cmd+W
+
+== PlasticNewFileActionShortcutForMacOS ==
+Shift+Cmd+N
+
+== PlasticNewDirectoryActionShortcutForMacOS ==
+Shift+Cmd+D
+
+== PlasticSaveActionShortcutForMacOS ==
+Cmd+S
+
+== PlasticCloseActionShortcutForMacOS ==
+Cmd+W
+
+== PlasticUndoActionShortcutForMacOS ==
+Cmd+Z
+
+== PlasticRedoActionShortcutForMacOS ==
+Shift+Cmd+Z
+
+== PlasticCutActionShortcutForMacOS ==
+Cmd+X
+
+== PlasticCopyActionShortcutForMacOS ==
+Cmd+C
+
+== PlasticPasteActionShortcutForMacOS ==
+Cmd+V
+
+== PlasticSelectAllActionShortcutForMacOS ==
+Cmd+A
+
+== PlasticFindActionShortcutForMacOS ==
+Cmd+F
+
+== PlasticFindNextActionShortcutForMacOS ==
+Cmd+G
+
+== PlasticFindPreviousActionShortcutForMacOS ==
+Shift+Cmd+G
+
+== PlasticUseSelectionActionShortcutForMacOS ==
+Cmd+E
+
+== PlasticJumpToSelectionActionShortcutForMacOS ==
+Cmd+J
 
 == PlasticPreferencesShortcutForMacOS ==
 Cmd+,
@@ -7800,12 +7887,6 @@ Unity Dashboard
 == WebAdmin ==
 Web Admin
 
-== UserNotFoundSignUp ==
-User account not found.
-
-== VisitUnityDashboardToSignUp ==
-Visit https://dashboard.unity3d.com to sign up.
-
 == LoadingOrganizations ==
 Loading organizations...
 
@@ -7848,7 +7929,7 @@ There are no incoming changes found
 == EmptySyncViewMessage ==
 There are no cloud syncs created yet
 
-== LockInfoDetailsFormatString == 
+== LockInfoDetailsFormatString ==
 {0} {1} on {2} by {3}
 
 == LockMenuItemReleaseLock ==
@@ -7885,7 +7966,7 @@ Remove
 Configure rules
 
 == DiscoverNewSmartLocks ==
-New feature: Smart Locks. Artists can now lock files safely among branches. 
+New feature: Smart Locks. Artists can now lock files safely among branches.
 
 == PurgedRevision ==
 Purged revision

@@ -1316,6 +1316,9 @@ The specified SEID was not found in the object ACL. Check whether it is inherite
 == SecurityUserGroupUnknown ==
 Unknown user or group: '{0}'. Please have in mind that user/group names are case sensitive!
 
+== SecurityGroupUnknown ==
+Unknown group: '{0}'. Please have in mind that group names are case sensitive!
+
 == SecurityUserInactive ==
 The user {0} appears as an inactive user because his/her license has been deactivated. Please activate it and then try again.
 

@@ -1322,6 +1322,9 @@ El SEID especificado no está en la ACL del objeto. Compruebe si es heredado.
 == SecurityUserGroupUnknown ==
 Usuario o grupo desconocido: '{0}'. Compruebe que la información introducida es correcta. Los nombres de usuario o grupo distinguen entre mayúsculas y minúsculas.
 
+== SecurityGroupUnknown ==
+Grupo desconocido: '{0}'. Compruebe que la información introducida es correcta. Los nombres de grupo distinguen entre mayúsculas y minúsculas.
+
 == SecurityUserInactive ==
 El usuario {0} aparece como usuario inactivo porque se ha desactivado su licencia. Actívela e inténtelo la operación de nuevo.
 

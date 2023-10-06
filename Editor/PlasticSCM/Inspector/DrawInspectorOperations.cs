@@ -10,6 +10,7 @@ using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
+using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.Tool;
 
@@ -58,6 +59,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
             IViewSwitcher viewSwitcher,
             IHistoryViewLauncher historyViewLauncher,
             GluonGui.ViewHost viewHost,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
             PlasticGui.WorkspaceWindow.NewIncomingChangesUpdater incomingChangesUpdater,
             IAssetStatusCache assetStatusCache,
             IMergeViewLauncher mergeViewLauncher,
@@ -75,6 +77,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
                 viewSwitcher,
                 historyViewLauncher,
                 viewHost,
+                workspaceOperationsMonitor,
                 incomingChangesUpdater,
                 mAssetStatusCache,
                 mergeViewLauncher,

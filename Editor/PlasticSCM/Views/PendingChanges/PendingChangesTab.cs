@@ -29,6 +29,7 @@ using PlasticGui.WorkspaceWindow.PendingChanges.Changelists;
 using Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
+using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.Help;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
@@ -80,6 +81,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             IMergeViewLauncher mergeViewLauncher,
             IHistoryViewLauncher historyViewLauncher,
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
             NewIncomingChangesUpdater developerNewIncomingChangesUpdater,
             GluonNewIncomingChangesUpdater gluonNewIncomingChangesUpdater,
             IAssetStatusCache assetStatusCache,
@@ -92,6 +94,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mWorkspaceWindow = workspaceWindow;
             mHistoryViewLauncher = historyViewLauncher;
             mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
+            mWorkspaceOperationsMonitor = workspaceOperationsMonitor;
             mDeveloperNewIncomingChangesUpdater = developerNewIncomingChangesUpdater;
             mGluonNewIncomingChangesUpdater = gluonNewIncomingChangesUpdater;
             mAssetStatusCache = assetStatusCache;
@@ -139,9 +142,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return;
 
             if (!PlasticGuiConfig.Get().Configuration.CommitAutoRefresh)
-                return;
-
-            if (mIsRefreshing || mWorkspaceWindow.IsOperationInProgress())
                 return;
 
             if (mNewChangesInWk != null && !mNewChangesInWk.Detected())
@@ -243,6 +243,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         void IRefreshableView.Refresh()
         {
+            if (mProgressControls.IsOperationRunning())
+                return;
+
             if (!mAreIgnoreRulesInitialized)
                 return;
 
@@ -996,8 +999,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         static void DrawNoPendingChangesEmptyState(Rect rect)
         {
-            DrawTreeViewEmptyState.For(
-                rect,
+                DrawTreeViewEmptyState.For(
+                    rect,
                 PlasticLocalization.GetString(PlasticLocalization.Name.NoPendingChanges));
         }
 
@@ -1136,6 +1139,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         readonly NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
         readonly GluonNewIncomingChangesUpdater mGluonNewIncomingChangesUpdater;
         readonly bool mIsGluonMode;
+        readonly WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
         readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
         readonly IHistoryViewLauncher mHistoryViewLauncher;
         readonly WorkspaceWindow mWorkspaceWindow;

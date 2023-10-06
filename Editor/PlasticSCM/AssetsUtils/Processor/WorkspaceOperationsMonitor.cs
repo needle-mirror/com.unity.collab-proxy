@@ -73,6 +73,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
         internal void Start()
         {
             mIsRunning = true;
+            mIsEnabled = true;
 
             Thread thread = new Thread(TaskLoopThread);
             thread.IsBackground = true;
@@ -84,12 +85,26 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             SetAsFinished();
         }
 
+        internal void Disable()
+        {
+            mIsEnabled = false;
+
+            mLog.Debug("Disabled");
+        }
+
+        internal void Enable()
+        {
+            mIsEnabled = true;
+
+            mLog.Debug("Enabled");
+        }
+
         internal void AddAssetsProcessorPathsToAdd(
             List<string> paths)
         {
             AddPathsToProcess(
                 mAssetsProcessorPathsToAdd, paths,
-                mLock, mResetEvent);
+                mLock, mResetEvent, mIsEnabled);
         }
 
         internal void AddAssetsProcessorPathsToDelete(
@@ -97,7 +112,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
         {
             AddPathsToProcess(
                 mAssetsProcessorPathsToDelete, paths,
-                mLock, mResetEvent);
+                mLock, mResetEvent, mIsEnabled);
         }
 
         internal void AddAssetsProcessorPathsToCheckout(
@@ -105,7 +120,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
         {
             AddPathsToProcess(
                 mAssetsProcessorPathsToCheckout, paths,
-                mLock, mResetEvent);
+                mLock, mResetEvent, mIsEnabled);
         }
 
         internal void AddAssetsProcessorPathsToMove(
@@ -113,7 +128,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
         {
             AddPathsToMoveToProcess(
                 mAssetsProcessorPathsToMove, paths,
-                mLock, mResetEvent);
+                mLock, mResetEvent, mIsEnabled);
         }
 
         internal void AddPathsToCheckout(
@@ -121,7 +136,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
         {
             AddPathsToProcess(
                 mPathsToCheckout, paths,
-                mLock, mResetEvent);
+                mLock, mResetEvent, mIsEnabled);
         }
 
         void TaskLoopThread()
@@ -133,41 +148,29 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     if (!mIsRunning)
                         break;
 
-                    ProcessAssetProcessorOperations(
-                        mPlasticAPI,
-                        mAssetsProcessorPathsToAdd,
-                        mAssetsProcessorPathsToDelete,
-                        mAssetsProcessorPathsToCheckout,
-                        mAssetsProcessorPathsToMove,
-                        mLock,
-                        mDisableAssetsProcessor);
-
-                    ProcessCheckoutOperation(
-                        mPlasticAPI,
-                        mPathsToCheckout,
-                        mLock);
-
-                    bool hasAssetProcessorOperations = false;
-                    bool hasCheckoutOperations = false;
-                    HasPendingOperationsToProcess(
-                        mAssetsProcessorPathsToAdd,
-                        mAssetsProcessorPathsToDelete,
-                        mAssetsProcessorPathsToCheckout,
-                        mAssetsProcessorPathsToMove,
-                        mPathsToCheckout,
-                        mLock,
-                        out hasAssetProcessorOperations,
-                        out hasCheckoutOperations);
-
-                    if (hasAssetProcessorOperations ||
-                        hasCheckoutOperations)
+                    if (!mIsEnabled)
+                    {
+                        SleepUntilNextWorkload();
                         continue;
+                    }
 
-                    if (!hasAssetProcessorOperations)
-                        EditorDispatcher.Dispatch(AfterAssetProcessorOperation);
+                    bool hasAssetProcessorOpsPending = false;
+                    bool hasCheckoutOpsPending = false;
+                    ProcessOperations(
+                        mPlasticAPI,
+                        mAssetsProcessorPathsToAdd,
+                        mAssetsProcessorPathsToDelete,
+                        mAssetsProcessorPathsToCheckout,
+                        mAssetsProcessorPathsToMove,
+                        mPathsToCheckout,
+                        mLock,
+                        mDisableAssetsProcessor,
+                        out hasAssetProcessorOpsPending,
+                        out hasCheckoutOpsPending);
 
-                    if (!hasCheckoutOperations)
-                        EditorDispatcher.Dispatch(AfterCheckoutOperation);
+                    if (hasAssetProcessorOpsPending ||
+                        hasCheckoutOpsPending)
+                        continue;
 
                     SleepUntilNextWorkload();
                 }
@@ -179,6 +182,53 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                         "Stacktrace: {0}", e.StackTrace);
                 }
             }
+        }
+
+        void ProcessOperations(
+            IPlasticAPI plasticApi,
+            List<string> assetsProcessorPathsToAdd,
+            List<string> assetsProcessorPathsToDelete,
+            List<string> assetsProcessorPathsToCheckout,
+            List<AssetPostprocessor.PathToMove> assetsProcessorPathsToMove,
+            List<string> pathsToCheckout,
+            object lockObj,
+            IDisableAssetsProcessor disableAssetsProcessor,
+            out bool hasAssetProcessorOpsPending,
+            out bool hasCheckoutOpsPending)
+        {
+            bool hasAssetProcessorOpsProcessed =
+                ProcessAssetProcessorOperations(
+                    plasticApi,
+                    assetsProcessorPathsToAdd,
+                    assetsProcessorPathsToDelete,
+                    assetsProcessorPathsToCheckout,
+                    assetsProcessorPathsToMove,
+                    lockObj,
+                    disableAssetsProcessor);
+
+            bool hasCheckoutOpsProcessed =
+                ProcessCheckoutOperation(
+                    plasticApi,
+                    pathsToCheckout,
+                    lockObj);
+
+            HasPendingOperationsToProcess(
+                assetsProcessorPathsToAdd,
+                assetsProcessorPathsToDelete,
+                assetsProcessorPathsToCheckout,
+                assetsProcessorPathsToMove,
+                pathsToCheckout,
+                lockObj,
+                out hasAssetProcessorOpsPending,
+                out hasCheckoutOpsPending);
+
+            if (hasAssetProcessorOpsProcessed &&
+                !hasAssetProcessorOpsPending)
+                EditorDispatcher.Dispatch(AfterAssetProcessorOperation);
+
+            if (hasCheckoutOpsProcessed &&
+                !hasCheckoutOpsPending)
+                EditorDispatcher.Dispatch(AfterCheckoutOperation);
         }
 
         void AfterAssetProcessorOperation()
@@ -221,7 +271,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             mResetEvent.WaitOne();
         }
 
-        static void ProcessAssetProcessorOperations(
+        static bool ProcessAssetProcessorOperations(
             IPlasticAPI plasticApi,
             List<string> assetsProcessorPathsToAdd,
             List<string> assetsProcessorPathsToDelete,
@@ -230,24 +280,30 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             object lockObj,
             IDisableAssetsProcessor disableAssetsProcessor)
         {
+            bool hasProcessedPaths = false;
+
             try
             {
-                AssetsProcessorOperations.AddIfNotControlled(
-                    plasticApi, ExtractPathsToProcess(
-                        assetsProcessorPathsToAdd, lockObj),
-                    FilterManager.Get().GetIgnoredFilter());
+                hasProcessedPaths = AssetsProcessorOperations.
+                    AddIfNotControlled(
+                        plasticApi, ExtractPathsToProcess(
+                            assetsProcessorPathsToAdd, lockObj),
+                        FilterManager.Get().GetIgnoredFilter());
 
-                AssetsProcessorOperations.DeleteIfControlled(
-                    plasticApi, ExtractPathsToProcess(
-                        assetsProcessorPathsToDelete, lockObj));
+                hasProcessedPaths |= AssetsProcessorOperations.
+                    DeleteIfControlled(
+                        plasticApi, ExtractPathsToProcess(
+                            assetsProcessorPathsToDelete, lockObj));
 
-                AssetsProcessorOperations.CheckoutIfControlledAndChanged(
-                    plasticApi, ExtractPathsToProcess(
-                        assetsProcessorPathsToCheckout, lockObj));
+                hasProcessedPaths |= AssetsProcessorOperations.
+                    CheckoutIfControlledAndChanged(
+                        plasticApi, ExtractPathsToProcess(
+                            assetsProcessorPathsToCheckout, lockObj));
 
-                AssetsProcessorOperations.MoveIfControlled(
-                    plasticApi, ExtractPathsToMoveToProcess(
-                        assetsProcessorPathsToMove, lockObj));
+                hasProcessedPaths |= AssetsProcessorOperations.
+                    MoveIfControlled(
+                        plasticApi, ExtractPathsToMoveToProcess(
+                            assetsProcessorPathsToMove, lockObj));
             }
             catch (Exception ex)
             {
@@ -255,9 +311,11 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
                 disableAssetsProcessor.Disable();
             }
+
+            return hasProcessedPaths;
         }
 
-        static void ProcessCheckoutOperation(
+        static bool ProcessCheckoutOperation(
             IPlasticAPI plasticApi,
             List<string> pathsToProcess,
             object lockObj)
@@ -277,20 +335,30 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     result.Add(path);
             }
 
-            if (result.Count == 0)
-                return;
+            bool hasPathsToProcess = result.Count > 0;
 
-            plasticApi.Checkout(
-                result.ToArray(),
-                CheckoutModifiers.ProcessSymlinks);
+            if (hasPathsToProcess)
+            {
+                plasticApi.Checkout(
+                    result.ToArray(),
+                    CheckoutModifiers.ProcessSymlinks);
+            }
+
+            LogProcessedPaths("ProcessCheckoutOperation", result);
+
+            return hasPathsToProcess;
         }
 
         static void AddPathsToProcess(
             List<string> pathsToProcess,
             List<string> paths,
             object lockObj,
-            ManualResetEvent resetEvent)
+            ManualResetEvent resetEvent,
+            bool isEnabled)
         {
+            if (!isEnabled)
+                return;
+
             lock (lockObj)
             {
                 pathsToProcess.AddRange(paths);
@@ -303,8 +371,12 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             List<AssetPostprocessor.PathToMove> pathsToProcess,
             List<AssetPostprocessor.PathToMove> paths,
             object lockObj,
-            ManualResetEvent resetEvent)
+            ManualResetEvent resetEvent,
+            bool isEnabled)
         {
+            if (!isEnabled)
+                return;
+
             lock (lockObj)
             {
                 pathsToProcess.AddRange(paths);
@@ -389,6 +461,24 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             viewHost.RefreshView(ViewType.SearchView);
         }
 
+        static void LogProcessedPaths(
+            string operation,
+            List<string> paths)
+        {
+            if (paths.Count == 0)
+            {
+                mLog.DebugFormat(
+                    "{0} - There are no processed paths.",
+                    operation);
+                return;
+            }
+
+            mLog.DebugFormat(
+                "{0} - Processed paths: {1}{2}",
+                operation, Environment.NewLine,
+                string.Join(Environment.NewLine, paths));
+        }
+
         static void LogException(Exception ex)
         {
             mLog.WarnFormat("Message: {0}", ex.Message);
@@ -400,7 +490,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
         static class AssetsProcessorOperations
         {
-            internal static void AddIfNotControlled(
+            internal static bool AddIfNotControlled(
                 IPlasticAPI plasticApi,
                 List<string> paths,
                 IgnoredFilesFilter ignoredFilter)
@@ -412,7 +502,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     string metaPath = MetaPath.GetMetaPath(path);
 
                     if (plasticApi.GetWorkspaceFromPath(path) == null)
-                        return;
+                        return false;
 
                     if (plasticApi.GetWorkspaceTreeNode(path) == null &&
                         !ignoredFilter.IsIgnored(path))
@@ -424,20 +514,28 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                         result.Add(metaPath);
                 }
 
-                if (result.Count == 0)
-                    return;
+                bool hasPathsToProcess = result.Count > 0;
 
-                IList checkouts;
-                plasticApi.Add(
-                    result.ToArray(),
-                    GetDefaultAddOptions(),
-                    out checkouts);
+                if (hasPathsToProcess)
+                {
+                    IList checkouts;
+                    plasticApi.Add(
+                        result.ToArray(),
+                        GetDefaultAddOptions(),
+                        out checkouts);
+                }
+
+                LogProcessedPaths("AddIfNotControlled", result);
+
+                return hasPathsToProcess;
             }
 
-            internal static void DeleteIfControlled(
+            internal static bool DeleteIfControlled(
                 IPlasticAPI plasticApi,
                 List<string> paths)
             {
+                List<string> processedPaths = new List<string>(paths.Count);
+
                 foreach (string path in paths)
                 {
                     string metaPath = MetaPath.GetMetaPath(path);
@@ -446,20 +544,30 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     {
                         plasticApi.DeleteControlled(
                             path, DeleteModifiers.None);
+
+                        processedPaths.Add(path);
                     }
 
                     if (plasticApi.GetWorkspaceTreeNode(metaPath) != null)
                     {
                         plasticApi.DeleteControlled(
                             metaPath, DeleteModifiers.None);
+
+                        processedPaths.Add(metaPath);
                     }
                 }
+
+                LogProcessedPaths("DeleteIfControlled", processedPaths);
+
+                return processedPaths.Count > 0;
             }
 
-            internal static void MoveIfControlled(
+            internal static bool MoveIfControlled(
                 IPlasticAPI plasticApi,
                 List<AssetPostprocessor.PathToMove> paths)
             {
+                List<string> processedPaths = new List<string>(paths.Count);
+
                 foreach (AssetPostprocessor.PathToMove pathToMove in paths)
                 {
                     string srcMetaPath = MetaPath.GetMetaPath(pathToMove.SrcPath);
@@ -470,6 +578,9 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                         plasticApi.Move(
                             pathToMove.SrcPath, pathToMove.DstPath,
                             MoveModifiers.None);
+
+                        processedPaths.Add(string.Format("{0} to {1}",
+                            pathToMove.SrcPath, pathToMove.DstPath));
                     }
 
                     if (plasticApi.GetWorkspaceTreeNode(srcMetaPath) != null)
@@ -477,11 +588,18 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                         plasticApi.Move(
                             srcMetaPath, dstMetaPath,
                             MoveModifiers.None);
+
+                        processedPaths.Add(string.Format("{0} to {1}",
+                            srcMetaPath, dstMetaPath));
                     }
                 }
+
+                LogProcessedPaths("MoveIfControlled", processedPaths);
+
+                return processedPaths.Count > 0;
             }
 
-            internal static void CheckoutIfControlledAndChanged(
+            internal static bool CheckoutIfControlledAndChanged(
                 IPlasticAPI plasticApi,
                 List<string> paths)
             {
@@ -507,12 +625,18 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                         result.Add(metaPath);
                 }
 
-                if (result.Count == 0)
-                    return;
+                bool hasPathsToProcess = result.Count > 0;
 
-                plasticApi.Checkout(
-                    result.ToArray(),
-                    CheckoutModifiers.None);
+                if (hasPathsToProcess)
+                {
+                    plasticApi.Checkout(
+                        result.ToArray(),
+                        CheckoutModifiers.None);
+                }
+
+                LogProcessedPaths("CheckoutIfControlledAndChanged", result);
+
+                return hasPathsToProcess;
             }
 
             static AddOptions GetDefaultAddOptions()
@@ -526,12 +650,13 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
         object mLock = new object();
         volatile bool mIsRunning;
+        volatile bool mIsEnabled;
         volatile ManualResetEvent mResetEvent = new ManualResetEvent(false);
 
         List<string> mAssetsProcessorPathsToAdd = new List<string>();
         List<string> mAssetsProcessorPathsToDelete = new List<string>();
         List<string> mAssetsProcessorPathsToCheckout = new List<string>();
-        List<AssetPostprocessor.PathToMove> mAssetsProcessorPathsToMove = 
+        List<AssetPostprocessor.PathToMove> mAssetsProcessorPathsToMove =
             new List<AssetPostprocessor.PathToMove>();
         List<string> mPathsToCheckout = new List<string>();
 

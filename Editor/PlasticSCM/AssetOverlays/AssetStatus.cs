@@ -17,7 +17,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
         DeletedOnServer = 1 << 9,
         Locked          = 1 << 10,
         LockedRemote    = 1 << 11,
-        LockedRetained  = 1 << 12,
+        Retained  = 1 << 12,
         HiddenChanged   = 1 << 13,
     }
 
@@ -25,16 +25,16 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
     {
         internal readonly AssetStatus Status;
         internal readonly string LockedBy;
-        internal readonly string WorkspaceName;
+        internal readonly string HolderBranchName;
 
         internal LockStatusData(
             AssetStatus status,
             string lockedBy,
-            string workspaceName)
+            string holderBranchName)
         {
             Status = status;
             LockedBy = lockedBy;
-            WorkspaceName = workspaceName;
+            HolderBranchName = holderBranchName;
         }
     }
 
@@ -65,6 +65,11 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             return ContainsAny(status, AssetStatus.LockedRemote);
         }
 
+        internal static bool IsRetained(AssetStatus status)
+        {
+            return ContainsAny(status, AssetStatus.Retained);
+        }        
+        
         internal static bool IsOutOfDate(AssetStatus status)
         {
             return ContainsAny(status, AssetStatus.OutOfDate);

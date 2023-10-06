@@ -16,6 +16,7 @@ using PlasticGui.Gluon;
 using Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
+using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
@@ -47,6 +48,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             EditorWindow parentWindow,
             IWorkspaceWindow workspaceWindow,
             ViewHost viewHost,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
             GuiMessage.IGuiMessage guiMessage,
             IMergeViewLauncher mergeViewLauncher,
             IGluonViewSwitcher gluonViewSwitcher)
@@ -63,6 +65,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 new ProgressControlsForDialogs(),
                 workspaceWindow,
                 viewHost,
+                workspaceOperationsMonitor,
                 guiMessage,
                 mergeViewLauncher,
                 gluonViewSwitcher);
@@ -225,7 +228,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
         void OkButtonWithCheckinAction()
         {
             bool isCancelled;
-            SaveAssets.ForPathsWithConfirmation(mPaths, out isCancelled);
+            SaveAssets.ForPathsWithConfirmation(
+                mPaths, mWorkspaceOperationsMonitor,
+                out isCancelled);
 
             if (isCancelled)
                 return;
@@ -268,6 +273,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             ProgressControlsForDialogs progressControls,
             IWorkspaceWindow workspaceWindow,
             ViewHost viewHost,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
             GuiMessage.IGuiMessage guiMessage,
             IMergeViewLauncher mergeViewLauncher,
             IGluonViewSwitcher gluonViewSwitcher)
@@ -283,6 +289,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             instance.mProgressControls = progressControls;
             instance.mWorkspaceWindow = workspaceWindow;
             instance.mViewHost = viewHost;
+            instance.mWorkspaceOperationsMonitor = workspaceOperationsMonitor;
             instance.mGuiMessage = guiMessage;
             instance.mMergeViewLauncher = mergeViewLauncher;
             instance.mGluonViewSwitcher = gluonViewSwitcher;
@@ -308,6 +315,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
         ProgressControlsForDialogs mProgressControls;
 
         IWorkspaceWindow mWorkspaceWindow;
+        WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
         ViewHost mViewHost;
         IMergeViewLauncher mMergeViewLauncher;
         IGluonViewSwitcher mGluonViewSwitcher;

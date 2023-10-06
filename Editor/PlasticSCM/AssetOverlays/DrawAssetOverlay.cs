@@ -83,7 +83,11 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
 
             if (ClassifyAssetStatus.IsLocked(assetStatus))
                 return PlasticLocalization.GetString(
-                    PlasticLocalization.Name.StatusLockedMe);
+                    PlasticLocalization.Name.StatusLockedByMe);
+
+            if (ClassifyAssetStatus.IsRetained(assetStatus))
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.StatusRetained);
 
             if (ClassifyAssetStatus.IsCheckedOut(assetStatus))
                 return PlasticLocalization.GetString(
@@ -118,8 +122,8 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             string line3 = string.Format("{0} {1}",
                 bulletCharacter,
                 PlasticLocalization.GetString(
-                    PlasticLocalization.Name.AssetOverlayTooltipWorkspace,
-                    lockStatusData.WorkspaceName));
+                    PlasticLocalization.Name.AssetOverlayTooltipOn,
+                    lockStatusData.HolderBranchName));
 
             return string.Format(
                 "{0}" + Environment.NewLine +
@@ -146,14 +150,9 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
 
             AssetStatus assetStatus = mAssetStatusCache.GetStatus(fullPath);
 
-            LockStatusData lockStatusData =
-                ClassifyAssetStatus.IsLockedRemote(assetStatus) ?
-                mAssetStatusCache.GetLockStatusData(fullPath) :
-                null;
-
             string tooltipText = GetTooltipText(
                 assetStatus,
-                lockStatusData);
+                mAssetStatusCache.GetLockStatusData(fullPath));
 
             DrawOverlayIcon.ForStatus(
                 selectionRect,
@@ -210,6 +209,9 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
 
                 if (ClassifyAssetStatus.IsLocked(assetStatus))
                     return Images.GetLockedLocalOverlayIcon();
+
+                if (ClassifyAssetStatus.IsRetained(assetStatus))
+                    return Images.GetRetainedOverlayIcon();
 
                 if (ClassifyAssetStatus.IsCheckedOut(assetStatus))
                     return Images.GetCheckedOutOverlayIcon();

@@ -2299,7 +2299,7 @@ Unix 유사 파일 시스템에만 적용
 == StatusDeletedOnServer ==
 서버에서 삭제됨
 
-== StatusLocked ==
+== StatusLockedBy ==
 '{0}'에 의해 잠김
 
 == StatusCheckedOutChanged ==

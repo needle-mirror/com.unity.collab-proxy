@@ -36,6 +36,7 @@ namespace Unity.PlasticSCM.Editor.UI
             IconConflictResolvedOverlay,
             IconLockedLocalOverlay,
             IconLockedRemoteOverlay,
+            IconRetainedOverlay,
             XLink,
             Ok,
             SecondaryTabClose,
@@ -167,6 +168,14 @@ namespace Unity.PlasticSCM.Editor.UI
                 mLockedRemoteOverlayIcon = GetOverlay(Name.IconLockedRemoteOverlay);
 
             return mLockedRemoteOverlayIcon;
+        }
+
+        internal static Texture GetRetainedOverlayIcon()
+        {
+            if (mRetainedOverlayIcon == null)
+                mRetainedOverlayIcon = GetOverlay(Name.IconRetainedOverlay);
+
+            return mRetainedOverlayIcon;
         }
 
         internal static Texture GetIgnoredOverlayIcon()
@@ -686,6 +695,7 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture mConflictResolvedOverlayIcon;
         static Texture mLockedLocalOverlayIcon;
         static Texture mLockedRemoteOverlayIcon;
+        static Texture mRetainedOverlayIcon;
         static Texture mIgnoredverlayIcon;
 
         static Texture mRefreshIcon;

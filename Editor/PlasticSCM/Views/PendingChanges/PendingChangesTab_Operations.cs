@@ -133,7 +133,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             }
 
             bool isCancelled;
-            SaveAssets.ForChangesWithConfirmation(changesToCheckin, out isCancelled);
+            SaveAssets.ForChangesWithConfirmation(
+                changesToCheckin, mWorkspaceOperationsMonitor,
+                out isCancelled);
 
             if (isCancelled)
                 return;
@@ -181,7 +183,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             }
 
             bool isCancelled;
-            SaveAssets.ForChangesWithConfirmation(changesToCheckin, out isCancelled);
+            SaveAssets.ForChangesWithConfirmation(
+                changesToCheckin, mWorkspaceOperationsMonitor,
+                out isCancelled);
 
             if (isCancelled)
                 return;
@@ -223,7 +227,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             }
 
             bool isCancelled;
-            SaveAssets.ForChangesWithConfirmation(changesToShelve, out isCancelled);
+            SaveAssets.ForChangesWithConfirmation(
+                changesToShelve, mWorkspaceOperationsMonitor,
+                out isCancelled);
 
             if (isCancelled)
                 return;
@@ -259,7 +265,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return;
             }
 
-            SaveAssets.ForChangesWithoutConfirmation(changesToUndo);
+            SaveAssets.ForChangesWithoutConfirmation(
+                changesToUndo, mWorkspaceOperationsMonitor);
 
             UndoUIOperation undoOperation = new UndoUIOperation(
                 mWkInfo, mViewHost,
@@ -297,7 +304,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return;
             }
 
-            SaveAssets.ForChangesWithoutConfirmation(changesToUndo);
+            SaveAssets.ForChangesWithoutConfirmation(
+                changesToUndo, mWorkspaceOperationsMonitor);
 
             mPendingChangesOperations.Undo(
                 changesToUndo,

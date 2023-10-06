@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 using Codice.Client.BaseCommands;
 using Codice.Client.Common;
+using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 
 namespace Unity.PlasticSCM.Editor.AssetUtils
 {
@@ -14,54 +15,71 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
     {
         internal static void ForChangesWithConfirmation(
             List<ChangeInfo> changes,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
             out bool isCancelled)
         {
             ForPaths(
                 GetPaths(changes), true,
+                workspaceOperationsMonitor,
                 out isCancelled);
         }
 
         internal static void ForPathsWithConfirmation(
             List<string> paths,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
             out bool isCancelled)
         {
             ForPaths(
                 paths, true,
+                workspaceOperationsMonitor,
                 out isCancelled);
         }
 
         internal static void ForChangesWithoutConfirmation(
-            List<ChangeInfo> changes)
+            List<ChangeInfo> changes,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor)
         {
             bool isCancelled;
             ForPaths(
                 GetPaths(changes), false,
+                workspaceOperationsMonitor,
                 out isCancelled);
         }
 
         internal static void ForPathsWithoutConfirmation(
-            List<string> paths)
+            List<string> paths,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor)
         {
             bool isCancelled;
             ForPaths(
                 paths, false,
+                workspaceOperationsMonitor,
                 out isCancelled);
         }
 
         static void ForPaths(
             List<string> paths,
             bool askForUserConfirmation,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
             out bool isCancelled)
         {
-            SaveDirtyScenes(
-                paths,
-                askForUserConfirmation,
-                out isCancelled);
+            workspaceOperationsMonitor.Disable();
+            try
+            {
+                SaveDirtyScenes(
+                    paths,
+                    askForUserConfirmation,
+                    out isCancelled);
 
-            if (isCancelled)
-                return;
+                if (isCancelled)
+                    return;
 
-            AssetDatabase.SaveAssets();
+                AssetDatabase.SaveAssets();
+            }
+            finally
+            {
+                workspaceOperationsMonitor.Enable();
+            }
         }
 
         static void SaveDirtyScenes(
@@ -126,7 +144,8 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
             return false;
         }
 
-        static List<string> GetPaths(List<ChangeInfo> changeInfos)
+        static List<string> GetPaths(
+            List<ChangeInfo> changeInfos)
         {
             List<string> result = new List<string>();
             foreach (ChangeInfo change in changeInfos)

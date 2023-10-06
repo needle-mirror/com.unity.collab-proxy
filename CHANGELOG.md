@@ -2,6 +2,28 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.2.0] - 2023-10-06
+
+Unity Version Control is now available as part of the Version Control Package! You can enable Unity Version Control via Window > Unity Version Control to get started!
+If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
+Removing a previously added Plastic SCM Asset Store Plug-In:
+
+- Select the PlasticSCM folder in the Assets\Plugins folder on the Project tab, then click Edit > Delete
+- Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
+
+### Added
+
+- Added button for organization owner/admins to upgrade to DevOps subscription.
+- Included new decorators for retained & locked files.
+
+### Changed
+
+- Updated description in the package.json, including an updated link to get started.
+
+### Fixed
+
+- Fixed failed operations when the workspace is already locked.
+
 ## [2.1.0] - 2023-09-01
 
 Unity Version Control is now available as part of the Version Control Package! You can enable Unity Version Control via Window > Unity Version Control to get started!
@@ -11,14 +33,20 @@ Removing a previously added Plastic SCM Asset Store Plug-In:
 - Select the PlasticSCM folder in the Assets\Plugins folder on the Project tab, then click Edit > Delete
 - Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
 
-Changed:
+### Added
+
+- Added command to support Hub creating a new project, and connecting a project to Unity Version Control.
+- Show a message with a link to invite users to the organization after the first checkin.
+
+### Changed
 
 - Moved the button to invite users to the organization from the submenu to the toolbar.
-- Show a message with a link to invite users to the organization after the first checkin.
-- Don't write cloudProjectId in ProjectSettings.asset anymore since it should only be managed by Services.
-- Added command to support Hub creating a new project, and connecting a project to Unity Version Control.
 
-Fixed:
+### Removed
+
+- Don't write cloudProjectId in ProjectSettings.asset anymore since it should only be managed by Services.
+
+### Fixed
 
 - Fixed Add to ignored/hidden changes list from the Project window creating a negative rule.
 - Fixed Switch to changeset not working on Gluon partial workspace.
@@ -32,7 +60,7 @@ Removing a previously added Plastic SCM Asset Store Plug-In:
 - Select the PlasticSCM folder in the Assets\Plugins folder on the Project tab, then click Edit > Delete
 - Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
 
-Fixed:
+### Fixed
 
 - Fixed the Unity Version Control icon disappearing from the Editor Toolbar on domain reload.
 - Fixed the popup stating "An existing checkout operation has locked the workspace" when trying to check in a scene with unsaved changes.

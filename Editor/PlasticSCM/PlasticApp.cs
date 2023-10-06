@@ -74,10 +74,17 @@ namespace Unity.PlasticSCM.Editor
             if (sEventSenderScheduler != null)
             {
                 sPingEventLoop = new PingEventLoop();
-                sPingEventLoop.Start();
-                sPingEventLoop.SetUnityVersion(Application.unityVersion);
 
-                CollabPlugin.GetVersion(pluginVersion => sPingEventLoop.SetPluginVersion(pluginVersion));
+                CollabPlugin.GetVersion(pluginVersion => 
+                {
+                    if (!string.IsNullOrEmpty(pluginVersion) && !string.IsNullOrEmpty(Application.unityVersion))
+                    {
+                        mLog.InfoFormat("Package: {0} Unity: {1}", pluginVersion, Application.unityVersion);
+                        sPingEventLoop.SetPluginVersion(pluginVersion);
+                        sPingEventLoop.SetUnityVersion(Application.unityVersion);
+                        sPingEventLoop.Start();
+                    }
+                });
             }
 
             PlasticMethodExceptionHandling.InitializeAskCredentialsUi(

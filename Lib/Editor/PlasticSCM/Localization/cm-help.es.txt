@@ -7881,9 +7881,10 @@ Deshace cambios en un workspace.
 == CMD_USAGE_UNDO ==
 Syntaxis:
 
-    cm undo [<path>[ ...]] [--symlink] [-r | --recursive] [<filter>[ ...]]
+    cm undo [<path> [...]] [--symlink] [-r | --recursive] [<filter> [...]]
             [--silent | --machinereadable [--startlineseparator=<sep>]
-                            [--endlineseparator=<sep>] [--fieldseparator=<sep>]]
+                                          [--endlineseparator=<sep>]
+                                          [--fieldseparator=<sep>]]
 
     path        Rutas de los ficheros o directorios sobre los que deshacer los
                 cambios. Use comillas dobles (" ") para especificar rutas que
@@ -7968,25 +7969,11 @@ Notas:
           cm undo .
           cm undo /src file.txt code.cs
 
-Ficheros borrados:
-
-    Para deshacer borrados de fichero o directorios hay que especificar la
-    ruta completa del fichero o directorio, o el directorio padre más la opción 
-    -r (recursivo).
-
-    Por ejemplo:
+Ejemplos:
 
     cm undo .
-    (NO deshace los borrados (solo otros cambios) en el directorio actual.)
-
-    cm undo . -r
-    (Deshace todos los borrados (y otros cambios) recursivamente del directorio
-    actual.)
-
-    cm undo src/file.txt
-    (Deshace el borrado (u otro cambio) del fichero src/file.txt.)
-
-Ejemplos:
+    (Deshace todos los cambios en el directorio actual.
+     No deshará los cambios contenidos en subdirectorios.)
 
     cm undo . -r
     (Deshace recursivamente todos los cambios en el directorio actual. Si

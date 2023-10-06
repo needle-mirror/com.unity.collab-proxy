@@ -161,10 +161,10 @@ https://www.plasticscm.com/download/releasenotes/
 更新しています...
 
 == UpdateProgressSingular ==
-{1} 個中 {0} 個を更新しました (1 個中 {2} 個のファイル){4}
+{1} 中 {0} を更新しました (1 個中 {2} 個のファイル){4}
 
 == UpdateProgressPlural ==
-{1} 個中 {0} 個を更新しました ({3} 個中 {2} 個のファイル){4}
+{1} 中 {0} を更新しました ({3} 個中 {2} 個のファイル){4}
 
 == CheckinComments ==
 チェックインのコメント
@@ -2299,7 +2299,7 @@ Unix ライクなファイルシステムにのみ適用されます
 == StatusDeletedOnServer ==
 サーバー上で削除済み
 
-== StatusLocked ==
+== StatusLockedBy ==
 '{0}' によってロック済み
 
 == StatusCheckedOutChanged ==

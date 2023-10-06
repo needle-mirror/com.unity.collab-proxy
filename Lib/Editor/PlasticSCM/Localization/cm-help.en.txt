@@ -7863,9 +7863,10 @@ Undoes changes in a workspace.
 == CMD_USAGE_UNDO ==
 Usage:
 
-    cm ^undo [<path>[ ...]] [--^symlink] [-^r | --^recursive] [<filter>[ ...]]
-            [--^silent | --^machinereadable [--^startlineseparator=<sep>]
-                            [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
+    cm ^undo [<path> [...]] [--^symlink] [-^r | --^recursive] [<filter> [...]]
+            [--^silent | [--^machinereadable [--^startlineseparator=<sep>]
+                                           [--^endlineseparator=<sep>]
+                                           [--^fieldseparator=<sep>]]
 
 Options:
 
@@ -7947,25 +7948,11 @@ Filters:
 
     If no filter is specified, all kinds of changes are undone.
 
-Deleted items:
-
-    To undo file and directory deletions, you must either specify the full path
-    of the item, or specify the containing directory and use the recursive ('-^r')
-    flag.
-
-    For example:
+Examples:
 
     cm ^undo .
-    (Does NOT undo deletions (but other changes) in the current directory.)
-
-    cm ^undo . -^r
-    (Undoes all deletions (and other changes) in the current directory
-    recursively.)
-
-    cm ^undo src/file.txt
-    (Undoes deletion (or other change) of src/file.txt.)
-
-Examples:
+    (Undoes all changes in the current directory.
+     It won't undo changes within its subdirectories.)
 
     cm ^undo . -^r
     (Undoes all changes in the current directory recursively. If executed

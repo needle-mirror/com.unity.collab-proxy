@@ -162,10 +162,47 @@ namespace Unity.PlasticSCM.Editor.WebApi
                 }
             }
 
+            internal static SubscriptionDetailsResponse GetSubscriptionDetails(
+                string organizationName,
+                string authToken)
+            {
+                Uri endpoint = mWebApiUris.GetFullUri(
+                    SubscriptionDetailsEndpoint,
+                    organizationName);
+
+                try
+                {
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(endpoint);
+                    request.Method = "GET";
+                    request.ContentType = "application/json";
+
+                    string authenticationToken = "Basic " + authToken;
+
+                    request.Headers.Add(
+                       HttpRequestHeader.Authorization, authenticationToken);
+
+                    return GetResponse<SubscriptionDetailsResponse>(request);
+                }
+                catch (Exception ex)
+                {
+                    mLog.ErrorFormat(
+                       "Unable to retrieve subscription details '{0}': {1}",
+                       endpoint.ToString(), ex.Message);
+
+                    mLog.DebugFormat(
+                        "StackTrace:{0}{1}",
+                        Environment.NewLine, ex.StackTrace);
+
+                    return null;
+                }
+            }
+
             const string IsBetaEnabledEndpoint = "api/unity-package/beta/is-enabled";
             const string TokenExchangeEndpoint = "api/oauth/unityid/exchange/{0}";
             const string IsCollabProjectMigratedEndpoint = "api/cloud/unity/projects/{0}/is-migrated";
-            const string IsUserAdminEnpoint  = "api/cloud/organizations/{0}/is-user-admin";
+            const string IsUserAdminEnpoint = "api/cloud/organizations/{0}/is-user-admin";
+            const string SubscriptionDetailsEndpoint = "api/cloud/organizations/{0}/subscription-details";
+
             static readonly PlasticWebApiUris mWebApiUris = PlasticWebApiUris.BuildDefault();
         }
 
