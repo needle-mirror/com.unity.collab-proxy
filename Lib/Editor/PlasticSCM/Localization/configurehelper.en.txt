@@ -49,6 +49,9 @@ Single Sign On
 == ConfiguringLdap ==
 Configuring LDAP connection...
 
+== ConfiguringSaml ==
+Configuring SAML connection...
+
 == ConfiguringUp ==
 Configure your credentials:
 
@@ -114,3 +117,30 @@ There is no port specified in the remoting configuration file
 
 == InvalidPortNumber ==
 Invalid port number: {0}
+
+== SamlWorkingMode ==
+SAML
+
+== SamlIdPMetadata ==
+SAML Authentication - IdP metadata (federation metadata document)
+
+== SamlIssuer ==
+SAML Authentication - Application (client) Id
+
+== SamlSignInUrl ==
+SAML Authentication - Sign-in URL (SAML-P sign-on endpoint)
+
+== SamlAbsoluteSessionValidityInDays ==
+SAML Authentication - SAML session absolute validity in days
+
+== SamlSignInUrl ==
+SAML Authentication - Sign-in URL (SAML-P sign-on endpoint)
+
+== SamlGraphApiClientId ==
+Graph API - Application registration client Id
+
+== SamlGraphApiTenantId ==
+Graph API - Application registration tenant Id
+
+== SamlGraphApiClientSecret ==
+Graph API - Application registration client secret

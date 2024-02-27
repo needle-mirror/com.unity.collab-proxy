@@ -237,7 +237,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 return QueryConstants.BranchesBeginningQuery;
 
             string whereClause = QueryConstants.GetDateWhereClause(
-                dateFilter.GetFilterDate(DateTime.UtcNow));
+                dateFilter.GetTimeAgo());
 
             return string.Format("{0} {1}",
                 QueryConstants.BranchesBeginningQuery,

@@ -222,28 +222,47 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                 out hasAssetProcessorOpsPending,
                 out hasCheckoutOpsPending);
 
-            if (hasAssetProcessorOpsProcessed &&
-                !hasAssetProcessorOpsPending)
-                EditorDispatcher.Dispatch(AfterAssetProcessorOperation);
+            bool isAfterAssetProcessorOpNeeded =
+                hasAssetProcessorOpsProcessed &&
+                !hasAssetProcessorOpsPending;
 
-            if (hasCheckoutOpsProcessed &&
-                !hasCheckoutOpsPending)
-                EditorDispatcher.Dispatch(AfterCheckoutOperation);
+            bool isAfterCheckoutOpNeeded =
+                hasCheckoutOpsProcessed &&
+                !hasCheckoutOpsPending;
+
+            if (!isAfterAssetProcessorOpNeeded &&
+                !isAfterCheckoutOpNeeded)
+                return;
+
+            EditorDispatcher.Dispatch(() =>
+            {
+                RefreshAsset.VersionControlCache();
+
+                if (isAfterAssetProcessorOpNeeded)
+                    AfterAssetProcessorOperation();
+
+                if (isAfterCheckoutOpNeeded)
+                    AfterCheckoutOperation();
+            });           
         }
 
         void AfterAssetProcessorOperation()
         {
-            AutoRefresh.PendingChangesView(
-                mPendingChangesTab);
+            AutoRefresh.PendingChangesView(mPendingChangesTab);
 
-            AutoRefresh.IncomingChangesView(
-                mIncomingChangesTab);
+            AutoRefresh.IncomingChangesView(mIncomingChangesTab);
+
+            if (mIsGluonMode)
+            {
+                RefreshViewsAfterAssetProcessorForGluon(mViewHost);
+                return;
+            }
+
+            RefreshViewsAfterAssetProcessorForDeveloper(mWorkspaceWindow);
         }
 
         void AfterCheckoutOperation()
         {
-            RefreshAsset.VersionControlCache();
-
             if (mIsGluonMode)
             {
                 RefreshViewsAfterCheckoutForGluon(mViewHost);
@@ -438,6 +457,26 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             }
         }
 
+        static void RefreshViewsAfterAssetProcessorForGluon(ViewHost viewHost)
+        {
+            if (viewHost == null)
+            {
+                return;
+            }
+
+            viewHost.RefreshView(ViewType.LocksView);
+        }
+
+        static void RefreshViewsAfterAssetProcessorForDeveloper(IWorkspaceWindow workspaceWindow)
+        {
+            if (workspaceWindow == null)
+            {
+                return;
+            }
+
+            workspaceWindow.RefreshView(ViewType.LocksView);
+        }
+
         static void RefreshViewsAfterCheckoutForDeveloper(
             IWorkspaceWindow workspaceWindow)
         {
@@ -447,6 +486,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             workspaceWindow.RefreshView(ViewType.BranchExplorerView);
             workspaceWindow.RefreshView(ViewType.PendingChangesView);
             workspaceWindow.RefreshView(ViewType.HistoryView);
+            workspaceWindow.RefreshView(ViewType.LocksView);
         }
 
         static void RefreshViewsAfterCheckoutForGluon(
@@ -459,6 +499,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             viewHost.RefreshView(ViewType.CheckinView);
             viewHost.RefreshView(ViewType.IncomingChangesView);
             viewHost.RefreshView(ViewType.SearchView);
+            viewHost.RefreshView(ViewType.LocksView);
         }
 
         static void LogProcessedPaths(
@@ -542,20 +583,17 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
                     if (plasticApi.GetWorkspaceTreeNode(path) != null)
                     {
-                        plasticApi.DeleteControlled(
-                            path, DeleteModifiers.None);
-
                         processedPaths.Add(path);
                     }
 
                     if (plasticApi.GetWorkspaceTreeNode(metaPath) != null)
                     {
-                        plasticApi.DeleteControlled(
-                            metaPath, DeleteModifiers.None);
-
                         processedPaths.Add(metaPath);
                     }
                 }
+
+                plasticApi.DeleteControlled(
+                    processedPaths.ToArray(), DeleteModifiers.None, null);
 
                 LogProcessedPaths("DeleteIfControlled", processedPaths);
 

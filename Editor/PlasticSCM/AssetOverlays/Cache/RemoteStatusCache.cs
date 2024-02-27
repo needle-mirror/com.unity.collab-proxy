@@ -19,11 +19,13 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
         internal RemoteStatusCache(
             WorkspaceInfo wkInfo,
             bool isGluonMode,
-            Action repaintProjectWindow)
+            Action repaintProjectWindow,
+            Action repaintInspector)
         {
             mWkInfo = wkInfo;
             mIsGluonMode = isGluonMode;
             mRepaintProjectWindow = repaintProjectWindow;
+            mRepaintInspector = repaintInspector;
         }
 
         internal AssetStatus GetStatus(string fullPath)
@@ -99,6 +101,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
                     }
 
                     mRepaintProjectWindow();
+                    mRepaintInspector();
                 });
         }
 
@@ -168,6 +171,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
 
         Dictionary<string, AssetStatus> mStatusByPathCache;
 
+        readonly Action mRepaintInspector;
         readonly Action mRepaintProjectWindow;
         readonly bool mIsGluonMode;
         readonly WorkspaceInfo mWkInfo;

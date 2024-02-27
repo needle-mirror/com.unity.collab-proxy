@@ -95,9 +95,11 @@
         internal const string HISTORY_TABLE_SETTINGS_NAME = "{0}_HistoryListV2_{1}";
         internal const string BRANCHES_TABLE_SETTINGS_NAME = "{0}_BranchesListV2_{1}";
         internal const string BRANCHES_DATE_FILTER_SETTING_NAME = "{0}_BranchesDateFilter_{1}";
+        internal const string LOCKS_TABLE_SETTINGS_NAME = "{0}_LocksListV2_{1}";
 
         internal const string PLASTIC_PLUGIN_IS_ENABLED_KEY_NAME = "{0}_PlasticPluginIsEnabled";
         internal const string SHOW_BRANCHES_VIEW_KEY_NAME = "{0}_ShowBranchesView";
+        internal const string SHOW_LOCKS_VIEW_KEY_NAME = "{0}_ShowLocksView";
 
         internal const string FIRST_CHECKIN_SUBMITTED = "{0}_FirstCheckinSubmitted";
 
@@ -136,6 +138,22 @@
             internal const float REPOSITORY_MIN_WIDTH = 90f;
             internal const float GUID_WIDTH = 270f;
             internal const float GUID_MIN_WIDTH = 100f;
+        }
+
+        internal static class LocksColumns
+        {
+                internal const float PATH_WIDTH = 400f;
+                internal const float PATH_MIN_WIDTH = 200f;
+                internal const float LOCK_TYPE_WIDTH = 100f;
+                internal const float LOCK_TYPE_MIN_WIDTH = 60f;
+                internal const float MODIFICATION_DATE_WIDTH = 120f;
+                internal const float MODIFICATION_DATE_MIN_WIDTH = 60f;
+                internal const float OWNER_WIDTH = 220f;
+                internal const float OWNER_MIN_WIDTH = 110f;
+                internal const float BRANCH_NAME_WIDTH = 180f;
+                internal const float BRANCH_NAME_MIN_WIDTH = 90f;
+                internal const float DESTINATION_BRANCH_NAME_WIDTH = 180f;
+                internal const float DESTINATION_BRANCH_NAME_MIN_WIDTH = 90f;
         }
     }
 }

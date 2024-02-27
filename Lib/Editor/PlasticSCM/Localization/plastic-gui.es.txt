@@ -112,6 +112,75 @@ Filtrar ramas seleccionadas y relacionadas
 == FilterSelectedBranchesPendingMerges ==
 Filtrar merges pendientes para ramas seleccionadas
 
+== RelayoutMenu ==
+Relayout
+
+== MoveBranchUp ==
+Mover ramas seleccionadas arriba
+
+== MoveBranchDown ==
+Mover ramas seleccionadas abajo
+
+== MoveBranchTop ==
+Mover ramas seleccionadas arriba del todo
+
+== MoveBranchBottom ==
+Mover ramas seleccionadas abajo del todo
+
+== ClearBranchRelayout ==
+Limpiar relayout de las ramas seleccionadas
+
+== ResetRelayoutData ==
+Limpiar todos los datos de relayout
+
+== ClearAllBranchRelayoutsDialogExplanation ==
+Esta acción eliminará todas las preferencias de relayout de rama para cualquier workspace. ¿Desea continuar?
+
+== PlasticMoveBranchUpShortcutForWindows ==
+Ctrl+Up
+
+== PlasticMoveBranchUpShortcutForMacOS ==
+Cmd+Up
+
+== PlasticMoveBranchUpShortcutForLinux ==
+Ctrl+Up
+
+== PlasticMoveBranchDownShortcutForWindows ==
+Ctrl+Down
+
+== PlasticMoveBranchDownShortcutForMacOS ==
+Cmd+Down
+
+== PlasticMoveBranchDownShortcutForLinux ==
+Ctrl+Down
+
+== PlasticMoveBranchTopShortcutForWindows ==
+Ctrl+Shift+Up
+
+== PlasticMoveBranchTopShortcutForMacOS ==
+Cmd+Shift+Up
+
+== PlasticMoveBranchTopShortcutForLinux ==
+Ctrl+Shift+Up
+
+== PlasticMoveBranchBottomShortcutForWindows ==
+Ctrl+Shift+Down
+
+== PlasticMoveBranchBottomShortcutForMacOS ==
+Cmd+Shift+Down
+
+== PlasticMoveBranchBottomShortcutForLinux ==
+Ctrl+Shift+Down
+
+== PlasticClearBranchLayoutShortcutForWindows ==
+Ctrl+Shift+C
+
+== PlasticClearBranchLayoutShortcutForMacOS ==
+Cmd+Shift+C
+
+== PlasticClearBranchLayoutShortcutForLinux ==
+Ctrl+Shift+C
+
 == GoToParentChangeset ==
 Ir al changeset padre
 
@@ -299,7 +368,7 @@ Open Unity Dashboard
 Actualizar Unity Version Control
 
 == MainSidebarInstallVersionItem ==
-Salir e instalar nueva actualización
+Reiniciar e instalar nueva actualización
 
 == MainSidebarCodeReviewsItem ==
 Revisiones de código
@@ -348,6 +417,9 @@ Registro de tiempo
 
 == CreationDateColumn ==
 Fecha de creación
+
+== LastActivityColumn ==
+Última actividad
 
 == GuidColumn ==
 Guid
@@ -923,7 +995,7 @@ No borrar ítem de disco
 No borrar ítesm de disco
 
 == DeletingProgress ==
-Borrando {0}...
+Borrando ({0}/{1}) {2}...
 
 == RemoveFromVersionControlPlural ==
 Eliminar ítems del control de versiones
@@ -1210,6 +1282,9 @@ Introduzca un patrón de búsqueda. Use cs:, lb: o br: para limitar los resultad
 == BranchColumn ==
 Rama
 
+== DestinationBranchColumn ==
+Rama destino
+
 == CancelButton ==
 Cancelar
 
@@ -1257,6 +1332,12 @@ Aún no se han creado shelves
 
 == NoLocksCreatedExplanation ==
 Aún no se han creado bloqueos en ficheros
+
+== LoadLocksError ==
+No se pudo recuperar la información de bloqueos
+
+== LoadLocksErrorExplanation ==
+No se pudo recuperar la información de bloqueos - {0}
 
 == NoShelvesMatchQueryExplanation ==
 No hay Shelves que coincidan con tu consulta
@@ -4325,6 +4406,12 @@ Agrupa cambios en "listas de cambios"
 == PendingChangesGroupInChangeListsExplanation ==
 Unity VCS puede agrupar los cambios en el workspace en listas creadas por el usuario. Esto es útil si echa de menos la funcionalidad de otros controles de versiones anteriores (P4).
 
+== PendingChangesViewAsATree ==
+Ver en modo árbol
+
+== PendingChangesViewAsATreeExplanation ==
+Muestra los cambios en el workspace en modo de vista de árbol.
+
 == PendingChangesShowPrivateFiles ==
 Mostrar ficheros privados
 
@@ -4994,6 +5081,9 @@ Mejorar plan
 == ReplyButton ==
 Responder
 
+== ReplyPlaceHolder ==
+Reply...
+
 == CommentButton ==
 Comentar
 
@@ -5113,6 +5203,12 @@ Guardar el título
 
 == DirtyCodeReviewTitleQuestion ==
 Ha editado el título de la revisión de código, ¿desea guardar los cambios?
+
+== DirtyCodeReviewDescriptionTitle ==
+Guardar la descripción
+
+== DirtyCodeReviewDescriptionQuestion ==
+Ha editado la descripción de la revisión de código, ¿desea guardar los cambios?
 
 == DirtyReviewCommentTitle ==
 Guardar comentario de revisión
@@ -5521,9 +5617,6 @@ Título
 == ReviewStatusColumn ==
 Estado
 
-== ReviewReviewerColumn ==
-Revisor
-
 == MergingFile ==
 Mezclando fichero {0} de {1}: {2}
 
@@ -5550,6 +5643,9 @@ Cargando revisón de código con título {0}...
 
 == UpgradeServerForNewCodeReviewError ==
 ¡Necesitas actualizar el servidor a la versión 8.0.16.3691 o superior para poder utilizar el nuevo sistema de code review!
+
+== UpgradeServerTo110168307ForNewCodeReviewError ==
+¡Necesitas actualizar el servidor a la versión 11.0.16.8321 o superior para poder utilizar el nuevo sistema de code review!
 
 == LoadingMembers ==
 Cargando miembros...
@@ -5851,14 +5947,11 @@ Esperando sesión...
 == RetrievingOrgsProgress ==
 Obteniendo organizaciones...
 
-== RetrievingCloudDrivesProgress ==
-Obteniendo cloud drives...
+== RetrievingWorkspacesProgress ==
+Obteniendo workspaces...
 
-== GettingCloudDriveRepositoryProgress ==
-Obteniendo el repositorio cloud drive...
-
-== UnableToGetCloudDriveRepositoryError ==
-No es posible obtener el repository con guid '{0}' para la organización '{1}'
+== CreatingYourPersonalWorkspaceProgress ==
+Creando tu personal workspace...
 
 == GettingSSOProviders ==
 Obteniendo los proveedores de la organización...
@@ -7878,9 +7971,6 @@ Destinario
 == Executable ==
 Ejecutable
 
-== DiscoverNewCodeReviewExperience ==
-Descubre la nueva experiencia de Code Review con múltiples revisores en el
-
 == UnityDashboard ==
 Unity Dashboard
 
@@ -7930,7 +8020,7 @@ No se han encontrado cambios entrantes
 Aún no se han creado vistas de sincronización
 
 == LockInfoDetailsFormatString == 
-{0} {1} en {2} por {3}
+{0} {1} en {2} por {3} con destino {4}
 
 == LockMenuItemReleaseLock ==
 Liberar
@@ -7942,25 +8032,34 @@ Borrar
 Confirma desbloqueo
 
 == ReleaseLocksMessageSingular ==
-Liberando 1 bloqueo. ¿Está seguro?
+Liberar bloqueos permitirá a otros usuarios seguir trabajando en esos archivos y recuperar bloqueos. ¿Quieres liberar 1 bloqueo?
 
 == ReleaseLocksMessagePlural ==
-Liberando {0} bloqueos. ¿Está seguro?
+Liberar bloqueos permitirá a otros usuarios seguir trabajando en esos archivos y recuperar bloqueos. ¿Quieres liberar {0} bloqueos?
 
 == ReleaseLocksButton ==
 Liberar
+
+== ReleaseLocksButtonTooltip ==
+Liberar bloqueos permitirá a otros usuarios seguir trabajando en esos archivos y recuperar bloqueos
 
 == ConfirmRemoveLocksTitle ==
 Confirma borrado
 
 == RemoveLocksMessageSingular ==
-Borrando 1 bloqueo. ¿Está seguro?
+Eliminar bloqueos hará que esos archivos sean editables por cualquier persona con acceso a ellos en el repositorio, lo que aumentará el riesgo de futuros conflictos de merge. ¿Quieres eliminar 1 bloqueo?
 
 == RemoveLocksMessagePlural ==
-Liberando {0} bloqueos. ¿Está seguro?
+Eliminar bloqueos hará que esos archivos sean editables por cualquier persona con acceso a ellos en el repositorio, lo que aumentará el riesgo de futuros conflictos de merge. ¿Quieres eliminar {0} bloqueos?
 
 == RemoveLocksButton ==
 Borrar
+
+== RemoveLocksButtonTooltip ==
+Eliminar bloqueos hará que esos archivos sean editables por cualquier persona con acceso a ellos en el repositorio, lo que aumentará el riesgo de futuros conflictos de merge
+
+== LearnMoreAboutReleaseRemoveLocks ==
+Saber más acerca de liberar y eliminar bloqueos
 
 == ConfigureLockRules ==
 Configurar reglas
@@ -7973,3 +8072,108 @@ Revisión purgada
 
 == PurgedRevisionMessage ==
 El contenido no se pudo mostrar, esta revisión ha sido eliminada permanentemente.
+
+== MarkReview ==
+Marcar review
+
+== MarkReviewAs ==
+Marcar review como...
+
+== MarkAs ==
+Mark as {0}
+
+== ReviewStatusComment ==
+Comentario (opcional)
+
+== GettingReviewers ==
+Obteniendo los revisores ...
+
+== GettingReviewComments ==
+Obteniendo los comentarios de la review ...
+
+== Conversation ==
+Conversación
+
+== ReviewChanges ==
+Revisar cambios
+
+== Reviewers ==
+Revisores
+
+== Author ==
+Autor
+
+== AddedDescriptionTimeAgo ==
+añadió una descripción {0}
+
+== EditDescription ==
+Editar descripción
+
+== AddDescription ==
+Añadir descripción
+
+== AddADescription ==
+Añadir una descripción
+
+== AddADescriptionExplanation ==
+Añade una descripción general o instrucciones sobre esta revisión
+
+== AddDescriptionPlaceHolder ==
+Escribe una descripción...
+
+== StartAConversationPlaceHolder ==
+Empezar una conversación...
+
+== MarkedReviewAs ==
+marcó la revisión como
+
+== HideOneReply ==
+Ocultar 1 respuesta
+
+== HideReplies ==
+Ocultar {0} respuestas
+
+== ShowOneReply ==
+Mostrar 1 respuesta
+
+== ShowReplies ==
+Mostrar {0} respuestas
+
+== ResolvedIn ==
+Resuelto en
+
+== QuestionMarkedAsResolved ==
+Pregunta contestada
+
+== Discarded ==
+Descartado
+
+== AskedAQuestion ==
+hizo una pregunta
+
+== Commented ==
+comentó
+
+== RequestedChanges ==
+pidió cambios
+
+== AddCommentPlaceHolder ==
+Añadir un comentario...
+
+== Today ==
+Hoy
+
+== Yesterday ==
+Ayer
+
+== LastWeek ==
+La semana pasada
+
+== MoreThanAWeekAgo ==
+Hace más de una semana
+
+== DiffHeaderDetailsStringFormat ==
+por {0} el {1}
+
+== MovedFrom ==
+ (movido de {0})

@@ -54,14 +54,14 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         internal bool IsAllCheckedState()
         {
-            List<IPlasticTreeNode> nodes = mPendingChangesTree.GetNodes();
+            IEnumerable<IPlasticTreeNode> nodes = mPendingChangesTree.GetNodes();
 
-            if (nodes == null || nodes.Count == 0)
+            if (nodes == null)
                 return false;
 
             foreach (IPlasticTreeNode node in nodes)
             {
-                if (!(CheckedItems.GetIsCheckedValue(node) ?? false))
+                if (!(CheckableItems.GetIsCheckedValue(node) ?? false))
                     return false;
             }
 
@@ -70,7 +70,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         protected bool IsMixedCheckedState()
         {
-            List<IPlasticTreeNode> nodes = mPendingChangesTree.GetNodes();
+            IEnumerable<IPlasticTreeNode> nodes = mPendingChangesTree.GetNodes();
 
             if (nodes == null)
                 return false;
@@ -79,10 +79,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             bool hasUncheckedNode = false;
             foreach (IPlasticTreeNode node in nodes)
             {
-                if (CheckedItems.GetIsPartiallyCheckedValue(node))
+                if (CheckableItems.GetIsPartiallyCheckedValue(node))
                     return true;
 
-                if (CheckedItems.GetIsCheckedValue(node) ?? false)
+                if (CheckableItems.GetIsCheckedValue(node) ?? false)
                     hasCheckedNode = true;
                 else
                     hasUncheckedNode = true;
@@ -96,13 +96,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         internal void UpdateCheckedState(bool isChecked)
         {
-            List<IPlasticTreeNode> nodes = mPendingChangesTree.GetNodes();
+            IEnumerable<IPlasticTreeNode> nodes = mPendingChangesTree.GetNodes();
 
             if (nodes == null)
                 return;
 
             foreach (IPlasticTreeNode node in nodes)
-                CheckedItems.SetCheckedValue(node, isChecked);
+                CheckableItems.SetCheckedValue(node, isChecked);
         }
 
         readonly PendingChangesTreeView mPendingChangesTreeView;

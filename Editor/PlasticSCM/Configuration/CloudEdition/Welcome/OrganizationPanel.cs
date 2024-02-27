@@ -138,7 +138,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         void OpenUnityDashboardButton_clicked()
         {
-            Application.OpenURL(UnityUrl.UnityDashboard.Get());
+            Application.OpenURL(UnityUrl.UnityDashboard.Plastic.Get());
         }
 
         void BuildComponents(string title, List<string> organizations)

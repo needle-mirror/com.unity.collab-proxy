@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
+using Codice.Client.Commands;
 using Codice.Client.Commands.WkTree;
-using Codice.Client.Common;
 using Codice.Client.Common.Locks;
 using Codice.Client.Common.WkTree;
 using Codice.CM.Common;
-using Codice.CM.WorkspaceServer.DataStore.Guids;
+using Codice.CM.WorkspaceServer;
 
 namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
 {
@@ -14,20 +13,19 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
     {
         internal static Dictionary<WorkspaceTreeNode, LockInfo> GetLocksInfo(
             WorkspaceInfo wkInfo,
-            Dictionary<RepositorySpec, List<WorkspaceTreeNode>> locksCandidates)
+            Dictionary<MountPointWithPath, List<WorkspaceTreeNode>> locksCandidates)
         {
             Dictionary<WorkspaceTreeNode, LockInfo> result =
                 new Dictionary<WorkspaceTreeNode, LockInfo>();
 
-            Dictionary<string, Dictionary<Guid, LockInfo>> locksByItemByServer =
-                new Dictionary<string, Dictionary<Guid, LockInfo>>(
-                    StringComparer.InvariantCultureIgnoreCase);
+            ServerLocks.ForWorkingBranchOnRepoByItem locksForWorkingBranchOnRepoByItem =
+                new ServerLocks.ForWorkingBranchOnRepoByItem();
 
-            foreach (KeyValuePair<RepositorySpec, List<WorkspaceTreeNode>> each in locksCandidates)
+            foreach (KeyValuePair<MountPointWithPath, List<WorkspaceTreeNode>> each in locksCandidates)
             {
                 FillRepositoryLocks(
                     wkInfo, each.Key, each.Value,
-                    locksByItemByServer, result);
+                    locksForWorkingBranchOnRepoByItem, result);
             }
 
             return result;
@@ -35,15 +33,15 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
 
         static void FillRepositoryLocks(
             WorkspaceInfo wkInfo,
-            RepositorySpec repSpec,
+            MountPointWithPath mount,
             List<WorkspaceTreeNode> candidates,
-            Dictionary<string, Dictionary<Guid, LockInfo>> locksByItemByServer,
+            ServerLocks.ForWorkingBranchOnRepoByItem locksForWorkingBranchOnRepoByItem,
             Dictionary<WorkspaceTreeNode, LockInfo> locks)
         {
             if (candidates.Count == 0)
                 return;
 
-            LockRule lockRule = ServerLocks.GetLockRule(repSpec);
+            LockRule lockRule = ServerLocks.GetLockRule(mount.RepSpec);
 
             if (lockRule == null)
                 return;
@@ -53,24 +51,31 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
             if (candidates.Count == 0)
                 return;
 
-            Dictionary<Guid, LockInfo> serverlocksByItem =
-                ServerLocks.GetLocksForServerByItemGuid(
-                    repSpec.Server, locksByItemByServer);
+            BranchInfo workingBranch = CheckoutBranchSolver.Get(wkInfo).
+                GetWorkingBranchWithoutBranchExpansionByMount(mount);
 
-            if (serverlocksByItem == null || serverlocksByItem.Count == 0)
+            if (workingBranch == null)
                 return;
 
-            IList<Guid> candidatesGuids = GetCandidatesGuids(
-                wkInfo, repSpec, candidates);
+            ServerLocks.GetLocksForRepoByItemId(
+                mount.RepSpec, workingBranch.Id, locksForWorkingBranchOnRepoByItem);
 
-            for (int index = 0; index < candidates.Count; index++)
+            Dictionary<long, LockInfo> lockByItemCache;
+            if (!locksForWorkingBranchOnRepoByItem.TryGetLocks(
+                    mount.RepSpec, workingBranch.Id, out lockByItemCache))
+                return;
+
+            if (lockByItemCache.Count == 0)
+                return;
+
+            foreach (WorkspaceTreeNode candidate in candidates)
             {
                 LockInfo serverLock;
-                if (!serverlocksByItem.TryGetValue(
-                        candidatesGuids[index], out serverLock))
+                if (!lockByItemCache.TryGetValue(
+                        candidate.RevInfo.ItemId, out serverLock))
                     continue;
 
-                locks[candidates[index]] = serverLock;
+                locks[candidate] = serverLock;
             }
         }
 
@@ -99,22 +104,6 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
             }
 
             return result;
-        }
-
-        static IList<Guid> GetCandidatesGuids(
-            WorkspaceInfo wkInfo,
-            RepositorySpec repSpec,
-            List<WorkspaceTreeNode> candidates)
-        {
-            RepositoryInfo repInfo = RepositorySpecResolverProvider.
-                Get().GetRepInfo(repSpec);
-
-            IList<long> ids = new List<long>(candidates.Count);
-
-            foreach (WorkspaceTreeNode candidate in candidates)
-                ids.Add(candidate.RevInfo.ItemId);
-
-            return GuidResolver.Get().GetObjectGuids(repInfo, wkInfo, ids);
         }
     }
 }

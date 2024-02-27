@@ -35,3 +35,9 @@ Double-click any file in a changeset to go to the **File History** tab, and disp
 You can also view the changes made to a specific file in the **Project view** through a contextual menu, then revert to an earlier revision of the file.
 
 ![Revert changes in project view](images/ProjectView.gif)
+
+## Locks
+
+The **File locks** tab allows you to list and filter all locks in your repository, and gives you the ability to release or remove them selectively. To open the view, you can use the "Show Locks" button available in the toolbar.
+
+![File locks view](images/FileLocks.png)

@@ -818,7 +818,7 @@ Xlink を編集...
 ディスクから項目を削除しない
 
 == DeletingProgress ==
-{0} を削除しています...
+({0}/{1}) {2} を削除しています...
 
 == RemoveFromVersionControlPlural ==
 バージョン管理から項目を削除
@@ -4995,9 +4995,6 @@ Xlink されたファイルに対するレビューのコメントはまだサ�
 == ReviewStatusColumn ==
 ステータス
 
-== ReviewReviewerColumn ==
-レビュー担当者
-
 == MergingFile ==
 {1} 個のうちファイル {0} をマージ中:{2}
 
@@ -5024,6 +5021,9 @@ Xlink されたファイルに対するレビューのコメントはまだサ�
 
 == UpgradeServerForNewCodeReviewError ==
 新しいコードレビューシステムを使用するためには、サーバーをバージョン 8.0.16.3691 以上にアップグレードする必要があります!
+
+== UpgradeServerTo110168307ForNewCodeReviewError ==
+新しいコードレビューシステムを使用するためには、サーバーをバージョン 11.0.16.8321 以上にアップグレードする必要があります!
 
 == LoadingMembers ==
 メンバーをロードしています...

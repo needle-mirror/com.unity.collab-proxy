@@ -77,6 +77,20 @@ namespace Unity.PlasticSCM.Editor.UI
                 PlasticLocalization.GetString(PlasticLocalization.Name.NoButton));
         }
 
+        bool GuiMessage.IGuiMessage.ShowQuestionWithLearnMore(
+            string title,
+            string message,
+            string yesButton,
+            string noButton,
+            MultiLinkLabelData learnMoreContent)
+        {
+            return EditorUtility.DisplayDialog(
+                title,
+                message,
+                yesButton,
+                noButton);
+        }
+
         bool GuiMessage.IGuiMessage.ShowYesNoQuestion(string title, string message)
         {
             return EditorUtility.DisplayDialog(
@@ -119,7 +133,8 @@ namespace Unity.PlasticSCM.Editor.UI
             out bool checkBoxValue)
         {
             checkBoxValue = false;
-            return ((GuiMessage.IGuiMessage)this).ShowQuestion(title, message, positiveButtonText, neutralButtonText, negativeButtonText);
+            return ((GuiMessage.IGuiMessage)this).ShowQuestion(
+                title, message, positiveButtonText, neutralButtonText, negativeButtonText);
         }
 
         static GuiMessage.GuiMessageResponseButton GetResponse(int dialogResult)

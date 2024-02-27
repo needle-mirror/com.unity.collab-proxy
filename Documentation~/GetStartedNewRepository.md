@@ -1,6 +1,6 @@
-# Getting started with a new version control repository
+# Get started with a new version control repository
 
-**Note**: To start from an existing version control repository, see [Getting started with an existing version control repository](ExistingRepo.md).
+**Note**: To start from an existing version control repository, see [Get started with an existing version control repository](GetStartedExistingRepository.md).
 
 You can walk through a straightforward onboarding wizard when creating a repository for your Unity project. This new wizard will help you:
 
@@ -10,7 +10,7 @@ You can walk through a straightforward onboarding wizard when creating a reposit
 
 1. Open your Unity project.
 2. To access the version control window in the Unity Editor, click **Window** &gt; **version control**:
-   ![version control window](images/AccessingPlastic.png)
+   ![version control window](images/AccessingUnityVersionControl.png)
 
 3. In the version control onboarding window, complete the steps to continue:
    ![Onboarding](images/Onboarding.png)

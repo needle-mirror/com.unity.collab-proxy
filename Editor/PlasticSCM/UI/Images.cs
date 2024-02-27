@@ -58,7 +58,8 @@ namespace Unity.PlasticSCM.Editor.UI
             IconBranch,
             IconUndo,
             Refresh,
-            IconInviteUsers
+            IconInviteUsers,
+            IconLock
         }
 
         internal static Texture2D GetImage(Name image)
@@ -426,6 +427,14 @@ namespace Unity.PlasticSCM.Editor.UI
             return mInviteUsersIcon;
         }
 
+        internal static Texture2D GetLockIcon()
+        {
+            if (mLockIcon == null)
+                mLockIcon = GetImage(Name.IconLock);
+
+            return mLockIcon;
+        }
+
         internal static Texture2D GetTreeviewBackgroundTexture()
         {
             if (mTreeviewBackgroundTexture == null)
@@ -718,6 +727,7 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mConflictedIcon;
         static Texture2D mOutOfSyncIcon;
         static Texture2D mInviteUsersIcon;
+        static Texture2D mLockIcon;
 
         static Texture2D mPlasticViewIcon;
         static Texture2D mPlasticNotifyIncomingIcon;

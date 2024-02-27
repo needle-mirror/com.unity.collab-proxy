@@ -396,7 +396,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             if (!selectedIds.Contains(senderTreeViewItem.id))
                 return;
 
-            bool isChecked = ((ICheckablePlasticTreeNode)senderTreeViewItem.ChangeInfo).IsChecked();
+            bool isChecked = ((ICheckablePlasticTreeNode)senderTreeViewItem.ChangeInfo).IsChecked() ?? false;
 
             foreach (TreeViewItem treeViewItem in treeView.FindRows(selectedIds))
             {
@@ -424,7 +424,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             string label = item.Category.CategoryName;
             string infoLabel = item.Category.GetCheckedChangesText();
 
-            bool wasChecked = item.Category.IsChecked();
+            bool wasChecked = CheckableItems.GetIsCheckedValueForCategory(item.Category) ?? false;
             bool hadCheckedChildren = ((ICheckablePlasticTreeCategory)item.Category).GetCheckedChangesCount() > 0;
 
             DefaultStyles.label = GetCategoryStyle(
@@ -453,7 +453,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
             if (wasChecked && !isChecked)
             {
-                ((ICheckablePlasticTreeNode)item.Category).UpdateCheckedState(false);
+                ((ICheckablePlasticTreeCategory)item.Category).UpdateCheckedState(false);
                 onCheckedNodeChanged();
                 return;
             }
@@ -521,7 +521,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                     GetChangesOverlayIcon.ForGluonIncomingChange(
                         incomingChange, isSolvedConflict);
 
-                bool wasChecked = ((ICheckablePlasticTreeNode)incomingChange).IsChecked();
+                bool wasChecked = ((ICheckablePlasticTreeNode)incomingChange).IsChecked() ?? false;
 
                 bool isChecked = DrawTreeViewItem.ForCheckableItemCell(
                     rect, rowHeight, item.depth,

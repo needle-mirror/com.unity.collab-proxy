@@ -112,7 +112,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                 .Repository.GetRepSpec().ToString();
         }
 
-        void IPlasticTable<RepositoryInfo>.Fill(
+        void IPlasticTable<RepositoryInfo>.FillEntriesAndSelectRows(
             IList<RepositoryInfo> entries,
             List<RepositoryInfo> entriesToSelect,
             string currentFilter)

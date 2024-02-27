@@ -1,5 +1,6 @@
-﻿using System.IO;
-
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.VersionControl;
@@ -131,10 +132,8 @@ namespace Unity.PlasticSCM.Editor.Inspector
                 DrawBackRectangle(guiEnabledBck);
 
                 GUILayout.BeginHorizontal();
-                
+
                 DrawStatusLabel(assetStatus, lockStatusData);
-                
-                GUILayout.FlexibleSpace();
 
                 DrawButtons(assetOperations);
 
@@ -173,20 +172,42 @@ namespace Unity.PlasticSCM.Editor.Inspector
                 - UnityConstants.INSPECTOR_ACTIONS_BACK_RECTANGLE_TOP_MARGIN);
         }
 
-        static void DrawButtons(
-            AssetMenuOperations selectedGroupInfo)
+        static void DrawButtons(AssetMenuOperations assetOperations)
         {
-            if (selectedGroupInfo.HasFlag(AssetMenuOperations.Add))
+            var operationsAvailability = new Dictionary<AssetMenuOperations, bool>
+            {
+                { AssetMenuOperations.Add, assetOperations.HasFlag(AssetMenuOperations.Add) },
+                { AssetMenuOperations.Checkout, assetOperations.HasFlag(AssetMenuOperations.Checkout) },
+                { AssetMenuOperations.Checkin, assetOperations.HasFlag(AssetMenuOperations.Checkin) },
+                { AssetMenuOperations.Undo, assetOperations.HasFlag(AssetMenuOperations.Undo) }
+            };
+
+            // GUILayout reserves space for controls, which might lead to unexpected layout behavior
+            // when controls are hidden dynamically. We keep consistency by adding flex spaces for inactive operations.
+            foreach (var unused in operationsAvailability.Values.Where(activeOperation => !activeOperation))
+            {
+                GUILayout.FlexibleSpace();
+            }
+
+            if (operationsAvailability[AssetMenuOperations.Add])
+            {
                 DoAddButton();
+            }
 
-            if (selectedGroupInfo.HasFlag(AssetMenuOperations.Checkout))
+            if (operationsAvailability[AssetMenuOperations.Checkout])
+            {
                 DoCheckoutButton();
+            }
 
-            if (selectedGroupInfo.HasFlag(AssetMenuOperations.Checkin))
+            if (operationsAvailability[AssetMenuOperations.Checkin])
+            {
                 DoCheckinButton();
+            }
 
-            if (selectedGroupInfo.HasFlag(AssetMenuOperations.Undo))
+            if (operationsAvailability[AssetMenuOperations.Undo])
+            {
                 DoUndoButton();
+            }
         }
 
         static void DrawStatusLabel(

@@ -23,7 +23,6 @@ using PlasticGui;
 using PlasticGui.EventTracking;
 using PlasticGui.WebApi;
 using PlasticPipe.Certificates;
-using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Configuration;
 using Unity.PlasticSCM.Editor.UI;
 
@@ -73,18 +72,11 @@ namespace Unity.PlasticSCM.Editor
 
             if (sEventSenderScheduler != null)
             {
-                sPingEventLoop = new PingEventLoop();
+                UVCPackageVersion.AsyncGetVersion();
 
-                CollabPlugin.GetVersion(pluginVersion => 
-                {
-                    if (!string.IsNullOrEmpty(pluginVersion) && !string.IsNullOrEmpty(Application.unityVersion))
-                    {
-                        mLog.InfoFormat("Package: {0} Unity: {1}", pluginVersion, Application.unityVersion);
-                        sPingEventLoop.SetPluginVersion(pluginVersion);
-                        sPingEventLoop.SetUnityVersion(Application.unityVersion);
-                        sPingEventLoop.Start();
-                    }
-                });
+                sPingEventLoop = new PingEventLoop(
+                    BuildGetEventExtraInfoFunction.ForPingEvent());
+                sPingEventLoop.Start();
             }
 
             PlasticMethodExceptionHandling.InitializeAskCredentialsUi(

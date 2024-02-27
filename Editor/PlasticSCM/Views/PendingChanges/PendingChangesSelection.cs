@@ -4,6 +4,7 @@ using System.Linq;
 
 using Codice.Client.BaseCommands;
 using Codice.Client.Commands;
+using PlasticGui;
 using PlasticGui.WorkspaceWindow.PendingChanges;
 using PlasticGui.WorkspaceWindow.PendingChanges.Changelists;
 
@@ -93,7 +94,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         {
             return SelectedChangesGroupInfo.BuildFromChangeInfos(
                 wkPath,
-                treeView.GetSelectedChanges(true),
+                treeView.GetSelectedChanges(false),
                 GetInvolvedChangelists(treeView.GetSelectedPendingChangeInfos()));
         }
 
@@ -144,8 +145,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             foreach (PendingChangeInfo pendingChangeInfo in changes)
             {
-                ChangelistNode changelistNode =
-                    (ChangelistNode)pendingChangeInfo.GetParent().GetParent();
+                ChangelistNode changelistNode = GetChangelistAncestor.ForNode(pendingChangeInfo);
 
                 if (changelistNode == null)
                     continue;

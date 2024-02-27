@@ -2,6 +2,7 @@
 
 using UnityEditor;
 
+using Codice.Client.Common.EventTracking;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using GluonGui;
@@ -20,6 +21,7 @@ using Unity.PlasticSCM.Editor.Views.History;
 using Unity.PlasticSCM.Editor.Views.IncomingChanges;
 using Unity.PlasticSCM.Editor.Views.PendingChanges;
 using Unity.PlasticSCM.Editor.Views.Branches;
+using Unity.PlasticSCM.Editor.Views.Locks;
 
 using GluonNewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncomingChangesUpdater;
 using ObjectInfo = Codice.CM.Common.ObjectInfo;
@@ -37,8 +39,10 @@ namespace Unity.PlasticSCM.Editor
         internal ChangesetsTab ChangesetsTab { get; private set; }
         internal BranchesTab BranchesTab { get; private set; }
         internal HistoryTab HistoryTab { get; private set; }
+        internal LocksTab LocksTab { get; private set; }
 
         internal ViewSwitcher(
+            RepositorySpec repSpec,
             WorkspaceInfo wkInfo,
             ViewHost viewHost,
             bool isGluonMode,
@@ -49,6 +53,7 @@ namespace Unity.PlasticSCM.Editor
             StatusBar statusBar,
             EditorWindow parentWindow)
         {
+            mRepSpec = repSpec;
             mWkInfo = wkInfo;
             mViewHost = viewHost;
             mIsGluonMode = isGluonMode;
@@ -64,6 +69,7 @@ namespace Unity.PlasticSCM.Editor
             mChangesetsTabButton = new TabButton();
             mBranchesTabButton = new TabButton();
             mHistoryTabButton = new TabButton();
+            mLocksTabButton = new TabButton();
         }
 
         internal void SetNewIncomingChanges(
@@ -153,6 +159,9 @@ namespace Unity.PlasticSCM.Editor
 
             if (HistoryTab != null)
                 HistoryTab.OnDisable();
+
+            if (LocksTab != null)
+                LocksTab.OnDisable();
         }
 
         internal void Update()
@@ -186,6 +195,12 @@ namespace Unity.PlasticSCM.Editor
                 HistoryTab.Update();
                 return;
             }
+            
+            if (IsViewSelected(SelectedTab.Locks))
+            {
+                LocksTab.Update();
+                return;
+            }
         }
 
         internal void TabButtonsGUI()
@@ -201,6 +216,8 @@ namespace Unity.PlasticSCM.Editor
             BranchesTabButtonGUI();
 
             HistoryTabButtonGUI();
+            
+            LocksTabButtonGUI();
         }
 
         internal void TabViewGUI()
@@ -234,6 +251,12 @@ namespace Unity.PlasticSCM.Editor
                 HistoryTab.OnGUI();
                 return;
             }
+
+            if (IsViewSelected(SelectedTab.Locks))
+            {
+                LocksTab.OnGUI();
+                return;
+            }
         }
 
         internal void ShowBranchesViewIfNeeded()
@@ -262,7 +285,7 @@ namespace Unity.PlasticSCM.Editor
 
                     if (queryResult == null)
                         return;
-                   
+
                     if (queryResult.Count()>0)
                         OpenBranchesTab();
                 });
@@ -279,6 +302,27 @@ namespace Unity.PlasticSCM.Editor
                 ((IRefreshableView)BranchesTab).Refresh();
 
             SetSelectedView(SelectedTab.Branches);
+        }
+
+        internal void ShowLocksViewIfNeeded()
+        {
+            if (!BoolSetting.Load(UnityConstants.SHOW_LOCKS_VIEW_KEY_NAME, false))
+                return;
+            
+            OpenLocksTab();
+        }
+
+        internal void ShowLocksView()
+        {
+            OpenLocksTab();
+
+            bool wasLocksViewSelected = 
+                IsViewSelected(SelectedTab.Locks);
+
+            if (!wasLocksViewSelected)
+                ((IRefreshableView)LocksTab).Refresh();
+
+            SetSelectedView(SelectedTab.Locks);
         }
 
         void IViewSwitcher.ShowPendingChanges()
@@ -334,7 +378,7 @@ namespace Unity.PlasticSCM.Editor
             LaunchTool.OpenMerge(
                 mShowDownloadPlasticExeWindow,
                 mProcessExecutor,
-                mWkInfo, 
+                mWkInfo,
                 mIsGluonMode);
         }
 
@@ -361,13 +405,13 @@ namespace Unity.PlasticSCM.Editor
 
         void CloseHistoryTab()
         {
-            ShowView(mPreviousSelectedTab);
-
             mViewHost.RemoveRefreshableView(
                 ViewType.HistoryView, HistoryTab);
 
             HistoryTab.OnDisable();
             HistoryTab = null;
+
+            ShowPreviousViewFrom(SelectedTab.History);
 
             mParentWindow.Repaint();
         }
@@ -396,18 +440,18 @@ namespace Unity.PlasticSCM.Editor
         {
             BoolSetting.Save(false, UnityConstants.SHOW_BRANCHES_VIEW_KEY_NAME);
 
-            ShowView(mPreviousSelectedTab);
-
             mViewHost.RemoveRefreshableView(
                 ViewType.BranchesView, BranchesTab);
 
             BranchesTab.OnDisable();
             BranchesTab = null;
 
+            ShowPreviousViewFrom(SelectedTab.Branches);
+
             mParentWindow.Repaint();
         }
 
-        void ShowPendingChangesView()
+        internal void ShowPendingChangesView()
         {
             if (PendingChangesTab == null)
             {
@@ -550,6 +594,79 @@ namespace Unity.PlasticSCM.Editor
             SetSelectedView(SelectedTab.History);
         }
 
+        void ShowHistoryView()
+        {
+            if (HistoryTab == null)
+                return;
+
+            ((IRefreshableView)HistoryTab).Refresh();
+
+            SetSelectedView(SelectedTab.History);
+        }
+
+        void OpenLocksTab()
+        {
+            if (LocksTab == null)
+            {
+                LocksTab = new LocksTab(mRepSpec, mWorkspaceWindow, mParentWindow);
+
+                mViewHost.AddRefreshableView(ViewType.LocksView, LocksTab);
+
+                TrackFeatureUseEvent.For(mRepSpec,
+                    TrackFeatureUseEvent.Features.OpenLocksView);
+            }
+
+            BoolSetting.Save(true, UnityConstants.SHOW_LOCKS_VIEW_KEY_NAME);
+        }
+
+        void CloseLocksTab()
+        {
+            BoolSetting.Save(false, UnityConstants.SHOW_LOCKS_VIEW_KEY_NAME);
+
+            TrackFeatureUseEvent.For(mRepSpec,
+                TrackFeatureUseEvent.Features.CloseLocksView);
+
+            mViewHost.RemoveRefreshableView(ViewType.LocksView, LocksTab);
+
+            LocksTab.OnDisable();
+            LocksTab = null;
+            
+            ShowPreviousViewFrom(SelectedTab.Locks);
+
+            mParentWindow.Repaint();
+        }
+        
+        void LocksTabButtonGUI()
+        {
+            if (LocksTab == null)
+            {
+                return;
+            }
+
+            var wasLocksTabSelected = IsViewSelected(SelectedTab.Locks);
+
+            bool isCloseButtonClicked;
+
+            var isLocksTabSelected = mLocksTabButton.DrawClosableTabButton(
+                PlasticLocalization.Name.LocksViewTitle.GetString(),
+                wasLocksTabSelected,
+                true,
+                mTabButtonWidth,
+                mParentWindow.Repaint,
+                out isCloseButtonClicked);
+
+            if (isCloseButtonClicked)
+            {
+                CloseLocksTab();
+                return;
+            }
+
+            if (isLocksTabSelected)
+            {
+                SetSelectedView(SelectedTab.Locks);
+            }
+        }
+
         void InitializeTabButtonWidth()
         {
             if (mTabButtonWidth != -1)
@@ -560,7 +677,9 @@ namespace Unity.PlasticSCM.Editor
                 PlasticLocalization.GetString(PlasticLocalization.Name.PendingChangesViewTitle),
                 PlasticLocalization.GetString(PlasticLocalization.Name.IncomingChangesViewTitle),
                 PlasticLocalization.GetString(PlasticLocalization.Name.BranchesViewTitle),
-                PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetsViewTitle));
+                PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetsViewTitle),
+                PlasticLocalization.GetString(PlasticLocalization.Name.FileHistory),
+                PlasticLocalization.GetString(PlasticLocalization.Name.LocksViewTitle));
         }
 
         void ShowView(SelectedTab viewToShow)
@@ -578,7 +697,30 @@ namespace Unity.PlasticSCM.Editor
                 case SelectedTab.Changesets:
                     ShowChangesetsView();
                     break;
+
+                case SelectedTab.Branches:
+                    ShowBranchesView();
+                    break;
+
+                case SelectedTab.History:
+                    ShowHistoryView();
+                    break;
+
+                case SelectedTab.Locks:
+                    ShowLocksView();
+                    break;
             }
+        }
+
+        void ShowPreviousViewFrom(SelectedTab tabToClose)
+        {
+            if (!IsViewSelected(tabToClose))
+                return;
+
+            if (GetRefreshableViewBasedOnSelectedTab(mPreviousSelectedTab) == null)
+                mPreviousSelectedTab = SelectedTab.PendingChanges;
+
+            ShowView(mPreviousSelectedTab);
         }
 
         IRefreshableView GetRefreshableViewBasedOnSelectedTab(SelectedTab selectedTab)
@@ -599,6 +741,9 @@ namespace Unity.PlasticSCM.Editor
 
                 case SelectedTab.History:
                     return HistoryTab;
+
+                case SelectedTab.Locks:
+                    return LocksTab;
 
                 default:
                     return null;
@@ -623,6 +768,10 @@ namespace Unity.PlasticSCM.Editor
 
                 case ViewType.HistoryView:
                     return HistoryTab;
+
+                case ViewType.LocksView:
+                    return LocksTab;
+
                 default:
                     return null;
             }
@@ -730,16 +879,16 @@ namespace Unity.PlasticSCM.Editor
                  IsViewSelected(SelectedTab.Branches);
 
             bool isCloseButtonClicked;
-            
+
             bool isBranchesSelected = mBranchesTabButton.
                 DrawClosableTabButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.Branches),
+                    PlasticLocalization.Name.BranchesViewTitle),
                     wasBranchesSelected,
                     true,
                     mTabButtonWidth,
                     mParentWindow.Repaint,
                     out isCloseButtonClicked);
-                        
+
             if (isCloseButtonClicked)
             {
                 CloseBranchesTab();
@@ -757,7 +906,8 @@ namespace Unity.PlasticSCM.Editor
             IncomingChanges = 2,
             Changesets = 3,
             Branches = 4,
-            History = 5
+            History = 5,
+            Locks = 6
         }
 
         IIncomingChangesTab mIncomingChangesTab;
@@ -772,6 +922,7 @@ namespace Unity.PlasticSCM.Editor
         TabButton mIncomingChangesTabButton;
         TabButton mHistoryTabButton;
         TabButton mBranchesTabButton;
+        TabButton mLocksTabButton;
 
         IIncomingChangesNotifier mIncomingChangesNotifier;
         GluonNewIncomingChangesUpdater mGluonNewIncomingChangesUpdater;
@@ -787,5 +938,6 @@ namespace Unity.PlasticSCM.Editor
         readonly bool mIsGluonMode;
         readonly ViewHost mViewHost;
         readonly WorkspaceInfo mWkInfo;
+        readonly RepositorySpec mRepSpec;
     }
 }

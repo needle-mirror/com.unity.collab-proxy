@@ -36,9 +36,9 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             mPlasticAssetsProcessor = null;
         }
 
-        internal static void SetIsRepaintInspectorNeededAfterAssetDatabaseRefresh()
+        internal static void SetIsRepaintNeededAfterAssetDatabaseRefresh()
         {
-            mIsRepaintInspectorNeededAfterAssetDatabaseRefresh = true;
+            mIsRepaintNeededAfterAssetDatabaseRefresh = true;
         }
 
         static void OnPostprocessAllAssets(
@@ -50,9 +50,11 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             if (!mIsEnabled)
                 return;
 
-            if (mIsRepaintInspectorNeededAfterAssetDatabaseRefresh)
+            if (mIsRepaintNeededAfterAssetDatabaseRefresh)
             {
-                mIsRepaintInspectorNeededAfterAssetDatabaseRefresh = false;
+                mIsRepaintNeededAfterAssetDatabaseRefresh = false;
+
+                ProjectWindow.Repaint();
                 RepaintInspector.All();
             }
 
@@ -133,7 +135,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
         }
 
         static bool mIsEnabled;
-        static bool mIsRepaintInspectorNeededAfterAssetDatabaseRefresh;
+        static bool mIsRepaintNeededAfterAssetDatabaseRefresh;
 
         static PlasticAssetsProcessor mPlasticAssetsProcessor;
         static string mWkPath;

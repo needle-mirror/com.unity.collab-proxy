@@ -30,13 +30,20 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
 
             UnityEditor.VersionControl.Provider.ClearCache();
 
-            AssetPostprocessor.SetIsRepaintInspectorNeededAfterAssetDatabaseRefresh();
+            if (PlasticPlugin.AssetStatusCache != null)
+                PlasticPlugin.AssetStatusCache.Clear();
+
+            AssetPostprocessor.SetIsRepaintNeededAfterAssetDatabaseRefresh();
         }
 
         internal static void VersionControlCache()
         {
             UnityEditor.VersionControl.Provider.ClearCache();
 
+            if (PlasticPlugin.AssetStatusCache != null)
+                PlasticPlugin.AssetStatusCache.Clear();
+
+            ProjectWindow.Repaint();
             RepaintInspector.All();
         }
     }

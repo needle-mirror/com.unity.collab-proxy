@@ -818,7 +818,7 @@ GUID
 不从磁盘中删除项
 
 == DeletingProgress ==
-正在删除 {0}...
+正在删除 ({0}/{1}) {2}...
 
 == RemoveFromVersionControlPlural ==
 从版本控制中删除项
@@ -4995,9 +4995,6 @@ https://www.plasticscm.com/download/help/locking
 == ReviewStatusColumn ==
 状态
 
-== ReviewReviewerColumn ==
-审查者
-
 == MergingFile ==
 正在合并文件 {0} / {1}：{2}
 
@@ -5024,6 +5021,9 @@ https://www.plasticscm.com/download/help/locking
 
 == UpgradeServerForNewCodeReviewError ==
 您需要将服务器升级到版本 8.0.16.3691 或更高版本，才能使用新的代码审查系统！
+
+== UpgradeServerTo110168307ForNewCodeReviewError ==
+您需要将服务器升级到版本 11.0.16.8321 或更高版本，才能使用新的代码审查系统！
 
 == LoadingMembers ==
 正在加载成员...

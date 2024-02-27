@@ -117,49 +117,15 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         protected override void RowGUI(RowGUIArgs args)
         {
-            if (args.item is MergeCategoryTreeViewItem)
-            {
-                MergeCategoryTreeViewItemGUI(
-                    args.rowRect,
-                    (MergeCategoryTreeViewItem)args.item,
-                    args.selected,
-                    args.focused);
-                return;
-            }
+            float itemWidth;
+            TreeViewItemGUI(
+                args.item, args.rowRect, rowHeight, mDiffTree, args.selected, args.focused, out itemWidth);
 
-            if (args.item is ChangeCategoryTreeViewItem)
-            {
-                ChangeCategoryTreeViewItemGUI(
-                    args.rowRect,
-                    (ChangeCategoryTreeViewItem)args.item,
-                    args.selected,
-                    args.focused);
-                return;
-            }
+            float rowWidth = baseIndent + args.item.depth * depthIndentWidth + 
+                itemWidth + UnityConstants.TREEVIEW_ROW_WIDTH_OFFSET;
 
-            if (args.item is ClientDiffTreeViewItem)
-            {
-                float itemWidth;
-
-                ClientDiffTreeViewItemGUI(
-                    args.rowRect,
-                    rowHeight,
-                    mDiffTree,
-                    (ClientDiffTreeViewItem)args.item,
-                    args.selected,
-                    args.focused,
-                    out itemWidth);
-
-                float rowWidth = baseIndent + args.item.depth * depthIndentWidth + 
-                    itemWidth + UnityConstants.TREEVIEW_ROW_WIDTH_OFFSET;
-
-                if (rowWidth > mLargestRowWidth)
-                    mLargestRowWidth = rowWidth;
-
-                return;
-            }
-
-            base.RowGUI(args);
+            if (rowWidth > mLargestRowWidth)
+                mLargestRowWidth = rowWidth;
         }
 
         protected override void AfterRowsGUI()
@@ -425,15 +391,65 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             }
         }
 
+        static void TreeViewItemGUI(
+            TreeViewItem item,
+            Rect rowRect,
+            float rowHeight,
+            UnityDiffTree diffTree,
+            bool isSelected,
+            bool isFocused,
+            out float itemWidth)
+        {
+            if (item is MergeCategoryTreeViewItem)
+            {
+                MergeCategoryTreeViewItemGUI(
+                    rowRect,
+                    (MergeCategoryTreeViewItem)item,
+                    isSelected,
+                    isFocused,
+                    out itemWidth);
+                return;
+            }
+
+            if (item is ChangeCategoryTreeViewItem)
+            {
+                ChangeCategoryTreeViewItemGUI(
+                    rowRect,
+                    (ChangeCategoryTreeViewItem)item,
+                    isSelected,
+                    isFocused,
+                    out itemWidth);
+                return;
+            }
+
+            if (item is ClientDiffTreeViewItem)
+            {
+                ClientDiffTreeViewItemGUI(
+                    rowRect,
+                    rowHeight,
+                    diffTree,
+                    (ClientDiffTreeViewItem)item,
+                    isSelected,
+                    isFocused,
+                    out itemWidth);
+                return;
+            }
+
+            itemWidth = 0;
+        }
+
         static void MergeCategoryTreeViewItemGUI(
             Rect rowRect,
             MergeCategoryTreeViewItem item,
             bool isSelected,
-            bool isFocused)
+            bool isFocused,
+            out float itemWidth)
         {
             string label = item.Category.CategoryName;
             string infoLabel = PlasticLocalization.Name.ItemsCount.GetString(
                 item.Category.GetChildrenCount());
+
+            itemWidth = CalculateLabelWidth(label);
 
             DrawTreeViewItem.ForCategoryItem(
                 rowRect,
@@ -448,11 +464,14 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             Rect rowRect,
             ChangeCategoryTreeViewItem item,
             bool isSelected,
-            bool isFocused)
+            bool isFocused,
+            out float itemWidth)
         {
             string label = item.Category.CategoryName;
             string infoLabel = PlasticLocalization.Name.ItemsCount.GetString(
                 item.Category.GetChildrenCount());
+
+            itemWidth = CalculateLabelWidth(label);
 
             DrawTreeViewItem.ForCategoryItem(
                 rowRect,
@@ -504,11 +523,18 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             Texture icon,
             float rowHeight)
         {
-            GUIContent content = new GUIContent(label);
-            Vector2 contentSize = TreeView.DefaultStyles.label.CalcSize(content);
+            float labelWidth = CalculateLabelWidth(label);
             float iconWidth = rowHeight * ((float)icon.width / icon.height);
 
-            return iconWidth + contentSize.x;
+            return labelWidth + iconWidth;
+        }
+
+        static float CalculateLabelWidth(string label)
+        {
+            GUIContent content = new GUIContent(label);
+            Vector2 contentSize = DefaultStyles.label.CalcSize(content);
+
+            return contentSize.x;
         }
 
         static Texture GetClientDiffIcon(bool isDirectory, string path)

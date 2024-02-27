@@ -4,20 +4,11 @@ Unity Version Control Merge tool
 == FirstConflictButtonTooltip ==
 Go to first conflict (Ctrl + Shift + -)
 
-== PrevConflictButtonTooltip ==
-Previous conflict (Ctrl + -)
-
 == NextConflictButtonTooltip ==
 Next conflict (Ctrl + +)
 
 == LastConflictButtonTooltip ==
 Go to last conflict (Ctrl + Shift + +)
-
-== PrevNotAutomaticConflictButtonTooltip ==
-Previous not automatic conflict (Ctrl + PageUp)
-
-== NextNotAutomaticConflictButtonTooltip ==
-Next not automatic conflict (Ctrl + PageDown)
 
 == FirstConflictButtonTooltipPrefix ==
 Go to first conflict ({0})
@@ -36,6 +27,21 @@ Previous not automatic conflict ({0})
 
 == NextNotAutomaticConflictButtonTooltipPrefix ==
 Next not automatic conflict ({0})
+
+== ToggleSrcContributorButtonTooltipPrefix ==
+Toggle source contributor ({0})
+
+== ToggleBaseContributorButtonTooltipPrefix ==
+Toggle base contributor ({0})
+
+== ToggleDstContributorButtonTooltipPrefix ==
+Toggle destination contributor ({0})
+
+== ToggleResultContributorButtonTooltipPrefix ==
+Toggle result contributor ({0})
+
+== ToggleContributorButtonTooltipExplanation ==
+Shortcut applies to the selected conflict
 
 == PendingAutomaticConflictsLabel ==
 Current conflict: {0} of {1}
@@ -1074,58 +1080,94 @@ Open
 Open with...
 
 == PlasticNextUnresolvedConflictShortcutForWindows ==
-Ctrl+M
+Ctrl+Down
 
 == PlasticNextUnresolvedConflictShortcutForMacOS ==
-Cmd+M
+Cmd+Down
 
 == PlasticNextUnresolvedConflictShortcutForLinux ==
-Ctrl+M
+Ctrl+Down
 
 == PlasticPreviousUnresolvedConflictShortcutForWindows ==
-Ctrl+N
+Ctrl+Up
 
 == PlasticPreviousUnresolvedConflictShortcutForMacOS ==
-Cmd+N
+Cmd+Up
 
 == PlasticPreviousUnresolvedConflictShortcutForLinux ==
-Ctrl+N
+Ctrl+Up
 
 == PlasticNextConflictShortcutForWindows ==
-Ctrl+OemPlus
+Alt+Down
 
 == PlasticNextConflictShortcutForMacOS ==
-Cmd+OemPlus
+Alt+Down
 
 == PlasticNextConflictShortcutForLinux ==
-Ctrl+OemPlus
+Alt+Down
 
 == PlasticPreviousConflictShortcutForWindows ==
-Ctrl+OemMinus
+Alt+Up
 
 == PlasticPreviousConflictShortcutForMacOS ==
-Cmd+OemMinus
+Alt+Up
 
 == PlasticPreviousConflictShortcutForLinux ==
-Ctrl+OemMinus
+Alt+Up
 
 == PlasticFirstConflictShortcutForWindows ==
-Ctrl+Shift+OemMinus
+Ctrl+Shift+Up
 
 == PlasticFirstConflictShortcutForMacOS ==
-Cmd+Shift+OemMinus
+Cmd+Alt+Up
 
 == PlasticFirstConflictShortcutForLinux ==
-Ctrl+Shift+OemMinus
+Ctrl+Shift+Up
 
 == PlasticLastConflictShortcutForWindows ==
-Ctrl+Shift+OemPlus
+Ctrl+Shift+Down
 
 == PlasticLastConflictShortcutForMacOS ==
-Cmd+Shift+OemPlus
+Cmd+Alt+Down
 
 == PlasticLastConflictShortcutForLinux ==
-Ctrl+Shift+OemPlus
+Ctrl+Shift+Down
+
+== PlasticSelectSrcContributorShortcutForWindows ==
+Ctrl+D1
+
+== PlasticSelectSrcContributorShortcutForMacOS ==
+Cmd+D1
+
+== PlasticSelectSrcContributorShortcutForLinux ==
+Ctrl+D1
+
+== PlasticSelectBaseContributorShortcutForWindows ==
+Ctrl+D2
+
+== PlasticSelectBaseContributorShortcutForMacOS ==
+Cmd+D2
+
+== PlasticSelectBaseContributorShortcutForLinux ==
+Ctrl+D2
+
+== PlasticSelectDstContributorShortcutForWindows ==
+Ctrl+D3
+
+== PlasticSelectDstContributorShortcutForMacOS ==
+Cmd+D3
+
+== PlasticSelectDstContributorShortcutForLinux ==
+Ctrl+D3
+
+== PlasticSelectResultContributorShortcutForWindows ==
+Ctrl+D4
+
+== PlasticSelectResultContributorShortcutForMacOS ==
+Cmd+D4
+
+== PlasticSelectResultContributorShortcutForLinux ==
+Ctrl+D4
 
 == BinMergeUsageTitle ==
 BinMerge Tool Usage

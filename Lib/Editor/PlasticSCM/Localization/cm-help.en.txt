@@ -2105,13 +2105,17 @@ Downloads the content of a given revision.
 == CMD_USAGE_GETFILE ==
 Usage:
 
-    cm ^getfile | ^cat <revspec> [--^file=<output_file>] [--^debug] 
-                     [--^symlink] [--^raw]
+    cm ^getfile | ^cat <revspec>[[;<output_file>] | [--^file=<output_file>]]
+                     [--^debug] [--^symlink] [--^raw]
 
 Options:
 
     --^file            File to save the output. By default, it is printed on the
-                      standard output.
+                      standard output. Only usable when a single revision is
+                      required. If more than one ^revspec is provided, this 
+                      option should be avoided and use '^revspec;^outputfile'
+                      instead, adding as much pairs as needed separated by
+                      whitespaces.
     --^debug           When a directory specification is used, the command
                       shows all the items in the directory, its revision id
                       and file system protection.
@@ -2139,6 +2143,13 @@ Examples:
 
     cm ^getfile ^rev:info\ --^debug
     (Obtains all revisions in the 'info' directory.)
+
+    cm ^getfile "^revid:25@^rep:^default@^repserver:^localhost:8084;file_revid25.txt" 
+        "^revid:16@^rep:^default@^repserver:^localhost:8084;file_revid_16.txt"
+    (Obtains two different revisions and stores each one on different files.
+    To list ^revid it is possible to use the command '^cm ^find ^revision'.
+    Mind that, to specify 'spec;dest_file' collections, it might be needed to
+    quote the pairs individually, then separate them using whitespaces).
 
 == CMD_DESCRIPTION_GETREVISION ==
 Loads a revision in the workspace.
@@ -2528,7 +2539,7 @@ Shows locks on a server.
 Usage:
 
     cm ^lock ^list | ^ls [<revspec> [ ...]] [--^server=<server>]
-                      [--^repository] [--^anystatus]
+                      [--^repository] [--^workingbranch=<brname>] [--^anystatus]
                       [--^onlycurrentuser] [--^onlycurrentworkspace]
                       [--^ignorecase] 
                       [--^machinereadable [--^startlineseparator=<sep>]
@@ -2548,6 +2559,9 @@ Options:
                             repository.
                             (Use 'cm ^help ^objectspec' to learn more about
                             repository specs.)
+    --^workingbranch         Branch name.
+                            This option will only list the locks that apply to
+                            the destination branch of the specified branch.
     --^anystatus             Shows locks in any status (Locked or Retained).
                             By default, only locks in Locked status are shown.
     --^onlycurrentuser       Filters the results showing only the locks performed
@@ -2613,6 +2627,7 @@ Examples:
     cm ^lock ^list
     cm ^lock ^list --^server=myserver:8084
     cm ^lock ^list --^repository=repo@myserver:8084 --^anystatus
+    cm ^lock ^list --^repository=repo@myserver:8084 --^workingbranch=/main/scm21345
     cm ^lock ^ls ^serverpath:/src/foo.c#^cs:99@default@localhost:8084
     cm ^lock ^list ^revid:3521@default ^itemid:2381@secondary --^onlycurrentuser
     cm ^lock ^ls --^onlycurrentuser --^dateformat="yy/dd/MM HH:mm:ss"
@@ -3068,8 +3083,8 @@ Usage:
                            --^resolutionoption=(^src|^dst|(^rename --^resolutioninfo=<strname>))
                            --^mergeresultfile=<path> --^solvedconflictsfile=<path>]
                            [--^nointeractiveresolution]
+                           [--^xml[=<output_file>]] [--^encoding=<name>]
                            [--^machinereadable [--^startlineseparator=<sep>]
-                           [--^xml] [--^encoding]
                              [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
 
 Options:
@@ -5003,7 +5018,7 @@ Usage:
 
     cm ^partial ^update [<item_path>[ ...]] [--^changeset=<number>]
                       [--^silent | --^report] [--^dontmerge]
-                      [--^xml[=<output_file>]]
+                      [--^xml[=<output_file>]] [--^encoding=<name>]
                       [--^machinereadable [--^startlineseparator=<sep>]
                         [--^endlineseparator=<sep>] [--^fieldseparator=<sep>]]
 
@@ -5013,6 +5028,13 @@ Options:
     --^silent             No output is shown unless an error happens.
     --^xml                Prints the output in XML format to the standard 
                          output. It is possible to specify an output file.
+    --^encoding           Used with the '--xml' option, specifies the encoding to
+                         use in the XML output, i.e.: utf-8.
+                         See the MSDN documentation at
+                         http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
+                         to get the table of supported encodings and its format,
+                         (at the end of the page, in the "Name" column). 
+                         By default "utf-8" will be assigned.
     --^report             Prints a list of the applied changes when the command
                          is finished. Using '--^silent' will override this setting.
     --^dontmerge          Does not merge the file conflicts, it just skips them.

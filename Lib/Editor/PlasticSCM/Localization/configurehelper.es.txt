@@ -49,6 +49,9 @@ Single Sign On
 == ConfiguringLdap ==
 Configurando la conexión con LDAP ...
 
+== ConfiguringSaml ==
+Configurando la conexión con SAML ...
+
 == ConfiguringUp ==
 Configure sus credenciales:
 
@@ -114,3 +117,30 @@ No hay ningún puerto especificado en el fichero de configuración de remoting
 
 == InvalidPortNumber ==
 Número de puerto no válido: {0}
+
+== SamlWorkingMode ==
+SAML
+
+== SamlIdPMetadata ==
+Autenticación SAML - IdP metadatos (documento de metadatos de federación)
+
+== SamlIssuer ==
+Autenticación SAML - Id. de aplicación (cliente)
+
+== SamlSignInUrl ==
+Autenticación SAML - URL de inicio de sesión (Punto de conexión de inicio de sesión de SAML-P)
+
+== SamlAbsoluteSessionValidityInDays ==
+Autenticación SAML - Duración absoluta de la sesión de SAML en días
+
+== SamlSignInUrl ==
+Autenticación SAML - URL de inicio de sesión (Punto de conexión de inicio de sesión de SAML-P)
+
+== SamlGraphApiClientId ==
+Graph API - Id. de cliente del registro de aplicación
+
+== SamlGraphApiTenantId ==
+Graph API - Id. de directorio (inquilino) del registro de aplicación
+
+== SamlGraphApiClientSecret ==
+Graph API - Secreto de cliente del registro de aplicación

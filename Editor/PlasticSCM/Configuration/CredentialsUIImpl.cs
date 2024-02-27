@@ -50,6 +50,12 @@ namespace Unity.PlasticSCM.Editor.Configuration
             throw new NotImplementedException("OIDC authentication not supported yet.");
         }
 
+        AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForSamlCredentials(
+            string server)
+        {
+            throw new NotImplementedException("SAML authentication not supported yet.");
+        }
+
         AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForSsoCredentials(
             string cloudServer)
         {

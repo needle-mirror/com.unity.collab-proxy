@@ -494,10 +494,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return;
 
             DeleteOperation.Delete(
-                mWorkspaceWindow, mProgressControls,
-                privateDirectoriesToDelete, privateFilesToDelete,
+                mProgressControls,
+                privateDirectoriesToDelete,
+                privateFilesToDelete,
                 mDeveloperNewIncomingChangesUpdater,
-                RefreshAsset.UnityAssetDatabase);
+                RefreshAsset.UnityAssetDatabase,
+                () => ((IWorkspaceWindow)mWorkspaceWindow).RefreshView(ViewType.ItemsView),
+                () => ((IWorkspaceWindow)mWorkspaceWindow).RefreshView(ViewType.PendingChangesView));
         }
 
         void IPendingChangesMenuOperations.Annotate()
@@ -790,7 +793,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                         PendingChangesSelection.SelectChanges(
                             mPendingChangesTreeView, changesToSelect);
 
-                        DrawAssetOverlay.ClearCache();
+                        ClearAssetStatusCache();
                     }
                     finally
                     {
@@ -936,6 +939,15 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 mHasPendingMergeLinksFromRevert = false;
         }
 
+        void ClearAssetStatusCache()
+        {
+            if (mAssetStatusCache != null)
+                mAssetStatusCache.Clear();
+
+            ProjectWindow.Repaint();
+            RepaintInspector.All();
+        }
+
         void UpdateNotificationPanel()
         {
             if (PlasticGui.Plastic.API.IsFsReaderWatchLimitReached(mWkInfo))
@@ -1026,7 +1038,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             ExternalLink inviteUsersLink = new ExternalLink
             {
                 Label = PlasticLocalization.GetString(PlasticLocalization.Name.InviteOtherTeamMembers),
-                Url = UnityUrl.UnityDashboard.GetForInviteUsers(organizationToInviteUsers)
+                Url = UnityUrl.UnityDashboard.Plastic.GetForInviteUsers(organizationToInviteUsers)
             };
 
             DrawTreeViewEmptyState.For(

@@ -112,6 +112,75 @@ Filter selected and related branches
 == FilterSelectedBranchesPendingMerges ==
 Filter pending merges for selected branches
 
+== RelayoutMenu ==
+Relayout
+
+== MoveBranchUp ==
+Move selected branches up
+
+== MoveBranchDown ==
+Move selected branches down
+
+== MoveBranchTop ==
+Move selected branches to the top
+
+== MoveBranchBottom ==
+Move selected branches to the bottom
+
+== ClearBranchRelayout ==
+Clear selected branches relayout data
+
+== ResetRelayoutData ==
+Clear all relayout data
+
+== ClearAllBranchRelayoutsDialogExplanation ==
+This action will remove all your branch relayout preferences for any workspace. Do you want to continue?
+
+== PlasticMoveBranchUpShortcutForWindows ==
+Ctrl+Up
+
+== PlasticMoveBranchUpShortcutForMacOS ==
+Cmd+Up
+
+== PlasticMoveBranchUpShortcutForLinux ==
+Ctrl+Up
+
+== PlasticMoveBranchDownShortcutForWindows ==
+Ctrl+Down
+
+== PlasticMoveBranchDownShortcutForMacOS ==
+Cmd+Down
+
+== PlasticMoveBranchDownShortcutForLinux ==
+Ctrl+Down
+
+== PlasticMoveBranchTopShortcutForWindows ==
+Ctrl+Shift+Up
+
+== PlasticMoveBranchTopShortcutForMacOS ==
+Cmd+Shift+Up
+
+== PlasticMoveBranchTopShortcutForLinux ==
+Ctrl+Shift+Up
+
+== PlasticMoveBranchBottomShortcutForWindows ==
+Ctrl+Shift+Down
+
+== PlasticMoveBranchBottomShortcutForMacOS ==
+Cmd+Shift+Down
+
+== PlasticMoveBranchBottomShortcutForLinux ==
+Ctrl+Shift+Down
+
+== PlasticClearBranchLayoutShortcutForWindows ==
+Ctrl+Shift+C
+
+== PlasticClearBranchLayoutShortcutForMacOS ==
+Cmd+Shift+C
+
+== PlasticClearBranchLayoutShortcutForLinux ==
+Ctrl+Shift+C
+
 == GoToParentChangeset ==
 Go to parent changeset
 
@@ -299,7 +368,7 @@ Open Unity Dashboard
 Update Unity Version Control
 
 == MainSidebarInstallVersionItem ==
-Quit & Install new update
+Restart & Install new update
 
 == MainSidebarCodeReviewsItem ==
 Code Reviews
@@ -348,6 +417,9 @@ Last edited by
 
 == CreationDateColumn ==
 Creation date
+
+== LastActivityColumn ==
+Last activity
 
 == GuidColumn ==
 Guid
@@ -923,7 +995,7 @@ Do not delete item from disk
 Do not delete items from disk
 
 == DeletingProgress ==
-Deleting {0}...
+Deleting ({0}/{1}) {2}...
 
 == RemoveFromVersionControlPlural ==
 Remove items from version control
@@ -1210,6 +1282,9 @@ Type a search pattern. Use cs: lb: or br: to restrict results
 == BranchColumn ==
 Branch
 
+== DestinationBranchColumn ==
+Destination branch
+
 == CancelButton ==
 Cancel
 
@@ -1263,6 +1338,12 @@ There are no shelves that match your query
 
 == NoLocksCreatedExplanation ==
 There are no file locks created yet
+
+== LoadLocksError ==
+Cannot retrieve the locks information
+
+== LoadLocksErrorExplanation ==
+Cannot retrieve the locks information - {0}
 
 == ShowLinkedTasksButton ==
 Show tasks
@@ -4331,6 +4412,12 @@ Group changes in "change lists"
 == PendingChangesGroupInChangeListsExplanation ==
 Unity VCS can group the changes in the workspace in user created lists. This is useful if you miss the feature from previous version control.
 
+== PendingChangesViewAsATree ==
+View as a tree
+
+== PendingChangesViewAsATreeExplanation ==
+Show the changes in the workspace in a tree view mode.
+
 == PendingChangesShowPrivateFiles ==
 Show private files
 
@@ -5000,6 +5087,9 @@ Upgrade Plan
 == ReplyButton ==
 Reply
 
+== ReplyPlaceHolder ==
+Reply...
+
 == CommentButton ==
 Comment
 
@@ -5119,6 +5209,12 @@ Save code review title
 
 == DirtyCodeReviewTitleQuestion ==
 You have edited the title, do you want to save the changes?
+
+== DirtyCodeReviewDescriptionTitle ==
+Save code review description
+
+== DirtyCodeReviewDescriptionQuestion ==
+You have edited the description, do you want to save the changes?
 
 == DirtyReviewCommentTitle ==
 Save review comment
@@ -5527,9 +5623,6 @@ Title
 == ReviewStatusColumn ==
 Status
 
-== ReviewReviewerColumn ==
-Reviewer
-
 == MergingFile ==
 Merging file {0} of {1}: {2}
 
@@ -5556,6 +5649,9 @@ Loading code review with title {0} ...
 
 == UpgradeServerForNewCodeReviewError ==
 You need to upgrade the server to version 8.0.16.3691 or higher to use the new code review system!
+
+== UpgradeServerTo110168307ForNewCodeReviewError ==
+You need to upgrade the server to version 11.0.16.8321 or higher to use the new code review system!
 
 == LoadingMembers ==
 Loading members...
@@ -5857,14 +5953,11 @@ Waiting for a session...
 == RetrievingOrgsProgress ==
 Retrieving organizations...
 
-== RetrievingCloudDrivesProgress ==
-Retrieving cloud drives...
+== RetrievingWorkspacesProgress ==
+Retrieving cloud workspaces...
 
-== GettingCloudDriveRepositoryProgress ==
-Getting cloud drive repository...
-
-== UnableToGetCloudDriveRepositoryError ==
-Unable to get the repository with guid '{0}' for '{1}' organization
+== CreatingYourPersonalWorkspaceProgress ==
+Creating your personal workspace...
 
 == GettingSSOProviders ==
 Getting organization providers...
@@ -7878,9 +7971,6 @@ Destination
 == Executable ==
 Executable
 
-== DiscoverNewCodeReviewExperience ==
-Discover the new Code Review experience with multiple reviewers on the
-
 == UnityDashboard ==
 Unity Dashboard
 
@@ -7930,7 +8020,7 @@ There are no incoming changes found
 There are no cloud syncs created yet
 
 == LockInfoDetailsFormatString ==
-{0} {1} on {2} by {3}
+{0} {1} on {2} by {3} with destination {4}
 
 == LockMenuItemReleaseLock ==
 Release
@@ -7942,25 +8032,34 @@ Remove
 Confirm release
 
 == ReleaseLocksMessageSingular ==
-Releasing 1 lock. Are you sure?
+Releasing locks will allow other users to keep working on these files and retrieve locks. Would you like to release 1 lock?
 
 == ReleaseLocksMessagePlural ==
-Releasing {0} locks. Are you sure?
+Releasing locks will allow other users to keep working on these files and retrieve locks. Would you like to release {0} locks?
 
 == ReleaseLocksButton ==
 Release
+
+== ReleaseLocksButtonTooltip ==
+Release locks will allow other users to keep working on these files and retrieve locks
 
 == ConfirmRemoveLocksTitle ==
 Confirm remove
 
 == RemoveLocksMessageSingular ==
-Removing 1 lock. Are you sure?
+Removing locks will make these files editable by anyone with access to them on the repository, increasing the risk of future merge conflicts. Would you like to remove 1 lock?
 
 == RemoveLocksMessagePlural ==
-Removing {0} locks. Are you sure?
+Removing locks will make these files editable by anyone with access to them on the repository, increasing the risk of future merge conflicts. Would you like to remove {0} locks?
 
 == RemoveLocksButton ==
 Remove
+
+== RemoveLocksButtonTooltip ==
+Remove locks will make these files editable by anyone with access to them on the repository, increasing the risk of future merge conflicts
+
+== LearnMoreAboutReleaseRemoveLocks ==
+Learn more about release and remove locks
 
 == ConfigureLockRules ==
 Configure rules
@@ -7973,3 +8072,108 @@ Purged revision
 
 == PurgedRevisionMessage ==
 The content can't be displayed, this revision has been permanently deleted.
+
+== MarkReview ==
+Mark review
+
+== MarkReviewAs ==
+Mark review as...
+
+== MarkAs ==
+Mark as {0}
+
+== ReviewStatusComment ==
+Comment (optional)
+
+== GettingReviewers ==
+Getting reviewers ...
+
+== GettingReviewComments ==
+Getting review comments ...
+
+== Conversation ==
+Conversation
+
+== ReviewChanges ==
+Review changes
+
+== Reviewers ==
+Reviewers
+
+== Author ==
+Author
+
+== AddedDescriptionTimeAgo ==
+added a description {0}
+
+== EditDescription ==
+Edit description
+
+== AddDescription ==
+Add description
+
+== AddADescription ==
+Add a description
+
+== AddADescriptionExplanation ==
+Give an overview, or provide instructions about this review
+
+== AddDescriptionPlaceHolder ==
+Type your description here
+
+== StartAConversationPlaceHolder ==
+Start a conversation...
+
+== MarkedReviewAs ==
+marked review as
+
+== HideOneReply ==
+Hide 1 reply
+
+== HideReplies ==
+Hide {0} replies
+
+== ShowOneReply ==
+Show 1 reply
+
+== ShowReplies ==
+Show {0} replies
+
+== ResolvedIn ==
+Resolved in
+
+== QuestionMarkedAsResolved ==
+Question marked as resolved
+
+== Discarded ==
+Discarded
+
+== AskedAQuestion ==
+asked a question
+
+== Commented ==
+commented
+
+== RequestedChanges ==
+requested changes
+
+== AddCommentPlaceHolder ==
+Add your comment here...
+
+== Today ==
+Today
+
+== Yesterday ==
+Yesterday
+
+== LastWeek ==
+Last week
+
+== MoreThanAWeekAgo ==
+More than a week ago
+
+== DiffHeaderDetailsStringFormat ==
+by {0} on {1}
+
+== MovedFrom ==
+ (moved from {0})

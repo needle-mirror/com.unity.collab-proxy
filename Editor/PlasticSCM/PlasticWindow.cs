@@ -346,6 +346,7 @@ namespace Unity.PlasticSCM.Editor
                 mStatusBar = new StatusBar();
 
                 mViewSwitcher = new ViewSwitcher(
+                    PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
                     mWkInfo,
                     viewHost,
                     mIsGluonMode,
@@ -413,6 +414,7 @@ namespace Unity.PlasticSCM.Editor
                 mLastUpdateTime = EditorApplication.timeSinceStartup;
 
                 mViewSwitcher.ShowBranchesViewIfNeeded();
+                mViewSwitcher.ShowLocksViewIfNeeded();
 
                 if (!EditionToken.IsCloudEdition())
                     return;
@@ -464,8 +466,7 @@ namespace Unity.PlasticSCM.Editor
                 notificationBar,
                 PlasticGui.Plastic.WebRestAPI,
                 new UnityPlasticTimerBuilder(),
-                new NotificationBarUpdater.NotificationBarConfig(),
-                ScreenResolution.Get());
+                new NotificationBarUpdater.NotificationBarConfig());
             mNotificationBarUpdater.Start();
             mNotificationBarUpdater.SetWorkspace(wkInfo);
         }
@@ -512,7 +513,7 @@ namespace Unity.PlasticSCM.Editor
 
                     mIsUGOSubscription = t.Result.OrderSource == UGO_ORDER_SOURCE;
                     mUpgradePlanUrl = t.Result.ExtraData.ContainsKey(UGO_CONSUMPTION_URL_KEY) && t.Result.IsAdmin ?
-                        t.Result.ExtraData[UGO_CONSUMPTION_URL_KEY].ToString() : UnityUrl.UnityDashboard.Get();
+                        t.Result.ExtraData[UGO_CONSUMPTION_URL_KEY].ToString() : UnityUrl.UnityDashboard.Plastic.Get();
                 });
         }
 
@@ -644,6 +645,11 @@ namespace Unity.PlasticSCM.Editor
                 viewSwitcher.BranchesTab.DrawSearchFieldForBranchesTab();
                 return;
             }
+            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Locks))
+            {
+                viewSwitcher.LocksTab.DrawSearchFieldForLocksTab();
+                return;
+            }
         }
 
         static void DoTabToolbar(
@@ -715,6 +721,16 @@ namespace Unity.PlasticSCM.Editor
                 isGluonMode));
 
             menu.ShowAsContext();
+        }
+
+        static void OpenLocksViewAndSendEvent(
+            WorkspaceInfo wkInfo,
+            ViewSwitcher viewSwitcher)
+        {
+            viewSwitcher.ShowLocksView();
+            TrackFeatureUseEvent.For(
+                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
+                TrackFeatureUseEvent.Features.OpenLocksView);
         }
 
         static void ShowSettingsContextMenu(
@@ -828,6 +844,11 @@ namespace Unity.PlasticSCM.Editor
                         processExecutor,
                         isGluonMode);
                 }
+            }
+
+            if (DrawToolbarButton(Images.GetLockIcon(), PlasticLocalization.Name.ShowLocks.GetString()))
+            {
+                OpenLocksViewAndSendEvent(wkInfo, viewSwitcher);
             }
 
             RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(wkInfo);
@@ -954,7 +975,7 @@ namespace Unity.PlasticSCM.Editor
 
         static void OpenUnityDashboardInviteUsersUrl(string organization)
         {
-            Application.OpenURL(UnityUrl.UnityDashboard.GetForInviteUsers(organization));
+            Application.OpenURL(UnityUrl.UnityDashboard.Plastic.GetForInviteUsers(organization));
         }
 
         static void ForceCheckout_Clicked(object obj)

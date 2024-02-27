@@ -349,6 +349,12 @@ Next conflict (Ctrl+PagDown)
 == PreviousConflictButtonTooltip ==
 Previous conflict (Ctrl+PageUp)
 
+== NextConflictButtonTooltipPrefix ==
+Next conflict ({0})
+
+== PreviousConflictButtonTooltipPrefix ==
+Previous conflict ({0})
+
 == SaveAndExitExplanation ==
 save the result file and exit the tool
 

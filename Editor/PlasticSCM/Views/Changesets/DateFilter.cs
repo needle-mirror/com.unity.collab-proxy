@@ -1,4 +1,5 @@
 ﻿using System;
+using PlasticGui.WorkspaceWindow.QueryViews;
 
 namespace Unity.PlasticSCM.Editor.Views.Changesets
 {
@@ -21,23 +22,23 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             FilterType = filterType;
         }
 
-        internal DateTime GetFilterDate(DateTime referenceDate)
+        internal string GetTimeAgo()
         {
             switch (FilterType)
             {
                 case DateFilter.Type.LastWeek:
-                    return referenceDate.AddDays(-7);
+                    return QueryConstants.OneWeekAgo;
                 case DateFilter.Type.Last15Days:
-                    return referenceDate.AddDays(-15);
+                    return QueryConstants.HalfMonthAgo;
                 case DateFilter.Type.LastMonth:
-                    return referenceDate.AddMonths(-1);
+                    return QueryConstants.OneMonthAgo;
                 case DateFilter.Type.Last3Months:
-                    return referenceDate.AddMonths(-3);
+                    return QueryConstants.ThreeMonthsAgo;
                 case DateFilter.Type.LastYear:
-                    return referenceDate.AddYears(-1);
+                    return QueryConstants.OneYearAgo;
             }
 
-            return DateTime.MinValue;
+            return string.Empty;
         }
     }
 }

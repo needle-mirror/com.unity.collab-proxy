@@ -447,7 +447,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 return QueryConstants.ChangesetsBeginningQuery;
 
             string whereClause = QueryConstants.GetDateWhereClause(
-                dateFilter.GetFilterDate(DateTime.UtcNow));
+                dateFilter.GetTimeAgo());
 
             return string.Format("{0} {1}",
                 QueryConstants.ChangesetsBeginningQuery,

@@ -2,6 +2,36 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.3.1] - 2024-02-27
+
+Unity Version Control is now available as part of the Version Control Package! You can enable Unity Version Control via Window > Unity Version Control to get started!
+If you have previously used the Unity Asset Store Plastic SCM plug-in, you can now simply use this package. Make sure you delete the plug-in from your project.
+Removing a previously added Plastic SCM Asset Store Plug-In:
+
+- Select the PlasticSCM folder in the Assets\Plugins folder on the Project tab, then click Edit > Delete
+- Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
+
+### Added
+
+- New view to list and manage locks.
+
+### Fixed
+
+- Fixed DropdownField not working properly on a ModalUtility window on MacOS.
+- Fixed issue with existing checkout operations locking the workspace.
+- Retained locks prevented to checkout assets.
+- Reviewed initialization and application lifecycle.
+- Fixed layout error when switching checkout status in the inspector.
+- Fixed Diff option unavailable for .prefab.
+- Fixed UI error when opening and closing multiple closable tabs.
+- Ensured branch creations start from the latest changeset.
+- Unable to expand added item list after collapsing.
+- Pending Changes context menu had the view file history greyed out for asset+meta.
+- Preconfigured date format was not recognized as a valid DateTime.
+- Fixed finding changes operation being firing constantly.
+- Removed obsolete content in package documentation.
+- Fixed typo in locks tooltip.
+
 ## [2.2.0] - 2023-10-06
 
 Unity Version Control is now available as part of the Version Control Package! You can enable Unity Version Control via Window > Unity Version Control to get started!

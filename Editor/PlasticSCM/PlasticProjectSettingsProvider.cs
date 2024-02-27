@@ -354,6 +354,7 @@ namespace Unity.PlasticSCM.Editor
                 resultWkStatusOptions,
                 matchingOptions,
                 mUseChangeLists,
+                false,
                 mAutoRefresh,
                 false,
                 mCheckFileContent,

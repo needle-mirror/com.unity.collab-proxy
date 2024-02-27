@@ -818,7 +818,7 @@ Xlink 편집...
 디스크에서 항목을 삭제하지 않음
 
 == DeletingProgress ==
-{0} 삭제 중...
+({0}/{1}) {2} 삭제 중...
 
 == RemoveFromVersionControlPlural ==
 버전 제어에서 항목 제거
@@ -4995,9 +4995,6 @@ Xlink 파일에 대한 검토 코멘트가 아직 지원되지 않습니다
 == ReviewStatusColumn ==
 상태
 
-== ReviewReviewerColumn ==
-검토자
-
 == MergingFile ==
 {0}/{1}개 파일 병합 중: {2}
 
@@ -5024,6 +5021,9 @@ Xlink 파일에 대한 검토 코멘트가 아직 지원되지 않습니다
 
 == UpgradeServerForNewCodeReviewError ==
 새 코드 검토 시스템을 사용하려면 서버를 버전 8.0.16.3691 이상으로 업그레이드해야 합니다.
+
+== UpgradeServerTo110168307ForNewCodeReviewError ==
+새 코드 검토 시스템을 사용하려면 서버를 버전 11.0.16.8321 이상으로 업그레이드해야 합니다.
 
 == LoadingMembers ==
 구성원 로드 중...

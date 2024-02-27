@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 using Codice;
+using Codice.Client.Commands;
+using Codice.Client.Commands.Mount;
 using Codice.Client.Commands.WkTree;
 using Codice.Client.Common;
 using Codice.Client.Common.Locks;
@@ -17,10 +20,12 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
     {
         internal LockStatusCache(
             WorkspaceInfo wkInfo,
-            Action repaintProjectWindow)
+            Action repaintProjectWindow,
+            Action repaintInspector)
         {
             mWkInfo = wkInfo;
             mRepaintProjectWindow = repaintProjectWindow;
+            mRepaintInspector = repaintInspector;
         }
 
         internal AssetStatus GetStatus(string fullPath)
@@ -75,9 +80,8 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
             waiter.Execute(
                 /*threadOperationDelegate*/ delegate
                 {
-
-                    Dictionary<RepositorySpec, List<WorkspaceTreeNode>> lockCandidates =
-                        new Dictionary<RepositorySpec, List<WorkspaceTreeNode>>();
+                    Dictionary<MountPointWithPath, List<WorkspaceTreeNode>> lockCandidates =
+                        new Dictionary<MountPointWithPath, List<WorkspaceTreeNode>>();
 
                     FillLockCandidates.ForTree(mWkInfo, lockCandidates);
 
@@ -112,6 +116,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
                     }
 
                     mRepaintProjectWindow();
+                    mRepaintInspector();
                 });
         }
 
@@ -119,35 +124,57 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
         {
             internal static void ForTree(
                 WorkspaceInfo wkInfo,
-                Dictionary<RepositorySpec, List<WorkspaceTreeNode>> lockCandidates)
+                Dictionary<MountPointWithPath, List<WorkspaceTreeNode>> lockCandidates)
             {
                 WorkspaceTreeNode rootNode = CmConnection.Get().GetWorkspaceTreeHandler().
-                GetWorkspaceTree(wkInfo, wkInfo.ClientPath, true);
+                    GetWorkspaceTree(wkInfo, wkInfo.ClientPath, true);
 
-                Queue<WorkspaceTreeNode> pendingDirectories = new Queue<WorkspaceTreeNode>();
-                pendingDirectories.Enqueue(rootNode);
+                Queue<NodeWithPath> pendingDirectories = new Queue<NodeWithPath>();
+                pendingDirectories.Enqueue(new NodeWithPath(
+                    MountPointWithPath.BuildWorkspaceRootMountPoint(rootNode.RepSpec),
+                    rootNode, wkInfo.ClientPath));
 
                 while (pendingDirectories.Count > 0)
                 {
-                    WorkspaceTreeNode directoryNode = pendingDirectories.Dequeue();
+                    NodeWithPath directoryNode = pendingDirectories.Dequeue();
 
-                    ForChildren(directoryNode, pendingDirectories, lockCandidates);
+                    ForChildren(
+                        wkInfo.ClientPath,
+                        directoryNode.Mount,
+                        directoryNode.Path,
+                        directoryNode.Node,
+                        pendingDirectories,
+                        lockCandidates);
                 }
             }
 
             static void ForChildren(
-                WorkspaceTreeNode directoryNode,
-                Queue<WorkspaceTreeNode> pendingDirectories,
-                Dictionary<RepositorySpec, List<WorkspaceTreeNode>> lockCandidates)
+                string wkPath,
+                MountPointWithPath parentMount,
+                string dirPath,
+                WorkspaceTreeNode dirNode,
+                Queue<NodeWithPath> pendingDirectories,
+                Dictionary<MountPointWithPath, List<WorkspaceTreeNode>> lockCandidates)
             {
-                if (!directoryNode.HasChildren)
+                if (!dirNode.HasChildren)
                     return;
 
-                foreach (WorkspaceTreeNode child in directoryNode.Children)
+                foreach (WorkspaceTreeNode child in dirNode.Children)
                 {
+                    string childPath = Path.Combine(dirPath, child.Name);
+
                     if (CheckWorkspaceTreeNodeStatus.IsDirectory(child))
                     {
-                        pendingDirectories.Enqueue(child);
+                        MountPointWithPath mount = XlinkWorkspaceTreeNode.IsXlinkWkNode(child) ?
+                            new MountPointWithPath(
+                                MountPointId.BuildForXlink(
+                                    ((XlinkWorkspaceTreeNode)child).Xlink.GUID, parentMount.Id),
+                                child.RepSpec,
+                                WorkspacePath.CmPathFromWorkspacePath(childPath, wkPath)) :
+                            parentMount;
+
+                        pendingDirectories.Enqueue(
+                            new NodeWithPath(mount, child, childPath));
                         continue;
                     }
 
@@ -155,13 +182,29 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
                         continue;
 
                     List<WorkspaceTreeNode> nodes = null;
-                    if (!lockCandidates.TryGetValue(child.RepSpec, out nodes))
+                    if (!lockCandidates.TryGetValue(parentMount, out nodes))
                     {
                         nodes = new List<WorkspaceTreeNode>();
-                        lockCandidates.Add(child.RepSpec, nodes);
+                        lockCandidates.Add(parentMount, nodes);
                     }
 
                     nodes.Add(child);
+                }
+            }
+
+            class NodeWithPath
+            {
+                internal readonly MountPointWithPath Mount;
+                internal readonly WorkspaceTreeNode Node;
+                internal readonly string Path;
+                internal NodeWithPath(
+                    MountPointWithPath mount,
+                    WorkspaceTreeNode node,
+                    string path)
+                {
+                    Mount = mount;
+                    Node = node;
+                    Path = path;
                 }
             }
         }
@@ -221,8 +264,9 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
 
         Dictionary<string, LockStatusData> mStatusByPathCache;
 
-        readonly WorkspaceInfo mWkInfo;
+        readonly Action mRepaintInspector;
         readonly Action mRepaintProjectWindow;
+        readonly WorkspaceInfo mWkInfo;
 
         static object mLock = new object();
     }

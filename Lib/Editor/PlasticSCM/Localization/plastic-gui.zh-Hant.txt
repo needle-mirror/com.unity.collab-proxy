@@ -818,7 +818,7 @@ GUID
 請勿從磁碟刪除項目
 
 == DeletingProgress ==
-正在刪除 {0}...
+正在刪除 ({0}/{1}) {2}...
 
 == RemoveFromVersionControlPlural ==
 從版本控制移除項目
@@ -4995,9 +4995,6 @@ https://www.plasticscm.com/download/help/locking
 == ReviewStatusColumn ==
 狀態
 
-== ReviewReviewerColumn ==
-檢閱者
-
 == MergingFile ==
 正在合併 {0} 個檔案，共 {1} 個:{2}
 
@@ -5024,6 +5021,9 @@ https://www.plasticscm.com/download/help/locking
 
 == UpgradeServerForNewCodeReviewError ==
 您必須將伺服器版本升級成 8.0.16.3691 或更高版本，才能使用新版程式碼檢閱系統!
+
+== UpgradeServerTo110168307ForNewCodeReviewError ==
+您必須將伺服器版本升級成 11.0.16.8321 或更高版本，才能使用新版程式碼檢閱系統!
 
 == LoadingMembers ==
 正在載入成員...

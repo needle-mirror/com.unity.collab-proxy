@@ -306,15 +306,6 @@ The client version ({0}) doesn't match the server version ({1}). Please update y
 == CloudForbiddenError ==
 Data cannot read/write to Unity VCS Cloud. There was an authentication issue. Your local date (client or server) is probably wrong. Change it to fix the issue.
 
-== CloudWkAlreadyExists ==
-The cloud workspace {0} already exists.
-
-== CloudWkMountNotFound ==
-The mount point {0} doesn't exist.
-
-== CloudWkNotFound ==
-The specified cloud workspace {0} can't be found.
-
 == CmdCantMove ==
 Can't move {0} to {1}.
 
@@ -944,6 +935,9 @@ The guid for the object {0} has not been found.
 == OidcStateAuthenticationPending ==
 The OpenID authentication is not finished.
 
+== SamlStateAuthenticationPending ==
+The SAML authentication is not finished.
+
 == OnlyAdminCanAcceptCert ==
 Only the server administrator can accept a certificate on the server.
 
@@ -1391,6 +1385,9 @@ The {0} has not been found or its version is not compatible.
 == TestConnectionNotAvailable ==
 Test connection not available. Probably the server and client configuration mode are not the same.
 
+== TooManyFailedAuthenticationAttempts ==
+Too many failed authentication attempts. Please try again later.
+
 == TreeCantAddDuplicatedName ==
 Can't add an entry with the same name. Duplicated child [{0}]. Parent [{1}]
 
@@ -1531,6 +1528,18 @@ Security Working mode not initialized. Must be Name, Name+Id or LDAP.
 
 == WorkingModeNotSupported ==
 The {0} users configuration is not supported on this platform.
+
+== WorkspaceNameAlreadyInUse ==
+Workspace name '{0}' is already in use.
+
+== WorkspaceRepAlreadyShared ==
+Workspace '{0}' is already shared.
+
+== WorkspaceUvcsConnectionAlreadyExists ==
+UVCS connection '{0}' already exists.
+
+== WorkspaceUvcsConnectionDoesntExist ==
+UVCS connection '{0}' does not exist.
 
 == WriteBlobError ==
 The data for revision {0} (segment {1}) cannot be written on rep {2}.

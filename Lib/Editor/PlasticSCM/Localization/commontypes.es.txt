@@ -312,15 +312,6 @@ La versión del cliente ({0}) no es la misma que la versión del servidor ({1}).
 == CloudForbiddenError ==
 Los datos no pueden ser leídos/escritos de Unity VCS Cloud. Hubo un problema con la autenticación. Probablemente la fecha local (de su cliente o servidor) sea incorrecta. Corríjala para arreglar el problema.
 
-== CloudWkAlreadyExists ==
-El cloud workspace {0} ya existe.
-
-== CloudWkMountNotFound ==
-La unidad montada {0} no existe.
-
-== CloudWkNotFound ==
-No se ha podido encontrar el cloud workspace {0}.
-
 == CmdCantMove ==
 No se puede mover {0} a {1}.
 
@@ -950,6 +941,9 @@ El GUID para el objeto {0} no ha sido encontrado.
 == OidcStateAuthenticationPending ==
 La autenticación OpenID no ha finalizado.
 
+== SamlStateAuthenticationPending ==
+La autenticación SAML no ha finalizado.
+
 == OnlyAdminCanAcceptCert ==
 Es necesario ser administrador del servidor para aceptar un certificado en el servidor.
 
@@ -1397,6 +1391,9 @@ No se ha encontrado el script {0} o su versión no es compatible.
 == TestConnectionNotAvailable ==
 La prueba de conexión no está disponible. Posiblemente el servidor y el cliente no están configurados en el mismo modo.
 
+== TooManyFailedAuthenticationAttempts ==
+Demasiados intentos de autenticación fallidos. Inténtelo de nuevo más tarde.
+
 == TreeCantAddDuplicatedName ==
 No se puede añadir una entrada con el mismo nombre. Hijo duplicado [{0}]. Padre [{1}]
 
@@ -1537,6 +1534,18 @@ Modo de trabajo con usuarios no inicializado. Debe ser uno de los siguientes: Na
 
 == WorkingModeNotSupported ==
 La configuración de usuarios {0} no está soportada en esta plataforma.
+
+== WorkspaceNameAlreadyInUse ==
+El nombre del espacio de trabajo '{0}' ya está en uso.
+
+== WorkspaceRepAlreadyShared ==
+El espacio de trabajo '{0}' ya está compartido.
+
+== WorkspaceUvcsConnectionAlreadyExists ==
+La conexión UVCS '{0}' ya existe.
+
+== WorkspaceUvcsConnectionDoesntExist ==
+La conexión UVCS '{0}' no existe.
 
 == WriteBlobError ==
 No se pueden escribir los datos de la revisión {0} (segmento {1}) en el repositorio {2}.

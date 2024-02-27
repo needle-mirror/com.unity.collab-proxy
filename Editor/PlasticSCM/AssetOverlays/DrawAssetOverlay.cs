@@ -43,14 +43,6 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             mAssetStatusCache = null;
         }
 
-        internal static void ClearCache()
-        {
-            if (mAssetStatusCache != null)
-                mAssetStatusCache.Clear();
-
-            mRepaintProjectWindow();
-        }
-
         internal static string GetStatusString(AssetStatus assetStatus)
         {
             if (ClassifyAssetStatus.IsPrivate(assetStatus))
@@ -112,8 +104,11 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
 
             char bulletCharacter = '\u25cf';
 
-            string line1 = PlasticLocalization.GetString(
-                PlasticLocalization.Name.AssetOverlayTooltipStatus, statusText);
+            string line1 = ClassifyAssetStatus.IsLocked(statusValue) ?
+                statusText + ":" :
+                PlasticLocalization.GetString(
+                    PlasticLocalization.Name.AssetOverlayTooltipStatus,
+                    statusText);
 
             string line2 = string.Format("{0} {1}",
                 bulletCharacter,

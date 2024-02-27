@@ -9,16 +9,14 @@ namespace Unity.PlasticSCM.Editor.UI
         {
             GUIContent buttonContent = new GUIContent(buttonText);
 
-            GUIStyle buttonStyle = new GUIStyle(EditorStyles.miniButton);
+            return ForRegularButton(buttonContent);
+        }
 
-            buttonStyle.stretchWidth = false;
+        internal static bool For(string buttonText, string buttonTooltip)
+        {
+            GUIContent buttonContent = new GUIContent(buttonText, buttonTooltip);
 
-            Rect rt = GUILayoutUtility.GetRect(
-                buttonContent,
-                buttonStyle,
-                GUILayout.MinWidth(UnityConstants.REGULAR_BUTTON_WIDTH));
-
-            return GUI.Button(rt, buttonText, buttonStyle);
+            return ForRegularButton(buttonContent);
         }
 
         internal static bool ForCommentSection(string buttonText)
@@ -29,7 +27,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
             buttonStyle.stretchWidth = false;
 
-            var width = MeasureMaxWidth.ForTexts(buttonStyle, buttonText);
+            float width = MeasureMaxWidth.ForTexts(buttonStyle, buttonText);
 
             Rect rt = GUILayoutUtility.GetRect(
                 buttonContent,
@@ -37,7 +35,21 @@ namespace Unity.PlasticSCM.Editor.UI
                 GUILayout.MinWidth(width),
                 GUILayout.MaxWidth(width));
 
-            return GUI.Button(rt, buttonText, buttonStyle);
+            return GUI.Button(rt, buttonContent, buttonStyle);
+        }
+
+        static bool ForRegularButton(GUIContent buttonContent)
+        {
+            GUIStyle buttonStyle = new GUIStyle(EditorStyles.miniButton);
+
+            buttonStyle.stretchWidth = false;
+
+            Rect rt = GUILayoutUtility.GetRect(
+                buttonContent,
+                buttonStyle,
+                GUILayout.MinWidth(UnityConstants.REGULAR_BUTTON_WIDTH));
+
+            return GUI.Button(rt, buttonContent, buttonStyle);
         }
     }
 }

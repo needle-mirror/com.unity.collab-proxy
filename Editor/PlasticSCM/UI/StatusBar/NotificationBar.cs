@@ -64,6 +64,14 @@ namespace Unity.PlasticSCM.Editor.UI.StatusBar
             HasNotification = mSubscriptionPanel.HasNotification || mContactPanel.HasNotification;
         }
 
+        void INotificationBar.CleanActions()
+        {
+            HasNotification = false;
+
+            mSubscriptionPanel.SetAction(null, null, false);
+            mContactPanel.SetAction(null, null, false);
+        }
+
         static void DrawCloseButton(NotificationBar notificationBar)
         {
             GUILayout.BeginVertical();

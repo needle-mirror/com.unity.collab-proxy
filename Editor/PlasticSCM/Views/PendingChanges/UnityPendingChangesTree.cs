@@ -18,7 +18,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mMetaCache = new MetaCache();
         }
 
-        internal List<IPlasticTreeNode> GetNodes()
+        internal IEnumerable<IPlasticTreeNode> GetNodes()
         {
             return ((IPlasticTree)mInnerTree).GetNodes();
         }

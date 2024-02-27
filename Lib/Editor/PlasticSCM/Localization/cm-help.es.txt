@@ -2178,8 +2178,8 @@ Descarga el contenido de una revisión especificada.
 == CMD_USAGE_GETFILE ==
 Sintaxis:
 
-    cm getfile | cat <revspec> [--file=<output_file>] [--debug] 
-                     [--symlink] [--raw]
+    cm getfile | cat <revspec>[[;<output_file>] | [--file=<output_file>]]
+                     [--debug] [--symlink] [--raw]
 
     revspec     Especificación de la revisión. (Use 'cm help objectspec' para
                 más información sobre las especificaciones de revisiones.)
@@ -2187,7 +2187,12 @@ Sintaxis:
 Opciones:
 
     --file          Fichero donde guardar la salida. Por defecto, se imprime en
-                    la salida estándar.
+                    la salida estándar. Esta opción sólo se debe usar cuando
+                    se proporciona una única revisión. Si se desea añadir más de
+                    una revisión, esta opción no debería usarse. En su lugar,
+                    se debería emplear la versión de pares de 'revspec;output_file',
+                    añadiendo tantos pares como se desee separados por espacios
+                    en blanco.
     --debug         Cuando se especifica la revisión de un directorio, el
                     comando muestra el id de la revisión y la protección del
                     sistema del fichero.
@@ -2213,6 +2218,14 @@ Ejemplos:
 
     cm getfile rev:info\ --debug
     (Obtiene todas las revisiones del directorio 'info'.)
+
+    cm getfile "revid:25@rep:default@repserver:localhost:8084;file_revid25.txt" 
+        "revid:16@rep:default@repserver:localhost:8084;file_revid_16.txt"
+    (Obtiene dos revisiones y las almacena  en diferentes archivos. Para listar
+    revid es posible usar el comando 'cm find revision'. Considera que para
+    especificar colecciones de 'revspec;output_file' podría ser necesario
+    entrecomillar cada par individualmente y después separar cada uno por
+    espacios en blanco).
 
 == CMD_DESCRIPTION_GETREVISION ==
 Carga una revisión en el espacio de trabajo.
@@ -2609,7 +2622,7 @@ Muestra los bloqueos de un servidor.
 Sintaxis:
 
     cm lock list | ls [<revspec> [ ...]] [--server=<server>] [--anystatus]
-                      [--repository] [--anystatus]
+                      [--repository] [--workingbranch=<brname>] [--anystatus]
                       [--onlycurrentuser] [--onlycurrentworkspace]
                       [--ignorecase]
                       [--machinereadable [--startlineseparator=<sep>]
@@ -2639,8 +2652,10 @@ Opciones:
                             los bloqueos del repositorio especificado.
                             (Use 'cm help objectspec' para más información sobre
                             las especificaciones de repositorios.)
+    --workingbranch         Nombre de la rama. Esta opción lista sólo los bloqueos
+                            que aplican a la rama destino de la rama especificada.
     --anystatus             Muestra los locks sin filtrar por estado.
-                            Por defecto, sólo se muestran los locks es estado Locked.                           
+                            Por defecto, sólo se muestran los locks es estado Locked.
     --onlycurrentuser       Filtra el resultado mostrando solo los bloqueos
                             llevados a cabo por el usuario actual.
     --onlycurrentworkspace  Filtra el resultado mostrando solo los bloqueos
@@ -2699,6 +2714,7 @@ Ejemplos:
     cm lock list
     cm lock ls --server=myserver:8084
     cm lock ls --repository=repo@myserver:8084 --anystatus
+    cm lock ls --repository=repo@myserver:8084 --workingbranch=/main/scm21345
     cm lock ls serverpath:/src/foo.c#cs:99@default@localhost:8084
     cm lock ls revid:3521@default itemid:2381@secondary --onlycurrentuser
     cm lock ls --onlycurrentuser --dateformat="yy/dd/MM HH:mm:ss"
@@ -3167,8 +3183,8 @@ Sintaxis:
                            --resolutionoption=(src|dst|(rename --resolutioninfo=<strname>))
                            --mergeresultfile=<path> --solvedconflictsfile=<path>]
                            [--nointeractiveresolution]
+                           [--xml[=<output_file>]] [--encoding=<name>]   
                            [--machinereadable [--startlineseparator=<sep>]
-                           [--xml] [--encoding]
                              [--endlineseparator=<sep>] [--fieldseparator=<sep>]]
 
     source_spec           Especificación del objeto origen de la mezcla (merge).
@@ -5059,7 +5075,7 @@ Sintaxis:
     cm partial update [<ruta>+]
                       [--changeset=número]
                       [--silent | --report] [--dontmerge]
-                      [--xml[=<output_file>]]
+                      [--xml[=<output_file>]] [--encoding=<name>]
                       [--machinereadable [--startlineseparator=<sep>]
                         [--endlineseparator=<sep>] [--fieldseparator=<sep>]]
 
@@ -5077,6 +5093,12 @@ Opciones:
     --silent              No muestra salida a no ser que ocurra un error.
     --xml                 Imprime por defecto a la salida estándar en formato 
                           XML. Se permite especificar un fichero de salida.
+    --encoding            Se usa junto con la opción '--xml' y especifica qué formato
+                          de encoding se va a usar en la salida de XML, p.e.: utf-8.
+                          Se puede consultar información sobre posibles encodings aquí:
+                          http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
+                          (tabla "List of encodings", columna "Name").
+                          Por defecto, se asigna "utf-8".
     --report              Imprime una lista de los cambios efectuados una vez que
                           termina la operación. Esta opción no tiene efecto si se 
                           utiliza la opción --silent.

@@ -477,7 +477,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             PendingChangeInfo changeInfo =
                 ((ChangeTreeViewItem)treeViewItems[0]).ChangeInfo;
             PendingChangeCategory category =
-                (PendingChangeCategory)changeInfo.GetParent();
+                (PendingChangeCategory)((IPlasticTreeNode)changeInfo).GetParent();
 
             int itemIndex = category.GetChildPosition(changeInfo);
 
@@ -538,12 +538,12 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         internal int GetCheckedItemCount()
         {
-            return CheckedItems.GetCheckedChildNodeCount(mPendingChangesTree.GetNodes());
+            return CheckableItems.GetCheckedChildNodeCount(mPendingChangesTree.GetNodes());
         }
 
         internal int GetTotalItemCount()
         {
-            return CheckedItems.GetTotalChildNodeCount(mPendingChangesTree.GetNodes());
+            return CheckableItems.GetTotalChildNodeCount(mPendingChangesTree.GetNodes());
         }
 
         ChangeInfo GetNextExistingAddedItem(
@@ -579,8 +579,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         ChangeInfo GetExistingAddedItem(
             PendingChangeCategory addedCategory, int addedItemIndex)
         {
-            ChangeInfo currentChangeInfo = ((PendingChangeInfo)addedCategory.
-                GetChild(addedItemIndex)).ChangeInfo;
+            ChangeInfo currentChangeInfo = ((PendingChangeInfo)((IPendingChangesNode)addedCategory)
+                .GetCurrentChanges()[addedItemIndex]).ChangeInfo;
 
             if (Directory.Exists(currentChangeInfo.Path) ||
                 File.Exists(currentChangeInfo.Path))
@@ -650,7 +650,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             string label = item.Changelist.ChangelistInfo.Name;
             string secondaryLabel = item.Changelist.ChangelistInfo.Description;
 
-            bool wasChecked = CheckedItems.GetIsCheckedValue(item.Changelist) ?? false;
+            bool wasChecked = CheckableItems.GetIsCheckedValue(item.Changelist) ?? false;
             
             bool hadCheckedChildren = 
                 ((ICheckablePlasticTreeCategoryGroup)item.Changelist).GetCheckedCategoriesCount() > 0;
@@ -672,7 +672,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             if (wasChecked != isChecked)
             {
-                CheckedItems.SetCheckedValue(item.Changelist, isChecked);
+                CheckableItems.SetCheckedValue(item.Changelist, isChecked);
                 treeView.SelectionChanged();
             }
         }
@@ -688,7 +688,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             string label = item.Category.CategoryName;
             string secondaryLabel = item.Category.GetCheckedChangesText();
 
-            bool wasChecked = item.Category.IsChecked();
+            bool wasChecked = CheckableItems.GetIsCheckedValueForCategory(item.Category) ?? false;
             bool hadCheckedChildren = 
                 ((ICheckablePlasticTreeCategory)item.Category).GetCheckedChangesCount() > 0;
 
@@ -706,7 +706,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             if (wasChecked != isChecked)
             {
-                CheckedItems.SetCheckedValue(item.Category, isChecked);
+                CheckableItems.SetCheckedValue(item.Category, isChecked);
                 treeView.SelectionChanged();
             }
         }
@@ -776,7 +776,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                     GetChangesOverlayIcon.ForPendingChange(
                         changeInfo.ChangeInfo, isConflicted);
 
-                bool wasChecked = ((ICheckablePlasticTreeNode)changeInfo).IsChecked();
+                bool wasChecked = ((ICheckablePlasticTreeNode)changeInfo).IsChecked() ?? false;
 
                 bool isChecked = DrawTreeViewItem.ForCheckableItemCell(
                     rect, rowHeight, item.depth,
@@ -818,7 +818,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             if (!selectedIds.Contains(senderTreeViewItem.id))
                 return;
 
-            bool isChecked = ((ICheckablePlasticTreeNode)senderTreeViewItem.ChangeInfo).IsChecked();
+            bool isChecked = ((ICheckablePlasticTreeNode)senderTreeViewItem.ChangeInfo).IsChecked() ?? false;
 
             foreach (TreeViewItem treeViewItem in treeView.FindRows(selectedIds))
             {
@@ -844,7 +844,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         {
             ClearRows(rootItem, rows);
 
-            List<IPlasticTreeNode> nodes = pendingChangesTree.GetNodes();
+            IEnumerable<IPlasticTreeNode> nodes = pendingChangesTree.GetNodes();
 
             if (nodes == null)
                 return;
@@ -902,7 +902,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 !treeView.IsExpanded(changelistTreeViewItem.id))
                 return;
 
-            IList<IPlasticTreeNode> categories = ((IPlasticTreeNode)changelist).GetChildren();
+            IEnumerable<IPlasticTreeNode> categories = ((IPlasticTreeNode)changelist).GetChildren();
 
             foreach (IPlasticTreeNode category in categories)
             {
@@ -940,7 +940,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 !treeView.IsExpanded(categoryTreeViewItem.id))
                 return;
 
-            foreach (PendingChangeInfo change in category.GetCurrentChanges())
+            foreach (PendingChangeInfo change in ((IPendingChangesNode)category).GetCurrentChanges())
             {
                 int changeId;
                 if (!treeViewItemIds.TryGetInfoItemId(change, out changeId))

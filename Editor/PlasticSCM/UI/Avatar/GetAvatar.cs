@@ -3,6 +3,7 @@
 using UnityEngine;
 
 using PlasticGui;
+using CodiceApp.Gravatar;
 
 namespace Unity.PlasticSCM.Editor.UI.Avatar
 {
@@ -32,12 +33,15 @@ namespace Unity.PlasticSCM.Editor.UI.Avatar
 
         static void AfterDownloadSucceed(
             string email,
-            byte[] avatarBytes,
+            GravatarImagesProvider.Result result,
             Action avatarLoadedAction)
         {
-            AvatarImages.UpdateGravatar(email, avatarBytes);
+            if (result.ResultCode == GravatarImagesProvider.Result.OperationResult.OK)
+            {
+                AvatarImages.UpdateGravatar(email, result.RawGravatar);
 
-            avatarLoadedAction();
+                avatarLoadedAction();
+            }
         }
     }
 }

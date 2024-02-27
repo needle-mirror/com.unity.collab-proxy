@@ -74,6 +74,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
 
                     workspaceWindow.RefreshView(ViewType.PendingChangesView);
                     workspaceWindow.RefreshView(ViewType.HistoryView);
+                    workspaceWindow.RefreshView(ViewType.BranchesView);
+                    workspaceWindow.RefreshView(ViewType.ChangesetsView);
+                    workspaceWindow.RefreshView(ViewType.LocksView);
                 });
         }
 
@@ -125,6 +128,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
 
                     viewHost.RefreshView(ViewType.CheckinView);
                     viewHost.RefreshView(ViewType.HistoryView);
+                    viewHost.RefreshView(ViewType.LocksView);
                 });
         }
 
