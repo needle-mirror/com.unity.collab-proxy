@@ -2,6 +2,7 @@
 
 using UnityEditor.VersionControl;
 
+using Codice.LogWrapper;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetMenu;
@@ -19,6 +20,8 @@ namespace Unity.PlasticSCM.Editor.SceneView
             if (mIsEnabled)
                 return;
 
+            mLog.Debug("Enable");
+
             mWkPath = wkPath;
             mWorkspaceOperationsMonitor = workspaceOperationsMonitor;
             mAssetStatusCache = assetStatusCache;
@@ -30,6 +33,8 @@ namespace Unity.PlasticSCM.Editor.SceneView
 
         internal static void Disable()
         {
+            mLog.Debug("Disable");
+
             mIsEnabled = false;
 
             Provider.preCheckoutCallback -= Provider_preCheckoutCallback;
@@ -68,5 +73,7 @@ namespace Unity.PlasticSCM.Editor.SceneView
         static IAssetStatusCache mAssetStatusCache;
         static WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
         static string mWkPath;
+
+        static readonly ILog mLog = PlasticApp.GetLogger("DrawSceneOperations");
     }
 }

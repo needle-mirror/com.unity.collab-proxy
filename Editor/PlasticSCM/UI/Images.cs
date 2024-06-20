@@ -745,6 +745,6 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mMovedIcon;
         static Texture2D mRepositoryIcon;
 
-        static readonly ILog mLog = LogManager.GetLogger("Images");
+        static readonly ILog mLog = PlasticApp.GetLogger("Images");
     }
 }

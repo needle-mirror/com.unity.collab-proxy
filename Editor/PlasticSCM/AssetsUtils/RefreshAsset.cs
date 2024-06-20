@@ -1,6 +1,8 @@
 ﻿using UnityEditor.PackageManager;
+using UnityEditor;
 
-using Unity.PlasticSCM.Editor.AssetUtils.Processor;
+using AssetPostprocessor = Unity.PlasticSCM.Editor.AssetUtils.Processor.AssetPostprocessor;
+using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor.AssetUtils
 {
@@ -8,43 +10,52 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
     {
         internal static void BeforeLongAssetOperation()
         {
-            UnityEditor.AssetDatabase.DisallowAutoRefresh();
+            AssetDatabase.DisallowAutoRefresh();
         }
 
         internal static void AfterLongAssetOperation()
         {
-            UnityEditor.AssetDatabase.AllowAutoRefresh();
+            AssetDatabase.AllowAutoRefresh();
 
-            UnityAssetDatabase();
-
-            // Client is an API to interact with package manager
-            // Client.Resolve() will resolve any pending packages added or removed from the project.
-            // https://docs.unity3d.com/ScriptReference/PackageManager.Client.html
+            // Client.Resolve() will resolve any pending packages added or removed from the project
+            // VCS-1004718 - This is important so the domain gets reloaded first if needed
             Client.Resolve();
+
+            mCooldownRefreshAssetsAction.Ping();
         }
 
         internal static void UnityAssetDatabase()
         {
-            UnityEditor.AssetDatabase.Refresh(
-                UnityEditor.ImportAssetOptions.Default);
-
-            UnityEditor.VersionControl.Provider.ClearCache();
-
-            if (PlasticPlugin.AssetStatusCache != null)
-                PlasticPlugin.AssetStatusCache.Clear();
-
-            AssetPostprocessor.SetIsRepaintNeededAfterAssetDatabaseRefresh();
+            RefreshUnityAssetDatabase();
         }
 
         internal static void VersionControlCache()
+        {
+            ClearVersionControlCaches();
+
+            ProjectWindow.Repaint();
+            RepaintInspector.All();
+        }
+
+        static void ClearVersionControlCaches()
         {
             UnityEditor.VersionControl.Provider.ClearCache();
 
             if (PlasticPlugin.AssetStatusCache != null)
                 PlasticPlugin.AssetStatusCache.Clear();
-
-            ProjectWindow.Repaint();
-            RepaintInspector.All();
         }
+
+        static void RefreshUnityAssetDatabase()
+        {
+            AssetDatabase.Refresh(ImportAssetOptions.Default);
+
+            ClearVersionControlCaches();
+
+            AssetPostprocessor.SetIsRepaintNeededAfterAssetDatabaseRefresh();
+        }
+
+        static CooldownWindowDelayer mCooldownRefreshAssetsAction = new CooldownWindowDelayer(
+            RefreshUnityAssetDatabase,
+            UnityConstants.REFRESH_ASSET_DATABASE_DELAYED_INTERVAL);
     }
 }

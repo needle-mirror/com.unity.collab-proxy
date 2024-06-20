@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading;
 
@@ -9,6 +10,7 @@ using Codice.Client.BaseCommands;
 using Codice.Client.Commands;
 using Codice.Client.Commands.WkTree;
 using Codice.LogWrapper;
+using Codice.Utils;
 using GluonGui;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
@@ -72,16 +74,21 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
         internal void Start()
         {
-            mIsRunning = true;
+            mLog.Debug("Start");
+
+            mCancelToken = new CancelToken();
             mIsEnabled = true;
 
             Thread thread = new Thread(TaskLoopThread);
             thread.IsBackground = true;
+            thread.Name = "Plastic SCM Workspace Operations Monitor thread";
             thread.Start();
         }
 
         internal void Stop()
         {
+            mLog.Debug("Stop");
+
             SetAsFinished();
         }
 
@@ -145,7 +152,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             {
                 try
                 {
-                    if (!mIsRunning)
+                    if (mCancelToken.IsCancelled())
                         break;
 
                     if (!mIsEnabled)
@@ -163,10 +170,14 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                         mAssetsProcessorPathsToCheckout,
                         mAssetsProcessorPathsToMove,
                         mPathsToCheckout,
+                        mCancelToken,
                         mLock,
                         mDisableAssetsProcessor,
                         out hasAssetProcessorOpsPending,
                         out hasCheckoutOpsPending);
+
+                    if (mCancelToken.IsCancelled())
+                        break;
 
                     if (hasAssetProcessorOpsPending ||
                         hasCheckoutOpsPending)
@@ -191,11 +202,17 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             List<string> assetsProcessorPathsToCheckout,
             List<AssetPostprocessor.PathToMove> assetsProcessorPathsToMove,
             List<string> pathsToCheckout,
+            CancelToken cancelToken,
             object lockObj,
             IDisableAssetsProcessor disableAssetsProcessor,
             out bool hasAssetProcessorOpsPending,
             out bool hasCheckoutOpsPending)
         {
+            hasAssetProcessorOpsPending = false;
+            hasCheckoutOpsPending = false;
+
+            mLog.Debug("Starting process operations...");
+
             bool hasAssetProcessorOpsProcessed =
                 ProcessAssetProcessorOperations(
                     plasticApi,
@@ -203,14 +220,25 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     assetsProcessorPathsToDelete,
                     assetsProcessorPathsToCheckout,
                     assetsProcessorPathsToMove,
+                    cancelToken,
                     lockObj,
                     disableAssetsProcessor);
+
+            if (cancelToken.IsCancelled())
+                return;
 
             bool hasCheckoutOpsProcessed =
                 ProcessCheckoutOperation(
                     plasticApi,
                     pathsToCheckout,
+                    cancelToken,
                     lockObj);
+
+            mLog.Debug("ProcessOperations - Processed paths ? " +
+                 (hasAssetProcessorOpsProcessed || hasCheckoutOpsProcessed));
+
+            if (cancelToken.IsCancelled())
+                return;
 
             HasPendingOperationsToProcess(
                 assetsProcessorPathsToAdd,
@@ -234,8 +262,13 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                 !isAfterCheckoutOpNeeded)
                 return;
 
+            if (cancelToken.IsCancelled())
+                return;
+
             EditorDispatcher.Dispatch(() =>
             {
+                mLog.Debug("AfterProcessOperations");
+
                 RefreshAsset.VersionControlCache();
 
                 if (isAfterAssetProcessorOpNeeded)
@@ -243,7 +276,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
                 if (isAfterCheckoutOpNeeded)
                     AfterCheckoutOperation();
-            });           
+            });
         }
 
         void AfterAssetProcessorOperation()
@@ -277,15 +310,17 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
         void SetAsFinished()
         {
-            if (!mIsRunning)
+            if (mCancelToken.IsCancelled())
                 return;
 
-            mIsRunning = false;
+            mCancelToken.Cancel();
             mResetEvent.Set();
         }
 
         void SleepUntilNextWorkload()
         {
+            mLog.Debug("SleepUntilNextWorkload");
+
             mResetEvent.Reset();
             mResetEvent.WaitOne();
         }
@@ -296,6 +331,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             List<string> assetsProcessorPathsToDelete,
             List<string> assetsProcessorPathsToCheckout,
             List<AssetPostprocessor.PathToMove> assetsProcessorPathsToMove,
+            CancelToken cancelToken,
             object lockObj,
             IDisableAssetsProcessor disableAssetsProcessor)
         {
@@ -305,24 +341,37 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             {
                 hasProcessedPaths = AssetsProcessorOperations.
                     AddIfNotControlled(
-                        plasticApi, ExtractPathsToProcess(
-                            assetsProcessorPathsToAdd, lockObj),
-                        FilterManager.Get().GetIgnoredFilter());
+                        plasticApi,
+                        ExtractPathsToProcess(assetsProcessorPathsToAdd, lockObj),
+                        FilterManager.Get().GetIgnoredFilter(),
+                        cancelToken);
+
+                if (cancelToken.IsCancelled())
+                    return false;
 
                 hasProcessedPaths |= AssetsProcessorOperations.
                     DeleteIfControlled(
-                        plasticApi, ExtractPathsToProcess(
-                            assetsProcessorPathsToDelete, lockObj));
+                        plasticApi,
+                        ExtractPathsToProcess(assetsProcessorPathsToDelete, lockObj),
+                        cancelToken);
+
+                if (cancelToken.IsCancelled())
+                    return false;
 
                 hasProcessedPaths |= AssetsProcessorOperations.
                     CheckoutIfControlledAndChanged(
-                        plasticApi, ExtractPathsToProcess(
-                            assetsProcessorPathsToCheckout, lockObj));
+                        plasticApi,
+                        ExtractPathsToProcess(assetsProcessorPathsToCheckout, lockObj),
+                        cancelToken);
+
+                if (cancelToken.IsCancelled())
+                    return false;
 
                 hasProcessedPaths |= AssetsProcessorOperations.
                     MoveIfControlled(
-                        plasticApi, ExtractPathsToMoveToProcess(
-                            assetsProcessorPathsToMove, lockObj));
+                        plasticApi,
+                        ExtractPathsToMoveToProcess(assetsProcessorPathsToMove, lockObj).AsReadOnly(),
+                        cancelToken);
             }
             catch (Exception ex)
             {
@@ -337,6 +386,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
         static bool ProcessCheckoutOperation(
             IPlasticAPI plasticApi,
             List<string> pathsToProcess,
+            CancelToken cancelToken,
             object lockObj)
         {
             List<string> paths = ExtractPathsToProcess(
@@ -346,6 +396,9 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
             foreach (string path in paths)
             {
+                if (cancelToken.IsCancelled())
+                    return false;
+
                 WorkspaceTreeNode node =
                     plasticApi.GetWorkspaceTreeNode(path);
 
@@ -353,6 +406,9 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     !CheckWorkspaceTreeNodeStatus.IsCheckedOut(node))
                     result.Add(path);
             }
+
+            if (cancelToken.IsCancelled())
+                return false;
 
             bool hasPathsToProcess = result.Count > 0;
 
@@ -529,17 +585,21 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                 Environment.NewLine, ex.StackTrace);
         }
 
-        static class AssetsProcessorOperations
+        internal static class AssetsProcessorOperations
         {
             internal static bool AddIfNotControlled(
                 IPlasticAPI plasticApi,
                 List<string> paths,
-                IgnoredFilesFilter ignoredFilter)
+                IgnoredFilesFilter ignoredFilter,
+                CancelToken cancelToken)
             {
                 List<string> result = new List<string>();
 
                 foreach (string path in paths)
                 {
+                    if (cancelToken.IsCancelled())
+                        return false;
+
                     string metaPath = MetaPath.GetMetaPath(path);
 
                     if (plasticApi.GetWorkspaceFromPath(path) == null)
@@ -554,6 +614,9 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                         !ignoredFilter.IsIgnored(path))
                         result.Add(metaPath);
                 }
+
+                if (cancelToken.IsCancelled())
+                    return false;
 
                 bool hasPathsToProcess = result.Count > 0;
 
@@ -573,12 +636,16 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
             internal static bool DeleteIfControlled(
                 IPlasticAPI plasticApi,
-                List<string> paths)
+                List<string> paths,
+                CancelToken cancelToken)
             {
                 List<string> processedPaths = new List<string>(paths.Count);
 
                 foreach (string path in paths)
                 {
+                    if (cancelToken.IsCancelled())
+                        return false;
+
                     string metaPath = MetaPath.GetMetaPath(path);
 
                     if (plasticApi.GetWorkspaceTreeNode(path) != null)
@@ -592,6 +659,9 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     }
                 }
 
+                if (cancelToken.IsCancelled())
+                    return false;
+
                 plasticApi.DeleteControlled(
                     processedPaths.ToArray(), DeleteModifiers.None, null);
 
@@ -602,14 +672,15 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
             internal static bool MoveIfControlled(
                 IPlasticAPI plasticApi,
-                List<AssetPostprocessor.PathToMove> paths)
+                ReadOnlyCollection<AssetPostprocessor.PathToMove> paths,
+                CancelToken cancelToken)
             {
                 List<string> processedPaths = new List<string>(paths.Count);
 
                 foreach (AssetPostprocessor.PathToMove pathToMove in paths)
                 {
-                    string srcMetaPath = MetaPath.GetMetaPath(pathToMove.SrcPath);
-                    string dstMetaPath = MetaPath.GetMetaPath(pathToMove.DstPath);
+                    if (cancelToken.IsCancelled())
+                        return false;
 
                     if (plasticApi.GetWorkspaceTreeNode(pathToMove.SrcPath) != null)
                     {
@@ -620,6 +691,12 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                         processedPaths.Add(string.Format("{0} to {1}",
                             pathToMove.SrcPath, pathToMove.DstPath));
                     }
+
+                    if (cancelToken.IsCancelled())
+                        return false;
+
+                    string srcMetaPath = MetaPath.GetMetaPath(pathToMove.SrcPath);
+                    string dstMetaPath = MetaPath.GetMetaPath(pathToMove.DstPath);
 
                     if (plasticApi.GetWorkspaceTreeNode(srcMetaPath) != null)
                     {
@@ -639,12 +716,16 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
             internal static bool CheckoutIfControlledAndChanged(
                 IPlasticAPI plasticApi,
-                List<string> paths)
+                List<string> paths,
+                CancelToken cancelToken)
             {
                 List<string> result = new List<string>();
 
                 foreach (string path in paths)
                 {
+                    if (cancelToken.IsCancelled())
+                        return false;
+
                     string metaPath = MetaPath.GetMetaPath(path);
 
                     WorkspaceTreeNode node =
@@ -662,6 +743,9 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                         ChangedFileChecker.IsChanged(nodeMeta.LocalInfo, metaPath, false))
                         result.Add(metaPath);
                 }
+
+                if (cancelToken.IsCancelled())
+                    return false;
 
                 bool hasPathsToProcess = result.Count > 0;
 
@@ -687,28 +771,27 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
         }
 
         object mLock = new object();
-        volatile bool mIsRunning;
-        volatile bool mIsEnabled;
-        volatile ManualResetEvent mResetEvent = new ManualResetEvent(false);
 
         List<string> mAssetsProcessorPathsToAdd = new List<string>();
         List<string> mAssetsProcessorPathsToDelete = new List<string>();
         List<string> mAssetsProcessorPathsToCheckout = new List<string>();
-        List<AssetPostprocessor.PathToMove> mAssetsProcessorPathsToMove =
-            new List<AssetPostprocessor.PathToMove>();
+        List<AssetPostprocessor.PathToMove> mAssetsProcessorPathsToMove = new List<AssetPostprocessor.PathToMove>();
         List<string> mPathsToCheckout = new List<string>();
 
         PendingChangesTab mPendingChangesTab;
         IIncomingChangesTab mIncomingChangesTab;
-
-        NewIncomingChangesUpdater mNewIncomingChangesUpdater;
-        ViewHost mViewHost;
         IWorkspaceWindow mWorkspaceWindow;
+        ViewHost mViewHost;
+        NewIncomingChangesUpdater mNewIncomingChangesUpdater;
+
+        volatile bool mIsEnabled;
+        volatile ManualResetEvent mResetEvent = new ManualResetEvent(false);
+        CancelToken mCancelToken = new CancelToken();
 
         readonly bool mIsGluonMode = false;
         readonly IDisableAssetsProcessor mDisableAssetsProcessor;
         readonly IPlasticAPI mPlasticAPI;
 
-        static readonly ILog mLog = LogManager.GetLogger("WorkspaceOperationsMonitor");
+        static readonly ILog mLog = PlasticApp.GetLogger("WorkspaceOperationsMonitor");
     }
 }

@@ -9,6 +9,9 @@ using Codice.Client.GameUI;
 using Codice.Client.GameUI.Update;
 using Codice.CM.Common;
 using Codice.CM.Common.Merge;
+using Codice.CM.Common.Mount;
+using Codice.CM.Common.Partial;
+using Codice.CM.Common.Update.Partial;
 using Codice.Utils;
 using GluonGui.WorkspaceWindow.Views;
 
@@ -118,7 +121,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
                     return result;
 
                 foreach (OutOfDateItemsByMount diffs in
-                    outOfDateItems.GetOutOfDateItemsByMountList())
+                    outOfDateItems.GetOutOfDateItemsByMountList(PathHelper.GetPathSorter()))
                 {
                     foreach (Difference diff in diffs.Changed)
                     {

@@ -210,7 +210,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     if (workingBranch == null)
                         return;
 
-                    mMergeController.UpdateMergeObjectInfoIfNeeded(workingBranch);
+                    mMergeController.UpdateMergeObjectInfoAndCleanStateIfNeeded(workingBranch);
                     mMergeViewLogic.AutoRefresh();
                 });
         }
@@ -238,7 +238,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Developer
                     if (workingBranch == null)
                         return;
 
-                    mMergeController.UpdateMergeObjectInfoIfNeeded(workingBranch);
+                    mMergeController.UpdateMergeObjectInfoAndCleanStateIfNeeded(workingBranch);
                     mMergeViewLogic.Refresh();
                 });
         }

@@ -5,7 +5,10 @@ using UnityEditor;
 using UnityEngine;
 
 using Codice.Client.Common.Connection;
+using Codice.Client.Common.FsNodeReaders;
 using Codice.CM.Common;
+using Codice.LogWrapper;
+using PlasticPipe.Client;
 using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
@@ -100,6 +103,8 @@ namespace Unity.PlasticSCM.Editor
 
             PlasticApp.InitializeIfNeeded();
 
+            mLog.Debug("Enable");
+
             if (!FindWorkspace.HasWorkspace(ApplicationDataPath.Get()))
                 return;
 
@@ -118,6 +123,8 @@ namespace Unity.PlasticSCM.Editor
                 return;
 
             mIsEnabledForWorkspace = true;
+
+            mLog.Debug("EnableForWorkspace " + wkInfo.ClientPath);
 
             PlasticApp.SetWorkspace(wkInfo);
 
@@ -148,6 +155,16 @@ namespace Unity.PlasticSCM.Editor
             Task.Run(() => EnsureServerConnection(wkInfo, mPlasticConnectionMonitor));
         }
 
+        internal static void Shutdown()
+        {
+            mLog.Debug("Shutdown");
+
+            HandleCredsAliasAndServerCert.CleanHostUnreachableExceptionListener();
+            mPlasticConnectionMonitor.Stop();
+
+            Disable();
+        }
+
         internal static void Disable()
         {
             if (!mIsEnabled)
@@ -155,23 +172,18 @@ namespace Unity.PlasticSCM.Editor
 
             try
             {
-                PlasticApp.Dispose();
+                mLog.Debug("Disable");
 
-                if (!mIsEnabledForWorkspace)
-                    return;
+                DisableForWorkspace();
 
-                mWorkspaceOperationsMonitor.Stop();
+                WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
+                    ApplicationDataPath.Get(), PlasticGui.Plastic.API);
 
-                AssetsProcessors.Disable();
-                AssetMenuItems.Disable();
-                DrawAssetOverlay.Disable();
-                DrawInspectorOperations.Disable();
-                DrawSceneOperations.Disable();
+                PlasticApp.Dispose(wkInfo);
             }
             finally
             {
                 mIsEnabled = false;
-                mIsEnabledForWorkspace = false;
             }
         }
 
@@ -185,6 +197,27 @@ namespace Unity.PlasticSCM.Editor
 
             if (OnNotificationUpdated != null) 
                 OnNotificationUpdated.Invoke();
+        }
+
+        static void DisableForWorkspace()
+        {
+            if (!mIsEnabledForWorkspace)
+                return;
+
+            try
+            {
+                mWorkspaceOperationsMonitor.Stop();
+
+                AssetsProcessors.Disable();
+                AssetMenuItems.Disable();
+                DrawAssetOverlay.Disable();
+                DrawInspectorOperations.Disable();
+                DrawSceneOperations.Disable();
+            }
+            finally
+            {
+                mIsEnabledForWorkspace = false;
+            }
         }
 
         static WorkspaceOperationsMonitor BuildWorkspaceOperationsMonitor(
@@ -232,5 +265,7 @@ namespace Unity.PlasticSCM.Editor
         static PlasticConnectionMonitor mPlasticConnectionMonitor = new PlasticConnectionMonitor();
         static bool mIsEnabled;
         static bool mIsEnabledForWorkspace;
+
+        static readonly ILog mLog = PlasticApp.GetLogger("PlasticPlugin");
     }
 }

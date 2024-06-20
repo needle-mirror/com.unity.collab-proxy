@@ -46,6 +46,9 @@ Revisiones de código
 == Server ==
 Servidor
 
+== Organization ==
+Organización
+
 == Repository ==
 Repositorio
 
@@ -104,16 +107,16 @@ Ir a la rama base
 Explorador de Ramas
 
 == FilterSelectedBranches ==
-Filtrar ramas seleccionadas
+Filtrar por las ramas seleccionadas
 
 == FilterSelectedAndRelatedBranches ==
-Filtrar ramas seleccionadas y relacionadas
+Filtrar por las ramas seleccionadas y relacionadas
 
 == FilterSelectedBranchesPendingMerges ==
-Filtrar merges pendientes para ramas seleccionadas
+Filtrar por las ramas seleccionadas y relacionadas excluyendo las ya integradas
 
 == RelayoutMenu ==
-Relayout
+Reordenamiento
 
 == MoveBranchUp ==
 Mover ramas seleccionadas arriba
@@ -128,13 +131,13 @@ Mover ramas seleccionadas arriba del todo
 Mover ramas seleccionadas abajo del todo
 
 == ClearBranchRelayout ==
-Limpiar relayout de las ramas seleccionadas
+Limpiar reordenamiento de las ramas seleccionadas
 
 == ResetRelayoutData ==
-Limpiar todos los datos de relayout
+Limpiar todos los datos de reordenamiento
 
 == ClearAllBranchRelayoutsDialogExplanation ==
-Esta acción eliminará todas las preferencias de relayout de rama para cualquier workspace. ¿Desea continuar?
+Esta acción eliminará todas las preferencias de reordenamiento de rama para cualquier workspace. ¿Desea continuar?
 
 == PlasticMoveBranchUpShortcutForWindows ==
 Ctrl+Up
@@ -233,7 +236,7 @@ Calculando...
 Copyright © 2006-{0} Unity Technologies. Todos los derechos reservados.
 
 == FiltersAndConditionalFormat ==
-Filtros y formato
+Filtros avanzados y formato
 
 == ReleaseNotesLinkText ==
 Notas de versión
@@ -362,7 +365,7 @@ Sobre Gluon
 Documentación
 
 == MainSidebarOpenUnityDashboardItem ==
-Open Unity Dashboard
+Abrir Unity Cloud
 
 == MainSidebarUpdateVersionItem ==
 Actualizar Unity Version Control
@@ -1471,17 +1474,6 @@ On-premises
 == AddNewAccount ==
 Añadir nueva cuenta
 
-== OnlyRelevantButton ==
-Only relevant
-
-== OnlyRelevantTooltip ==
-Mostrar sólo los changesets que definen la estructura del diagrama:
- - el primero y último de una rama
- - el padre de una rama
- - el origen y destino de un merge
- - aquellos que están etiquetados
- - el changeset actual
-
 == ResolutionMethodColumn ==
 Resolution method
 
@@ -1631,15 +1623,6 @@ Branch Explorer search
 
 == BrexDisplayOptions ==
 Display options
-
-== InitialDateLabel ==
-From:
-
-== EndDateLabel ==
-To:
-
-== SinceDateLabel ==
-Since:
 
 == SelectAll ==
 Select all
@@ -2252,9 +2235,6 @@ Display labels
 == BrexDisplayBranchTaskInfo ==
 Display branch task info
 
-== BrexDisplayOnlyRelevantCsets ==
-Display only relevant changesets
-
 == NoReplicationSources ==
 Not replicated
 
@@ -2381,6 +2361,9 @@ Version
 == FilterWaterMark ==
 Filter
 
+== QuickFilterWaterMark ==
+Quick filter
+
 == ExploreWorkspace ==
 Explore workspace
 
@@ -2425,6 +2408,9 @@ Container folder
 
 == CheckinComment ==
 Añade un comentario de check-in o shelve...
+
+== CheckinOnlyComment ==
+Añade un comentario de check-in...
 
 == BrowseForFolderTitle ==
 Browse for folder
@@ -4230,9 +4216,6 @@ Subtractive merge from changeset interval (from cs:{0} to cs:{1})
 == ChangesetMerge ==
 Merge from changeset cs:{0}
 
-== SwitchBranchButton ==
-Switch branch...
-
 == PleaseTypeAPath ==
 Por favor, introduzca una ruta
 
@@ -4341,6 +4324,9 @@ Qué encontrar
 == PendingChangesWhatToShowTab ==
 Qué mostrar
 
+== PendingChangesVisualizationTab ==
+Visualización
+
 == PendingChangesMoveDetectionTab ==
 Detección de movidos
 
@@ -4405,6 +4391,12 @@ Agrupa cambios en "listas de cambios"
 
 == PendingChangesGroupInChangeListsExplanation ==
 Unity VCS puede agrupar los cambios en el workspace en listas creadas por el usuario. Esto es útil si echa de menos la funcionalidad de otros controles de versiones anteriores (P4).
+
+== PendingChangesGroupInCategories ==
+Agrupar cambios en categorías
+
+== PendingChangesGroupInCategoriesExplanation ==
+Unity VCS puede agrupar los cambios en el workspace por categoría como "cambiados", "añadidos", "movidos", "borrados". Es útil si desea ver los cambios de una forma más organizada.
 
 == PendingChangesViewAsATree ==
 Ver en modo árbol
@@ -5332,16 +5324,16 @@ Hay {0} cambios sin aplicar y {1} preguntas sin contestar.
 No deberías marcar como revisada una revisión de código con comentarios pendientes. ¿Quieres continuar?
 
 == SinceOneWeekAgo ==
-1 semana atrás
+Última semana
 
 == SinceFifteenDaysAgo ==
-15 días atrás
+Últimos 15 días
 
 == SinceOneMonthAgo ==
-1 mes atrás
+Último mes
 
 == SinceThreeMonthsAgo ==
-3 meses atrás
+Últimos 3 meses
 
 == SinceAGivenDate ==
 Una fecha concreta
@@ -5650,14 +5642,20 @@ Cargando revisón de código con título {0}...
 == LoadingMembers ==
 Cargando miembros...
 
-== UserChooserDialogTitle ==
+== UserGroupChooserDialogTitle ==
 Seleccione un usuario o grupo de la lista:
+
+== UserChooserDialogTitle ==
+Seleccione un usuario de la lista:
 
 == SelectUsersDialogTitle ==
 Seleccionar usuarios
 
 == SelectUserGroupDialogTitle ==
 Seleccionar usuario o grupo
+
+== SelectUserDialogTitle ==
+Seleccionar usuario
 
 == NoUserSelectedErrorMessage ==
 Seleccione un usuario de la lista
@@ -5777,6 +5775,9 @@ Ambos
 
 == SelectedUserOrGroup ==
 Usuario o grupo seleccionado:
+
+== SelectedUser ==
+Usuario seleccionado:
 
 == User ==
 Usuario
@@ -5949,9 +5950,6 @@ Obteniendo organizaciones...
 
 == RetrievingWorkspacesProgress ==
 Obteniendo workspaces...
-
-== CreatingYourPersonalWorkspaceProgress ==
-Creando tu personal workspace...
 
 == GettingSSOProviders ==
 Obteniendo los proveedores de la organización...
@@ -6483,6 +6481,24 @@ Cmd+P
 
 == PlasticPermissionsShortcutForLinux ==
 Ctrl+P
+
+== PlasticExpandAllShortcutForWindows ==
+Ctrl+Shift+E
+
+== PlasticExpandAllShortcutForMacOS ==
+Cmd+Shift+E
+
+== PlasticExpandAllShortcutForLinux ==
+Ctrl+Shift+E
+
+== PlasticCollapseAllShortcutForWindows ==
+Ctrl+Shift+C
+
+== PlasticCollapseAllShortcutForMacOS ==
+Cmd+Shift+C
+
+== PlasticCollapseAllShortcutForLinux ==
+Ctrl+Shift+C
 
 == PlasticMergeShortcutForWindows ==
 Ctrl+M
@@ -7037,10 +7053,10 @@ No se puede obtener el comentario
 ¡Copiado!
 
 == OpenOrCreateWorkspace ==
-Abrir o crear otro workspace...
+Ver workspaces
 
 == ViewRepositories ==
-Ver repositorios...
+Ver repositorios
 
 == InviteMembersTitle ==
 Invite members
@@ -7193,10 +7209,10 @@ Ver contenido del item modificado en destino
 ¿Aún no tienes una organización?
 
 == ClickButtonBelowToCreateOrg ==
-Haga click en el botón para crear una organización desde el Dashboard de Unity
+Haga click en el botón para crear una organización desde Unity Cloud
 
 == OpenUnityDashboard ==
-Abrir el Dashboard de Unity
+Abrir Unity Cloud
 
 == CreateNewOrganization ==
 Crear una nueva organización
@@ -7216,11 +7232,17 @@ Organizaciones
 == CreateNewRepository ==
 Crear un nuevo repositorio
 
+== NoWorkspacesTitle ==
+¿Aún no tienes un workspace?
+
+== CreateNewRepository ==
+Crear un nuevo workspace
+
 == CreateRepositoryNameLabel ==
-Repositorio nombre
+Nombre del repositorio
 
 == CreateWorkspaceNameLabel ==
-Espacio de trabajo nombre
+Nombre del workspace
 
 == CreateWorkspaceLocationLabel ==
 Ubicación
@@ -7992,14 +8014,8 @@ Siempre abrir los shelves en la ventana actual
 == EmptyLabelsMessage ==
 Aún no se han creado etiquetas
 
-== EmptyLabelsMatchQueryMessage ==
-No hay etiquetas que coincidan con tu consulta
-
 == EmptyAttributesMessage ==
 Aún no se han creado atributos
-
-== EmptyAttributesMatchQueryMessage ==
-No hay atributos que coincidan con tu consulta
 
 == EmptyCodeReviewsMessage ==
 Aún no se han creado revisiones de código
@@ -8019,7 +8035,7 @@ No se han encontrado cambios entrantes
 == EmptySyncViewMessage ==
 Aún no se han creado vistas de sincronización
 
-== LockInfoDetailsFormatString == 
+== LockInfoDetailsFormatString ==
 {0} {1} en {2} por {3} con destino {4}
 
 == LockMenuItemReleaseLock ==
@@ -8127,6 +8143,12 @@ Empezar una conversación...
 == MarkedReviewAs ==
 marcó la revisión como
 
+== SelftRequestedReview ==
+auto-solicitó revisión
+
+== RequestedReviewFrom ==
+pidió revisión a
+
 == HideOneReply ==
 Ocultar 1 respuesta
 
@@ -8177,3 +8199,228 @@ por {0} el {1}
 
 == MovedFrom ==
  (movido de {0})
+
+== BrExFiltersLabel ==
+Filtros:
+
+== DateFilterButton ==
+Fecha
+
+== SavedFilters ==
+Filtros guardados
+
+== SinceSpecifiedDate ==
+Desde la fecha especificada
+
+== DateRange ==
+Rango de fechas
+
+== SaveCurrentFilter ==
+Guardar filtro actual
+
+== NothingHereYet ==
+Nada aquí todavía
+
+== UserFilterButton ==
+Usuario
+
+== FilterByMeButton ==
+Yo
+
+== FilterByMeButtonTooltip ==
+Muestra solo las ramas creadas o que contienen cambios creados por el usuario actual
+
+== UnassignedButton ==
+Sin asignar
+
+== UnassignedButtonTooltip ==
+Muestra sólo las reviews que no tienen ningún revisor asignado
+
+== BranchFilterButton ==
+Rama
+
+== FilterWorkingBranchButton ==
+Rama de trabajo
+
+== FilterWorkingBranchButtonTooltip ==
+Muestra solo la rama de trabajo
+
+== OtherFilterButton ==
+Otros
+
+== StatusFilterButton ==
+Estado
+
+== RelevantChangesetsText ==
+Ver sólo cambios relevantes
+
+== RelevantChangesetsExplanation ==
+Mostrar sólo cambios que definen la estructura del diagrama: comienzo/fin de rama, merges, etiquetas, padres y changeset actual
+
+== RelevantChangesetsShortText ==
+Sólo relevantes
+
+== PendingToMergeBranchesText ==
+Excluir ramas integradas
+
+== PendingToMergeBranchesExplanation ==
+Omitir ramas que ya estén integradas en alguna padre
+
+== PendingToMergeBranchesShortText ==
+No integradas
+
+== RelatedBranchesText ==
+Mostrar ramas relacionadas
+
+== RelatedBranchesExplanation ==
+Extender la vista para incluir las ramas padre, hijas y conectadas por merge para tener una vista completa
+
+== RelatedBranchesShortText ==
+Relacionadas
+
+== BranchesEmptyState ==
+Ups! Parece que no hay ramas que coincidan con tus filtros
+
+== HistoryEmptyState ==
+Ups! Parece que no hay revisiones que coincidan con tus filtros
+
+== ChangesetsEmptyState ==
+Ups! Parece que no hay changesets que coincidan con tus filtros
+
+== LabelsEmptyState ==
+Ups! Parece que no hay etiquetas que coincidan con tus filtros
+
+== AttributesEmptyState ==
+Ups! Parece que no hay atributos que coincidan con tus filtros
+
+== CodeReviewsEmptyState ==
+Ups! Parece que no hay code reviews que coincidan con tus filtros
+
+== ResetFilters ==
+Restablecer filtros
+
+== ReRequestReviewButton ==
+Volver a solicitar revisión
+
+== ListViewButton ==
+Ver como lista
+
+== TreeViewButton ==
+Ver como árbol
+
+== ExpandAllMenuItem ==
+Expandir todos los nodos
+
+== CollapseAllMenuItem ==
+Contraer todos los nodos
+
+== NewBranchButton ==
+Crear rama
+
+== CreateNewBranchButton ==
+Crear nueva rama
+
+== NoBranchMatchingFilter ==
+No hay ramas que coincidan con el filtro
+
+== CreateANewBranchInstead ==
+Puedes crear una nueva rama en su lugar
+
+== MainBranchSection ==
+Rama principal
+
+== RecentBranchesSection ==
+Ramas recientes
+
+== OtherBranchesSection ==
+Otras ramas
+
+== ReviewersColumn ==
+Revisores
+
+== CreateWorkspacePanelTitle ==
+Crea tu workspace cloud en la organización {0}
+
+== CreateWorkspacePanelDescription ==
+¿Quieres conectar este workspace con un repositorio existente?
+
+== WorkspaceWithUvcsConnectionSelectorName ==
+Conecta el workspace a un repositorio
+
+== WorkspaceWithUvcsConnectionSelectorDescription ==
+Quiero cargar los ficheros fuente desde un repositorio Unity UVCS a este workspace.
+
+== WorkspaceWithoutConnectionSelectorName ==
+No conectar a un repositorio
+
+== WorkspaceWithoutConnectionSelectorDescription ==
+Quiero importar los ficheros desde una unidad local.
+
+== WorkspaceNameEntry ==
+Nombre del workspace:
+
+== NoRepositoriesToConnect ==
+No hay repositorios a los que conectar el workspace
+
+== RepositoryAndBranchOnlyAvailableForConnectedWks ==
+El repositorio y la rama solo están disponibles para workspaces conectados
+
+== CollaboratorsEmptyState ==
+Todavía no hay colaboradores
+
+== Collaborators ==
+Colaboradores
+
+== LoadingMainBranchProgress ==
+Cargando rama principal...
+
+== ConnectingWorkspaceToRepository ==
+Conectando workspace al repositorio UVCS...
+
+== SharingWorkspaceWith ==
+Compartiendo workspace con '{0}' ...
+
+== ExecuteQueryClearsFiltersWarningTitle ==
+Advertencia de limpieza de filtros
+
+== ExecuteQueryClearsFiltersWarningMessage ==
+Al ejecutar ésta query se limpiarán los filtros configurados para esta vista. Puedes volver a aplicarlos para filtrar sobre los resultados, cuando la query se haya ejecutado.
+
+== ExecuteQueryClearsFiltersWarningPositiveButton ==
+Ejecutar query
+
+== ApplyDateFilterClearsQueryWarningTitle ==
+Advertencia de limpieza de query
+
+== ApplyDateFilterClearsQueryWarningMessage ==
+Aplicar un filtro de fecha eliminará la query personalizada que hayas configurado para esta vista
+
+== ApplyDateFilterClearsQueryWarningMessagePositiveButton ==
+Aplicar filtro
+
+== ResumeSyncWhenOpenWorkspaceLinkTitle ==
+Abrir cloud drive workspace
+
+== ResumeSyncWhenOpenWorkspaceLinkMessage ==
+Está intentando abrir el workspace '{0}' en su disco pero la sincronización está pausada, por lo que el workspace podría estar desactualizado. ¿Quieres reanudar la sincronización ahora?
+
+== RepositoriesAndWorkspaces ==
+Repositorios y workspaces
+
+== AllWorkspaces ==
+Todos los workspaces
+
+== WorkspaceMenuItemAddExistingWorkspace ==
+Añadir workspace existente...
+
+== NoValidWorkspaceTitle ==
+Workspace no válido
+
+== NoValidWorkspaceMessage ==
+El workspace seleccionado no es válido. Por favor, selecciona un workspace válido.
+
+== DropFolderToOpenWorkspace ==
+Arrastra aquí para abrir. Mantén presionado Shift para abrir en una nueva ventana.
+
+== DropFolderToCreateWorkspace ==
+Arrastra aquí para crear un workspace nuevo.

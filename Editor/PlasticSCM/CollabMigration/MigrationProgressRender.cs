@@ -68,6 +68,6 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
             return details;
         }
 
-        static ILog mLog = LogManager.GetLogger("MigrationProgressRender");
+        static ILog mLog = PlasticApp.GetLogger("MigrationProgressRender");
     }
 }

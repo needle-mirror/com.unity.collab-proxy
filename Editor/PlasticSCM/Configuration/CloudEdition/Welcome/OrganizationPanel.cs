@@ -19,17 +19,18 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         internal OrganizationPanel(
             CloudEditionWelcomeWindow parentWindow,
             IPlasticWebRestApi restApi,
-            string title,
-            List<string> organizations)
+            string title)
         {
             mParentWindow = parentWindow;
             mRestApi = restApi;
 
             InitializeLayoutAndStyles();
 
-            BuildComponents(title, organizations);
+            BuildComponents(title);
 
             EditorWindowFocus.OnApplicationActivated += OnEditorActivated;
+
+            OnEditorActivated();
         }
 
         internal void Dispose()
@@ -141,7 +142,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             Application.OpenURL(UnityUrl.UnityDashboard.Plastic.Get());
         }
 
-        void BuildComponents(string title, List<string> organizations)
+        void BuildComponents(string title)
         {
             mParentWindow.titleContent = new UnityEngine.GUIContent(title);
 
@@ -149,8 +150,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
             mProgressContainer = this.Q<VisualElement>("progressContainer");
             mProgressContainer.Add((VisualElement)mProgressControls);
-
-            ProcessOrganizations(organizations);
         }
 
         void BuildSingleOrganizationSection(string organizationName)
@@ -217,7 +216,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         }
 
         string mOrganizationToJoin = "";
-        bool mReloadOrganizationsNeeded;
+        bool mReloadOrganizationsNeeded = true;
 
         Button mJoinSingleOrganizationButton;
         Button mJoinMultipleOrganizationsButton;

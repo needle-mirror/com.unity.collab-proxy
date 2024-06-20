@@ -1,7 +1,4 @@
-﻿== AddNotAllowedPathIsFreeByTransformerRule ==
-The item '{0}' cannot be added. The path '{0}' is already in use in the server but it's free on the client because of the transformer rule '{1}'.
-
-== AddedItemCannotBeLocked ==
+﻿== AddedItemCannotBeLocked ==
 The item '{0}' cannot be locked because it's an added item. (Note: if the item doesn't appear as an added item then the workspace could be corrupted. Please contact with support)
 
 == AdminReadonlyNotSupported ==
@@ -231,9 +228,6 @@ The changeset '{0}' content cannot be loaded.
 == OneDayAgo ==
 1 day ago
 
-== DeleteNotAllowedTransfomerRuleInside ==
-The item '{0}' cannot be deleted because it contains the transformer rule '{1}'.
-
 == DestinationField ==
 Destination
 
@@ -347,12 +341,6 @@ Branch expansion rules:
 == FailConnectionServer ==
 Connection to server {0} could not be established
 
-== FastChgRepNotAllowedOnTransWk ==
-The fast update cannot be used to change the target repository using transformer rules. Please use the standard update.
-
-== FastNotAllowedRuleRestricion ==
-The fast update is not allowed, because the server change '{0}' could not be applied on the workspace with the transformer rule '{1}'. Please update the workspace transformer rules if needed and use the standard update.
-
 == FastUpdCloakedError ==
 The fast update cannot be used with cloaked rules. Please use the standard update.
 
@@ -382,9 +370,6 @@ Not on workspace. "on repositories" clause is needed on the query.
 
 == FormatterError ==
 The field {0} is not valid for the specified object type
-
-== GameUiCiHeadOutOfDateError ==
-The checkin operation cannot be completed because new changes were created in the repository '{0}' since the operation began. Please retry the checkin operation to take into account the new server changes.
 
 == GameuiCiInsideUnresolvedXlinkNotAllowed ==
 The xlink '{0}' cannot be resolved. Changes under an unresolved xlink cannot be checked in.
@@ -424,9 +409,6 @@ The server {0} doesn't support the Incoming Changes operation. Please upgrade th
 
 == IncomingChangesReadonlyXlinksNotSupported ==
 Read-only Xlinks changes are not currently supported by the Incoming Changes. Please just run a regular merge to get the latest changes.
-
-== IncomingTansformerRulesNotSupported ==
-The workspace contains transformer rules. The transformer rules are not currently supported by the Incoming Changes. Please update your workspace undoing any pending change first. If you have pending changes that want to preserve, you can shelve them before undoing them and apply the shelf after the update.
 
 == IncomingWxlinkBackwardEditionNotSupported ==
 The writable Xlink '{0}' was edited to point to a previous (older) changeset. This edition of a writable Xlink is not currently supported by the Incoming Changes. Please update your workspace undoing any pending change first. If you have pending changes that want to preserve, you can shelve them before undoing them and apply the shelf after the update.
@@ -567,32 +549,8 @@ Top-level branches are not allowed in this edition, only child branches can be c
 == Merge ==
 Merge
 
-== MergeAddNotAllowedPathFreeByRule ==
-The item '{0}' cannot be added. The path '{0}' is already in use in the server but it's free on the client because of the transformer rule '{1}'. The merge cannot be completed with the current transformer rules. Please remove the involved transformer rule (or use a not transformed workspace) and try the merge again.
-
-== MergeDeleteNotAllowedRuleInside ==
-The item '{0}' cannot be deleted because it contains the transformer rule '{1}'.  The merge cannot be completed with the current transformer rules. Please remove the involved transformer rule (or use a not transformed workspace) and try the merge again.
-
-== MergeMoveNotAllowedPathFreeByRule ==
-The item '{0}' cannot be moved to '{1}'. The path '{1}' is already in use in the server but it's free on the client because of the transformer rule '{2}'. The merge cannot be completed with the current transformer rules. Please remove the involved transformer rule (or use a not transformed workspace) and try the merge again.
-
-== MergeMoveNotAllowedTransformedItem ==
-The item '{0}' cannot be moved because it has been transformed by the rule '{1}'. The merge cannot be completed with the current transformer rules. Please remove the involved transformer rule (or use a not transformed workspace) and try the merge again.
-
 == MergeNeeded ==
 A merge is needed from changeset 'cs:{0}@rep:{2}@repserver:{3}(mount:{4})' to changeset 'cs:{1}@rep:{2}@repserver:{3}(mount:{4})' in order to checkin. The checkin operation cannot continue. Please run 'cm merge "cs:{0}@rep:{2}@repserver:{3}" --merge' at '{5}' to solve the conflicts. Then, you can retry the checkin operation.
-
-== MergeRestorerDeletedPathInUse ==
-The deleted path by the transformer rule '{0}' has been reused by the transformer rule '{1}', so the deleted content cannot be restored. The merge cannot be completed with the current transformer rules. Please remove the involved transformer rule (or use a not transformed workspace) and try the merge again.
-
-== MergeRestorerRmRuleCannotBeLoaded ==
-The content of the transformer rule '{0}' cannot be loaded. The merge cannot be completed with the current transformer rules. Please remove the involved transformer rule (or use a not transformed workspace) and try the merge again.
-
-== MergeRestorerRmRuleMountMissing ==
-The mount point of the transformer rule '{0}' cannot be found. The merge cannot be completed with the current transformer rules. Please remove the involved transformer rule (or use a not transformed workspace) and try the merge again.
-
-== MergeRestorerRmRuleParentMissing ==
-The content of the transformer rule '{0}' cannot be restored because its parent '{1}' is not loaded on the workspace. The merge cannot be completed with the current transformer rules. Please remove the involved transformer rule (or use a not transformed workspace) and try the merge again.
 
 == MergeToPendingDirectoryConflicts ==
 There are pending directory conflicts that must be resolved before processing the merge-to.
@@ -632,12 +590,6 @@ The parent branch {0} was not found on the repository server
 
 == OneMonthAgo ==
 1 month ago
-
-== MoveNotAllowedForTransformedItem ==
-The item '{0}' cannot be moved because it has been transformed by the rule '{1}'.
-
-== MoveNotAllowedPathIsFreeByTransformerRule ==
-The item '{0}' cannot be moved to '{1}'. The path '{1}' is already in use in the server but it's free on the client because of the transformer rule '{2}'.
 
 == MultipleWorkspaceNotAllowed ==
 The {0} operation cannot be executed using items from different workspaces. Please retry the operation with the items of each workspace.
@@ -789,27 +741,6 @@ The branch {0} has more than one head. Please merge it to be able to continue sy
 == SyncBranchesWithMultipleHeads ==
 The branches {0} have more than one head. Please merge them to be able to continue synchronizing
 
-== TransformedItemAlreadyApplied ==
-Rule '{0}' cannot be applied because a rule for the same item was already applied '{1}'
-
-== TransformerMvRuleDstInUseError ==
-The rule '{0}' cannot be applied because the destination path is in use.
-
-== TransformerMvRuleDstInsideSrcError ==
-Rule '{0}' cannot be applied because an item cannot be moved inside itself.
-
-== TransformerMvRuleModifiesAppliedRule ==
-Rule '{0}' cannot be applied because it modifies an already applied rule ('{1}').
-
-== TransformerRmRuleMvInsideError ==
-Rule '{0}' cannot be applied because it contains a move rule ('{1}').
-
-== TransformerRuleDeleteRootError ==
-Rule '{0}' cannot be applied because the root item cannot be deleted.
-
-== TransformerRuleMissingPathError ==
-Rule '{0}' cannot be applied because the path '{1}' is not found.
-
 == TriggerNameField ==
 Trigger name
 
@@ -941,9 +872,6 @@ Failed to mount the dynamic workspace {0} after {1} seconds.
 
 == WkDynamicMultipleNotMountedYet ==
 Failed to mount the following dynamic workspaces after {0} seconds: {1}.
-
-== GameUiCheckinConflictsError ==
-The checkin/shelve operation cannot be completed because some local changes cannot be applied on the current server version. Please check the conflicts between your local changes and the current server version.
 
 == IsNotWk ==
 {0} is not in a workspace.

@@ -11,7 +11,7 @@ namespace Unity.PlasticSCM.Editor.Configuration
         internal static TokenExchangeResponse PlasticCredentials(
             string unityAccessToken,
             string serverName,
-            string projectPath)
+            string wkPath)
         {
             SetupUnityEditionToken.CreateCloudEditionTokenIfNeeded();
 
@@ -19,7 +19,7 @@ namespace Unity.PlasticSCM.Editor.Configuration
             if (!isClientConfigConfigured)
             {
                 ConfigureClientConf.FromUnityAccessToken(
-                    unityAccessToken, serverName, projectPath);
+                    unityAccessToken, serverName, wkPath);
             }
 
             TokenExchangeResponse tokenExchangeResponse = WebRestApiClient.
@@ -30,8 +30,7 @@ namespace Unity.PlasticSCM.Editor.Configuration
 
             CloudEditionWelcomeWindow.JoinCloudServer(
                 serverName,
-                tokenExchangeResponse.User,
-                tokenExchangeResponse.AccessToken);
+                tokenExchangeResponse.User);
 
             if (!isClientConfigConfigured)
                 return tokenExchangeResponse;
@@ -48,7 +47,7 @@ namespace Unity.PlasticSCM.Editor.Configuration
             internal static void FromUnityAccessToken(
                 string unityAccessToken,
                 string serverName,
-                string projectPath)
+                string wkPath)
             {
                 CredentialsResponse response = WebRestApiClient.
                     PlasticScm.GetCredentials(unityAccessToken);
@@ -65,14 +64,14 @@ namespace Unity.PlasticSCM.Editor.Configuration
                 }
 
                 ClientConfigData configData = BuildClientConfigData(
-                    serverName, projectPath, response);
+                    serverName, wkPath, response);
 
                 ClientConfig.Get().Save(configData);
             }
 
             static ClientConfigData BuildClientConfigData(
                 string serverName,
-                string projectPath,
+                string wkPath,
                 CredentialsResponse response)
             {
                 SEIDWorkingMode workingMode = GetWorkingMode(response.Type);
@@ -80,7 +79,7 @@ namespace Unity.PlasticSCM.Editor.Configuration
                 ClientConfigData configData = new ClientConfigData();
 
                 configData.WorkspaceServer = serverName;
-                configData.CurrentWorkspace = projectPath;
+                configData.CurrentWorkspace = wkPath;
                 configData.WorkingMode = workingMode.ToString();
                 configData.SecurityConfig = UserInfo.GetSecurityConfigStr(
                     workingMode,

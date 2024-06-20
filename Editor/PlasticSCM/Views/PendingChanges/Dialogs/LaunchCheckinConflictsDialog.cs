@@ -3,6 +3,7 @@
 using UnityEditor;
 
 using Codice.Client.GameUI.Checkin;
+using Codice.CM.Common.Checkin.Partial;
 using GluonGui.Dialog;
 using GluonGui.WorkspaceWindow.Views.Checkin.Operations;
 using PlasticGui;

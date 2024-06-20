@@ -427,6 +427,7 @@ namespace Unity.PlasticSCM.Editor
                      this,
                      mWorkspaceWindow,
                      mDeveloperNewIncomingChangesUpdater,
+                     mGluonNewIncomingChangesUpdater,
                      mParentWindow);
 
                 mViewHost.AddRefreshableView(

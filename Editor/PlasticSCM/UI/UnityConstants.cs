@@ -29,35 +29,16 @@
         internal const int STATUS_BAR_ICON_SIZE = 16;
         internal const int STATUS_BAR_NOTIFICATION_SPACING = 8;
 
-#if UNITY_2019_1_OR_NEWER
         internal const float DROPDOWN_ICON_Y_OFFSET = 2f;
         internal const float TREEVIEW_FOLDOUT_Y_OFFSET = 0f;
         internal const float TREEVIEW_ROW_HEIGHT = 24f;
         internal const float TREEVIEW_HEADER_CHECKBOX_Y_OFFSET = 0f;
         internal const float TREEVIEW_CHECKBOX_Y_OFFSET = 0f;
         internal static float DIR_CONFLICT_VALIDATION_WARNING_LABEL_HEIGHT = 21f;
-#else
-        internal const float DROPDOWN_ICON_Y_OFFSET = 5f;
-        internal const float TREEVIEW_FOLDOUT_Y_OFFSET = 1f;
-        internal const float TREEVIEW_ROW_HEIGHT = 20f;
-        internal const float TREEVIEW_PENDING_CHANGES_ROW_HEIGHT = 24f;
-        internal const float TREEVIEW_HEADER_CHECKBOX_Y_OFFSET = 6f;
-        internal const float TREEVIEW_CHECKBOX_Y_OFFSET = 2f;
-        internal static float DIR_CONFLICT_VALIDATION_WARNING_LABEL_HEIGHT = 18f;
-#endif
 
-#if UNITY_2020_1_OR_NEWER
         internal const float INSPECTOR_ACTIONS_BACK_RECTANGLE_TOP_MARGIN = -2f;
-#else
-        internal const float INSPECTOR_ACTIONS_BACK_RECTANGLE_TOP_MARGIN = 0f;
-#endif
 
-#if UNITY_2019
-        internal const int INSPECTOR_ACTIONS_HEADER_BACK_RECTANGLE_HEIGHT = 24;
-#else
         internal const int INSPECTOR_ACTIONS_HEADER_BACK_RECTANGLE_HEIGHT = 7;
-#endif
-
 
         internal const int LEFT_MOUSE_BUTTON = 0;
         internal const int RIGHT_MOUSE_BUTTON = 1;
@@ -77,8 +58,9 @@
         internal const double SEARCH_DELAYED_INPUT_ACTION_INTERVAL = 0.25;
         internal const double SELECTION_DELAYED_INPUT_ACTION_INTERVAL = 0.25;
         internal const double AUTO_REFRESH_DELAYED_INTERVAL = 0.25;
-        internal const double AUTO_REFRESH_PENDING_CHANGES_DELAYED_INTERVAL = 0.1;
+        internal const double AUTO_REFRESH_CHANGES_DELAYED_INTERVAL = 0.1;
         public const double PLUGIN_DELAYED_INITIALIZE_INTERVAL = 0.25;
+        internal const double REFRESH_ASSET_DATABASE_DELAYED_INTERVAL = 0.25;
         
         internal const double NOTIFICATION_CLEAR_INTERVAL = 5;
 

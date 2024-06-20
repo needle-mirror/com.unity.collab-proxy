@@ -20,6 +20,8 @@ using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.Branches.Dialogs;
 using Unity.PlasticSCM.Editor.Views.Changesets;
 
+using GluonNewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncomingChangesUpdater;
+
 namespace Unity.PlasticSCM.Editor.Views.Branches
 {
     internal class BranchesTab : 
@@ -37,13 +39,15 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             IMergeViewLauncher mergeViewLauncher,
             IUpdateReport updateReport,
             NewIncomingChangesUpdater developerNewIncomingChangesUpdater,
+            GluonNewIncomingChangesUpdater gluonNewIncomingChangesUpdater,
             EditorWindow parentWindow)
         {
             mWkInfo = wkInfo;
             mParentWindow = parentWindow;
             mProgressControls = new ProgressControlsForViews();
 
-            mProgressControls = new ProgressControlsForViews();
+            mDeveloperNewIncomingChangesUpdater = developerNewIncomingChangesUpdater;
+            mGluonNewIncomingChangesUpdater = gluonNewIncomingChangesUpdater;
 
             BuildComponents(
                 wkInfo,
@@ -118,11 +122,18 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
         void IRefreshableView.Refresh()
         {
+            // VCS-1005209 - There are scenarios where the list of branches need to check for incoming changes.
+            // For example, deleting the active branch will automatically switch your workspace to the parent changeset,
+            // which might have incoming changes.
+            if (mDeveloperNewIncomingChangesUpdater != null)
+                mDeveloperNewIncomingChangesUpdater.Update(DateTime.Now);
+
+            if (mGluonNewIncomingChangesUpdater != null)
+                mGluonNewIncomingChangesUpdater.Update(DateTime.Now);
+
             string query = GetBranchesQuery(mDateFilter);
 
-            FillBranches(mWkInfo,
-                query,
-                BranchesSelection.GetSelectedRepObjectInfos(mBranchesListView));
+            FillBranches(mWkInfo, query, BranchesSelection.GetSelectedRepObjectInfos(mBranchesListView));
         }
 
         //IQueryRefreshableView
@@ -439,5 +450,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         readonly WorkspaceInfo mWkInfo;
         readonly ProgressControlsForViews mProgressControls;
         readonly EditorWindow mParentWindow;
+        readonly NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
+        readonly GluonNewIncomingChangesUpdater mGluonNewIncomingChangesUpdater;
     }
 }

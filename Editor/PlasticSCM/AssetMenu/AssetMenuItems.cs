@@ -1,8 +1,8 @@
-﻿using UnityEditor;
-using UnityEditor.VersionControl;
+﻿using UnityEditor.VersionControl;
 
 using Codice.CM.Common;
 using Codice.Client.Common.EventTracking;
+using Codice.LogWrapper;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Items;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
@@ -21,6 +21,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             if (mIsEnabled)
                 return;
 
+            mLog.Debug("Enable");
+
             mWkInfo = wkInfo;
             mAssetStatusCache = assetStatusCache;
 
@@ -37,6 +39,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         internal static void Disable()
         {
+            mLog.Debug("Disable");
+
             mIsEnabled = false;
 
             RemoveMenuItems();
@@ -63,7 +67,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             IMergeViewLauncher mergeViewLauncher,
             PlasticGui.Gluon.IGluonViewSwitcher gluonViewSwitcher,
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
-            EditorWindow parentWindow,
             bool isGluonMode)
         {
             if (!mIsEnabled)
@@ -80,7 +83,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 mAssetStatusCache,
                 mergeViewLauncher,
                 gluonViewSwitcher,
-                parentWindow,
                 mAssetSelection,
                 showDownloadPlasticExeWindow,
                 isGluonMode);
@@ -304,7 +306,13 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         static IAssetStatusCache mAssetStatusCache;
         static WorkspaceInfo mWkInfo;
 
-        const int BASE_MENU_ITEM_PRIORITY = 19; // Puts Plastic SCM right below Create menu
+#if UNITY_6000_0_OR_NEWER
+        // Puts Unity Version Control in a new section, as it precedes the Create menu with the old value
+        const int BASE_MENU_ITEM_PRIORITY = 71;
+#else
+        // Puts Unity Version Control right below the Create menu
+        const int BASE_MENU_ITEM_PRIORITY = 19;
+#endif
 
         // incrementing the "order" param by 11 causes the menu system to add a separator
         const int PENDING_CHANGES_MENU_ITEM_PRIORITY = BASE_MENU_ITEM_PRIORITY;
@@ -316,5 +324,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         const int HIDDEN_MENU_ITEMS_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 26;
         const int DIFF_MENU_ITEM_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 37;
         const int HISTORY_MENU_ITEM_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 38;
+
+        static readonly ILog mLog = PlasticApp.GetLogger("AssetMenuItems");
     }
 }

@@ -62,11 +62,7 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
             double currentTime = EditorApplication.timeSinceStartup;
             double deltaTime = currentTime - mLastRotationTime;
 
-#if UNITY_2021_2_OR_NEWER
             mSpinner.transform.rotation = Quaternion.Euler(0, 0, mRotation);
-#else
-            transform.rotation = Quaternion.Euler(0, 0, mRotation);
-#endif
 
             mRotation += (int)(ROTATION_SPEED * deltaTime);
             mRotation = mRotation % 360;

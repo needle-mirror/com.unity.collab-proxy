@@ -51,7 +51,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             IAssetStatusCache assetStatusCache,
             IMergeViewLauncher mergeViewLauncher,
             IGluonViewSwitcher gluonViewSwitcher,
-            EditorWindow parentWindow,
             IAssetSelection assetSelection,
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             bool isGluonMode)
@@ -69,7 +68,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             mAssetSelection = assetSelection;
             mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
             mIsGluonMode = isGluonMode;
-            mParentWindow = parentWindow;
 
             mGuiMessage = new UnityPlasticGuiMessage();
             mProgressControls = new EditorProgressControls(mGuiMessage);
@@ -155,7 +153,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                     selectedPaths,
                     mAssetStatusCache,
                     mIsGluonMode,
-                    mParentWindow,
                     mWorkspaceWindow,
                     mViewHost,
                     mWorkspaceOperationsMonitor,
@@ -283,7 +280,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
             FilterRulesConfirmationData filterRulesConfirmationData = 
                 FilterRulesConfirmationDialog.AskForConfirmation(
-                    rules, isAddOperation, isApplicableToAllWorkspaces, mParentWindow);
+                    rules, isAddOperation, isApplicableToAllWorkspaces, null);
 
             AddFilesFilterPatternsOperation.Run(
                 mWkInfo, mWorkspaceWindow, type, operation, filterRulesConfirmationData);
@@ -324,7 +321,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         readonly bool mIsGluonMode;
         readonly GuiMessage.IGuiMessage mGuiMessage;
         readonly EditorProgressControls mProgressControls;
-        readonly EditorWindow mParentWindow;
         readonly IAssetSelection mAssetSelection;
         readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
     }

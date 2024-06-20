@@ -44,6 +44,6 @@ namespace Unity.PlasticSCM.Editor.UI
 
         static object mLock = new object();
 
-        static readonly ILog mLog = LogManager.GetLogger("GUIActionRunner");
+        static readonly ILog mLog = PlasticApp.GetLogger("GUIActionRunner");
     }
 }

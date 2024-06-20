@@ -1,3 +1,6 @@
+== AccessTokensNotEnabled ==
+Access tokens are not enabled on this server. If you believe this to be an error, please contact your server administrator.
+
 == AclNotFound ==
 You are working with out-of-date objects. Maybe your client or workspace is out of date, please update it.
 
@@ -93,6 +96,27 @@ The data {0} is encrypted. The encryption info is needed in order to read it.
 == CannotDeleteChangesetItemsLocked ==
 The changeset cs:{0} cannot be deleted until the following locked items are released: {1}
 
+== CannotDeleteChangesetShelvesetDependsOnIt ==
+The changeset cs:{0} cannot be deleted because sh:{1} depends on it. You must delete sh:{1} first.
+
+== CannotDeleteChangesetChangesetDependsOnIt ==
+The changeset cs:{0} cannot be deleted because cs:{1} depends on it. You must delete cs:{1} first.
+
+== CannotDeleteChangesetEmptyBranchDependsOnIt ==
+The changeset cs:{0} cannot be deleted because the empty branch {1} depends on it.
+
+== CannotDeleteChangesetLabelPointsToIt ==
+The changeset cs:{0} cannot be deleted because label '{1}' points to it. You must delete the label first.
+
+== CannotDeleteChangesetIsMergeSource ==
+The changeset cs:{0} cannot be deleted because it is the source of a mergelink. You must delete the merge destination (cs:{1}) first.
+
+== CannotDeleteChangesetIsIntervalMergeSource ==
+The changeset cs:{0} cannot be deleted because it is part of an interval merge source.
+
+== CannotDeleteChangesetIsChangesetZero ==
+The changeset cs:0 cannot be deleted. It is a fixed point in your repository's history.
+
 == CannotDiffDstCsetNotComplete ==
 Cannot show differences between changeset {0} and changeset {1}. The destination changeset {1} has not been replicated to this repository. Make sure that you replicated the branch containing this changeset.
 
@@ -125,6 +149,9 @@ Cannot retrieve the content of the revision {0} at repository {1} because it was
 
 == CannotSaveDataNotCo ==
 Data can only be saved for a checked out revision.
+
+== CannotUpdateAssigneeWithMultipleReviewers ==
+The assignee could not be updated because the review has more than one reviewer.
 
 == CannotUpdateWorkspaceOutOfDate ==
 Cannot perform a partial update when the workspace is out of date.
@@ -256,11 +283,17 @@ Can't use a regular label type as starting point of a smart branch. {0}.
 == ChangeDeleteConflict ==
 Change delete conflict
 
+== ChangeMustBeSelected ==
+To select the change '{0}' the change '{1}' must be selected too.
+
 == ChangepasswordCommandNotAvailable ==
 This command is only available when security config is user/password.
 
 == ChangepasswordCommandNotAvailableOnServer ==
 This command is only available when security config is user/password and Plastic SCM Server is not configured to use user/password security mode.
+
+== ChangesetAlreadyExists ==
+The specified changeset {0} already exists.
 
 == ChangesetDoesntexist ==
 The specified changeset {0} does not exist.
@@ -322,7 +355,7 @@ Can't move {0} to {1}. Destination is a subfolder from source folder.
 Couldn't connect to the server {0}.
 
 == CmdErrorItemInCi ==
-Can't undo change for item {0}, it's checked in. 
+Can't undo change for item {0}, it's checked in.
 
 == CmdErrorPrivateItem ==
 Can't perform operation. The item {0} is private.
@@ -410,6 +443,9 @@ Can't move. Destination {0} already exists. Overwriting items is not allowed
 
 == DestinationDirectoryMustBeCheckedoutToMove ==
 To move {0} the destination directory must be checked out.
+
+== DestinationMustBeCheckedin ==
+The move source '{0}' can't be checkedin without check-in the destination '{1}'.
 
 == DirIdentical ==
 Directories are identical.
@@ -534,6 +570,15 @@ The server '{0}' requires encryption, but it's not allowed for FIPS compliant se
 == FormatAndXmlModifiersIncompatible ==
 --xml and --format modifiers are not compatible and cannot be used together.
 
+== GameUiCheckinConflictsError ==
+The checkin/shelve operation cannot be completed because some local changes cannot be applied on the current server version. Please check the conflicts between your local changes and the current server version.
+
+== GameUiCiHeadOutOfDateError ==
+The checkin operation cannot be completed because new changes were created in the repository '{0}' since the operation began. Please retry the checkin operation to take into account the new server changes.
+
+== GameuiCiInsideUnresolvedXlinkNotAllowed ==
+The xlink '{0}' cannot be resolved. Changes under an unresolved xlink cannot be checked in.
+
 == GetClientContext ==
 Can't get client user and machine context.
 
@@ -613,7 +658,7 @@ Invalid LDAP server type: {0}.
 Invalid module name {0}. It can't be empty and can't contain /
 
 == InvalidOption ==
-Invalid option. 
+Invalid option.
 
 == InvalidOs ==
 The Operating System is not supported in this edition.
@@ -640,7 +685,7 @@ Invalid value for server name.
 Invalid parameters user/password in client config file.
 
 == InvalidValue ==
-Invalid value. 
+Invalid value.
 
 == InvalidWorkingMode ==
 Invalid SEID working mode in configuration file.
@@ -828,7 +873,7 @@ No organization has been provided. You need to work against a specific organizat
 The label {0} already exists.
 
 == MsgError ==
-Error: 
+Error:
 
 == MsgNoSelector ==
 There is no selector for this workspace. {0}
@@ -883,6 +928,9 @@ No such user: {0}.
 
 == NoWorkspaceSelected ==
 There is no workspace selected.
+
+== NotChangedInCurrentWorkspace ==
+The item '{0}' is not changed in current workspace.
 
 == NotEmptyIostatsFolder ==
 Error: disk test path not empty. Path: {0}
@@ -1055,7 +1103,7 @@ The secured path can't be created. The path is under an xlink. Use the path perm
 
 == PathSpecMultipleMatches ==
 Specified secured path: {0} matches with several secured path instances. Please provide a full secured path spec ( 'path#tag' or 'path' with '--branches=list_of_branches' argument ).
-   
+
 
 == ProblemLoadingExtension ==
 There was a problem loading an extension.
@@ -1245,16 +1293,25 @@ RootItem must be unique in the repository. {0} has been located.
 You need to save it before add it to Unity VCS.
 
 == ScriptVersionNotValid ==
-The {0} version of {1} server is {2}. Please upgrade it to the {3} version. 
+The {0} version of {1} server is {2}. Please upgrade it to the {3} version.
 
 == SecuredPathMovedCollission ==
 The move from '{0}' to '{1}' is not allowed because the existing user permissions are different between the source path and destination path.
+
+== SecurityAccessTokenDoesNotExist ==
+The access token '{0}' does not exist or does not belong to you.
+
+== SecurityAccessTokenExpired ==
+The access token '{0}' expired.
 
 == SecurityCantActivateUser ==
 You don't have permissions to activate user {0}. You need to be repository server administrator in order to be allowed to complete this operation.
 
 == SecurityCantArchive ==
 You don't have permissions to archive revisions. You need to be repository server administrator in order to be allowed to complete this operation.
+
+== SecurityCantCreateAccessToken ==
+You don't have permissions to create access tokens. If you believe this to be an error, please contact your server administrator.
 
 == SecurityCantDeactivateUser ==
 You don't have permissions to deactivate user {0}. You need to be repository server administrator in order to be allowed to complete this operation.
@@ -1264,6 +1321,9 @@ An object can't inherit from its own ACL. Recursion found.
 
 == SecurityCantMergeChange ==
 You don't have permissions to perform this merge. You don't have read permission for certain changes in the source contributor.
+
+== SecurityCantRevealAccessToken ==
+You don't have permissions to reveal access tokens. If you believe this to be an error, please contact your server administrator.
 
 == SecurityCantUpdateReviewStatus ==
 You don't have permission to update the status of the review. Only a reviewer or the repository server administrator can do it.
@@ -1535,11 +1595,20 @@ Workspace name '{0}' is already in use.
 == WorkspaceRepAlreadyShared ==
 Workspace '{0}' is already shared.
 
+== WorkspaceRepAlreadyLocked ==
+Workspace '{0}' is already locked by other concurrent operation.
+
+== WorkspaceShareNotFound ==
+Workspace '{0}' is not shared with user '{1}'.
+
 == WorkspaceUvcsConnectionAlreadyExists ==
 UVCS connection '{0}' already exists.
 
 == WorkspaceUvcsConnectionDoesntExist ==
 UVCS connection '{0}' does not exist.
+
+== WorkspaceUvcsConnectionMetadataOutOfDate ==
+Cannot update UVCS connection metadata '{0}' because there are new changes in the server (local id:{1}, server id:{2}).
 
 == WriteBlobError ==
 The data for revision {0} (segment {1}) cannot be written on rep {2}.
@@ -1681,6 +1750,9 @@ Deleting a changeset is not allowed on a repository that is on sync with Git.
 
 == MoveChangesetNotAllowedOnGitSyncRep ==
 Moving a changeset is not allowed on a repository that is on sync with Git.
+
+== DeleteBranchAndChangesetsNotSupported ==
+The server {0} doesn't support deleting a branch and its changesets at once. Please upgrade the server or delete the changesets one by one before deleting the branch.
 
 == P4ExecutableDoesNotExist ==
 Unable to find the Perforce CLI executable. Please ensure it's available in your PATH environment variable.

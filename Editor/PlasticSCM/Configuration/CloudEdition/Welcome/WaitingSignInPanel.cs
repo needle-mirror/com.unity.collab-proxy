@@ -2,6 +2,7 @@
 
 using Codice.Client.Common;
 using Codice.Client.Common.OAuth;
+using Codice.CM.Common;
 
 using PlasticGui;
 using PlasticGui.Configuration.OAuth;
@@ -30,19 +31,26 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             BuildComponents();
         }
 
-        internal void OAuthSignInForConfigure(
-            Uri signInUrl,
+        internal void OAuthSignIn(
+            SEIDWorkingMode workingMode,
             Guid state,
+            Uri signInUrl,
+            string ssoProviderName,
             IGetOauthToken getToken)
         {
             mSignIn = new OAuthSignIn();
 
-            mSignIn.ForConfigure(
+            mSignIn.ForHomeView(
+                string.Empty,
+                workingMode,
                 signInUrl,
                 state,
+                ssoProviderName,
+                string.Empty,
                 mProgressControls,
                 mNotify,
                 mCmConnection,
+                new OAuthSignIn.Browser(),
                 getToken,
                 mRestApi);
 

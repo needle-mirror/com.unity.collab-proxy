@@ -148,7 +148,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 return;
 
             Filter filter = new Filter(searchString);
-            mRevisionsList.Filter(filter, mColumnNames, null);
+            mRevisionsList.Filter(filter, mColumnNames, null, null);
         }
 
         internal void Sort()

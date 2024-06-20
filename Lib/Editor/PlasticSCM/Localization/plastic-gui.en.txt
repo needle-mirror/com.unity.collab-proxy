@@ -46,6 +46,9 @@ Code reviews
 == Server ==
 Server
 
+== Organization ==
+Organization
+
 == Repository ==
 Repository
 
@@ -104,16 +107,16 @@ Go to branch base
 Branch Explorer
 
 == FilterSelectedBranches ==
-Filter selected branches
+Filter by selected branches
 
 == FilterSelectedAndRelatedBranches ==
-Filter selected and related branches
+Filter by selected and related branches
 
 == FilterSelectedBranchesPendingMerges ==
-Filter pending merges for selected branches
+Filter by selected and related branches excluding already merged
 
 == RelayoutMenu ==
-Relayout
+Reorder
 
 == MoveBranchUp ==
 Move selected branches up
@@ -128,13 +131,13 @@ Move selected branches to the top
 Move selected branches to the bottom
 
 == ClearBranchRelayout ==
-Clear selected branches relayout data
+Clear selected branches reorder data
 
 == ResetRelayoutData ==
-Clear all relayout data
+Clear all reorder data
 
 == ClearAllBranchRelayoutsDialogExplanation ==
-This action will remove all your branch relayout preferences for any workspace. Do you want to continue?
+This action will remove all your branch reorder preferences for any workspace. Do you want to continue?
 
 == PlasticMoveBranchUpShortcutForWindows ==
 Ctrl+Up
@@ -233,7 +236,7 @@ Calculating...
 Copyright © 2006-{0} Unity Technologies. All Rights Reserved.
 
 == FiltersAndConditionalFormat ==
-Filters & format
+Advanced filters & format
 
 == ReleaseNotesLinkText ==
 Release Notes
@@ -362,7 +365,7 @@ About Gluon
 Documentation
 
 == MainSidebarOpenUnityDashboardItem ==
-Open Unity Dashboard
+Open Unity Cloud
 
 == MainSidebarUpdateVersionItem ==
 Update Unity Version Control
@@ -1420,12 +1423,6 @@ Cloaked
 == HiddenChanged ==
 Hidden changed
 
-== WorkspaceExplorerDialogTitle ==
-Available Unity VCS workspaces
-
-== WorkspaceExplorerDialogExplanation ==
-Please select a workspace from the list below:
-
 == MainWindowTitle ==
 Unity DevOps Version Control - wk: {0} - {1} - {2}: {3}@{4}
 
@@ -1470,17 +1467,6 @@ On-premises
 
 == AddNewAccount ==
 Add new account
-
-== OnlyRelevantButton ==
-Only relevant
-
-== OnlyRelevantTooltip ==
-Show only the changesets that define the structure of the diagram:
- - the first and last of a branch
- - the parent of a branch
- - the source and destination of a merge
- - those that are labelled
- - the working changeset
 
 == ResolutionMethodColumn ==
 Resolution method
@@ -1631,15 +1617,6 @@ Branch Explorer search
 
 == BrexDisplayOptions ==
 Display options
-
-== InitialDateLabel ==
-From:
-
-== EndDateLabel ==
-To:
-
-== SinceDateLabel ==
-Since:
 
 == SelectAll ==
 Select all
@@ -2252,9 +2229,6 @@ Display labels
 == BrexDisplayBranchTaskInfo ==
 Display branch task info
 
-== BrexDisplayOnlyRelevantCsets ==
-Display only relevant changesets
-
 == NoReplicationSources ==
 Not replicated
 
@@ -2381,6 +2355,9 @@ Version
 == FilterWaterMark ==
 Filter
 
+== QuickFilterWaterMark ==
+Quick filter
+
 == ExploreWorkspace ==
 Explore workspace
 
@@ -2425,6 +2402,9 @@ Container folder
 
 == CheckinComment ==
 Add a comment to your check-in or shelve...
+
+== CheckinOnlyComment ==
+Add a comment to your check-in...
 
 == BrowseForFolderTitle ==
 Browse for folder
@@ -3095,9 +3075,6 @@ Destination server
 
 == DestinationReplicationRepository ==
 Destination repository
-
-== CreateWorkspaceButton ==
-Create a new workspace...
 
 == MenuAddToIgnoreList ==
 Add to ignored list
@@ -4236,9 +4213,6 @@ Subtractive merge from changeset interval (from cs:{0} to cs:{1})
 == ChangesetMerge ==
 Merge from changeset cs:{0}
 
-== SwitchBranchButton ==
-Switch branch...
-
 == PleaseTypeAPath ==
 Please enter a path
 
@@ -4347,6 +4321,9 @@ What to find
 == PendingChangesWhatToShowTab ==
 What to show
 
+== PendingChangesVisualizationTab ==
+Visualization
+
 == PendingChangesMoveDetectionTab ==
 Move detection
 
@@ -4411,6 +4388,12 @@ Group changes in "change lists"
 
 == PendingChangesGroupInChangeListsExplanation ==
 Unity VCS can group the changes in the workspace in user created lists. This is useful if you miss the feature from previous version control.
+
+== PendingChangesGroupInCategories ==
+Group changes by categories
+
+== PendingChangesGroupInCategoriesExplanation ==
+Unity VCS can group the changes in the workspace by categories like "changed", "added", "moved", "deleted". It is useful if you want to see the changes in a more organized way.
 
 == PendingChangesViewAsATree ==
 View as a tree
@@ -5338,16 +5321,16 @@ You have {0} changes to apply and {1} questions to answer.
 You should not mark as reviewed a code review with pending comments. Continue anyway?
 
 == SinceOneWeekAgo ==
-1 week ago
+Last week
 
 == SinceFifteenDaysAgo ==
-15 days ago
+Last 15 days
 
 == SinceOneMonthAgo ==
-1 month ago
+Last month
 
 == SinceThreeMonthsAgo ==
-3 months ago
+Last 3 months
 
 == SinceAGivenDate ==
 A given date
@@ -5656,14 +5639,20 @@ You need to upgrade the server to version 11.0.16.8321 or higher to use the new 
 == LoadingMembers ==
 Loading members...
 
-== UserChooserDialogTitle ==
+== UserGroupChooserDialogTitle ==
 Please select a user or group from the list below:
+
+== UserChooserDialogTitle ==
+Please select a user from the list below:
 
 == SelectUsersDialogTitle ==
 Select users
 
 == SelectUserGroupDialogTitle ==
 Select user or group
+
+== SelectUserDialogTitle ==
+Select user
 
 == NoUserSelectedErrorMessage ==
 Select a user from the list
@@ -5783,6 +5772,9 @@ Both
 
 == SelectedUserOrGroup ==
 Selected user or group:
+
+== SelectedUser ==
+Selected user:
 
 == User ==
 User
@@ -5955,9 +5947,6 @@ Retrieving organizations...
 
 == RetrievingWorkspacesProgress ==
 Retrieving cloud workspaces...
-
-== CreatingYourPersonalWorkspaceProgress ==
-Creating your personal workspace...
 
 == GettingSSOProviders ==
 Getting organization providers...
@@ -6483,6 +6472,24 @@ Cmd+P
 
 == PlasticPermissionsShortcutForLinux ==
 Ctrl+P
+
+== PlasticExpandAllShortcutForWindows ==
+Ctrl+Shift+E
+
+== PlasticExpandAllShortcutForMacOS ==
+Cmd+Shift+E
+
+== PlasticExpandAllShortcutForLinux ==
+Ctrl+Shift+E
+
+== PlasticCollapseAllShortcutForWindows ==
+Ctrl+Shift+C
+
+== PlasticCollapseAllShortcutForMacOS ==
+Cmd+Shift+C
+
+== PlasticCollapseAllShortcutForLinux ==
+Ctrl+Shift+C
 
 == PlasticMergeShortcutForWindows ==
 Ctrl+M
@@ -7037,10 +7044,10 @@ Cannot get the comment
 Copied!
 
 == OpenOrCreateWorkspace ==
-Open or create other workspace...
+View workspaces
 
 == ViewRepositories ==
-View repositories...
+View repositories
 
 == InviteMembersTitle ==
 Invite members
@@ -7193,10 +7200,10 @@ View content of item changed on destination
 No organization yet?
 
 == ClickButtonBelowToCreateOrg ==
-Click the button below to create a new organization from the Unity Dashboard
+Click the button below to create a new organization from Unity Cloud
 
 == OpenUnityDashboard ==
-Open Unity Dashboard
+Open Unity Cloud
 
 == CreateNewOrganization ==
 Create a new organization
@@ -7215,6 +7222,12 @@ No repository yet?
 
 == CreateNewRepository ==
 Create a new repository
+
+== NoWorkspacesTitle ==
+No workspaces yet?
+
+== CreateNewRepository ==
+Create a new workspace
 
 == CreateRepositoryNameLabel ==
 Repository name
@@ -7992,14 +8005,8 @@ Always open shelves in current window
 == EmptyLabelsMessage ==
 There are no labels created yet
 
-== EmptyLabelsMatchQueryMessage ==
-There are no labels that match your query
-
 == EmptyAttributesMessage ==
 There are no attributes created yet
-
-== EmptyAttributesMatchQueryMessage ==
-There are no attributes that match your query
 
 == EmptyCodeReviewsMessage ==
 There are no code reviews created yet
@@ -8127,6 +8134,12 @@ Start a conversation...
 == MarkedReviewAs ==
 marked review as
 
+== SelftRequestedReview ==
+self-requested a review
+
+== RequestedReviewFrom ==
+requested review from
+
 == HideOneReply ==
 Hide 1 reply
 
@@ -8177,3 +8190,228 @@ by {0} on {1}
 
 == MovedFrom ==
  (moved from {0})
+
+== BrExFiltersLabel ==
+Filters:
+
+== DateFilterButton ==
+Date
+
+== SavedFilters ==
+Saved filters
+
+== SinceSpecifiedDate ==
+Since specified date
+
+== DateRange ==
+Date range
+
+== SaveCurrentFilter ==
+Save current filter
+
+== NothingHereYet ==
+Nothing here yet
+
+== UserFilterButton ==
+User
+
+== FilterByMeButton ==
+Me
+
+== FilterByMeButtonTooltip ==
+Shows branches created or contains changesets by the current user
+
+== UnassignedButton ==
+Unassigned
+
+== UnassignedButtonTooltip ==
+Shows reviews that don't have any reviewers assigned
+
+== BranchFilterButton ==
+Branch
+
+== FilterWorkingBranchButton ==
+Working branch
+
+== FilterWorkingBranchButtonTooltip ==
+Displays the branch that are currently being worked on
+
+== OtherFilterButton ==
+Other
+
+== StatusFilterButton ==
+Status
+
+== RelevantChangesetsText ==
+View relevant changes only
+
+== RelevantChangesetsExplanation ==
+Show only the changes defining diagram structure: branch start/end, merges, labels, parents, and working changeset
+
+== RelevantChangesetsShortText ==
+Only relevant
+
+== PendingToMergeBranchesText ==
+Exclude merged branches
+
+== PendingToMergeBranchesExplanation ==
+Omit branches already merged into any parent
+
+== PendingToMergeBranchesShortText ==
+Not merged
+
+== RelatedBranchesText ==
+Show related branches
+
+== RelatedBranchesExplanation ==
+Extend view to include parent, children, and merge-connected branches for comprehensive view
+
+== RelatedBranchesShortText ==
+Related
+
+== BranchesEmptyState ==
+Oops! It looks like there are no branches matching your filters
+
+== HistoryEmptyState ==
+Oops! It looks like there are no revisions matching your filters
+
+== ChangesetsEmptyState ==
+Oops! It looks like there are no changesets matching your filters
+
+== LabelsEmptyState ==
+Oops! It looks like there are no labels matching your filters
+
+== AttributesEmptyState ==
+Oops! It looks like there are no attributes matching your filters
+
+== CodeReviewsEmptyState ==
+Oops! It looks like there are no code reviews matching your filters
+
+== ResetFilters ==
+Reset filters
+
+== ReRequestReviewButton ==
+Re-request review
+
+== ListViewButton ==
+List view
+
+== TreeViewButton ==
+Tree view
+
+== ExpandAllMenuItem ==
+Expand all nodes
+
+== CollapseAllMenuItem ==
+Collapse all nodes
+
+== NewBranchButton ==
+New branch
+
+== CreateNewBranchButton ==
+Create new branch
+
+== NoBranchMatchingFilter ==
+There are no branches that are matching the filter
+
+== CreateANewBranchInstead ==
+You can create a new branch instead
+
+== MainBranchSection ==
+Main branch
+
+== RecentBranchesSection ==
+Recent branches
+
+== OtherBranchesSection ==
+Other branches
+
+== ReviewersColumn ==
+Reviewers
+
+== CreateWorkspacePanelTitle ==
+Create your cloud workspace on {0} organization
+
+== CreateWorkspacePanelDescription ==
+Do you want to connect this workspace to an existing repository?
+
+== WorkspaceWithUvcsConnectionSelectorName ==
+Connect workspace to a repository
+
+== WorkspaceWithUvcsConnectionSelectorDescription ==
+I want to load source files from a Unity UVCS repository to this workspace.
+
+== WorkspaceWithoutConnectionSelectorName ==
+Don't connect to a repository
+
+== WorkspaceWithoutConnectionSelectorDescription ==
+I want to import files from a local drive.
+
+== WorkspaceNameEntry ==
+Workspace name:
+
+== NoRepositoriesToConnect ==
+There are no repositories to connect the workspace to
+
+== RepositoryAndBranchOnlyAvailableForConnectedWks ==
+The repository and the branch are only available for connected workspaces
+
+== CollaboratorsEmptyState ==
+There are no collaborators yet
+
+== Collaborators ==
+Collaborators
+
+== LoadingMainBranchProgress ==
+Loading main branch...
+
+== ConnectingWorkspaceToRepository ==
+Connecting workspace to the UVCS repository...
+
+== SharingWorkspaceWith ==
+Sharing workspace with '{0}' ...
+
+== ExecuteQueryClearsFiltersWarningTitle ==
+Clear filters warning
+
+== ExecuteQueryClearsFiltersWarningMessage ==
+Executing this query will clear the display filters you have configured for this view. After the query is executed, you can re-apply them to filter the results.
+
+== ExecuteQueryClearsFiltersWarningPositiveButton ==
+Execute query
+
+== ApplyDateFilterClearsQueryWarningTitle ==
+Clear query warning
+
+== ApplyDateFilterClearsQueryWarningMessage ==
+Applying a date filter will clear the custom query you've set up for this view
+
+== ApplyDateFilterClearsQueryWarningMessagePositiveButton ==
+Apply filter
+
+== ResumeSyncWhenOpenWorkspaceLinkTitle ==
+Open cloud drive workspace
+
+== ResumeSyncWhenOpenWorkspaceLinkMessage ==
+You are trying to open the '{0}' workspace on your disk but the syncing is paused, so the workspace could be out-of-date. Do you want to resume the syncing now?
+
+== RepositoriesAndWorkspaces ==
+Repositories and workspaces
+
+== AllWorkspaces ==
+All workspaces
+
+== WorkspaceMenuItemAddExistingWorkspace ==
+Add existing workspace...
+
+== NoValidWorkspaceTitle ==
+No valid workspace
+
+== NoValidWorkspaceMessage ==
+The selected folder is not a UVCS workspace. Please select a valid workspace folder.
+
+== DropFolderToOpenWorkspace ==
+Drop here to open. Hold Shift to open in a new window.
+
+== DropFolderToCreateWorkspace ==
+Drop here to create a new workspace.

@@ -12,9 +12,11 @@ using Codice.Utils;
 using GluonGui;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
+using PlasticGui.WorkspaceWindow.BranchExplorer;
 using PlasticGui.WorkspaceWindow.Diff;
 using PlasticGui.WorkspaceWindow.History;
 using PlasticGui.WorkspaceWindow.Open;
+using PlasticGui.WorkspaceWindow.Configuration;
 
 using GluonRevertOperation = GluonGui.WorkspaceWindow.Views.Details.History.RevertOperation;
 using HistoryDescriptor = GluonGui.WorkspaceWindow.Views.Details.History.HistoryDescriptor;
@@ -142,10 +144,13 @@ namespace Unity.PlasticSCM.Editor.Views.History
         }
 
         void HistoryViewLogic.IHistoryView.UpdateData(
+            List<ResolvedUser> resolvedUsers,
+            ResolvedUser currentUser,
             Dictionary<BranchInfo, ChangesetInfo> branchesAndChangesets,
             BranchInfo workingBranch,
             HistoryRevisionList list,
-            long loadedRevisionId)
+            long loadedRevisionId,
+            WorkspaceUIConfiguration config)
         {
             mHistoryListView.BuildModel(list, loadedRevisionId);
 

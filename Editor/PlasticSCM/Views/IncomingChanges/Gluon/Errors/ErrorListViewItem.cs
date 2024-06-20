@@ -1,6 +1,6 @@
 ﻿using UnityEditor.IMGUI.Controls;
 
-using Codice.Client.BaseCommands;
+using Codice.CM.Common;
 
 namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon.Errors
 {

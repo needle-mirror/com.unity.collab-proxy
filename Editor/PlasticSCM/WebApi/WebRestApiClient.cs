@@ -329,6 +329,6 @@ namespace Unity.PlasticSCM.Editor.WebApi
                 Environment.NewLine, ex.StackTrace);
         }
 
-        static readonly ILog mLog = LogManager.GetLogger("WebRestApiClient");
+        static readonly ILog mLog = PlasticApp.GetLogger("WebRestApiClient");
     }
 }

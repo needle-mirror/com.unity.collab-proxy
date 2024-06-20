@@ -30,6 +30,18 @@ namespace Unity.PlasticSCM.Editor
 {
     internal static class PlasticApp
     {
+        static PlasticApp()
+        {
+            RegisterDomainUnloadHandler();
+
+            mLog = GetLogger("PlasticApp");
+        }
+
+        internal static ILog GetLogger(string name)
+        {
+            return LogManager.GetLogger(name);
+        }
+
         internal static void InitializeIfNeeded()
         {
             if (mIsInitialized)
@@ -39,10 +51,13 @@ namespace Unity.PlasticSCM.Editor
 
             ConfigureLogging();
 
+            mLog.Debug("InitializeIfNeeded");
+
             if (!PlasticPlugin.IsUnitTesting)
                 GuiMessage.Initialize(new UnityPlasticGuiMessage());
 
             RegisterExceptionHandlers();
+            RegisterBeforeAssemblyReloadHandler();
 
             InitLocalization();
 
@@ -64,19 +79,19 @@ namespace Unity.PlasticSCM.Editor
 
             if (!PlasticPlugin.IsUnitTesting)
             {
-                sEventSenderScheduler = EventTracking.Configure(
+                mEventSenderScheduler = EventTracking.Configure(
                     (PlasticWebRestApi)PlasticGui.Plastic.WebRestAPI,
                     ApplicationIdentifier.UnityPackage,
                     IdentifyEventPlatform.Get());
             }
 
-            if (sEventSenderScheduler != null)
+            if (mEventSenderScheduler != null)
             {
                 UVCPackageVersion.AsyncGetVersion();
 
-                sPingEventLoop = new PingEventLoop(
+                mPingEventLoop = new PingEventLoop(
                     BuildGetEventExtraInfoFunction.ForPingEvent());
-                sPingEventLoop.Start();
+                mPingEventLoop.Start();
             }
 
             PlasticMethodExceptionHandling.InitializeAskCredentialsUi(
@@ -88,74 +103,78 @@ namespace Unity.PlasticSCM.Editor
         internal static void SetWorkspace(WorkspaceInfo wkInfo)
         {
             RegisterApplicationFocusHandlers();
-            RegisterAssemblyReloadHandlers();
 
-            if (sEventSenderScheduler == null)
+            if (mEventSenderScheduler == null)
                 return;
 
-            sPingEventLoop.SetWorkspace(wkInfo);
+            mPingEventLoop.SetWorkspace(wkInfo);
             PlasticGui.Plastic.WebRestAPI.SetToken(
                 CmConnection.Get().BuildWebApiTokenForCloudEditionDefaultUser());
         }
 
-        internal static void Dispose()
+        internal static void EnableMonoFsWatcherIfNeeded()
         {
-            mIsInitialized = false;
-
-            UnRegisterExceptionHandlers();
-
-            UnRegisterApplicationFocusHandlers();
-            UnRegisterAssemblyReloadHandlers();
-
-            if (sEventSenderScheduler != null)
-            {
-                sPingEventLoop.Stop();
-                // Launching and forgetting to avoid a timeout when sending events files and no
-                // network connection is available.
-                // This will be refactored once a better mechanism to send event is in place
-                sEventSenderScheduler.EndAndSendEventsAsync();
-            }
-
-            WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
-                ApplicationDataPath.Get(), PlasticGui.Plastic.API);
-
-            if (wkInfo == null)
+            if (PlatformIdentifier.IsMac())
                 return;
 
-            WorkspaceFsNodeReaderCachesCleaner.CleanWorkspaceFsNodeReader(wkInfo);
+            MonoFileSystemWatcher.IsEnabled = true;
         }
 
-        static void InitLocalization()
+        internal static void DisableMonoFsWatcherIfNeeded()
         {
-            string language = null;
-            try
-            {
-                language = ClientConfig.Get().GetLanguage();
-            }
-            catch
-            {
-                language = string.Empty;
-            }
+            if (PlatformIdentifier.IsMac())
+                return;
 
-            Localization.Init(language);
-            PlasticLocalization.SetLanguage(language);
+            MonoFileSystemWatcher.IsEnabled = false;
         }
 
-        static void ConfigureLogging()
+        internal static void Dispose(WorkspaceInfo wkInfo)
         {
+            if (!mIsInitialized)
+                return;
+
             try
             {
-                string log4netpath = ToolConfig.GetUnityPlasticLogConfigFile();
+                mLog.Debug("Dispose");
 
-                if (!File.Exists(log4netpath))
-                    WriteLogConfiguration.For(log4netpath);
+                UnRegisterExceptionHandlers();
+                UnRegisterApplicationFocusHandlers();
 
-                XmlConfigurator.Configure(new FileInfo(log4netpath));
+                if (mEventSenderScheduler != null)
+                {
+                    mPingEventLoop.Stop();
+                    // Launching and forgetting to avoid a timeout when sending events files and no
+                    // network connection is available.
+                    // This will be refactored once a better mechanism to send event is in place
+                    mEventSenderScheduler.EndAndSendEventsAsync();
+                }
+
+                if (wkInfo == null)
+                    return;
+
+                WorkspaceFsNodeReaderCachesCleaner.CleanWorkspaceFsNodeReader(wkInfo);
             }
-            catch
+            finally
             {
-                //it failed configuring the logging info; nothing to do.
+                mIsInitialized = false;
             }
+        }
+
+        static void RegisterDomainUnloadHandler()
+        {
+            AppDomain.CurrentDomain.DomainUnload += AppDomainUnload;
+        }
+
+        static void RegisterBeforeAssemblyReloadHandler()
+        {
+            AssemblyReloadEvents.beforeAssemblyReload += BeforeAssemblyReload;
+        }
+
+        static void RegisterApplicationFocusHandlers()
+        {
+            EditorWindowFocus.OnApplicationActivated += OnApplicationActivated;
+
+            EditorWindowFocus.OnApplicationDeactivated += OnApplicationDeactivated;
         }
 
         static void RegisterExceptionHandlers()
@@ -165,11 +184,21 @@ namespace Unity.PlasticSCM.Editor
             Application.logMessageReceivedThreaded += HandleLog;
         }
 
-        static void RegisterApplicationFocusHandlers()
+        static void UnRegisterDomainUnloadHandler()
         {
-            EditorWindowFocus.OnApplicationActivated += EnableFsWatcher;
+            AppDomain.CurrentDomain.DomainUnload -= AppDomainUnload;
+        }
 
-            EditorWindowFocus.OnApplicationDeactivated += DisableFsWatcher;
+        static void UnRegisterBeforeAssemblyReloadHandler()
+        {
+            AssemblyReloadEvents.beforeAssemblyReload -= BeforeAssemblyReload;
+        }
+
+        static void UnRegisterApplicationFocusHandlers()
+        {
+            EditorWindowFocus.OnApplicationActivated -= OnApplicationActivated;
+
+            EditorWindowFocus.OnApplicationDeactivated -= OnApplicationDeactivated;
         }
 
         static void UnRegisterExceptionHandlers()
@@ -179,23 +208,11 @@ namespace Unity.PlasticSCM.Editor
             Application.logMessageReceivedThreaded -= HandleLog;
         }
 
-        static void UnRegisterApplicationFocusHandlers()
+        static void AppDomainUnload(object sender, EventArgs e)
         {
-            EditorWindowFocus.OnApplicationActivated -= EnableFsWatcher;
+            mLog.Debug("AppDomainUnload");
 
-            EditorWindowFocus.OnApplicationDeactivated -= DisableFsWatcher;
-        }
-
-        static void RegisterAssemblyReloadHandlers()
-        {
-            AssemblyReloadEvents.beforeAssemblyReload += DisableFsWatcher;
-            AssemblyReloadEvents.afterAssemblyReload += EnableFsWatcher;
-        }
-
-        static void UnRegisterAssemblyReloadHandlers()
-        {
-            AssemblyReloadEvents.beforeAssemblyReload -= DisableFsWatcher;
-            AssemblyReloadEvents.afterAssemblyReload -= EnableFsWatcher;
+            UnRegisterDomainUnloadHandler();
         }
 
         static void HandleUnhandledException(object sender, UnhandledExceptionEventArgs args)
@@ -231,16 +248,62 @@ namespace Unity.PlasticSCM.Editor
             });
         }
 
-        static void EnableFsWatcher()
+        static void OnApplicationActivated()
         {
-            MonoFileSystemWatcher.IsEnabled = true;
+            mLog.Debug("OnApplicationActivated");
+
+            EnableMonoFsWatcherIfNeeded();
         }
 
-        static void DisableFsWatcher()
+        static void OnApplicationDeactivated()
         {
-            MonoFileSystemWatcher.IsEnabled = false;
+            mLog.Debug("OnApplicationDeactivated");
+
+            DisableMonoFsWatcherIfNeeded();
         }
 
+        static void BeforeAssemblyReload()
+        {
+            mLog.Debug("BeforeAssemblyReload");
+
+            UnRegisterBeforeAssemblyReloadHandler();
+
+            PlasticShutdown.Shutdown();
+        }
+
+        static void ConfigureLogging()
+        {
+            try
+            {
+                string log4netpath = ToolConfig.GetUnityPlasticLogConfigFile();
+
+                if (!File.Exists(log4netpath))
+                    WriteLogConfiguration.For(log4netpath);
+
+                XmlConfigurator.Configure(new FileInfo(log4netpath));
+            }
+            catch
+            {
+                //it failed configuring the logging info; nothing to do.
+            }
+        }
+
+        static void InitLocalization()
+        {
+            string language = null;
+            try
+            {
+                language = ClientConfig.Get().GetLanguage();
+            }
+            catch
+            {
+                language = string.Empty;
+            }
+
+            Localization.Init(language);
+            PlasticLocalization.SetLanguage(language);
+        }
+        
         static void SetupFsWatcher()
         {
             if (!PlatformIdentifier.IsMac())
@@ -270,10 +333,8 @@ namespace Unity.PlasticSCM.Editor
         }
 
         static bool mIsInitialized;
-
-        static EventSenderScheduler sEventSenderScheduler;
-        static PingEventLoop sPingEventLoop;
-
-        static readonly ILog mLog = LogManager.GetLogger("PlasticApp");
+        static EventSenderScheduler mEventSenderScheduler;
+        static PingEventLoop mPingEventLoop;
+        static ILog mLog;
     }
 }

@@ -125,7 +125,7 @@
 Copyright © 2006-{0} Unity Technologies. All Rights Reserved.
 
 == FiltersAndConditionalFormat ==
-筛选器和格式
+高级过滤器和格式
 
 == ReleaseNotesLinkText ==
 发行说明
@@ -1378,15 +1378,6 @@ Unity DevOps Version Control - 工作区：{0} - {1} - {2}:{3}@{4}
 == BrexDisplayOptions ==
 显示选项
 
-== InitialDateLabel ==
-自：
-
-== EndDateLabel ==
-至：
-
-== SinceDateLabel ==
-自：
-
 == SelectAll ==
 全选
 
@@ -2075,6 +2066,9 @@ Gluon 配置
 容器文件夹
 
 == CheckinComment ==
+在此处输入签入注释
+
+== CheckinOnlyComment ==
 在此处输入签入注释
 
 == BrowseForFolderTitle ==
@@ -3731,9 +3725,6 @@ Cloud 存储库
 == ChangesetMerge ==
 从变更集 cs:{0} 合并
 
-== SwitchBranchButton ==
-切换分支...
-
 == PleaseTypeAPath ==
 请输入路径
 
@@ -4734,16 +4725,16 @@ https://www.plasticscm.com/download/help/locking
 不应将有待定注释的代码审查标记为已审查。是否仍然继续？
 
 == SinceOneWeekAgo ==
-1 周前
+上星期
 
 == SinceFifteenDaysAgo ==
-15 天前
+过去 15 天
 
 == SinceOneMonthAgo ==
-1 个月前
+上个月
 
 == SinceThreeMonthsAgo ==
-3 个月前
+过去 3 个月
 
 == SinceAGivenDate ==
 某个给定日期

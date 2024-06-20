@@ -18,20 +18,12 @@ namespace Unity.PlasticSCM.Editor
 
         static string GetVersionControl()
         {
-#if UNITY_2020_1_OR_NEWER
             return VersionControlSettings.mode;
-#else
-            return EditorSettings.externalVersionControl;
-#endif
         }
 
         static void SetVersionControl(string versionControl)
         {
-#if UNITY_2020_1_OR_NEWER
             VersionControlSettings.mode = versionControl;
-#else
-            EditorSettings.externalVersionControl = versionControl;
-#endif
         }
     }
 }

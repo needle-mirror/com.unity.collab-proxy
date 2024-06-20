@@ -79,7 +79,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
 
             mApplyRulesToAllWorkspace = EditorGUILayout.ToggleLeft(
                 PlasticLocalization.GetString(PlasticLocalization.Name.ApplyRulesToAllWorkspaceCheckButton),
-                mApplyRulesToAllWorkspace, GUILayout.Width(200));
+                mApplyRulesToAllWorkspace, GUILayout.ExpandWidth(true));
         }
 
         void DoButtonsArea()

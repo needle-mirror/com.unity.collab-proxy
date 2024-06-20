@@ -42,8 +42,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             string userName,
             string password)
         {
-            mNotify.SuccessForConfigure(
-                organizations);
+            // Do nothing
         }
 
         void Login.INotify.SuccessForSSO(
@@ -65,7 +64,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         void Login.INotify.SuccessForHomeView(string userName)
         {
-            // Do nothing
+            mNotify.SuccessForHomeView(userName);
         }
 
         void Login.INotify.ValidationFailed(
@@ -124,7 +123,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 mPasswordField.text,
                 string.Empty,
                 string.Empty,
-                Login.Mode.Configure,
+                Login.Mode.HomeView,
                 mProgressControls,
                 this);
         }

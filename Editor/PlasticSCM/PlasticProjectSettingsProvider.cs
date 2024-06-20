@@ -163,10 +163,9 @@ namespace Unity.PlasticSCM.Editor
                     PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
                     TrackFeatureUseEvent.Features.UnityPackage.DisableManually);
 
-                PlasticPlugin.ConnectionMonitor.Stop();
                 PlasticPluginIsEnabledPreference.Disable();
                 CloseWindowIfOpened.Plastic();
-                PlasticPlugin.Disable();
+                PlasticShutdown.Shutdown();
                 return;
             }
         }
@@ -354,6 +353,7 @@ namespace Unity.PlasticSCM.Editor
                 resultWkStatusOptions,
                 matchingOptions,
                 mUseChangeLists,
+                true,
                 false,
                 mAutoRefresh,
                 false,

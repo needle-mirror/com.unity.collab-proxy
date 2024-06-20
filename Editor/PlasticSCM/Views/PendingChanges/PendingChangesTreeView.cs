@@ -283,14 +283,19 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 if (changeInfo.IsDirectory)
                 {
                     dirChanges.Add(changeInfo);
-                    continue;
+                }
+                else
+                {
+                    fileChanges.Add(changeInfo);    
                 }
 
-                fileChanges.Add(changeInfo);
-            }
+                ChangeInfo metaChangeInfo = mPendingChangesTree.GetMetaChange(changeInfo);
 
-            mPendingChangesTree.FillWithMeta(fileChanges);
-            mPendingChangesTree.FillWithMeta(dirChanges);
+                if (metaChangeInfo != null)
+                {
+                    fileChanges.Add(metaChangeInfo);
+                }
+            }
 
             privateDirectories = dirChanges.Select(
                 d => d.GetFullPath()).ToList();

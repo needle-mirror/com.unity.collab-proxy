@@ -37,8 +37,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
                 if (string.IsNullOrEmpty(pendingChangesTab.CommentText))
                 {
-                    DoPlaceholderIfNeeded(PlasticLocalization.GetString(
-                        PlasticLocalization.Name.CheckinComment),
+                    DoPlaceholderIfNeeded(PlasticLocalization.GetString(PlasticLocalization.Name.CheckinOnlyComment),
                         textAreaRect);
                 }
 

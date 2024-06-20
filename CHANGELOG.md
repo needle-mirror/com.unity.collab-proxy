@@ -2,6 +2,32 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.4.3] - 2024-06-20
+
+### Added
+
+- Changed the default ignore.conf to not ignore itself
+- Added "Undo unchanged" and "Undo checkouts keeping changes" options to pending changes view
+- Removed focus redirection after Check-in
+
+### Fixed
+
+- Moving folders in the Editor now correctly use the UVCS "Move" operation
+- Fixed hang on domain reload 
+- Fixed "item with the same key has already been added" error
+- Fixed failure to delete a .meta file when deleting a private folder from the pending changes
+- Supported workspace name with non-latin characters in Pending Changes
+- Fixed text cut-off in filter rules dialog
+- Fixed unexpected error while switching between branches
+- Fixed error after renaming a parent branch of the working branch
+- Fixed variables's value becoming clear after resolving conflict in inspector
+- Removed misleading indication about shelves
+- Fixed column sorting in pending changes view
+- Fixed missing incoming changes after removing a branch
+- Fixed "Collection was modified" error when doing multiple renames in a row
+- Fixed undo & check-in operations not working when the current scene was never saved
+- Fixed check in error if nothing is selected in the pending changes tree
+
 ## [2.3.1] - 2024-02-27
 
 Unity Version Control is now available as part of the Version Control Package! You can enable Unity Version Control via Window > Unity Version Control to get started!
@@ -19,7 +45,6 @@ Removing a previously added Plastic SCM Asset Store Plug-In:
 
 - Fixed DropdownField not working properly on a ModalUtility window on MacOS.
 - Fixed issue with existing checkout operations locking the workspace.
-- Retained locks prevented to checkout assets.
 - Reviewed initialization and application lifecycle.
 - Fixed layout error when switching checkout status in the inspector.
 - Fixed Diff option unavailable for .prefab.
@@ -31,6 +56,7 @@ Removing a previously added Plastic SCM Asset Store Plug-In:
 - Fixed finding changes operation being firing constantly.
 - Removed obsolete content in package documentation.
 - Fixed typo in locks tooltip.
+- Replaced the text "plasticscm.com" by a https://unity.com/solutions/version-control in the package.json
 
 ## [2.2.0] - 2023-10-06
 

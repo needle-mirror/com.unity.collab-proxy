@@ -7,6 +7,7 @@ using UnityEngine;
 using Codice.Client.Common.Threading;
 using Codice.LogWrapper;
 using PlasticGui.Configuration.OAuth;
+using PlasticGui.WebApi.Responses;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.WebApi;
@@ -55,8 +56,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             string userName,
             string accessToken)
         {
-            mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseSuccess;
-            ChooseOrganization(organizations);
         }
 
         void OAuthSignIn.INotify.SuccessForSSO(string organization)
@@ -69,6 +68,8 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         void OAuthSignIn.INotify.SuccessForHomeView(string userName)
         {
+            mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseSuccess;
+            ChooseOrganization(userName);
         }
 
         void OAuthSignIn.INotify.SuccessForCredentials(
@@ -150,10 +151,10 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         void GetOrganizationList()
         {
             OAuthSignIn.GetOrganizationsFromAccessToken(
-                string.Empty,
-                CloudProjectSettings.userName,
+                SsoProvider.UNITY_URL_ACTION,
+                UserName,
                 AccessToken,
-                OAuthSignIn.Mode.Configure,
+                OAuthSignIn.Mode.HomeView,
                 new ProgressControlsForDialogs(),
                 this,
                 PlasticGui.Plastic.WebRestAPI
@@ -161,7 +162,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         }
 
         void ChooseOrganization(
-            List<string> organizations)
+            string userName)
         {
             mPlasticWindow = GetPlasticWindow();
 
@@ -170,13 +171,9 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 mPlasticWindow.CmConnectionForTesting, null, true);
 
             mCloudEditionWelcomeWindow = CloudEditionWelcomeWindow.GetWelcomeWindow();
-            mCloudEditionWelcomeWindow.FillUserAndToken(UserName, AccessToken);
-            if (organizations.Count == 1)
-            {
-                mCloudEditionWelcomeWindow.JoinOrganizationAndWelcomePage(organizations[0]);
-                return;
-            }
-            mCloudEditionWelcomeWindow.ShowOrganizationPanelFromAutoLogin(organizations);
+            mCloudEditionWelcomeWindow.ShowOrganizationPanelFromAutoLogin();
+            mCloudEditionWelcomeWindow.Focus();
+            mCloudEditionWelcomeWindow.FillUser(userName);
         }
 
         static PlasticWindow GetPlasticWindow()
@@ -193,7 +190,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         PlasticWindow mPlasticWindow;
         CloudEditionWelcomeWindow mCloudEditionWelcomeWindow;
 
-        static readonly ILog mLog = LogManager.GetLogger("TokensExchange");
+        static readonly ILog mLog = PlasticApp.GetLogger("TokensExchange");
     }
 
 }

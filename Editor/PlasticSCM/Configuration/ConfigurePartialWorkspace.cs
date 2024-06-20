@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-using Codice.Client.Commands.Mount;
 using Codice.Client.Commands.WkTree;
 using Codice.Client.Common;
 using Codice.Client.Common.GameUI;
 using Codice.CM.Common;
+using Codice.CM.Common.Mount;
+using Codice.CM.Common.Partial;
 using Codice.CM.WorkspaceServer.DataStore.Configuration;
 
 namespace Unity.PlasticSCM.Editor.Configuration

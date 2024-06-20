@@ -117,7 +117,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                             serverSpecPart,
                             string.Empty);
 
-                    mDialogUserAssistant = new CreateWorkspaceDialogUserAssistant(
+                    mDialogUserAssistant = CreateWorkspaceDialogUserAssistant.ForWkPathAndName(
                         mWorkspacePath,
                         allWorkspaces);
 

@@ -14,6 +14,7 @@ using Codice.Client.Common.Threading;
 using Codice.CM.Client.Gui;
 using Codice.CM.Common;
 using Codice.CM.Common.Merge;
+using Codice.CM.Common.Mount;
 using Codice.LogWrapper;
 using GluonGui;
 using GluonGui.WorkspaceWindow.Views.Checkin.Operations;
@@ -26,7 +27,6 @@ using PlasticGui.WorkspaceWindow.Items;
 using PlasticGui.WorkspaceWindow.Open;
 using PlasticGui.WorkspaceWindow.PendingChanges;
 using PlasticGui.WorkspaceWindow.PendingChanges.Changelists;
-using Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
@@ -53,6 +53,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         IPendingChangesMenuOperations,
         IChangelistMenuOperations,
         IOpenMenuOperations,
+        PendingChangesViewPendingChangeMenu.IAdvancedUndoMenuOperations,
         IFilesFilterPatternsMenuOperations,
         PendingChangesViewMenu.IGetSelectedNodes,
         ChangesetsTab.IRevertToChangesetListener
@@ -571,13 +572,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 true, out changesToUndo, out dependenciesCandidates);
 
             UndoChangesForMode(
-                mWkInfo, mIsGluonMode, 
+                mWkInfo, mIsGluonMode,
                 changesToUndo, dependenciesCandidates);
         }
 
         void IChangelistMenuOperations.CreateNew()
         {
-            ChangelistCreationData changelistCreationData = 
+            ChangelistCreationData changelistCreationData =
                 CreateChangelistDialog.CreateChangelist(mWkInfo, mParentWindow);
 
             ChangelistOperations.CreateNew(mWkInfo, this, changelistCreationData);
@@ -594,7 +595,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             ChangelistOperations.CreateNew(mWkInfo, this, changelistCreationData);
 
             ChangelistOperations.MoveToChangelist(
-                mWkInfo, this, changes, 
+                mWkInfo, this, changes,
                 changelistCreationData.ChangelistInfo.Name);
         }
 
@@ -679,12 +680,22 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             bool isApplicableToAllWorkspaces = !mIsGluonMode;
             bool isAddOperation = operation == FilterOperationType.Add;
 
-            FilterRulesConfirmationData filterRulesConfirmationData = 
+            FilterRulesConfirmationData filterRulesConfirmationData =
                 FilterRulesConfirmationDialog.AskForConfirmation(
                     rules, isAddOperation, isApplicableToAllWorkspaces, mParentWindow);
 
             AddFilesFilterPatternsOperation.Run(
                 mWkInfo, mWorkspaceWindow, type, operation, filterRulesConfirmationData);
+        }
+
+        void PendingChangesViewPendingChangeMenu.IAdvancedUndoMenuOperations.UndoUnchanged()
+        {
+            UndoUnchangedFor(PendingChangesSelection.GetSelectedChanges(mPendingChangesTreeView));
+        }
+
+        void PendingChangesViewPendingChangeMenu.IAdvancedUndoMenuOperations.UndoCheckoutsKeepingChanges()
+        {
+            UndoCheckoutsKeepingChangesFor(PendingChangesSelection.GetSelectedChanges(mPendingChangesTreeView));
         }
 
         List<IPlasticTreeNode> PendingChangesViewMenu.IGetSelectedNodes.GetSelectedNodes()
@@ -837,7 +848,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             DoOperationsToolbar(
               mWkInfo,
               mIsGluonMode,
-              mAdvancedDropdownMenu,
+              mUndoDropdownMenu,
               mProgressControls.IsOperationRunning());
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndVertical();
@@ -854,7 +865,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         void DoOperationsToolbar(
             WorkspaceInfo wkInfo,
             bool isGluonMode,
-            GenericMenu advancedDropdownMenu,
+            GenericMenu undoDropdownMenu,
             bool isOperationRunning)
         {
             EditorGUILayout.BeginHorizontal();
@@ -867,14 +878,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                     CheckinForMode(wkInfo, isGluonMode, mKeepItemsLocked);
                 }
 
-                else if (DrawActionButton.ForCommentSection(
+                if (DrawActionButton.ForCommentSection(
                         PlasticLocalization.GetString(
                             PlasticLocalization.Name.CheckinChanges)))
                 {
                     UpdateIsCommentWarningNeeded(CommentText);
 
-                    if (!mIsEmptyCheckinCommentWarningNeeded &&
-                        mPendingChangesTreeView.GetCheckedItemCount() > 0)
+                    if (!mIsEmptyCheckinCommentWarningNeeded)
                     {
                         CheckinForMode(wkInfo, isGluonMode, mKeepItemsLocked);
                     }
@@ -882,13 +892,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
                 GUILayout.Space(2);
 
-                if (DrawActionButton.ForCommentSection(PlasticLocalization.GetString(
-                        PlasticLocalization.Name.UndoChanges)))
-                {
-                    TrackFeatureUseEvent.For(PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
-                        TrackFeatureUseEvent.Features.UndoTextButton);
-                    UndoForMode(wkInfo, isGluonMode);
-                }
+                DoUndoButton(wkInfo, isGluonMode, undoDropdownMenu);
 
                 if (isGluonMode)
                 {
@@ -897,20 +901,37 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                         mKeepItemsLocked,
                         GUILayout.Width(UnityConstants.EXTRA_LARGE_BUTTON_WIDTH));
                 }
-                //TODO: Codice - beta: hide the advanced menu until the behavior is implemented
-                /*else
-                {
-                    var dropDownContent = new GUIContent(string.Empty);
-                    var dropDownRect = GUILayoutUtility.GetRect(
-                        dropDownContent, EditorStyles.toolbarDropDown);
-
-                    if (EditorGUI.DropdownButton(dropDownRect, dropDownContent,
-                            FocusType.Passive, EditorStyles.toolbarDropDown))
-                        advancedDropdownMenu.DropDown(dropDownRect);
-                }*/
             }
 
             EditorGUILayout.EndHorizontal();
+        }
+
+        void DoUndoButton(WorkspaceInfo wkInfo, bool isGluonMode, GenericMenu undoDropdownMenu)
+        {
+            string undoText = PlasticLocalization.GetString(PlasticLocalization.Name.UndoChanges);
+
+            if (isGluonMode)
+            {
+                if (DrawActionButton.ForCommentSection(undoText))
+                {
+                    UndoChangesAction(wkInfo, true);
+                }
+            }
+            else
+            {
+                DrawActionButtonWithMenu.For(
+                    undoText,
+                    () => UndoChangesAction(wkInfo, false),
+                    undoDropdownMenu);
+            }
+        }
+
+        void UndoChangesAction(WorkspaceInfo wkInfo, bool isGluonMode)
+        {
+            TrackFeatureUseEvent.For(PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
+                TrackFeatureUseEvent.Features.UndoTextButton);
+
+            UndoForMode(wkInfo, isGluonMode);
         }
 
         void UpdateChangesTree(List<ChangeInfo> changes)
@@ -1038,7 +1059,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             ExternalLink inviteUsersLink = new ExternalLink
             {
                 Label = PlasticLocalization.GetString(PlasticLocalization.Name.InviteOtherTeamMembers),
-                Url = UnityUrl.UnityDashboard.Plastic.GetForInviteUsers(organizationToInviteUsers)
+                Url = UnityUrl.UnityDashboard.Plastic.GetForInviteUsers(
+                    organizationToInviteUsers, UnityUrl.UnityDashboard.UnityCloudRequestSource.Editor)
             };
 
             DrawTreeViewEmptyState.For(
@@ -1081,10 +1103,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         {
             mHelpPanel = new HelpPanel(plasticWindow);
 
-            mAdvancedDropdownMenu = new GenericMenu();
-            mAdvancedDropdownMenu.AddItem(new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.UndoUnchangedButton)),
-                false, () => { });
+            mUndoDropdownMenu = new GenericMenu();
+            mUndoDropdownMenu.AddItem(
+                new GUIContent(PlasticLocalization.GetString(PlasticLocalization.Name.UndoUnchangedButton)),
+                false, UndoUnchanged);
+            mUndoDropdownMenu.AddItem(
+                new GUIContent(PlasticLocalization.GetString(PlasticLocalization.Name.UndoCheckoutsKeepingChanges)),
+                false, UndoCheckoutsKeepingChanges);
 
             mSearchField = new SearchField();
             mSearchField.downOrUpArrowKeyPressed += SearchField_OnDownOrUpArrowKeyPressed;
@@ -1098,15 +1123,16 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mPendingChangesTreeView = new PendingChangesTreeView(
                 mWkInfo, mIsGluonMode, headerState,
                 PendingChangesTreeHeaderState.GetColumnNames(),
-                new PendingChangesViewMenu(mWkInfo, this, this, this, this, this, this, mIsGluonMode),
+                new PendingChangesViewMenu(mWkInfo, this, this, this, this, this, this, this, mIsGluonMode),
                 mAssetStatusCache);
             mPendingChangesTreeView.Reload();
 
             mMergeLinksListView = new MergeLinksListView();
             mMergeLinksListView.Reload();
         }
+
         INewChangesInWk mNewChangesInWk;
-        GenericMenu mAdvancedDropdownMenu;
+        GenericMenu mUndoDropdownMenu;
 
         void ClearComments()
         {
@@ -1158,6 +1184,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         readonly ViewHost mViewHost;
         readonly WorkspaceInfo mWkInfo;
 
-        static readonly ILog mLog = LogManager.GetLogger("PendingChangesTab");
+        static readonly ILog mLog = PlasticApp.GetLogger("PendingChangesTab");
     }
 }

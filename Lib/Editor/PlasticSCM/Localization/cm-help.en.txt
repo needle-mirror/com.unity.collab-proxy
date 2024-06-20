@@ -1,3 +1,219 @@
+== CMD_DESCRIPTION_ACCESS_TOKEN ==
+Allows the user to manage Access Tokens.
+
+== CMD_USAGE_ACCESS_TOKEN ==
+Usage:
+
+    cm ^accesstoken <command> [options]
+
+Commands:
+
+    - ^create
+    - ^list
+    - ^reveal
+    - ^revoke
+
+    To get more information about each command run:
+    cm ^accesstoken <command> --^usage
+    cm ^accesstoken <command> --^help
+
+== CMD_HELP_ACCESS_TOKEN ==
+Examples:
+
+    cm ^accesstoken ^create "To be used by the Build Server"
+    cm ^accesstoken ^list
+    cm ^accesstoken ^reveal 19c57d0f-c525-4767-8670-82f7ecc2ccdb
+    cm ^accesstoken ^revoke 19c57d0f-c525-4767-8670-82f7ecc2ccdb
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_CREATE == 
+Creates a new access token.
+
+== CMD_USAGE_ACCESS_TOKEN_CREATE == 
+Usage:
+
+    cm ^accesstoken ^create <description> [<repserverspec>]
+        [--^format=<str_format>] [--dateformat=<str_date_format>]
+
+    description         A description that helps identify the purpose
+                        of the access token.
+    repserverspec       Repository server specification.
+                        (Use 'cm ^help ^objectspec' to learn more about rep server
+                        specs.)
+    --^format            Retrieves the output message in a specific format. See
+                        Remarks for more info.
+    --^dateformat        Sets the output format to print dates.
+
+== CMD_HELP_ACCESS_TOKEN_CREATE ==
+Remarks:
+
+    The access token lifespan will be determined by the server configuration.
+    It is not possible to set the token lifespan at creation time.
+
+    Output format parameters (--^format option):
+
+    This command accepts a format string to show the output.
+
+    The output parameters of this command are the following:
+    {^id}             | {0}         ID of the access token.
+    {^description}    | {1}         Description of the access token.
+    {^owner}          | {2}         Owner of the access token.
+    {^creationdate}   | {3}         Creation date of the access token.
+    {^expirationdate} | {4}         Expiration date of the access token.
+    {^lastusedate}    | {5}         Last use date of the access token.
+    {^tab}                          Inserts a tab space.
+    {^newline}                      Inserts a new line.
+
+    If the format parameter is not specified, the output will be printed
+    using a table format.
+
+Examples:
+
+    cm ^accesstoken ^create "Token for Build Server"
+    (Creates a new access token with the provided description against the default
+     repserver.)
+
+    cm ^accesstoken ^create "Token for Build Server" skull:8087
+    (Creates a new access token with the provided description on repserver skull:8087.)
+
+    cm ^accesstoken ^create "Token for Build Server" --^format="{^id}"
+    (Creates a new access token with the provided description against the default
+     repserver and only displays its ID.)
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_LIST ==
+Lists access tokens.
+
+== CMD_USAGE_ACCESS_TOKEN_LIST ==
+Usage:
+
+    cm ^accesstoken ^list [<repserverspec>]
+        [--^format=<str_format>] [--^dateformat=<str_date_format>]
+
+    repserverspec       Repository server specification.
+                        (Use 'cm ^help ^objectspec' to learn more about rep server
+                        specs.)
+    --^format            Retrieves the output message in a specific format. See
+                        Remarks for more info.
+    --^dateformat        Sets the output format to print dates.
+
+== CMD_HELP_ACCESS_TOKEN_LIST ==
+Remarks:
+
+    You can only list your own access tokens. Revoked access tokens will not be
+    returned as part of the result. On the other hand, expired access tokens will.
+
+    Output format parameters (--^format option):
+
+    This command accepts a format string to show the output.
+
+    The output parameters of this command are the following:
+    {^id}             | {0}         ID of the access token.
+    {^description}    | {1}         Description of the access token.
+    {^owner}          | {2}         Owner of the access token.
+    {^creationdate}   | {3}         Creation date of the access token.
+    {^expirationdate} | {4}         Expiration date of the access token.
+    {^lastusedate}    | {5}         Last use date of the access token.
+    {^tab}                          Inserts a tab space.
+    {^newline}                      Inserts a new line.
+
+    If the format parameter is not specified, the output will be printed
+    using a table format.
+
+Examples:
+
+    cm ^accesstoken ^list
+    (Lists access tokens on the default repserver.)
+
+    cm ^accesstoken ^list skull:8087
+    (Lists access tokens on repserver skull:8087.)
+
+    cm ^accesstoken ^list --^format="{^id}"
+    (Lists access tokens on the default repserver and only displays their IDs.)
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_REVOKE ==
+Revokes an existing access token.
+
+== CMD_USAGE_ACCESS_TOKEN_REVOKE ==
+Usage:
+
+    cm ^accesstoken ^revoke <id> [<repserverspec>]
+
+    id                  The ID of the access token to be revoked.
+    repserverspec       Repository server specification.
+                        (Use 'cm ^help ^objectspec' to learn more about rep server
+                        specs.)
+
+== CMD_HELP_ACCESS_TOKEN_REVOKE ==
+Remarks:
+
+    You can only revoke your own access tokens. Trying to revoke an access token
+    that does not exist or does not belong to you will result in an error.
+    (See '^cm ^accesstoken ^list --^help' for further information.)
+
+    To revoke an access token you need to provide the full ID.
+
+    Revoking an access token does not mean that the already revealed Unity VCS
+    tokens will stop functioning immediately.
+    The maximum amount of time that can pass between revoking an access token
+    and the revealed Unity VCS token stopping working depends on the
+    'TokenExpirationTimeSpan' configuration key in your server.conf.
+    By default, it is 1 hour.
+    If you need to know the exact value configured for your Unity VCS server,
+    please contact your repository server administrator.
+    (See '^cm ^accesstoken ^reveal --^help' for further information.)
+
+Examples:
+
+    cm ^accesstoken ^revoke de0be8a4-2a7a-44c6-9c4c-82c8222dbc6f
+    (Revokes the access token with the provided ID from the default repserver.)
+
+    cm ^accesstoken ^revoke de0be8a4-2a7a-44c6-9c4c-82c8222dbc6f skull:8087
+    (Revokes the access token with the provided ID from repserver skull:8087.)
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_REVEAL ==
+Reveals an access token so it can be used as the authentication credentials.
+
+== CMD_USAGE_ACCESS_TOKEN_REVEAL ==
+Usage:
+
+    cm ^accesstoken ^reveal <id> [<repserverspec>]
+
+    id                  The ID of the access token to be revealed.
+    repserverspec       Repository server specification.
+                        (Use 'cm ^help ^objectspec' to learn more about rep server
+                        specs.)
+
+
+== CMD_HELP_ACCESS_TOKEN_REVEAL ==
+Remarks:
+
+    You can only reveal your own access tokens. Trying to reveal an access token
+    that does not exist or does not belong to you will result in an error.
+    (See '^cm ^accesstoken ^list --^help' for further information.)
+
+    To reveal an access token you need to provide the full ID.
+
+    The revealed token can be used for automation purposes. You can pass it down
+    in subsequent 'cm' commands (either in the same machine or a different one)
+    by using the following 'cm' arguments (replace accordingly):
+
+        $ cm ^repo ^list \
+            --^username=^Peter \
+            --^workingmode=^OIDCWorkingMode \
+            --^token="the revealed token" \
+            --^server=skull:8087
+
+    The revealed token will be valid from the very moment it was revealed, and
+    will be automatically renewed as long as the related access token is not
+    expired nor revoked.
+
+Examples:
+
+    cm ^accesstoken ^reveal d2f43753-f612-4e51-b9b4-3c2883d7cf95
+    (Reveals the access token with the provided ID on the default repserver.)
+
+    cm ^accesstoken ^reveal d2f43753-f612-4e51-b9b4-3c2883d7cf95 skull:8087
+    (Reveals the access token with the provided ID on repserver skull:8087.)
+
 == CMD_DESCRIPTION_ACL ==
 Sets permissions on an object.
 
@@ -1779,8 +1995,6 @@ Remarks:
         ^ClientPath              The local path on disk for the item.
         ^RelativePath            The workspace-relative path.
         ^ServerPath              The repository path for the item.
-                                   (Note: Transformed workspaces are not
-                                   currently supported for this option).
         ^Size                    Item size.
         ^Hash                    Item hash sum.
         ^Owner                   The user the item belongs to.
@@ -2947,9 +3161,6 @@ Remarks:
     - {^newlocation} (cset@branch)
     - {^guid} (Will take longer to resolve)
     - {^itemguid}
-    - {^transformed} (Show applied rule for transformed items. Check the
-      Administrator Guide to learn about Transformable workspaces:
-      https://www.plasticscm.com/download/help/adminguide)
 
     You can customize the '^ls' format setting the PLASTIC_LS_FORMAT environment
     variable.
@@ -3491,10 +3702,30 @@ Deletes one or more branches.
 Usage:
 
     cm ^branch | ^br ^delete | ^rm <brspec>[ ...]
+                            [--^delete-changesets]
 
     brspec              Branch to delete. Use a whitespace to separate branches.
                         (Use 'cm ^help ^objectspec' to learn more about branch
                         specs.)
+
+Options:
+
+    --^delete-changesets     For non-emtpy branches, first deletes the changesets
+                            within the branch, then deletes the branch.
+                            The operation will fail in the following scenarios:
+                            - The branch includes the changeset zero (the main
+                            branch in your repository).
+                            - One or more changesets in the branch have a label
+                            pointing to them.
+                            - One or more shelvesets where created from changesets
+                            in the branch.
+                            - The branch has child branches (even if the child
+                            branch is empty).
+                            - One or more changesets in the branch are the source
+                            of a merge, and the destination is not included in
+                            the branch being deleted.
+                            The operation is atomic. Either all or none of the
+                            changesets in the branch are removed.
 
 == CMD_HELP_BRANCH_DELETE ==
 Remarks:
@@ -3510,6 +3741,9 @@ Examples:
     cm ^br ^rm main/task002 /main/task012@reptest@myserver:8084
     (Deletes branches '/main/task002' in the repository of the current workspace
     and '/main/task012' in the repository 'reptest@myserver:8084'.)
+
+    cm ^br ^rm main/task002 --delete-changesets
+    (Deletes branch '/main/task002' and all of its changesets at once).
 
 == CMD_DESCRIPTION_BRANCH_RENAME ==
 Renames a branch.
@@ -4120,7 +4354,10 @@ Repository spec (repspec):
 
 Branch spec (brspec):
 
-    ^br:[/]br_name[@repspec]
+    There are different types of branch specs:
+
+    - ^br:[/]br_name[@repspec]
+    - ^br:^brguid:branch_guid[@repspec]
 
     Examples:
         cm ^switch ^br:/main@^rep:plastic@^repserver:skull:9095
@@ -4128,12 +4365,19 @@ Branch spec (brspec):
          command admits a much shorter form:
         "cm ^switch main@plastic@skull:9095".)
 
-        cm ^find ^revisions "^where ^branch='^br:/main/task001'"
+        cm ^find ^revisions "^where ^branch='^br:/main/task001'
+
+        cm ^switch ^br:^brguid:68846cdd-6a46-458c-a47f-52454cc150d9@plastic@skull:9095
+
+        cm ^find ^branch "^where ^parent='^brguid:68846cdd-6a46-458c-a47f-52454cc150d9'"
 
     Remark:
         The initial '/' on the branch is not mandatory. We used to specify all
         our branches as /main, /main/task001, and so on. But now, we prefer the
         shorter form main, main/task001 which makes commands more compact.
+
+        The guid spec is not valid for commands that needs the full branch name
+        (such as "cm ^create ^branch").
 
 Changeset spec (csetspec):
 

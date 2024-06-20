@@ -125,7 +125,7 @@
 Copyright © 2006-{0} Unity Technologies. All Rights Reserved.
 
 == FiltersAndConditionalFormat ==
-필터 및 형식
+고급 필터 및 형식
 
 == ReleaseNotesLinkText ==
 릴리스 노트
@@ -1378,15 +1378,6 @@ Unity DevOps Version Control - 워크스페이스: {0} - {1} - {2}: {3}@{4}
 == BrexDisplayOptions ==
 표시 옵션
 
-== InitialDateLabel ==
-다음에서:
-
-== EndDateLabel ==
-다음으로:
-
-== SinceDateLabel ==
-다음부터:
-
 == SelectAll ==
 모두 선택
 
@@ -2075,6 +2066,9 @@ Cloud 리포지토리 이름을 입력하십시오
 컨테이너 폴더
 
 == CheckinComment ==
+여기에 체크인 코멘트 입력
+
+== CheckinOnlyComment ==
 여기에 체크인 코멘트 입력
 
 == BrowseForFolderTitle ==
@@ -3731,9 +3725,6 @@ cs:{0} 체인지 세트에서 차감식 병합
 == ChangesetMerge ==
 cs:{0} 체인지 세트에서 병합
 
-== SwitchBranchButton ==
-브랜치 전환...
-
 == PleaseTypeAPath ==
 경로를 입력하십시오
 
@@ -4734,16 +4725,16 @@ Xlink 파일에 대한 검토 코멘트가 아직 지원되지 않습니다
 대기 중인 코멘트가 있는 코드 검토로 검토됨으로 표시하지 않아야 합니다. 그래도 계속하시겠습니까?
 
 == SinceOneWeekAgo ==
-1주 전
+지난주
 
 == SinceFifteenDaysAgo ==
-15일 전
+지난 15일
 
 == SinceOneMonthAgo ==
-1개월 전
+지난 달
 
 == SinceThreeMonthsAgo ==
-3개월 전
+지난 3개월
 
 == SinceAGivenDate ==
 지정된 날짜

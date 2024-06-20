@@ -7,6 +7,7 @@ using Codice.Client.Commands;
 using Codice.Client.Common;
 using Codice.CM.Common;
 using Codice.CM.Common.Merge;
+using Codice.CM.Common.Mount;
 using PlasticGui.WorkspaceWindow.PendingChanges;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Tree;

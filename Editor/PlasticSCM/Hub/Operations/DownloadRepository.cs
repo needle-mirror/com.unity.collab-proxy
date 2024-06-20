@@ -80,7 +80,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
 
             try
             {
-                if (FindWorkspace.HasWorkspace(parameters.ProjectFullPath))
+                if (FindWorkspace.HasWorkspace(parameters.WorkspaceFullPath))
                 {
                     // each domain reload, the package is reloaded.
                     // way need to check if we already downloaded it
@@ -93,7 +93,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
                     AutoConfig.PlasticCredentials(
                         parameters.AccessToken,
                         parameters.RepositorySpec.Server,
-                        parameters.ProjectFullPath);
+                        parameters.WorkspaceFullPath);
 
                 if (tokenExchangeResponse.Error != null)
                 {
@@ -111,7 +111,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
                 WorkspaceInfo wkInfo = CreateWorkspace.
                     CreateWorkspaceForRepSpec(
                         parameters.RepositorySpec,
-                        parameters.ProjectFullPath,
+                        parameters.WorkspaceFullPath,
                         mLog);
                
                 PlasticGui.Plastic.API.Update(
@@ -188,6 +188,6 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
 
         UpdateNotifier mUpdateNotifier = new UpdateNotifier();
 
-        static readonly ILog mLog = LogManager.GetLogger("DownloadRepository");
+        static readonly ILog mLog = PlasticApp.GetLogger("DownloadRepository");
     }
 }

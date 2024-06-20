@@ -4,6 +4,7 @@ using System.Linq;
 
 using Codice.Client.BaseCommands;
 using Codice.Client.Commands;
+using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.PendingChanges;
 using PlasticGui.WorkspaceWindow.PendingChanges.Changelists;

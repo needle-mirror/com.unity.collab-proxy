@@ -97,6 +97,8 @@ namespace Unity.PlasticSCM.Editor
 
         void OnEnable()
         {
+            mLog.Debug("OnEnable");
+
             wantsMouseMove = true;
 
             if (mException != null)
@@ -119,9 +121,11 @@ namespace Unity.PlasticSCM.Editor
 
         void OnDisable()
         {
-            // We need to disable FSWatcher because otherwise it hangs
+            mLog.Debug("OnDisable");
+
+            // We need to disable MonoFSWatcher because otherwise it hangs
             // when you move the window between monitors with different scale
-            MonoFileSystemWatcher.IsEnabled = false;
+            PlasticApp.DisableMonoFsWatcherIfNeeded();
 
             if (mException != null)
                 return;
@@ -139,6 +143,8 @@ namespace Unity.PlasticSCM.Editor
 
         void OnDestroy()
         {
+            mLog.Debug("OnDestroy");
+
             if (mException != null)
                 return;
 
@@ -156,12 +162,18 @@ namespace Unity.PlasticSCM.Editor
             if (bCloseWindow)
                 return;
 
+            mLog.Debug(
+                "Show window again because the user doesn't want " + 
+                "to quit it due to there is an operation running");
+
             mForceToOpen = true;
             ShowPlasticWindow(this);
         }
 
         void OnFocus()
         {
+            mLog.Debug("OnFocus");
+
             if (mException != null)
                 return;
 
@@ -179,8 +191,7 @@ namespace Unity.PlasticSCM.Editor
             if (Mouse.IsRightMouseButtonPressed(Event.current))
                 return;
 
-            mViewSwitcher.AutoRefreshPendingChangesView();
-            mViewSwitcher.AutoRefreshIncomingChangesView();
+            mCooldownAutoRefreshChangesAction.Ping();
         }
 
         void OnGUI()
@@ -248,6 +259,7 @@ namespace Unity.PlasticSCM.Editor
                     mShowDownloadPlasticExeWindow,
                     mProcessExecutor,
                     mIsGluonMode,
+                    mIsCloudOrganization,
                     mIsUGOSubscription,
                     mUpgradePlanUrl);
 
@@ -359,9 +371,23 @@ namespace Unity.PlasticSCM.Editor
 
                 InitializeNewIncomingChanges(mWkInfo, mIsGluonMode, mViewSwitcher);
 
-                mCooldownAutoRefreshPendingChangesAction = new CooldownWindowDelayer(
-                    mViewSwitcher.AutoRefreshPendingChangesView,
-                    UnityConstants.AUTO_REFRESH_PENDING_CHANGES_DELAYED_INTERVAL);
+                // Create a CooldownWindowDelayer to make the auto-refresh changes delayed.
+                // In this way, we cover the following scenario:
+                // * When Unity Editor window is activated it writes some files to its Temp
+                //   folder. This causes the fswatcher to process those events.
+                // * We need to wait until the fswatcher finishes processing the events,
+                //   otherwise the NewChangesInWk method will return TRUE because there
+                //   are pending events to process, which causes an unwanted 'get pending
+                //   changes' operation when there are no new changes.
+                // * So, we need to delay the auto-refresh call in order
+                //   to give the fswatcher enough time to process the events.
+                mCooldownAutoRefreshChangesAction = new CooldownWindowDelayer(
+                    () =>
+                    {
+                        mViewSwitcher.AutoRefreshPendingChangesView();
+                        mViewSwitcher.AutoRefreshIncomingChangesView();
+                    },
+                    UnityConstants.AUTO_REFRESH_CHANGES_DELAYED_INTERVAL);
 
                 mWorkspaceWindow = new WorkspaceWindow(
                     mWkInfo,
@@ -393,7 +419,6 @@ namespace Unity.PlasticSCM.Editor
                     mViewSwitcher,
                     mViewSwitcher,
                     mShowDownloadPlasticExeWindow,
-                    this,
                     mIsGluonMode);
 
                 DrawInspectorOperations.BuildOperations(
@@ -408,7 +433,6 @@ namespace Unity.PlasticSCM.Editor
                     mViewSwitcher,
                     mViewSwitcher,
                     mShowDownloadPlasticExeWindow,
-                    this,
                     mIsGluonMode);
 
                 mLastUpdateTime = EditorApplication.timeSinceStartup;
@@ -473,6 +497,7 @@ namespace Unity.PlasticSCM.Editor
 
         void GetSubscriptionDetails(WorkspaceInfo wkInfo)
         {
+            mIsCloudOrganization = false;
             mIsUGOSubscription = false;
             mUpgradePlanUrl = string.Empty;
 
@@ -482,6 +507,8 @@ namespace Unity.PlasticSCM.Editor
             {
                 return;
             }
+
+            mIsCloudOrganization = PlasticGui.Plastic.API.IsCloud(repSpec.Server);
 
             string organizationName = ServerOrganizationParser.GetOrganizationFromServer(repSpec.Server);
 
@@ -519,6 +546,8 @@ namespace Unity.PlasticSCM.Editor
 
         void OnApplicationActivated()
         {
+            mLog.Debug("OnApplicationActivated");
+
             if (mException != null)
                 return;
 
@@ -538,21 +567,13 @@ namespace Unity.PlasticSCM.Editor
                 mDeveloperNewIncomingChangesUpdater,
                 mGluonNewIncomingChangesUpdater);
 
-            // When Unity Editor window is activated it writes some files to its Temp folder.
-            // This causes the fswatcher to process those events.
-            // We need to wait until the fswatcher finishes processing the events,
-            // otherwise the NewChangesInWk method will return TRUE, causing
-            // the pending changes view to unwanted auto-refresh.
-            // So, we need to delay the auto-refresh call in order
-            // to give the fswatcher enough time to process the events.
-            // Note that the OnFocus event is not affected by this issue.
-            mCooldownAutoRefreshPendingChangesAction.Ping();
-
-            mViewSwitcher.AutoRefreshIncomingChangesView();
+            mCooldownAutoRefreshChangesAction.Ping();
         }
 
         void OnApplicationDeactivated()
         {
+            mLog.Debug("OnApplicationDeactivated");
+
             if (mException != null)
                 return;
 
@@ -658,6 +679,7 @@ namespace Unity.PlasticSCM.Editor
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             LaunchTool.IProcessExecutor processExecutor,
             bool isGluonMode,
+            bool isCloudOrganization,
             bool isUGOSubscription,
             string upgradePlanUrl)
         {
@@ -675,6 +697,7 @@ namespace Unity.PlasticSCM.Editor
                 showDownloadPlasticExeWindow,
                 processExecutor,
                 isGluonMode,
+                isCloudOrganization,
                 isUGOSubscription,
                 upgradePlanUrl);
 
@@ -778,6 +801,7 @@ namespace Unity.PlasticSCM.Editor
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             LaunchTool.IProcessExecutor processExecutor,
             bool isGluonMode,
+            bool isCloudOrganization,
             bool isUGOSubscription,
             string upgradePlanUrl)
         {
@@ -851,15 +875,13 @@ namespace Unity.PlasticSCM.Editor
                 OpenLocksViewAndSendEvent(wkInfo, viewSwitcher);
             }
 
-            RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(wkInfo);
-
-            if (PlasticGui.Plastic.API.IsCloud(repSpec.Server))
+            if (isCloudOrganization)
             {
                 if (DrawToolbarButton(
                     Images.GetInviteUsersIcon(),
                     PlasticLocalization.Name.InviteMembers.GetString()))
                 {
-                    InviteMembersToOrganization(repSpec);
+                    InviteMembersToOrganization(wkInfo);
                 }
 
                 if (isUGOSubscription)
@@ -903,8 +925,10 @@ namespace Unity.PlasticSCM.Editor
             Application.OpenURL(upgradePlanUrl);
         }
 
-        static void InviteMembersToOrganization(RepositorySpec repSpec)
+        static void InviteMembersToOrganization(WorkspaceInfo wkInfo)
         {
+            RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(wkInfo);
+
             string organizationName = ServerOrganizationParser.
                 GetOrganizationFromServer(repSpec.Server);
 
@@ -975,7 +999,8 @@ namespace Unity.PlasticSCM.Editor
 
         static void OpenUnityDashboardInviteUsersUrl(string organization)
         {
-            Application.OpenURL(UnityUrl.UnityDashboard.Plastic.GetForInviteUsers(organization));
+            Application.OpenURL(UnityUrl.UnityDashboard.Plastic.GetForInviteUsers(
+                organization, UnityUrl.UnityDashboard.UnityCloudRequestSource.Editor));
         }
 
         static void ForceCheckout_Clicked(object obj)
@@ -1098,7 +1123,7 @@ namespace Unity.PlasticSCM.Editor
             result.mWkInfo = window.mWkInfo;
             result.mWorkspaceWindow = window.mWorkspaceWindow;
             result.mViewSwitcher = window.mViewSwitcher;
-            result.mCooldownAutoRefreshPendingChangesAction = window.mCooldownAutoRefreshPendingChangesAction;
+            result.mCooldownAutoRefreshChangesAction = window.mCooldownAutoRefreshChangesAction;
             result.mDeveloperNewIncomingChangesUpdater = window.mDeveloperNewIncomingChangesUpdater;
             result.mGluonNewIncomingChangesUpdater = window.mGluonNewIncomingChangesUpdater;
             result.mException = window.mException;
@@ -1181,7 +1206,7 @@ namespace Unity.PlasticSCM.Editor
 
         double mLastUpdateTime = 0f;
 
-        CooldownWindowDelayer mCooldownAutoRefreshPendingChangesAction;
+        CooldownWindowDelayer mCooldownAutoRefreshChangesAction;
         internal ViewSwitcher mViewSwitcher;
         WelcomeView mWelcomeView;
 
@@ -1195,6 +1220,7 @@ namespace Unity.PlasticSCM.Editor
 
         bool mIsGluonMode;
         bool mDisableCollabIfEnabledWhenLoaded;
+        bool mIsCloudOrganization;
         bool mIsUGOSubscription;
         string mUpgradePlanUrl;
 
@@ -1206,6 +1232,6 @@ namespace Unity.PlasticSCM.Editor
         const string UGO_CONSUMPTION_URL_KEY = "consumptionUrl";
         const string UGO_ORDER_SOURCE = "UGO";
 
-        static readonly ILog mLog = LogManager.GetLogger("PlasticWindow");
+        static readonly ILog mLog = PlasticApp.GetLogger("PlasticWindow");
     }
 }

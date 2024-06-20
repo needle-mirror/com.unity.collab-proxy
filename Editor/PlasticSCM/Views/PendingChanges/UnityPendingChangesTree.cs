@@ -79,7 +79,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             bool bExcludePrivates)
         {
             return mInnerTree.GetDependenciesCandidates(
-                selectedChanges, bExcludePrivates);
+                new HashSet<ChangeInfo>(selectedChanges), bExcludePrivates);
         }
 
         internal void BuildChangeCategories(
@@ -92,7 +92,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mInnerTree = BuildPendingChangesTree.FromChanges(
                 wkInfo,
                 changes,
-                checkedStateManager);
+                checkedStateManager,
+                PlasticGuiConfig.Get().Configuration.CommitUseChangeLists,
+                PlasticGuiConfig.Get().Configuration.CommitGroupInCategories,
+                PlasticGuiConfig.Get().Configuration.CommitViewAsATree);
         }
 
         internal ChangeInfo GetChangedForMoved(ChangeInfo moved)

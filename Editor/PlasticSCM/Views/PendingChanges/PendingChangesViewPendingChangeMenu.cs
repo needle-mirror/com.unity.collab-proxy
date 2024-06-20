@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-
+using System.Linq;
+using Codice.Client.BaseCommands;
 using UnityEditor;
 using UnityEngine;
 
@@ -27,18 +28,28 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             bool SelectionHasMeta();
         }
 
+        internal interface IAdvancedUndoMenuOperations
+        {
+            void UndoUnchanged();
+            void UndoCheckoutsKeepingChanges();
+        }
+
         internal PendingChangesViewPendingChangeMenu(
             WorkspaceInfo wkInfo,
             IPendingChangesMenuOperations pendingChangesMenuOperations,
             IChangelistMenuOperations changelistMenuOperations,
             IOpenMenuOperations openMenuOperations,
             IMetaMenuOperations metaMenuOperations,
-            IFilesFilterPatternsMenuOperations filterMenuOperations)
+            IAdvancedUndoMenuOperations advancedUndoMenuOperations,
+            IFilesFilterPatternsMenuOperations filterMenuOperations,
+            bool isGluonMode)
         {
             mPendingChangesMenuOperations = pendingChangesMenuOperations;
             mChangelistMenuOperations = changelistMenuOperations;
             mOpenMenuOperations = openMenuOperations;
             mMetaMenuOperations = metaMenuOperations;
+            mAdvancedUndoMenuOperations = advancedUndoMenuOperations;
+            mIsGluonMode = isGluonMode;
 
             mFilterMenuBuilder = new FilesFilterPatternsMenuBuilder(filterMenuOperations);
             mMoveToChangelistMenuBuilder = new MoveToChangelistMenuBuilder(
@@ -120,6 +131,16 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mMetaMenuOperations.DiffMeta();
         }
 
+        void UndoUnchangedMenuItem_Click()
+        {
+            mAdvancedUndoMenuOperations.UndoUnchanged();
+        }
+
+        void UndoCheckoutsKeepingChangesMenuItem_Click()
+        {
+            mAdvancedUndoMenuOperations.UndoCheckoutsKeepingChanges();
+        }
+
         void UndoChangesMenuItem_Click()
         {
             mPendingChangesMenuOperations.UndoChanges();
@@ -198,10 +219,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             menu.AddSeparator(string.Empty);
 
-            if (operations.HasFlag(PendingChangesMenuOperations.UndoChanges))
-                menu.AddItem(mUndoChangesMenuItemContent, false, UndoChangesMenuItem_Click);
-            else
-                menu.AddDisabledItem(mUndoChangesMenuItemContent);
+            UpdateUndoMenuItems(operations, menu, info.SelectedChanges);
 
             menu.AddSeparator(string.Empty);
 
@@ -293,6 +311,38 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 menu.AddDisabledItem(mOpenMetaInExplorerMenuItemContent);
         }
 
+        void UpdateUndoMenuItems(PendingChangesMenuOperations operations, GenericMenu menu, List<ChangeInfo> changes)
+        {
+            if (!operations.HasFlag(PendingChangesMenuOperations.UndoChanges))
+            {
+                menu.AddDisabledItem(mUndoChangesMenuItemContent);
+                return;
+            }
+
+            if (mIsGluonMode)
+            {
+                menu.AddItem(mUndoChangesMenuItemContent, false, UndoChangesMenuItem_Click);
+                return;
+            }
+
+            if (changes.Any(change => !ChangeTypesOperator.AreEquals(change.ChangeTypes, ChangeTypes.CheckedOut)))
+            {
+                menu.AddItem(mUndoChangesMenuItemContent, false, UndoChangesMenuItem_Click);
+            }
+
+            if (changes.Any(change => ChangeTypesOperator.AreEquals(change.ChangeTypes, ChangeTypes.CheckedOut)))
+            {
+                menu.AddItem(mUndoUnchangedMenuItemContent, false, UndoUnchangedMenuItem_Click);
+            }
+            
+            if (changes.Any(change => 
+                    ChangeTypesOperator.ContainsAny(change.ChangeTypes, ChangeTypes.CheckedOut) &&
+                    ChangeTypesOperator.ContainsOther(change.ChangeTypes, ChangeTypes.CheckedOut)))
+            {
+                menu.AddItem(mUndoCheckoutsKeepingChangesMenuItemContent, false, UndoCheckoutsKeepingChangesMenuItem_Click);
+            }
+        }
+
         GUIContent GetNoActionMenuItemContent()
         {
             if (mNoActionMenuItemContent == null)
@@ -341,6 +391,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 PlasticLocalization.GetString(PlasticLocalization.Name.DiffMetaMenuItem));
             mUndoChangesMenuItemContent = new GUIContent(
                 PlasticLocalization.GetString(PlasticLocalization.Name.PendingChangesMenuItemUndoChanges));
+            mUndoUnchangedMenuItemContent = new GUIContent(
+                PlasticLocalization.GetString(PlasticLocalization.Name.UndoUnchangedButton));
+            mUndoCheckoutsKeepingChangesMenuItemContent = new GUIContent(
+                PlasticLocalization.GetString(PlasticLocalization.Name.UndoCheckoutsKeepingChanges));
             mCheckoutMenuItemContent = new GUIContent(
                 PlasticLocalization.GetString(PlasticLocalization.Name.PendingChangesMenuItemCheckout));
             mDeleteMenuItemContent = new GUIContent(string.Format("{0} {1}",
@@ -460,6 +514,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         GUIContent mDiffMenuItemContent;
         GUIContent mDiffMetaMenuItemContent;
         GUIContent mUndoChangesMenuItemContent;
+        GUIContent mUndoUnchangedMenuItemContent;
+        GUIContent mUndoCheckoutsKeepingChangesMenuItemContent;
         GUIContent mCheckoutMenuItemContent;
         GUIContent mDeleteMenuItemContent;
         GUIContent mViewHistoryMenuItemContent;
@@ -470,6 +526,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         readonly IOpenMenuOperations mOpenMenuOperations;
         readonly IChangelistMenuOperations mChangelistMenuOperations;
         readonly IPendingChangesMenuOperations mPendingChangesMenuOperations;
+        readonly IAdvancedUndoMenuOperations mAdvancedUndoMenuOperations;
         readonly FilesFilterPatternsMenuBuilder mFilterMenuBuilder;
         readonly MoveToChangelistMenuBuilder mMoveToChangelistMenuBuilder;
         readonly bool mIsGluonMode;

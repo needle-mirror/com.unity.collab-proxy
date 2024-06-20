@@ -18,7 +18,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 {
     internal interface IWelcomeWindowNotify
     {
-        void SuccessForConfigure(List<string> organizations);
+        void SuccessForHomeView(string userName);
         void Back();
     }
 
@@ -54,8 +54,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         internal static void JoinCloudServer(
             string cloudServer,
-            string username,
-            string accessToken)
+            string username)
         {
             SaveCloudServer.ToPlasticGuiConfig(cloudServer);
             SaveCloudServer.ToPlasticGuiConfigFile(
@@ -66,21 +65,20 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             KnownServers.ServersFromCloud.InitializeForWindows(
                 PlasticGuiConfig.Get().Configuration.DefaultCloudServer);
 
-            CloudEditionWelcome.WriteToTokensConf(
-                cloudServer, username, accessToken);
-
             SetupUnityEditionToken.CreateCloudEditionTokenIfNeeded();
+
+            ClientConfigData clientConfigData = ConfigurationChecker.GetClientConfigData();
 
             if (sAutoLogin)
             {
-                ClientConfigData clientConfigData = ConfigurationChecker.GetClientConfigData();
                 clientConfigData.WorkspaceServer = cloudServer;
                 clientConfigData.WorkingMode = SEIDWorkingMode.SSOWorkingMode.ToString();
                 clientConfigData.SecurityConfig = username;
-                ClientConfig.Get().Save(clientConfigData);
 
                 GetWindow<PlasticWindow>().GetWelcomeView().autoLoginState = AutoLogin.State.OrganizationChoosed;
             }
+
+            ClientConfig.Get().Save(clientConfigData);
         }
 
         internal static string GetPlasticConfigFileToSaveOrganization()
@@ -113,11 +111,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         internal void JoinOrganizationAndWelcomePage(string organization)
         {
-            JoinCloudServer(organization,
-                mUserName,
-                mAccessToken);
-
-            GetWelcomePage.Run(sRestApi, organization);
+            JoinCloudServer(organization, mUserName);
         }
 
         internal void ReplaceRootPanel(VisualElement panel)
@@ -126,33 +120,24 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             rootVisualElement.Add(panel);
         }
 
-        internal void ShowOrganizationPanel(
-            string title,
-            List<string> organizations)
+        internal void ShowOrganizationPanel(string title)
         {
             mOrganizationPanel = new OrganizationPanel(
                 this,
                 sRestApi,
-                title,
-                organizations);
+                title);
 
             ReplaceRootPanel(mOrganizationPanel);
         }
 
-        internal void FillUserAndToken(
-            string userName,
-            string accessToken)
+        internal void FillUser(string userName)
         {
             mUserName = userName;
-            mAccessToken = accessToken;
         }
 
-        internal void ShowOrganizationPanelFromAutoLogin(
-            List<string> organizations)
+        internal void ShowOrganizationPanelFromAutoLogin()
         {
-            ShowOrganizationPanel(
-                GetWindowTitle(),
-                organizations);
+            ShowOrganizationPanel(GetWindowTitle());
         }
 
         internal string GetWindowTitle()
@@ -171,14 +156,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             string userName,
             string accessToken)
         {
-            ShowOrganizationPanel(
-                GetWindowTitle(),
-                organizations);
-
-            Focus();
-
-            mUserName = userName;
-            mAccessToken = accessToken;
+            // empty implementation
         }
 
         void OAuthSignIn.INotify.SuccessForSSO(string organization)
@@ -191,9 +169,13 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             // empty implementation
         }
 
-        void OAuthSignIn.INotify.SuccessForHomeView(string homeView)
+        void OAuthSignIn.INotify.SuccessForHomeView(string userName)
         {
-            // empty implementation
+            ShowOrganizationPanel(GetWindowTitle());
+
+            Focus();
+
+            mUserName = userName;
         }
 
         void OAuthSignIn.INotify.SuccessForCredentials(
@@ -208,12 +190,15 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             Focus();
         }
 
-        void IWelcomeWindowNotify.SuccessForConfigure(
-            List<string> organizations)
+        void IWelcomeWindowNotify.SuccessForHomeView(string userName)
         {
-            ShowOrganizationPanel(
-                GetWindowTitle(),
-                organizations);
+            GetWindow<PlasticWindow>().InitializePlastic();
+                
+            ShowOrganizationPanel(GetWindowTitle());
+
+            Focus();
+
+            mUserName = userName;
         }
 
         void IWelcomeWindowNotify.Back()
@@ -262,7 +247,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 mSignInPanel.SignInWithUnityIdButtonAutoLogin();
         }
 
-        string mAccessToken;
         string mUserName;
 
         OrganizationPanel mOrganizationPanel;

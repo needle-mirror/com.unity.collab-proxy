@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 
 using Codice.Client.GameUI.Checkin;
+using Codice.CM.Common.Checkin.Partial;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
 

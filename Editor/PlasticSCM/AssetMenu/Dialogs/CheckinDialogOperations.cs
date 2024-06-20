@@ -7,6 +7,7 @@ using Codice.Client.Common;
 using Codice.Client.Common.Threading;
 using Codice.Client.GameUI.Checkin;
 using Codice.CM.Common;
+using Codice.CM.Common.Checkin.Partial;
 
 using GluonGui;
 

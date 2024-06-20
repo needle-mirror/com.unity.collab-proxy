@@ -3,6 +3,7 @@
 using UnityEditor;
 using UnityEngine;
 
+using Codice.LogWrapper;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
@@ -19,6 +20,8 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             if (mIsEnabled)
                 return;
 
+            mLog.Debug("Enable");
+
             mWkPath = wkPath;
             mAssetStatusCache = assetStatusCache;
 
@@ -33,6 +36,8 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
 
         internal static void Disable()
         {
+            mLog.Debug("Disable");
+
             mIsEnabled = false;
 
             EditorApplication.projectWindowItemOnGUI -= OnProjectWindowItemGUI;
@@ -243,6 +248,8 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
         static string mWkPath;
 
         const float OVERLAY_ICON_OFFSET = 20f;
+
+        static readonly ILog mLog = PlasticApp.GetLogger("DrawAssetOverlay");
     }
 }
 

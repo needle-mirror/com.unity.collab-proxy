@@ -2,6 +2,7 @@
 
 using Codice.Client.BaseCommands;
 using Codice.Client.Commands;
+using Codice.CM.Common;
 using Codice.ThemeImages;
 using PlasticGui.WorkspaceWindow.Merge;
 using PlasticGui.WorkspaceWindow.PendingChanges;

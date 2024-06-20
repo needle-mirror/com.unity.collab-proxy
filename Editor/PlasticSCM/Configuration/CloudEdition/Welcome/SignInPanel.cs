@@ -5,6 +5,7 @@ using UnityEngine.UIElements;
 
 using Codice.Client.Common;
 using Codice.Client.Common.OAuth;
+using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WebApi;
 using Unity.PlasticSCM.Editor.UI;
@@ -70,9 +71,13 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mParentWindow.ReplaceRootPanel(mWaitingSignInPanel);
 
             Guid state = Guid.NewGuid();
-            mWaitingSignInPanel.OAuthSignInForConfigure(
-                GetCloudSsoProviders.BuildAuthInfoForUnityId(string.Empty, state).SignInUrl,
+            GetOauthProviders.AuthInfo provider =
+                GetCloudSsoProviders.BuildAuthInfoForUnityId(string.Empty, state);
+            mWaitingSignInPanel.OAuthSignIn(
+                SEIDWorkingMode.SSOWorkingMode,
                 state,
+                provider.SignInUrl,
+                provider.ProviderName,
                 new GetCloudSsoToken(mRestApi));
         }
 

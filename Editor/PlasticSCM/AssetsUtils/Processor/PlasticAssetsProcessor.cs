@@ -102,6 +102,6 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
         DateTime mLastExceptionDateTime = DateTime.MinValue;
         WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
 
-        static readonly ILog mLog = LogManager.GetLogger("PlasticAssetsProcessor");
+        static readonly ILog mLog = PlasticApp.GetLogger("PlasticAssetsProcessor");
     }
 }

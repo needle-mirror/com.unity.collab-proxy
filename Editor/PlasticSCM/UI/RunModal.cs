@@ -67,36 +67,18 @@ namespace Unity.PlasticSCM.Editor.UI
 
         static void PopDispatcherContext(EditorWindow window)
         {
-#if UNITY_2020_1_OR_NEWER
             //UnityEngine.UIElements.EventDispatcher.editorDispatcher.PopDispatcherContext();
 
             object editorDispatcher = mEditorDispatcherProp2020.GetValue(null);
             mPopContextMethod2020.Invoke(editorDispatcher, null);
-#else
-            // m_Parent.visualTree.panel.dispatcher?.PopDispatcherContext();
-
-            object dispatcher = GetDispatcher(window);
-
-            if (dispatcher != null)
-                mPopContextMethod.Invoke(dispatcher, null);
-#endif
         }
 
         static void PushDispatcherContext(EditorWindow window)
         {
-#if UNITY_2020_1_OR_NEWER
             //UnityEngine.UIElements.EventDispatcher.editorDispatcher.PushDispatcherContext();
 
             object editorDispatcher = mEditorDispatcherProp2020.GetValue(null);
             mPushContextMethod2020.Invoke(editorDispatcher, null);
-#else
-            // m_Parent.visualTree.panel.dispatcher?.PushDispatcherContext();
-
-            object dispatcher = GetDispatcher(window);
-
-            if (dispatcher != null)
-                mPushContextMethod.Invoke(dispatcher, null);
-#endif
         }
 
         static object GetDispatcher(EditorWindow window)
@@ -142,11 +124,10 @@ namespace Unity.PlasticSCM.Editor.UI
             mCreateSavedGUIState = savedGUIStateType.GetMethod("Create", flags);
             mApplyAndForgetMethod = savedGUIStateType.GetMethod("ApplyAndForget", flags);
 
-#if UNITY_2020_1_OR_NEWER
             mEditorDispatcherProp2020 = typeof(UnityEngine.UIElements.EventDispatcher).GetProperty("editorDispatcher", flags);
             mPushContextMethod2020 = mEditorDispatcherProp2020.PropertyType.GetMethod("PushDispatcherContext", flags);
             mPopContextMethod2020 = mEditorDispatcherProp2020.PropertyType.GetMethod("PopDispatcherContext", flags);
-#endif
+
             flags = BindingFlags.NonPublic
                     | BindingFlags.Instance
                     | BindingFlags.Public;
@@ -185,9 +166,6 @@ namespace Unity.PlasticSCM.Editor.UI
 
         static MethodInfo BuildMakeModalMethodInfo(BindingFlags flags)
         {
-            if (EditorVersion.IsCurrentEditorOlderThan("2019.3.10f1"))
-                return typeof(EditorWindow).GetMethod("MakeModal", flags);
-
             return typeof(EditorWindow).GetMethod("Internal_MakeModal", flags);
         }
 
@@ -204,11 +182,9 @@ namespace Unity.PlasticSCM.Editor.UI
         static PropertyInfo mPanelProp;
         static PropertyInfo mDispatcherProp;
 
-#if UNITY_2020_1_OR_NEWER
         static PropertyInfo mEditorDispatcherProp2020;
         static MethodInfo mPushContextMethod2020;
         static MethodInfo mPopContextMethod2020;
-#endif
 
         // // How ContainerWindows are visualized. Used with ContainerWindow.Show
         // internal enum ShowMode

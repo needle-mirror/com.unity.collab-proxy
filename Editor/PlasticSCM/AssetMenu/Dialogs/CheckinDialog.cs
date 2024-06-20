@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 
 using UnityEditor;
@@ -45,7 +44,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             List<string> paths,
             IAssetStatusCache assetStatusCache,
             bool isGluonMode,
-            EditorWindow parentWindow,
             IWorkspaceWindow workspaceWindow,
             ViewHost viewHost,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
@@ -70,13 +68,12 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 mergeViewLauncher,
                 gluonViewSwitcher);
 
-            return dialog.RunModal(parentWindow) == ResponseType.Ok;
+            return dialog.RunModal(null) == ResponseType.Ok;
         }
 
         protected override void OnModalGUI()
         {
-            Title(PlasticLocalization.GetString(
-                PlasticLocalization.Name.CheckinComment));
+            Title(PlasticLocalization.GetString(PlasticLocalization.Name.CheckinOnlyComment));
 
             GUI.SetNextControlName(CHECKIN_TEXTAREA_NAME);
 

@@ -337,7 +337,7 @@ namespace Unity.PlasticSCM.Editor.Tool
         static int mGluonProcessId = -1;
         static int mBrexProcessId = -1;
 
-        static readonly ILog mLog = LogManager.GetLogger("LaunchTool");
+        static readonly ILog mLog = PlasticApp.GetLogger("LaunchTool");
 
         internal class ShowDownloadPlasticExeWindow : LaunchTool.IShowDownloadPlasticExeWindow
         {
@@ -488,7 +488,7 @@ namespace Unity.PlasticSCM.Editor.Tool
                 }
             }
 
-            readonly ILog mLog = LogManager.GetLogger("ProcessExecutor");
+            readonly ILog mLog = PlasticApp.GetLogger("ProcessExecutor");
         }
     }
 }

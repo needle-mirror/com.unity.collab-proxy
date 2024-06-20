@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor.IMGUI.Controls;
 
 using Codice.Client.BaseCommands;
+using Codice.CM.Common;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Tree;
 

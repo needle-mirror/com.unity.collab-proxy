@@ -134,6 +134,6 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
         static string SORT_COLUMN_INDEX_KEY = "SortColumnIdx";
         static string SORT_ASCENDING_KEY = "SortAscending";
 
-        static readonly ILog mLog = LogManager.GetLogger("TreeHeaderSettings");
+        static readonly ILog mLog = PlasticApp.GetLogger("TreeHeaderSettings");
     }
 }

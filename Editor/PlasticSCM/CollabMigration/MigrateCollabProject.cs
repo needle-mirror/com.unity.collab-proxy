@@ -258,6 +258,6 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
         const int MIGRATED_NOT_CALCULATED = 0;
         const int MIGRATED_NOTHING_TO_DO = 1;
 
-        static readonly ILog mLog = LogManager.GetLogger("MigrateCollabProject");
+        static readonly ILog mLog = PlasticApp.GetLogger("MigrateCollabProject");
     }
 }

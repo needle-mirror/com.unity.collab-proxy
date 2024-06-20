@@ -412,6 +412,6 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
         string mUnityAccessToken;
         WorkspaceInfo mWorkspaceInfo;
 
-        static readonly ILog mLog = LogManager.GetLogger("MigrationDialog");
+        static readonly ILog mLog = PlasticApp.GetLogger("MigrationDialog");
     }
 }

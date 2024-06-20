@@ -14,17 +14,20 @@ namespace Unity.PlasticSCM.Editor.Hub
             }
 
             internal readonly string ProjectPath;
+            internal readonly string WorkspacePath;
             internal readonly string Organization;
             internal readonly string Repository;
             internal readonly Operation OperationType;
 
             internal Command(
                 string projectPath,
+                string workspacePath,
                 string organization,
                 string repository,
                 Operation operationType)
             {
                 ProjectPath = projectPath;
+                WorkspacePath = workspacePath;
                 Organization = organization;
                 Repository = repository;
                 OperationType = operationType;
@@ -37,12 +40,18 @@ namespace Unity.PlasticSCM.Editor.Hub
                     && !string.IsNullOrEmpty(Repository)
                     && OperationType != Operation.None; 
             }
+
+            internal bool HasWorkspacePath()
+            {
+                return !string.IsNullOrEmpty(WorkspacePath);
+            }
         }
 
         internal static Command GetCommand(Dictionary<string, string> args)
         {
             return new Command(
                 GetProjectPath(args),
+                GetWorkspacePath(args),
                 GetOrganization(args),
                 GetRepository(args),
                 GetOperation(args));
@@ -84,6 +93,16 @@ namespace Unity.PlasticSCM.Editor.Hub
                 return data;
 
             if (args.TryGetValue(CloudArguments.PROJECT_ARG, out data))
+                return data;
+
+            return null;
+        }
+
+        internal static string GetWorkspacePath(Dictionary<string, string> args)
+        {
+            string data;
+
+            if (args.TryGetValue(UVCSArguments.WORKSPACE_PATH_ARG, out data))
                 return data;
 
             return null;
@@ -133,7 +152,13 @@ namespace Unity.PlasticSCM.Editor.Hub
 
         static bool IsDownloadRepositoryCommand(Dictionary<string, string> args)
         {
-            // Open remote project command:
+            return IsDownloadRepositoryCommandUsingLegacyArgs(args)
+                || IsDownloadRepositoryCommandUsingUVCSArgs(args);
+        }
+
+        static bool IsDownloadRepositoryCommandUsingLegacyArgs(Dictionary<string, string> args)
+        {
+            // Open remote project command using legacy args:
             // -createProject {project_path}
             //     -cloudProject {plastic_repo}
             //     -cloudOrganization 151d73c7-38cb-4eec-b11e-34764e707226-{plastic_org}
@@ -150,10 +175,25 @@ namespace Unity.PlasticSCM.Editor.Hub
                 CloudArguments.PLASTIC_ORG_PREFIX_VALUE);
         }
 
+        static bool IsDownloadRepositoryCommandUsingUVCSArgs(Dictionary<string, string> args)
+        {
+            // Open remote project command using UVCS args:
+            // -createProject {project_path}
+            //     -uvcsRepository {plastic_repo}
+            //     -uvcsOrganization {plastic_org_name}
+
+            if (!args.ContainsKey(CREATE_PROJECT))
+                return false;
+
+            return args.ContainsKey(UVCSArguments.ORGANIZATION_ARG)
+                && args.ContainsKey(UVCSArguments.REPOSITORY_ARG);
+        }
+
         static class UVCSArguments
         {
             internal const string ORGANIZATION_ARG = "-uvcsOrganization";
             internal const string REPOSITORY_ARG = "-uvcsRepository";
+            internal const string WORKSPACE_PATH_ARG = "-uvcsWorkspacePath";
             internal const string CREATE_WORKSPACE_FLAG = "-uvcsCreateWorkspace";
         }
 

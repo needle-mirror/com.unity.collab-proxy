@@ -125,7 +125,7 @@
 Copyright © 2006-{0} Unity Technologies. All Rights Reserved.
 
 == FiltersAndConditionalFormat ==
-フィルターと形式
+高度なフィルターとフォーマット
 
 == ReleaseNotesLinkText ==
 リリースノート
@@ -1378,15 +1378,6 @@ Unity DevOps Version Control - ワークスペース:{0} - {1} - {2}:{3}@{4}
 == BrexDisplayOptions ==
 オプションを表示
 
-== InitialDateLabel ==
-開始:
-
-== EndDateLabel ==
-終了:
-
-== SinceDateLabel ==
-次の日時以降:
-
 == SelectAll ==
 すべて選択
 
@@ -2075,6 +2066,9 @@ Cloud リポジトリ名を入力してください
 コンテナーフォルダー
 
 == CheckinComment ==
+チェックインのコメントをここに入力
+
+== CheckinOnlyComment ==
 チェックインのコメントをここに入力
 
 == BrowseForFolderTitle ==
@@ -3731,9 +3725,6 @@ SSL を使用
 == ChangesetMerge ==
 変更セット cs:{0} からマージ
 
-== SwitchBranchButton ==
-ブランチを切り替え...
-
 == PleaseTypeAPath ==
 パスを入力してください
 
@@ -4734,16 +4725,16 @@ Xlink されたファイルに対するレビューのコメントはまだサ�
 保留中のコメントがあるコードレビューをレビュー済みとしてマークすることはできません。続行しますか?
 
 == SinceOneWeekAgo ==
-1 週間前
+先週
 
 == SinceFifteenDaysAgo ==
-15 日前
+過去 15 日間
 
 == SinceOneMonthAgo ==
-1 か月前
+先月
 
 == SinceThreeMonthsAgo ==
-3 か月前
+過去 3 か月
 
 == SinceAGivenDate ==
 指定した日付

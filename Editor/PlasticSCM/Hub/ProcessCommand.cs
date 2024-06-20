@@ -61,10 +61,15 @@ namespace Unity.PlasticSCM.Editor.Hub
                 ParseArguments.GetCommand(args);
 
             if (!command.IsValid())
+            {
+                mLog.Debug("There is no valid command to process");
                 return;
+            }
 
             SessionState.SetBool(
                 IS_PLASTIC_COMMAND_KEY, true);
+
+            mLog.DebugFormat("Processing command: {0}", command.OperationType);
 
             OperationParams parameters = OperationParams.
                 BuildFromCommand(command, unityAccessToken);
@@ -80,6 +85,6 @@ namespace Unity.PlasticSCM.Editor.Hub
             }
         }
 
-        static readonly ILog mLog = LogManager.GetLogger("ProcessCommand");
+        static readonly ILog mLog = PlasticApp.GetLogger("ProcessCommand");
     }
 }

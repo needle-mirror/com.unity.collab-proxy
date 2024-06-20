@@ -32,6 +32,11 @@ namespace Unity.PlasticSCM.Editor
 
         internal void Stop()
         {
+            if (!mIsMonitoringServerConnection)
+                return;
+
+            mLog.Debug("Stop");
+
             mIsMonitoringServerConnection = false;
             mResetEvent.Set();
         }
@@ -43,17 +48,19 @@ namespace Unity.PlasticSCM.Editor
 
         internal void OnConnectionError(Exception ex, string server)
         {
-            if (!mIsConnected)
+            lock (mOnConnectionErrorLock)
             {
-                mLog.WarnFormat("A network exception happened while the plugin was offline!");
-                ExceptionsHandler.LogException("PlasticConnectionMonitor", ex);
-                return;
+                LogConnectionError(ex, mIsConnected);
+
+                if (!mIsConnected)
+                    return;
+
+                mIsConnected = false;
             }
 
-            mLog.Debug("A network exception will cause the Plugin to go offline");
-            ExceptionsHandler.LogException("PlasticConnectionMonitor", ex);
-
-            OnConnectionLost(server);
+            HandleConnectionLost(
+                mRepSpecForEventTracking,
+                () => StartMonitoring(server));
         }
 
         void HandleCredsAliasAndServerCert.IHostUnreachableExceptionListener.OnHostUnreachableException(
@@ -65,10 +72,13 @@ namespace Unity.PlasticSCM.Editor
 
         void StartMonitoring(string server)
         {
+            mLog.Debug("StartMonitoring");
+
             mIsMonitoringServerConnection = true;
 
             Thread thread = new Thread(MonitorServerConnection);
             thread.IsBackground = true;
+            thread.Name = "Plastic SCM Connection Monitor thread";
             thread.Start(server);
         }
 
@@ -83,27 +93,16 @@ namespace Unity.PlasticSCM.Editor
 
                 try
                 {
-                    bool isConnected;
-
                     mResetEvent.Reset();
 
-                    isConnected = HasConnectionToServer(server);
-
-                    mIsTryingReconnection = false;
-
-                    if (isConnected)
+                    if (HasConnectionToServer(server))
                     {
-                        OnConnectionRestored();
+                        mIsConnected = true;
+                        HandleConnectionRestored(mRepSpecForEventTracking);
                         break;
                     }
 
-                    EditorDispatcher.Dispatch(() =>
-                    {
-                        PlasticWindow window = GetPlasticWindowIfOpened();
-
-                        if (window != null)
-                            window.Repaint();
-                    });
+                    RepaintPlasticWindowIfOpened();
 
                     mResetEvent.WaitOne(CONNECTION_POLL_TIME_MS);
                 }
@@ -112,20 +111,24 @@ namespace Unity.PlasticSCM.Editor
                     mLog.Error("Error checking network connectivity", ex);
                     mLog.DebugFormat("Stacktrace: {0}", ex.StackTrace);
                 }
+                finally
+                {
+                    mIsTryingReconnection = false;
+                }
             }
         }
 
-        void OnConnectionLost(string server)
+        static void HandleConnectionLost(
+            RepositorySpec repSpecForEventTracking,
+            Action startMonitoringAction)
         {
-            TrackConnectionLostEvent(mRepSpecForEventTracking);
-
-            mIsConnected = false;
+            TrackConnectionLostEvent(repSpecForEventTracking);
 
             EditorDispatcher.Dispatch(() =>
             {
                 PlasticPlugin.Disable();
 
-                StartMonitoring(server);
+                startMonitoringAction();
 
                 PlasticWindow window = GetPlasticWindowIfOpened();
 
@@ -134,11 +137,10 @@ namespace Unity.PlasticSCM.Editor
             });
         }
 
-        void OnConnectionRestored()
+        static void HandleConnectionRestored(
+            RepositorySpec repSpecForEventTracking)
         {
-            TrackConnectionRestoredEvent(mRepSpecForEventTracking);
-
-            mIsConnected = true;
+            TrackConnectionRestoredEvent(repSpecForEventTracking);
 
             EditorDispatcher.Dispatch(() =>
             {
@@ -151,21 +153,24 @@ namespace Unity.PlasticSCM.Editor
             });
         }
 
-        static bool HasConnectionToServer(string server)
+        static void RepaintPlasticWindowIfOpened()
         {
-            try
+            EditorDispatcher.Dispatch(() =>
             {
-                mLog.DebugFormat("Checking connection to {0}...", server);
+                PlasticWindow window = GetPlasticWindowIfOpened();
 
-                return PlasticGui.Plastic.API.CheckServerConnection(server);
-            }
-            catch (Exception ex)
-            {
-                mLog.DebugFormat("Checking connection to {0} failed: {1}",
-                    server,
-                    ex.Message);
-                return false;
-            }
+                if (window != null)
+                    window.Repaint();
+            });
+        }
+
+        static void LogConnectionError(Exception ex, bool isConnected)
+        {
+            mLog.WarnFormat(isConnected ?
+                "A network exception will cause the plugin to go offline" :
+                "A network exception happened while the plugin was offline!");
+
+            ExceptionsHandler.LogException("PlasticConnectionMonitor", ex);
         }
 
         static void TrackConnectionLostEvent(RepositorySpec repSpec)
@@ -196,16 +201,34 @@ namespace Unity.PlasticSCM.Editor
             return EditorWindow.GetWindow<PlasticWindow>(null, false);
         }
 
-        RepositorySpec mRepSpecForEventTracking;
+        static bool HasConnectionToServer(string server)
+        {
+            try
+            {
+                mLog.DebugFormat("Checking connection to {0}...", server);
+
+                return PlasticGui.Plastic.API.CheckServerConnection(server);
+            }
+            catch (Exception ex)
+            {
+                mLog.DebugFormat("Checking connection to {0} failed: {1}",
+                    server,
+                    ex.Message);
+                return false;
+            }
+        }
 
         volatile bool mIsMonitoringServerConnection;
         volatile bool mIsTryingReconnection;
         volatile bool mIsConnected = true;
 
-        ManualResetEvent mResetEvent = new ManualResetEvent(false);
+        RepositorySpec mRepSpecForEventTracking;
+
+        readonly object mOnConnectionErrorLock = new object();
+        readonly ManualResetEvent mResetEvent = new ManualResetEvent(false);
 
         const int CONNECTION_POLL_TIME_MS = 30000;
 
-        static readonly ILog mLog = LogManager.GetLogger("PlasticConnectionMonitor");
+        static readonly ILog mLog = PlasticApp.GetLogger("PlasticConnectionMonitor");
     }
 }

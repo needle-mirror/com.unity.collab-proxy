@@ -10,6 +10,7 @@ using Codice.Client.Common;
 using Codice.Client.Common.EventTracking;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
+using Codice.CM.Common.Mount;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.Update;

@@ -7,7 +7,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
 {
     internal class OperationParams
     {
-        internal readonly string ProjectFullPath;
+        internal readonly string WorkspaceFullPath;
         internal readonly string Organization;
         internal readonly string Repository;
         internal readonly RepositorySpec RepositorySpec;
@@ -17,8 +17,12 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
             ParseArguments.Command command,
             string unityAccessToken)
         {
+            string workspaceFullPath = command.HasWorkspacePath() ?
+                Path.GetFullPath(command.WorkspacePath) :
+                Path.GetFullPath(command.ProjectPath);
+
             return new OperationParams(
-                Path.GetFullPath(command.ProjectPath),
+                workspaceFullPath,
                 command.Organization,
                 command.Repository,
                 BuildRepositorySpec(
@@ -42,13 +46,13 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
         }
 
         OperationParams(
-            string projectFullPath,
+            string workspaceFullPath,
             string organization,
             string repository,
             RepositorySpec repositorySpec,
             string accessToken)
         {
-            ProjectFullPath = projectFullPath;
+            WorkspaceFullPath = workspaceFullPath;
             Organization = organization;
             Repository = repository;
             RepositorySpec = repositorySpec;

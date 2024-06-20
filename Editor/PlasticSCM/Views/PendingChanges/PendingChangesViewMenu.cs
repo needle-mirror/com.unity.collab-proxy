@@ -24,6 +24,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             IFilesFilterPatternsMenuOperations filterMenuOperations,
             IOpenMenuOperations openMenuOperations,
             PendingChangesViewPendingChangeMenu.IMetaMenuOperations metaMenuOperations,
+            PendingChangesViewPendingChangeMenu.IAdvancedUndoMenuOperations advancedUndoMenuOperations,
             IChangelistMenuOperations changelistMenuOperations,
             IGetSelectedNodes getSelectedNodes,
             bool isGluonMode)
@@ -33,6 +34,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mFilterMenuOperations = filterMenuOperations;
             mOpenMenuOperations = openMenuOperations;
             mMetaMenuOperations = metaMenuOperations;
+            mAdvancedUndoMenuOperations = advancedUndoMenuOperations;
             mChangelistMenuOperations = changelistMenuOperations;
             mGetSelectedNodes = getSelectedNodes;
             mIsGluonMode = isGluonMode;
@@ -82,7 +84,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                     mChangelistMenuOperations,
                     mOpenMenuOperations,
                     mMetaMenuOperations,
-                    mFilterMenuOperations);
+                    mAdvancedUndoMenuOperations,
+                    mFilterMenuOperations,
+                    mIsGluonMode);
             }
 
             return mPendingChangeMenu;
@@ -126,6 +130,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         readonly IFilesFilterPatternsMenuOperations mFilterMenuOperations;
         readonly IOpenMenuOperations mOpenMenuOperations;
         readonly PendingChangesViewPendingChangeMenu.IMetaMenuOperations mMetaMenuOperations;
+        readonly PendingChangesViewPendingChangeMenu.IAdvancedUndoMenuOperations mAdvancedUndoMenuOperations;
         readonly IChangelistMenuOperations mChangelistMenuOperations;
         readonly IGetSelectedNodes mGetSelectedNodes;
         readonly bool mIsGluonMode;

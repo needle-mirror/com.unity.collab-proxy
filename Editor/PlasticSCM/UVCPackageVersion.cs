@@ -60,6 +60,6 @@ namespace Unity.PlasticSCM.Editor
 
         const string UVCS_PACKAGE_NAME = "com.unity.collab-proxy";
 
-        static readonly ILog mLog = LogManager.GetLogger("UVCPackageVersion");
+        static readonly ILog mLog = PlasticApp.GetLogger("UVCPackageVersion");
     }
 }

@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.VersionControl;
 
 using Codice.CM.Common;
+using Codice.LogWrapper;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetsOverlays;
@@ -26,6 +28,8 @@ namespace Unity.PlasticSCM.Editor.Inspector
             if (mIsEnabled)
                 return;
 
+            mLog.Debug("Enable");
+
             mWkPath = wkPath;
             mAssetStatusCache = assetStatusCache;
 
@@ -41,6 +45,8 @@ namespace Unity.PlasticSCM.Editor.Inspector
 
         internal static void Disable()
         {
+            mLog.Debug("Disable");
+
             mIsEnabled = false;
 
             UnityEditor.Editor.finishedDefaultHeaderGUI -=
@@ -66,7 +72,6 @@ namespace Unity.PlasticSCM.Editor.Inspector
             IMergeViewLauncher mergeViewLauncher,
             PlasticGui.Gluon.IGluonViewSwitcher gluonViewSwitcher,
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
-            EditorWindow parentWindow,
             bool isGluonMode)
         {
             if (!mIsEnabled)
@@ -83,7 +88,6 @@ namespace Unity.PlasticSCM.Editor.Inspector
                 mAssetStatusCache,
                 mergeViewLauncher,
                 gluonViewSwitcher,
-                parentWindow,
                 mAssetSelection,
                 showDownloadPlasticExeWindow,
                 isGluonMode);
@@ -324,5 +328,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
         static string mWkPath;
 
         const string EXTRA_SPACE = "    ";
+
+        static readonly ILog mLog = PlasticApp.GetLogger("DrawInspectorOperations");
     }
 }

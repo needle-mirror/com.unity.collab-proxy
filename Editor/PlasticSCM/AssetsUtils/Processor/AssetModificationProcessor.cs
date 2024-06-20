@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
 
+using Codice.LogWrapper;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.UI;
 using AssetOverlays = Unity.PlasticSCM.Editor.AssetsOverlays;
@@ -26,6 +27,8 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             string wkPath,
             IAssetStatusCache assetStatusCache)
         {
+            mLog.Debug("Enable");
+
             mWkPath = wkPath;
             mAssetStatusCache = assetStatusCache;
 
@@ -34,6 +37,8 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
         internal static void Disable()
         {
+            mLog.Debug("Disable");
+
             mIsEnabled = false;
 
             mWkPath = null;
@@ -95,5 +100,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
         static IAssetStatusCache mAssetStatusCache;
         static string mWkPath;
+
+        static readonly ILog mLog = PlasticApp.GetLogger("AssetModificationProcessor");
     }
 }

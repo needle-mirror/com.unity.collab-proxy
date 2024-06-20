@@ -37,6 +37,6 @@ namespace Unity.PlasticSCM.Editor.Help
             return true;
         }
 
-        static readonly ILog mLog = LogManager.GetLogger("HelpLinkData");
+        static readonly ILog mLog = PlasticApp.GetLogger("HelpLinkData");
     }
 }

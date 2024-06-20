@@ -165,6 +165,10 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
                     autoLoginState = AutoLogin.State.Running;
                     AutoLogin autoLogin = new AutoLogin();
                     autoLogin.Run();
+                }
+
+                if (autoLoginState != AutoLogin.State.ErrorNoToken)
+                {
                     return;
                 }
 

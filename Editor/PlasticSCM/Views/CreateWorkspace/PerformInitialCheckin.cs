@@ -9,6 +9,7 @@ using Codice.Client.Commands.CheckIn;
 using Codice.Client.Common;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
+using Codice.CM.Common.Checkin.Partial;
 using Codice.Client.GameUI.Checkin;
 using PlasticGui;
 using PlasticGui.Help.Conditions;

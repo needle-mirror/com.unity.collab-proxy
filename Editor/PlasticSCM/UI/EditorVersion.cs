@@ -30,7 +30,6 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal static bool IsEditorOlderThan(string versionA, string versionB)
         {
-#if UNITY_2017_1_OR_NEWER
             var editorA = Parse(versionA);
             var editorB = Parse(versionB);
             if (editorA.Year == editorB.Year)
@@ -42,9 +41,6 @@ namespace Unity.PlasticSCM.Editor.UI
                 return editorA.Release < editorB.Release;
             }
             return editorA.Year < editorB.Year;
-#else
-            return false;
-#endif
         }
 
         static int ParseUpdateString(string version)

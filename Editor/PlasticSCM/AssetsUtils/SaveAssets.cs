@@ -133,6 +133,9 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
             List<string> paths,
             Scene scene)
         {
+            if (string.IsNullOrEmpty(scene.path))
+                return false;
+
             foreach (string path in paths)
             {
                 if (PathHelper.IsSamePath(
