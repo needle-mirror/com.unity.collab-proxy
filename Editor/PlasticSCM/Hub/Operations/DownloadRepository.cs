@@ -92,8 +92,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
                 TokenExchangeResponse tokenExchangeResponse =
                     AutoConfig.PlasticCredentials(
                         parameters.AccessToken,
-                        parameters.RepositorySpec.Server,
-                        parameters.WorkspaceFullPath);
+                        parameters.RepositorySpec.Server);
 
                 if (tokenExchangeResponse.Error != null)
                 {

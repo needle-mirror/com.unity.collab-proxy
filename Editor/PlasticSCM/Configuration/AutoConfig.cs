@@ -1,8 +1,11 @@
-﻿using Codice.Client.Common;
+﻿using System;
+using Codice.Client.Common;
 using Codice.CM.Common;
-using PlasticGui;
+using Codice.LogWrapper;
+using PlasticGui.WorkspaceWindow.Home;
 using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
 using Unity.PlasticSCM.Editor.WebApi;
+using UnityEngine;
 
 namespace Unity.PlasticSCM.Editor.Configuration
 {
@@ -10,127 +13,59 @@ namespace Unity.PlasticSCM.Editor.Configuration
     {
         internal static TokenExchangeResponse PlasticCredentials(
             string unityAccessToken,
-            string serverName,
-            string wkPath)
+            string serverName)
         {
-            SetupUnityEditionToken.CreateCloudEditionTokenIfNeeded();
+            SetupUnityEditionToken.CreateCloudEditionToken();
 
-            bool isClientConfigConfigured = ClientConfig.IsConfigured();
-            if (!isClientConfigConfigured)
+            var startTick = Environment.TickCount;
+
+            var tokenExchangeResponse = WebRestApiClient.PlasticScm.TokenExchange(unityAccessToken);
+
+            mLog.DebugFormat("TokenExchange time {0} ms", Environment.TickCount - startTick);
+
+            if (tokenExchangeResponse == null)
             {
-                ConfigureClientConf.FromUnityAccessToken(
-                    unityAccessToken, serverName, wkPath);
+                mLog.Warn("Token exchange response null");
+                Debug.LogWarning("Token exchange response null");
+                return null;
             }
 
-            TokenExchangeResponse tokenExchangeResponse = WebRestApiClient.
-                PlasticScm.TokenExchange(unityAccessToken);
-
             if (tokenExchangeResponse.Error != null)
+            {
+                var warning = string.Format("Unable to exchange token: {0} [code {1}]",
+                    tokenExchangeResponse.Error.Message, tokenExchangeResponse.Error.ErrorCode);
+                mLog.ErrorFormat(warning);
+                Debug.LogWarning(warning);
                 return tokenExchangeResponse;
+            }
+
+            if (string.IsNullOrEmpty(tokenExchangeResponse.AccessToken))
+            {
+                var warning = string.Format("Access token is empty for user: {0}", 
+                    tokenExchangeResponse.User);
+                mLog.InfoFormat(warning);
+                Debug.LogWarning(warning);
+            }
+            
+            // This creates the client.conf if needed but doesn't overwrite it if it exists already,
+            // and it also updates the profiles.conf and tokens.conf with the new AccessToken
+            UserAccounts.SaveAccount(
+                serverName,
+                SEIDWorkingMode.SSOWorkingMode, // Hub sign-in working mode
+                tokenExchangeResponse.User,
+                tokenExchangeResponse.AccessToken,
+                null,
+                null,
+                null);
 
             CloudEditionWelcomeWindow.JoinCloudServer(
-                serverName,
-                tokenExchangeResponse.User);
-
-            if (!isClientConfigConfigured)
-                return tokenExchangeResponse;
-          
-            ConfigureProfile.ForServerIfNeeded(
                 serverName,
                 tokenExchangeResponse.User);
 
             return tokenExchangeResponse;
         }
 
-        static class ConfigureClientConf
-        {
-            internal static void FromUnityAccessToken(
-                string unityAccessToken,
-                string serverName,
-                string wkPath)
-            {
-                CredentialsResponse response = WebRestApiClient.
-                    PlasticScm.GetCredentials(unityAccessToken);
-
-                if (response.Error != null)
-                {
-                    UnityEngine.Debug.LogErrorFormat(
-                        PlasticLocalization.GetString(
-                            PlasticLocalization.Name.ErrorGettingCredentialsCloudProject),
-                        response.Error.Message,
-                        response.Error.ErrorCode);
-
-                    return;
-                }
-
-                ClientConfigData configData = BuildClientConfigData(
-                    serverName, wkPath, response);
-
-                ClientConfig.Get().Save(configData);
-            }
-
-            static ClientConfigData BuildClientConfigData(
-                string serverName,
-                string wkPath,
-                CredentialsResponse response)
-            {
-                SEIDWorkingMode workingMode = GetWorkingMode(response.Type);
-
-                ClientConfigData configData = new ClientConfigData();
-
-                configData.WorkspaceServer = serverName;
-                configData.CurrentWorkspace = wkPath;
-                configData.WorkingMode = workingMode.ToString();
-                configData.SecurityConfig = UserInfo.GetSecurityConfigStr(
-                    workingMode,
-                    response.Email,
-                    GetPassword(response.Token, response.Type));
-                configData.LastRunningEdition = InstalledEdition.Get();
-                return configData;
-            }
-
-            static string GetPassword(
-                string token,
-                CredentialsResponse.TokenType tokenType)
-            {
-                if (tokenType == CredentialsResponse.TokenType.Bearer)
-                    return BEARER_PREFIX + token;
-
-                return token;
-            }
-
-            static SEIDWorkingMode GetWorkingMode(CredentialsResponse.TokenType tokenType)
-            {
-                if (tokenType == CredentialsResponse.TokenType.Bearer)
-                    return SEIDWorkingMode.SSOWorkingMode;
-
-                return SEIDWorkingMode.LDAPWorkingMode;
-            }
-
-            const string BEARER_PREFIX = "Bearer ";
-        }
-
-        static class ConfigureProfile
-        {
-            internal static void ForServerIfNeeded(string serverName, string user)
-            {
-                ProfileManager profileManager = CmConnection.Get().GetProfileManager();
-
-                ServerProfile serverProfile = profileManager.GetProfileForServer(serverName);
-
-                if (serverProfile != null)
-                    return;
-
-                serverProfile = ProfileManager.CreateProfile(
-                    serverName,
-                    SEIDWorkingMode.SSOWorkingMode,
-                    user);
-
-                profileManager.SaveProfile(serverProfile);
-            }
-        }
-
+        static readonly ILog mLog = PlasticApp.GetLogger("AutoConfig");
     }
-
 }
 

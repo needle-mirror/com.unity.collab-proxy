@@ -41,21 +41,21 @@ namespace Unity.PlasticSCM.Editor
             return window.IsPlasticInstalling;
         }
     }
+    
+    // The plugin rely on the "cloudedition.token" to be created in the "plastic4e config folder, instead of checking
+    // the one in the UVCS installation directory, since it can run without an existing installation.
     internal static class SetupUnityEditionToken
     {
-        internal static void CreateCloudEditionTokenIfNeeded()
+        // Always create the "cloudedition.token" when called from the Hub or the Cloud Edition Welcome window
+        internal static void CreateCloudEditionToken()
         {
-            string toolPath = PlasticInstallPath.GetPlasticExePath();
+            var tokenFilePath = UserConfigFolder.GetConfigFile(EditionToken.CLOUD_EDITION_FILE_NAME);
 
-            if (!string.IsNullOrEmpty(toolPath))
-                return;
-
-            string tokenFilePath = UserConfigFolder.GetConfigFile(
-                EditionToken.CLOUD_EDITION_FILE_NAME);
-
-            File.Create(tokenFilePath).Dispose();
+            if (!File.Exists(tokenFilePath))
+                File.Create(tokenFilePath).Dispose();
         }
-
+        
+        // Synchronize the "cloudedition.token" file between the installation directory and the "plastic4" config folder
         internal static void FromPlasticInstallation(string plasticClientBinDir)
         {
             bool isCloudPlasticInstall = IsPlasticInstallOfEdition(

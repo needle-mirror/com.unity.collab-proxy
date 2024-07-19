@@ -2,6 +2,12 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.4.4] - 2024-07-19
+
+### Fixed
+
+- Fixed the Unity Editor stuck on "Creating workspace" when "Use Unity Version Control" was selected from the Hub
+
 ## [2.4.3] - 2024-06-20
 
 ### Added

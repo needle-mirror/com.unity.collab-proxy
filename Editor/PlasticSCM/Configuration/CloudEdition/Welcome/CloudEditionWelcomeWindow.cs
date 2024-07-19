@@ -52,6 +52,8 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             return GetWindow<CloudEditionWelcomeWindow>();
         }
 
+        // Set the Default Server in the config files of all our clients so they are already all configured at once
+        // this avoids having the Desktop application asking the user again later
         internal static void JoinCloudServer(
             string cloudServer,
             string username)
@@ -65,7 +67,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             KnownServers.ServersFromCloud.InitializeForWindows(
                 PlasticGuiConfig.Get().Configuration.DefaultCloudServer);
 
-            SetupUnityEditionToken.CreateCloudEditionTokenIfNeeded();
+            SetupUnityEditionToken.CreateCloudEditionToken();
 
             ClientConfigData clientConfigData = ConfigurationChecker.GetClientConfigData();
 

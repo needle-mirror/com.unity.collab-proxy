@@ -277,8 +277,7 @@ namespace Unity.PlasticSCM.Editor.CollabMigration
             {
                 tokenExchangeResponse = AutoConfig.PlasticCredentials(
                     unityAccessToken,
-                    serverName,
-                    projectPath);
+                    serverName);
 
                 if (tokenExchangeResponse.Error != null)
                 {
