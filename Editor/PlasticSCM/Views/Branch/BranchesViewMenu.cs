@@ -72,13 +72,13 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             BranchMenuOperations operations = BranchMenuUpdater.GetAvailableMenuOperations(
                 mBranchMenuOperations.GetSelectedBranchesCount(), false);
 
-			AddBranchMenuItem(
+            AddBranchMenuItem(
                 mCreateBranchMenuItemContent,
                 menu,
                 operations,
                 BranchMenuOperations.CreateBranch,
                 CreateBranchMenuItem_Click);
-			
+
             AddBranchMenuItem(
                 mSwitchToBranchMenuItemContent,
                 menu,
@@ -86,20 +86,20 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 BranchMenuOperations.SwitchToBranch,
                 SwitchToBranchMenuItem_Click);
 
-            menu.AddSeparator("");
+            menu.AddSeparator(string.Empty);
 
             AddBranchMenuItem(
                 mRenameBranchMenuItemContent,
                 menu,
                 operations,
-				BranchMenuOperations.Rename,
+                BranchMenuOperations.Rename,
                 RenameBranchMenuItem_Click);
 
             AddBranchMenuItem(
                 mDeleteBranchMenuItemContent,
                 menu,
                 operations,
-				BranchMenuOperations.Delete,
+                BranchMenuOperations.Delete,
                 DeleteBranchMenuItem_Click);
         }
 

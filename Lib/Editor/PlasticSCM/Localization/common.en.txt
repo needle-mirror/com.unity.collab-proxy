@@ -130,6 +130,12 @@ The item won't be downloaded because it is already changed (checked-out, locally
 == ItemPathAlreadyUsedByChange ==
 The item won't be downloaded/moved because there is an existing change at '{0}'. Please undo the local change, unload the item (from the configuration view) and retry the operation.
 
+== MoveIgnoredDestinationWasntSelected ==
+The item '{0}' won't be moved because the destination of the move '{1}' wasn't selected. Please, update the workspace or select the source and destination of the move and retry the operation.
+
+== MoveIgnoredSourceWasntSelected ==
+The item '{0}' won't be moved because it wasn't selected although the destination of the move '{1}' was selected. Please, update the workspace or select the source and destination of the move and retry the operation.
+
 == MoveItemAlreadyChanged ==
 The item won't be moved because it is already changed (checked-out, locally changed, deleted, moved or reverted) in the workspace: '{0}'. Please undo or checkin the local change and retry the operation.
 

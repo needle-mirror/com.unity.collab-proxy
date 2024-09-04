@@ -6,6 +6,7 @@ using UnityEngine;
 
 using Codice.Client.Common.Threading;
 using Codice.LogWrapper;
+using PlasticGui;
 using PlasticGui.Configuration.OAuth;
 using PlasticGui.WebApi.Responses;
 using Unity.PlasticSCM.Editor.UI;
@@ -87,14 +88,14 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         {
             int ini = Environment.TickCount;
 
-            TokenExchangeResponse response = null;
+            TokenExchangeResponse tokenExchangeResponse = null;
 
             IThreadWaiter waiter = ThreadWaiter.GetWaiter(10);
             waiter.Execute(
             /*threadOperationDelegate*/ delegate
             {
                 mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseInit;
-                response = WebRestApiClient.PlasticScm.TokenExchange(unityAccessToken);
+                tokenExchangeResponse = WebRestApiClient.PlasticScm.TokenExchange(unityAccessToken);
             },
             /*afterOperationDelegate*/ delegate
             {
@@ -112,38 +113,40 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                     return;
                 }
 
-                if (response == null)
+                if (tokenExchangeResponse == null)
                 {
                     mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorResponseNull;
-                    Debug.LogWarning("Auto Login response null");
+                    var warning = PlasticLocalization.GetString(PlasticLocalization.Name.TokenExchangeResponseNull);
+                    mLog.Warn(warning);
+                    Debug.LogWarning(warning);
                     return;
                 }
                    
-                if (response.Error != null)
+                if (tokenExchangeResponse.Error != null)
                 {
                     mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorResponseError;
                     var warning = string.Format(
-                            "Unable to exchange token: {0} [code {1}]",
-                            response.Error.Message, response.Error.ErrorCode);
+                        PlasticLocalization.GetString(PlasticLocalization.Name.TokenExchangeResponseError),
+                        tokenExchangeResponse.Error.Message, tokenExchangeResponse.Error.ErrorCode);
                     mLog.ErrorFormat(warning);
                     Debug.LogWarning(warning);
                     return;
                 }
 
-                if (string.IsNullOrEmpty(response.AccessToken))
+                if (string.IsNullOrEmpty(tokenExchangeResponse.AccessToken))
                 {
                     mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorTokenEmpty;
                     var warning = string.Format(
-                        "Access token is empty for user: {0}",
-                        response.User);
+                        PlasticLocalization.GetString(PlasticLocalization.Name.TokenExchangeAccessEmpty), 
+                        tokenExchangeResponse.User);
                     mLog.InfoFormat(warning);
                     Debug.LogWarning(warning);
                     return;
                 }
 
                 mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseEnd;
-                AccessToken = response.AccessToken;
-                UserName = response.User;
+                AccessToken = tokenExchangeResponse.AccessToken;
+                UserName = tokenExchangeResponse.User;
                 GetOrganizationList();
             });
         }

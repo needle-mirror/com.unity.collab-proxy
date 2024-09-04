@@ -3997,6 +3997,12 @@ File Visibility Settings
 == ProjectSettingsMoveAndRename ==
 File Move and Rename Detection
 
+== ProjectSettingsAutomaticAdd ==
+自動將新檔案新增至原始碼管理
+
+== ProjectSettingsAutomaticAddExplanation ==
+讓 Unity VCS 自動將新檔案新增至原始碼管理。
+
 == MergeToMergeNeededExplanation ==
 合併目標作業執行時，合併目標作業目的地中隨即新建變更集，並接著建立一個以上的前端。執行新的合併 (或合併目標) 作業時，請考慮整合這些前端。受影響的分支:
 
@@ -5405,9 +5411,6 @@ Open in Gluon
 
 == And ==
  和 {0}
-
-== ErrorDialogTitle ==
-Error - {0}
 
 == InstallUnityVersionControl ==
 Install Unity Version Control

@@ -1336,9 +1336,6 @@ Show the shelves view
 == NoShelvesCreatedExplanation ==
 There are no shelves created yet
 
-== NoShelvesMatchQueryExplanation ==
-There are no shelves that match your query
-
 == NoLocksCreatedExplanation ==
 There are no file locks created yet
 
@@ -3204,6 +3201,18 @@ WARNING: The hostname provided in the server certificate does NOT match the serv
 == RepositoryExplorerServerLabel ==
 Server:
 
+== RepositoryExplorerServerProjectLabel ==
+Server project:
+
+== RetrievingServerProjects ==
+Retrieving server projects...
+
+== NoServerProjectsFound ==
+No server projects were found
+
+== ErrorRetrievingServerProjects ==
+Could not retrieve the server projects
+
 == ShowUndeleteButton ==
 Deleted items
 
@@ -4509,6 +4518,12 @@ File Visibility Settings
 == ProjectSettingsMoveAndRename ==
 File Move and Rename Detection
 
+== ProjectSettingsAutomaticAdd ==
+Automatically add new files to source control
+
+== ProjectSettingsAutomaticAddExplanation ==
+Let Unity VCS add new files to source control automatically.
+
 == MergeToMergeNeededExplanation ==
 While the merge-to operation was running, new changesets were created in the destination of the merge-to operation, creating more than one head. Consider unifying them by running a new merge (or merge-to) operation. Affected branches:
 
@@ -5527,7 +5542,7 @@ To confirm, type the name of the repository
 == DeleteRepositoriesConfirmText ==
 To confirm the delete, type '{0}'
 
-== DeleteRepositoryCannotUndo ==
+== DeleteCannotUndo ==
 This action cannot be undone.
 
 == DeleteRepositoryConfirmEntry ==
@@ -5633,7 +5648,7 @@ Loading code review with title {0} ...
 == UpgradeServerForNewCodeReviewError ==
 You need to upgrade the server to version 8.0.16.3691 or higher to use the new code review system!
 
-== UpgradeServerTo110168307ForNewCodeReviewError ==
+== UpgradeServerTo110168321ForNewCodeReviewError ==
 You need to upgrade the server to version 11.0.16.8321 or higher to use the new code review system!
 
 == LoadingMembers ==
@@ -6032,9 +6047,6 @@ Cannot remove Unity VCS menu item: {0} Method MenuType.RemoveMenuItem not found
 == ErrorUpdatePlasticSCMMenus ==
 Cannot update all menus: Method EditorUtility.Internal_UpdateAllMenus not found
 
-== ErrorDialogTitle ==
-Error - {0}
-
 == CheckoutButton ==
 Checkout
 
@@ -6180,7 +6192,10 @@ Installing...
 Skipping download. File {0} already exists
 
 == InstallUnityVersionControl ==
-Install Unity Version Control
+This feature is available on the desktop application of Unity Version Control.
+
+== UnityVersionControlInstalled ==
+Unity Version Control installed. You can now use the feature.
 
 == LoginOrSignUp ==
 Login or sign up
@@ -6194,17 +6209,12 @@ Login or sign up
 == LoginOrSignUpUnityVersionControl ==
  Login or sign up for a Unity Version Control account
 
-== WhichVersionInstall ==
-Which version do you want to install?
+== InstallConfirmationMessage ==
+You computer does not seem to have the application installed yet.
+Would you like to download the application and its advanced tools?
 
-* Cloud Edition is intended for for teams who usually work with a Cloud server.
-* Enterprise Edition is the choice for teams who work with on-premise servers.
-
-== DownloadCloudEdition ==
-Download Cloud Edition
-
-== DownloadEnterpriseEdition ==
-Download Enterprise Edition
+Once the download is finished, simply install it on your computer.
+Then, click the feature button again in the Unity Editor package.
 
 == NeedEnterprise ==
 Need Unity VCS Enterprise?
@@ -6251,8 +6261,14 @@ Locked remote
 == AssetOverlayTooltipOn ==
 on {0}
 
-== ErrorGettingCredentialsCloudProject ==
-Error getting credentials to download Cloud Project: {0} ({1})
+== TokenExchangeResponseNull ==
+Token exchange response null
+
+== TokenExchangeResponseError ==
+Unable to exchange token: {0} [code {1}]
+
+== TokenExchangeAccessEmpty ==
+Access token is empty for user: {0}
 
 == ErrorDownloadingCloudProject ==
 Error downloading Cloud Project: {0}
@@ -7226,7 +7242,7 @@ Create a new repository
 == NoWorkspacesTitle ==
 No workspaces yet?
 
-== CreateNewRepository ==
+== CreateNewWorkspace ==
 Create a new workspace
 
 == CreateRepositoryNameLabel ==
@@ -8287,6 +8303,9 @@ Oops! It looks like there are no attributes matching your filters
 == CodeReviewsEmptyState ==
 Oops! It looks like there are no code reviews matching your filters
 
+== ShelvesEmptyState ==
+Oops! It looks like there are no shelves matching your filters
+
 == ResetFilters ==
 Reset filters
 
@@ -8329,6 +8348,15 @@ Other branches
 == ReviewersColumn ==
 Reviewers
 
+== CommentsColumn ==
+Comments
+
+== CommentsCellTooltip ==
+Comments and replies
+
+== UnresolvedIssuesCellTooltip ==
+Unresolved issues: Change requests and questions
+
 == CreateWorkspacePanelTitle ==
 Create your cloud workspace on {0} organization
 
@@ -8342,7 +8370,7 @@ Connect workspace to a repository
 I want to load source files from a Unity UVCS repository to this workspace.
 
 == WorkspaceWithoutConnectionSelectorName ==
-Don't connect to a repository
+Don't connect workspace to a repository
 
 == WorkspaceWithoutConnectionSelectorDescription ==
 I want to import files from a local drive.
@@ -8415,3 +8443,66 @@ Drop here to open. Hold Shift to open in a new window.
 
 == DropFolderToCreateWorkspace ==
 Drop here to create a new workspace.
+
+== DeleteBranchTitle ==
+Confirm branch deletion
+
+== DeleteBranchExplanation ==
+You are about to delete {0} and all of its changesets. Are you sure you want to continue?
+
+== DeleteBranchesExplanation ==
+You are about to delete the following branches and all their changesets:
+
+== DeleteBranchesConfirmation ==
+This action cannot be undone. Are you sure you want to continue?
+
+== ConfirmationCheckBox ==
+Yes, I am sure!
+
+== ContinueAnyway ==
+Continue anyway
+
+== ViewSyncIssuesMenuItem ==
+View sync issues
+
+== SyncIssuesDialogTitle ==
+Sync issues
+
+== SyncIssuesEmptyStateMessage ==
+No issues found
+
+== SyncIssuesEmptyStateExplanation ==
+Issues related to syncing your files will be shown here
+
+== SyncIssuesDownloadingChanges ==
+Issues downloading changes
+
+== SyncIssuesUploadingChanges ==
+Issues uploading changes
+
+== SyncIssuesCountSingular ==
+(1 issues)
+
+== SyncIssuesCountPlural ==
+({0} issues)
+
+== CopySyncIssues ==
+Copy sync issues
+
+== LastSynced ==
+synced {0}
+
+== IssuesFound ==
+Issues found
+
+== WorkspacesUnableToSyncSingular ==
+Your workspace is unable to sync
+
+== WorkspacesUnableToSyncPlural ==
+{0} workspaces are unable to sync
+
+== CannotLoadBranches ==
+Cannot load branches
+
+== CannotLoadBranchesExplanation ==
+We couldn't load the branches from the UVCS server. Please check your connection and try again.

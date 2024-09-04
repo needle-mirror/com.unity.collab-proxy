@@ -87,6 +87,9 @@ No puede deshacerse el movido desde {0} a {1} porque {2} ha sido borrado
 == CannotUpdateWithPendingChanges ==
 No se puede actualizar el espacio de trabajo porque hay cambios pendientes. Por favor, revise dichos cambios e intente de nuevo la operación.
 
+== CannotUpdateWorkspaceContainsChanges ==
+No hay nuevos changesets en tu configuración actual a los que actualizarse. Tienes cambios pendientes en tu workspace. Si estás intentando obetner los últimos cambios, intenta deshacer estos cambios en lugar de hacer un update.
+
 == CantArchiveAnAlreadyArchivedRevision ==
 No se puede archivar una revisión que ya está archivada. {0}
 
@@ -212,9 +215,6 @@ El comentario
 == CompMethodError ==
 {0} no es un método de comparación válido
 
-== ContentMustBeUndoCheckedout ==
-Para deshacer la desprotección sobre '{0}' en su contenido debe ser deshecha también.
-
 == CorruptConfigurationFile ==
 El fichero de configuración '{0}' no se puede leer, porque su contenido no es válido o está corrupto.
 
@@ -337,6 +337,9 @@ Windows no permite puntos al final de los nombres.
 == ExpansionRulesHeader ==
 Reglas de expansión de ramas:
 
+== FailConnectionServer ==
+No se pudo establecer conexión con el servidor {0}
+
 == FastUpdCloakedError ==
 El fast update no se puede usar con reglas de cloaked. Por favor, use el standard update.
 
@@ -354,6 +357,9 @@ No se puede ejecutar la actualización rápida en el espacio de trabajo: '{0}'. 
 
 == FieldTooLong ==
  {0} es demasiado grande, tiene {1} caracteres y el tamaño máximo es de {2}
+
+== FieldEmpty ==
+{0} no puede estar vacío.
 
 == FileTypesFileNotFound ==
 No se pudo encontrar el fichero de tipos {0}
@@ -375,6 +381,9 @@ No se pueden hacer cambios dentro del xlink '{0}' porque no puede resolverse aho
 
 == GenericError ==
 Se ha producido un error en el servidor {0}
+
+== GetRevisionDirectoryNotSupported ==
+GetRevision no está soportado para directorios. Para obetner los contenidos de un directorio, añádelo a tus reglas de workspace.
 
 == GluonPartialUpdateToDifferentBranch ==
 La operación de update no puede continuar. El changeset destino debe estar en la rama actual del espacio de trabajo: {0}.
@@ -509,9 +518,6 @@ No se puede encontrar el ítem '{0}' (ItemId:{1}) en el repositorio '{2}'. Proba
 == ItemLockOutOfDateOnMergeFromHead ==
 '{0}' no puede bloquearse. No es la última revisión, y los bloqueos solo pueden realizarse sobre la última versión. Para continuar, deshaz los cambios y actualiza de nuevo. Para evitar este error en el futuro, recuerda hacer checkout de los ficheros que requieren bloqueo antes de realizar cambios.
 
-== ItemMustBeUndoCheckedout ==
-No se puede deshacer '{0}' porque depende de '{1}'. Añada '{1}' a los argumentos y pruebe de nuevo.
-
 == ItemNameField ==
 El nombre del ítem
 
@@ -563,6 +569,9 @@ hace 1 minuto
 == MissingUserOrPassword ==
 Necesita especificar un usuario (--username) y una contraseña (--password) para el modo de trabajo '{0}'.
 
+== MissingUserOrPasswordOrToken ==
+Necesita especificar un usuario (--username) y o bien una contraseña (--password) o un token (--token) para el modo de trabajo '{0}'.
+
 == MissingUserOrToken ==
 Necesita especificar un usuario (--username) y un token (--token) para el modo de trabajo '{0}'.
 
@@ -610,9 +619,6 @@ No se puede obtener un punto de montaje para un consulta de múltiples repositor
 
 == NoPathBetweenCsets ==
 No hay un camino entre '{0}' y '{1}'.
-
-== NoPendingMerges ==
-There are not merges in progress on workspace '{0}'.
 
 == NoSuchCodeReview ==
 No se pudo encontrar la revisión de código especificada '{0}'.
@@ -871,6 +877,18 @@ Los siguientes espacios de trabajo dinámicos todavía no están montados despu�
 
 == CmdPatchFileNotFound ==
 El fichero que contiene el patch no ha sido encontrado.
+
+== Key_AttrNotExist ==
+ATTR_NOT_EXIST
+
+== Key_AttrTypeWrong ==
+ATTR_TYPE_WRONG
+
+== Key_AttrTypeWrongValue ==
+ATTR_TYPE_WRONG_VALUE
+
+== Key_Unrecognized ==
+UNRECOGNIZED
 
 == Seconds ==
 segundos

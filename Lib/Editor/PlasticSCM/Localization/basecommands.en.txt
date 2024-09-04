@@ -379,8 +379,43 @@ Source changeset: {0}
 == BranchHistoryEntryType ==
 Type: {0}
 
+== BringChangesStgApplyingChanges ==
+Applying changes...
+
+== BringChangesStgShelvingChanges ==
+Shelving changes...
+
+== BringChangesStgUndoingChanges ==
+Undoing workspace changes...
+
+== BringChangesStgCalculatingMergeConflicts ==
+Calculating merge conflicts for shelveset sh:{0}...
+
+== BringChangesStgApplyingShelveset ==
+Applying shelveset sh:{0}...
+
+== BringChangesApplyShelvesetQuestion ==
+Applying shelveset sh:{0} will cause merge conflicts.
+You can continue applying the shelveset, or cancel the operation.
+If you choose to continue, you will be assisted in solving the conflicts.
+If you choose to cancel, you can manually apply the shelve later on.
+What would you like to do?
+
+== BringChangesApplyShelvesetQuestionViewConflictsOption ==
+View the conflicts (lists conflicts and asks you this question again)
+
+== BringChangesApplyShelvesetQuestionApplyShelveOption ==
+Apply the shelve (starts the merge conflicts resolution)
+
+== BringChangesApplyShelvesetQuestionCancelMessage ==
+You can manually apply the shelveset running the following command:
+cm shelveset apply sh:{0}
+
 == CalculatingInitialChangeset ==
 Calculating initial changeset
+
+== Cancel ==
+Cancel
 
 == CannotBeDeletedChanged ==
 The item '{0}' cannot be deleted on disk because it has been changed.
@@ -1089,6 +1124,9 @@ Data status
 
 == DataWritten ==
 Data written
+
+== Default ==
+Default
 
 == DefaultFormatDiffmetrics ==
 changed: {0}  added: {1}  deleted: {2}
@@ -1879,12 +1917,6 @@ An item has been moved on the source and the destination has deleted it or its p
 == MoveDeleteConflictSourceOperation ==
 Moved from {0} to {1}
 
-== MoveIgnoredDestinationWasntSelected ==
-The item '{0}' won't be moved because the destination of the move '{1}' wasn't selected. Please, update the workspace or select the source and destination of the move and retry the operation.
-
-== MoveIgnoredSourceWasntSelected ==
-The item '{0}' won't be moved because it wasn't selected although the destination of the move '{1}' was selected. Please, update the workspace or select the source and destination of the move and retry the operation.
-
 == MoveItemAlreadyChanged ==
 The item won't be moved because it is already changed (checked-out, locally changed, deleted, moved or reverted) in the workspace: '{0}'. Please undo or checkin the local change and retry the operation.
 
@@ -2035,6 +2067,9 @@ No changes were applied
 
 == NoChangesInWk ==
 There are no changes in the workspace {0}
+
+== NoPathSpecified ==
+No path specified.
 
 == NoErrorsDetected ==
 No errors detected.
@@ -2263,6 +2298,9 @@ Reconciling ACLs
 == ReconcilingObjects ==
 Reconciling objects
 
+== RecurseWkIncompatibleWithWorkspacePath ==
+Can't use '--recursewk' flag with a workspace path.
+
 == RemoveTubeSucceeded ==
 The tube {0} -> {1} was correctly removed.
 
@@ -2393,7 +2431,25 @@ The repository '{0}' was correctly shared.
 Shelve
 
 == ShelvePendingChangesQuestion ==
-There are pending changes in your workspace. You can shelve the pending changes and continue with the operation or cancel it. If you continue with the switch operation, your pending changes won't be lost, they can be recovered from the created shelve. Do you want to continue with the switch operation? (y/n)
+There are pending changes in your workspace.
+You can shelve and undo the pending changes, or cancel the switch.
+If you choose to shelve your changes, they will be shelved and can be recovered later from the created shelveset.
+If you choose to cancel the operation, the workspace will be left as is.
+What would you like to do?
+
+== ShelveOrBringPendingChangesQuestion ==
+There are pending changes in your workspace.
+You can shelve and undo the pending changes, bring your changes with you, or cancel the switch.
+If you choose to shelve your changes, they will be shelved and can be recovered later from the created shelveset.
+If you choose to bring your changes, they will be shelved and then automatically reapplied after the switch.
+If you choose to cancel the operation, the workspace will be left as is.
+What would you like to do?
+
+== ShelveOrBringPendingChangesQuestionShelveOption ==
+Save my changes (create a shelve)
+
+== ShelveOrBringPendingChangesQuestionBringChangesOption ==
+Bring my changes (create an intermediate shelve and apply it automatically)
 
 == ShelvePendingChangesShelvesetComment ==
 Shelve created during switch operation (from cs:{0})
@@ -2615,6 +2671,12 @@ License information: server: {0}
 
 == UserKey ==
 User
+
+== UserMultipleChoiceAnswerPrompt ==
+Please enter your choice ({0}): 
+
+== UserMultipleChoiceAnswerPromptWithDefaultOption ==
+Please enter your choice ({0}) [default is '{1}']: 
 
 == View ==
 controls whether objects can be viewed

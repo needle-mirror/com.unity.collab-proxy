@@ -37,7 +37,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             /*threadOperationDelegate*/ delegate
             {
                 RepositorySpec repSpec = new SpecGenerator().
-                    GenRepositorySpec(false, repository);
+                    GenRepositorySpec(false, repository, CmConnection.Get().UnityOrgResolver);
 
                 repInfo = plasticApi.GetRepositoryInfo(repSpec);
 

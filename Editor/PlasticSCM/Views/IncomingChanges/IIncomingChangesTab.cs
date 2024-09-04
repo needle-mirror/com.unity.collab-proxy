@@ -7,6 +7,7 @@
             get; set;
         }
 
+        void OnEnable();
         void OnDisable();
         void Update();
         void OnGUI();

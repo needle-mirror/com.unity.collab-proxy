@@ -4,9 +4,6 @@ Los tókenes de acceso no están habilitados en este servidor. Si cree que es un
 == AclNotFound ==
 Está trabajando con objetos desactualizados. Puede que su cliente o su espacio de trabajo este desactualizado, por favor actualicelo.
 
-== AclidNotFound ==
-No se ha encontrado un ACLID para un repositorio o un espacio de trabajo.
-
 == ActivateUserNotInLicenseList ==
 El usuario {0} no se puede activar. Para activar un usuario con este comando debe haber sido desactivado previamente. Para activar un usuario debe iniciar una sesión en Plastic SCM con las credenciales de este usuario.
 
@@ -155,9 +152,6 @@ Los datos sólo puede ser guardados en revisiones desprotegidas.
 
 == CannotUpdateAssigneeWithMultipleReviewers ==
 No se puede actualizar el assignee porque la review tiene más de un revisor.
-
-== CannotUpdateWorkspaceContainsChanges ==
-No existen changesets más nuevos en su configuración actual a los que se pueda apuntar. Tiene cambios pendientes en su workspace, si está tratando obtener los últimos cambios, hágalo realizando la operación 'deshacer cambios' en vez de actualizar su workspace.
 
 == CannotUpdateWorkspaceOutOfDate ==
 No se puede actualizar parcialmente el workspace porque hay nuevos cambios en el repositorio.
@@ -408,6 +402,9 @@ Configurando el modo de seguridad/usuarios. Éstos son los modos disponibles.
 == ConflictCannotBeApplied ==
 La resolución del conflicto no puede aplicarse porque depende de la resolución de otros conflictos. Por favor, intente resolver los conflictos en otro orden. La resolución del conflicto devolvió el siguiente error: {0}
 
+== ContentMustBeUndoCheckedout ==
+Para deshacer la desprotección sobre '{0}' en su contenido debe ser deshecha también.
+
 == ControlInManager ==
 El control {0} ya se encuentra en el gestor gráfico.
 
@@ -618,7 +615,7 @@ La etiqueta especificada no es válida: {0}.
 == IncorrectRepClientSpec ==
 El repositorio especificado no es válido: {0}.
 
-== IncorrectSpecNoArgument ==
+== IncorrectSpec ==
 La especificación de objeto no es válida.
 
 == InvalidChildrenitemchangetype ==
@@ -735,6 +732,9 @@ El item {0} se carga 2 veces en las rutas '{1}' y '{2}'. Por favor, elimine una 
 == ItemLockOutOfDate ==
 No se pudo hacer checkout de '{0}' porque no tienes la última version. Necesitas deshacer tus cambios para poder actualizarte a los últimos contenidos y aplicar el checkout exclusivo. Si realmente necesitas conservar tus cambios, sálvalos manualmente en otra ubicación. Recuerda bloquear este fichero en el futuro antes de realizar cambios en él.
 
+== ItemMustBeUndoCheckedout ==
+No se puede deshacer '{0}' porque depende de '{1}'. Añada '{1}' a los argumentos y pruebe de nuevo.
+
 == ItemNotFound ==
 No se ha encontrado el ítem {0}.
 
@@ -816,7 +816,7 @@ No se puede encontrar un enlace de tipo {0}.
 == LoadSpec ==
 No se ha podido cargar la especificación.
 
-== LoadeTwiceConflict ==
+== LoadedTwiceConflict ==
 Conflicto de ítem cargado múltiples veces
 
 == MergeBrNecessary ==
@@ -1478,6 +1478,12 @@ Se ha producido un error no esperado "{0}". Para más información consulta el l
 == UnlicensedTubeFeature ==
 La licencia del servidor Plastic SCM no soporta Plastic Tube.
 
+== UnityOrgProjectRepOperationNotAllowed ==
+La gestión de Proyectos en Organizaciones Unity debe hacerse en el Cloud Dashboard. Por favor, abra https://cloud.unity.com/home/organizations/{0}/projects/default/devops/overview en su navegador para continuar.
+
+== UnityOrgSecurityOperationNotAllowed ==
+Esta operación de seguridad no está permitida en Organizaciones Unity para el objeto seleccionado. Para gestionar el control de acceso en su organización, abra https://cloud.unity.com/home/organizations/{0}/projects/default/devops/overview en su navegador.
+
 == UpCantAddGroupToItself ==
 Un grupo no puede ser miembro de sí mismo.
 
@@ -1562,6 +1568,9 @@ No se han podido obtener los usaurios del sistema.
 == UsersExceeded ==
 Se ha excedido el número máximo de usuarios con licencia.
 
+== VcsRepositoryInUnityOrgMustBeUnderProject ==
+Los repositories deben crearse bajo un proyecto en organizaciones Unity.
+
 == ViewUnknown ==
 Tipo de vista desconocido: {0}
 
@@ -1640,7 +1649,7 @@ El valor '{0}' no es válido para el campo '{1}' en la consulta "{2}". El campo 
 == FindAttrTypeWrongValue ==
 El valor '{0}' no es válido para el campo '{1}' en la consulta "{2}". El campo '{1}' admite un valor de los siguientes: {3}
 
-== IncorrectSpec ==
+== Incorrectspec ==
 Especificación de objeto incorrecta: {0}
 
 == NotValidCmPath ==
@@ -1684,6 +1693,9 @@ checkout
 
 == CopyOperationName ==
 copiar
+
+== DeleteOperationName ==
+eliminar
 
 == IncomingChangesOperationName ==
 cambios entrantes
@@ -1774,3 +1786,9 @@ No se pudo replicar el repositorio, porque se borró algún changeset mientras s
 
 == FetchBrDeletedRevisionsError ==
 No se pudo replicar la rama '{0}', porque se borró alguno de sus changesets mientras replicaba. Por favor inténtelo de nuevo.
+
+== CantResolveOrganization ==
+No se puede resolver la organización {0}
+
+== MoveChangesetZeroNotAllowed ==
+No se puede mover changeset zero.

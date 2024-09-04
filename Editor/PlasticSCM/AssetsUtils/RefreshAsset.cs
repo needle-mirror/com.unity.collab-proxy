@@ -17,16 +17,21 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
         {
             AssetDatabase.AllowAutoRefresh();
 
-            // Client.Resolve() will resolve any pending packages added or removed from the project
-            // VCS-1004718 - This is important so the domain gets reloaded first if needed
-            Client.Resolve();
-
-            mCooldownRefreshAssetsAction.Ping();
+            UnityAssetDatabaseAndPackageManagerAsync();
         }
 
         internal static void UnityAssetDatabase()
         {
             RefreshUnityAssetDatabase();
+        }
+
+        internal static void UnityAssetDatabaseAndPackageManagerAsync()
+        {
+            // Client.Resolve() will resolve any pending packages added or removed from the project
+            // VCS-1004718 - This is important so the domain gets reloaded first if needed
+            Client.Resolve();
+
+            mCooldownRefreshAssetsAction.Ping();
         }
 
         internal static void VersionControlCache()

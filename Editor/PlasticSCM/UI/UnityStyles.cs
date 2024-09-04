@@ -48,7 +48,7 @@ namespace Unity.PlasticSCM.Editor.UI
             internal static Color SecondaryLabel = EditorGUIUtility.isProSkin ?
                 new Color(196f / 255, 196f / 255, 196f / 255) :
                 new Color(105f / 255, 105f / 255, 105f / 255);
-            internal static Color BackgroundBar = EditorGUIUtility.isProSkin ? 
+            internal static Color BackgroundBar = EditorGUIUtility.isProSkin ?
                 new Color(35f / 255, 35f / 255, 35f / 255) :
                 new Color(160f / 255, 160f / 255, 160f / 255);
 
@@ -96,7 +96,6 @@ namespace Unity.PlasticSCM.Editor.UI
                 style.fontSize = MODAL_FONT_SIZE;
                 return style;
             });
-
 
             internal static readonly LazyStyle Toggle = new LazyStyle(() =>
             {
@@ -162,7 +161,7 @@ namespace Unity.PlasticSCM.Editor.UI
             internal static readonly LazyStyle Label = new LazyStyle(() =>
             {
                 var style = new GUIStyle(TreeView.DefaultStyles.label);
-                style.fontSize = 11;
+                style.fontSize = UnityConstants.LABEL_FONT_SIZE;
                 style.alignment = TextAnchor.MiddleLeft;
                 return style;
             });
@@ -170,7 +169,7 @@ namespace Unity.PlasticSCM.Editor.UI
             internal static readonly LazyStyle SecondaryLabel = new LazyStyle(() =>
             {
                 var style = new GUIStyle(TreeView.DefaultStyles.label);
-                style.fontSize = 11;
+                style.fontSize = UnityConstants.LABEL_FONT_SIZE;
                 style.alignment = TextAnchor.MiddleLeft;
 
                 style.active = new GUIStyleState() { textColor = Colors.SecondaryLabel };
@@ -217,7 +216,7 @@ namespace Unity.PlasticSCM.Editor.UI
             internal static readonly LazyStyle BoldLabel = new LazyStyle(() =>
             {
                 var style = new GUIStyle(TreeView.DefaultStyles.boldLabel);
-                style.fontSize = 11;
+                style.fontSize = UnityConstants.LABEL_FONT_SIZE;
                 style.alignment = TextAnchor.MiddleLeft;
                 return style;
             });
@@ -225,7 +224,7 @@ namespace Unity.PlasticSCM.Editor.UI
             internal static readonly LazyStyle LabelRightAligned = new LazyStyle(() =>
             {
                 var style = new GUIStyle(TreeView.DefaultStyles.label);
-                style.fontSize = 11;
+                style.fontSize = UnityConstants.LABEL_FONT_SIZE;
                 style.alignment = TextAnchor.MiddleRight;
                 return style;
             });
@@ -250,7 +249,7 @@ namespace Unity.PlasticSCM.Editor.UI
                 style.alignment = TextAnchor.MiddleCenter;
                 style.fontSize = 14;
                 style.padding = new RectOffset(
-                    0, 0, 
+                    0, 0,
                     UnityConstants.TREEVIEW_STATUS_CONTENT_PADDING, UnityConstants.TREEVIEW_STATUS_CONTENT_PADDING);
                 style.stretchWidth = false;
                 return style;
@@ -624,7 +623,7 @@ namespace Unity.PlasticSCM.Editor.UI
                 textColor = GetEditorSkin().textArea.normal.textColor,
                 background = Images.GetTreeviewBackgroundTexture()
             };
-                
+
             style.wordWrap = true;
             return style;
         });

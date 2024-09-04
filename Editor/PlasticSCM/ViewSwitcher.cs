@@ -34,8 +34,8 @@ namespace Unity.PlasticSCM.Editor
         IGluonViewSwitcher,
         IHistoryViewLauncher
     {
-        internal IIncomingChangesTab IncomingChangesTabForTesting { get { return mIncomingChangesTab; } }
         internal PendingChangesTab PendingChangesTab { get; private set; }
+        internal IIncomingChangesTab IncomingChangesTab { get; private set; }
         internal ChangesetsTab ChangesetsTab { get; private set; }
         internal BranchesTab BranchesTab { get; private set; }
         internal HistoryTab HistoryTab { get; private set; }
@@ -94,14 +94,12 @@ namespace Unity.PlasticSCM.Editor
 
         internal void AutoRefreshPendingChangesView()
         {
-            AutoRefresh.PendingChangesView(
-                PendingChangesTab);
+            AutoRefresh.PendingChangesView(PendingChangesTab);
         }
 
         internal void AutoRefreshIncomingChangesView()
         {
-            AutoRefresh.IncomingChangesView(
-                mIncomingChangesTab);
+            AutoRefresh.IncomingChangesView(IncomingChangesTab);
         }
 
         internal void RefreshView(ViewType viewType)
@@ -141,6 +139,32 @@ namespace Unity.PlasticSCM.Editor
             }
         }
 
+        internal void OnEnable()
+        {
+            mWorkspaceOperationsMonitor.
+                RegisterPendingChangesView(PendingChangesTab);
+            mWorkspaceOperationsMonitor.
+                RegisterIncomingChangesView(IncomingChangesTab);
+
+            if (PendingChangesTab != null)
+                PendingChangesTab.OnEnable();
+
+            if (IncomingChangesTab != null)
+                IncomingChangesTab.OnEnable();
+
+            if (ChangesetsTab != null)
+                ChangesetsTab.OnEnable();
+
+            if (BranchesTab != null)
+                BranchesTab.OnEnable();
+
+            if (HistoryTab != null)
+                HistoryTab.OnEnable();
+
+            if (LocksTab != null)
+                LocksTab.OnEnable();
+        }
+
         internal void OnDisable()
         {
             mWorkspaceOperationsMonitor.UnRegisterViews();
@@ -148,8 +172,8 @@ namespace Unity.PlasticSCM.Editor
             if (PendingChangesTab != null)
                 PendingChangesTab.OnDisable();
 
-            if (mIncomingChangesTab != null)
-                mIncomingChangesTab.OnDisable();
+            if (IncomingChangesTab != null)
+                IncomingChangesTab.OnDisable();
 
             if (ChangesetsTab != null)
                 ChangesetsTab.OnDisable();
@@ -174,7 +198,7 @@ namespace Unity.PlasticSCM.Editor
 
             if (IsViewSelected(SelectedTab.IncomingChanges))
             {
-                mIncomingChangesTab.Update();
+                IncomingChangesTab.Update();
                 return;
             }
 
@@ -230,7 +254,7 @@ namespace Unity.PlasticSCM.Editor
 
             if (IsViewSelected(SelectedTab.IncomingChanges))
             {
-                mIncomingChangesTab.OnGUI();
+                IncomingChangesTab.OnGUI();
                 return;
             }
 
@@ -493,9 +517,9 @@ namespace Unity.PlasticSCM.Editor
 
         void ShowIncomingChangesView()
         {
-            if (mIncomingChangesTab == null)
+            if (IncomingChangesTab == null)
             {
-                mIncomingChangesTab = mIsGluonMode ?
+                IncomingChangesTab = mIsGluonMode ?
                     new Views.IncomingChanges.Gluon.IncomingChangesTab(
                         mWkInfo,
                         mViewHost,
@@ -515,17 +539,17 @@ namespace Unity.PlasticSCM.Editor
 
                 mViewHost.AddRefreshableView(
                     ViewType.IncomingChangesView,
-                    (IRefreshableView)mIncomingChangesTab);
+                    (IRefreshableView)IncomingChangesTab);
 
                 mWorkspaceOperationsMonitor.RegisterIncomingChangesView(
-                    mIncomingChangesTab);
+                    IncomingChangesTab);
             }
 
             bool wasIncomingChangesSelected =
                 IsViewSelected(SelectedTab.IncomingChanges);
 
             if (!wasIncomingChangesSelected)
-                mIncomingChangesTab.AutoRefresh();
+                IncomingChangesTab.AutoRefresh();
 
             SetSelectedView(SelectedTab.IncomingChanges);
         }
@@ -732,7 +756,7 @@ namespace Unity.PlasticSCM.Editor
                     return PendingChangesTab;
 
                 case SelectedTab.IncomingChanges:
-                    return (IRefreshableView)mIncomingChangesTab;
+                    return (IRefreshableView)IncomingChangesTab;
 
                 case SelectedTab.Changesets:
                     return ChangesetsTab;
@@ -759,7 +783,7 @@ namespace Unity.PlasticSCM.Editor
                     return PendingChangesTab;
 
                 case ViewType.IncomingChangesView:
-                    return (IRefreshableView)mIncomingChangesTab;
+                    return (IRefreshableView)IncomingChangesTab;
 
                 case ViewType.ChangesetsView:
                     return ChangesetsTab;
@@ -790,10 +814,10 @@ namespace Unity.PlasticSCM.Editor
 
             mSelectedTab = tab;
 
-            if (mIncomingChangesTab == null)
+            if (IncomingChangesTab == null)
                 return;
 
-            mIncomingChangesTab.IsVisible =
+            IncomingChangesTab.IsVisible =
                 tab == SelectedTab.IncomingChanges;
         }
 
@@ -910,8 +934,6 @@ namespace Unity.PlasticSCM.Editor
             History = 5,
             Locks = 6
         }
-
-        IIncomingChangesTab mIncomingChangesTab;
 
         SelectedTab mSelectedTab;
         SelectedTab mPreviousSelectedTab;

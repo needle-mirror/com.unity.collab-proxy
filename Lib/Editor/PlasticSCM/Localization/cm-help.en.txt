@@ -7678,10 +7678,14 @@ Options:
                               output is redirected.
     --^noinput                Skips the interactive questions to continue the
                               operation with pending changes or to shelve them.
+                              Using this option disables the possibility of
+                              bringing your pending changes.
     --^silent                 No output is shown unless an error happens.
     --^verbose                Shows additional information.
     --^xml                    Prints the output in XML format to the standard output.
                               It is possible to specify an output file.
+                              Using this option disables the possibility of
+                              bringing your pending changes.
     --^encoding               Used with the --^xml option, specifies the encoding to
                               use in the XML output, i.e.: utf-8.
                               See the MSDN documentation at
@@ -8371,7 +8375,9 @@ Options:
                             shown if there are pending changes detected when
                             updating the workspace.
     --^noinput               Skips the interactive questions to continue the
-                            operation with pending changes or to shelve them. 
+                            operation with pending changes or to shelve them.
+                            Using this option disables the possibility of
+                            bringing your pending changes.
     --^override              Overrides changed files outside Unity VCS control.
                             Their content will be overwritten with the server
                             content.
@@ -8383,9 +8389,13 @@ Options:
                             modifying a file, you can use this check and speed
                             up the operation.
     --^silent                No output is shown unless an error happens.
+                            Using this option disables the possibility of
+                            bringing your pending changes.
     --^verbose               Shows additional information.
     --^xml                   Prints the output in XML format to the standard output.
                             It is possible to specify an output file.
+                            Using this option disables the possibility of
+                            bringing your pending changes.
     --^encoding              Used with the --^xml option, specifies the encoding to
                             use in the XML output, i.e.: utf-8.
                             See the MSDN documentation at
@@ -8393,6 +8403,8 @@ Options:
                             to get the table of supported encodings and its format, 
                             (at the end of the page, in the "Name" column).
     --^machinereadable       Outputs the result in an easy-to-parse format.
+                            Using this option disables the possibility of
+                            bringing your pending changes.
     --^startlineseparator    Used with the '--^machinereadable' flag,
                             specifies how the lines should start.
     --^endlineseparator      Used with the '--^machinereadable' flag,

@@ -10,13 +10,13 @@ namespace Unity.PlasticSCM.Editor.UI
         void GuiMessage.IGuiMessage.ShowMessage(
             string title,
             string message,
-            GuiMessage.GuiMessageType alertType)
+            GuiMessage.GuiMessageType messageType)
         {
             if (!PlasticPlugin.ConnectionMonitor.IsConnected)
                 return;
 
             EditorUtility.DisplayDialog(
-                BuildDialogTitle(title, alertType),
+                GetDialogTitleForMessageType(title, messageType),
                 message,
                 PlasticLocalization.GetString(PlasticLocalization.Name.CloseButton));
         }
@@ -27,10 +27,7 @@ namespace Unity.PlasticSCM.Editor.UI
                 return;
 
             EditorUtility.DisplayDialog(
-                string.Format(
-                    PlasticLocalization.GetString(PlasticLocalization.Name.ErrorDialogTitle),
-                    PlasticLocalization.GetString(PlasticLocalization.Name.UnityVersionControl)
-                ),
+                GetDialogTitleForMessageType(null, GuiMessage.GuiMessageType.Critical),
                 message,
                 PlasticLocalization.GetString(PlasticLocalization.Name.CloseButton));
         }
@@ -45,7 +42,7 @@ namespace Unity.PlasticSCM.Editor.UI
             if (string.IsNullOrEmpty(negativeActionButton))
             {
                 bool result = EditorUtility.DisplayDialog(
-                    title,
+                    GetDialogTitle(title),
                     message,
                     positiveActionButton,
                     neutralActionButton);
@@ -56,7 +53,7 @@ namespace Unity.PlasticSCM.Editor.UI
             }
 
             int intResult = EditorUtility.DisplayDialogComplex(
-                title,
+                GetDialogTitle(title),
                 message,
                 positiveActionButton,
                 neutralActionButton,
@@ -71,7 +68,7 @@ namespace Unity.PlasticSCM.Editor.UI
             string yesButton)
         {
             return EditorUtility.DisplayDialog(
-                title,
+                GetDialogTitle(title),
                 message,
                 yesButton,
                 PlasticLocalization.GetString(PlasticLocalization.Name.NoButton));
@@ -85,7 +82,7 @@ namespace Unity.PlasticSCM.Editor.UI
             MultiLinkLabelData learnMoreContent)
         {
             return EditorUtility.DisplayDialog(
-                title,
+                GetDialogTitle(title),
                 message,
                 yesButton,
                 noButton);
@@ -94,7 +91,7 @@ namespace Unity.PlasticSCM.Editor.UI
         bool GuiMessage.IGuiMessage.ShowYesNoQuestion(string title, string message)
         {
             return EditorUtility.DisplayDialog(
-                title,
+                GetDialogTitle(title),
                 message,
                 PlasticLocalization.GetString(PlasticLocalization.Name.YesButton),
                 PlasticLocalization.GetString(PlasticLocalization.Name.NoButton));
@@ -104,7 +101,7 @@ namespace Unity.PlasticSCM.Editor.UI
             string title, string message)
         {
             int intResult = EditorUtility.DisplayDialogComplex(
-                title,
+                GetDialogTitle(title),
                 message,
                 PlasticLocalization.GetString(PlasticLocalization.Name.YesButton),
                 PlasticLocalization.GetString(PlasticLocalization.Name.CancelButton),
@@ -117,7 +114,7 @@ namespace Unity.PlasticSCM.Editor.UI
             string title, string message, GuiMessage.GuiMessageType messageType)
         {
             return EditorUtility.DisplayDialog(
-                BuildDialogTitle(title, messageType),
+                GetDialogTitleForMessageType(title, messageType),
                 message,
                 PlasticLocalization.GetString(PlasticLocalization.Name.YesButton),
                 PlasticLocalization.GetString(PlasticLocalization.Name.NoButton));
@@ -137,34 +134,31 @@ namespace Unity.PlasticSCM.Editor.UI
                 title, message, positiveButtonText, neutralButtonText, negativeButtonText);
         }
 
-        static GuiMessage.GuiMessageResponseButton GetResponse(int dialogResult)
+        static string GetDialogTitle(string title)
         {
-            switch (dialogResult)
-            {
-                case 0:
-                    return GuiMessage.GuiMessageResponseButton.Positive;
-                case 1:
-                    return GuiMessage.GuiMessageResponseButton.Neutral;
-                case 2:
-                    return GuiMessage.GuiMessageResponseButton.Negative;
-                default:
-                    return GuiMessage.GuiMessageResponseButton.Neutral;
-            }
+            if (string.IsNullOrEmpty(title))
+                return UnityConstants.PLASTIC_WINDOW_TITLE;
+
+            if (title.Contains(UnityConstants.PLASTIC_WINDOW_TITLE))
+                return title;
+
+            return string.Format("{0} - {1}",
+                UnityConstants.PLASTIC_WINDOW_TITLE, title);
         }
 
-        static string BuildDialogTitle(
+        static string GetDialogTitleForMessageType(
             string title,
-            GuiMessage.GuiMessageType alertType)
+            GuiMessage.GuiMessageType messageType)
         {
-            string alertTypeText = GetAlertTypeText(alertType);
-            return string.Format("{0} - {1}", alertTypeText, title);
+            string alertTypeText = GetMessageTypeText(messageType);
+            return string.Format("{0} - {1}", alertTypeText, GetDialogTitle(title));
         }
 
-        static string GetAlertTypeText(GuiMessage.GuiMessageType alertType)
+        static string GetMessageTypeText(GuiMessage.GuiMessageType messageType)
         {
             string alertTypeText = string.Empty;
 
-            switch (alertType)
+            switch (messageType)
             {
                 case GuiMessage.GuiMessageType.Informational:
                     alertTypeText = "Information";
@@ -181,6 +175,21 @@ namespace Unity.PlasticSCM.Editor.UI
             }
 
             return alertTypeText;
+        }
+
+        static GuiMessage.GuiMessageResponseButton GetResponse(int dialogResult)
+        {
+            switch (dialogResult)
+            {
+                case 0:
+                    return GuiMessage.GuiMessageResponseButton.Positive;
+                case 1:
+                    return GuiMessage.GuiMessageResponseButton.Neutral;
+                case 2:
+                    return GuiMessage.GuiMessageResponseButton.Negative;
+                default:
+                    return GuiMessage.GuiMessageResponseButton.Neutral;
+            }
         }
     }
 }

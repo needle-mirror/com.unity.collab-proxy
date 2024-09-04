@@ -7770,12 +7770,16 @@ Opciones:
     --forcedetailedprogress Fuerza mostrar progreso detallado incluso cuando se
                             redirige la salida estándar.
     --noinput               Ignora las preguntas interactivas para continuar la
-                            operación con cambios pendientes o haciendolos shelve.   
+                            operación con cambios pendientes o haciendolos shelve.
+                            Usar esta opción deshabilita la posibilidad de llevar
+                            cambios pendientes.
     --silent                Solo se imprimen mensajes en caso de error.
     --verbose               Muestra información adicional.
     --xml                   Imprime el resultado en formato XML a la salida
                             estándar. También es posible especificar un fichero
                             de salida.
+                            Usar esta opción deshabilita la posibilidad de llevar
+                            cambios pendientes.
     --encoding              Usado con la opción --xml, especifica el encoding
                             que se usará en la salida XML, por ejemplo, utf-8.
                             Consulte la documentación de MSDN en
@@ -8419,7 +8423,9 @@ Opciones:
                             del espacio de trabajo, se ignorarán y se continuará
                             con la actualización.
     --noinput               Ignora las preguntas interactivas para continuar la
-                            operación con cambios pendientes o haciendolos shelve.                            
+                            operación con cambios pendientes o haciendolos shelve.
+                            Usar esta opción deshabilita la posibilidad de llevar
+                            cambios pendientes.
     --override              Ignoran los ficheros cambiados fuera del control de
                             Unity VCS. Su contenido se sobrescribirá con el
                             contenido del servidor.
@@ -8432,10 +8438,14 @@ Opciones:
                             desprotegen (checkout) ficheros antes de
                             modificarlos.
     --silent                Solo se imprimen mensajes en caso de error.
+                            Usar esta opción deshabilita la posibilidad de llevar
+                            cambios pendientes.
     --verbose               Muestra información adicional.
     --xml                   Imprime el resultado en formato XML a la salida
                             estándar. También es posible especificar un fichero
                             de salida.
+                            Usar esta opción deshabilita la posibilidad de llevar
+                            cambios pendientes.
     --encoding              Usado con la opción --xml, especifica el encoding
                             que se usará en la salida XML, por ejemplo, utf-8.
                             Consulte la documentación de MSDN en
@@ -8443,6 +8453,8 @@ Opciones:
                             para obtener la tabla de codificaciones soportadas y
                             su formato (al final de la página en la columna "Name").
     --machinereadable       Muestra el resultado en un formato fácil de parsear.
+                            Usar esta opción deshabilita la posibilidad de llevar
+                            cambios pendientes.
     --startlineseparator    Usado con '--machinereadable', indica cómo deben
                             empezar las líneas del resultado.
     --endlineseparator      Usado con '--machinereadable', indica cómo deben

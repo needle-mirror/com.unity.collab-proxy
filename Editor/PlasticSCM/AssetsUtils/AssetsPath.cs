@@ -1,10 +1,14 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 
 using UnityEditor;
 using UnityEngine;
 
+using Codice.Client.BaseCommands;
 using Codice.Client.Common;
+using Codice.CM.Common;
 using Codice.Utils;
 using PlasticGui;
 
@@ -104,6 +108,11 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
             return AssetDatabase.GUIDToAssetPath(guid);
         }
 
+        internal static bool IsPackagesRootElement(string path)
+        {
+            return PathHelper.IsSamePath(mProjectPackagesFullPath, PathHelper.GetParentPath(path));
+        }
+
         static AssetsPath()
         {
             mAssetsFolderLocation = (IsRunningAsUPMPackage()) ?
@@ -111,8 +120,8 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
                 "Assets/Plugins/PlasticSCM/Editor/Assets";
         }
 
-        static string mProjectFullPath = ProjectPath.
-            FromApplicationDataPath(ApplicationDataPath.Get());
+        static readonly string mProjectFullPath = ProjectPath.FromApplicationDataPath(ApplicationDataPath.Get());
+        static readonly string mProjectPackagesFullPath = Path.Combine(mProjectFullPath, "Packages");
 
         static string mAssetsFolderLocation;
     }

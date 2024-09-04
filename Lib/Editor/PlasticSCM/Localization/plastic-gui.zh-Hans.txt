@@ -3997,6 +3997,12 @@ File Visibility Settings
 == ProjectSettingsMoveAndRename ==
 File Move and Rename Detection
 
+== ProjectSettingsAutomaticAdd ==
+自动将新文件添加到源代码控制中
+
+== ProjectSettingsAutomaticAddExplanation ==
+让 Unity VCS 自动将新文件添加到源代码控制中。
+
 == MergeToMergeNeededExplanation ==
 在运行“合并到”操作期间，在“合并到”操作的目标位置创建了新的变更集，从而创建了多个头部。请考虑通过运行新的合并（或“合并到”）操作来进行统一。受影响的分支：
 
@@ -5405,9 +5411,6 @@ Open in Gluon
 
 == And ==
  和 {0}
-
-== ErrorDialogTitle ==
-Error - {0}
 
 == InstallUnityVersionControl ==
 Install Unity Version Control

@@ -8,7 +8,7 @@ _Note this project is the natural evolution of the old Collaborate package, henc
 [Documentation](https://docs.unity.com/ugs/en-us/manual/devops/manual/vcs-plugins/unityeditor-plugin/unity-version-control-package) - [Changelog](https://docs.unity3d.com/Packages/com.unity.collab-proxy@2.1/changelog/CHANGELOG.html) - [Yamato](https://unity-ci.cds.internal.unity3d.com/project/259)
 
 ## Compatibility
-The minimum supported version of the Unity Editor is 2021.3 LTS.
+The minimum supported version of the Unity Editor is 2020.3.48f1 LTS.
 
 Windows and macOS are officially supported.
 

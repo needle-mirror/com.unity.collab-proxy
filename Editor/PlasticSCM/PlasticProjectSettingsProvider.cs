@@ -14,6 +14,8 @@ using PlasticGui;
 using PlasticGui.WorkspaceWindow.PendingChanges;
 using Unity.PlasticSCM.Editor.UI;
 
+using AssetPostprocessor = Unity.PlasticSCM.Editor.AssetUtils.Processor.AssetPostprocessor;
+
 namespace Unity.PlasticSCM.Editor
 {
     class PlasticProjectSettingsProvider : SettingsProvider
@@ -59,26 +61,39 @@ namespace Unity.PlasticSCM.Editor
 
             CheckFsWatcher(mWkInfo);
 
-            mInitialOptions = new PendingChangesOptions();
-            mInitialOptions.LoadPendingChangesOptions();
+            mAutomaticAdd = AssetPostprocessor.AutomaticAdd;
 
-            SetOptions(mInitialOptions);
+            mPendingChangesSavedOptions = new PendingChangesOptions();
+            mPendingChangesSavedOptions.LoadPendingChangesOptions();
+
+            SetPendingChangesOptions(mPendingChangesSavedOptions);
+
+            mIsProjectSettingsActivated = true;
         }
 
         public override void OnDeactivate()
         {
-            if (mInitialOptions == null)
+            if (!mIsProjectSettingsActivated)
+            {
                 return;
+            }
 
-            bool isDialogueDirty = false;
+            mIsProjectSettingsActivated = false;
+
+            bool arePendingChangesOptionsChanged = false;
+
             try
             {
-                PendingChangesOptions currentOptions = GetOptions();
-                isDialogueDirty = IsDirty(currentOptions);
-                if (!isDialogueDirty)
-                    return;
+                AssetPostprocessor.SetAutomaticAddOption(mAutomaticAdd);
 
-                currentOptions.SavePreferences();
+                PendingChangesOptions newPendingChangesOptions = GetPendingChangesOptions();
+
+                arePendingChangesOptionsChanged = !mPendingChangesSavedOptions.AreSameOptions(newPendingChangesOptions);
+
+                if (arePendingChangesOptionsChanged)
+                {
+                    newPendingChangesOptions.SavePreferences();    
+                }
             }
             finally
             {
@@ -88,8 +103,10 @@ namespace Unity.PlasticSCM.Editor
                 {
                     autoRefreshView.EnableAutoRefresh();
 
-                    if (isDialogueDirty)
+                    if (arePendingChangesOptionsChanged)
+                    {
                         autoRefreshView.ForceRefresh();
+                    }
                 }
             }
         }
@@ -193,6 +210,7 @@ namespace Unity.PlasticSCM.Editor
                 EditorStyles.boldLabel);
             EditorGUILayout.Space(1);
 
+            mAutomaticAdd = EditorGUILayout.Toggle(Styles.AutomaticAdd, mAutomaticAdd);
             mShowCheckouts = EditorGUILayout.Toggle(Styles.ShowCheckouts, mShowCheckouts);
             mAutoRefresh = EditorGUILayout.Toggle(Styles.AutoRefresh, mAutoRefresh);
         }
@@ -286,7 +304,7 @@ namespace Unity.PlasticSCM.Editor
                     });
         }
 
-        void SetOptions(PendingChangesOptions options)
+        void SetPendingChangesOptions(PendingChangesOptions options)
         {
             mShowCheckouts = IsEnabled(
                 WorkspaceStatusOptions.FindCheckouts, options.WorkspaceStatusOptions);
@@ -316,7 +334,7 @@ namespace Unity.PlasticSCM.Editor
             mSimilarityPercent = (int)((1 - options.MovedMatchingOptions.AllowedChangesPerUnit) * 100f);
         }
 
-        PendingChangesOptions GetOptions()
+        PendingChangesOptions GetPendingChangesOptions()
         {
             WorkspaceStatusOptions resultWkStatusOptions =
                 WorkspaceStatusOptions.None;
@@ -359,11 +377,6 @@ namespace Unity.PlasticSCM.Editor
                 false,
                 mCheckFileContent,
                 false);
-        }
-
-        bool IsDirty(PendingChangesOptions currentOptions)
-        {
-            return !mInitialOptions.AreSameOptions(currentOptions);
         }
 
         static void DrawSettingsSection(Action drawSettings)
@@ -481,6 +494,11 @@ namespace Unity.PlasticSCM.Editor
 
         class Styles
         {
+            internal static GUIContent AutomaticAdd =
+                new GUIContent(PlasticLocalization.GetString(
+                        PlasticLocalization.Name.ProjectSettingsAutomaticAdd),
+                    PlasticLocalization.GetString(
+                        PlasticLocalization.Name.ProjectSettingsAutomaticAddExplanation));
             internal static GUIContent ShowCheckouts =
                 new GUIContent(PlasticLocalization.GetString(
                         PlasticLocalization.Name.PendingChangesShowCheckouts),
@@ -548,11 +566,14 @@ namespace Unity.PlasticSCM.Editor
                         PlasticLocalization.Name.PendingChangesSimilarityPercentageExplanation));
         }
 
+        bool mIsProjectSettingsActivated;
+
         bool mIsPluginEnabled;
 
         WorkspaceInfo mWkInfo;
-        PendingChangesOptions mInitialOptions;
+        PendingChangesOptions mPendingChangesSavedOptions;
 
+        bool mAutomaticAdd;
         bool mShowCheckouts;
         bool mAutoRefresh;
         bool mFSWatcherEnabled;

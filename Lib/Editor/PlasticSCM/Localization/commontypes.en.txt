@@ -402,6 +402,9 @@ Select the users authentication mode. These are the available modes:
 == ConflictCannotBeApplied ==
 The conflict resolution cannot be applied because it depends on resolving other conflicts. Please try to resolve conflicts in a different order. The conflict resolution returned the following error: {0}
 
+== ContentMustBeUndoCheckedout ==
+To perform the undo checkout operation on directory '{0}' its content must be included in the operation.
+
 == ControlInManager ==
 The control {0} is already in graphics manager.
 
@@ -728,6 +731,9 @@ The item {0} is loaded twice at '{1}' and '{2}'. Please remove one of them.
 
 == ItemLockOutOfDate ==
 Cannot checkout '{0}' because you don't have the latest version. You will need to undo your changes to update to latest and lock. If you really need to preserve your changes, backup them manually. Please remember to lock this file in the future before making changes.
+
+== ItemMustBeUndoCheckedout ==
+Cannot undo '{0}' because there is a dependency on '{1}'. Add '{1}' to the command arguments and retry.
 
 == ItemNotFound ==
 Item {0} not found.
@@ -1472,6 +1478,12 @@ There has been an unexpected error "{0}". For more information check the server 
 == UnlicensedTubeFeature ==
 The Plastic Tube is unlicensed in your Plastic SCM server.
 
+== UnityOrgProjectRepOperationNotAllowed ==
+Unity Organizations require Projects to be managed in the Cloud Dashboard. Please open https://cloud.unity.com/home/organizations/{0}/projects/default/devops/overview in your browser to continue.
+
+== UnityOrgSecurityOperationNotAllowed ==
+This security operation is not allowed in Unity Organizations for the target object. To manage access control in your organization, please open https://cloud.unity.com/home/organizations/{0}/projects/default/devops/overview in your browser.
+
 == UpCantAddGroupToItself ==
 A group can't be added to itself.
 
@@ -1555,6 +1567,9 @@ System users cannot be obtained.
 
 == UsersExceeded ==
 The maximum number of licensed users has been exceeded.
+
+== VcsRepositoryInUnityOrgMustBeUnderProject ==
+Repositories must be created under a project in Unity Organizations.
 
 == ViewUnknown ==
 Unknown view type {0}
@@ -1771,3 +1786,9 @@ Can't fetch the repository because some changeset was deleted while the fetch wa
 
 == FetchBrDeletedRevisionsError ==
 Can't fetch the branch '{0}' because some of its changesets was deleted while the fetch was in progress. Please try again.
+
+== CantResolveOrganization ==
+Can't resolve organization {0}
+
+== MoveChangesetZeroNotAllowed ==
+Cannot move changeset zero.

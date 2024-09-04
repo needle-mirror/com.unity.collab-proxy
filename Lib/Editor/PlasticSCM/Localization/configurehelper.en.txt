@@ -133,9 +133,6 @@ SAML Authentication - Sign-in URL (SAML-P sign-on endpoint)
 == SamlAbsoluteSessionValidityInDays ==
 SAML Authentication - SAML session absolute validity in days
 
-== SamlSignInUrl ==
-SAML Authentication - Sign-in URL (SAML-P sign-on endpoint)
-
 == SamlGraphApiClientId ==
 Graph API - Application registration client Id
 

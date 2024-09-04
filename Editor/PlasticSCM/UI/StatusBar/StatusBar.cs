@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
+using Codice.Client.Common;
 using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.Gluon;
@@ -75,7 +76,7 @@ namespace Unity.PlasticSCM.Editor.UI.StatusBar
 
             GUILayout.FlexibleSpace();
 
-            DrawWorkspaceStatus(workspaceWindow.WorkspaceStatus);
+            DrawWorkspaceStatus(workspaceWindow);
 
             EndDrawBar();
         }
@@ -141,18 +142,18 @@ namespace Unity.PlasticSCM.Editor.UI.StatusBar
             DrawNotificationLabel(notification.Message);
         }
 
-        static void DrawWorkspaceStatus(WorkspaceStatusString.Data status)
+        static void DrawWorkspaceStatus(WorkspaceWindow workspaceWindow)
         {
             DrawIcon(Images.GetBranchIcon());
 
-            if (status == null)
+            if (workspaceWindow.WorkspaceStatus == null)
                 return;
 
             DrawLabel(string.Format(
                 "{0}@{1}@{2}",
-                status.ObjectSpec,
-                status.RepositoryName,
-                status.Server));
+                workspaceWindow.WorkspaceStatus.ObjectSpec,
+                workspaceWindow.WorkspaceStatus.RepositoryName,
+                workspaceWindow.ServerDisplayName));
         }
 
         static void DrawIcon(Texture2D icon)

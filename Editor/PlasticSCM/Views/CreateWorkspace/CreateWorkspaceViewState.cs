@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-using UnityEngine;
+﻿using UnityEngine;
 
 using Unity.PlasticSCM.Editor.UI.Progress;
 
@@ -14,7 +12,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             Gluon
         }
 
-        internal string RepositoryName { get; set; }
+        internal string Repository { get; set; }
         internal string WorkspaceName { get; set; }
         internal WorkspaceModes WorkspaceMode { get; set; }
         internal ProgressControlsForViews.Data ProgressData { get; set; }
@@ -25,7 +23,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
 
             return new CreateWorkspaceViewState()
             {
-                RepositoryName = projectName,
+                Repository = projectName,
                 WorkspaceName = projectName,
                 WorkspaceMode = WorkspaceModes.Developer,
                 ProgressData = new ProgressControlsForViews.Data()

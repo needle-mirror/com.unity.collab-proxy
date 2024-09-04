@@ -118,11 +118,20 @@ Seleccionar Resultado
 == KeepResultButton ==
 Mantener resultado
 
+== ResultPressedButton ==
+Deseleccionar Resultado
+
 == ResultButtonTooltip ==
 (Ctrl+4)
 
 == SaveAndExitButton ==
 Guardar y salir
+
+== SaveAndExitTooltip ==
+Guardar resultado y cerrar mergetool
+
+== SaveAsTooltip ==
+Guardar resultado en un nuevo archivo
 
 == SyntaxHighlight ==
 Syntax highlight
@@ -159,6 +168,51 @@ Diferencia de los contribuidores origen con destino
 
 == DifferencesWindowTitle ==
 Diferencias
+
+== AutomaticConflictChunk1 ==
+El conflicto actual es 
+
+== AutomaticConflictChunk2 ==
+automático
+
+== AutomaticConflictChunk3 ==
+. No se necesita intervención del usuario.
+
+== SolvedConflictChunk1 ==
+El conflicto actual es 
+
+== SolvedConflictChunk2 ==
+no automático
+
+== SolvedConflictChunk3 ==
+, y ya ha sido 
+
+== SolvedConflictChunk4 ==
+resuelto
+
+== SolvedConflictChunk5 ==
+ por el usuario.
+
+== NonAutomaticConflictChunk1 ==
+El conflicto actual es 
+
+== NonAutomaticConflictChunk2 ==
+no automático
+
+== NonAutomaticConflictChunk3 ==
+. Resuélvelo haciendo click en los botones de arriba, editando el resultado, o marcándolo como resuelto.
+
+== PatternNotFound ==
+Patrón no encontrado
+
+== PreviousSearchButtonTooltip ==
+Buscar resultado anterior
+
+== NextSearchButtonTooltip ==
+Buscar resultado siguiente
+
+== UnexpectedError ==
+Ha ocurrido un error inesperado.
 
 == FirstDiffButtonTooltip ==
 Primera diferencia
@@ -268,6 +322,9 @@ Colorear por autor
 == AnnotateColorByDate ==
 Colorear por fecha
 
+== AnnotateContextMenu ==
+Annotate
+
 == AnnotateShowAuthor ==
 Mostrar autor
 
@@ -361,6 +418,51 @@ Guardar cambios (Ctrl+S)
 == SaveButtonTooltipWithCustomShortcut ==
 Guardar cambios ({0})
 
+== SaveAsMenu ==
+Guardar como...
+
+== MergeButton ==
+Merge
+
+== KeepSrcMenu ==
+Mantener cambios de origen y salir
+
+== KeepBaseMenu ==
+Mantener cambios de base y salir
+
+== KeepDstMenu ==
+Mantener cambios de estino y salir
+
+== SrcNeeded ==
+Es necesario un nombre de archivo de origen
+
+== DstNeeded ==
+Es necesario un nombre de archivo de destino
+
+== ResultNeeded ==
+Es necesario un nombre de archivo de resultado
+
+== AutomaticNeeded ==
+En modo silencioso es necesaria la opción de merge automático
+
+== FileTypeError ==
+{0} no es un tipo de archivo válido para syntax highlight
+
+== CompMethodError ==
+Método de comparación inválido
+
+== SrcEncodingMenuTitle ==
+Encoding de origen
+
+== DstEncodingMenuTitle ==
+Encoding de destino
+
+== BaseEncodingMenuTitle ==
+Encoding de base
+
+== ResultEncodingMenuTitle ==
+Encoding de resultado
+
 == DiscardButton ==
 Descartar
 
@@ -445,6 +547,15 @@ Buscar:
 == FindButton ==
 Buscar...
 
+== MatchCase ==
+Coincidir mayúsculas
+
+== MergeResolutionOptionsTooltip ==
+Opciones de resolución de merge
+
+== MergeOptionsTooltip ==
+Opciones de visualización y cálculo
+
 == FindCloseButtonTooltip ==
 Cerrar barra de búsqueda
 
@@ -459,6 +570,15 @@ Detección de movidos
 
 == MovedDetectionDialogMenuItem ==
 Detección de movidos...
+
+== EnableMoveDetectionMenuItem ==
+Activar detección de movidos
+
+== MoveDetectionRatio ==
+Ratio de detección de movidos
+
+== MinimumLinesInDifference ==
+Mínimo número de líneas diferentes
 
 == MaximizeButtonLeftTooltip ==
 Maximizar panel izquierdo
@@ -502,8 +622,32 @@ Mostrar las diferencias con el texto movido
 == XDiffFragment ==
 [fragmento]
 
+== FontsAndColorsMenuItem ==
+Fuentes y colores
+
+== FontDoesNotSupportStrikeout ==
+La fuente {0} no soporta el estilo tachado, usado por la aplicación. Por favor, elige otra fuente.
+
+== ChangeFontMenuItem ==
+Cambiar fuente...
+
+== LeftDiffColorMenuItem ==
+Color de las diferencias de la izquierda
+
+== RightDiffColorMenuItem ==
+Color de las diferencias de la derecha
+
+== RestoreDefaultsMenuItem ==
+Restaurar valores por defecto
+
 == FilesIdentical ==
 Las dos revisiones son idénticas.
+
+== AddDiffSelection ==
+Añadir selección de diff
+
+== DiffWithPreviousSelection ==
+Hacer un diff con la selección previa
 
 == Encoding ==
 Codificación
@@ -637,6 +781,30 @@ Sintaxis: mergetool [<opcionesDiferencias> | <opcionesMerge>]
         mergetool -s=file1.txt -b=file0.txt --destination=file2.txt
         mergetool --base=file0.txt -d=file2.txt --source=file1.txt --automatic --result=result.txt
         mergetool -b=file0.txt -s=file1.txt -d=file2.txt -a -r=result.txt -e=utf7 -i=eol -t=text/csharp -m=onlyone
+
+== BrowseForSaveFileTitle ==
+Guardar archivo
+
+== PendingUnsolvedConflicts ==
+El archivo aún tiene {0} conflictos sin resolver.
+
+== FileChangedSinceSaved ==
+El archivo ha cambiado desde la última vez que se guardó.
+
+== SaveAndExitDialogButton ==
+Guardar y salir
+
+== ExitWithoutSavingButton ==
+Salir sin guardar
+
+== CloseButton ==
+Cerrar
+
+== OkButton ==
+OK
+
+== CancelButton ==
+Cancelar
 
 == ArgError ==
 Los argumentos especificados son incorrectos
@@ -778,8 +946,38 @@ Dividir los bloques de conflicto
 == MergeBlocksMenuTitle ==
 Unir los bloques de conflicto
 
+== ComparisonMethodMenuTitle ==
+Método de comparación
+
 == ColorsMenuTitle ==
 Colores de merge tracking
+
+== RecognizeAll ==
+Reconocer todo
+
+== IgnoreEol ==
+Ignorar EOLs
+
+== IgnoreWhitespace ==
+Ignorar espacios en blanco
+
+== IgnoreEolWhitespace ==
+Ignorar EOLs y espacios en blanco
+
+== EncodingDialogTitle ==
+Seleccionar encoding
+
+== EncodingDialogDescription ==
+Selecciona un encoding
+
+== EncodingDialogLabel ==
+Encoding:
+
+== DefaultEncoding ==
+Encoding por defecto:
+
+== ResultEncoding ==
+Encoding resultado:
 
 == XmergeButton ==
 XMerge...

@@ -213,9 +213,6 @@ Comment
 == CompMethodError ==
 {0} isn´t a valid comparison method
 
-== ContentMustBeUndoCheckedout ==
-To perform the undo checkout operation on directory '{0}' its content must be included in the operation.
-
 == CorruptConfigurationFile ==
 The configuration file '{0}' cannot be read, because its data is invalid or corrupt.
 
@@ -519,9 +516,6 @@ The item '{0}' (ItemId:{1}) cannot be found on the repository '{2}'. You are pro
 == ItemLockOutOfDateOnMergeFromHead ==
 '{0}' can't be locked. It is not the newest revision, and locks can only be done on the latest version. You can undo your changes and update again. In the future, you can avoid this error by checking out files that require locking before you make changes.
 
-== ItemMustBeUndoCheckedout ==
-Cannot undo '{0}' because there is a dependency on '{1}'. Add '{1}' to the command arguments and retry.
-
 == ItemNameField ==
 Item name
 
@@ -572,6 +566,9 @@ Error in merge tool "{0}" execution. Merge tools in client.conf are incorrectly 
 
 == MissingUserOrPassword ==
 You need to specify user (--username) and password (--password) for working mode '{0}'.
+
+== MissingUserOrPasswordOrToken ==
+You need to specify user (--username) and either password (--password) or token (--token) for working mode '{0}'.
 
 == MissingUserOrToken ==
 You need to specify user (--username) and token (--token) for working mode '{0}'.

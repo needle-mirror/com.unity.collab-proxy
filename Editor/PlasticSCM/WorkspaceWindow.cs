@@ -37,11 +37,8 @@ namespace Unity.PlasticSCM.Editor
         IGluonUpdateReport,
         IGluonWorkspaceStatusChangeListener
     {
-        internal void SetUpdateNotifierForTesting(UpdateNotifier updateNotifier)
-        {
-            mUpdateNotifierForTesting = updateNotifier;
-        }
         internal WorkspaceStatusString.Data WorkspaceStatus { get; private set; }
+        internal string ServerDisplayName { get; private set; }
         internal OperationProgressData Progress { get { return mOperationProgressData; } }
 
         internal Gluon.ProgressOperationHandler GluonProgressOperationHandler
@@ -70,6 +67,16 @@ namespace Unity.PlasticSCM.Editor
             mOperationProgressData = new OperationProgressData();
 
             ((IWorkspaceWindow)this).UpdateTitle();
+        }
+        internal void SetUpdateNotifierForTesting(UpdateNotifier updateNotifier)
+        {
+            mUpdateNotifierForTesting = updateNotifier;
+        }
+
+        internal void RegisterPendingChangesProgressControls(
+            ProgressControlsForViews progressControls)
+        {
+            mProgressControls = progressControls;
         }
 
         internal bool IsOperationInProgress()
@@ -124,6 +131,17 @@ namespace Unity.PlasticSCM.Editor
                 null);
         }
 
+        internal void UpdateWorkspaceForMode(bool isGluonMode)
+        {
+            if (isGluonMode)
+            {
+                PartialUpdateWorkspace();
+                return;
+            }
+
+            UpdateWorkspace();
+        }
+
         void IWorkspaceWindow.RefreshView(ViewType viewType)
         {
             mSwitcher.RefreshView(viewType);
@@ -141,6 +159,11 @@ namespace Unity.PlasticSCM.Editor
         void IWorkspaceWindow.UpdateTitle()
         {
             UpdateWorkspaceTitle();
+        }
+
+        bool IWorkspaceWindow.IsOperationInProgress()
+        {
+            return IsOperationInProgress();
         }
 
         bool IWorkspaceWindow.CheckOperationInProgress()
@@ -243,6 +266,13 @@ namespace Unity.PlasticSCM.Editor
             UpdateWorkspaceTitle();
         }
 
+        UpdateReportResult IGluonUpdateReport.ShowUpdateReport(
+            WorkspaceInfo wkInfo, List<ErrorMessage> errors)
+        {
+            return GluonUpdateReportDialog.ShowUpdateReport(
+                wkInfo, errors, mPlasticWindow);
+        }
+
         void UpdateWorkspaceTitle()
         {
             WorkspaceStatusString.Data status = null;
@@ -260,50 +290,10 @@ namespace Unity.PlasticSCM.Editor
 
                     WorkspaceStatus = status;
 
+                    ServerDisplayName = ResolveServer.ToDisplayString(status.Server);
+
                     RequestRepaint();
                 });
-        }
-
-        bool mRequestedRepaint;
-
-        UpdateNotifier mUpdateNotifierForTesting;
-        IProgressControls mProgressControls;
-
-        readonly OperationProgressData mOperationProgressData;
-        readonly Developer.ProgressOperationHandler mDeveloperProgressOperationHandler;
-        readonly Gluon.ProgressOperationHandler mGluonProgressOperationHandler;
-        readonly GuiMessage.IGuiMessage mGuiMessage;
-        readonly EditorWindow mPlasticWindow;
-        readonly NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
-        readonly IMergeViewLauncher mMergeViewLauncher;
-        readonly ViewSwitcher mSwitcher;
-        readonly ViewHost mViewHost;
-        readonly WorkspaceInfo mWkInfo;
-
-        internal void RegisterPendingChangesProgressControls(
-            ProgressControlsForViews progressControls)
-        {
-            mProgressControls = progressControls;
-        }
-
-        internal void UpdateWorkspaceForMode(
-            bool isGluonMode,
-            WorkspaceWindow workspaceWindow)
-        {
-            if (isGluonMode)
-            {
-                PartialUpdateWorkspace();
-                return;
-            }
-
-            UpdateWorkspace();
-        }
-
-        UpdateReportResult IGluonUpdateReport.ShowUpdateReport(
-            WorkspaceInfo wkInfo, List<ErrorMessage> errors)
-        {
-            return GluonUpdateReportDialog.ShowUpdateReport(
-                wkInfo, errors, mPlasticWindow);
         }
 
         void PartialUpdateWorkspace()
@@ -391,5 +381,21 @@ namespace Unity.PlasticSCM.Editor
                 updateReportResult.UpdateForcedPaths,
                 updateReportResult.UnaffectedErrors);
         }
+
+        bool mRequestedRepaint;
+
+        UpdateNotifier mUpdateNotifierForTesting;
+        IProgressControls mProgressControls;
+
+        readonly OperationProgressData mOperationProgressData;
+        readonly Developer.ProgressOperationHandler mDeveloperProgressOperationHandler;
+        readonly Gluon.ProgressOperationHandler mGluonProgressOperationHandler;
+        readonly GuiMessage.IGuiMessage mGuiMessage;
+        readonly EditorWindow mPlasticWindow;
+        readonly NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
+        readonly IMergeViewLauncher mMergeViewLauncher;
+        readonly ViewSwitcher mSwitcher;
+        readonly ViewHost mViewHost;
+        readonly WorkspaceInfo mWkInfo;
     }
 }

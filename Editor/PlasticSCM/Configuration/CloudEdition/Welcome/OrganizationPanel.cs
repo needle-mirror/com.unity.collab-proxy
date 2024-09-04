@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
@@ -9,6 +10,7 @@ using Codice.Client.Common.Threading;
 using PlasticGui;
 using PlasticGui.WebApi;
 using PlasticGui.WebApi.Responses;
+using PlasticGui.WorkspaceWindow.Home;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.UIElements;
 
@@ -82,11 +84,16 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                         return;
                     }
 
-                    ProcessOrganizations(organizationResponse.CloudServers);
+                    // This is crucial to initialize the internal cache of slugs in the plastic library
+                    OrganizationsInformation.UpdateOrganizationSlugs(organizationResponse);
+
+                    List<OrganizationInfo> organizationsInfo = OrganizationsInformation.FromServersOrdered(organizationResponse.CloudServers);
+
+                    ProcessOrganizations(organizationsInfo);
                 });
         }
 
-        void ProcessOrganizations(List<string> organizations)
+        void ProcessOrganizations(List<OrganizationInfo> organizations)
         {
             this.Query<VisualElement>("noOrganization").Collapse();
             this.Query<VisualElement>("joinSingleOrganization").Collapse();
@@ -119,7 +126,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
             mJoinMultipleOrganizationsButton = this.Q<Button>("joinMultipleOrganizationsButton");
             mJoinMultipleOrganizationsButton.clicked += JoinOrganizationButton_clicked;
-            mOrganizationToJoin = organizations.First();
+            mOrganizationToJoin = organizations.First().Server;
         }
 
         void InitializeLayoutAndStyles()
@@ -130,7 +137,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         void JoinOrganizationButton_clicked()
         {
-            mParentWindow.JoinOrganizationAndWelcomePage(mOrganizationToJoin);
+            mParentWindow.SaveDefaultCloudServer(mOrganizationToJoin);
 
             // TODO: Closing the window for now. Need to connect this event to the main on boarding
             //       workflow.
@@ -152,24 +159,27 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mProgressContainer.Add((VisualElement)mProgressControls);
         }
 
-        void BuildSingleOrganizationSection(string organizationName)
+        void BuildSingleOrganizationSection(OrganizationInfo organizationInfo)
         {
             this.SetControlText<Label>("confirmationMessage",
                 PlasticLocalization.Name.JoinOrganizationTitle);
 
-            mOrganizationToJoin = organizationName;
+            mOrganizationToJoin = organizationInfo.Server;
 
             this.Query<VisualElement>("joinSingleOrganization").Show();
 
             this.SetControlText<Label>("joinSingleOrganizationLabel",
-                PlasticLocalization.Name.YouBelongToOrganization, organizationName);
+                PlasticLocalization.Name.YouBelongToOrganization,  organizationInfo.DisplayName);
 
             this.SetControlText<Button>("joinSingleOrganizationButton",
                 PlasticLocalization.Name.JoinButton);
         }
 
-        void BuildMultipleOrganizationsSection(List<string> organizationNames)
+        void BuildMultipleOrganizationsSection(List<OrganizationInfo> organizations)
         {
+            organizations.Sort((x, y) =>
+                string.Compare(x.DisplayName, y.DisplayName, StringComparison.CurrentCulture));
+
             this.SetControlText<Label>("confirmationMessage",
                 PlasticLocalization.Name.JoinOrganizationTitle);
 
@@ -181,15 +191,17 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             VisualElement organizationDropdown = this.Query<VisualElement>("organizationDropdown");
             ToolbarMenu toolbarMenu = new ToolbarMenu
             {
-                text = organizationNames.FirstOrDefault(),
+                text = organizations.First().DisplayName,
             };
 
-            foreach (string name in organizationNames)
+            foreach (OrganizationInfo organization in organizations)
             {
-                toolbarMenu.menu.AppendAction(name, x => 
+                string organizationDisplayName = organization.DisplayName;
+
+                toolbarMenu.menu.AppendAction(organizationDisplayName, x => 
                 {
-                    toolbarMenu.text = name;
-                    mOrganizationToJoin = name;
+                    toolbarMenu.text = organizationDisplayName;
+                    mOrganizationToJoin = organization.Server;
                 }, DropdownMenuAction.AlwaysEnabled);
                 organizationDropdown.Add(toolbarMenu);
             }

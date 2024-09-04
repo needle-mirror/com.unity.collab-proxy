@@ -37,7 +37,7 @@ Active Directory
 == LdapWorkingMode ==
 LDAP
 
-== OIDCWorkingMode
+== OIDCWorkingMode ==
 OpenID Connect
 
 == UpWorkingMode ==
@@ -132,9 +132,6 @@ Autenticación SAML - URL de inicio de sesión (Punto de conexión de inicio de 
 
 == SamlAbsoluteSessionValidityInDays ==
 Autenticación SAML - Duración absoluta de la sesión de SAML en días
-
-== SamlSignInUrl ==
-Autenticación SAML - URL de inicio de sesión (Punto de conexión de inicio de sesión de SAML-P)
 
 == SamlGraphApiClientId ==
 Graph API - Id. de cliente del registro de aplicación

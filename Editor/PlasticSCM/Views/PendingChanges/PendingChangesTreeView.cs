@@ -182,7 +182,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             DrawTreeViewItem.InitializeStyles();
             base.BeforeRowsGUI();
         }
- 
+
         protected override void RowGUI(RowGUIArgs args)
         {
             if (args.item is ChangelistTreeViewItem)
@@ -286,7 +286,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 }
                 else
                 {
-                    fileChanges.Add(changeInfo);    
+                    fileChanges.Add(changeInfo);
                 }
 
                 ChangeInfo metaChangeInfo = mPendingChangesTree.GetMetaChange(changeInfo);
@@ -656,8 +656,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             string secondaryLabel = item.Changelist.ChangelistInfo.Description;
 
             bool wasChecked = CheckableItems.GetIsCheckedValue(item.Changelist) ?? false;
-            
-            bool hadCheckedChildren = 
+
+            bool hadCheckedChildren =
                 ((ICheckablePlasticTreeCategoryGroup)item.Changelist).GetCheckedCategoriesCount() > 0;
 
             bool hadPartiallyCheckedChildren =
@@ -694,7 +694,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             string secondaryLabel = item.Category.GetCheckedChangesText();
 
             bool wasChecked = CheckableItems.GetIsCheckedValueForCategory(item.Category) ?? false;
-            bool hadCheckedChildren = 
+            bool hadCheckedChildren =
                 ((ICheckablePlasticTreeCategory)item.Category).GetCheckedChangesCount() > 0;
 
             bool isChecked = DrawTreeViewItem.ForCheckableCategoryItem(
@@ -762,8 +762,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             string label = changeInfo.GetColumnText(
                 PendingChangesTreeHeaderState.GetColumnName(column));
-
-            DefaultStyles.label.fontSize = UnityConstants.PENDING_CHANGES_FONT_SIZE;
 
             if (column == PendingChangesTreeColumn.Item)
             {
@@ -859,7 +857,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 if (node is ChangelistNode)
                 {
                     AddChangelistNode(
-                        (ChangelistNode)node, 
+                        (ChangelistNode)node,
                         treeViewItemIds,
                         treeView,
                         rootItem,

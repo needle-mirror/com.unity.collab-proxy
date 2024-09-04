@@ -35,13 +35,13 @@ The contributors must be specified
 Specified encoding cannot be identified ({0}).
 
 == ErrorExecutingExternalDiffTool ==
-An error occurred when executing external diff tool: 
+An error occurred when executing external diff tool:
 
 == ErrorExecutingExternalMergeTool ==
-An error occurred when executing external merge tool: 
+An error occurred when executing external merge tool:
 
 == ErrorExecutingExternal2WayMergeTool ==
-An error occurred when executing external 2-way merge tool: 
+An error occurred when executing external 2-way merge tool:
 
 == ErrorFileTitleType ==
 Oops! We do not support your language... yet!
@@ -61,7 +61,7 @@ SemanticMerge requires a valid JVM installation available
 in order to parse your {0} files.
 
 You can run your default text-based {1} tool instead.
-    
+
 == ErrorNumberOfContributorsDoesNotMatch ==
 The number of contributors does not match
 
@@ -84,10 +84,10 @@ Browse for executable file
 Changes won't take effect until you reopen the Unity VCS GUI
 
 == RestartMergeWithConfigChangesMessage ==
-In order to apply the new saved configuration, the merge should be restarted. 
+In order to apply the new saved configuration, the merge should be restarted.
 
 == RestartDiffWithConfigChangesMessage ==
-In order to apply the new saved configuration, the diff should be restarted. 
+In order to apply the new saved configuration, the diff should be restarted.
 
 == RestartMergeQuestion ==
 You have already resolved {0} conflict(s) that will be lost. Are you sure you want to restart the merge?
@@ -151,7 +151,7 @@ Usage: {0} semanticmerge [<mergeOptions>]
             srcSymbolicName:     {{-sn | --srcsymbolicname}}=<symbolicname>
             dstSymbolicName:     {{-dn | --dstsymbolicname}}=<symbolicname>
             baseSymbolicName:    {{-bn | --basesymbolicname}}=<symbolicname>
-			
+
 
       generalOptions: [<defaultEncoding>] [<resultEncoding>] [<fileLanguage>] [<virtualMachine>]
                       [<externalMergeTool>] [<external2WayMerge>] [<externalDiffTool>]
@@ -163,8 +163,8 @@ Usage: {0} semanticmerge [<mergeOptions>]
             virtualMachine:      {{-vm | --virtualmachine}}=<path to the Java Virtual Machine executable>
             tabSpaces:           {{-ts   | --tabspaces}}={{4 | <user_defined>}}
             extrainfofile:       {{-ei   | --extrainfofile}}={{path to a file containing extra merge information}}
-            progress:            {{-pg   | --progress}}={{string representing the progress in the whole merge process}} 
-			
+            progress:            {{-pg   | --progress}}={{string representing the progress in the whole merge process}}
+
 
       contributorExtendedInfo: <contributorOwnerName> <contributorBranchName>
                                <contributorChangeset> <contributorComment>
@@ -263,7 +263,7 @@ Usage: {0} semanticmerge [<mergeOptions>]
             externalDiffTool:    {-edt  | --externalDiffTool}={default | <user_defined_tool>}
             tabSpaces:           {-ts   | --tabspaces}={4 | <user_defined>}
             extrainfofile:       {-ei   | --extrainfofile}={path to a file containing extra merge information}
-            progress:            {-pg   | --progress}={string representing the progress in the whole merge process} 
+            progress:            {-pg   | --progress}={string representing the progress in the whole merge process}
 
       contributorExtendedInfo: <contributorOwnerName> <contributorBranchName>
                                <contributorChangeset> <contributorComment>
@@ -494,10 +494,10 @@ Divergent Move Details
 Displays the Merge information
 
 == MergeInfoResultFile ==
-Result file: 
+Result file:
 
 == MergeInfoLanguage ==
-Language: 
+Language:
 
 == MergeInfoBaseFile ==
 Base file
@@ -509,10 +509,10 @@ Source file
 Destination file
 
 == MergeInfoFileName ==
-Name: 
+Name:
 
 == MergeInfoFilePath ==
-Path: 
+Path:
 
 == MergeInfoExtraInfo ==
 Extra info
@@ -723,7 +723,7 @@ It is different than most merge tools you have used so far, so it is worth inves
 _Explore the samples
 
 == ReadTheIntroGuideLinkText1 ==
-To learn more about the SemanticMerge fundamentals 
+To learn more about the SemanticMerge fundamentals
 
 == ReadTheIntroGuideLinkText2 ==
 Read the Intro Guide
@@ -764,7 +764,7 @@ Some of the files couldn't have their structure properly recognized.
 Please continue with the external tool.
 
 == ParsingErrorsDescription ==
-The following parsing errors have been found, the trees could be inconsistent:
+The following parsing errors have been found, the trees could be inconsistent and proceeding with the merge could result in file corruption:
 
 == ConfirmRestartMergeTitle ==
 Confirm restarting merge

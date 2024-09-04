@@ -22,7 +22,7 @@ namespace Unity.PlasticSCM.Editor.UI
         {
             var dockArea = mParentField.GetValue(dockWindow);
 
-            mAddTabMethod.Invoke(dockArea, new object[] { window });
+            mAddTabMethod.Invoke(dockArea, new object[] { window, true });
         }
 
         static void InitializeInfo()
@@ -37,7 +37,7 @@ namespace Unity.PlasticSCM.Editor.UI
                 return;
 
             mAddTabMethod = dockAreaType.GetMethod("AddTab", flags,
-                null, new Type[] { typeof(EditorWindow) }, null);
+                null, new Type[] { typeof(EditorWindow), typeof(bool) }, null);
         }
 
         static MethodInfo mAddTabMethod;

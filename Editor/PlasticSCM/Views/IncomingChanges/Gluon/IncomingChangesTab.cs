@@ -89,6 +89,10 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             set { mIsVisible = value; }
         }
 
+        void IIncomingChangesTab.OnEnable()
+        {
+        }
+
         void IIncomingChangesTab.OnDisable()
         {
             TreeHeaderSettings.Save(

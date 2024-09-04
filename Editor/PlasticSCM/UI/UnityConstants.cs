@@ -2,11 +2,11 @@
 {
     public static class UnityConstants
     {
+        internal const int LABEL_FONT_SIZE = 12;
+
         internal const float CANCEL_BUTTON_SIZE = 15f;
 
-        internal const float SMALL_BUTTON_WIDTH = 40f;
         internal const float REGULAR_BUTTON_WIDTH = 60f;
-        internal const float LARGE_BUTTON_WIDTH = 100f;
         internal const float EXTRA_LARGE_BUTTON_WIDTH = 130f;
 
         internal const float SEARCH_FIELD_WIDTH = 550f;
@@ -18,16 +18,13 @@
         internal const float TREEVIEW_ROW_WIDTH_OFFSET = 24f;
         internal const int TREEVIEW_STATUS_ICON_SIZE = 16;
         internal const int TREEVIEW_STATUS_CONTENT_PADDING = 4;
-        internal const int TREEVIEW_STATUS_CONTENT_OFFSET = 2;
         internal const float FIRST_COLUMN_WITHOUT_ICON_INDENT = 5f;
-        internal const int PENDING_CHANGES_FONT_SIZE = 12;
         internal const int OVERLAY_STATUS_ICON_SIZE = 16;
 
         internal const int SETTINGS_GUI_WIDTH = 400;
 
         internal const int STATUS_BAR_HEIGHT = 24;
         internal const int STATUS_BAR_ICON_SIZE = 16;
-        internal const int STATUS_BAR_NOTIFICATION_SPACING = 8;
 
         internal const float DROPDOWN_ICON_Y_OFFSET = 2f;
         internal const float TREEVIEW_FOLDOUT_Y_OFFSET = 0f;
@@ -57,11 +54,10 @@
 
         internal const double SEARCH_DELAYED_INPUT_ACTION_INTERVAL = 0.25;
         internal const double SELECTION_DELAYED_INPUT_ACTION_INTERVAL = 0.25;
-        internal const double AUTO_REFRESH_DELAYED_INTERVAL = 0.25;
         internal const double AUTO_REFRESH_CHANGES_DELAYED_INTERVAL = 0.1;
         public const double PLUGIN_DELAYED_INITIALIZE_INTERVAL = 0.25;
         internal const double REFRESH_ASSET_DATABASE_DELAYED_INTERVAL = 0.25;
-        
+
         internal const double NOTIFICATION_CLEAR_INTERVAL = 5;
 
         internal const string PENDING_CHANGES_TABLE_SETTINGS_NAME = "{0}_PendingChangesTreeV3_{1}";
@@ -87,6 +83,7 @@
 
         internal const string SHOW_NOTIFICATION_KEY_NAME = "ShowNotification";
         internal const string FORCE_CHECKOUT_KEY_NAME = "forceCheckoutPlasticSCM";
+        internal const string AUTOMATIC_ADD_KEY_NAME = "{0}_AutomaticAdd";
 
         internal static class ChangesetsColumns
         {
@@ -100,10 +97,6 @@
             internal const float COMMENT_MIN_WIDTH = 100f;
             internal const float BRANCH_WIDTH = 160f;
             internal const float BRANCH_MIN_WIDTH = 90f;
-            internal const float REPOSITORY_WIDTH = 210f;
-            internal const float REPOSITORY_MIN_WIDTH = 90f;
-            internal const float GUID_WIDTH = 270f;
-            internal const float GUID_MIN_WIDTH = 100f;
         }
 
         internal static class BranchesColumns
@@ -118,24 +111,22 @@
             internal const float COMMENT_MIN_WIDTH = 100f;
             internal const float REPOSITORY_WIDTH = 180f;
             internal const float REPOSITORY_MIN_WIDTH = 90f;
-            internal const float GUID_WIDTH = 270f;
-            internal const float GUID_MIN_WIDTH = 100f;
         }
 
         internal static class LocksColumns
         {
-                internal const float PATH_WIDTH = 400f;
-                internal const float PATH_MIN_WIDTH = 200f;
-                internal const float LOCK_TYPE_WIDTH = 100f;
-                internal const float LOCK_TYPE_MIN_WIDTH = 60f;
-                internal const float MODIFICATION_DATE_WIDTH = 120f;
-                internal const float MODIFICATION_DATE_MIN_WIDTH = 60f;
-                internal const float OWNER_WIDTH = 220f;
-                internal const float OWNER_MIN_WIDTH = 110f;
-                internal const float BRANCH_NAME_WIDTH = 180f;
-                internal const float BRANCH_NAME_MIN_WIDTH = 90f;
-                internal const float DESTINATION_BRANCH_NAME_WIDTH = 180f;
-                internal const float DESTINATION_BRANCH_NAME_MIN_WIDTH = 90f;
+            internal const float PATH_WIDTH = 400f;
+            internal const float PATH_MIN_WIDTH = 200f;
+            internal const float LOCK_TYPE_WIDTH = 100f;
+            internal const float LOCK_TYPE_MIN_WIDTH = 60f;
+            internal const float MODIFICATION_DATE_WIDTH = 120f;
+            internal const float MODIFICATION_DATE_MIN_WIDTH = 60f;
+            internal const float OWNER_WIDTH = 220f;
+            internal const float OWNER_MIN_WIDTH = 110f;
+            internal const float BRANCH_NAME_WIDTH = 180f;
+            internal const float BRANCH_NAME_MIN_WIDTH = 90f;
+            internal const float DESTINATION_BRANCH_NAME_WIDTH = 180f;
+            internal const float DESTINATION_BRANCH_NAME_MIN_WIDTH = 90f;
         }
     }
 }

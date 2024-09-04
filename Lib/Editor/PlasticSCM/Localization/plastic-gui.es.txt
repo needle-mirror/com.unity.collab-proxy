@@ -1342,9 +1342,6 @@ No se pudo recuperar la información de bloqueos
 == LoadLocksErrorExplanation ==
 No se pudo recuperar la información de bloqueos - {0}
 
-== NoShelvesMatchQueryExplanation ==
-No hay Shelves que coincidan con tu consulta
-
 == HideShelvesButton ==
 Ocultar shelves
 
@@ -1422,12 +1419,6 @@ Cloaked
 
 == HiddenChanged ==
 Cambios ocultos
-
-== WorkspaceExplorerDialogTitle ==
-Workspaces disponibles en Unity VCS
-
-== WorkspaceExplorerDialogExplanation ==
-Por favor, seleccione un workspace de la lista:
 
 == MainWindowTitle ==
 Unity DevOps Version Control - wk: {0} - {1} - {2}: {3}@{4}
@@ -3076,9 +3067,6 @@ Destination server
 == DestinationReplicationRepository ==
 Destination repository
 
-== CreateWorkspaceButton ==
-Create a new workspace...
-
 == MenuAddToIgnoreList ==
 Add to ignored list
 
@@ -3206,6 +3194,18 @@ WARNING: the hostname provided in the server certificate does NOT match the serv
 
 == RepositoryExplorerServerLabel ==
 Server:
+
+== RepositoryExplorerServerProjectLabel ==
+Server project:
+
+== RetrievingServerProjects ==
+Retrieving server projects...
+
+== NoServerProjectsFound ==
+No server projects were found
+
+== ErrorRetrievingServerProjects ==
+Could not retrieve the server projects
 
 == ShowUndeleteButton ==
 Archivos eliminados
@@ -4512,6 +4512,12 @@ File Visibility Settings
 == ProjectSettingsMoveAndRename ==
 File Move and Rename Detection
 
+== ProjectSettingsAutomaticAdd ==
+Añadir automáticamente nuevos archivos al control de versiones
+
+== ProjectSettingsAutomaticAddExplanation ==
+Permite a Unity Version Control añadir nuevos archivos al control de versiones automáticamente.
+
 == MergeToMergeNeededExplanation ==
 Durante la operación de merge-to, otro usuario ha creado nuevos changesets en el destino de la operación de merge-to, creando múltiples 'heads'. Considere unificarlas realizando una nueva operación de merge (o merge-to). Ramas afectadas:
 
@@ -5530,7 +5536,7 @@ Para confirmar, escribe el nombre del repositorio
 == DeleteRepositoriesConfirmText ==
 Para confirmar la eliminación, escribe '{0}'
 
-== DeleteRepositoryCannotUndo ==
+== DeleteCannotUndo ==
 Esta acción no se puede deshacer.
 
 == DeleteRepositoryConfirmEntry ==
@@ -5636,7 +5642,7 @@ Cargando revisón de código con título {0}...
 == UpgradeServerForNewCodeReviewError ==
 ¡Necesitas actualizar el servidor a la versión 8.0.16.3691 o superior para poder utilizar el nuevo sistema de code review!
 
-== UpgradeServerTo110168307ForNewCodeReviewError ==
+== UpgradeServerTo110168321ForNewCodeReviewError ==
 ¡Necesitas actualizar el servidor a la versión 11.0.16.8321 o superior para poder utilizar el nuevo sistema de code review!
 
 == LoadingMembers ==
@@ -6035,9 +6041,6 @@ Cannot remove Unity VCS menu item: {0} Method MenuType.RemoveMenuItem not found
 == ErrorUpdatePlasticSCMMenus ==
 Cannot update all menus: Method EditorUtility.Internal_UpdateAllMenus not found
 
-== ErrorDialogTitle ==
-Error - {0}
-
 == CheckoutButton ==
 Checkout
 
@@ -6183,7 +6186,10 @@ Installing...
 Skipping download. File {0} already exists
 
 == InstallUnityVersionControl ==
-Install Unity Version Control
+Esta operación esta disponible en la aplicación de escritorio de Unity Version Control.
+
+== UnityVersionControlInstalled ==
+Unity Version Control se ha instalado. Ahora puede utilizar esta funcionalidad.
 
 == LoginOrSignUp ==
 Login or sign up
@@ -6197,17 +6203,12 @@ Login or sign up
 == LoginOrSignUpUnityVersionControl ==
  Login or sign up for a Unity Version Control account
 
-== WhichVersionInstall ==
-Which version do you want to install?
+== InstallConfirmationMessage ==
+Parece que su sistema no tiene la aplicación instalada.
+¿Le gustaria descargarsela junto a sus herramientas avanzadas?
 
-* Cloud Edition is intended for for teams who usually work with a Cloud server.
-* Enterprise Edition is the choice for teams who work with on-premise servers.
-
-== DownloadCloudEdition ==
-Download Cloud Edition
-
-== DownloadEnterpriseEdition ==
-Download Enterprise Edition
+Una vez la descarga finalice, simplemente instálela en su sistema.
+A continuación, intente volver a utilizar la funcionalidad desde este paquete del editor de Unity.
 
 == NeedEnterprise ==
 ¿Necesitas Unity VCS Enterprise?
@@ -6260,8 +6261,14 @@ Locked remote
 == AssetOverlayTooltipOn ==
 on {0}
 
-== ErrorGettingCredentialsCloudProject ==
-Error getting credentials to download Cloud Project: {0} ({1})
+== TokenExchangeResponseNull ==
+Token exchange response null
+
+== TokenExchangeResponseError ==
+Unable to exchange token: {0} [code {1}]
+
+== TokenExchangeAccessEmpty ==
+Access token is empty for user: {0}
 
 == ErrorDownloadingCloudProject ==
 Error downloading Cloud Project: {0}
@@ -7235,7 +7242,7 @@ Crear un nuevo repositorio
 == NoWorkspacesTitle ==
 ¿Aún no tienes un workspace?
 
-== CreateNewRepository ==
+== CreateNewWorkspace ==
 Crear un nuevo workspace
 
 == CreateRepositoryNameLabel ==
@@ -8296,6 +8303,9 @@ Ups! Parece que no hay atributos que coincidan con tus filtros
 == CodeReviewsEmptyState ==
 Ups! Parece que no hay code reviews que coincidan con tus filtros
 
+== ShelvesEmptyState ==
+Ups! Parece que no hay shelves que coincidan con tus filtros
+
 == ResetFilters ==
 Restablecer filtros
 
@@ -8338,6 +8348,15 @@ Otras ramas
 == ReviewersColumn ==
 Revisores
 
+== CommentsColumn ==
+Comentarios
+
+== CommentsCellTooltip ==
+Comentarios y respuestas
+
+== UnresolvedIssuesCellTooltip ==
+Problemas sin resolver: Peticiones de cambios y preguntas
+
 == CreateWorkspacePanelTitle ==
 Crea tu workspace cloud en la organización {0}
 
@@ -8351,7 +8370,7 @@ Conecta el workspace a un repositorio
 Quiero cargar los ficheros fuente desde un repositorio Unity UVCS a este workspace.
 
 == WorkspaceWithoutConnectionSelectorName ==
-No conectar a un repositorio
+No conectar el workspace a un repositorio
 
 == WorkspaceWithoutConnectionSelectorDescription ==
 Quiero importar los ficheros desde una unidad local.
@@ -8424,3 +8443,66 @@ Arrastra aquí para abrir. Mantén presionado Shift para abrir en una nueva vent
 
 == DropFolderToCreateWorkspace ==
 Arrastra aquí para crear un workspace nuevo.
+
+== DeleteBranchTitle ==
+Confirma la eliminación de rama
+
+== DeleteBranchExplanation ==
+Estás a punto de eliminar {0} y todos sus changesets. ¿Estás seguro que quieres continuar?
+
+== DeleteBranchesExplanation ==
+Está a punto de eliminar las siguientes ramas y todos sus changesets:
+
+== DeleteBranchesConfirmation ==
+Esta operación no podrá deshacerse. ¿Estás seguro que quieres continuar?
+
+== ConfirmationCheckBox ==
+Si, estoy seguro!
+
+== ContinueAnyway ==
+Continuar igualmente
+
+== ViewSyncIssuesMenuItem ==
+Ver problemas de sincronización
+
+== SyncIssuesDialogTitle ==
+Problemas de sincronización
+
+== SyncIssuesEmptyStateMessage ==
+No se encontraron problemas
+
+== SyncIssuesEmptyStateExplanation ==
+Los problemas relacionados con la sincronización de sus archivos se mostrarán aquí
+
+== SyncIssuesDownloadingChanges ==
+Problemas descargando cambios
+
+== SyncIssuesUploadingChanges ==
+Problemas subiendo cambios
+
+== SyncIssuesCountSingular ==
+(1 problema)
+
+== SyncIssuesCountPlural ==
+({0} problemas)
+
+== CopySyncIssues ==
+Copiar problemas de sincronización
+
+== LastSynced ==
+sincronizado {0}
+
+== IssuesFound ==
+Se han encontrado problemas
+
+== WorkspacesUnableToSyncSingular ==
+Su workspace no se puede sincronizar
+
+== WorkspacesUnableToSyncPlural ==
+{0} workspaces no se pueden sincronizar
+
+== CannotLoadBranches ==
+No se pueden cargar las ramas
+
+== CannotLoadBranchesExplanation ==
+No se pueden cargar las ramas del servidor UVCS. Por favor, comprueba tu conexión e inténtalo de nuevo.

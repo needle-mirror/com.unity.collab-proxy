@@ -3997,6 +3997,12 @@ File Visibility Settings
 == ProjectSettingsMoveAndRename ==
 File Move and Rename Detections
 
+== ProjectSettingsAutomaticAdd ==
+新しいファイルを自動的にソース・コントロールに追加す
+
+== ProjectSettingsAutomaticAddExplanation ==
+Unity VCSに新しいファイルを自動的にソース管理へ追加させ。
+
 == MergeToMergeNeededExplanation ==
 マージ先操作の実行中に、マージ先操作の同期先で新しい変更セットが作成されたため、複数のヘッドが作成されています。新しいマージ (またはマージ先) 操作を実行してこれらを統合することを検討してください。影響を受けるブランチ:
 
@@ -5405,9 +5411,6 @@ Open in Gluon
 
 == And ==
  および {0}
-
-== ErrorDialogTitle ==
-Error - {0}
 
 == InstallUnityVersionControl ==
 Install Unity Version Control

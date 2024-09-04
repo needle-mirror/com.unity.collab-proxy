@@ -130,6 +130,12 @@ El ítem no se actualizará porque se encuentra cambiado (checked-out, cambiado,
 == ItemPathAlreadyUsedByChange ==
 El ítem no será descargado/movido porque hay un cambio local en '{0}'. Por favor, deshaga el cambio local, desmarque el ítem (desde la vista de configuración) y reintente la operación.
 
+== MoveIgnoredDestinationWasntSelected ==
+El ítem '{0}' no será movido porque el destino del movido '{1}' no fue seleccionado. Por favor, actualice todo el workspace o bien seleccione el origen y destino del movido y reintente la operation.
+
+== MoveIgnoredSourceWasntSelected ==
+El ítem '{0}' no será movido porque no fue seleccionado aunque el destino del movido '{1}' sí lo fue. Por favor, actualice todo el workspace o bien seleccione el origen y destino del movido y reintente la operation.
+
 == MoveItemAlreadyChanged ==
 El ítem no será movido porque se encuentra cambiado (checked-out, cambiado, borrado o movido) en el workspace: '{0}'. Por favor, deshaga o confirme el cambio local y reintente la operación.
 

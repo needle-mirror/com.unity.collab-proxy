@@ -299,9 +299,6 @@ El proceso exportará cambios a Git
 == BisyncPushErrors ==
 Errores durante el push:
 
-== BisyncPushingRepository ==
-Exportando repositorio {0} hacia '{1}'
-
 == BisyncReferenceWithoutSha ==
 No se pueden procesar referencias sin SHA
 
@@ -328,9 +325,6 @@ No se ha encontrado SHA para la revid:{0}
 
 == BisyncShaNotValid ==
 El SHA a procesar no es válido
-
-== BisyncSincronizingRepository ==
-Sincronizando repositorio {0} con '{1}'
 
 == BisyncSyncStatusSaved ==
 Estado de sincronización guardado: cset de Unity VCS {0} -> {1} commit {2}
@@ -383,8 +377,43 @@ Changeset origen: {0}
 == BranchHistoryEntryType ==
 Tipo: {0}
 
+== BringChangesStgApplyingChanges ==
+Aplicando cambios...
+
+== BringChangesStgShelvingChanges ==
+Creando shelve...
+
+== BringChangesStgUndoingChanges ==
+Deshaciendo cambios del espacio de trabajo...
+
+== BringChangesStgCalculatingMergeConflicts ==
+Calculando conflictos de merge para el shelveset sh:{0}...
+
+== BringChangesStgApplyingShelveset ==
+Aplicando el shelveset sh:{0}...
+
+== BringChangesApplyShelvesetQuestion ==
+Aplicar el shelveset sh:{0} causará conflictos de merge.
+Puede continuar aplicando el merge, o cancelar la operación.
+Si escoge continuar, será asistido para solucionar los conflictos.
+Si escoge cancelar, podrá aplicar el shelveset manualmente más adelante.
+¿Qué desea hacer?
+
+== BringChangesApplyShelvesetQuestionViewConflictsOption ==
+Ver los conflictos (lista los conflictos y pregunta de nuevo)
+
+== BringChangesApplyShelvesetQuestionApplyShelveOption ==
+Aplicar el shelveset (comienza la resolución de conflictos de merge)
+
+== BringChangesApplyShelvesetQuestionCancelMessage ==
+Puede aplicar el shelveset manualmente ejecutando el siguiente comando:
+cm shelveset apply sh:{0}
+
 == CalculatingInitialChangeset ==
 Calculando changeset inicial
+
+== Cancel ==
+Cancelar
 
 == CannotBeDeletedChanged ==
 El elemento '{0}' no puede ser borrando en disco porque ha sido modificado localmente.
@@ -656,15 +685,6 @@ Esta operación no esta permitida en espacios de trabajo estándar.
 == CmdErrorAclNoSuchUserOrGroup ==
 No existe el usuario o grupo
 
-== CmdErrorCantShelveCheckin ==
-No se puede hacer shelve de una revisión en checkin. {0}
-
-== CmdErrorCantShelveDirectory ==
-No se puede hacer shelve de un directorio. {0}
-
-== CmdErrorCantShelveNoinputfile ==
-No se puede hacer shelve de {0} porque no se ha especificado un fichero de contenido
-
 == CmdErrorGetfileCantWriteOutput ==
 Error: no se puede acceder al fichero de salida {0} por ser de sólo lectura
 
@@ -833,9 +853,6 @@ El ítem {0} se ha modificado en el espacio de trabajo actual. No se borrará.
 == CmdMsgFileDateNotChangedInWk ==
 No se modificó la fecha de {0} en el espacio de trabajo
 
-== CmdMsgFileNewerInWk ==
-El fichero {0} es más nuevo en el workspace. No se sobrescribirá.
-
 == CmdMsgItemCantLabelNoLabelOnRep ==
 La revisión {0} está en un repositorio que no contiene esa etiqueta
 
@@ -970,6 +987,9 @@ Servidor de repositorios: {0}
 == CmdRepoResultCheckdb ==
 Repositorio: {0}
 
+== CmdSetselectorEndwithdot ==
+Leyendo configuración del selector de stdin, acaba con '.' en una única línea
+
 == CmdStatusIncompatibleOptionsShortAndXml ==
 Las opciones --short y --xml no se pueden usar juntas porque --short no carga información detallada del estado.
 
@@ -996,8 +1016,8 @@ Por favor, proporcione uno explícitamente utilizando la opción --repository=<r
 == CmdUpdated ==
 {0} actualizado correctamente
 
-== CmdErrorUpdateProcessingItem ==
-{0} al actualizar '{1}': {2}
+== CmdUpdateReportItemMessage ==
+{0} actualizando '{1}': {2}
 
 == CmdUpdateReportWarningSeverity ==
 Warning
@@ -1102,6 +1122,9 @@ Estado del dato
 
 == DataWritten ==
 Datos escritos
+
+== Default ==
+Por defecto
 
 == DefaultFormatDiffmetrics ==
 cambiadas: {0}  añadidas: {1}  borradas: {2}
@@ -1892,12 +1915,6 @@ Un ítem ha sido movido en el origen y en el destino se ha borrado ese ítem o s
 == MoveDeleteConflictSourceOperation ==
 Movido de {0} a {1}
 
-== MoveIgnoredDestinationWasntSelected ==
-El ítem '{0}' no será movido porque el destino del movido '{1}' no fue seleccionado. Por favor, actualice todo el workspace o bien seleccione el origen y destino del movido y reintente la operation.
-
-== MoveIgnoredSourceWasntSelected ==
-El ítem '{0}' no será movido porque no fue seleccionado aunque el destino del movido '{1}' sí lo fue. Por favor, actualice todo el workspace o bien seleccione el origen y destino del movido y reintente la operation.
-
 == MoveItemAlreadyChanged ==
 El ítem no será movido porque se encuentra cambiado (checked-out, cambiado, borrado o movido) en el workspace: '{0}'. Por favor, deshaga o confirme el cambio local y reintente la operación.
 
@@ -2047,6 +2064,9 @@ No se aplicó ningún cambio
 == NoChangesInWk ==
 No hay cambios en el espacio de trabajo {0}
 
+== NoPathSpecified ==
+No se especificó una ruta.
+
 == NoErrorsDetected ==
 No se han encontrado errores.
 
@@ -2094,6 +2114,9 @@ Operación abandonada
 
 == OperationDisabled ==
 Esta operación está deshabilitada en Plastic SCM 5.0
+
+== OperationStartingFetch ==
+Operación lectura iniciada
 
 == OperationStartingPush ==
 Operación exportar iniciada
@@ -2271,6 +2294,9 @@ Reconciliando ACLs
 == ReconcilingObjects ==
 Reconciliando objetos
 
+== RecurseWkIncompatibleWithWorkspacePath ==
+No se puede usar la opción '--recursewk' junto a la ruta de un workspace.
+
 == RemoveTubeSucceeded ==
 El tubo {0} -> {1} fue correctamente eliminado.
 
@@ -2306,18 +2332,6 @@ controla la operación de lectura en la replica
 
 == Replicatewrite ==
 controla la operación de escritura en la replica
-
-== ReplicationErrorTryingtosetupauthdatafromfileFiledoesntexist ==
-Error intentando fijar el modo de autentificación desde un fichero. El fichero {0} no existe
-
-== ReplicationErrorTryingtosetupauthdatafromfileNodata ==
-Error intentando fijar el modo de autentificación desde un fichero. No hay datos en el fichero {0}
-
-== ReplicationErrorWrongauthmode ==
-Error, se ha especificado un modo de autenficación incorrecto. {0}
-
-== ReplicationErrorWrongentryintranslationtable ==
-Error en la tabla de traducción de nombres en la línea {0}
 
 == ReportCmdMsgFileChangedInWk ==
 El ítem ha cambiado en el espacio de trabajo fuera del control de Unity VCS. No se ha sobrescrito para respetar sus datos, pero el elemento no está al día. Puede seleccionar la opción "obtener todo" para ponerlo al día.
@@ -2413,7 +2427,26 @@ El repositorio '{0}' fue compartido correctamente.
 Shelve
 
 == ShelvePendingChangesQuestion ==
-Existen cambios pendientes en su espacio de trabajo. Puede hacer un shelve con los cambios pendientes y continuar con la operación o cancelarla. Si continúa con la operación sus cambios pendientes no se perderán, podrá recuperarlos del shelve creado. ¿Desea continuar con la operación? (s/n)
+Existen cambios pendientes en su espacio de trabajo.
+Puede guardar sus cambios pendientes o cancelar la operación.
+Puede hacer un shelve con los cambios pendientes y continuar con la operación o cancelarla.
+Si escoge guardarlos, sus cambios pendientes no se perderán y podrá recuperarlos del shelve creado.
+Si escoge cancelar, el espacio de trabajo no se modificará.
+¿Qué desea hacer?
+
+== ShelveOrBringPendingChangesQuestion ==
+Existen cambios pendientes en su espacio de trabajo.
+Puede guardar sus cambios pendientes, llevarlos consigo, o cancelar la operación.
+Si escoge guardarlos, sus cambios pendientes no se perderán y podrá recuperarlos del shelve creado.
+Si escoge llevarlos con usted, serán guardados en un shelve intermedio y luego reaplicados automáticamente.
+Si escoge cancelar, el espacio de trabajo no se modificará.
+¿Qué desea hacer?
+
+== ShelveOrBringPendingChangesQuestionShelveOption ==
+Guardar mis cambios (crear un shelve)
+
+== ShelveOrBringPendingChangesQuestionBringChangesOption ==
+Llevar mis cambios (crear un shelve y reaplicar automáticamente)
 
 == ShelvePendingChangesShelvesetComment ==
 Shelve creado como parte de la operación de cambio del espacio de trabajo (desde cs:{0})
@@ -2635,6 +2668,12 @@ Información de licencia: servidor: {0}
 
 == UserKey ==
 Usuario
+
+== UserMultipleChoiceAnswerPrompt ==
+Por favor, seleccione una opción ({0}): 
+
+== UserMultipleChoiceAnswerPromptWithDefaultOption ==
+Por favor, seleccione una opción ({0}) [por defecto '{1}']: 
 
 == View ==
 controla si los objetos pueden ser vistos

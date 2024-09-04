@@ -31,7 +31,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             //add a little indentation
             rowRect.x += 5;
             rowRect.width -= 5;
-            
+
             TreeView.DefaultGUI.Label(rowRect, label, isSelected, isFocused);
 
             if (!string.IsNullOrEmpty(infoLabel))
@@ -69,7 +69,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             //add a little indentation
             rowRect.x += 5;
             rowRect.width -= 5;
-          
+
             TreeView.DefaultGUI.Label(rowRect, label, isSelected, isFocused);
 
             if (!string.IsNullOrEmpty(infoLabel))
@@ -97,7 +97,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 
             rect = DrawIconLeft(
                rect, rowHeight, icon, overlayIcon);
-                  
+
             if (isSecondaryLabel)
             {
                 ForSecondaryLabel(rect, label, isSelected, isFocused, isBoldText);
@@ -244,7 +244,6 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                 GUIStyle secondaryBoldLabel =
                     UnityStyles.Tree.SecondaryBoldLabel;
 
-                secondaryBoldLabel.fontSize = UnityConstants.PENDING_CHANGES_FONT_SIZE;
                 secondaryBoldLabel.normal.textColor = Color.red;
 
                 secondaryBoldLabel.Draw(
@@ -254,8 +253,6 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 
             GUIStyle secondaryLabel =
                 UnityStyles.Tree.SecondaryLabel;
-
-            secondaryLabel.fontSize = UnityConstants.PENDING_CHANGES_FONT_SIZE;
 
             secondaryLabel.Draw(
                 rect, label, false, true, isSelected, isFocused);
@@ -273,12 +270,14 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 
             if (isBoldText)
             {
-                TreeView.DefaultStyles.boldLabel.Draw(
+                GUIStyle boldLabel = UnityStyles.Tree.BoldLabel;
+                boldLabel.Draw(
                     rect, label, false, true, isSelected, isFocused);
                 return;
             }
 
-            TreeView.DefaultStyles.label.Draw(
+            GUIStyle normalLabel = UnityStyles.Tree.Label;
+            normalLabel.Draw(
                 rect, label, false, true, isSelected, isFocused);
         }
 

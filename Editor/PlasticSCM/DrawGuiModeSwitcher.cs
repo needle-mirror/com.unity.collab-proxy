@@ -53,8 +53,7 @@ namespace Unity.PlasticSCM.Editor
 
             bool isGluonMode = selectedMode == GuiMode.GluonMode;
 
-            workspaceWindow.UpdateWorkspaceForMode(
-                isGluonMode, workspaceWindow);
+            workspaceWindow.UpdateWorkspaceForMode(isGluonMode);
 
             PendingChangesTreeHeaderState.SetMode(
                 changesTreeView.multiColumnHeader.state,

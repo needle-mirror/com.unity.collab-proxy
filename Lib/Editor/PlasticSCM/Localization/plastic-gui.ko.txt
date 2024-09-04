@@ -3997,6 +3997,12 @@ File Visibility Settings
 == ProjectSettingsMoveAndRename ==
 File Move and Rename Detection
 
+== ProjectSettingsAutomaticAdd ==
+소스 컨트롤에 새 파일 자동 추가
+
+== ProjectSettingsAutomaticAddExplanation ==
+Unity VCS가 새 파일을 소스 컨트롤에 자동으로 추가합니다.
+
 == MergeToMergeNeededExplanation ==
 대상에 병합 작업이 실행 중일 때 대상에 병합 작업의 대상에 새 체인지 세트가 생성되어 둘 이상의 헤드가 생성되었습니다. 새 병합(또는 대상에 병합) 작업을 실행하여 통합하는 방법을 고려하십시오. 영향을 받는 브랜치:
 
@@ -5396,9 +5402,6 @@ Open in Gluon
 
 == And ==
  및 {0}
-
-== ErrorDialogTitle ==
-Error - {0}
 
 == InstallUnityVersionControl ==
 Install Unity Version Control

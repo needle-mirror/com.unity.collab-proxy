@@ -2,10 +2,14 @@
 using System.Diagnostics;
 using System.IO;
 
+using UnityEditor;
+
 using Codice.Client.Common.EventTracking;
 using Codice.CM.Common;
 using Codice.LogWrapper;
 using Codice.Utils;
+using Unity.PlasticSCM.Editor.UI.Progress;
+using Unity.PlasticSCM.Editor.UI.StatusBar;
 using Unity.PlasticSCM.Editor.Views;
 
 namespace Unity.PlasticSCM.Editor.Tool
@@ -368,15 +372,18 @@ namespace Unity.PlasticSCM.Editor.Tool
                 if (IsExeAvailable.ForMode(isGluonMode))
                     return false;
 
-                DownloadPlasticExeWindow.ShowWindow(
+                mData = DownloadPlasticExeDialog.Show(
                     repSpec,
                     isGluonMode,
                     installCloudFrom,
                     installEnterpriseFrom,
-                    cancelInstallFrom);
+                    cancelInstallFrom,
+                    mData != null && !string.IsNullOrEmpty(mData.ProgressMessage) ? mData : null);
 
                 return true;
             }
+
+            UI.UIElements.ProgressControlsForDialogs.Data mData;
         }
 
         internal class ProcessExecutor : LaunchTool.IProcessExecutor

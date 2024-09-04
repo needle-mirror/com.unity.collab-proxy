@@ -15,6 +15,7 @@ using Codice.Client.Common.FsNodeReaders.Watcher;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.CM.ConfigureHelper;
+using Codice.CM.WorkspaceServer;
 using Codice.LogWrapper;
 using Codice.Utils;
 using CodiceApp.EventTracking;
@@ -24,6 +25,7 @@ using PlasticGui.EventTracking;
 using PlasticGui.WebApi;
 using PlasticPipe.Certificates;
 using Unity.PlasticSCM.Editor.Configuration;
+using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor
@@ -32,6 +34,8 @@ namespace Unity.PlasticSCM.Editor
     {
         static PlasticApp()
         {
+            ConfigureLogging();
+
             RegisterDomainUnloadHandler();
 
             mLog = GetLogger("PlasticApp");
@@ -42,6 +46,18 @@ namespace Unity.PlasticSCM.Editor
             return LogManager.GetLogger(name);
         }
 
+        internal static bool HasRunningOperation()
+        {
+            if (mWorkspaceWindow != null &&
+                mWorkspaceWindow.IsOperationInProgress())
+                return true;
+
+            if (mWkInfo == null)
+                return false;
+
+            return TransactionManager.Get().ExistsAnyWorkspaceTransaction(mWkInfo);
+        }
+
         internal static void InitializeIfNeeded()
         {
             if (mIsInitialized)
@@ -49,15 +65,19 @@ namespace Unity.PlasticSCM.Editor
 
             mIsInitialized = true;
 
-            ConfigureLogging();
-
             mLog.Debug("InitializeIfNeeded");
+            
+            // Ensures that the Edition Token is initialized from the UVCS installation regardless of if the PlasticWindow is opened
+            UnityConfigurationChecker.SynchronizeUnityEditionToken();
+            PlasticInstallPath.LogInstallationInfo();
 
             if (!PlasticPlugin.IsUnitTesting)
                 GuiMessage.Initialize(new UnityPlasticGuiMessage());
 
             RegisterExceptionHandlers();
             RegisterBeforeAssemblyReloadHandler();
+            RegisterEditorWantsToQuit();
+            RegisterEditorQuitting();
 
             InitLocalization();
 
@@ -69,13 +89,17 @@ namespace Unity.PlasticSCM.Editor
 
             SetupFsWatcher();
 
-            EditionManager.Get().DisableCapability(
-                EnumEditionCapabilities.Extensions);
+            // The plastic library holds an internal cache of slugs that relies on the file unityorgs.conf.
+            // This file might contain outdated information or not exist at all, so we need to ensure
+            // the cloud organizations are loaded and populated to the internal cache during the initialization.
+            if (!PlasticPlugin.IsUnitTesting)
+                SetupCloudOrganizations();
+
+            EditionManager.Get().DisableCapability(EnumEditionCapabilities.Extensions);
 
             ClientHandlers.Register();
 
-            PlasticGuiConfig.SetConfigFile(
-                PlasticGuiConfig.UNITY_GUI_CONFIG_FILE);
+            PlasticGuiConfig.SetConfigFile(PlasticGuiConfig.UNITY_GUI_CONFIG_FILE);
 
             if (!PlasticPlugin.IsUnitTesting)
             {
@@ -102,14 +126,26 @@ namespace Unity.PlasticSCM.Editor
 
         internal static void SetWorkspace(WorkspaceInfo wkInfo)
         {
+            mWkInfo = wkInfo;
+
             RegisterApplicationFocusHandlers();
 
             if (mEventSenderScheduler == null)
                 return;
 
-            mPingEventLoop.SetWorkspace(wkInfo);
+            mPingEventLoop.SetWorkspace(mWkInfo);
             PlasticGui.Plastic.WebRestAPI.SetToken(
                 CmConnection.Get().BuildWebApiTokenForCloudEditionDefaultUser());
+        }
+
+        internal static void RegisterWorkspaceWindow(IWorkspaceWindow workspaceWindow)
+        {
+            mWorkspaceWindow = workspaceWindow;
+        }
+
+        internal static void UnRegisterWorkspaceWindow()
+        {
+            mWorkspaceWindow = null;
         }
 
         internal static void EnableMonoFsWatcherIfNeeded()
@@ -128,7 +164,7 @@ namespace Unity.PlasticSCM.Editor
             MonoFileSystemWatcher.IsEnabled = false;
         }
 
-        internal static void Dispose(WorkspaceInfo wkInfo)
+        internal static void Dispose()
         {
             if (!mIsInitialized)
                 return;
@@ -139,6 +175,8 @@ namespace Unity.PlasticSCM.Editor
 
                 UnRegisterExceptionHandlers();
                 UnRegisterApplicationFocusHandlers();
+                UnRegisterEditorWantsToQuit();
+                UnRegisterEditorQuitting();
 
                 if (mEventSenderScheduler != null)
                 {
@@ -149,10 +187,10 @@ namespace Unity.PlasticSCM.Editor
                     mEventSenderScheduler.EndAndSendEventsAsync();
                 }
 
-                if (wkInfo == null)
+                if (mWkInfo == null)
                     return;
 
-                WorkspaceFsNodeReaderCachesCleaner.CleanWorkspaceFsNodeReader(wkInfo);
+                WorkspaceFsNodeReaderCachesCleaner.CleanWorkspaceFsNodeReader(mWkInfo);
             }
             finally
             {
@@ -163,6 +201,16 @@ namespace Unity.PlasticSCM.Editor
         static void RegisterDomainUnloadHandler()
         {
             AppDomain.CurrentDomain.DomainUnload += AppDomainUnload;
+        }
+
+        static void RegisterEditorWantsToQuit()
+        {
+            EditorApplication.wantsToQuit += OnEditorWantsToQuit;
+        }
+
+        static void RegisterEditorQuitting()
+        {
+            EditorApplication.quitting += OnEditorQuitting;
         }
 
         static void RegisterBeforeAssemblyReloadHandler()
@@ -187,6 +235,16 @@ namespace Unity.PlasticSCM.Editor
         static void UnRegisterDomainUnloadHandler()
         {
             AppDomain.CurrentDomain.DomainUnload -= AppDomainUnload;
+        }
+
+        static void UnRegisterEditorWantsToQuit()
+        {
+            EditorApplication.wantsToQuit -= OnEditorWantsToQuit;
+        }
+
+        static void UnRegisterEditorQuitting()
+        {
+            EditorApplication.quitting -= OnEditorQuitting;
         }
 
         static void UnRegisterBeforeAssemblyReloadHandler()
@@ -262,6 +320,26 @@ namespace Unity.PlasticSCM.Editor
             DisableMonoFsWatcherIfNeeded();
         }
 
+        static void OnEditorQuitting()
+        {
+            mLog.Debug("OnEditorQuitting");
+
+            PlasticPlugin.Shutdown();
+        }
+
+        static bool OnEditorWantsToQuit()
+        {
+            mLog.Debug("OnEditorWantsToQuit");
+
+            if (!HasRunningOperation())
+                return true;
+
+            return GuiMessage.ShowQuestion(
+                PlasticLocalization.GetString(PlasticLocalization.Name.OperationRunning),
+                PlasticLocalization.GetString(PlasticLocalization.Name.ConfirmClosingRunningOperation),
+                PlasticLocalization.GetString(PlasticLocalization.Name.YesButton));
+        }
+
         static void BeforeAssemblyReload()
         {
             mLog.Debug("BeforeAssemblyReload");
@@ -269,23 +347,6 @@ namespace Unity.PlasticSCM.Editor
             UnRegisterBeforeAssemblyReloadHandler();
 
             PlasticShutdown.Shutdown();
-        }
-
-        static void ConfigureLogging()
-        {
-            try
-            {
-                string log4netpath = ToolConfig.GetUnityPlasticLogConfigFile();
-
-                if (!File.Exists(log4netpath))
-                    WriteLogConfiguration.For(log4netpath);
-
-                XmlConfigurator.Configure(new FileInfo(log4netpath));
-            }
-            catch
-            {
-                //it failed configuring the logging info; nothing to do.
-            }
         }
 
         static void InitLocalization()
@@ -303,7 +364,7 @@ namespace Unity.PlasticSCM.Editor
             Localization.Init(language);
             PlasticLocalization.SetLanguage(language);
         }
-        
+
         static void SetupFsWatcher()
         {
             if (!PlatformIdentifier.IsMac())
@@ -311,6 +372,16 @@ namespace Unity.PlasticSCM.Editor
 
             WorkspaceWatcherFsNodeReadersCache.Get().SetMacFsWatcherBuilder(
                 new MacFsWatcherBuilder());
+        }
+
+        static void SetupCloudOrganizations()
+        {
+            if (!EditionToken.IsCloudEdition())
+            {
+                return;
+            }
+
+            OrganizationsInformation.LoadCloudOrganizationsAsync();
         }
 
         static bool IsPlasticStackTrace(string stackTrace)
@@ -332,7 +403,26 @@ namespace Unity.PlasticSCM.Editor
             return ex is ExitGUIException;
         }
 
+        static void ConfigureLogging()
+        {
+            try
+            {
+                string log4netpath = ToolConfig.GetUnityPlasticLogConfigFile();
+
+                if (!File.Exists(log4netpath))
+                    WriteLogConfiguration.For(log4netpath);
+
+                XmlConfigurator.Configure(new FileInfo(log4netpath));
+            }
+            catch
+            {
+                //it failed configuring the logging info; nothing to do.
+            }
+        }
+
         static bool mIsInitialized;
+        static IWorkspaceWindow mWorkspaceWindow;
+        static WorkspaceInfo mWkInfo;
         static EventSenderScheduler mEventSenderScheduler;
         static PingEventLoop mPingEventLoop;
         static ILog mLog;

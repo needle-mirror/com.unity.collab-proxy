@@ -106,6 +106,14 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             ((IRefreshableView)this).Refresh();
         }
 
+        internal void OnEnable()
+        {
+            mDiffPanel.OnEnable();
+
+            mSearchField.downOrUpArrowKeyPressed +=
+                SearchField_OnDownOrUpArrowKeyPressed;
+        }
+
         internal void OnDisable()
         {
             mDiffPanel.OnDisable();
@@ -129,12 +137,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         {
             InitializeShowChangesButtonWidth();
 
-            DoActionsToolbar(
-                this,
-                mProgressControls,
-                mSearchField,
-                mChangesetsListView,
-                mDateFilter);
+            DoActionsToolbar(mProgressControls);
 
             PlasticSplitterGUILayout.BeginHorizontalSplit(mSplitterState);
 
@@ -163,6 +166,30 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 UnityConstants.SEARCH_FIELD_WIDTH);
 
             VerifyIfSearchFieldIsRecentlyFocused(mSearchField);
+        }
+
+        internal void DrawDateFilter()
+        {
+            GUI.enabled = !mProgressControls.IsOperationRunning();
+
+            EditorGUI.BeginChangeCheck();
+
+            mDateFilter.FilterType = (DateFilter.Type)
+                EditorGUILayout.EnumPopup(
+                    mDateFilter.FilterType,
+                    EditorStyles.toolbarDropDown,
+                    GUILayout.Width(100));
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                EnumPopupSetting<DateFilter.Type>.Save(
+                    mDateFilter.FilterType,
+                    UnityConstants.CHANGESETS_DATE_FILTER_SETTING_NAME);
+
+                ((IRefreshableView)this).Refresh();
+            }
+
+            GUI.enabled = true;
         }
 
         internal void SetWorkingObjectInfo(WorkingObjectInfo homeInfo)
@@ -255,17 +282,29 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         }
 
         void IChangesetMenuOperations.DiffWithAnotherChangeset() { }
+
         void IChangesetMenuOperations.CreateBranch() { }
+
         void IChangesetMenuOperations.LabelChangeset() { }
+
         void IChangesetMenuOperations.MergeChangeset() {}
+
         void IChangesetMenuOperations.CherryPickChangeset() { }
+
         void IChangesetMenuOperations.SubtractiveChangeset() { }
+
         void IChangesetMenuOperations.SubtractiveChangesetInterval() { }
+
         void IChangesetMenuOperations.CherryPickChangesetInterval() { }
+
         void IChangesetMenuOperations.MergeToChangeset() { }
+
         void IChangesetMenuOperations.MoveChangeset() { }
+
         void IChangesetMenuOperations.DeleteChangeset() { }
+
         void IChangesetMenuOperations.BrowseRepositoryOnChangeset() { }
+
         void IChangesetMenuOperations.CreateCodeReview() { }
 
         void IChangesetMenuOperations.RevertToChangeset()
@@ -290,12 +329,54 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 mRevertToChangesetListener.OnSuccessOperation);
         }
 
+        void ChangesetsViewMenu.IMenuOperations.DiffBranch()
+        {
+            LaunchDiffOperations.DiffBranch(
+                mShowDownloadPlasticExeWindow,
+                mProcessExecutor,
+                ChangesetsSelection.GetSelectedRepository(mChangesetsListView),
+                ChangesetsSelection.GetSelectedChangeset(mChangesetsListView),
+                mIsGluonMode);
+        }
+
+        ChangesetExtendedInfo ChangesetsViewMenu.IMenuOperations.GetSelectedChangeset()
+        {
+            return ChangesetsSelection.GetSelectedChangeset(
+                mChangesetsListView);
+        }
+
         void SearchField_OnDownOrUpArrowKeyPressed()
         {
             mChangesetsListView.SetFocusAndEnsureSelectedItem();
         }
 
-        void FillChangesets(WorkspaceInfo wkInfo, string query, List<RepObjectInfo> changesetsToSelect)
+        void OnChangesetsListViewSizeChanged()
+        {
+            if (!mShouldScrollToSelection)
+                return;
+
+            mShouldScrollToSelection = false;
+            TableViewOperations.ScrollToSelection(mChangesetsListView);
+        }
+
+        void OnSelectionChanged()
+        {
+            List<RepObjectInfo> selectedChangesets = ChangesetsSelection.
+                GetSelectedRepObjectInfos(mChangesetsListView);
+
+            if (selectedChangesets.Count != 1)
+                return;
+
+            mDiffPanel.UpdateInfo(
+                MountPointWithPath.BuildWorkspaceRootMountPoint(
+                    ChangesetsSelection.GetSelectedRepository(mChangesetsListView)),
+                (ChangesetExtendedInfo)selectedChangesets[0]);
+        }
+
+        void FillChangesets(
+            WorkspaceInfo wkInfo,
+            string query,
+            List<RepObjectInfo> changesetsToSelect)
         {
             if (mIsRefreshing)
                 return;
@@ -365,43 +446,30 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 });
         }
 
-        void ChangesetsViewMenu.IMenuOperations.DiffBranch()
+        void InitializeShowChangesButtonWidth()
         {
-            LaunchDiffOperations.DiffBranch(
-                mShowDownloadPlasticExeWindow,
-                mProcessExecutor,
-                ChangesetsSelection.GetSelectedRepository(mChangesetsListView),
-                ChangesetsSelection.GetSelectedChangeset(mChangesetsListView),
-                mIsGluonMode);
-        }
-
-        ChangesetExtendedInfo ChangesetsViewMenu.IMenuOperations.GetSelectedChangeset()
-        {
-            return ChangesetsSelection.GetSelectedChangeset(
-                mChangesetsListView);
-        }
-
-        void OnChangesetsListViewSizeChanged()
-        {
-            if (!mShouldScrollToSelection)
+            if (mShowChangesButtonWidth != -1)
                 return;
 
-            mShouldScrollToSelection = false;
-            TableViewOperations.ScrollToSelection(mChangesetsListView);
+            mShowChangesButtonWidth = MeasureMaxWidth.ForTexts(
+                EditorStyles.toolbarButton,
+                PlasticLocalization.GetString(PlasticLocalization.Name.HideChanges),
+                PlasticLocalization.GetString(PlasticLocalization.Name.ShowChanges));
         }
 
-        void OnSelectionChanged()
+        void VerifyIfSearchFieldIsRecentlyFocused(SearchField searchField)
         {
-            List<RepObjectInfo> selectedChangesets = ChangesetsSelection.
-                GetSelectedRepObjectInfos(mChangesetsListView);
+            if (searchField.HasFocus() != mIsSearchFieldFocused)
+            {
+                mIsSearchFieldFocused = !mIsSearchFieldFocused;
 
-            if (selectedChangesets.Count != 1)
-                return;
-
-            mDiffPanel.UpdateInfo(
-                MountPointWithPath.BuildWorkspaceRootMountPoint(
-                    ChangesetsSelection.GetSelectedRepository(mChangesetsListView)),
-                (ChangesetExtendedInfo)selectedChangesets[0]);
+                if (mIsSearchFieldFocused)
+                {
+                    TrackFeatureUseEvent.For(
+                        PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                        TrackFeatureUseEvent.Features.ChangesetsViewChangesetsSearchBox);
+                }
+            }
         }
 
         static void UpdateChangesetsList(
@@ -442,6 +510,15 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                         wkInfo, loadedChangesetId).BranchId;
         }
 
+        static int GetChangesetsCount(
+            ViewQueryResult queryResult)
+        {
+            if (queryResult == null)
+                return 0;
+
+            return queryResult.Count();
+        }
+
         static string GetChangesetsQuery(DateFilter dateFilter)
         {
             if (dateFilter.FilterType == DateFilter.Type.AllTime)
@@ -455,36 +532,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 whereClause);
         }
 
-        static int GetChangesetsCount(
-            ViewQueryResult queryResult)
-        {
-            if (queryResult == null)
-                return 0;
-
-           return queryResult.Count();
-        }
-
-        void VerifyIfSearchFieldIsRecentlyFocused(SearchField searchField)
-        {
-            if (searchField.HasFocus() != mIsSearchFieldFocused)
-            {
-                mIsSearchFieldFocused = !mIsSearchFieldFocused;
-
-                if (mIsSearchFieldFocused)
-                {
-                    TrackFeatureUseEvent.For(
-                        PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
-                        TrackFeatureUseEvent.Features.ChangesetsViewChangesetsSearchBox);
-                }
-            }
-        }
-
-        void DoActionsToolbar(
-            IRefreshableView refreshableView,
-            ProgressControlsForViews progressControls,
-            SearchField searchField,
-            ChangesetsListView changesetsListView,
-            DateFilter dateFilter)
+        void DoActionsToolbar(ProgressControlsForViews progressControls)
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
@@ -525,41 +573,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             diffPanel.OnGUI();
 
             EditorGUILayout.EndVertical();
-        }
-
-        internal void DrawDateFilter()
-        {
-            GUI.enabled = !mProgressControls.IsOperationRunning();
-
-            EditorGUI.BeginChangeCheck();
-
-            mDateFilter.FilterType = (DateFilter.Type)
-                EditorGUILayout.EnumPopup(
-                    mDateFilter.FilterType,
-                    EditorStyles.toolbarDropDown,
-                    GUILayout.Width(100));
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                EnumPopupSetting<DateFilter.Type>.Save(
-                    mDateFilter.FilterType,
-                    UnityConstants.CHANGESETS_DATE_FILTER_SETTING_NAME);
-
-                ((IRefreshableView)this).Refresh();
-            }
-
-            GUI.enabled = true;
-        }
-
-        void InitializeShowChangesButtonWidth()
-        {
-            if (mShowChangesButtonWidth != -1)
-                return;
-
-            mShowChangesButtonWidth = MeasureMaxWidth.ForTexts(
-                EditorStyles.toolbarButton,
-                PlasticLocalization.GetString(PlasticLocalization.Name.HideChanges),
-                PlasticLocalization.GetString(PlasticLocalization.Name.ShowChanges));
         }
 
         void BuildComponents(

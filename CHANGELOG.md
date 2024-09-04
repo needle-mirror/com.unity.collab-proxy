@@ -2,6 +2,30 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.5.1] - 2024-09-04
+
+### Added
+
+- Allow deletion of non-empty branches that have not been merged anywhere
+- New setting to control if new files must be automatically added to source control
+
+### Changed
+
+- Improve the dialog to install Unity Version Control from the Editor
+
+### Fixed
+
+- Fixed 'an existing xxx operation has locked the workspace' error on finding changes operation
+- Fixed a case of a hang happening on Editor quit
+- Fixed the login that could fail for Enterprise installation
+- Fixed undo operation that didn't capture changes in packages
+- Fixed history that was not shown when there was no desktop client installed
+- Fixed unity 6 Editor going into the background after a dialog was closed
+- Fixed wrong font size when changing to changesets view
+- Fixed the "Upgrade plan" button in Unity plugin that used a obsolete redirection link
+- Fixed Logs that were configured too late in the initialization
+- Fixed the minimum supported version (2020.3.48f1 LTS) in the README
+
 ## [2.4.4] - 2024-07-19
 
 ### Fixed

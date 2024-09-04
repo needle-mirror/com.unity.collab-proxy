@@ -42,6 +42,16 @@ namespace Unity.PlasticSCM.Editor.UI
             CompleteModal(ResponseType.Apply);
         }
 
+        internal void RunUtility(EditorWindow parentWindow)
+        {
+            InitializeVars(parentWindow);
+
+            if (!IsResizable)
+                MakeNonResizable();
+
+            ShowUtility();
+        }
+
         internal ResponseType RunModal(EditorWindow parentWindow)
         {
             InitializeVars(parentWindow);
@@ -216,7 +226,6 @@ namespace Unity.PlasticSCM.Editor.UI
         protected static string ComboBox(
             string label,
             string value,
-            string controlName,
             List<string> dropDownOptions,
             GenericMenu.MenuFunction2 optionSelected,
             float width,
@@ -260,6 +269,16 @@ namespace Unity.PlasticSCM.Editor.UI
             }
         }
 
+        static void EntryLabel(string labelText)
+        {
+            GUIContent labelContent = new GUIContent(labelText);
+            GUIStyle labelStyle = UnityStyles.Dialog.EntryLabel;
+
+            Rect rt = GUILayoutUtility.GetRect(labelContent, labelStyle);
+
+            GUI.Label(rt, labelText, EditorStyles.label);
+        }
+
         protected static bool ToggleEntry(
             string label, bool value, float width, float x)
         {
@@ -267,6 +286,14 @@ namespace Unity.PlasticSCM.Editor.UI
                 new GUIContent(label), UnityStyles.Dialog.EntryLabel);
             rt.width = width;
             rt.x = x;
+
+            return GUI.Toggle(rt, value, label);
+        }
+
+        protected static bool ToggleEntry(string label, bool value)
+        {
+            var rt = GUILayoutUtility.GetRect(
+                new GUIContent(label), UnityStyles.Dialog.EntryLabel);
 
             return GUI.Toggle(rt, value, label);
         }
@@ -352,16 +379,6 @@ namespace Unity.PlasticSCM.Editor.UI
             minSize = maxSize;
         }
 
-        static void EntryLabel(string labelText)
-        {
-            GUIContent labelContent = new GUIContent(labelText);
-            GUIStyle labelStyle = UnityStyles.Dialog.EntryLabel;
-
-            Rect rt = GUILayoutUtility.GetRect(labelContent, labelStyle);
-
-            GUI.Label(rt, labelText, EditorStyles.label);
-        }
-
         static GUISkin GetEditorSkin()
         {
             return EditorGUIUtility.isProSkin ?
@@ -379,33 +396,9 @@ namespace Unity.PlasticSCM.Editor.UI
 
         bool mFocusedOnce;
 
-        Dictionary<string, string[]> mWrappedTextLines =
-            new Dictionary<string, string[]>();
-
         EditorWindow mParentWindow;
-
-        protected const float DEFAULT_LINE_SPACING = -5f;
         const float DEFAULT_WIDTH = 500f;
         const float DEFAULT_HEIGHT = 180f;
         const float DEFAULT_PARAGRAPH_SPACING = 10f;
-
-        static class BuildLine
-        {
-            internal static string ForIndex(string text, int index)
-            {
-                if (index < 0 || index > text.Length)
-                    return string.Empty;
-
-                return text.Substring(index).Trim();
-            }
-
-            internal static string ForIndexAndLenght(string text, int index, int lenght)
-            {
-                if (index < 0 || index > text.Length)
-                    return string.Empty;
-
-                return text.Substring(index, lenght);
-            }
-        }
     }
 }

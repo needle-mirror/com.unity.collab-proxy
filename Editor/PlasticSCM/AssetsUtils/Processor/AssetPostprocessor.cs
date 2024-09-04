@@ -1,14 +1,34 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
+using UnityEditor;
+
 using Codice.Client.Common;
 using Codice.Client.Common.FsNodeReaders.Watcher;
 using Codice.LogWrapper;
+using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 {
     class AssetPostprocessor : UnityEditor.AssetPostprocessor
     {
+        internal static bool AutomaticAdd { get; private set; }
+
+        static AssetPostprocessor()
+        {
+            AutomaticAdd = BoolSetting.Load(UnityConstants.AUTOMATIC_ADD_KEY_NAME, true);
+        }
+        
+        internal static void SetAutomaticAddOption(bool isEnabled)
+        {
+            if (AutomaticAdd != isEnabled)
+            {
+                AutomaticAdd = isEnabled;
+                
+                BoolSetting.Save(isEnabled, UnityConstants.AUTOMATIC_ADD_KEY_NAME);
+            }
+        }
+
         internal struct PathToMove
         {
             internal readonly string SrcPath;
@@ -78,8 +98,11 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             mPlasticAssetsProcessor.DeleteFromSourceControl(
                 GetPathsContainedOnWorkspace(mWkPath, deletedAssets));
 
-            mPlasticAssetsProcessor.AddToSourceControl(
-                GetPathsContainedOnWorkspace(mWkPath, importedAssets));
+            if (AutomaticAdd)
+            {
+                mPlasticAssetsProcessor.AddToSourceControl(
+                    GetPathsContainedOnWorkspace(mWkPath, importedAssets));
+            }
 
             // We expect modified assets to go through AssetModificationProcessor.OnWillSaveAssets before getting here.
             // To fix: there is a known limitation of renamed prefabs not triggering OnWillSaveAssets method.

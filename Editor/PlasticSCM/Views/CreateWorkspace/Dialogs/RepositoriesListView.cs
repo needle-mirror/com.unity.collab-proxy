@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using Codice.Client.Common;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
@@ -108,8 +108,8 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             if (selectedItems.Count == 0)
                 return null;
 
-            return ((RepositoryListViewItem)selectedItems[0])
-                .Repository.GetRepSpec().ToString();
+            return ((RepositoryListViewItem) selectedItems[0])
+                .Repository.GetRepSpec().ToDisplayString();
         }
 
         void IPlasticTable<RepositoryInfo>.FillEntriesAndSelectRows(
@@ -234,7 +234,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
 
             DrawTreeViewItem.ForSecondaryLabel(
                 rect,
-                item.Repository.Server,
+                item.ServerDisplayName,
                 isSelected,
                 isFocused,
                 false);

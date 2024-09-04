@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 
+using Codice.Client.Common;
+using Codice.LogWrapper;
 using Codice.Utils;
 
 namespace Unity.PlasticSCM.Editor.Tool
@@ -82,6 +84,27 @@ namespace Unity.PlasticSCM.Editor.Tool
             return null;
         }
 
+        internal static void LogInstallationInfo()
+        {
+            string plasticClientBinDir = GetClientBinDir();
+
+            if (string.IsNullOrEmpty(plasticClientBinDir))
+            {
+                mLog.DebugFormat("No installation found, behaving as {0} Edition",
+                    EditionToken.IsCloudEdition() ? "Cloud" : "Enterprise");
+            }
+            else
+            {
+                bool isCloudPlasticInstall = File.Exists(Path.Combine(plasticClientBinDir, EditionToken.CLOUD_EDITION_FILE_NAME));
+
+                mLog.DebugFormat("{0} Edition detected - installation directory: {1}",
+                    isCloudPlasticInstall ? "Cloud" : "Enterprise",
+                    plasticClientBinDir);
+                mLog.DebugFormat("Local token: {0} Edition",
+                    EditionToken.IsCloudEdition() ? "Cloud" : "Enterprise");
+            }
+        }
+
         static string GetToolCommand(string tool)
         {
             return File.Exists(tool) ? tool : null;
@@ -103,6 +126,8 @@ namespace Unity.PlasticSCM.Editor.Tool
 
         const string PLASTICSCM_FOLDER = "PlasticSCM5";
         const string PLASTICSCM_SUBFOLDER = "client";
+        
+        static readonly ILog mLog = PlasticApp.GetLogger("PlasticInstallPath");
 
         class Plastic
         {
