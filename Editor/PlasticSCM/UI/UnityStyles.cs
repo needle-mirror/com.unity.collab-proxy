@@ -681,6 +681,16 @@ namespace Unity.PlasticSCM.Editor.UI
             return style;
         });
 
+        internal static readonly LazyStyle LinkLabel = new LazyStyle(() =>
+        {
+            var style = new GUIStyle(GUI.skin.label);
+            style.normal.textColor = new Color(0.129f, 0.588f, 0.953f);
+            style.hover.textColor = new Color(0.239f, 0.627f, 0.949f);
+            style.active.textColor = new Color(0.239f, 0.627f, 0.949f);
+
+            return style;
+        });
+
         static GUISkin GetEditorSkin()
         {
             GUISkin editorSkin = null;

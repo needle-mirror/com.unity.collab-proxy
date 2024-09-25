@@ -583,6 +583,15 @@ Rename Workspace
 == RepositoryServerLabel ==
 Server (your_server:8087 or your_org@cloud):
 
+== RepositoryServerOrOrganizationLabel ==
+Server or organization:
+
+== OrganizationProjectLabel ==
+Organization project:
+
+== CreateOrganizationProjectLabel ==
+Create new organization project?
+
 == WorkspacePathLabel ==
 Path on disk:
 
@@ -1765,7 +1774,7 @@ Applying conflicts...
 Loading repositories...
 
 == NewRepositoryExplanation ==
-Type a name for the new repo and ensure you will create it on the correct server.
+Type a name for the new repository and ensure you will create it on the correct server or organization. 
 
 == NewWorkspaceExplanation ==
 Download a working copy of the repository {0}. It will just contain the files to work, not the entire history. A workspace is just the directory on disk that you use to make changes, edit, build and test locally.
@@ -3200,9 +3209,6 @@ WARNING: The hostname provided in the server certificate does NOT match the serv
 
 == RepositoryExplorerServerLabel ==
 Server:
-
-== RepositoryExplorerServerProjectLabel ==
-Server project:
 
 == RetrievingServerProjects ==
 Retrieving server projects...
@@ -6075,7 +6081,7 @@ Workspaces are used to store the local copies of your project files that you can
 Repository Name
 
 == RepositoryNameShortLabel ==
-Repository Name:
+Repository name:
 
 == NewButton ==
 New
@@ -8491,6 +8497,90 @@ Copy sync issues
 
 == LastSynced ==
 synced {0}
+Continue anyway
+
+== ViewSyncIssuesMenuItem ==
+View sync issues
+
+== SyncIssuesDialogTitle ==
+Sync issues
+
+== SyncIssuesEmptyStateMessage ==
+No issues found
+
+== SyncIssuesEmptyStateExplanation ==
+Issues related to syncing your files will be shown here
+
+== SyncIssuesDownloadingChanges ==
+Issues downloading changes
+
+== SyncIssuesUploadingChanges ==
+Issues uploading changes
+
+== SyncIssuesCountSingular ==
+(1 issues)
+
+== SyncIssuesCountPlural ==
+({0} issues)
+
+== CopySyncIssues ==
+Copy sync issues
+
+== LastSynced ==
+synced {0}
+
+== IssuesFound ==
+Issues found
+
+== WorkspacesUnableToSyncSingular ==
+Your workspace is unable to sync
+
+== WorkspacesUnableToSyncPlural ==
+{0} workspaces are unable to sync
+Continue anyway
+
+== IssuesFound ==
+Issues found
+
+== WorkspacesUnableToSyncSingular ==
+Your workspace is unable to sync
+
+== WorkspacesUnableToSyncPlural ==
+{0} workspaces are unable to sync
+
+== CannotLoadBranches ==
+Cannot load branches
+== CannotLoadBranches ==
+Cannot load branches
+== ViewSyncIssuesMenuItem ==
+View sync issues
+
+== SyncIssuesDialogTitle ==
+Sync issues
+
+== SyncIssuesEmptyStateMessage ==
+No issues found
+
+== SyncIssuesEmptyStateExplanation ==
+Issues related to syncing your files will be shown here
+
+== SyncIssuesDownloadingChanges ==
+Issues downloading changes
+
+== SyncIssuesUploadingChanges ==
+Issues uploading changes
+
+== SyncIssuesCountSingular ==
+(1 issues)
+
+== SyncIssuesCountPlural ==
+({0} issues)
+
+== CopySyncIssues ==
+Copy sync issues
+
+== LastSynced ==
+synced {0}
 
 == IssuesFound ==
 Issues found
@@ -8504,5 +8594,107 @@ Your workspace is unable to sync
 == CannotLoadBranches ==
 Cannot load branches
 
+== EnableSwitchAndShelveNotNow ==
+Not now
+
+== DiscardShelveConfirmationTitle ==
+Discard shelveset
+
+== DiscardShelveConfirmationMessage ==
+The shelveset will be discarded and all of its contents will be removed.
+Do you want to continue?
+
+== OverwriteExistingShelvesWarning ==
+Your current shelveset will be overwritten by creating a new one
+
+== OverwriteShelveDialogTitle ==
+Overwrite shelveset
+
+== OverwriteShelveDialogMessage ==
+Are you sure you want to overwrite the existing shelveset with your current changes?
+
+== OverwriteShelveDialogOverwriteButton ==
+Overwrite
+
+== ShowViewButtonTooltip ==
+Show {0} ({1})
+
+== CopyFilePathMenuItem ==
+Copy path
+
+== CopyRelativeFilePathMenuItem ==
+Copy relative path
+
+== CloudOrganizationsSection ==
+Cloud organizations
+
+== UnityOrganizationsSection ==
+Unity organizations
+
+== AllProjects ==
+All projects
+
+== ManageOrganizationMenuItem ==
+Manage organization
+
+== ManageProjectMenuItem ==
+Manage project
+
+== ViewProjectsInUnityCloud ==
+View projects in Unity Cloud
+
+== RetrievingProjects ==
+Retrieving projects
+== EnableSwitchAndShelveNotNow ==
+Not now
+
+== DiscardShelveConfirmationTitle ==
+Discard shelveset
+
+== DiscardShelveConfirmationMessage ==
+The shelveset will be discarded and all of its contents will be removed.
+Do you want to continue?
+
+== OverwriteExistingShelvesWarning ==
+Your current shelveset will be overwritten by creating a new one
+
+== OverwriteShelveDialogTitle ==
+Overwrite shelveset
+
+== OverwriteShelveDialogMessage ==
+Are you sure you want to overwrite the existing shelveset with your current changes?
+
+== OverwriteShelveDialogOverwriteButton ==
+Overwrite
+
+== ShowViewButtonTooltip ==
+Show {0} ({1})
+
+== CopyFilePathMenuItem ==
+Copy path
+
+== CopyRelativeFilePathMenuItem ==
+Copy relative path
+
+== CloudOrganizationsSection ==
+Cloud organizations
+
+== UnityOrganizationsSection ==
+Unity organizations
+
+== AllProjects ==
+All projects
+
+== ManageOrganizationMenuItem ==
+Manage organization
+
+== ManageProjectMenuItem ==
+Manage project
+
+== ViewProjectsInUnityCloud ==
+View projects in Unity Cloud
+
+== RetrievingProjects ==
+Retrieving projects
 == CannotLoadBranchesExplanation ==
 We couldn't load the branches from the UVCS server. Please check your connection and try again.

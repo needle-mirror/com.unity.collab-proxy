@@ -583,6 +583,15 @@ Renombrar workspace
 == RepositoryServerLabel ==
 Servidor (tu_servidor:8087 o tu_org@cloud):
 
+== RepositoryServerOrOrganizationLabel ==
+Servidor u organización:
+
+== OrganizationProjectLabel ==
+Proyecto:
+
+== CreateOrganizationProjectLabel ==
+Crear nuevo proyecto para esta organización?
+
 == WorkspacePathLabel ==
 Ruta en disco:
 
@@ -1765,7 +1774,7 @@ Applying conflicts...
 Loading repositories...
 
 == NewRepositoryExplanation ==
-Type a name for the new repo and make sure you will create it on the correct server.
+Type a name for the new repository and ensure you will create it on the correct server or organization.
 
 == NewWorkspaceExplanation ==
 Descargar una copia de trabajo del repositorio {0}. Sólo contiene los ficheros para trabajar, no el historial completo. Un workspace es una carpeta en disco que se usa para hacer cambios, editar y compilar localmente.
@@ -3194,9 +3203,6 @@ WARNING: the hostname provided in the server certificate does NOT match the serv
 
 == RepositoryExplorerServerLabel ==
 Server:
-
-== RepositoryExplorerServerProjectLabel ==
-Server project:
 
 == RetrievingServerProjects ==
 Retrieving server projects...
@@ -6069,7 +6075,7 @@ Workspaces are used to store the local copies of your project files that you can
 Repository Name
 
 == RepositoryNameShortLabel ==
-Repository Name:
+Repository name:
 
 == NewButton ==
 Nuevo
@@ -8505,4 +8511,182 @@ Su workspace no se puede sincronizar
 No se pueden cargar las ramas
 
 == CannotLoadBranchesExplanation ==
+No se pueden cargar las ramas del servidor UVCS. Por favor, comprueba tu conexión e inténtalo de nuevo.
+
+== ShelvedChanges ==
+Cambios en shelves
+
+== ShelvedChangesExplanation ==
+Hay cambios pendientes en shelves. Haz clic en 'Ver' para gestionarlos o usa el menú desplegable para más opciones.
+
+== ViewShelvedChangesButtonExplanation ==
+Ver y aplicar cambios en shelves
+
+== DiscardShelvedChanges ==
+Descartar cambios en shelves
+
+== EnableSwitchAndShelveTitle ==
+¡Habilita la nueva experiencia Switch and Shelve!
+
+== EnableSwitchAndShelveMessage ==
+Hemos mejorado el switch en el workspace con cambios pendientes. Nuestra nueva opción Shelve te da más control sobre tus cambios al cambiar a ramas, etiquetas o changesets.
+
+== EnableSwitchAndShelveLeaveChangesTitle ==
+Dejar cambios en Origen:
+
+== EnableSwitchAndShelveLeaveChangesDescription ==
+Deja tus cambios en el origen para continuar trabajando en ellos más tarde.
+
+== EnableSwitchAndShelveBringChangesTitle ==
+Traer cambios a Destino:
+
+== EnableSwitchAndShelveBringChangesDescription ==
+Mueve tus cambios sin problemas a la nueva rama o changeset.
+
+== EnableSwitchAndShelveQuestion ==
+¿Quieres habilitar la opción Shelve ahora? Puedes cambiar el comportamiento en cualquier momento en las preferencias.
+
+== EnableSwitchAndShelveYesEnableIt ==
+¡SÍ, HABILÍTALO!
+
+== EnableSwitchAndShelveNotNow ==
+Ahora no
+
+== DiscardShelveConfirmationTitle ==
+Descartar shelveset
+
+== DiscardShelveConfirmationMessage ==
+El shelveset será descartados y se eliminará todo su contenido.
+¿Quieres continuar?
+
+== OverwriteExistingShelvesWarning ==
+El shelveset actual será sobrescrito al crear uno nuevo
+
+== OverwriteShelveDialogTitle ==
+Sobrescribir shelveset
+
+== OverwriteShelveDialogMessage ==
+¿Estás seguro de que quieres sobrescribir el shelveset existente con tus cambios actuales?
+
+== OverwriteShelveDialogOverwriteButton ==
+Sobrescribir
+
+== ShowViewButtonTooltip ==
+Mostrar {0} ({1})
+
+== CopyFilePathMenuItem ==
+Copiar ruta
+
+== CopyRelativeFilePathMenuItem ==
+Copiar ruta relativa
+
+== CloudOrganizationsSection ==
+Organizaciones cloud
+
+== UnityOrganizationsSection ==
+Organizaciones Unity
+
+== AllProjects ==
+Todos los proyectos
+
+== ManageOrganizationMenuItem ==
+Administrar organización
+
+== ManageProjectMenuItem ==
+Administrar proyecto
+
+== ViewProjectsInUnityCloud ==
+View projects in Unity Cloud
+
+== RetrievingProjects ==
+Obteniendo proyectos
+No se pueden cargar las ramas del servidor UVCS. Por favor, comprueba tu conexión e inténtalo de nuevo.
+
+== ShelvedChanges ==
+Cambios en shelves
+
+== ShelvedChangesExplanation ==
+Hay cambios pendientes en shelves. Haz clic en 'Ver' para gestionarlos o usa el menú desplegable para más opciones.
+
+== ViewShelvedChangesButtonExplanation ==
+Ver y aplicar cambios en shelves
+
+== DiscardShelvedChanges ==
+Descartar cambios en shelves
+
+== EnableSwitchAndShelveTitle ==
+¡Habilita la nueva experiencia Switch and Shelve!
+
+== EnableSwitchAndShelveMessage ==
+Hemos mejorado el switch en el workspace con cambios pendientes. Nuestra nueva opción Shelve te da más control sobre tus cambios al cambiar a ramas, etiquetas o changesets.
+
+== EnableSwitchAndShelveLeaveChangesTitle ==
+Dejar cambios en Origen:
+
+== EnableSwitchAndShelveLeaveChangesDescription ==
+Deja tus cambios en el origen para continuar trabajando en ellos más tarde.
+
+== EnableSwitchAndShelveBringChangesTitle ==
+Traer cambios a Destino:
+
+== EnableSwitchAndShelveBringChangesDescription ==
+Mueve tus cambios sin problemas a la nueva rama o changeset.
+
+== EnableSwitchAndShelveQuestion ==
+¿Quieres habilitar la opción Shelve ahora? Puedes cambiar el comportamiento en cualquier momento en las preferencias.
+
+== EnableSwitchAndShelveYesEnableIt ==
+¡SÍ, HABILÍTALO!
+
+== EnableSwitchAndShelveNotNow ==
+Ahora no
+
+== DiscardShelveConfirmationTitle ==
+Descartar shelveset
+
+== DiscardShelveConfirmationMessage ==
+El shelveset será descartados y se eliminará todo su contenido.
+¿Quieres continuar?
+
+== OverwriteExistingShelvesWarning ==
+El shelveset actual será sobrescrito al crear uno nuevo
+
+== OverwriteShelveDialogTitle ==
+Sobrescribir shelveset
+
+== OverwriteShelveDialogMessage ==
+¿Estás seguro de que quieres sobrescribir el shelveset existente con tus cambios actuales?
+
+== OverwriteShelveDialogOverwriteButton ==
+Sobrescribir
+
+== ShowViewButtonTooltip ==
+Mostrar {0} ({1})
+
+== CopyFilePathMenuItem ==
+Copiar ruta
+
+== CopyRelativeFilePathMenuItem ==
+Copiar ruta relativa
+
+== CloudOrganizationsSection ==
+Organizaciones cloud
+
+== UnityOrganizationsSection ==
+Organizaciones Unity
+
+== AllProjects ==
+Todos los proyectos
+
+== ManageOrganizationMenuItem ==
+Administrar organización
+
+== ManageProjectMenuItem ==
+Administrar proyecto
+
+== ViewProjectsInUnityCloud ==
+View projects in Unity Cloud
+
+== RetrievingProjects ==
+Obteniendo proyectos
 No se pueden cargar las ramas del servidor UVCS. Por favor, comprueba tu conexión e inténtalo de nuevo.

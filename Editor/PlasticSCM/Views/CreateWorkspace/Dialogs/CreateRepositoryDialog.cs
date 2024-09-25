@@ -5,6 +5,7 @@ using UnityEngine;
 
 using Codice.Client.Common;
 using Codice.Client.Common.Threading;
+using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Home.Repositories;
 using PlasticGui.WebApi;
@@ -23,7 +24,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             get
             {
                 var baseRect = base.DefaultRect;
-                return new Rect(baseRect.x, baseRect.y, 600, 300);
+                return new Rect(baseRect.x, baseRect.y, 600, 310);
             }
         }
 
@@ -69,8 +70,6 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
 
             DoEntriesArea();
 
-            GUILayout.Space(10);
-
             DrawProgressForDialogs.For(mProgressControls.ProgressData);
 
             GUILayout.FlexibleSpace();
@@ -90,10 +89,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             mKnownServers = knownServers.Select(ResolveServer.ToDisplayString).ToList();
             mKnownServers.Sort();
 
-            if (OrganizationsInformation.IsUnityOrganization(mSelectedServer))
-            {
-                LoadServerProjects(mSelectedServer);
-            }
+            OnServerSelected(mSelectedServer);
         }
 
         void DoEntriesArea()
@@ -114,7 +110,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             GUILayout.Space(5);
             
             mSelectedServer = ComboBox(
-                PlasticLocalization.Name.RepositoryExplorerServerLabel.GetString(),
+                PlasticLocalization.Name.RepositoryServerOrOrganizationLabel.GetString(),
                 mSelectedServer,
                 mKnownServers,
                 OnServerSelected,
@@ -125,21 +121,48 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             {
                 GUILayout.Space(5);
 
-                if (mSelectedProject == null)
-                {
-                    GUI.enabled = false;
-                }
-
-                ComboBox(
-                    PlasticLocalization.Name.RepositoryExplorerServerProjectLabel.GetString(),
-                    mSelectedProject,
-                    mCurrentServerProjects,
-                    OnProjectSelected,
-                    ENTRY_WIDTH,
-                    ENTRY_X);
-
-                GUI.enabled = true;
+                DoOrganizationProjectsDropdown();
+                DoCreateOrganizationProjectLink();
             }
+        }
+
+        void DoOrganizationProjectsDropdown()
+        {
+            if (mSelectedProject == null)
+            {
+                GUI.enabled = false;
+            }
+
+            ComboBox(
+                PlasticLocalization.Name.OrganizationProjectLabel.GetString(),
+                mSelectedProject,
+                mCurrentServerProjects,
+                OnProjectSelected,
+                ENTRY_WIDTH,
+                ENTRY_X);
+
+            GUI.enabled = true;
+        }
+
+        void DoCreateOrganizationProjectLink()
+        {
+            GUILayout.BeginHorizontal();
+
+            GUILayout.FlexibleSpace();
+
+            if (GUILayout.Button(
+                    PlasticLocalization.Name.CreateOrganizationProjectLabel.GetString(),
+                    UnityStyles.LinkLabel,
+                    GUILayout.Height(20)))
+            {
+                // TODO refactor this code once the new changes in the OrganizationInfo are available
+                string serverName = ResolveServer.FromUserInput(mSelectedServer, CmConnection.Get().UnityOrgResolver);
+                string organizationName = ServerOrganizationParser.GetOrganizationFromServer(serverName);
+
+                Application.OpenURL(UnityUrl.UnityDashboard.UnityOrganizations.GetProjectsUrl(organizationName));
+            }
+
+            GUILayout.EndHorizontal();
         }
 
         void OnServerSelected(object server)
@@ -148,17 +171,34 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             mProgressControls.ProgressData.StatusMessage = string.Empty;
             mProgressControls.ProgressData.StatusType = MessageType.None;
 
-            mSelectedServer = server.ToString();
-            mSelectedProject = null;
             mIsLoadingProjects = false;
+
+            if (server == null || string.IsNullOrEmpty(server.ToString()))
+            {
+                mSelectedServer = null;
+                mSelectedProject = null;
+
+                return;
+            }
+
+            mSelectedServer = server.ToString();
 
             // We need to ensure it is a known server because the dropdown is editable
             if (OrganizationsInformation.IsUnityOrganization(mSelectedServer) && mKnownServers.Contains(mSelectedServer))
             {
                 LoadServerProjects(mSelectedServer);
             }
+            else
+            {
+                mSelectedProject = null;
+            }
 
             Repaint();
+        }
+
+        void OnFocus()
+        {
+            OnServerSelected(mSelectedServer);
         }
 
         void OnProjectSelected(object project)
@@ -199,14 +239,19 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
 
                     if (mCurrentServerProjects == null || mCurrentServerProjects.Count == 0)
                     {
+                        mSelectedProject = null;
+
                         ((IProgressControls) mProgressControls).ShowError(
                             PlasticLocalization.Name.NoServerProjectsFound.GetString());
                     }
                     else
                     {
-                        mSelectedProject = mCurrentServerProjects.First();
-                        ((IProgressControls) mProgressControls).HideProgress();
+                        if (string.IsNullOrEmpty(mSelectedProject) || !mCurrentServerProjects.Contains(mSelectedProject))
+                        {
+                            mSelectedProject = mCurrentServerProjects.First();
+                        }
 
+                        ((IProgressControls) mProgressControls).HideProgress();
                     }
                 });
         }

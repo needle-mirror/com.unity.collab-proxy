@@ -2,6 +2,12 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.5.2] - 2024-09-25
+
+### Fixed
+
+- Fix token renewal issue: Can't obtain a new token (Message: Invalid Refresh Token., Code: 132.104)
+
 ## [2.5.1] - 2024-09-04
 
 ### Added

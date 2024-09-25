@@ -164,18 +164,14 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             // sign in window, but show Enterprise option as well
             GUILayout.FlexibleSpace();
 
-            var anchorStyle = new GUIStyle(GUI.skin.label);
-            anchorStyle.normal.textColor = new Color(0.129f, 0.588f, 0.953f);
-            anchorStyle.hover.textColor = new Color(0.239f, 0.627f, 0.949f);
-            anchorStyle.active.textColor = new Color(0.239f, 0.627f, 0.949f);
-
             if (GUILayout.Button(
-                PlasticLocalization.GetString(
-                    PlasticLocalization.Name.NeedEnterprise),
-                    anchorStyle,
+                    PlasticLocalization.Name.NeedEnterprise.GetString(),
+                    UnityStyles.LinkLabel,
                     GUILayout.Width(BUTTON_WIDTH),
                     GUILayout.Height(20)))
+            {
                 TeamEditionConfigurationWindow.ShowWindow(mPlasticWebRestApi, this);
+            }
 
             GUILayout.Space(BUTTON_MARGIN);
 
