@@ -2,16 +2,57 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.6.0] - 2024-11-28
+
+### Added
+
+- Added the ability to merge a branch or a changeset, using a new context menu actions
+- Added file conflict & dir conflict context menu actions to the merge view
+- Added diff and merge settings in Project Settings -> Version Control -> Unity Version Control Settings
+- Added merge options dialog to the merge view
+- Added copy path & history context menu actions in all menus where they apply
+- Added an menu entry to 'Open in Unity Cloud' showing the repository in the Unity Dashboard
+
+### Changed
+
+- Updated the minimum supported version to Unity 2021.3.0f1
+- Removed support for migrating old Collaborate workspaces to Unity Version Control
+- Hide from the public documentation all internal APIs that were previously visible by mistake
+- Optimized switching operations to only triggers the Package Manager to reinstall packages when needed
+- Optimized incoming changes to only reload the Package Manager when needed (Gluon/partial workspace only for now)
+- Automatically add UnityDirMonSyncFile rule for existing ignore.conf to avoid triggering unnecessary finding changes operation
+- Improved the “search” edit box so it can resize when there is not enough space in the toolbar
+- Replaced the "D" DevOps icon by the branching icon used in the Hub
+- Replaced the logo of Unity in the Sign in to Unity VCS window
+
+### Fixed
+
+- Fixed files getting checked out even though they are in hidden_changes.conf
+- Fixed manual login to Cloud that didn't work with an Enterprise installation
+- Fixed resolve conflicts not informing about lack of UVCS installation
+- Fixed the Invite users to cloud organization when using an Enterprise installation
+- Fixed new child branch not created from HEAD after update
+- Fixed the learn more (here) link that showed the hex color value in Unity 6
+- Fixed link to invite members in Unity Cloud.
+- Fixed a crash in the create workspace window when unable to resolve a @unity organization
+- Fixed incoming changes view that was not kept as selected after resolving some conflicts
+- Fixed workspace name that was not refreshed after repository manual creation or selection
+- Added a warning message to inform users about mismatching cloud project.
+- Removed from the Create Workspace window the Local server that was present with no installation of UVCS
+- Replaced hardcoded urls pointing to plasticscm.com
+
 ## [2.5.2] - 2024-09-25
 
 ### Fixed
 
-- Fix token renewal issue: Can't obtain a new token (Message: Invalid Refresh Token., Code: 132.104)
+- Fixed token renewal issue: Can't obtain a new token (Message: Invalid Refresh Token., Code: 132.104)
+- Reworded labels in the Create Repository window and added a link to Create a new organization project.
 
 ## [2.5.1] - 2024-09-04
 
 ### Added
 
+- Added support for the new @unity organizations
 - Allow deletion of non-empty branches that have not been merged anywhere
 - New setting to control if new files must be automatically added to source control
 
@@ -49,7 +90,7 @@ All notable changes to this package will be documented in this file.
 ### Fixed
 
 - Moving folders in the Editor now correctly use the UVCS "Move" operation
-- Fixed hang on domain reload 
+- Fixed hang on domain reload
 - Fixed "item with the same key has already been added" error
 - Fixed failure to delete a .meta file when deleting a private folder from the pending changes
 - Supported workspace name with non-latin characters in Pending Changes
