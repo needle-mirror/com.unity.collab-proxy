@@ -1091,13 +1091,24 @@ Checks the connection to the server.
 == CMD_USAGE_CHECKCONNECTION ==
 Usage:
 
-      cm ^checkconnection | ^cc
+      cm ^checkconnection | ^cc [<repserverspec>]
+
+Options:
+
+    repserverspec   Repositories server.
+                    (Use 'cm ^help ^objectspec' to learn more about repserver
+                    specs.)
+
+Examples:
+
+    cm ^checkconnection myorg@cloud
 
 == CMD_HELP_CHECKCONNECTION ==
 Remarks:
 
     - This command returns a message indicating whether there is a valid
-      connection to the configured Unity VCS server.
+      connection to the specified server. If repserverspec is not specified,
+      the check will be performed with the server configured in client.conf.
     - The command checks checks the version compatibility with the server.
     - The command also checks whether the configured user is valid or not.
 
@@ -3611,9 +3622,11 @@ Commands:
     - ^create | ^mk
     - ^delete | ^rm
     - ^rename
+    - ^hide
     - ^history
     - ^showmain
     - ^showmerges
+    - ^unhide
 
     To get more information about each command run:
     cm ^branch <command> --^usage
@@ -3626,9 +3639,11 @@ Examples:
     cm ^branch ^create /main/scm21345
     cm ^branch ^delete /main/scm21345
     cm ^branch ^rename /main/scm21345 scm21346
+    cm ^branch ^hide /main/scm21345
     cm ^branch ^history /main/scm21345
     cm ^branch ^showmain
     cm ^branch ^showmerges file.txt
+    cm ^branch ^unhide /main/scm21345
 
 == CMD_DESCRIPTION_BRANCH_CREATE ==
 Creates a new branch.
@@ -3744,6 +3759,31 @@ Examples:
 
     cm ^br ^rm main/task002 --delete-changesets
     (Deletes branch '/main/task002' and all of its changesets at once).
+
+== CMD_DESCRIPTION_BRANCH_HIDE ==
+Hides a branch.
+
+== CMD_USAGE_BRANCH_HIDE ==
+Usage:
+
+    cm ^branch | ^br ^hide <brspec>[ ...] 
+
+    brspec              Branch to hide. Use a whitespace to separate branches.
+                        (Use 'cm ^help ^objectspec' to learn more about branch
+                        specs.)
+
+== CMD_HELP_BRANCH_HIDE ==
+Remarks:
+
+    This command hides one or more branches.
+
+Examples:
+
+    cm ^branch ^hide /main/task0 /main/task1
+    (Hides branches '/main/task0' and '/main/task1'.)
+
+    cm ^br ^hide ^br:/main@reptest@server2:8084
+    (Hides the 'main' branch of repository 'reptest@server2:8084'.)
 
 == CMD_DESCRIPTION_BRANCH_RENAME ==
 Renames a branch.
@@ -3900,6 +3940,31 @@ Examples:
     cm ^branch ^showmerges file.txt --^format="{^date} {^name}" --^dateformat="ddMMyy"
     (Displays branches involved in the merge, printing only the date and the
     name, with a given date format.)
+
+== CMD_DESCRIPTION_BRANCH_UNHIDE ==
+Unhides a branch.
+
+== CMD_USAGE_BRANCH_UNHIDE ==
+Usage:
+
+    cm ^branch | ^br ^unhide <brspec>[ ...] 
+
+    brspec              Branch to unhide. Use a whitespace to separate branches.
+                        (Use 'cm ^help ^objectspec' to learn more about branch
+                        specs.)
+
+== CMD_HELP_BRANCH_UNHIDE ==
+Remarks:
+
+    This command unhides one or more branches.
+
+Examples:
+
+    cm ^branch ^unhide /main/task0 /main/task1
+    (Unhides branches '/main/task0' and '/main/task1'.)
+
+    cm ^br ^unhide ^br:/main@reptest@server2:8084
+    (Unhides the 'main' branch of repository 'reptest@server2:8084'.)
 
 == CMD_DESCRIPTION_REPOSITORY ==
 Allows the user to manage repositories.
@@ -7035,6 +7100,7 @@ Remarks:
     ^parent      branch spec.
                  Use 'cm ^help ^objectspec' to learn how to specify this object.
     ^comment    string.
+    ^hidden     boolean. A way to show the hidden branches.
     ^GUID       Global Unique Identifier.
                  Hexadecimal id in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
     ^ID         integer.
@@ -7073,6 +7139,9 @@ Remarks:
     cm ^find ^branch "^where ^id = 2029607"
     (Finds the branch which id is 2029607.)
 
+    cm ^find ^branch "^where ^hidden = 'true'"
+    (Finds the hidden branches.)
+
 ^changeset:
     You can find changesets by filtering using the following fields:
 
@@ -7086,6 +7155,7 @@ Remarks:
     ^GUID               Global Unique Identifier.
                         Hexadecimal id in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
     ^comment            string.
+    ^ignorehidden       boolean. A way to return also the changesets from hidden branches.
     ^onlywithrevisions  boolean. To filter whether a cset has revisions or not.
     ^returnparent       boolean. A way to return the parent of a cset. Good for scripting.
     ^parent             changeset id (integer).
@@ -7834,82 +7904,6 @@ Examples:
     cm ^tr ^ls ^before-mkbranch --^server=myserver:8084
     cm ^tr ^rm ^after-setselector 4
     cm ^tr ^showtypes
-
-== CMD_DESCRIPTION_TUBE ==
-Runs commands related to Plastic Tube.
-
-== CMD_USAGE_TUBE ==
-Usage:
-
-    cm ^tube ^config -^u=<user> -^p=<password>
-    (Configures Unity VCS to use Plastic Tube with the specified user and
-    password.)
-
-    cm ^tube ^create <remoteuser>
-    (Creates the tube "remoteuser -> myuser". The user "myuser" allows to
-    "remoteuser" to connect to "myuser" server. Connections can be established
-    from "remoteuser" to "myuser". Only tubes from other users to the current
-    tube user can be created.)
-
-    cm ^tube ^remove <remoteuser>
-    (Removes the tube "remoteuser -> myuser".)
-
-    cm ^tube ^local
-    (Lists the local repositories shared in the local server and the users
-    that it is shared with.)
-    
-    cm ^tube ^remote
-    (Lists the shared remote repositories that are shared with the current
-    tube user.)
-
-    cm ^tube ^share <rep_spec>[ ...] -^u=<remoteuser> -^a=(^pull | ^push | ^pull,^push)
-    (Shares the local repository(s) with the remote user and sets the specified
-    access mode. Use a whitespace to separate repository specs.)
-
-    cm ^tube ^unshare <rep_spec>[ ...] -^u=<remoteuser>
-    (Unshares the local repository(s) with the remote user. Use a whitespace to
-    separate repository specs.)
-
-    cm ^tube ^connect
-    (Connects the Unity VCS server to Plastic Tube.)
-
-    cm ^tube ^disconnect
-    (Disconnects the Unity VCS server from Plastic Tube.)
-
-    cm ^tube ^status
-    (Shows if the Unity VCS server is connected to Plastic Tube.)
-
-Options:
-
-    -^u          Tube user (the plasticscm.com user).
-    -^p          User password.
-    -^a          Sets the access mode.
-    rep_spec     Repository specification. (Use 'cm ^help ^objectspec' to
-                learn more about repository specs.)
-
-== CMD_HELP_TUBE ==
-Remarks:
-
-    Use the 'cm ^tube' command to manage Plastic Tube.
-
-Examples:
-
-    cm ^tube ^config -^u=ruben@codicesoftware.com -^p=rubenpassword
-
-    cm ^tube ^create pablo@codicesoftware.com
-    ('pablo@codicesoftware.com' can connect to the current Plastic Tube user)
-    cm ^tube ^remove pablo@codicesoftware.com
-
-    cm ^tube ^local
-    cm ^tube ^remote
-
-    cm ^tube ^share repo@server:8087 -^u=pablo@codicesoftware.com -^a=^pull,^push
-    cm ^tube ^share repo@server:8087 doc@server:8087 -^u=pablo@codicesoftware.com -^a=^push
-    cm ^tube ^unshare repo@server:8087 -^u=pablo@codicesoftware.com
-
-    cm ^tube ^connect
-    cm ^tube ^disconnect
-    cm ^tube ^status
 
 == CMD_DESCRIPTION_UNDOCHECKOUT ==
 Undoes the checkout of an item.

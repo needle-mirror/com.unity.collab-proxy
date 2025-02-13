@@ -46,6 +46,9 @@ El dominio especificado no es válido: {0}.
 == BadFormatSeidData ==
 Formato incorrecto de los datos en SEID: {0}.
 
+== BisyncWrongBranchName ==
+Nombre de rama incorrecto
+
 == BitmapTooBig ==
 No se ha podido exportar el diagrama actual, quizá sea demasiado grande. Pruebe a establecer un filtrado más restrictivo para obtener un diagrama más pequeño.
 
@@ -255,6 +258,9 @@ No se puede borrar {0} porque está desprotegido.
 
 == CantRestoreInDifferentRep ==
 No se puede restaurar un ítem de un repositorio diferente.
+
+== CantRestoreRepositoryWithDifferentHierarchy ==
+No se puede restaurar el repository '{0}' a '{1}'. No se permite cambiar la jerarquía de repositorios en el momento de restaurar.
 
 == CantRetrieveSymlinkTarget ==
 No se pudo obtener el destino de enlace simbólico para {0}
@@ -602,6 +608,9 @@ No se ha podido cargar información de revisiones de {0}.
 
 == GenericInvalidCredentials ==
 Las credenciales del usuario no son válidas.
+
+== HideUnhideBranchNotSupported ==
+El servidor {0} no soporta ocultar / desocultar ramas. Por favor, actualice el servidor.
 
 == HydrateNotSupported ==
 El servidor {0} no soporta hidratar. Por favor, actualice el servidor.
@@ -1165,6 +1174,9 @@ Los nombres de módulo siguen la forma 'repo/modulo'. Ejemplo: default/module2.
 
 == RepAlreadyExists ==
 El repositorio {0} ya existe en el servidor {1}.
+
+== RepCannotBeMovedInsideItself ==
+El repositorio '{0}' no se puede mover dentro de si mismo '{1}'.
 
 == RepDoesntExist ==
 El repositorio {0} no existe. Probablemente haya sido eliminado y este trabajando con metadatos antiguos en el cliente.
@@ -1801,6 +1813,9 @@ La organización '{0}' no permite la autenticación de tipo '{1}'
 
 == CloudProviderInvalidTokenVersionDetected ==
 Versión de token incorrecta para conectarse a la organización '{0}'
+
+== CloudProviderMissingProvider ==
+No se pudo encontrar una forma de renovar autenticación de tipo '{0}' para la organización '{1}'
 
 == FetchAllDeletedRevisionsError ==
 No se pudo replicar el repositorio, porque se borró algún changeset mientras se replicaba. Por favor inténtelo de nuevo.

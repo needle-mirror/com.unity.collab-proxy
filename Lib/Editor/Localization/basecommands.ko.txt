@@ -379,20 +379,11 @@ cs:{0} 내보내기 경고. {1}\n{2}
 == CannotDownloadRevision ==
 다음 서버에서 개정 {0}을(를) 다운로드할 수 없음: {1}
 
-== CannotMakeTube ==
-Tube를 생성할 수 없습니다. {0}
-
 == CannotMoveChangesetWithPendingChanges ==
 대기 중인 변경사항이 있는 동안 현재 워크스페이스 브랜치에서 변경 세트를 이동할 수 없습니다.
 
-== CannotRemoveTube ==
-Tube를 제거할 수 없습니다. {0}
-
 == CannotRestoreDeleteWithChangesInside ==
 '{0}' 항목은 삭제될 때 변경사항이 있었으므로 복원할 수 없습니다. 대기 중인 변경사항을 취소하고 대기 중 변경사항 없이 다시 병합하거나 다른 충돌 해결 방법으로 다시 병합하십시오.
-
-== CannotStartTubeSession ==
-Plastic Tube 세션을 시작할 수 없습니다. {0}
 
 == CannotUnlockItems ==
 현재 사용자는 관리자가 아니고 잠금:{0}의 소유자도 아니므로 다음 항목의 잠금을 풀 수 없습니다.

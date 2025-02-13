@@ -3949,22 +3949,6 @@ Unity VCS 可以将工作区中的更改分组到用户创建的列表中。如�
 目录也是如此：目录结构需要具有多大的相似程度：相对于目录条目总数移动了多少个子级。
 对于二进制文件，此百分比表示允许的大小差异。
 
-== PendingChangesEnableNTFSJournal ==
-使用 NTFS 日记启用精确跟踪
-
-== PendingChangesEnableNTFSJournalExplanation ==
-在 GUI 处于打开状态下，使用 NTFS 日记可检测移动的文件和目录。此检测具有超高精度，而不会采用“猜测”或启发式方法。NTFS 知道何时移动了文件或目录。
-
-但是，这有一个缺点。如果通过 Visual Studio 之类的工具对项目进行重构，则使用此功能并不安全。这是因为 VS 不会简单地将 foo.c 移动到 src/bar.c，而是创建一个新的 src/bar.c，复制内容，然后删除 foo.c。无法从文件系统对此进行跟踪。
-
-如果您打算使用 Windows 资源管理器或命令行进行大规模重构，此过程将正常执行。
-
-== PendingChangesChangeTrackerServiceNotRunning ==
-Unity VCS Change Tracker 服务未运行
-
-== PendingChangesChangeTrackerServiceNotRunningExplanation ==
-无法与 Unity VCS Change Tracker 服务进行通信。确保该服务已安装并在运行。
-
 == PendingChangesINotifyEnabled ==
 已启用 inotify 更改观察程序
 

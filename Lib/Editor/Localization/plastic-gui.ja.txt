@@ -3949,22 +3949,6 @@ Unity VCS の管理外で、ワークスペース内で手動で削除したフ�
 ディレクトリに関しても同様です。ディレクトリ構造に必要な類似度は、ディレクトリのエントリの総数に対する移動された子の数の割合となります。
 バイナリの場合、このパーセンテージは許容されるサイズの差を意味します。
 
-== PendingChangesEnableNTFSJournal ==
-NTFS ジャーナルを使用した正確な追跡を有効にする
-
-== PendingChangesEnableNTFSJournalExplanation ==
-NTFS ジャーナルを使用して、GUI が開かれているときに移動されたファイルとディレクトリを検出します。これは非常に正確であり、「推測」や発見的手法は使用されません。NTFS は、ファイルやディレクトリがいつ移動されたかを認識します。
-
-しかし欠点もあります。Visual Studio などのツールでプロジェクトのリファクターを行う場合、これを使用するのは安全ではありません。なぜなら、VS は単純に foo.c を src/bar.c に移動するのではなく、新しい src/bar.c を作成し、コンテンツをコピーした後で foo.c を削除するからです。これをファイルシステムから追跡する方法はありません。
-
-Windows エクスプローラーやコマンドラインを使用した大規模なリファクターの実行を予定している場合は、スムーズに機能します。
-
-== PendingChangesChangeTrackerServiceNotRunning ==
-Unity VCS Change Tracker サービスが実行されていません
-
-== PendingChangesChangeTrackerServiceNotRunningExplanation ==
-Unity VCS Change Tracker サービスと通信できません。このサービスがインストールされて実行されていることを確認してください。
-
 == PendingChangesINotifyEnabled ==
 inotify 変更監視が有効になっています
 

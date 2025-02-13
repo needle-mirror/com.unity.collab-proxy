@@ -379,20 +379,11 @@ git 類型 {0} 沒有建置器
 == CannotDownloadRevision ==
 無法從伺服器下載修訂 {0}: {1}
 
-== CannotMakeTube ==
-無法建立 Tube。{0}
-
 == CannotMoveChangesetWithPendingChanges ==
 有暫止的變更時，無法移動目前工作區分支中的變更集。
 
-== CannotRemoveTube ==
-無法移除 Tube。{0}
-
 == CannotRestoreDeleteWithChangesInside ==
 無法還原項目 '{0}'，因為刪除該項目時，當中有變更。請復原暫止的變更，並在沒有暫止的變更的情況下，或具有其他衝突解決方案的情況下，重複進行合併。
-
-== CannotStartTubeSession ==
-無法啟動 Plastic Tube 工作階段。{0}
 
 == CannotUnlockItems ==
 無法解除鎖定下列項目，因為目前使用者不是管理員，也不是鎖定的擁有者: {0}

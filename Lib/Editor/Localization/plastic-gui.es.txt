@@ -289,6 +289,9 @@ Actualizando los ítems seleccionados...
 == LoadingItems ==
 Cargando ítems...
 
+== LoadingFilters ==
+Cargando filtros...
+
 == LoadingBranches ==
 Cargando ramas...
 
@@ -544,15 +547,6 @@ Anotar
 == NoItemsAreSelected ==
 No ha seleccionado ningún ítem (use las casillas para seleccionarlos) o ha seleccionado ítems ignorados.
 
-== EmptyCommentsDialogTitle ==
-Comentario de check-in vacío
-
-== EmptyCommentsDialogContent ==
-El comentario de check-in está vacío. Es recomendable escribir un comentario.
-
-== CheckinAnyway ==
-Hacer check in de todos modos
-
 == RepositoryNameLabel ==
 Nombre del repositorio:
 
@@ -699,6 +693,12 @@ Push de esta rama...
 
 == BranchMenuItemRenameBranch ==
 Renombrar...
+
+== BranchMenuItemHideBranch ==
+Ocultar
+
+== BranchMenuItemUnhideBranch ==
+Desocultar
 
 == BranchMenuItemDeleteBranch ==
 Borrar
@@ -1339,6 +1339,9 @@ Mostrar la vista de shelves
 == NoShelvesCreatedExplanation ==
 Aún no se han creado shelves
 
+== NoContentToCompareExplanation ==
+No hay contenido que comparar
+
 == NoLocksCreatedExplanation ==
 Aún no se han creado bloqueos en ficheros
 
@@ -1519,6 +1522,12 @@ Opciones de Pending Changes
 == DiffAndMergeOptionsSectionTitle ==
 Opciones de Diff y Merge
 
+== ShelveAndSwitchOptionsSectionTitle ==
+Opciones de Shelve & Switch
+
+== OtherOptionsSectionTitle ==
+Otras opciones
+
 == CreatingRepository ==
 Creating repository {0}...
 
@@ -1575,6 +1584,18 @@ Undeleting repository{0}...
 
 == UndeletingRepositoriesPlural ==
 Undeleting repositorys{0}...
+
+== HidingBranchesSingular ==
+Ocultando rama{0}...
+
+== HidingBranchesPlural ==
+Ocultando ramas{0}...
+
+== UnhidingBranchesSingular ==
+Desocultando rama{0}...
+
+== UnhidingBranchesPlural ==
+Desocultando ramas{0}...
 
 == DeletingBranchesSingular ==
 Deleting branch{0}...
@@ -3184,7 +3205,7 @@ Deshacer cambios
 Mantener cambios
 
 == AskAlwaysAfterShelve ==
-Preguntar siempre
+Pregúntame siempre
 
 == UndoChangesAfterShelveExplanation ==
 Los cambios seleccionados se eliminarán de la lista de cambios pendintes después crear un shelve
@@ -3193,7 +3214,7 @@ Los cambios seleccionados se eliminarán de la lista de cambios pendintes despu�
 Los cambios seleccionados se mantendrán en la lista de cambios pendintes después crear un shelve
 
 == AskAlwaysAfterShelveExplanation ==
-Preguntar siempre qué hacer antes de crear un shelve
+Pregúntame siempre qué hacer antes de crear un shelve
 
 == UndoChangesAfterShelveDefaultBehavior ==
 Comportamiento en la vista de cambios pendientes tras crear un shelve
@@ -4540,22 +4561,6 @@ Define "cómo de parecidos" deben ser dos ficheros para que sean detectados como
 También se aplica a los directorios: cómo de parecida debe ser la estructura del directorio: cuántos hijos movidos en relación con el total de entradas del directorio.
 Para los binarios, el % significa la diferencia de tamaño permitida.
 
-== PendingChangesEnableNTFSJournal ==
-Habilita una monitorización precisa utilizando NTFS journal
-
-== PendingChangesEnableNTFSJournalExplanation ==
-Usa el NTFS journal para detectar ficheros y directorios movidos mientras la GUI está abierta. Es superpreciso y no hay "adivinanzas" ni heurísticas. NTFS sabe cuándo se mueve un fichero o un directorio.
-
-Pero, hay un inconveniente: no es seguro usarlo si refactoriza un proyecto con herramientas como Visual Studio. Esto se debe a que VS no mueve simplemente foo.c a src/bar.c, sino que crea un nuevo src/bar.c, copia el contenido, y luego elimina foo.c. No hay forma de rastrearlo desde el sistema de ficheros.
-
-Para un gran refactor usando el Explorador de Windows o la línea de comandos, funcionará sin problemas.
-
-== PendingChangesChangeTrackerServiceNotRunning ==
-El servicio Unity VCS Change Tracker no se está ejecutando
-
-== PendingChangesChangeTrackerServiceNotRunningExplanation ==
-No se puede comunicar con el servicio Unity VCS Change Tracker. Asegúrese de que esté instalado y funcionando.
-
 == PendingChangesINotifyEnabled ==
 inotify change watcher está habilitado
 
@@ -4926,7 +4931,7 @@ Confirmación de cambio de modo
 == SwitchModeConfirmationDialogExplanation ==
 Estás en el modo {0}. ¿Estás seguro que quieres cambiar al modo {1}?
 
-Encuentra más información acerca de Gluon aqui: 
+Encuentra más información acerca de Gluon aqui:
 
 == DeveloperMode ==
 Desarrollador
@@ -5695,6 +5700,27 @@ Cargando revisón de código con título {0}...
 == UpgradeServerTo110168321ForNewCodeReviewError ==
 ¡Necesitas actualizar el servidor a la versión 11.0.16.8321 o superior para poder utilizar el nuevo sistema de code review!
 
+== SelectNewCodeReviewBehaviorTitle ==
+Nueva revisión de código
+
+== SelectNewCodeReviewBehaviorExplanation ==
+¿Quiere crear una nueva revisión de código en la aplicación de escritorio o en Unity Cloud?
+
+== NewCodeReviewDefaultBehavior ==
+Comportamiento para la nueva revisión de código
+
+== NewCodeReviewAskAlways ==
+Pregúntame siempre
+
+== NewCodeReviewAskAlwaysExplanation ==
+Pregúntame siempre cómo crear una revisión de código
+
+== CreateAndOpenCodeReviewInDesktopExplanation ==
+Crear una nueva revisión de código y abrir en la aplicación de escritorio
+
+== RequestCodeReviewFromUnityCloudExplanation ==
+Abre Unity Cloud para solicitar una nueva revisión de código
+
 == LoadingMembers ==
 Cargando miembros...
 
@@ -6148,14 +6174,14 @@ Select path to restore
 == SkipRestoreButton ==
 Skip
 
-== UndoThisChangePlusMeta ==
-Undo this change +meta
+== RevertThisFilePlusMeta ==
+Revert this file +meta to their previous revisions
 
-== UndoSelectedChanges ==
-Undo selected changes
+== RevertSelectedFiles ==
+Revert these files to their previous revisions
 
-== UndoThisChange ==
-Undo this change
+== RevertThisFile ==
+Revert this file to the previous revision
 
 == UndeleteRevisionPlusMeta ==
 Undelete revision +meta
@@ -6323,20 +6349,20 @@ Error downloading Cloud Project: {0}
 == ErrorCreatingWorkspaceForProject ==
 Error creando workspace para Proyecto: {0}
 
-== ConfigureGluon ==
-Configure Gluon
-
 == OpenInDesktopApp ==
-Open in Desktop App
+Abrir en Desktop App
 
 == OpenInGluon ==
-Open in Gluon
+Abrir en Gluon
 
-== OpenRepositoryInUnityCloud ==
+== OpenInUnityCloud ==
 Abrir en Unity Cloud
 
 == OpenRepositoryInUnityCloudError ==
 No ha sido posible abrir el repositorio actual en Unity Cloud.
+
+== GetProjectInfoError ==
+No ha sido posible obtener información del proyecto de la organización Unity.
 
 == PlasticConfigurationTitleUnityVCS ==
 Configure the connection to the Unity VCS server
@@ -6516,7 +6542,7 @@ Ctrl+C
 F2
 
 == PlasticRenameShortcutForMacOS ==
-Cmd+R
+Alt+R
 
 == PlasticRenameShortcutForLinux ==
 F2
@@ -7100,9 +7126,6 @@ No hay cambios en el merge
 == WorkspaceIsUpToDate ==
 Workspace is up to date.
 
-== NoPendingChanges ==
-No pending changes
-
 == DarkTheme ==
 Tema oscuro
 
@@ -7258,9 +7281,6 @@ Invitar miembros
 
 == InviteMembersToOrganizationNotAdminError ==
 Únicamente los administradores de la organización pueden invitar miembros.
-
-== InviteMembersInUnityCloudError ==
-No ha sido posible abrir la página para invitar miembros en Unity Cloud.
 
 == CalculatingViewLayout ==
 Calculando disposición de la vista
@@ -7730,7 +7750,7 @@ El comentario de shelve está vacío!
 Por favor, añade un comentario para identificar fácilmente tus shelves más tarde
 
 == DontAskMeAgainWithAction ==
-No preguntar de nuevo. Puedes cambiar esta configuración más tarde en {0}
+No preguntarme de nuevo. Puedes cambiar esta configuración más tarde en {0}
 
 == ShelveOptions ==
 preferencias de shelves
@@ -7754,7 +7774,7 @@ Por favor, añade un comentario de check-in
 Por favor, añade un comentario de shelve
 
 == DontAskMeAgain ==
-No preguntar de nuevo
+No preguntarme de nuevo
 
 == ResetButton ==
 Resetear
@@ -8011,6 +8031,9 @@ Creado por {0} el {1}
 == LoadingTooltipDetails ==
 Cargando detalles del tooltip...
 
+== ErrorLoadingAnnotations ==
+Error cargando anotaciones: {0}
+
 == ErrorLoadingTooltipDetails ==
 No se ha podido cargar el tooltip
 
@@ -8049,6 +8072,12 @@ Shift+Ctrl+H
 
 == PlasticToggleShelvesViewShortcutMacOS ==
 cmd+Shift+H
+
+== HideUnhideShortcutForMacOS ==
+cmd+H
+
+== HideUnhideShortcut ==
+ctrl+H
 
 == ZoomReset ==
 Resetear Zoom
@@ -8479,6 +8508,9 @@ Relacionadas
 == BranchesEmptyState ==
 Ups! Parece que no hay ramas que coincidan con tus filtros
 
+== HiddenBranchesEmptyState ==
+Ups! Parece que no hay ramas ocultas para este repositorio
+
 == HistoryEmptyState ==
 Ups! Parece que no hay revisiones que coincidan con tus filtros
 
@@ -8496,6 +8528,9 @@ Ups! Parece que no hay code reviews que coincidan con tus filtros
 
 == ShelvesEmptyState ==
 Ups! Parece que no hay shelves que coincidan con tus filtros
+
+== DiffsEmptyState ==
+Ups! Parece que no hay differencias que coincidan con tus filtros
 
 == ResetFilters ==
 Restablecer filtros
@@ -8599,14 +8634,17 @@ Al ejecutar ésta query se limpiarán los filtros configurados para esta vista. 
 == ExecuteQueryClearsFiltersWarningPositiveButton ==
 Ejecutar query
 
-== ApplyDateFilterClearsQueryWarningTitle ==
+== ClearQueryWarningTitle ==
 Advertencia de limpieza de query
 
 == ApplyDateFilterClearsQueryWarningMessage ==
-Aplicar un filtro de fecha eliminará la query personalizada que hayas configurado para esta vista
+Tienes una query personalizada configurada para esta vista. Si aplicas un filtro de fecha la query se eliminará
 
 == ApplyDateFilterClearsQueryWarningMessagePositiveButton ==
 Aplicar filtro
+
+== ChangingShowHiddenBranchesClearsQueryWarningMessage ==
+Tienes una query personalizada configurada para esta vista. Si cambias entre ramas ocultas/no ocultas, la query se eliminará
 
 == ResumeSyncWhenOpenWorkspaceLinkTitle ==
 Abrir cloud drive workspace
@@ -8728,14 +8766,51 @@ Traer cambios a Destino:
 == EnableSwitchAndShelveBringChangesDescription ==
 Mueve tus cambios sin problemas a la nueva rama o changeset.
 
-== EnableSwitchAndShelveQuestion ==
-¿Quieres habilitar la opción Shelve ahora? Puedes cambiar el comportamiento en cualquier momento en las preferencias.
+== EnableSwitchAndShelveQuestionStart ==
+¿Quieres habilitar la opción Shelve ahora?
+
+== EnableSwitchAndShelveQuestionEnd ==
+Puedes cambiar el comportamiento en cualquier momento en las preferencias.
 
 == EnableSwitchAndShelveYesEnableIt ==
 ¡SÍ, HABILÍTALO!
 
+== EnableSwitchAndShelveYesEnableItLowerCase ==
+¡Sí, habilítalo!
+
 == EnableSwitchAndShelveNotNow ==
 Ahora no
+
+== HideBranchConfirmationTitle ==
+Ocultar rama
+
+== HideBranchConfirmationMessageSingular ==
+La rama se ocultará junto a todos sus changesets. Puedes ver las ramas oculas y desocultarlas desde la vista de ramas.
+
+¿Quieres continuar?
+
+== HideBranchConfirmationMessagePlural ==
+Las ramas se ocultarán junto a todos sus changesets. Puedes ver las ramas oculas y desocultarlas desde la vista de ramas.
+
+¿Quieres continuar?
+
+== DeleteBranchErrorHideBranchConfirmationTitle ==
+No se puede eliminar la rama
+
+== DeleteBranchErrorHideBranchConfirmationMessage ==
+No se pudo eliminar
+
+== DeleteBranchErrorHideBranchConfirmationExplanation ==
+Alternativamente puedes {0}. Todos sus changesets también quedarán ocultos.
+Puedes ver las ramas ocultas y desocultarlas desde la vista de rama.
+
+¿Quieres continuar?
+
+== DeleteBranchErrorHideBranchConfirmationHideBranchSingular ==
+ocultarla
+
+== DeleteBranchErrorHideBranchConfirmationHideBranchPlural ==
+ocultarlas
 
 == DiscardShelveConfirmationTitle ==
 Descartar shelveset
@@ -8799,3 +8874,51 @@ Servidor:
 This Unity project is connected to [{0}], but the Unity Version Control repository belongs to [{1}].
 This means that your repository will appear under [{2}] at Unity Cloud, and the storage for this repository is being charged to the organization [{3}].
 If this is not correct, please re-connect this project to [{4}], or move the repository to the project [{5}].
+
+== EmailNotifications ==
+Notificaciones por email
+
+== SubscribeButton ==
+Suscribirse
+
+== UnsubscribeButton ==
+Cancelar suscripción
+
+== ManageEmailNotificationsLinkLabelMessage ==
+Las notificaciones por correo electrónico están desactivadas para este repositorio. Gestiona {0} o {1} para recibir notificaciones.
+
+== OpenRepositorySettingsLinkLabelMessage ==
+la configuración del repositorio
+
+== OpenOrganizationSettingsLinkLabelMessage ==
+la configuración de la organización
+
+== GenericSubscriptionReason ==
+Estás recibiendo notificaciones.
+
+== UserIsUnsubscribedSubscriptionReason ==
+Suscríbete para recibir notificaciones por correo electrónico para ésta Revisión de Código.
+
+== UserCommentedInReviewSubscriptionReason ==
+Estás recibiendo notificaciones porque comentaste.
+
+== UserMentionedInReviewSubscriptionReason ==
+Estás recibiendo notificaciones porque fuiste mencionado.
+
+== UserIsReviewerSubscriptionReason ==
+Estás recibiendo notificaciones porque eres un revisor.
+
+== UserIsOwnerSubscriptionReason ==
+Estás recibiendo notificaciones porque eres el propietario de la Revisión de Código.
+
+== UserSubscribedManuallySubscriptionReason ==
+Estás recibiendo notificaciones porque te suscribiste manualmente.
+
+== ShowHiddenBranchesTooltip ==
+Mostrar ramas ocultas
+
+== DontShowHiddenBranchesTooltip ==
+No mostrar ramas ocultas
+
+== HiddenBranchTooltip ==
+Esta rama está oculta

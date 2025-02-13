@@ -379,20 +379,11 @@ Git 类型 {0} 没有生成器
 == CannotDownloadRevision ==
 无法从服务器下载修订 {0}：{1}
 
-== CannotMakeTube ==
-无法创建 Tube。{0}
-
 == CannotMoveChangesetWithPendingChanges ==
 在有待定更改时，无法移动当前工作区分支中的变更集。
 
-== CannotRemoveTube ==
-无法删除 Tube。{0}
-
 == CannotRestoreDeleteWithChangesInside ==
 无法还原项 '{0}'，因为在删除时该项中包含更改。请撤销待定更改，并在没有待定更改的情况下或使用其他冲突解决方案再次进行合并。
-
-== CannotStartTubeSession ==
-无法启动 Plastic Tube 会话。{0}
 
 == CannotUnlockItems ==
 无法解锁以下项，因为当前用户既不是管理员，也不是锁 {0} 的所有者

@@ -3949,22 +3949,6 @@ Unity VCS 可將工作區中的變更分組在使用者建立的清單中。如�
 這個情況也適用於目錄：目錄結構必須達到多少相似性：相對於目錄總項目數有多少個已移動下層項目。
 處理二進位檔案時，% 表示允許的大小差異。
 
-== PendingChangesEnableNTFSJournal ==
-啟用使用 NTFS 日誌進行精確追蹤
-
-== PendingChangesEnableNTFSJournalExplanation ==
-使用 NTFS 日誌，在 GUI 已開啟情況下偵測已移動的檔案與目錄。這種方法超級精確，而且沒有「可能性」或「啟發性」。NTFS 知道檔案或目錄的移動時間。
-
-不過，這個做法有個缺點。如果專案重構時是使用像是 Visual Studio 等工具，使用這個功能就不安全。原因在於 VS 不會直接將 foo.c 移動到 src/bar.c，而是建立新的 src/bar.c，接著複製內容，然後刪除 foo.c。因此無法從檔案系統進行追蹤。
-
-如果打算使用 Windows 檔案總管或命令列進行大規模重構，這個功能將可流暢運作。
-
-== PendingChangesChangeTrackerServiceNotRunning ==
-Unity VCS 變更追蹤器服務不在執行中
-
-== PendingChangesChangeTrackerServiceNotRunningExplanation ==
-無法與 Unity VCS 變更追蹤器服務通訊。確定其已安裝及執行中。
-
 == PendingChangesINotifyEnabled ==
 inotify 變更監看器已啟用
 

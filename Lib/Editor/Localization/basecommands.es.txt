@@ -436,20 +436,11 @@ No se puede eliminar un changeset de la rama actualmente cargada en el workspace
 == CannotDownloadRevision ==
 No se puede descargar la revisión {0} del servidor: {1}
 
-== CannotMakeTube ==
-El tubo no puede ser creado. {0}
-
 == CannotMoveChangesetWithPendingChanges ==
 No se puede mover un changeset de la rama actualmente cargada en el workspace mientras haya cambios pendientes.
 
-== CannotRemoveTube ==
-El tubo no puede ser eliminado. {0}
-
 == CannotRestoreDeleteWithChangesInside ==
 El ítem '{0}' no puede ser restaurado porque tenía cambios dentro cuando fue borrado. Por favor, deshaga los cambios pendientes y repita el merge sin cambios locales o con otra resolución.
-
-== CannotStartTubeSession ==
-No se pudo iniciar la sesión con Plastic Tube. {0}
 
 == CannotUnlockItems ==
 No se pueden deshacer los siguientes checkouts exclusivos ya que el usuario actual no es el administrador ni el propietario de los bloqueos:{0}

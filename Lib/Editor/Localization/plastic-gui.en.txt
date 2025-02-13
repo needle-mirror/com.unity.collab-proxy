@@ -289,6 +289,9 @@ Updating the selected items...
 == LoadingItems ==
 Loading items...
 
+== LoadingFilters ==
+Loading filters...
+
 == LoadingBranches ==
 Loading branches...
 
@@ -544,15 +547,6 @@ Annotate
 == NoItemsAreSelected ==
 No items are selected. Use the items' checkboxes to select them. This can also occur if you have selected items, but they are all ignored.
 
-== EmptyCommentsDialogTitle ==
-Empty Check-in Comment Field
-
-== EmptyCommentsDialogContent ==
-The check-in comment field is blank. Writing a comment is recommended.
-
-== CheckinAnyway ==
-Check in Anyway
-
 == RepositoryNameLabel ==
 Repository name:
 
@@ -699,6 +693,12 @@ Push this branch...
 
 == BranchMenuItemRenameBranch ==
 Rename...
+
+== BranchMenuItemHideBranch ==
+Hide
+
+== BranchMenuItemUnhideBranch ==
+Unhide
 
 == BranchMenuItemDeleteBranch ==
 Delete
@@ -1342,6 +1342,9 @@ Show the shelves view
 == NoShelvesCreatedExplanation ==
 There are no shelves created yet
 
+== NoContentToCompareExplanation ==
+There is no content to compare
+
 == NoLocksCreatedExplanation ==
 There are no file locks created yet
 
@@ -1519,6 +1522,12 @@ Pending Changes Options
 == DiffAndMergeOptionsSectionTitle ==
 Diff and Merge Options
 
+== ShelveAndSwitchOptionsSectionTitle ==
+Shelve & Switch Options
+
+== OtherOptionsSectionTitle ==
+Other Options
+
 == CreatingRepository ==
 Creating repository {0}...
 
@@ -1575,6 +1584,18 @@ Undeleting repository{0}...
 
 == UndeletingRepositoriesPlural ==
 Undeleting repositories{0}...
+
+== HidingBranchesSingular ==
+Hiding branch{0}...
+
+== HidingBranchesPlural ==
+Hiding branches{0}...
+
+== UnhidingBranchesSingular ==
+Unhiding branch{0}...
+
+== UnhidingBranchesPlural ==
+Unhiding branches{0}...
 
 == DeletingBranchesSingular ==
 Deleting branch{0}...
@@ -3190,7 +3211,7 @@ Undo changes
 Keep changes
 
 == AskAlwaysAfterShelve ==
-Ask always
+Always ask me
 
 == UndoChangesAfterShelveExplanation ==
 Selected changes will be deleted from the pending changes list after shelving
@@ -3199,7 +3220,7 @@ Selected changes will be deleted from the pending changes list after shelving
 Selected changes will be kept in the pending changes list after shelving
 
 == AskAlwaysAfterShelveExplanation ==
-Always ask what to do before creating the shelve
+Always ask me what to do before creating the shelve
 
 == UndoChangesAfterShelveDefaultBehavior ==
 Behavior for pending changes after shelving
@@ -4546,22 +4567,6 @@ Defines "how similar" the comparison needs to be for two files to be detected as
 It applies to directories too: how similar the directory structure needs to be: how many moved children relative to the total of directory entries.
 For binaries, the % means the allowed difference in size.
 
-== PendingChangesEnableNTFSJournal ==
-Enable precise tracking using the NTFS journal
-
-== PendingChangesEnableNTFSJournalExplanation ==
-Use the NTFS journal to detect moved files and directories while the GUI is open. It is super precise and there is no "guessing" or heuristic. NTFS knows when a file or directory is moved.
-
-But, there is a drawback. It is not safe to use it if you refactor your project with tools like Visual Studio. This is because VS doesn't simply move foo.c to src/bar.c, but, creates a new src/bar.c, copies the content, and then deletes foo.c. There is no way to track it from the filesystem.
-
-If you plan to do a big refactor using the Windows Explorer or the command line, it will work smoothly.
-
-== PendingChangesChangeTrackerServiceNotRunning ==
-Unity VCS Change Tracker service is not running
-
-== PendingChangesChangeTrackerServiceNotRunningExplanation ==
-Cannot communicate with the Unity VCS Change Tracker service. Ensure that it is installed and running.
-
 == PendingChangesINotifyEnabled ==
 inotify change watcher is enabled
 
@@ -4933,7 +4938,7 @@ Switch mode confirmation
 == SwitchModeConfirmationDialogExplanation ==
 You are in {0} mode. Do you really want to switch to {1} mode?
 
-Learn more about Gluon here: 
+Learn more about Gluon here:
 
 == DeveloperMode ==
 Developer
@@ -5701,6 +5706,27 @@ You need to upgrade the server to version 8.0.16.3691 or higher to use the new c
 == UpgradeServerTo110168321ForNewCodeReviewError ==
 You need to upgrade the server to version 11.0.16.8321 or higher to use the new code review system!
 
+== SelectNewCodeReviewBehaviorTitle ==
+New code review
+
+== SelectNewCodeReviewBehaviorExplanation ==
+Do you want to create a new code review in the Desktop app or the Unity Cloud website?
+
+== NewCodeReviewDefaultBehavior ==
+Behavior for new code review
+
+== NewCodeReviewAskAlways ==
+Always ask me
+
+== NewCodeReviewAskAlwaysExplanation ==
+Always ask me how to create a code review
+
+== CreateAndOpenCodeReviewInDesktopExplanation ==
+Create a new code review and open it in the Desktop Application
+
+== RequestCodeReviewFromUnityCloudExplanation ==
+Open Unity Cloud to request a new code review
+
 == LoadingMembers ==
 Loading members...
 
@@ -6154,14 +6180,14 @@ Select path to restore
 == SkipRestoreButton ==
 Skip
 
-== UndoThisChangePlusMeta ==
-Undo this change +meta
+== RevertThisFilePlusMeta ==
+Revert this file +meta to their previous revisions
 
-== UndoSelectedChanges ==
-Undo selected changes
+== RevertSelectedFiles ==
+Revert these files to their previous revisions
 
-== UndoThisChange ==
-Undo this change
+== RevertThisFile ==
+Revert this file to the previous revision
 
 == UndeleteRevisionPlusMeta ==
 Undelete revision +meta
@@ -6323,20 +6349,20 @@ Error downloading Cloud Project: {0}
 == ErrorCreatingWorkspaceForProject ==
 Error creating workspace for Project: {0}
 
-== ConfigureGluon ==
-Configure Gluon
-
 == OpenInDesktopApp ==
 Open in Desktop App
 
 == OpenInGluon ==
 Open in Gluon
 
-== OpenRepositoryInUnityCloud ==
+== OpenInUnityCloud ==
 Open in Unity Cloud
 
 == OpenRepositoryInUnityCloudError ==
 It was not possible to open the current repository in Unity Cloud.
+
+== GetProjectInfoError ==
+It was not possible to get project information from the Unity organization.
 
 == PlasticConfigurationTitleUnityVCS ==
 Configure the connection to the Unity VCS server
@@ -6516,7 +6542,7 @@ Ctrl+C
 F2
 
 == PlasticRenameShortcutForMacOS ==
-Cmd+R
+Alt+R
 
 == PlasticRenameShortcutForLinux ==
 F2
@@ -7100,9 +7126,6 @@ No merge changes
 == WorkspaceIsUpToDate ==
 Workspace is up to date.
 
-== NoPendingChanges ==
-No pending changes
-
 == DarkTheme ==
 Dark theme
 
@@ -7258,9 +7281,6 @@ Invite members
 
 == InviteMembersToOrganizationNotAdminError ==
 You cannot invite members to the organization because you are not the administrator.
-
-== InviteMembersInUnityCloudError ==
-It was not possible to open the invite members page in in Unity Cloud.
 
 == CalculatingViewLayout ==
 Calculating view layout
@@ -8011,6 +8031,9 @@ Created by {0} on {1}
 == LoadingTooltipDetails ==
 Loading tooltip details...
 
+== ErrorLoadingAnnotations ==
+Error calculating annotations: {0}
+
 == ErrorLoadingTooltipDetails ==
 Error loading tooltip details
 
@@ -8049,6 +8072,12 @@ Shift+Ctrl+H
 
 == PlasticToggleShelvesViewShortcutMacOS ==
 cmd+Shift+H
+
+== HideUnhideShortcutForMacOS ==
+cmd+H
+
+== HideUnhideShortcut ==
+ctrl+H
 
 == ZoomReset ==
 Reset Zoom
@@ -8479,6 +8508,9 @@ Related
 == BranchesEmptyState ==
 Oops! It looks like there are no branches matching your filters
 
+== HiddenBranchesEmptyState ==
+Oops! It looks like there are no hidden branches for this repository
+
 == HistoryEmptyState ==
 Oops! It looks like there are no revisions matching your filters
 
@@ -8496,6 +8528,9 @@ Oops! It looks like there are no code reviews matching your filters
 
 == ShelvesEmptyState ==
 Oops! It looks like there are no shelves matching your filters
+
+== DiffsEmptyState ==
+Oops! It looks like there are no diffs matching your filters
 
 == ResetFilters ==
 Reset filters
@@ -8599,14 +8634,17 @@ Executing this query will clear the display filters you have configured for this
 == ExecuteQueryClearsFiltersWarningPositiveButton ==
 Execute query
 
-== ApplyDateFilterClearsQueryWarningTitle ==
+== ClearQueryWarningTitle ==
 Clear query warning
 
 == ApplyDateFilterClearsQueryWarningMessage ==
-Applying a date filter will clear the custom query you've set up for this view
+You have a custom query set up for this view. Applying a date filter will clear it.
 
 == ApplyDateFilterClearsQueryWarningMessagePositiveButton ==
 Apply filter
+
+== ChangingShowHiddenBranchesClearsQueryWarningMessage ==
+You have a custom query set up for this view. Toggling between hidden/unhidden branches will clear it.
 
 == ResumeSyncWhenOpenWorkspaceLinkTitle ==
 Open cloud drive workspace
@@ -8728,14 +8766,50 @@ Bring changes to Target:
 == EnableSwitchAndShelveBringChangesDescription ==
 Move your changes seamlessly to the new branch or changeset.
 
-== EnableSwitchAndShelveQuestion ==
-Do you want to enable the Shelve option now? You can change the behaviour at any time in the preferences.
+== EnableSwitchAndShelveQuestionStart ==
+Do you want to enable the Shelve option now?
+
+== EnableSwitchAndShelveQuestionEnd ==
+You can change the behaviour at any time in the preferences.
 
 == EnableSwitchAndShelveYesEnableIt ==
 YES, ENABLE IT!
 
+== EnableSwitchAndShelveYesEnableItLowerCase ==
+Yes, enable it!
+
 == EnableSwitchAndShelveNotNow ==
 Not now
+
+== HideBranchConfirmationTitle ==
+Hide branch
+
+== HideBranchConfirmationMessageSingular ==
+The branch will be hidden. Hidden branches can still be viewed and unhidden from the Branches view.
+
+Do you want to continue?
+
+== HideBranchConfirmationMessagePlural ==
+The branches will be hidden. Hidden branches can still be viewed and unhidden from the Branches view.
+
+Do you want to continue?
+
+== DeleteBranchErrorHideBranchConfirmationTitle ==
+Cannot delete branch
+
+== DeleteBranchErrorHideBranchConfirmationMessage ==
+Could not delete
+
+== DeleteBranchErrorHideBranchConfirmationExplanation ==
+You can {0} instead. Hidden branches can still be viewed and unhidden from the Branches view.
+
+Do you want to continue?
+
+== DeleteBranchErrorHideBranchConfirmationHideBranchSingular ==
+hide it
+
+== DeleteBranchErrorHideBranchConfirmationHideBranchPlural ==
+hide them
 
 == DiscardShelveConfirmationTitle ==
 Discard shelveset
@@ -8799,3 +8873,51 @@ Server:
 This Unity project is connected to [{0}], but the Unity Version Control repository belongs to [{1}].
 This means that your repository will appear under [{2}] at Unity Cloud, and the storage for this repository is being charged to the organization [{3}].
 If this is not correct, please re-connect this project to [{4}], or move the repository to the project [{5}].
+
+== EmailNotifications ==
+Email notifications
+
+== SubscribeButton ==
+Subscribe
+
+== UnsubscribeButton ==
+Unsubscribe
+
+== ManageEmailNotificationsLinkLabelMessage ==
+Email notifications are disabled for this repository. Manage {0} or {1} settings to opt in to notifications.
+
+== OpenRepositorySettingsLinkLabelMessage ==
+repository settings
+
+== OpenOrganizationSettingsLinkLabelMessage ==
+organization settings
+
+== GenericSubscriptionReason ==
+You're receiving notifications.
+
+== UserIsUnsubscribedSubscriptionReason ==
+Subscribe to receive email notifications for this Code Review.
+
+== UserCommentedInReviewSubscriptionReason ==
+You're receiving notifications because you commented.
+
+== UserMentionedInReviewSubscriptionReason ==
+You're receiving notifications because you were mentioned.
+
+== UserIsReviewerSubscriptionReason ==
+You're receiving notifications because you're a reviewer.
+
+== UserIsOwnerSubscriptionReason ==
+You're receiving notifications because you're the owner of the Code Review.
+
+== UserSubscribedManuallySubscriptionReason ==
+You're receiving notifications because you subscribed manually.
+
+== ShowHiddenBranchesTooltip ==
+Show hidden branches
+
+== DontShowHiddenBranchesTooltip ==
+Don't show hidden branches
+
+== HiddenBranchTooltip ==
+This branch is hidden

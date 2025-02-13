@@ -1138,13 +1138,25 @@ Comprueba la conexión con el servidor.
 == CMD_USAGE_CHECKCONNECTION ==
 Sintaxis:
 
-    cm checkconnection | cc
+    cm checkconnection | cc [<repserverspec>]
+
+Options:
+
+    repserverspec   Repositories server.
+                    (Use 'cm ^help ^objectspec' to learn more about repserver
+                    specs.)
+
+Examples:
+
+    cm ^checkconnection myorg@cloud
 
 == CMD_HELP_CHECKCONNECTION ==
 Notas:
 
     - Este comando devuelve un mensaje indicando si existe una conexión válida
-      con el servidor de Unity VCS configurado.
+      con el servidor especificado. Si no se indica un especificación de
+      servidor de repositorios, la comprobación se hará sobre el servidor
+      indicado en el fichero client.conf.
     - El comando comprueba la compatibilidad de versiones con el servidor.
     - El comando también comprueba si el usuario configurado es válido o no.
 
@@ -3705,9 +3717,11 @@ Comandos:
     create | mk
     delete | rm
     rename
+    hide
     history
     showmain
     showmerges
+    unhide
 
     Para obtener más información sobre cada comando:
     cm branch command --usage
@@ -3720,9 +3734,11 @@ Ejemplos:
     cm branch create /main/scm21345
     cm branch delete /main/scm21345
     cm branch rename /main/scm21345 scm21346
+    cm branch hide /main/scm21345
     cm branch history /main/scm21345
     cm branch showmain
     cm branch showmerges file.txt
+    cm branch unhide /main/scm21345
 
 == CMD_DESCRIPTION_BRANCH_CREATE ==
 Crea una rama.
@@ -3841,6 +3857,32 @@ Ejemplos:
 
     cm br rm main/task002 --delete-changesets
     (Borra la rama '/main/task002' y todos sus changesets en una sola operación.)
+
+== CMD_DESCRIPTION_BRANCH_HIDE ==
+Oculta una o más ramas.
+
+== CMD_USAGE_BRANCH_HIDE ==
+Sintaxis:
+
+    cm branch | br hide <brspec>[ ...]
+
+    brspec          Rama a ocultar. Use un espacio en blanco para separar ramas.
+                    (Use 'cm help objectspec' para más información sobre
+                    especificaciones de ramas.)
+
+== CMD_HELP_BRANCH_HIDE ==
+Notas:
+
+    Este comando oculta una o más ramas.
+
+Ejemplos:
+
+    cm branch hide /main/task0 /main/task1
+    (Oculta las ramas con nombre 'task0' y 'task1' que son hijas de 'main' en el
+    repositorio del espacio de trabajo actual.)
+
+    cm br hide br:/main@reptest@server2:8084
+    (Oculta la rama'/main' del repositorio 'reptest@myserver:8084'.)
 
 == CMD_DESCRIPTION_BRANCH_RENAME ==
 Renombra una rama.
@@ -4008,6 +4050,32 @@ Ejemplos:
     cm branch showmerges file.txt --format="{date} {name}" --dateformat="ddMMyy"
     (Muestra las ramas involucradas en el merge mostrando solo la fecha y el
     nombre y con las fechas en un determinado formato.)
+
+== CMD_DESCRIPTION_BRANCH_UNHIDE ==
+Desoculta una o más ramas.
+
+== CMD_USAGE_BRANCH_UNHIDE ==
+Sintaxis:
+
+    cm branch | br unhide <brspec>[ ...]
+
+    brspec          Rama a desocultar. Use un espacio en blanco para separar ramas.
+                    (Use 'cm help objectspec' para más información sobre
+                    especificaciones de ramas.)
+
+== CMD_HELP_BRANCH_UNHIDE ==
+Notas:
+
+    Este comando desoculta una o más ramas.
+
+Ejemplos:
+
+    cm branch unhide /main/task0 /main/task1
+    (Desoculta las ramas con nombre 'task0' y 'task1' que son hijas de 'main' en
+    el repositorio del espacio de trabajo actual.)
+
+    cm br unhide br:/main@reptest@server2:8084
+    (Desoculta la rama'/main' del repositorio 'reptest@myserver:8084'.)
 
 == CMD_DESCRIPTION_REPOSITORY ==
 Permite al usuario administrar repositorios.
@@ -7275,6 +7343,7 @@ branch:
                  Admite el usuario especial 'me'.
     Parent     : branch spec.
     Comment    : string.
+    Hidden     : boolean.
     GUID       : Identificador Global Único.
                  Id hexadecimal con el formato xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
     Item       : item spec or item id (integer).
@@ -7308,6 +7377,7 @@ changeset:
     GUID              : Identificador Global Único.
                         Id hexadecimal con el formato xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
     Comment           : string.
+    IgnoreHidden      : boolean.
     OnlyWithRevisions : boolean.
     ReturnParent      : boolean.
     Parent            : changeset id (integer).
@@ -7922,92 +7992,6 @@ Ejemplos:
     cm tr ls before-mkbranch --server=myserver:8084
     cm tr rm after-setselector 4
     cm tr showtypes
-
-== CMD_DESCRIPTION_TUBE ==
-Ejecuta comandos relacionados con Plastic Tube.
-
-== CMD_USAGE_TUBE ==
-Sintaxis:
-
-    cm tube config -u=user -p=password
-
-    cm tube create remoteuser
-    cm tube remove remoteuser
-
-    cm tube local
-    cm tube remote
-
-    cm tube share <repository_spec>+ -u=remoteuser -a=access_mode
-    cm tube unshare <repository_spec>+ -u=remoteuser
-
-    cm tube connect
-    cm tube disconnect
-    cm tube status
-
-Opciones:
-
-    -u                Usuario de Tube (el usuario de plasticscm.com)
-    -p                Password del usuario
-    -a                Acceso: pull, push o ambos (pull | push | pull,push)
-    rep_spec          Especificación del repositorio.
-                      Usa 'cm help objectspec' para obtener más información
-                      sobre la especificación de repositorios.
-
-== CMD_HELP_TUBE ==
-Notas:
-
-    config
-        Configura Unity VCS para usar Plastic Tube con el usuario y password
-        especificados.
-
-    create
-        Crea el Tube remoteuser -> myuser.
-        El usuario 'myuser' permite a 'remoteuser' conectarse al servidor
-        de 'myuser'.
-        Pueden establecerse conexiones de 'remoteuser' a 'myuser'.
-        Sólo pueden crearse un Tube de otro usuario al usuario actual de
-        Plastic Tube.
-    remove
-        Elimina el Tube remoteuser -> myuser.
-
-    local
-        Lista los repositorios locales compartidos en el servidor local y los
-        usuarios con quien son compartidos.
-    remote
-        Lista los repositorios remotamente compartidos que son compartidos con
-        el usuario actual de Plastic Tube.
-
-    share
-        Comparte el repositorio(s) local con el usuario y remoto y los permisos
-        especificados.
-    unshare
-        Deja de compartir el repositorio local con el usuario remoto.
-
-    connect
-        Conecta el servidor de Unity VCS a Plastic Tube.
-    disconnect
-        Desconecta el servidor de Unity VCS de Plastic Tube.
-    status
-        Muestra si el servidor de Unity VCS está conectado a Plastic Tube.
-
-Ejemplos:
-
-    cm tube config -u=ruben@codicesoftware.com -p=rubenpassword
-
-    cm tube create pablo@codicesoftware.com
-    ('pablo@codicesoftware.com' puede conectar con el usuario actual del Tube)
-    cm tube remove pablo@codicesoftware.com
-
-    cm tube local
-    cm tube remote
-
-    cm tube share repo@server:8087 -u=pablo@codicesoftware.com -a=pull,push
-    cm tube share repo@server:8087 doc@server:8087 -u=pablo@codicesoftware.com -a=push
-    cm tube unshare repo@server:8087 -u=pablo@codicesoftware.com
-
-    cm tube connect
-    cm tube disconnect
-    cm tube status
 
 == CMD_DESCRIPTION_UNDOCHECKOUT ==
 Deshace la desprotección de un ítem.

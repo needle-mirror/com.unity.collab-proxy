@@ -438,20 +438,11 @@ It is not possible to delete a changeset in the current workspace branch while t
 == CannotDownloadRevision ==
 Cannot download revision {0} from server: {1}
 
-== CannotMakeTube ==
-The tube cannot be created. {0}
-
 == CannotMoveChangesetWithPendingChanges ==
 It is not possible to move a changeset in the current workspace branch while there are pending changes.
 
-== CannotRemoveTube ==
-The tube cannot be removed. {0}
-
 == CannotRestoreDeleteWithChangesInside ==
 The item '{0}' cannot be restored because it had changes in it when it was deleted. Please undo the pending changes and repeat the merge without pending changes or with another conflict resolution.
-
-== CannotStartTubeSession ==
-The Plastic Tube session cannot be started. {0}
 
 == CannotUnlockItems ==
 Cannot unlock the following items since the current user is not the administrator nor the owner of the locks:{0}

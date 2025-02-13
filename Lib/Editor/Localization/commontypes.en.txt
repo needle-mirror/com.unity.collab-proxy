@@ -46,6 +46,9 @@ The specified domain is not valid: {0}.
 == BadFormatSeidData ==
 Bad format in SEID data: {0}.
 
+== BisyncWrongBranchName ==
+Wrong branch name
+
 == BitmapTooBig ==
 Could not export current diagram. It may be too big, try filtering to reduce the size.
 
@@ -255,6 +258,9 @@ Can't remove {0} because it is checked out.
 
 == CantRestoreInDifferentRep ==
 Can't restore an item from a different repository.
+
+== CantRestoreRepositoryWithDifferentHierarchy ==
+Can't restore repository '{0}' to '{1}'. It's not allowed to change the repository hierarchy on restore.
 
 == CantRetrieveSymlinkTarget ==
 Can't retrieve symlink target for {0}
@@ -602,6 +608,9 @@ Could not get revision information for {0}.
 
 == GenericInvalidCredentials ==
 Invalid user credentials.
+
+== HideUnhideBranchNotSupported ==
+The server {0} doesn't support hiding / unhiding branches. Please upgrade the server.
 
 == HydrateNotSupported ==
 The server {0} doesn't support hydrate. Please upgrade the server.
@@ -1165,6 +1174,9 @@ Remember it is in the form repo/module. Example: default/module2.
 
 == RepAlreadyExists ==
 The repository {0} for repository server {1} already exists.
+
+== RepCannotBeMovedInsideItself ==
+The repository '{0}' cannot be moved inside itself '{1}'.
 
 == RepDoesntExist ==
 The repository {0} doesn't exist. Probably, it was deleted and you are working with out-of-date metadata in the client side.
@@ -1801,6 +1813,9 @@ The organization '{0}' does not allow to login with '{1}' authentication
 
 == CloudProviderInvalidTokenVersionDetected ==
 Detected an invalid token version to try to connect to organization '{0}'
+
+== CloudProviderMissingProvider ==
+Could not find a provider to renew '{0}' authentication for organization '{1}'
 
 == FetchAllDeletedRevisionsError ==
 Can't fetch the repository because some changeset was deleted while the fetch was in progress. Please try again.

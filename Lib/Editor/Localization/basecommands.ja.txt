@@ -379,20 +379,11 @@ cs:{0} のプッシュに関する警告。{1}\n{2}
 == CannotDownloadRevision ==
 サーバーからリビジョン {0} をダウンロードできません: {1}
 
-== CannotMakeTube ==
-チューブを作成できません。{0}
-
 == CannotMoveChangesetWithPendingChanges ==
 保留中の変更がある間は、現在のワークスペースブランチ内の変更セットを移動することはできません。
 
-== CannotRemoveTube ==
-チューブを削除できません。{0}
-
 == CannotRestoreDeleteWithChangesInside ==
 項目 '{0}' は削除時に変更を含んでいたため、復元することができません。保留中の変更を取り消し、保留中の変更がない状態にするか、別の競合解決を用いてマージを繰り返してください。
-
-== CannotStartTubeSession ==
-Plastic Tube セッションを開始できません。{0}
 
 == CannotUnlockItems ==
 現在のユーザーは管理者ではなく、ロックの所有者でもないため、次の項目のロックを解除できません:{0}
