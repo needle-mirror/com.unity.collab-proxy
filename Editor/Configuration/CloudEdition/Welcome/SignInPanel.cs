@@ -4,27 +4,23 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 using Codice.Client.Common;
-using Codice.Client.Common.OAuth;
+using Codice.Client.Common.Authentication;
+using Codice.Client.Common.WebApi;
 using Codice.CM.Common;
 using PlasticGui;
-using PlasticGui.WebApi;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.UIElements;
 using PlasticGui.Configuration.CloudEdition.Welcome;
-using PlasticGui.Configuration.OAuth;
 
 namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 {
     internal class SignInPanel : VisualElement
     {
         internal SignInPanel(
-            CloudEditionWelcomeWindow parentWindow,
-            IPlasticWebRestApi restApi,
-            CmConnection cmConnection)
+            CloudEditionWelcomeWindow parentWindow, IPlasticWebRestApi restApi)
         {
             mParentWindow = parentWindow;
             mRestApi = restApi;
-            mCmConnection = cmConnection;
 
             InitializeLayoutAndStyles();
 
@@ -60,31 +56,22 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         internal void SignInWithUnityIdButton_Clicked()
         {
             mWaitingSignInPanel = new WaitingSignInPanel(
-                mParentWindow,
-                mParentWindow,
-                mRestApi,
-                mCmConnection);
+                mParentWindow, mParentWindow, mRestApi);
 
             mParentWindow.ReplaceRootPanel(mWaitingSignInPanel);
 
             Guid state = Guid.NewGuid();
 
-            GetOauthProviders.AuthInfo provider = GetCloudSsoProviders.BuildAuthInfoForUnityId(string.Empty, state);
-
             mWaitingSignInPanel.OAuthSignIn(
-                state,
-                provider.SignInUrl,
-                provider.ProviderName,
-                new GetCloudSsoToken(mRestApi));
+                GetAuthProviders.GetUnityIdAuthProvider(string.Empty, state),
+                GetCredentialsFromState.Build(
+                    string.Empty, state, SEIDWorkingMode.SSOWorkingMode, mRestApi));
         }
 
         internal void SignInWithUnityIdButtonAutoLogin()
         {
             mWaitingSignInPanel = new WaitingSignInPanel(
-                mParentWindow,
-                mParentWindow,
-                mRestApi,
-                mCmConnection);
+                mParentWindow, mParentWindow, mRestApi);
 
             mWaitingSignInPanel.OnAutoLogin();
 
@@ -93,7 +80,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         void PrivacyPolicyStatementButton_Clicked()
         {
-            Application.OpenURL(SignUp.PRIVACY_POLICY_URL);
+            Application.OpenURL(UnityUrl.DevOps.GetPrivacyPolicy());
         }
 
         void BuildComponents()
@@ -151,7 +138,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         void InitializeLayoutAndStyles()
         {
             AddToClassList("grow");
-            
+
             this.LoadLayout(typeof(SignInPanel).Name);
             this.LoadStyle(typeof(SignInPanel).Name);
         }
@@ -165,6 +152,5 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         readonly CloudEditionWelcomeWindow mParentWindow;
         readonly IPlasticWebRestApi mRestApi;
-        readonly CmConnection mCmConnection;
     }
 }

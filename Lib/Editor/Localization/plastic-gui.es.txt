@@ -950,7 +950,7 @@ Diferencias de revisiones seleccionadas
 Diferencias de changeset
 
 == HistoryMenuItemRevertToThisRevision ==
-Revertir fichero a esta revisión
+Volver a esta revisión
 
 == ItemsMenuItemRename ==
 Renombrar...
@@ -1523,7 +1523,7 @@ Opciones de Pending Changes
 Opciones de Diff y Merge
 
 == ShelveAndSwitchOptionsSectionTitle ==
-Opciones de Shelve & Switch
+Opciones de Shelve y Switch
 
 == OtherOptionsSectionTitle ==
 Otras opciones
@@ -3830,9 +3830,6 @@ LDAP
 == UPWorkingMode ==
 Built-in user and password
 
-== TubeWorkingMode ==
-Tube Working Mode
-
 == SSOWorkingMode ==
 Single Sign On
 
@@ -4176,8 +4173,8 @@ Hide/show details area
 == NoDiffToolDefined ==
 There aren't any diff tools defined in the client configuration file
 
-== FileHistory ==
-File History
+== History ==
+Historia
 
 == OpenButton ==
 Abrir
@@ -4314,10 +4311,10 @@ Copy
 == AnnotateOptions ==
 Annotate options
 
-== AnnotateDiffBranchMenuItem ==
+== DiffBranchMenuItem ==
 Diff branch {0}
 
-== AnnotateDiffChangesetMenuItem ==
+== DiffChangesetMenuItem ==
 Diff changeset {0}
 
 == AnnotateParentRevisionMenuItem ==
@@ -4969,8 +4966,11 @@ Iniciando sesión como '{0}'...
 == SigningUp ==
 Creando cuenta '{0}'...
 
+== GettingOrganizationsCompatibleWithAuthProvider ==
+Obteniendo organizaciones compatibles con '{0}'...
+
 == GettingDatacenters ==
-Obteniendo los datacenters ...
+Obteniendo los datacenters...
 
 == EnterOrganizationName ==
 Por favor introduzca el nombre de la organización
@@ -5395,6 +5395,9 @@ No deberías marcar como revisada una revisión de código con comentarios pendi
 
 == SinceThreeMonthsAgo ==
 Últimos 3 meses
+
+== SinceOneYearAgo ==
+Último año
 
 == SinceAGivenDate ==
 Una fecha concreta
@@ -6030,9 +6033,6 @@ Obteniendo organizaciones...
 == RetrievingWorkspacesProgress ==
 Obteniendo workspaces...
 
-== GettingSSOProviders ==
-Obteniendo los proveedores de la organización...
-
 == CompleteSignInOnBrowser ==
 Completa el registro en tu navegador.
 
@@ -6047,9 +6047,6 @@ Iniciar sesión con Single Sign On
 
 == SignInToOrganization ==
 Iniciar sesión en {0}
-
-== NoProvidersForOrganization ==
-La organización especificada no ha habilitado el acceso por SSO
 
 == DontKnowOrganizationName ==
 No recuerdo el nombre de la organización
@@ -6211,7 +6208,7 @@ Guardar esta revisión como...
 Diff .meta
 
 == ViewHistoryMenuItem ==
-View file history
+Historia
 
 == ViewHistoryMetaMenuItem ==
 View .meta file history
@@ -6308,7 +6305,7 @@ Deshacer cambios
 Diferencias con revisión anterior
 
 == HistoryPlasticMenu ==
-View file history
+Historia
 
 == StatusCheckout ==
 Checked out
@@ -6343,8 +6340,8 @@ Unable to exchange token: {0} [code {1}]
 == TokenExchangeAccessEmpty ==
 Access token is empty for user: {0}
 
-== ErrorDownloadingCloudProject ==
-Error downloading Cloud Project: {0}
+== ErrorDownloadingProjectFromRepository ==
+Error al descargar el Proyecto desde el repositorio: {0}
 
 == ErrorCreatingWorkspaceForProject ==
 Error creando workspace para Proyecto: {0}
@@ -6393,6 +6390,12 @@ _Del
 
 == UnityMergeShortcutForMacOS ==
 #%m
+
+== UnityHideUnhideShortcutForWindows ==
+%h
+
+== UnityHideUnhideShortcutForMacOS ==
+#%h
 
 == UnityOpenShortcut ==
 #o
@@ -7130,7 +7133,10 @@ Workspace is up to date.
 Tema oscuro
 
 == CheckinCompleted ==
-Check-in successfully completed
+Check-in creado correctamente.
+
+== CheckinChangesetWasCreatedPart ==
+ha sido creado.
 
 == UndoCompleted ==
 Undo changes successfully completed
@@ -7520,23 +7526,31 @@ Cambiar a Gluon
 Cambiar a Unity VCS
 
 == DynamicWkspacesTitle ==
-Configuración de los Workspaces Dinámicos (Workspaces Virtuales)
+Configuración de los Workspaces Dinámicos
 
 == DynamicWkspacesSummary ==
-Un Workspace Dinámico es espacio virtual controlado por Unity VCS donde solo se permite la descarga bajo demanda (potenciado por heurísticas para acelerar descargas de multiples ficheros).
-Es posible crear copias de enormes entornos trabajo, solamente consumiendo el espacio de los ficheros que realmente se van a utilizar.
+Los Workspaces Dinámicos (también conocidos como espacios de trabajo virtuales) te permiten trabajar con grandes repositorios de manera eficiente. En lugar de descargar todo de una vez, los archivos se recuperan bajo demanda, guiados por heurísticas inteligentes para acelerar el acceso a múltiples archivos. Esto significa que puedes montar copias de trabajo grandes utilizando solo el espacio en disco necesario para los archivos que realmente necesitas.
 
 == DynamicWkspacesCurrently ==
-Workspaces Dinámicos estan actualmente
+El agente PlasticFS
 
 == DynamicWkspacesInYourComputer ==
-en esta máquina
+para usar Workspaces Dinámicos
 
-== DynamicWkspacesTurnedOn ==
-habilitados
+== DynamicWkspacesAgentIsReady ==
+está listo
 
-== DynamicWkspacesTurnedOff ==
-deshabilitados
+== DynamicWkspacesAgentIsRequired ==
+es necesario
+
+== DynamicWkspacesStartAgent ==
+Desear arrancar el agente PlasticFS y añadirlo al startup del sistema?
+
+== DynamicWkspacesStartAgentRemarks ==
+Es visible en la bandeja de la barra de tareas cuando está ejecutándose.
+
+== DynamicWkspacesStartAgentButton ==
+Lanzar
 
 == CodeEditorTitle ==
 Opciones del editor de código
@@ -8509,6 +8523,9 @@ Relacionadas
 Ups! Parece que no hay ramas que coincidan con tus filtros
 
 == HiddenBranchesEmptyState ==
+Ups! Parece que no hay ramas ocultas que coincidan con tus filtros
+
+== HiddenBranchesInRepositoryEmptyState ==
 Ups! Parece que no hay ramas ocultas para este repositorio
 
 == HistoryEmptyState ==
@@ -8622,8 +8639,8 @@ Cargando rama principal...
 == ConnectingWorkspaceToRepository ==
 Conectando workspace al repositorio UVCS...
 
-== SharingWorkspaceWith ==
-Compartiendo workspace con '{0}' ...
+== SharingWorkspace ==
+Compartiendo workspace...
 
 == ExecuteQueryClearsFiltersWarningTitle ==
 Advertencia de limpieza de filtros
@@ -8922,3 +8939,24 @@ No mostrar ramas ocultas
 
 == HiddenBranchTooltip ==
 Esta rama está oculta
+
+== PlasticConversationShortcutWindows ==
+Ctrl+D1
+
+== PlasticConversationShortcutMacOS ==
+Cmd+D1
+
+== PlasticConversationShortcutLinux ==
+Ctrl+D1
+
+== PlasticReviewChangesShortcutWindows ==
+Ctrl+D2
+
+== PlasticReviewChangesShortcutMacOS ==
+Cmd+D2
+
+== PlasticReviewChangesShortcutLinux ==
+Ctrl+D2
+
+== OpeningWorkspace ==
+Abriendo workspace...

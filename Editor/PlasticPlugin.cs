@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Threading;
 using System.Threading.Tasks;
 
 using UnityEditor;
@@ -74,8 +75,11 @@ namespace Unity.PlasticSCM.Editor
 
         static PlasticPlugin()
         {
+            EditorDispatcher.InitializeMainThreadIdAndContext(
+                Thread.CurrentThread.ManagedThreadId,
+                SynchronizationContext.Current);
+
             ProcessHubCommand.Initialize();
-            EditorDispatcher.Initialize();
 
             if (!FindWorkspace.HasWorkspace(ApplicationDataPath.Get()))
                 return;
@@ -99,8 +103,7 @@ namespace Unity.PlasticSCM.Editor
 
             mLog.Debug("Enable");
 
-            if (!FindWorkspace.HasWorkspace(ApplicationDataPath.Get()))
-                return;
+            PlasticApp.Enable();
 
             WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
                 ApplicationDataPath.Get(), PlasticGui.Plastic.API);
@@ -120,6 +123,8 @@ namespace Unity.PlasticSCM.Editor
 
             mLog.Debug("EnableForWorkspace " + wkInfo.ClientPath);
 
+            PlasticGui.Plastic.API.UpgradeWorkspaceMetadataAfterOrgUnificationNeeded(wkInfo);
+
             PlasticApp.SetWorkspace(wkInfo);
 
             HandleCredsAliasAndServerCert.InitializeHostUnreachableExceptionListener(
@@ -136,11 +141,17 @@ namespace Unity.PlasticSCM.Editor
 
             UnityCloudProjectLinkMonitor.CheckCloudProjectAlignmentAsync(wkInfo);
 
-            AssetsProcessors.Enable(wkInfo.ClientPath, plasticAssetsProcessor, mAssetStatusCache);
-            AssetMenuItems.Enable(wkInfo, mAssetStatusCache);
-            DrawAssetOverlay.Enable(wkInfo.ClientPath, mAssetStatusCache);
-            DrawInspectorOperations.Enable(wkInfo.ClientPath, mAssetStatusCache);
-            DrawSceneOperations.Enable(wkInfo.ClientPath, mWorkspaceOperationsMonitor, mAssetStatusCache);
+            AssetsProcessors.Enable(
+                wkInfo.ClientPath, plasticAssetsProcessor, mAssetStatusCache);
+            AssetMenuItems.Enable(
+                wkInfo, PlasticGui.Plastic.API, mAssetStatusCache);
+            DrawAssetOverlay.Enable(
+                wkInfo.ClientPath, mAssetStatusCache);
+            DrawInspectorOperations.Enable(
+                wkInfo, PlasticGui.Plastic.API, mAssetStatusCache);
+            DrawSceneOperations.Enable(
+                wkInfo, PlasticGui.Plastic.API,
+                mWorkspaceOperationsMonitor, mAssetStatusCache);
 
             Task.Run(() => EnsureServerConnection(wkInfo, mPlasticConnectionMonitor));
         }
@@ -194,12 +205,15 @@ namespace Unity.PlasticSCM.Editor
             try
             {
                 mWorkspaceOperationsMonitor.Stop();
+                mAssetStatusCache.Cancel();
 
                 AssetsProcessors.Disable();
                 AssetMenuItems.Disable();
                 DrawAssetOverlay.Disable();
                 DrawInspectorOperations.Disable();
                 DrawSceneOperations.Disable();
+
+                mAssetStatusCache.Clear();
             }
             finally
             {

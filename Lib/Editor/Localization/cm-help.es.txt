@@ -5403,7 +5403,8 @@ Sintaxis:
 Opciones:
 
     --changeset           Actualiza el espacio de trabajo parcial al changeset 
-                          especificado.
+                          especificado. Esta opción no tiene efecto si se utiliza
+                          la opción --incoming.
     --silent              No muestra salida a no ser que ocurra un error.
     --xml                 Imprime por defecto a la salida estándar en formato 
                           XML. Se permite especificar un fichero de salida.
@@ -5419,6 +5420,8 @@ Opciones:
     --dontmerge           No procesa los conflictos de fichero. El resto de cambios
                           se procesan con normalidad. Esta opción puede ser útil en
                           automatización para evitar interacción con el usuario.
+    --incoming            Ejecuta la operación de Incoming Changes aplicando sólo los
+                          cambios locales involucrados en la operación.
     --machinereadable     Muestra el resultado en un formato fácil de parsear.
     --startlineseparator  Usado con '--machinereadable', indica cómo deben
                           empezar las líneas del resultado.

@@ -1,11 +1,14 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using Unity.Plastic.Newtonsoft.Json;
+
 using PlasticGui.WebApi.Responses;
 
 namespace Unity.PlasticSCM.Editor.WebApi
 {
     // Internal usage. This isn't a public API.
     [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("IsCollabProjectMigratedResponse is deprecated and will be removed in a future release", false)]
     public class IsCollabProjectMigratedResponse
     {
         [EditorBrowsable(EditorBrowsableState.Never)]

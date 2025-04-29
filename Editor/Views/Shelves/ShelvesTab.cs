@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using UnityEditor;
@@ -12,6 +13,8 @@ using PlasticGui;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.QueryViews;
 using PlasticGui.WorkspaceWindow.QueryViews.Shelves;
+using Unity.PlasticSCM.Editor.AssetUtils;
+using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
@@ -27,7 +30,7 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
         IRefreshableView,
         IShelveMenuOperations
     {
-        internal string EmptyStateMessage { get { return mEmptyStateContent.text; } }
+        internal string EmptyStateMessage { get { return mEmptyStateData.Content.text; } }
         internal ShelvesListView Table { get { return mShelvesListView; } }
         internal IShelveMenuOperations Operations { get { return this; } }
         internal IProgressControls ProgressControls { get { return mProgressControls; } }
@@ -46,6 +49,8 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             IShelvedChangesUpdater shelvedChangesUpdater,
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             LaunchTool.IProcessExecutor processExecutor,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            ISaveAssets saveAssets,
             EditorWindow parentWindow,
             bool isGluonMode)
         {
@@ -59,6 +64,8 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             mShelvedChangesUpdater = shelvedChangesUpdater;
             mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
             mProcessExecutor = processExecutor;
+            mWorkspaceOperationsMonitor = workspaceOperationsMonitor;
+            mSaveAssets = saveAssets;
             mParentWindow = parentWindow;
             mIsGluonMode = isGluonMode;
 
@@ -116,8 +123,9 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
 
             DoShelvesArea(
                 mShelvesListView,
+                mEmptyStateData,
                 mProgressControls.IsOperationRunning(),
-                mEmptyStateContent);
+                mParentWindow.Repaint);
 
             EditorGUILayout.BeginHorizontal();
 
@@ -198,6 +206,14 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
 
         void IShelveMenuOperations.ApplyShelveInWorkspace()
         {
+            bool isCancelled;
+            mSaveAssets.UnderWorkspaceWithConfirmation(
+                mWkInfo.ClientPath, mWorkspaceOperationsMonitor,
+                out isCancelled);
+
+            if (isCancelled)
+                return;
+
             ChangesetInfo shelveToApply = ShelvesSelection.GetSelectedShelve(mShelvesListView);
 
             if (mIsGluonMode)
@@ -294,6 +310,8 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
                     {
                         if (waiter.Exception != null)
                         {
+                            mDiffPanel.ClearInfo();
+
                             ExceptionsHandler.DisplayException(waiter.Exception);
                             return;
                         }
@@ -355,10 +373,11 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             EditorGUILayout.EndHorizontal();
         }
 
-        static void DoShelvesArea(
+        void DoShelvesArea(
             ShelvesListView shelvesListView,
+            EmptyStateData emptyStateData,
             bool isOperationRunning,
-            GUIContent emptyStateContent)
+            Action repaint)
         {
             EditorGUILayout.BeginVertical();
 
@@ -368,10 +387,12 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
 
             shelvesListView.OnGUI(rect);
 
-            emptyStateContent.text = GetEmptyStateMessage(shelvesListView);
+            emptyStateData.Update(
+                GetEmptyStateMessage(shelvesListView),
+                rect, Event.current.type, repaint);
 
-            if (!string.IsNullOrEmpty(emptyStateContent.text))
-                DrawTreeViewEmptyState.For(rect, emptyStateContent);
+            if (!emptyStateData.IsEmpty())
+                DrawTreeViewEmptyState.For(emptyStateData);
 
             GUI.enabled = true;
 
@@ -452,11 +473,13 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
         ShelvesListView mShelvesListView;
         DiffPanel mDiffPanel;
 
-        readonly GUIContent mEmptyStateContent = new GUIContent(string.Empty);
+        readonly EmptyStateData mEmptyStateData = new EmptyStateData();
         readonly ProgressControlsForViews mProgressControls;
         readonly bool mIsGluonMode;
         readonly EditorWindow mParentWindow;
         readonly LaunchTool.IProcessExecutor mProcessExecutor;
+        readonly WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
+        readonly ISaveAssets mSaveAssets;
         readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
         readonly IShelvedChangesUpdater mShelvedChangesUpdater;
         readonly IUpdateProgress mUpdateProgress;

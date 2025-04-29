@@ -420,6 +420,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             var instance = CreateInstance<MergeOptionsDialog>();
             instance.mParameters = parameters;
             instance.mProgressControls = progressControls;
+            instance.mEnterKeyAction = instance.OkButtonWithValidationAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
             return instance;
         }

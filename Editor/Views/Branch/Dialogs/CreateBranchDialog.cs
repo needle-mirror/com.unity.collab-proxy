@@ -1,8 +1,10 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEngine;
 
 using Codice.CM.Common;
+using Codice.Client.Common;
 using PlasticGui;
+using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.QueryViews.Branches;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
@@ -45,6 +47,27 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
                 repSpec, parentBranchInfo, changesetStr);
 
             CreateBranchDialog dialog = Create(repSpec, parentBranchInfo, -1 , explanation);
+            ResponseType dialogueResult = dialog.RunModal(parentWindow);
+
+            BranchCreationData result = dialog.BuildCreationData();
+            result.Result = dialogueResult == ResponseType.Ok;
+            return result;
+        }
+
+        internal static BranchCreationData CreateBranchFromChangeset(
+            EditorWindow parentWindow,
+            RepositorySpec repSpec,
+            ChangesetExtendedInfo changesetInfo)
+        {
+            BranchInfo parentBranchInfo = BranchInfoCache.GetBranch(
+                repSpec, changesetInfo.BranchId);
+
+            string changesetStr = SpecPreffix.CHANGESET + changesetInfo.ChangesetId.ToString();
+
+            string explanation = BranchCreationUserInfo.GetFromObjectString(
+                repSpec, parentBranchInfo, changesetStr);
+
+            CreateBranchDialog dialog = Create(repSpec, parentBranchInfo, changesetInfo.ChangesetId, explanation);
             ResponseType dialogueResult = dialog.RunModal(parentWindow);
 
             BranchCreationData result = dialog.BuildCreationData();
@@ -99,6 +122,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
                         PlasticLocalization.Name.CommentsEntry.GetString(),
                         GUILayout.Width(100));
                 }
+                GUI.SetNextControlName(COMMENT_TEXTAREA_CONTROL_NAME);
                 mComment = GUILayout.TextArea(mComment, GUILayout.Height(100));
                 GUILayout.Space(5);
             }
@@ -144,6 +168,11 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
             if (!NormalButton(PlasticLocalization.Name.CreateButton.GetString()))
                 return;
 
+            CreateButtonAction();
+        }
+
+        void CreateButtonAction()
+        {
             BranchCreationValidation.AsyncValidation(
                 BuildCreationData(), this, mProgressControls);
         }
@@ -153,6 +182,8 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
         {
             var instance = CreateInstance<CreateBranchDialog>();
             instance.IsResizable = false;
+            instance.mEnterKeyAction = instance.CreateButtonAction;
+            instance.AddControlConsumingEnterKey(COMMENT_TEXTAREA_CONTROL_NAME);
             instance.mEscapeKeyAction = instance.CloseButtonAction;
             instance.mRepositorySpec = repSpec;
             instance.mParentBranchInfo = parentBranchInfo;
@@ -190,5 +221,6 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
 
         bool mWasNameFieldFocused;
         const string NAME_FIELD_CONTROL_NAME = "CreateBranchNameField";
+        const string COMMENT_TEXTAREA_CONTROL_NAME = "CreateBranchCommentTextArea";
     }
 }

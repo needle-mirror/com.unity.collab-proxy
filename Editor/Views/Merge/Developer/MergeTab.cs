@@ -20,9 +20,11 @@ using PlasticGui.WorkspaceWindow.Topbar;
 using PlasticGui.WorkspaceWindow.Diff;
 using PlasticGui.WorkspaceWindow.Merge;
 using Unity.PlasticSCM.Editor.AssetUtils;
+using Unity.PlasticSCM.Editor.Settings;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
+using Unity.PlasticSCM.Editor.UI.StatusBar;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.Merge.Developer.DirectoryConflicts;
 using UnityEditor.IMGUI.Controls;
@@ -37,6 +39,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         IMergeViewMenuOperations,
         MergeViewFileConflictMenu.IMetaMenuOperations
     {
+
         internal MergeTreeView Table { get { return mMergeTreeView; } }
         internal ConflictResolutionState ConflictResolutionState { get { return mConflictResolutionState; } }
         internal int DirectoryConflictCount { get { return mDirectoryConflictCount; } }
@@ -51,6 +54,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             IHistoryViewLauncher historyViewLauncher,
             NewIncomingChangesUpdater newIncomingChangesUpdater,
+            StatusBar statusBar,
             EditorWindow parentWindow,
             ObjectInfo objectInfo,
             ObjectInfo ancestorChangesetInfo,
@@ -63,6 +67,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             IShelvedChangesUpdater shelvedChangesUpdater,
             IRefreshView refreshView,
             bool isIncomingMerge,
+            bool isMergeFinished,
             bool showDiscardChangesButton)
         {
             MergeTab mergeTab = new MergeTab(
@@ -73,6 +78,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 showDownloadPlasticExeWindow,
                 historyViewLauncher,
                 newIncomingChangesUpdater,
+                statusBar,
                 parentWindow,
                 objectInfo,
                 ancestorChangesetInfo,
@@ -85,9 +91,11 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 shelvedChangesUpdater,
                 refreshView,
                 isIncomingMerge,
+                isMergeFinished,
                 showDiscardChangesButton);
 
-            ((IRefreshableView)mergeTab).Refresh();
+            if (!isMergeFinished)
+                ((IRefreshableView)mergeTab).Refresh();
 
             return mergeTab;
         }
@@ -100,6 +108,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             IHistoryViewLauncher historyViewLauncher,
             NewIncomingChangesUpdater newIncomingChangesUpdater,
+            StatusBar statusBar,
             EditorWindow parentWindow,
             ObjectInfo objectInfo,
             ObjectInfo ancestorChangesetInfo,
@@ -112,6 +121,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             IShelvedChangesUpdater shelvedChangesUpdater,
             IRefreshView refreshView,
             bool isIncomingMerge,
+            bool isMergeFinished,
             CalculatedMergeResult calculatedMergeResult,
             bool showDiscardChangesButton)
         {
@@ -123,6 +133,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 showDownloadPlasticExeWindow,
                 historyViewLauncher,
                 newIncomingChangesUpdater,
+                statusBar,
                 parentWindow,
                 objectInfo,
                 ancestorChangesetInfo,
@@ -135,6 +146,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 shelvedChangesUpdater,
                 refreshView,
                 isIncomingMerge,
+                isMergeFinished,
                 showDiscardChangesButton);
 
             mergeTab.mMergeViewLogic.CalculateMergeFromMergeResult(calculatedMergeResult);
@@ -152,6 +164,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             IHistoryViewLauncher historyViewLauncher,
             NewIncomingChangesUpdater newIncomingChangesUpdater,
+            StatusBar statusBar,
             EditorWindow parentWindow,
             ObjectInfo objectInfo,
             ObjectInfo ancestorChangesetInfo,
@@ -164,6 +177,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             IShelvedChangesUpdater shelvedChangesUpdater,
             IRefreshView refreshView,
             bool isIncomingMerge,
+            bool isMergeFinished,
             bool showDiscardChangesButton)
         {
             mWkInfo = wkInfo;
@@ -173,7 +187,11 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             mHistoryViewLauncher = historyViewLauncher;
             mNewIncomingChangesUpdater = newIncomingChangesUpdater;
             mParentWindow = parentWindow;
+            mStatusBar = statusBar;
             mObjectInfo = objectInfo;
+            mAncestorObjectInfo = ancestorChangesetInfo;
+            mMergeType = mergeType;
+            mFrom = from;
             mGuiMessage = new UnityPlasticGuiMessage();
             mMergeController = mergeController;
             mUpdateShelvedChangesNotification = updateShelvedChangesNotification;
@@ -181,6 +199,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             mRefreshView = refreshView;
             mIsIncomingMerge = isIncomingMerge;
             mShowDiscardChangesButton = showDiscardChangesButton;
+            mIsMergeFinished = isMergeFinished;
 
             mIsMergeTo = MergeTypeClassifier.IsMergeTo(mergeType);
             mRepSpec = PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo);
@@ -238,8 +257,18 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 mIsIncomingMerge
                     ? UnityConstants.DEVELOPER_INCOMING_CHANGES_TABLE_SETTINGS_NAME
                     : UnityConstants.DEVELOPER_MERGE_TABLE_SETTINGS_NAME);
+        }
 
-            mResolveChangeset.Clear();
+        internal SerializableMergeTabState GetSerializableState()
+        {
+            return new SerializableMergeTabState(
+                mRepSpec,
+                mObjectInfo,
+                mAncestorObjectInfo,
+                mMergeType,
+                mFrom,
+                mIsIncomingMerge,
+                mIsMergeFinished);
         }
 
         internal void Update()
@@ -260,11 +289,12 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
 
             DoConflictsTree(
                 mMergeTreeView,
-                mEmptyStateContent,
+                mEmptyStateData,
+                mCooldownClearUpdateSuccessAction,
                 mIsOperationRunning,
-                mHasNothingToDownload,
                 mIsUpdateSuccessful,
-                mIsIncomingMerge);
+                mIsIncomingMerge,
+                mParentWindow.Repaint);
 
             List<MergeChangeInfo> selectedMergeChanges =
                 mMergeTreeView.GetSelectedMergeChanges();
@@ -290,14 +320,15 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 DoActionToolbarMessage(
                     mIsMessageLabelVisible,
                     mMessageLabelText,
-                    mHasNothingToDownload,
+                    mIsMergeFinished,
                     mIsErrorMessageLabelVisible,
                     mErrorMessageLabelText,
                     mDirectoryConflictCount,
                     mFileConflictCount,
-                    mChangesSummary);
+                    mChangesSummary,
+                    mSwitcher);
 
-                if (mIsProcessMergesButtonVisible)
+                if (mIsProcessMergesButtonVisible && !mIsMergeFinished)
                 {
                     DoProcessMergesButton(
                         mIsProcessMergesButtonEnabled && !mHasPendingDirectoryConflicts,
@@ -309,7 +340,8 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                         mMergeViewLogic,
                         mMergeDialogParameters.Options.Contributor,
                         mWkInfo,
-                        (p) => AfterProcessMerges(p));
+                        AfterProcessMerges,
+                        MergeSuccessfullyFinished);
 
                     if (mShowDiscardChangesButton)
                     {
@@ -364,44 +396,58 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             mMergeViewLogic.AutoRefresh();
         }
 
-        bool IIncomingChangesTab.IsVisible{ get; set; }
-
-        void IMergeView.UpdateData(
-            MergeChangesTree mergeChangesTree,
-            ExplainMergeData explainMergeData,
-            MergeSolvedFileConflicts solvedFileConflicts,
-            bool isIncomingMerge,
-            bool isMergeTo,
-            bool mergeHasFinished)
+        internal void ProcessMergeForTesting()
         {
-            HideMessage();
-
-            ShowProcessMergesButton(
-                MergeViewTexts.GetProcessMergesButtonText(
-                    MergeChangesTreeParser.HasFileConflicts(mergeChangesTree),
-                    mIsIncomingMerge,
-                    mIsMergeTo));
-
-            mMergeChangesTree = mergeChangesTree;
-
-            mConflictResolutionStates.Clear();
-
-            UpdateFileConflictsTree(
-                mergeChangesTree,
-                mMergeTreeView,
-                mResolveChangeset);
-
-            UpdateOverview(mergeChangesTree, solvedFileConflicts);
+            ProcessMerges(
+                new List<string>(),
+                null,
+                mMergeDialogParameters.Options.Contributor);
         }
 
-        void IMergeView.UpdateSolvedDirectoryConflicts()
+        internal void ResolveDirectoryConflict(MergeChangeInfo conflict)
         {
-            if (mMergeChangesTree == null)
+            ConflictResolutionState state;
+
+            if (!mConflictResolutionStates.TryGetValue(conflict.DirectoryConflict, out state))
                 return;
 
-            mDirectoryConflictCount = MergeChangesTreeParser.GetUnsolvedDirectoryConflictsCount(
-                mMergeChangesTree);
+            List<DirectoryConflictResolutionData> conflictResolutions =
+                new List<DirectoryConflictResolutionData>();
+
+            AddConflictResolution(
+                conflict,
+                state.ResolveAction,
+                state.RenameValue,
+                conflictResolutions);
+
+            MergeChangeInfo metaConflict =
+                mMergeTreeView.GetMetaChange(conflict);
+
+            if (metaConflict != null)
+            {
+                AddConflictResolution(
+                    metaConflict,
+                    state.ResolveAction,
+                    MetaPath.GetMetaPath(state.RenameValue),
+                    conflictResolutions);
+            }
+
+            if (state.IsApplyActionsForNextConflictsChecked)
+            {
+                foreach (MergeChangeInfo otherConflict in mMergeTreeView.GetSelectedMergeChanges())
+                {
+                    AddConflictResolution(
+                        otherConflict,
+                        state.ResolveAction,
+                        state.RenameValue,
+                        conflictResolutions);
+                }
+            }
+
+            mMergeViewLogic.ResolveDirectoryConflicts(conflictResolutions);
         }
+
+        bool IIncomingChangesTab.IsVisible{ get; set; }
 
         void IIncomingChangesTab.OnEnable()
         {
@@ -443,6 +489,42 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             OnGUI();
         }
 
+        void IMergeView.UpdateData(
+            MergeChangesTree mergeChangesTree,
+            ExplainMergeData explainMergeData,
+            MergeSolvedFileConflicts solvedFileConflicts,
+            bool isIncomingMerge,
+            bool isMergeTo,
+            bool mergeHasFinished)
+        {
+            HideMessage();
+
+            ShowProcessMergesButton(
+                MergeViewTexts.GetProcessMergesButtonText(
+                    MergeChangesTreeParser.HasFileConflicts(mergeChangesTree),
+                    mIsIncomingMerge,
+                    mIsMergeTo));
+
+            mMergeChangesTree = mergeChangesTree;
+
+            mConflictResolutionStates.Clear();
+
+            UpdateFileConflictsTree(
+                mergeChangesTree,
+                mMergeTreeView);
+
+            UpdateOverview(mergeChangesTree, solvedFileConflicts);
+        }
+
+        void IMergeView.UpdateSolvedDirectoryConflicts()
+        {
+            if (mMergeChangesTree == null)
+                return;
+
+            mDirectoryConflictCount = MergeChangesTreeParser.GetUnsolvedDirectoryConflictsCount(
+                mMergeChangesTree);
+        }
+
         void IMergeView.UpdateSolvedFileConflicts(
             MergeSolvedFileConflicts solvedFileConflicts)
         {
@@ -464,8 +546,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
 
             mMessageLabelText = message;
             mIsMessageLabelVisible = true;
-            mHasNothingToDownload = MergeViewTexts.IsEmptyMergeMessage(message) ||
-                                    MergeViewTexts.IsEmptyIncomingChangesMessage(message);
+            mIsMergeFinished = MergeViewTexts.IsMergeAlreadyProcessedMessage(message);
         }
 
         string IMergeView.GetComments(out bool bCancel)
@@ -489,15 +570,15 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             mIsDirectoryResolutionPanelEnabled = true;
         }
 
+        void IMergeView.DisableResolveDirectoryConflictsControls()
+        {
+            mIsDirectoryResolutionPanelEnabled = false;
+        }
+
         void IMergeView.ShowCancelButton()
         {
             mIsCancelMergesButtonEnabled = true;
             mIsCancelMergesButtonVisible = true;
-        }
-
-        void IMergeView.DisableResolveDirectoryConflictsControls()
-        {
-            mIsDirectoryResolutionPanelEnabled = false;
         }
 
         void IMergeView.HideCancelButton()
@@ -534,39 +615,6 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         {
             return GetSelectedMergeChangesGroupInfo.For(
                 mMergeTreeView.GetSelectedMergeChanges(), mIsIncomingMerge);
-        }
-
-        void MergeViewFileConflictMenu.IMetaMenuOperations.DiffDestinationWithAncestor()
-        {
-            MergeChangeInfo mergeChange = MergeSelection.
-                GetSingleSelectedMergeChange(mMergeTreeView);
-
-            if (mergeChange == null)
-                return;
-
-            DiffDestinationWithAncestorForFileConflict(
-                mShowDownloadPlasticExeWindow,
-                mMergeTreeView.GetMetaChange(mergeChange),
-                mWkInfo);
-        }
-
-        void MergeViewFileConflictMenu.IMetaMenuOperations.DiffSourceWithAncestor()
-        {
-            MergeChangeInfo mergeChange = MergeSelection.
-                GetSingleSelectedMergeChange(mMergeTreeView);
-
-            if (mergeChange == null)
-                return;
-
-            DiffSourceWithAncestorForFileConflict(
-                mShowDownloadPlasticExeWindow,
-                mMergeTreeView.GetMetaChange(mergeChange),
-                mWkInfo);
-        }
-
-        bool MergeViewFileConflictMenu.IMetaMenuOperations.SelectionHasMeta()
-        {
-            return mMergeTreeView.SelectionHasMeta();
         }
 
         void IMergeViewMenuOperations.DiffSourceWithDestination()
@@ -672,6 +720,33 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 mWkInfo.ClientPath);
         }
 
+        void MergeViewFileConflictMenu.IMetaMenuOperations.ShowHistory()
+        {
+            MergeChangeInfo mergeChangeInfo = MergeSelection.GetSingleSelectedMergeChange(mMergeTreeView);
+            MergeChangeInfo metaChangeInfo = mMergeTreeView.GetMetaChange(mergeChangeInfo);
+            RevisionInfo revInfo = mergeChangeInfo.GetRevision();
+
+            mHistoryViewLauncher.ShowHistoryView(
+                metaChangeInfo.GetMount().RepSpec,
+                revInfo.ItemId,
+                metaChangeInfo.GetPath(),
+                revInfo.Type == EnumRevisionType.enDirectory);
+        }
+
+        void MergeViewFileConflictMenu.IMetaMenuOperations.DiffDestinationWithAncestor()
+        {
+            MergeChangeInfo mergeChange = MergeSelection.
+                GetSingleSelectedMergeChange(mMergeTreeView);
+
+            if (mergeChange == null)
+                return;
+
+            DiffDestinationWithAncestorForFileConflict(
+                mShowDownloadPlasticExeWindow,
+                mMergeTreeView.GetMetaChange(mergeChange),
+                mWkInfo);
+        }
+
         void IMergeViewMenuOperations.ShowHistory()
         {
             MergeChangeInfo mergeChangeInfo = MergeSelection.GetSingleSelectedMergeChange(mMergeTreeView);
@@ -682,6 +757,40 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 revInfo.ItemId,
                 mergeChangeInfo.GetPath(),
                 revInfo.Type == EnumRevisionType.enDirectory);
+        }
+
+        void MergeViewFileConflictMenu.IMetaMenuOperations.DiffSourceWithAncestor()
+        {
+            MergeChangeInfo mergeChange = MergeSelection.
+                GetSingleSelectedMergeChange(mMergeTreeView);
+
+            if (mergeChange == null)
+                return;
+
+            DiffSourceWithAncestorForFileConflict(
+                mShowDownloadPlasticExeWindow,
+                mMergeTreeView.GetMetaChange(mergeChange),
+                mWkInfo);
+        }
+
+        void MergeViewFileConflictMenu.IMetaMenuOperations.DiffSourceWithDestination()
+        {
+            MergeChangeInfo mergeChange = MergeSelection.
+                GetSingleSelectedMergeChange(mMergeTreeView);
+
+            if (mergeChange == null)
+                return;
+
+            DiffSourceWithDestinationForFileConflict(
+                mShowDownloadPlasticExeWindow,
+                mMergeTreeView.GetMetaChange(mergeChange),
+                mWkInfo,
+                mIsIncomingMerge);
+        }
+
+        bool MergeViewFileConflictMenu.IMetaMenuOperations.SelectionHasMeta()
+        {
+            return mMergeTreeView.SelectionHasMeta();
         }
 
         void SearchField_OnDownOrUpArrowKeyPressed()
@@ -707,7 +816,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         {
             mMessageLabelText = string.Empty;
             mIsMessageLabelVisible = false;
-            mHasNothingToDownload = false;
+            mIsMergeFinished = false;
 
             mErrorMessageLabelText = string.Empty;
             mIsErrorMessageLabelVisible = false;
@@ -724,32 +833,90 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
 
         void AfterProcessMerges(UpdateProgress progress)
         {
-            mIsUpdateSuccessful = true;
-            mCooldownClearUpdateSuccessAction.Ping();
-
             RefreshAsset.AfterLongAssetOperation(
                 ProjectPackages.ShouldBeResolvedFromUpdateProgress(mWkInfo, progress));
         }
 
-        void MergeViewFileConflictMenu.IMetaMenuOperations.ShowHistory()
+        void ShowProcessMergesButton(string processMergesButtonText)
         {
-            MergeChangeInfo mergeChangeInfo = MergeSelection.GetSingleSelectedMergeChange(mMergeTreeView);
-            MergeChangeInfo metaChangeInfo = mMergeTreeView.GetMetaChange(mergeChangeInfo);
-            RevisionInfo revInfo = mergeChangeInfo.GetRevision();
-
-            mHistoryViewLauncher.ShowHistoryView(
-                metaChangeInfo.GetMount().RepSpec,
-                revInfo.ItemId,
-                metaChangeInfo.GetPath(),
-                revInfo.Type == EnumRevisionType.enDirectory);
+            mProcessMergesButtonText = processMergesButtonText;
+            mIsProcessMergesButtonEnabled = true;
+            mIsProcessMergesButtonVisible = true;
         }
 
-        internal void ProcessMergeForTesting()
+        void ProcessMerges(
+            List<string> selectedPaths,
+            IToolLauncher toolLauncher,
+            MergeContributorType contributorType)
+        {
+            ProcessMerges(
+                mMergeViewLogic,
+                contributorType,
+                mWorkspaceWindow,
+                mSwitcher,
+                toolLauncher,
+                mGuiMessage,
+                selectedPaths,
+                AfterProcessMerges,
+                MergeSuccessfullyFinished);
+        }
+
+        void MergeSuccessfullyFinished()
+        {
+            mIsUpdateSuccessful = true;
+        }
+
+        void ProcessAllMerges()
         {
             ProcessMerges(
                 new List<string>(),
-                null,
+                PlasticExeLauncher.BuildForMergeSelectedFiles(mWkInfo, false, mShowDownloadPlasticExeWindow),
                 mMergeDialogParameters.Options.Contributor);
+        }
+
+        void DoConflictsTree(
+            MergeTreeView mergeTreeView,
+            EmptyStateData emptyStateData,
+            CooldownWindowDelayer cooldownClearUpdateSuccessAction,
+            bool isOperationRunning,
+            bool isUpdateSuccessful,
+            bool isIncomingMerge,
+            Action repaint)
+        {
+            using (new EditorGUI.DisabledScope(isOperationRunning))
+            {
+                Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
+
+                mergeTreeView.OnGUI(rect);
+
+                if (isOperationRunning)
+                    return;
+
+                if (mergeTreeView.GetTotalItemCount() == 0)
+                {
+                    DrawEmptyState(
+                        rect,
+                        emptyStateData,
+                        cooldownClearUpdateSuccessAction,
+                        isUpdateSuccessful,
+                        isIncomingMerge,
+                        repaint);
+                    return;
+                }
+
+                if (isUpdateSuccessful)
+                    NotifySuccessInStatusBar();
+            }
+        }
+
+        void NotifySuccessInStatusBar()
+        {
+            mStatusBar.Notify(
+                new GUIContentNotification(
+                    PlasticLocalization.Name.WorkspaceUpdateCompleted.GetString()),
+                UnityEditor.MessageType.None,
+                Images.GetStepOkIcon());
+            mIsUpdateSuccessful = false;
         }
 
         static void DiffSourceWithDestinationForDirectoryConflict(
@@ -815,21 +982,6 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 imageDiffLauncher: null);
         }
 
-        void MergeViewFileConflictMenu.IMetaMenuOperations.DiffSourceWithDestination()
-        {
-            MergeChangeInfo mergeChange = MergeSelection.
-                GetSingleSelectedMergeChange(mMergeTreeView);
-
-            if (mergeChange == null)
-                return;
-
-            DiffSourceWithDestinationForFileConflict(
-                mShowDownloadPlasticExeWindow,
-                mMergeTreeView.GetMetaChange(mergeChange),
-                mWkInfo,
-                mIsIncomingMerge);
-        }
-
         static void DiffDestinationWithAncestorForFileConflict(
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             MergeChangeInfo mergeChange,
@@ -890,39 +1042,18 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 imageDiffLauncher: null);
         }
 
-        void UpdateFileConflictsTree(
+        static void UpdateFileConflictsTree(
             MergeChangesTree mergeChangesTree,
-            MergeTreeView mergeTreeView,
-            IResolveChangeset resolveChangeset)
+            MergeTreeView mergeTreeView)
         {
-            UnityMergeTree unityMergeTree = null;
+            UnityMergeTree unityMergeTree = UnityMergeTree.BuildMergeCategories(mergeChangesTree);
 
-            IThreadWaiter waiter = ThreadWaiter.GetWaiter(10);
-            waiter.Execute(
-                /*threadOperationDelegate*/ delegate
-                {
-                    unityMergeTree = UnityMergeTree.BuildMergeCategories(
-                        mergeChangesTree);
-                    mergeChangesTree.ResolveUserNames(
-                        new MergeChangesTree.ResolveUserName());
-                    mergeChangesTree.ResolveComments(resolveChangeset);
-                },
-                /*afterOperationDelegate*/ delegate
-                {
-                    mergeTreeView.BuildModel(unityMergeTree);
-                    mergeTreeView.Refilter();
-                    mergeTreeView.Sort();
-                    mergeTreeView.Reload();
+            mergeTreeView.BuildModel(unityMergeTree);
+            mergeTreeView.Refilter();
+            mergeTreeView.Sort();
+            mergeTreeView.Reload();
 
-                    mergeTreeView.SelectFirstUnsolvedDirectoryConflict();
-                });
-        }
-
-        void ShowProcessMergesButton(string processMergesButtonText)
-        {
-            mProcessMergesButtonText = processMergesButtonText;
-            mIsProcessMergesButtonEnabled = true;
-            mIsProcessMergesButtonVisible = true;
+            mergeTreeView.SelectFirstUnsolvedDirectoryConflict();
         }
 
         static void DiffSourceWithAncestorForFileConflict(
@@ -955,7 +1086,8 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             IToolLauncher toolLauncher,
             GuiMessage.IGuiMessage guiMessage,
             List<string> selectedPaths,
-            EndOperationDelegateForUpdateProgress afterProcessMergesAction)
+            EndOperationDelegateForUpdateProgress afterProcessMergesAction,
+            Action successOperationDelegate)
         {
             mergeViewLogic.ProcessMerges(
                 workspaceWindow,
@@ -968,31 +1100,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 false,
                 RefreshAsset.BeforeLongAssetOperation,
                 afterProcessMergesAction,
-                null);
-        }
-
-        void ProcessAllMerges()
-        {
-            ProcessMerges(
-                new List<string>(),
-                PlasticExeLauncher.BuildForMergeSelectedFiles(mWkInfo, false, mShowDownloadPlasticExeWindow),
-                mMergeDialogParameters.Options.Contributor);
-        }
-
-        void ProcessMerges(
-            List<string> selectedPaths,
-            IToolLauncher toolLauncher,
-            MergeContributorType contributorType)
-        {
-            ProcessMerges(
-                mMergeViewLogic,
-                contributorType,
-                mWorkspaceWindow,
-                mSwitcher,
-                toolLauncher,
-                mGuiMessage,
-                selectedPaths,
-                (p) => AfterProcessMerges(p));
+                successOperationDelegate);
         }
 
         static void AddConflictResolution(
@@ -1007,37 +1115,6 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 conflict.GetMount().Mount,
                 resolveAction,
                 renameValue));
-        }
-
-        static ConflictResolutionState GetConflictResolutionState(
-            DirectoryConflict directoryConflict,
-            DirectoryConflictAction[] conflictActions,
-            Dictionary<DirectoryConflict, ConflictResolutionState> conflictResoltionStates)
-        {
-            ConflictResolutionState result;
-
-            if (conflictResoltionStates.TryGetValue(directoryConflict, out result))
-                return result;
-
-            result = ConflictResolutionState.Build(directoryConflict, conflictActions);
-
-            conflictResoltionStates.Add(directoryConflict, result);
-            return result;
-        }
-
-        static int GetPendingConflictsCount(
-            List<MergeChangeInfo> selectedChangeInfos)
-        {
-            int result = 0;
-            foreach (MergeChangeInfo changeInfo in selectedChangeInfos)
-            {
-                if (changeInfo.DirectoryConflict.IsResolved())
-                    continue;
-
-                result++;
-            }
-
-            return result;
         }
 
         static void DoTitle(
@@ -1061,44 +1138,28 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             EditorGUILayout.EndHorizontal();
         }
 
-        static void DoConflictsTree(
-            MergeTreeView mergeTreeView,
-            GUIContent emptyStateContent,
-            bool isOperationRunning,
-            bool hasNothingToDownload,
-            bool isUpdateSuccessful,
-            bool isIncomingMerge)
-        {
-            GUI.enabled = !isOperationRunning;
-
-            Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
-
-            mergeTreeView.OnGUI(rect);
-
-            if (hasNothingToDownload)
-                DrawEmptyState(rect, emptyStateContent, isUpdateSuccessful, isIncomingMerge);
-
-            GUI.enabled = true;
-        }
-
         static void DrawEmptyState(
             Rect rect,
-            GUIContent emptyStateContent,
+            EmptyStateData emptyStateData,
+            CooldownWindowDelayer cooldownClearUpdateSuccessAction,
             bool isUpdateSuccessful,
-            bool isIncomingMerge)
+            bool isIncomingMerge,
+            Action repaint)
         {
-            if (isUpdateSuccessful)
+            emptyStateData.Update(
+                GetEmptyStateMessage(isUpdateSuccessful, isIncomingMerge),
+                rect, Event.current.type, repaint);
+
+            if (!isUpdateSuccessful)
             {
-                emptyStateContent.text = PlasticLocalization.Name.WorkspaceUpdateCompleted.GetString();
-                DrawTreeViewEmptyState.For(rect, emptyStateContent, Images.GetStepOkIcon());
+                DrawTreeViewEmptyState.For(emptyStateData);
                 return;
             }
 
-            emptyStateContent.text = isIncomingMerge ?
-                PlasticLocalization.Name.NoIncomingChanges.GetString() :
-                PlasticLocalization.Name.NoMergeChanges.GetString();
+            if (!cooldownClearUpdateSuccessAction.IsRunning)
+                cooldownClearUpdateSuccessAction.Ping();
 
-            DrawTreeViewEmptyState.For(rect, emptyStateContent);
+            DrawTreeViewEmptyState.For(Images.GetStepOkIcon(), emptyStateData);
         }
 
         static void DoDirectoryConflictResolutionPanel(
@@ -1147,25 +1208,22 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         static void DoActionToolbarMessage(
             bool isMessageLabelVisible,
             string messageLabelText,
-            bool hasNothingToDownload,
+            bool isMergeFinished,
             bool isErrorMessageLabelVisible,
             string errorMessageLabelText,
             int directoryConflictCount,
             int fileConflictCount,
-            MergeViewTexts.ChangesToApplySummary changesSummary)
+            MergeViewTexts.ChangesToApplySummary changesSummary,
+            IViewSwitcher viewSwitcher)
         {
-            if (isMessageLabelVisible)
+            if (isMergeFinished)
             {
-                string message = messageLabelText;
-
-                if (hasNothingToDownload)
-                {
-                    message = PlasticLocalization.GetString(
-                        PlasticLocalization.Name.WorkspaceIsUpToDate);
-                }
-
-                DoInfoMessage(message);
+                DoMergeAlreadyProcessedArea(viewSwitcher);
+                return;
             }
+
+            if (isMessageLabelVisible)
+                DoInfoMessage(messageLabelText);
 
             if (isErrorMessageLabelVisible)
             {
@@ -1214,7 +1272,8 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             MergeViewLogic mergeViewLogic,
             MergeContributorType contributorType,
             WorkspaceInfo wkInfo,
-            EndOperationDelegateForUpdateProgress afterProcessMergesAction)
+            EndOperationDelegateForUpdateProgress afterProcessMergesAction,
+            Action successOperationDelegate)
         {
             GUI.enabled = isEnabled;
 
@@ -1228,7 +1287,8 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                     PlasticExeLauncher.BuildForResolveConflicts(wkInfo, false, showDownloadPlasticExeWindow),
                     guiMessage,
                     new List<string>(),
-                    afterProcessMergesAction);
+                    afterProcessMergesAction,
+                    successOperationDelegate);
             }
 
             GUI.enabled = true;
@@ -1275,49 +1335,6 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             return shouldCancelMergesButtonEnabled;
         }
 
-        internal void ResolveDirectoryConflict(MergeChangeInfo conflict)
-        {
-            ConflictResolutionState state;
-
-            if (!mConflictResolutionStates.TryGetValue(conflict.DirectoryConflict, out state))
-                return;
-
-            List<DirectoryConflictResolutionData> conflictResolutions =
-                new List<DirectoryConflictResolutionData>();
-
-            AddConflictResolution(
-                conflict,
-                state.ResolveAction,
-                state.RenameValue,
-                conflictResolutions);
-
-            MergeChangeInfo metaConflict =
-                mMergeTreeView.GetMetaChange(conflict);
-
-            if (metaConflict != null)
-            {
-                AddConflictResolution(
-                    metaConflict,
-                    state.ResolveAction,
-                    MetaPath.GetMetaPath(state.RenameValue),
-                    conflictResolutions);
-            }
-
-            if (state.IsApplyActionsForNextConflictsChecked)
-            {
-                foreach (MergeChangeInfo otherConflict in mMergeTreeView.GetSelectedMergeChanges())
-                {
-                    AddConflictResolution(
-                        otherConflict,
-                        state.ResolveAction,
-                        state.RenameValue,
-                        conflictResolutions);
-                }
-            }
-
-            mMergeViewLogic.ResolveDirectoryConflicts(conflictResolutions);
-        }
-
         static void DoWarningMessage()
         {
             string label = PlasticLocalization.GetString(PlasticLocalization.Name.SolveConflictsInLable);
@@ -1331,7 +1348,43 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         {
             EditorGUILayout.BeginHorizontal();
 
-            GUILayout.Label(message, UnityStyles.MergeTab.ChangesToApplySummaryLabel);
+            GUILayout.Label(message, UnityStyles.MergeTab.InfoLabel);
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        static void DoMergeAlreadyProcessedArea(IViewSwitcher viewSwitcher)
+        {
+            EditorGUILayout.BeginHorizontal();
+
+            GUILayout.Label(
+                PlasticLocalization.Name.MergeAlreadyProcessedOpenPendingChangesText.GetString(),
+                UnityStyles.MergeTab.InfoLabel);
+
+            if (GUILayout.Button(
+                PlasticLocalization.Name.MergeAlreadyProcessedOpenPendingChangesLinkText.GetString(),
+                UnityStyles.MergeTab.LinkLabel))
+            {
+                viewSwitcher.ShowPendingChanges();
+                viewSwitcher.DisableMergeView();
+            }
+
+            EditorGUIUtility.AddCursorRect(
+                GUILayoutUtility.GetLastRect(), MouseCursor.Link);
+
+            GUILayout.Label(
+                PlasticLocalization.Name.MergeAlreadyProcessedOpenPreferencesText.GetString(),
+                UnityStyles.MergeTab.InfoLabel);
+
+            if (GUILayout.Button(
+                PlasticLocalization.Name.MergeAlreadyProcessedOpenPreferencesLinkText.GetString(),
+                UnityStyles.MergeTab.LinkLabel))
+            {
+                OpenPlasticProjectSettings.InDiffAndMergeFoldout();
+            }
+
+            EditorGUIUtility.AddCursorRect(
+                GUILayoutUtility.GetLastRect(), MouseCursor.Link);
 
             EditorGUILayout.EndHorizontal();
         }
@@ -1343,6 +1396,49 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             GUILayout.Label(message, UnityStyles.MergeTab.RedPendingConflictsOfTotalLabel);
 
             EditorGUILayout.EndHorizontal();
+        }
+
+        static ConflictResolutionState GetConflictResolutionState(
+            DirectoryConflict directoryConflict,
+            DirectoryConflictAction[] conflictActions,
+            Dictionary<DirectoryConflict, ConflictResolutionState> conflictResoltionStates)
+        {
+            ConflictResolutionState result;
+
+            if (conflictResoltionStates.TryGetValue(directoryConflict, out result))
+                return result;
+
+            result = ConflictResolutionState.Build(directoryConflict, conflictActions);
+
+            conflictResoltionStates.Add(directoryConflict, result);
+            return result;
+        }
+
+        static string GetEmptyStateMessage(
+            bool isUpdateSuccessful,
+            bool isIncomingMerge)
+        {
+            if (isUpdateSuccessful)
+                return PlasticLocalization.Name.WorkspaceUpdateCompleted.GetString();
+
+            return isIncomingMerge ?
+                PlasticLocalization.Name.NoIncomingChanges.GetString() :
+                PlasticLocalization.Name.NoMergeChanges.GetString();
+        }
+
+        static int GetPendingConflictsCount(
+            List<MergeChangeInfo> selectedChangeInfos)
+        {
+            int result = 0;
+            foreach (MergeChangeInfo changeInfo in selectedChangeInfos)
+            {
+                if (changeInfo.DirectoryConflict.IsResolved())
+                    continue;
+
+                result++;
+            }
+
+            return result;
         }
 
         void BuildComponents(
@@ -1377,7 +1473,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         bool mIsCancelMergesButtonVisible;
         bool mIsMessageLabelVisible;
         bool mIsErrorMessageLabelVisible;
-        bool mHasNothingToDownload;
+        bool mIsMergeFinished;
 
         bool mIsProcessMergesButtonEnabled;
         bool mIsCancelMergesButtonEnabled;
@@ -1407,10 +1503,8 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         int mDirectoryConflictCount;
         int mFileConflictCount;
         MergeViewTexts.ChangesToApplySummary mChangesSummary;
-
-        readonly IResolveChangeset mResolveChangeset = new ResolveChangeset();
         readonly GUIContent mValidationLabel = new GUIContent(string.Empty, Images.GetWarnIcon());
-        readonly GUIContent mEmptyStateContent = new GUIContent(string.Empty);
+        readonly EmptyStateData mEmptyStateData = new EmptyStateData();
         readonly ProgressControlsForViews mProgressControls;
         readonly CooldownWindowDelayer mCooldownClearUpdateSuccessAction;
         readonly MergeViewLogic mMergeViewLogic;
@@ -1424,7 +1518,11 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         readonly MergeViewLogic.IMergeController mMergeController;
         readonly GuiMessage.IGuiMessage mGuiMessage;
         readonly ObjectInfo mObjectInfo;
+        readonly ObjectInfo mAncestorObjectInfo;
+        readonly EnumMergeType mMergeType;
+        readonly ShowIncomingChangesFrom mFrom;
         readonly EditorWindow mParentWindow;
+        readonly StatusBar mStatusBar;
         readonly NewIncomingChangesUpdater mNewIncomingChangesUpdater;
         readonly IHistoryViewLauncher mHistoryViewLauncher;
         readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;

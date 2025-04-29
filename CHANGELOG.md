@@ -2,17 +2,53 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.8.1] - 2025-04-29
+
+### Added
+
+- Added to the list of branches a context action to hide branches. You can use the filter to list the hidden branches and unhide them from the context menu.
+- Added to the list of branches a context action to diff the branch.
+- Added to the list of changesets a context action to create a new branch from a specific changeset.
+- Added to the check-in and shelve notification a link to go to the list of changesets/shelves. The user can also copy the direct diff link.
+- Added to the merge operation a notification with a link to go to the pending changes.
+- Added to the undo and update workspace operations an ephemeral notification.
+- Added to the status bar an action to copy to the clipboard the name of the current branch.
+- Added to most dialogs an "Enter" keyboard shortcut to confirm the operation like the corresponding button.
+- Added to the history of a folder a context action to revert changes.
+- Added to the history a context action to diff changes for files that were moved/renamed.
+- Added to the pending changes view the user avatar if available from Gravatar.
+- Added to the merge view the avatars for authors of changes.
+
+### Fixed
+
+- Fixed the UI that could start refreshing forever, never completing the ongoing operations.
+- Fixed the auto checkout for assets to only apply for file containing actual changes.
+- Fixed project download from the Hub that was silently skipped when trying to download inside another workspace. It's now logging an explicit error in the console.
+- Fixed a null exception that could occur when switching to the changesets tab very quickly after checkin.
+- Fixed bulk editing meta files that was only performing a single checkout for the last element.
+- Fixed a null exception that could occur on Revert to this revision if the selected change triggered a domain reload.
+- Fixed the scroll that was not at the top when opening the branches or the shelves view.
+- Fixed an error that was showing when deleting a shelveset that wasn't the one selected in the list.
+- Fixed merge success notification that was showing in the view potentially colliding with contents.
+- Implemented a mechanism to fix the path to UnityYAMLMerge.exe in the client.conf so it always points to an existing Unity installation.
+- Fixed the apply shelve operation so that it checks for dirty changes and warn the user before applying the shelve.
+- Fixed Undo changes of a Moved asset using the Asset Context Menu from the Project View that was leaving an inconsistent .meta file.
+- Added the option to add a folder by path to the ignore or hidden changes list, instead of the incorrect option "Using the item extension".
+- Fixed incorrect branch name in the history of a file for a revision where it was moved, displaying details of the move instead of the name of the branch.
+- Fixed the Unity Editor crashing on macOS when opening the Unity Version Control window with the PiXYZ Plugin installed.
+- Fixed a null exception that occured when using the diff search filter without any shelve in the repository.
+
 ## [2.7.1] - 2025-02-13
 
 ### Added
 
-- You can now Shelve your selected Pending Changes, inspect the shelves content, and apply them to your workspace.
-- You can now Shelve your Pending Changes when switching to another branch (or changeset) and decide if you want to apply them automatically after the switch.
-- You can now create a code review from the list of branches (or changesets) opening either the Desktop App or the Unity Cloud website.
+- Added a button to shelve selected pending changes. You can inspect the shelves content, and apply them to your workspace.
+- Added the option to shelve pending changes when switching to another branch (or changeset). You can decide to apply them automatically after the switch.
+- Added a context menu entry to create a code review from the list of branches (or changesets). You can decide to open the Desktop App or the Unity Cloud website.
 
 ### Changed
 
-- Serialize the Checkin comment and tick selection so they are kept on any domain reload and play mode.
+- Serialized the Checkin comment and tick selection so they are kept on any domain reload and play mode.
 - Optimized incoming changes & merge to only reload the Package Manager when needed.
 - Added dedicated toolbar buttons to open the list of branches and the Branch Explorer of the Desktop App.
 - Reworded the changeset context menu "Undo this change" to "Revert this file to the previous revision" so it’s more explicit.

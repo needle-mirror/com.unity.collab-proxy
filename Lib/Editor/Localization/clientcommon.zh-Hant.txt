@@ -371,6 +371,9 @@ Windows 不允許檔案名稱在行尾有圓點。
 == GetRevisionDirectoryNotSupported ==
 不支援在目錄中使用 GetRevision。若要取得目錄的內容，請在您的工作區規則中載入該目錄。
 
+== GettingSSOProviders ==
+正在取得組織提供者...
+
 == GluonPartialUpdateToDifferentBranch ==
 更新作業無法繼續。目標變更集必須位於目前的工作區分支: {0}。
 
@@ -615,6 +618,9 @@ Unity VCS 的更新版本已升級工作區 '{0}' 的中繼資料。現在，舊
 == NoPathBetweenCsets ==
 '{0}' 和 '{1}' 之間沒有任何路徑。
 
+== NoProvidersForOrganization ==
+指定的組織不允許使用 SSO 存取
+
 == NoSuchCodeReview ==
 找不到指定的程式碼檢閱 '{0}'。
 
@@ -626,6 +632,9 @@ Unity VCS 的更新版本已升級工作區 '{0}' 的中繼資料。現在，舊
 
 == NotValidCmPath ==
 指定的路徑: {0} 不是有效的伺服器路徑。
+
+== OAuthSignInCheckMessage ==
+正在等待工作階段...
 
 == ObjectNameField ==
 物件名稱
@@ -668,6 +677,9 @@ Unity VCS 的更新版本已升級工作區 '{0}' 的中繼資料。現在，舊
 
 == RestorePathShouldNotExist ==
 還原路徑不應該存在。
+
+== RetrievingOrgsProgress ==
+正在擷取組織...
 
 == RevdatanotfoundForSpec ==
 找不到指定修訂規格的資料

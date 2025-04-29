@@ -1,5 +1,6 @@
-﻿using System;
-using PlasticGui.WorkspaceWindow.QueryViews;
+﻿using PlasticGui.WorkspaceWindow.QueryViews;
+
+using LayoutFilters = Codice.Client.BaseCommands.LayoutFilters;
 
 namespace Unity.PlasticSCM.Editor.Views.Changesets
 {
@@ -22,19 +23,43 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             FilterType = filterType;
         }
 
+        internal LayoutFilters.DateFilter GetLayoutFilter()
+        {
+            switch (FilterType)
+            {
+                case Type.LastWeek:
+                    return LayoutFilters.DateFilter.BuildFromTimeAgo(
+                        LayoutFilters.SinceTimeType.OneWeekAgo);
+                case Type.Last15Days:
+                    return LayoutFilters.DateFilter.BuildFromTimeAgo(
+                        LayoutFilters.SinceTimeType.FifteenDaysAgo);
+                case Type.LastMonth:
+                    return LayoutFilters.DateFilter.BuildFromTimeAgo(
+                        LayoutFilters.SinceTimeType.OneMonthAgo);
+                case Type.Last3Months:
+                    return LayoutFilters.DateFilter.BuildFromTimeAgo(
+                        LayoutFilters.SinceTimeType.ThreeMonthsAgo);
+                case Type.LastYear:
+                    return LayoutFilters.DateFilter.BuildFromTimeAgo(
+                        LayoutFilters.SinceTimeType.OneYearAgo);
+            }
+
+            return null;
+        }
+
         internal string GetTimeAgo()
         {
             switch (FilterType)
             {
-                case DateFilter.Type.LastWeek:
+                case Type.LastWeek:
                     return QueryConstants.OneWeekAgo;
-                case DateFilter.Type.Last15Days:
+                case Type.Last15Days:
                     return QueryConstants.HalfMonthAgo;
-                case DateFilter.Type.LastMonth:
+                case Type.LastMonth:
                     return QueryConstants.OneMonthAgo;
-                case DateFilter.Type.Last3Months:
+                case Type.Last3Months:
                     return QueryConstants.ThreeMonthsAgo;
-                case DateFilter.Type.LastYear:
+                case Type.LastYear:
                     return QueryConstants.OneYearAgo;
             }
 

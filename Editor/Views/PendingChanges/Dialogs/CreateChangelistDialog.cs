@@ -129,6 +129,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
                         GUILayout.Width(100));
                 }
 
+                GUI.SetNextControlName(DESCRIPTION_TEXTAREA_CONTROL_NAME);
                 mChangelistDescription = GUILayout.TextArea(mChangelistDescription, GUILayout.Height(100));
 
                 GUILayout.Space(5);
@@ -156,7 +157,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
 
                 GUILayout.FlexibleSpace();
 
-                DoCreateButton();
+                DoCreateOrEditButton();
                 DoCancelButton();
             }
         }
@@ -170,13 +171,18 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             }
         }
 
-        void DoCreateButton()
+        void DoCreateOrEditButton()
         {
             if (!NormalButton(PlasticLocalization.GetString(mIsCreateMode ?
                     PlasticLocalization.Name.CreateButton :
                     PlasticLocalization.Name.EditButton)))
                 return;
 
+            CreateOrEditButtonAction();
+        }
+
+        void CreateOrEditButtonAction()
+        {
             ChangelistCreationValidation.Validation(
                 mWkInfo,
                 mChangelistName,
@@ -189,6 +195,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
         {
             var instance = CreateInstance<CreateChangelistDialog>();
             instance.IsResizable = false;
+            instance.mEnterKeyAction = instance.CreateOrEditButtonAction;
+            instance.AddControlConsumingEnterKey(DESCRIPTION_TEXTAREA_CONTROL_NAME);
             instance.mEscapeKeyAction = instance.CloseButtonAction;
             instance.mWkInfo = wkInfo;
             instance.mChangelistToEdit = null;
@@ -206,6 +214,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
         {
             var instance = CreateInstance<CreateChangelistDialog>();
             instance.IsResizable = false;
+            instance.mEnterKeyAction = instance.CreateOrEditButtonAction;
+            instance.AddControlConsumingEnterKey(DESCRIPTION_TEXTAREA_CONTROL_NAME);
             instance.mEscapeKeyAction = instance.CloseButtonAction;
             instance.mWkInfo = wkInfo;
             instance.mChangelistToEdit = changelistToEdit;
@@ -241,5 +251,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
 
         bool mWasNameFieldFocused;
         const string NAME_FIELD_CONTROL_NAME = "CreateChangelistNameField";
+        const string DESCRIPTION_TEXTAREA_CONTROL_NAME = "CreateChangelistDescriptionTextArea";
     }
 }

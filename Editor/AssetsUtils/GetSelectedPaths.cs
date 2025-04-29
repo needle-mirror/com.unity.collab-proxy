@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 
+using Codice.CM.Common;
+using PlasticGui;
 using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using UnityEditor.VersionControl;
@@ -10,14 +12,15 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
     internal static class GetSelectedPaths
     {
         internal static List<string> ForOperation(
-            string wkPath,
-            AssetList assetList,
+            WorkspaceInfo wkInfo,
+            IEnumerable<Asset> assetList,
+            IPlasticAPI plasticApi,
             IAssetStatusCache assetStatusCache,
             AssetMenuOperations operation,
             bool includeMetaFiles = true)
         {
             List<string> selectedPaths = AssetsSelection.
-                GetSelectedPaths(wkPath, assetList);
+                GetSelectedPaths(wkInfo.ClientPath, assetList);
 
             List<string> result = new List<string>(selectedPaths);
 
@@ -38,7 +41,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
                     continue;
 
                 if (!IsApplicableForOperation(
-                        metaPath, false, operation, assetStatusCache))
+                        metaPath, false, wkInfo, plasticApi, assetStatusCache, operation))
                     continue;
 
                 result.Add(metaPath);
@@ -50,11 +53,13 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
         static bool IsApplicableForOperation(
             string path,
             bool isDirectory,
-            AssetMenuOperations operation,
-            IAssetStatusCache assetStatusCache)
+            WorkspaceInfo wkInfo,
+            IPlasticAPI plasticApi,
+            IAssetStatusCache assetStatusCache,
+            AssetMenuOperations operation)
         {
             SelectedAssetGroupInfo info = SelectedAssetGroupInfo.BuildFromSingleFile(
-                path, isDirectory, assetStatusCache);
+                path, isDirectory, wkInfo, plasticApi, assetStatusCache);
 
             return AssetMenuUpdater.GetAvailableMenuOperations(info).HasFlag(operation);
         }

@@ -57,10 +57,10 @@ namespace Unity.PlasticSCM.Editor.Gluon
 
             StatusBar.DrawIcon(icon, UnityConstants.STATUS_BAR_ICON_SIZE - 2);
 
-            StatusBar.DrawNotificationLabel(
+            StatusBar.DrawNotification(new GUIContentNotification(
                 new GUIContent(
                     PlasticLocalization.Name.ShelvedChanges.GetString(),
-                    PlasticLocalization.Name.ShelvedChangesExplanation.GetString()));
+                    PlasticLocalization.Name.ShelvedChangesExplanation.GetString())));
 
             GenericMenu discardShelveDropdownMenu = new GenericMenu();
 

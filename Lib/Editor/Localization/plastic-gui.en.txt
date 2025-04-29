@@ -950,7 +950,7 @@ Diff selected revisions
 Diff changeset
 
 == HistoryMenuItemRevertToThisRevision ==
-Revert file to this revision
+Revert to this revision
 
 == ItemsMenuItemRename ==
 Rename...
@@ -1523,7 +1523,7 @@ Pending Changes Options
 Diff and Merge Options
 
 == ShelveAndSwitchOptionsSectionTitle ==
-Shelve & Switch Options
+Shelve and Switch Options
 
 == OtherOptionsSectionTitle ==
 Other Options
@@ -3836,9 +3836,6 @@ LDAP
 == UPWorkingMode ==
 Built-in user and password
 
-== TubeWorkingMode ==
-Tube Working Mode
-
 == SSOWorkingMode ==
 Single Sign On
 
@@ -4182,8 +4179,8 @@ Hide/show details area
 == NoDiffToolDefined ==
 There aren't any diff tools defined in the client configuration file
 
-== FileHistory ==
-File History
+== History ==
+History
 
 == OpenButton ==
 Open
@@ -4320,10 +4317,10 @@ Copy
 == AnnotateOptions ==
 Annotate options
 
-== AnnotateDiffBranchMenuItem ==
+== DiffBranchMenuItem ==
 Diff branch {0}
 
-== AnnotateDiffChangesetMenuItem ==
+== DiffChangesetMenuItem ==
 Diff changeset {0}
 
 == AnnotateParentRevisionMenuItem ==
@@ -4976,6 +4973,9 @@ Logging in as '{0}'...
 == SigningUp ==
 Creating account '{0}'...
 
+== GettingOrganizationsCompatibleWithAuthProvider ==
+Getting organizations compatible with '{0}'...
+
 == GettingDatacenters ==
 Getting datacenters ...
 
@@ -5401,6 +5401,9 @@ Last month
 
 == SinceThreeMonthsAgo ==
 Last 3 months
+
+== SinceOneYearAgo ==
+Last year
 
 == SinceAGivenDate ==
 A given date
@@ -6036,9 +6039,6 @@ Retrieving organizations...
 == RetrievingWorkspacesProgress ==
 Retrieving cloud workspaces...
 
-== GettingSSOProviders ==
-Getting organization providers...
-
 == CompleteSignInOnBrowser ==
 Complete your sign in using your Browser.
 
@@ -6053,9 +6053,6 @@ Sign in with Single Sign On
 
 == SignInToOrganization ==
 Sign in to {0}
-
-== NoProvidersForOrganization ==
-The specified organization doesn't allow access with SSO
 
 == DontKnowOrganizationName ==
 I don't know the organization name
@@ -6217,7 +6214,7 @@ Save this revision as...
 Diff .meta
 
 == ViewHistoryMenuItem ==
-View file history
+History
 
 == ViewHistoryMetaMenuItem ==
 View .meta file history
@@ -6314,7 +6311,7 @@ Undo changes
 Diff with previous revision
 
 == HistoryPlasticMenu ==
-View file history
+History
 
 == StatusCheckout ==
 Checked out
@@ -6343,8 +6340,8 @@ Unable to exchange token: {0} [code {1}]
 == TokenExchangeAccessEmpty ==
 Access token is empty for user: {0}
 
-== ErrorDownloadingCloudProject ==
-Error downloading Cloud Project: {0}
+== ErrorDownloadingProjectFromRepository ==
+Error downloading Project from repository: {0}
 
 == ErrorCreatingWorkspaceForProject ==
 Error creating workspace for Project: {0}
@@ -6393,6 +6390,12 @@ _Del
 
 == UnityMergeShortcutForMacOS ==
 #%m
+
+== UnityHideUnhideShortcutForWindows ==
+%h
+
+== UnityHideUnhideShortcutForMacOS ==
+#%h
 
 == UnityOpenShortcut ==
 #o
@@ -7130,7 +7133,10 @@ Workspace is up to date.
 Dark theme
 
 == CheckinCompleted ==
-Check-in successfully completed
+Check-in successfully completed.
+
+== CheckinChangesetWasCreatedPart ==
+was created.
 
 == UndoCompleted ==
 Undo changes successfully completed
@@ -7520,23 +7526,31 @@ Switch to Gluon
 Switch to Unity VCS
 
 == DynamicWkspacesTitle ==
-Configuration of Dynamic Workspaces (a.k.a. virtual workspaces)
+Configuration of Dynamic Workspaces
 
 == DynamicWkspacesSummary ==
-A Dynamic Workspace is a virtual filesystem controlled by Unity VCS where is only downloaded on demand (powered by heuristics to speed up downloads of multiple files).
-You can mount gigantic working copies but only consume the space of the files you really use.
+Dynamic workspaces (also known as virtual workspaces) allow you to work with large repositories efficiently. Instead of downloading everything at once, files are retrieved on demand, guided by smart heuristics to speed up access to multiple files. This means you can mount large working copies while only using disk space for the files you actually need.
 
 == DynamicWkspacesCurrently ==
-Dynamic Workspaces are currently
+The PlasticFS agent
 
 == DynamicWkspacesInYourComputer ==
-in your computer
+to use dynamic workspaces
 
-== DynamicWkspacesTurnedOn ==
-turned ON
+== DynamicWkspacesAgentIsReady ==
+is ready
 
-== DynamicWkspacesTurnedOff ==
-turned OFF
+== DynamicWkspacesAgentIsRequired ==
+is required
+
+== DynamicWkspacesStartAgent ==
+Start PlasticFS agent for the first time and set it to run on startup?
+
+== DynamicWkspacesStartAgentRemarks ==
+It's visible in the taskbar tray when running.
+
+== DynamicWkspacesStartAgentButton ==
+Launch
 
 == CodeEditorTitle ==
 Code editor settings
@@ -8509,6 +8523,9 @@ Related
 Oops! It looks like there are no branches matching your filters
 
 == HiddenBranchesEmptyState ==
+Oops! It looks like there are no hidden branches matching your filters
+
+== HiddenBranchesInRepositoryEmptyState ==
 Oops! It looks like there are no hidden branches for this repository
 
 == HistoryEmptyState ==
@@ -8622,8 +8639,8 @@ Loading main branch...
 == ConnectingWorkspaceToRepository ==
 Connecting workspace to the UVCS repository...
 
-== SharingWorkspaceWith ==
-Sharing workspace with '{0}' ...
+== SharingWorkspace ==
+Sharing workspace...
 
 == ExecuteQueryClearsFiltersWarningTitle ==
 Clear filters warning
@@ -8921,3 +8938,24 @@ Don't show hidden branches
 
 == HiddenBranchTooltip ==
 This branch is hidden
+
+== PlasticConversationShortcutWindows ==
+Ctrl+D1
+
+== PlasticConversationShortcutMacOS ==
+Cmd+D1
+
+== PlasticConversationShortcutLinux ==
+Ctrl+D1
+
+== PlasticReviewChangesShortcutWindows ==
+Ctrl+D2
+
+== PlasticReviewChangesShortcutMacOS ==
+Cmd+D2
+
+== PlasticReviewChangesShortcutLinux ==
+Ctrl+D2
+
+== OpeningWorkspace ==
+Opening workspace...

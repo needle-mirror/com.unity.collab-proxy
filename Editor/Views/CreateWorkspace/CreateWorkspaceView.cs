@@ -2,17 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
 using UnityEngine;
 
 using Codice.Client.Common;
 using Codice.Client.Common.Threading;
+using Codice.Client.Common.WebApi;
 using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.Configuration.CloudEdition;
 using PlasticGui.WorkspaceWindow.Home.Repositories;
 using PlasticGui.WorkspaceWindow.Home.Workspaces;
-using PlasticGui.WebApi;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.UI.Progress;
 

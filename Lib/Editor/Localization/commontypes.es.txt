@@ -700,7 +700,10 @@ Tipo de revisión no válido: {0}.
 Directorio Activo: El servidor {0} no es válido.
 
 == InvalidServerFormat ==
-El servidor '{0}' tiene un formato no valido. El formato valido para el servidor es: [protocolo://][organizacion@]servidor
+El servidor '{0}' tiene un formato no válido. El formato valido para el servidor es: [protocolo://][organizacion@]servidor
+
+== InvalidOrganizationType ==
+Tipo de organización '{0}' no válido.
 
 == InvalidSname ==
 El valor de server name no es válido.
@@ -890,6 +893,9 @@ El update no puede completarse porque existe conflicto con el item localmente mo
 == MergeWithNotLoadedDestRev ==
 La revisión destino de un merge no puede aparecer como 'no cargada' (NL).
 
+== MigratedOrganizationGenesisIdMismatch ==
+El Genesis ID '{0}' para la organización '{1}' no coincide con el existente '{2}'.
+
 == MissingExternalStorageConfiguration ==
 Los datos de la revisión están en un almacenamiento externo, pero no se ha definido ningún almacenamiento externo. Por favor, añada la configuración del almacenamiento externo en la configuración de base de datos del servidor.
 
@@ -1016,9 +1022,6 @@ La autenticación SAML no ha finalizado.
 == OnlyAdminCanAcceptCert ==
 Es necesario ser administrador del servidor para aceptar un certificado en el servidor.
 
-== OnlyAdminCanConfPlasticTube ==
-Únicamente el administrador del servidor puede modificar la configuración de Plastic Tube.
-
 == OnlyAdminCanExecuteAdminCommand ==
 Es necesario ser administrador del servidor para ejecutar un comando de administración.
 
@@ -1043,6 +1046,9 @@ Operación cancelada por el usuario.
 == OperationNotApplicableToWorkspaces ==
 Esta operación no es aplicable a espacios de trabajo.
 
+== OrganizationAlreadyExists ==
+La organización '{0}' ya existe.
+
 == OrganizationDbCannotBeCreated ==
 La BD '{0}' para la organización '{1}' no se ha podido crear. Por favor inténtelo de nuevo más tarde. Si el problema persiste, por favor contacte con soporte.
 
@@ -1066,6 +1072,12 @@ Estado no válido '{0}' en la organización '{1}'.
 
 == OrganizationMembersEmpty ==
 No fue posible recuperar la información de autenticación Cloud. Por favor, inténtalo de nuevo más tarde. Contacta con nosotros en devops-vcs-support@unity3d.com si el problema persiste.
+
+== OrganizationWithIdDoesNotExist ==
+La organización con ID {0} no existe.
+
+== OrganizationsFileNotFound ==
+No se puede utilizar organizaciones, no se encontró el fichero '{0}'.
 
 == OrphanFoldersDetected ==
 {0} directorios huérfanos detectados en el tree. Solamente ser esperaba uno (la raíz).
@@ -1319,6 +1331,12 @@ No fue encontrada la revisión a cargar
 == RevtreeNoRevsToShow ==
 No se puede mostrar el árbol de revisiones para el ítem {0}.
 
+== RollbackMigratedOrganizationNameMismatch ==
+El nombre de organización especificado '{1}' no corresponde con el nombre previo a la migración '{2}' para el Genesis Org ID '{0}'.
+
+== RollbackMigratedOrganizationInvalid ==
+La organización Unity '{0}' no se puede volver atrás, no fue migrada anteriormente.
+
 == RootitemNumLocated ==
 El ítem raíz debe de ser único en el repositorio. Se han encontrado {0} elementos raíz.
 
@@ -1496,14 +1514,8 @@ El trigger especificado no existe.
 == TryingToLockTwice ==
  No se puede hacer lock exclusivo del mismo ítem ({0}) desde rutas diferentes '{1}' y '{2}'.
 
-== TubeConfUnavailable ==
-No se pudo obtener la configuration de Plastic Tube. Por favor, verifique que el servidor está correctamente configurado para usar Plastic Tube. Puede configurarlo con el comando 'cm tube config'.
-
 == UnexpectedError ==
 Se ha producido un error no esperado "{0}". Para más información consulta el log del servidor.
-
-== UnlicensedTubeFeature ==
-La licencia del servidor Plastic SCM no soporta Plastic Tube.
 
 == UnityOrgPermissionsInheritanceChangesNotAllowed ==
 No se permiten cambios en la herencia de permisos en Organizaciones Unity. Para gestionar el control de acceso en su organización, abra https://cloud.unity.com/home/organizations/{0}/projects/default/devops/overview en su navegador.
@@ -1761,7 +1773,10 @@ recuperar
 undo
 
 == UpdateOperationName ==
-acualizar
+actualizar
+
+== UpgradeOperationName ==
+acualizar metadatos
 
 == WorkspaceTreeOperationName ==
 árbol del workspace

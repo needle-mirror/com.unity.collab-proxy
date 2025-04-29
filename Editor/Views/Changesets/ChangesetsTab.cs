@@ -5,7 +5,6 @@ using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 using Codice.Client.Common;
-using Codice.Client.Common.EventTracking;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.CM.Common.Mount;
@@ -46,6 +45,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         internal ChangesetsTab(
             WorkspaceInfo wkInfo,
             WorkspaceWindow workspaceWindow,
+            ChangesetInfo changesetToSelect,
             IViewSwitcher viewSwitcher,
             IMergeViewLauncher mergeViewLauncher,
             IHistoryViewLauncher historyViewLauncher,
@@ -59,6 +59,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             LaunchTool.IProcessExecutor processExecutor,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            ISaveAssets saveAssets,
             EditorWindow parentWindow,
             bool isGluonMode)
         {
@@ -70,6 +71,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
             mProcessExecutor = processExecutor;
             mWorkspaceOperationsMonitor = workspaceOperationsMonitor;
+            mSaveAssets = saveAssets;
             mParentWindow = parentWindow;
             mIsGluonMode = isGluonMode;
             mGluonUpdateReport = gluonUpdateReport;
@@ -114,7 +116,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 null,
                 mEnableSwitchAndShelveFeatureDialog);
 
-            ((IRefreshableView)this).Refresh();
+            RefreshAndSelect(changesetToSelect);
         }
 
         internal void OnEnable()
@@ -231,14 +233,23 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mProcessExecutor = processExecutor;
         }
 
-        void IRefreshableView.Refresh()
+        internal void RefreshAndSelect(RepObjectInfo repObj)
         {
+            List<RepObjectInfo> changesetsToSelect = repObj == null ?
+                ChangesetsSelection.GetSelectedRepObjectInfos(mChangesetsListView) :
+                new List<RepObjectInfo> { repObj };
+
             string query = GetChangesetsQuery(mDateFilter);
 
             FillChangesets(
                 mWkInfo,
                 query,
-                ChangesetsSelection.GetSelectedRepObjectInfos(mChangesetsListView));
+                changesetsToSelect);
+        }
+
+        void IRefreshableView.Refresh()
+        {
+            RefreshAndSelect(null);
         }
 
         int IChangesetMenuOperations.GetSelectedChangesetsCount()
@@ -280,7 +291,10 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         void IChangesetMenuOperations.DiffWithAnotherChangeset() { }
 
-        void IChangesetMenuOperations.CreateBranch() { }
+        void IChangesetMenuOperations.CreateBranch()
+        {
+            CreateBranchForMode();
+        }
 
         void IChangesetMenuOperations.LabelChangeset() { }
 
@@ -419,8 +433,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
             mIsRefreshing = true;
 
-            int defaultRow = TableViewOperations.
-                GetFirstSelectedRow(mChangesetsListView);
+            int defaultRow = TableViewOperations.GetFirstSelectedRow(mChangesetsListView);
 
             ((IProgressControls)mProgressControls).ShowProgress(
                 PlasticLocalization.GetString(
@@ -432,21 +445,20 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             waiter.Execute(
                 /*threadOperationDelegate*/ delegate
                 {
-                    long loadedChangesetId = GetLoadedChangesetId(
-                        wkInfo, mIsGluonMode);
+                    queryResult = new ViewQueryResult(
+                        PlasticGui.Plastic.API.FindQuery(wkInfo, query));
 
-                    long loadedBranchId = GetLoadedBranchId(
-                        wkInfo, loadedChangesetId, mIsGluonMode);
+                    long changesetId = PlasticGui.Plastic.API.GetLoadedChangeset(wkInfo);
 
                     lock (mLock)
                     {
-                        mLoadedChangesetId = loadedChangesetId;
+                        mLoadedChangesetId = changesetId;
                     }
 
-                    mChangesetsViewMenu.SetLoadedBranchId(loadedBranchId);
+                    BranchInfo currentBranch = PlasticGui.Plastic.API.GetWorkingBranch(wkInfo);
 
-                    queryResult = new ViewQueryResult(
-                        PlasticGui.Plastic.API.FindQuery(wkInfo, query));
+                    if (currentBranch != null)
+                        mChangesetsViewMenu.SetLoadedBranchId(currentBranch.BranchId);
                 },
                 /*afterOperationDelegate*/ delegate
                 {
@@ -454,6 +466,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                     {
                         if (waiter.Exception != null)
                         {
+                            mDiffPanel.ClearInfo();
+
                             ExceptionsHandler.DisplayException(waiter.Exception);
                             return;
                         }
@@ -496,28 +510,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             changesetsListView.Sort();
 
             changesetsListView.Reload();
-        }
-
-        static long GetLoadedChangesetId(
-            WorkspaceInfo wkInfo,
-            bool isGluonMode)
-        {
-            if (isGluonMode)
-                return -1;
-
-            return PlasticGui.Plastic.API.GetLoadedChangeset(wkInfo);
-        }
-
-        static long GetLoadedBranchId(
-            WorkspaceInfo wkInfo,
-            long loadedChangesetId,
-            bool isGluonMode)
-        {
-            if (isGluonMode)
-                return -1;
-
-            return PlasticGui.Plastic.API.GetChangesetInfoFromId(
-                        wkInfo, loadedChangesetId).BranchId;
         }
 
         static int GetChangesetsCount(
@@ -609,10 +601,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 (int)ChangesetsListColumn.CreationDate, false);
 
             mChangesetsViewMenu = new ChangesetsViewMenu(
-                wkInfo,
                 this,
                 this,
-                mShowDownloadPlasticExeWindow,
                 mIsGluonMode);
 
             mChangesetsListView = new ChangesetsListView(
@@ -656,6 +646,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
 
         readonly WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
+        readonly ISaveAssets mSaveAssets;
         readonly bool mIsGluonMode;
         readonly ViewHost mViewHost;
         readonly IGluonUpdateReport mGluonUpdateReport;

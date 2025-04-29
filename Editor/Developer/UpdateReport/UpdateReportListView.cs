@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-using Codice.Client.BaseCommands;
 using Codice.Client.Commands;
 using Codice.Client.Common;
 using Codice.CM.Common;
@@ -14,22 +13,18 @@ using Unity.PlasticSCM.Editor.UI.Tree;
 
 namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
 {
-    internal class UpdateReportListView : TreeView
+    internal class UpdateReportListView : PlasticTreeView
     {
         internal UpdateReportListView(
             WorkspaceInfo wkInfo,
             UpdateReportListHeaderState headerState,
             Action onCheckedReportLineChanged)
-            : base(new TreeViewState())
         {
             mWkInfo = wkInfo;
             mOnCheckedReportLineChanged = onCheckedReportLineChanged;
 
             multiColumnHeader = new MultiColumnHeader(headerState);
             multiColumnHeader.canSort = false;
-
-            rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = false;
         }
 
         internal List<ReportLine> GetCheckedLines()
@@ -90,16 +85,6 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
             return selectedErrors[0];
         }
 
-        public override IList<TreeViewItem> GetRows()
-        {
-            return mRows;
-        }
-
-        protected override TreeViewItem BuildRoot()
-        {
-            return new TreeViewItem(0, -1, string.Empty);
-        }
-
         protected override IList<TreeViewItem> BuildRows(
             TreeViewItem rootItem)
         {
@@ -107,22 +92,6 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
                 this, mReportLines, rootItem, mRows);
 
             return mRows;
-        }
-
-        protected override void BeforeRowsGUI()
-        {
-            int firstRowVisible;
-            int lastRowVisible;
-            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
-
-            GUI.DrawTexture(new Rect(0,
-                firstRowVisible * rowHeight,
-                GetRowRect(0).width + 500,
-                (lastRowVisible * rowHeight) + 1000),
-                Images.GetTreeviewBackgroundTexture());
-
-            DrawTreeViewItem.InitializeStyles();
-            base.BeforeRowsGUI();
         }
 
         protected override void RowGUI(RowGUIArgs args)
@@ -275,7 +244,6 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
             checkedLines.Remove(item);
         }
 
-        List<TreeViewItem> mRows = new List<TreeViewItem>();
         IList mReportLines = new ArrayList();
 
         HashSet<UpdateReportLineListViewItem> mCheckedLines =

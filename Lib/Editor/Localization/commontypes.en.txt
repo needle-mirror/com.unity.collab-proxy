@@ -684,6 +684,9 @@ Invalid module name {0}. It can't be empty and can't contain /
 == InvalidOption ==
 Invalid option.
 
+== InvalidOrganizationType ==
+Invalid organization type '{0}'.
+
 == InvalidOs ==
 The Operating System is not supported in this edition.
 
@@ -890,6 +893,9 @@ The update operation cannot be performed because an item locally changed exists:
 == MergeWithNotLoadedDestRev ==
 Merge destination revision can't be 'not loaded'.
 
+== MigratedOrganizationGenesisIdMismatch ==
+Genesis ID '{0}' for organization '{1}' doesn't match existing '{2}'.
+
 == MissingExternalStorageConfiguration ==
 The revision data is stored on an external storage, but no external storage was defined. Please add the external storage configuration on the server database configuration.
 
@@ -1016,9 +1022,6 @@ The SAML authentication is not finished.
 == OnlyAdminCanAcceptCert ==
 Only the server administrator can accept a certificate on the server.
 
-== OnlyAdminCanConfPlasticTube ==
-Only the server administrator can modify the Plastic Tube configuration.
-
 == OnlyAdminCanExecuteAdminCommand ==
 Only the server administrator can execute an admin command.
 
@@ -1043,6 +1046,9 @@ Operation canceled by user.
 == OperationNotApplicableToWorkspaces ==
 This operation is not applicable to workspaces.
 
+== OrganizationAlreadyExists ==
+Organization '{0}' already exists.
+
 == OrganizationDbCannotBeCreated ==
 The DB '{0}' for organization '{1}' cannot be created. Please try again later. If the problem persists, please contact with support.
 
@@ -1066,6 +1072,12 @@ Invalid status '{0}' in organization '{1}'.
 
 == OrganizationMembersEmpty ==
 Unable to retrieve Cloud authentication information. Please try again later. Contact us at devops-vcs-support@unity3d.com if the problem persists.
+
+== OrganizationWithIdDoesNotExist ==
+Organization with ID {0} doesn't exist.
+
+== OrganizationsFileNotFound ==
+Organizations cannot be used since the file '{0}' was not found.
 
 == OrphanFoldersDetected ==
 {0} orphan folders detected in tree. Only 1 (the root) is expected
@@ -1319,6 +1331,12 @@ The revision to reload was not found
 == RevtreeNoRevsToShow ==
 Can't show revision tree for item {0}.
 
+== RollbackMigratedOrganizationNameMismatch ==
+Specified organization name '{1}' doesn't match the migrated organization name '{2}' for Genesis Org ID '{0}'.
+
+== RollbackMigratedOrganizationInvalid ==
+Migration of Unity organization '{0}' can't be rolled back, it wasn't migrated before.
+
 == RootitemNumLocated ==
 RootItem must be unique in the repository. {0} has been located.
 
@@ -1496,14 +1514,8 @@ The specified trigger does not exist.
 == TryingToLockTwice ==
 Can't perform an exclusive lock of the same item ({0}) from different paths '{1}' and '{2}'.
 
-== TubeConfUnavailable ==
-The Plastic Tube configuration is not available. Please check that your plastic server is correctly configured to use Plastic Tube. You can configure it through the 'cm tube config' command.
-
 == UnexpectedError ==
 There has been an unexpected error "{0}". For more information check the server log.
-
-== UnlicensedTubeFeature ==
-The Plastic Tube is unlicensed in your Plastic SCM server.
 
 == UnityOrgPermissionsInheritanceChangesNotAllowed ==
 Changes to permissions inheritance are not allowed in Unity Organizations. To manage access control in your organization, please open https://cloud.unity.com/home/organizations/{0}/projects/default/devops/overview in your browser.
@@ -1762,6 +1774,9 @@ undo
 
 == UpdateOperationName ==
 update
+
+== UpgradeOperationName ==
+upgrade
 
 == WorkspaceTreeOperationName ==
 workspace tree

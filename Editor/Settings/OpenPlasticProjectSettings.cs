@@ -20,6 +20,16 @@ namespace Unity.PlasticSCM.Editor.Settings
             provider.OpenAllFoldouts();
         }
 
+        internal static void InDiffAndMergeFoldout()
+        {
+            PlasticProjectSettingsProvider provider = OpenInPlasticProjectSettings();
+
+            if (provider == null)
+                return;
+
+            provider.OpenDiffAndMergeFoldout();
+        }
+
         internal static void InShelveAndSwitchFoldout()
         {
             PlasticProjectSettingsProvider provider = OpenInPlasticProjectSettings();

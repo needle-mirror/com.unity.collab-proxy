@@ -1,20 +1,28 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 using UnityEditor.VersionControl;
 
+using Codice.Client.Common.Threading;
+using Codice.CM.Common;
 using Codice.LogWrapper;
+using PlasticGui;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
+
+using PlasticAssetModificationProcessor = Unity.PlasticSCM.Editor.AssetUtils.Processor.AssetModificationProcessor;
 
 namespace Unity.PlasticSCM.Editor.SceneView
 {
     static class DrawSceneOperations
     {
         internal static void Enable(
-            string wkPath,
-            WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            WorkspaceInfo wkInfo,
+            IPlasticAPI plasticApi,
+            IWorkspaceOperationsMonitor workspaceOperationsMonitor,
             IAssetStatusCache assetStatusCache)
         {
             if (mIsEnabled)
@@ -22,7 +30,8 @@ namespace Unity.PlasticSCM.Editor.SceneView
 
             mLog.Debug("Enable");
 
-            mWkPath = wkPath;
+            mWkInfo = wkInfo;
+            mPlasticAPI = plasticApi;
             mWorkspaceOperationsMonitor = workspaceOperationsMonitor;
             mAssetStatusCache = assetStatusCache;
 
@@ -39,7 +48,8 @@ namespace Unity.PlasticSCM.Editor.SceneView
 
             Provider.preCheckoutCallback -= Provider_preCheckoutCallback;
 
-            mWkPath = null;
+            mWkInfo = null;
+            mPlasticAPI = null;
             mWorkspaceOperationsMonitor = null;
             mAssetStatusCache = null;
         }
@@ -49,30 +59,56 @@ namespace Unity.PlasticSCM.Editor.SceneView
             ref string changesetID,
             ref string changesetDescription)
         {
-            if (!mIsEnabled)
-                return true;
+            try
+            {
+                if (!mIsEnabled)
+                    return true;
 
-            if (!FindWorkspace.HasWorkspace(ApplicationDataPath.Get()))
-            { 
-                Disable();
-                return true;
+                List<Asset> assets = GetUnmodifiedAssets(
+                    list, PlasticAssetModificationProcessor.GetModifiedAssetsToProcess());
+
+                if (assets.Count == 0)
+                    return true;
+
+                List<string> selectedPaths = GetSelectedPaths.ForOperation(
+                    mWkInfo, assets, mPlasticAPI, mAssetStatusCache,
+                    AssetMenuOperations.Checkout);
+
+                if (selectedPaths.Count == 0)
+                    return true;
+
+                mWorkspaceOperationsMonitor.AddPathsToCheckout(selectedPaths);
+            }
+            catch (Exception ex)
+            {
+                ExceptionsHandler.LogException(typeof(DrawSceneOperations).Name, ex);
             }
 
-            List<string> selectedPaths = GetSelectedPaths.ForOperation(
-                mWkPath, list, mAssetStatusCache,
-                AssetMenuOperations.Checkout);
-
-            if (selectedPaths.Count == 0)
-                return true;
-
-            mWorkspaceOperationsMonitor.AddPathsToCheckout(selectedPaths);
             return true;
+        }
+
+        static List<Asset> GetUnmodifiedAssets(
+            AssetList assetList,
+            ReadOnlyCollection<string> modifiedAssetsToProcess)
+        {
+            List<Asset> result = new List<Asset>(assetList.Count);
+
+            foreach (Asset asset in assetList)
+            {
+                if (modifiedAssetsToProcess.Contains(asset.path))
+                    continue;
+
+                result.Add(asset);
+            }
+
+            return result;
         }
 
         static bool mIsEnabled;
         static IAssetStatusCache mAssetStatusCache;
-        static WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
-        static string mWkPath;
+        static IWorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
+        static IPlasticAPI mPlasticAPI;
+        static WorkspaceInfo mWkInfo;
 
         static readonly ILog mLog = PlasticApp.GetLogger("DrawSceneOperations");
     }

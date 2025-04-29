@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 
 using UnityEditor;
 using UnityEngine;
 
+using Codice.Client.Common.Threading;
 using Codice.LogWrapper;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
@@ -136,28 +137,35 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
 
         static void OnProjectWindowItemGUI(string guid, Rect selectionRect)
         {
-            if (string.IsNullOrEmpty(guid))
-                return;
+            try
+            {
+                if (string.IsNullOrEmpty(guid))
+                    return;
 
-            if (Event.current.type != EventType.Repaint)
-                return;
+                if (Event.current.type != EventType.Repaint)
+                    return;
 
-            string fullPath = AssetsPath.GetFullPathUnderWorkspace.
-                ForGuid(mWkPath, guid);
+                string fullPath = AssetsPath.GetFullPathUnderWorkspace.
+                    ForGuid(mWkPath, guid);
 
-            if (fullPath == null)
-                return;
+                if (fullPath == null)
+                    return;
 
-            AssetStatus assetStatus = mAssetStatusCache.GetStatus(fullPath);
+                AssetStatus assetStatus = mAssetStatusCache.GetStatus(fullPath);
 
-            string tooltipText = GetTooltipText(
-                assetStatus,
-                mAssetStatusCache.GetLockStatusData(fullPath));
+                string tooltipText = GetTooltipText(
+                    assetStatus,
+                    mAssetStatusCache.GetLockStatusData(fullPath));
 
-            DrawOverlayIcon.ForStatus(
-                selectionRect,
-                assetStatus,
-                tooltipText);
+                DrawOverlayIcon.ForStatus(
+                    selectionRect,
+                    assetStatus,
+                    tooltipText);
+            }
+            catch (Exception ex)
+            {
+                ExceptionsHandler.LogException(typeof(DrawAssetOverlay).Name, ex);
+            }
         }
 
         internal static class DrawOverlayIcon

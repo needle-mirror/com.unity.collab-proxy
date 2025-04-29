@@ -58,11 +58,15 @@ namespace Unity.PlasticSCM.Editor.UI.StatusBar
             void OnGUI();
         }
 
-        internal void Notify(string message, MessageType type, Texture2D image)
+        internal void Notify(INotificationContent content, MessageType type, Texture2D image)
         {
-            mNotification = new Notification(message, type, image);
+            mNotification = new Notification(
+                content,
+                type,
+                image);
             mCooldownNotificationClearAction.Ping();
         }
+
         internal NotificationBar NotificationBar { get; private set; }
 
         internal StatusBar()
@@ -132,16 +136,28 @@ namespace Unity.PlasticSCM.Editor.UI.StatusBar
             DrawWorkspaceStatus(mWorkspaceWindow);
 
             EndDrawBar();
+
+            Rect lastRect = GUILayoutUtility.GetLastRect();
+
+            if (MouseEntered(mIsMouseOver, lastRect))
+            {
+                mIsMouseOver = true;
+                mCooldownNotificationClearAction.Pause();
+            }
+
+            if (MouseExited(mIsMouseOver, lastRect))
+            {
+                mIsMouseOver = false;
+                mCooldownNotificationClearAction.Resume();
+            }
         }
 
-        internal static void DrawNotificationLabel(GUIContent label)
+        internal static void DrawNotification(INotificationContent notification)
         {
             GUILayout.BeginVertical();
             GUILayout.FlexibleSpace();
 
-            GUILayout.Label(
-                label,
-                UnityStyles.StatusBar.NotificationLabel);
+            notification.OnGUI();
 
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
@@ -183,7 +199,7 @@ namespace Unity.PlasticSCM.Editor.UI.StatusBar
         static void DrawNotification(Notification notification)
         {
             DrawIcon(notification.Image);
-            DrawNotificationLabel(new GUIContent(notification.Message));
+            DrawNotification(notification.Content);
         }
 
         static void DrawWorkspaceStatus(WorkspaceWindow workspaceWindow)
@@ -193,7 +209,7 @@ namespace Unity.PlasticSCM.Editor.UI.StatusBar
             if (workspaceWindow.WorkspaceStatus == null)
                 return;
 
-            DrawLabel(string.Format(
+            DrawWorkspaceStatusLabel(string.Format(
                 "{0}@{1}@{2}",
                 workspaceWindow.WorkspaceStatus.ObjectSpec,
                 workspaceWindow.WorkspaceStatus.RepositoryName,
@@ -215,14 +231,12 @@ namespace Unity.PlasticSCM.Editor.UI.StatusBar
             GUILayout.EndVertical();
         }
 
-        static void DrawLabel(string label)
+        static void DrawWorkspaceStatusLabel(string label)
         {
             GUILayout.BeginVertical();
             GUILayout.FlexibleSpace();
 
-            GUILayout.Label(
-                label,
-                UnityStyles.StatusBar.Label);
+            DrawCopyableLabel.For(label, UnityStyles.StatusBar.Label);
 
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
@@ -259,15 +273,31 @@ namespace Unity.PlasticSCM.Editor.UI.StatusBar
             return sBarStyle;
         }
 
+        static bool MouseEntered(
+            bool isMouseOver,
+            Rect lastRect)
+        {
+            bool isInside = lastRect.Contains(Event.current.mousePosition);
+            return isInside && !isMouseOver;
+        }
+
+        static bool MouseExited(
+            bool isMouseOver,
+            Rect lastRect)
+        {
+            bool isInside = lastRect.Contains(Event.current.mousePosition);
+            return !isInside && isMouseOver;
+        }
+
         class Notification
         {
-            internal string Message { get; private set; }
+            internal INotificationContent Content { get; private set; }
             internal MessageType MessageType { get; private set; }
             internal Texture2D Image { get; private set; }
 
-            internal Notification(string message, MessageType messageType, Texture2D image)
+            internal Notification(INotificationContent content, MessageType messageType, Texture2D image)
             {
-                Message = message;
+                Content = content;
                 MessageType = messageType;
                 Image = image;
             }
@@ -277,6 +307,7 @@ namespace Unity.PlasticSCM.Editor.UI.StatusBar
         WorkspaceWindow mWorkspaceWindow;
         IIncomingChangesNotification mIncomingChangesNotification;
         IShelvedChangesNotification mShelvedChangesNotification;
+        bool mIsMouseOver = false;
 
         readonly CooldownWindowDelayer mCooldownNotificationClearAction;
 

@@ -11,9 +11,39 @@ using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 
 namespace Unity.PlasticSCM.Editor.AssetUtils
 {
-    internal static class SaveAssets
+    internal interface ISaveAssets
     {
-        internal static void UnderWorkspaceWithConfirmation(
+        void UnderWorkspaceWithConfirmation(
+            string wkPath,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            out bool isCancelled);
+
+        void ForChangesWithConfirmation(
+            string wkPath,
+            List<ChangeInfo> changes,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            out bool isCancelled);
+
+        void ForPathsWithConfirmation(
+            string wkPath,
+            List<string> paths,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            out bool isCancelled);
+
+        void ForChangesWithoutConfirmation(
+            string wkPath,
+            List<ChangeInfo> changes,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor);
+
+        void ForPathsWithoutConfirmation(
+            string wkPath,
+            List<string> paths,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor);
+    }
+
+    internal class SaveAssets : ISaveAssets
+    {
+        void ISaveAssets.UnderWorkspaceWithConfirmation(
             string wkPath,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
             out bool isCancelled)
@@ -26,7 +56,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
                 out isCancelled);
         }
 
-        internal static void ForChangesWithConfirmation(
+        void ISaveAssets.ForChangesWithConfirmation(
             string wkPath,
             List<ChangeInfo> changes,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
@@ -40,7 +70,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
                 out isCancelled);
         }
 
-        internal static void ForPathsWithConfirmation(
+        void ISaveAssets.ForPathsWithConfirmation(
             string wkPath,
             List<string> paths,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
@@ -54,7 +84,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
                 out isCancelled);
         }
 
-        internal static void ForChangesWithoutConfirmation(
+        void ISaveAssets.ForChangesWithoutConfirmation(
             string wkPath,
             List<ChangeInfo> changes,
             WorkspaceOperationsMonitor workspaceOperationsMonitor)
@@ -68,7 +98,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
                 out isCancelled);
         }
 
-        internal static void ForPathsWithoutConfirmation(
+        void ISaveAssets.ForPathsWithoutConfirmation(
             string wkPath,
             List<string> paths,
             WorkspaceOperationsMonitor workspaceOperationsMonitor)

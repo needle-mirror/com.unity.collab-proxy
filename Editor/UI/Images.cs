@@ -63,7 +63,8 @@ namespace Unity.PlasticSCM.Editor.UI
             Refresh,
             IconInviteUsers,
             IconLock,
-            IconShelve
+            IconShelve,
+            IconClipboard,
         }
 
         internal static Texture2D GetImage(Name image)
@@ -224,6 +225,16 @@ namespace Unity.PlasticSCM.Editor.UI
             return mRefreshIcon;
         }
 
+        internal static Texture GetHideIcon()
+        {
+            return GetIconFromEditorGUI("scenevis_hidden_hover");
+        }
+
+        internal static Texture GetUnhideIcon()
+        {
+            return GetIconFromEditorGUI("scenevis_visible_hover");
+        }
+
         internal static Texture GetSettingsIcon()
         {
             return GetIconFromEditorGUI("settings");
@@ -267,6 +278,14 @@ namespace Unity.PlasticSCM.Editor.UI
                 mPlasticIcon = GetImage(Name.IconPlastic);
 
             return mPlasticIcon;
+        }
+
+        internal static Texture2D GetClipboardIcon()
+        {
+            if (mClipboardIcon == null)
+                mClipboardIcon = GetImage(Name.IconClipboard);
+
+            return mClipboardIcon;
         }
 
         internal static Texture2D GetBranchIcon()
@@ -759,6 +778,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
         static Texture2D mUndoIcon;
         static Texture2D mPlasticIcon;
+        static Texture2D mClipboardIcon;
         static Texture2D mBranchIcon;
         static Texture2D mBranchesIcon;
         static Texture2D mBranchExplorerIcon;

@@ -5,8 +5,9 @@ using UnityEditor;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
-using Codice.CM.Common;
+using Codice.Client.Common.Authentication;
 using Codice.Client.Common.Connection;
+using Codice.CM.Common;
 using PlasticGui.WorkspaceWindow.Home;
 
 namespace Unity.PlasticSCM.Editor.Configuration
@@ -63,9 +64,12 @@ namespace Unity.PlasticSCM.Editor.Configuration
         AskCredentialsToUser.DialogData BuildCredentialsDialogData(
             ResponseType dialogResult)
         {
-            return new AskCredentialsToUser.DialogData(
-                dialogResult == ResponseType.Ok,
-                mUser, mPassword, mSaveProfile, mSeidWorkingMode);
+            return dialogResult == ResponseType.Ok
+                ? AskCredentialsToUser.DialogData.Success(
+                    new Credentials(
+                        new SEID(mUser, false, mPassword),
+                        mSeidWorkingMode))
+                : AskCredentialsToUser.DialogData.Failure(mSeidWorkingMode);
         }
 
         void DoEntriesArea()
@@ -120,8 +124,7 @@ namespace Unity.PlasticSCM.Editor.Configuration
 
         void OkButtonWithValidationAction()
         {
-            CredentialsDialogValidation.AsyncValidation(
-                BuildCredentialsDialogData(ResponseType.Ok), this, mProgressControls);
+            CredentialsDialogValidation.Validate(mUser, mPassword, this, mProgressControls);
         }
 
         static CredentialsDialog Create(

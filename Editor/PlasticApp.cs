@@ -13,6 +13,7 @@ using Codice.Client.Common.EventTracking;
 using Codice.Client.Common.FsNodeReaders;
 using Codice.Client.Common.FsNodeReaders.Watcher;
 using Codice.Client.Common.Threading;
+using Codice.Client.Common.WebApi;
 using Codice.CM.Common;
 using Codice.CM.ConfigureHelper;
 using Codice.CM.WorkspaceServer;
@@ -21,8 +22,6 @@ using Codice.Utils;
 using CodiceApp.EventTracking;
 using MacUI;
 using PlasticGui;
-using PlasticGui.EventTracking;
-using PlasticGui.WebApi;
 using PlasticPipe.Certificates;
 using Unity.PlasticSCM.Editor.Configuration;
 using Unity.PlasticSCM.Editor.Tool;
@@ -71,6 +70,8 @@ namespace Unity.PlasticSCM.Editor
 
             mLog.Debug("InitializeIfNeeded");
 
+            mLog.DebugFormat("Unity version: {0}", Application.unityVersion);
+
             // Ensures that the Edition Token is initialized from the UVCS installation regardless of if the PlasticWindow is opened
             UnityConfigurationChecker.SynchronizeUnityEditionToken();
             PlasticInstallPath.LogInstallationInfo();
@@ -93,12 +94,6 @@ namespace Unity.PlasticSCM.Editor
 
             SetupFsWatcher();
 
-            // The plastic library holds an internal cache of slugs that relies on the file unityorgs.conf.
-            // This file might contain outdated information or not exist at all, so we need to ensure
-            // the cloud organizations are loaded and populated to the internal cache during the initialization.
-            if (!PlasticPlugin.IsUnitTesting)
-                SetupCloudOrganizations();
-
             EditionManager.Get().DisableCapability(EnumEditionCapabilities.Extensions);
 
             ClientHandlers.Register();
@@ -113,10 +108,10 @@ namespace Unity.PlasticSCM.Editor
                     IdentifyEventPlatform.Get());
             }
 
+            UVCPackageVersion.Initialize();
+
             if (mEventSenderScheduler != null)
             {
-                UVCPackageVersion.AsyncGetVersion();
-
                 mPingEventLoop = new PingEventLoop(
                     BuildGetEventExtraInfoFunction.ForPingEvent());
                 mPingEventLoop.Start();
@@ -126,6 +121,15 @@ namespace Unity.PlasticSCM.Editor
                 new CredentialsUiImpl());
             ClientEncryptionServiceProvider.SetEncryptionPasswordProvider(
                 new MissingEncryptionPasswordPromptHandler());
+        }
+
+        internal static void Enable()
+        {
+            PlasticGui.Plastic.WebRestAPI.SetToken(
+                CmConnection.Get().BuildWebApiTokenForCloudEditionDefaultUser());
+
+            if (!PlasticPlugin.IsUnitTesting)
+                SetupCloudOrganizations(PlasticGui.Plastic.WebRestAPI);
         }
 
         internal static void SetWorkspace(WorkspaceInfo wkInfo)
@@ -138,8 +142,6 @@ namespace Unity.PlasticSCM.Editor
                 return;
 
             mPingEventLoop.SetWorkspace(mWkInfo);
-            PlasticGui.Plastic.WebRestAPI.SetToken(
-                CmConnection.Get().BuildWebApiTokenForCloudEditionDefaultUser());
         }
 
         internal static void RegisterWorkspaceWindow(IWorkspaceWindow workspaceWindow)
@@ -200,6 +202,17 @@ namespace Unity.PlasticSCM.Editor
             {
                 mIsInitialized = false;
             }
+        }
+
+        static void SetupCloudOrganizations(IPlasticWebRestApi restApi)
+        {
+            if (!EditionToken.IsCloudEdition())
+                return;
+
+            // The plastic library holds an internal cache of slugs that relies on the file unityorgs.conf.
+            // This file might contain outdated information or not exist at all, so we need to ensure
+            // the cloud organizations are loaded and populated to the internal cache during the initialization.
+            OrganizationsInformation.LoadCloudOrganizationsAsync(restApi);
         }
 
         static void RegisterDomainUnloadHandler()
@@ -385,16 +398,6 @@ namespace Unity.PlasticSCM.Editor
                 new MacFsWatcherBuilder());
         }
 
-        static void SetupCloudOrganizations()
-        {
-            if (!EditionToken.IsCloudEdition())
-            {
-                return;
-            }
-
-            OrganizationsInformation.LoadCloudOrganizationsAsync();
-        }
-
         static bool IsPlasticStackTrace(string stackTrace)
         {
             if (stackTrace == null)
@@ -424,6 +427,8 @@ namespace Unity.PlasticSCM.Editor
                     WriteLogConfiguration.For(log4netpath);
 
                 XmlConfigurator.Configure(new FileInfo(log4netpath));
+
+                mLog.DebugFormat("Configured logging in '{0}'", log4netpath);
             }
             catch
             {
@@ -432,6 +437,7 @@ namespace Unity.PlasticSCM.Editor
         }
 
         static bool mIsDomainUnloadHandlerRegistered;
+
         static bool mIsInitialized;
         static IWorkspaceWindow mWorkspaceWindow;
         static WorkspaceInfo mWkInfo;

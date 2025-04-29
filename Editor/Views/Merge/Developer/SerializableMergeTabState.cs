@@ -8,62 +8,47 @@ using PlasticGui.WorkspaceWindow.Merge;
 namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
 {
     [Serializable]
-    internal class BuildMergeTabParameters
+    internal class SerializableMergeTabState
     {
-        internal RepositorySpec RepSpec
-        {
-            get { return mRepSpec; }
-        }
+        internal RepositorySpec RepSpec { get; private set; }
+        internal EnumMergeType MergeType { get; private set; }
+        internal ShowIncomingChangesFrom From { get; private set; }
+        internal bool IsIncomingMerge { get; private set; }
+        internal bool IsMergeFinished { get; set; }
 
-        internal EnumMergeType MergeType
-        {
-            get { return mMergeType; }
-        }
+        internal bool IsInitialized { get; private set; }
 
-        internal ShowIncomingChangesFrom From
-        {
-            get { return mFrom; }
-        }
-
-        internal bool IsIncomingMerge
-        {
-            get { return mIsIncomingMerge; }
-        }
-
-        internal bool IsInitialized
-        {
-            get { return mIsInitialized; }
-        }
-
-        internal BuildMergeTabParameters(
+        internal SerializableMergeTabState(
             RepositorySpec repSpec,
             ObjectInfo objectInfo,
             ObjectInfo ancestorObjectInfo,
             EnumMergeType mergeType,
             ShowIncomingChangesFrom from,
-            bool isIncomingMerge)
+            bool isIncomingMerge,
+            bool isMergeFinished)
         {
-            mRepSpec = repSpec;
+            RepSpec = repSpec;
 
             SetObjectInfo(objectInfo);
             SetAncestorObjectInfo(ancestorObjectInfo);
 
-            mMergeType = mergeType;
-            mFrom = from;
-            mIsIncomingMerge = isIncomingMerge;
+            MergeType = mergeType;
+            From = from;
+            IsIncomingMerge = isIncomingMerge;
+            IsMergeFinished = isMergeFinished;
 
-            mIsInitialized = true;
+            IsInitialized = true;
         }
 
         internal ObjectInfo GetObjectInfo()
         {
-            if (mBranchInfo.Id != -1)
+            if (mBranchInfo != null && mBranchInfo.Id != -1)
                 return mBranchInfo;
 
-            if (mChangesetInfo.Id != -1)
+            if (mChangesetInfo != null && mChangesetInfo.Id != -1)
                 return mChangesetInfo;
 
-            if (mLabelInfo.Id != -1)
+            if (mLabelInfo != null && mLabelInfo.Id != -1)
                 return mLabelInfo;
 
             return null;
@@ -71,13 +56,13 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
 
         internal ObjectInfo GetAncestorObjectInfo()
         {
-            if (mAncestorBranchInfo.Id != -1)
+            if (mAncestorBranchInfo != null && mAncestorBranchInfo.Id != -1)
                 return mAncestorBranchInfo;
 
-            if (mAncestorChangesetInfo.Id != -1)
+            if (mAncestorChangesetInfo != null && mAncestorChangesetInfo.Id != -1)
                 return mAncestorChangesetInfo;
 
-            if (mAncestorLabelInfo.Id != -1)
+            if (mAncestorLabelInfo != null && mAncestorLabelInfo.Id != -1)
                 return mAncestorLabelInfo;
 
             return null;
@@ -126,9 +111,6 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         }
 
         [SerializeField]
-        RepositorySpec mRepSpec;
-
-        [SerializeField]
         BranchInfo mBranchInfo;
         [SerializeField]
         ChangesetInfo mChangesetInfo;
@@ -141,15 +123,5 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         ChangesetInfo mAncestorChangesetInfo;
         [SerializeField]
         MarkerInfo mAncestorLabelInfo;
-
-        [SerializeField]
-        EnumMergeType mMergeType;
-        [SerializeField]
-        ShowIncomingChangesFrom mFrom;
-        [SerializeField]
-        bool mIsIncomingMerge;
-
-        [SerializeField]
-        bool mIsInitialized;
     }
 }

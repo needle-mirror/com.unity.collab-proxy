@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -6,6 +7,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.VersionControl;
 
+using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.LogWrapper;
 using PlasticGui;
@@ -23,7 +25,8 @@ namespace Unity.PlasticSCM.Editor.Inspector
     static class DrawInspectorOperations
     {
         internal static void Enable(
-            string wkPath,
+            WorkspaceInfo wkInfo,
+            IPlasticAPI plasticApi,
             IAssetStatusCache assetStatusCache)
         {
             if (mIsEnabled)
@@ -31,7 +34,8 @@ namespace Unity.PlasticSCM.Editor.Inspector
 
             mLog.Debug("Enable");
 
-            mWkPath = wkPath;
+            mWkInfo = wkInfo;
+            mPlasticAPI = plasticApi;
             mAssetStatusCache = assetStatusCache;
 
             mIsEnabled = true;
@@ -55,7 +59,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
 
             RepaintInspector.All();
 
-            mWkPath = null;
+            mWkInfo = null;
             mAssetStatusCache = null;
             mAssetSelection = null;
             mOperations = null;
@@ -63,11 +67,13 @@ namespace Unity.PlasticSCM.Editor.Inspector
 
         internal static void BuildOperations(
             WorkspaceInfo wkInfo,
+            IPlasticAPI plasticApi,
             WorkspaceWindow workspaceWindow,
             IViewSwitcher viewSwitcher,
             IHistoryViewLauncher historyViewLauncher,
             GluonGui.ViewHost viewHost,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            ISaveAssets saveAssets,
             PlasticGui.WorkspaceWindow.NewIncomingChangesUpdater incomingChangesUpdater,
             ShelvedChangesUpdater shelvedChangesUpdater,
             IAssetStatusCache assetStatusCache,
@@ -77,15 +83,17 @@ namespace Unity.PlasticSCM.Editor.Inspector
             bool isGluonMode)
         {
             if (!mIsEnabled)
-                Enable(wkInfo.ClientPath, assetStatusCache);
+                Enable(wkInfo, plasticApi, assetStatusCache);
 
             mOperations = new AssetVcsOperations(
                 wkInfo,
+                plasticApi,
                 workspaceWindow,
                 viewSwitcher,
                 historyViewLauncher,
                 viewHost,
                 workspaceOperationsMonitor,
+                saveAssets,
                 incomingChangesUpdater,
                 shelvedChangesUpdater,
                 mAssetStatusCache,
@@ -98,40 +106,49 @@ namespace Unity.PlasticSCM.Editor.Inspector
 
         static void Editor_finishedDefaultHeaderGUI(UnityEditor.Editor inspector)
         {
-            if (!mIsEnabled)
-                return;
-
-            if (!FindWorkspace.HasWorkspace(ApplicationDataPath.Get()))
+            try
             {
-                Disable();
-                return;
+                if (!mIsEnabled)
+                    return;
+
+                mAssetSelection.SetActiveInspector(inspector);
+
+                AssetList assetList = ((AssetVcsOperations.IAssetSelection)
+                    mAssetSelection).GetSelectedAssets();
+
+                if (assetList.Count == 0)
+                    return;
+
+                SelectedAssetGroupInfo selectedGroupInfo = SelectedAssetGroupInfo.
+                    BuildFromAssetList(mWkInfo, assetList, mPlasticAPI, mAssetStatusCache);
+
+                if (assetList.Count != selectedGroupInfo.SelectedCount)
+                    return;
+
+                AssetsOverlays.AssetStatus assetStatus;
+                LockStatusData lockStatusData;
+                GetAssetStatusToDraw(
+                    assetList[0].path, assetList.Count,
+                    mAssetStatusCache,
+                    out assetStatus,
+                    out lockStatusData);
+
+                AssetMenuOperations assetOperations = AssetMenuUpdater.
+                    GetAvailableMenuOperations(selectedGroupInfo);
+
+                DrawAssetStatusHeader(assetStatus, lockStatusData, assetOperations);
             }
+            catch (Exception ex)
+            {
+                ExceptionsHandler.LogException(typeof(DrawInspectorOperations).Name, ex);
+            }
+        }
 
-            mAssetSelection.SetActiveInspector(inspector);
-
-            AssetList assetList = ((AssetVcsOperations.IAssetSelection)
-                mAssetSelection).GetSelectedAssets();
-
-            if (assetList.Count == 0)
-                return;
-
-            SelectedAssetGroupInfo selectedGroupInfo = SelectedAssetGroupInfo.
-                BuildFromAssetList(mWkPath, assetList, mAssetStatusCache);
-
-            if (assetList.Count != selectedGroupInfo.SelectedCount)
-                return;
-
-            AssetsOverlays.AssetStatus assetStatus;
-            LockStatusData lockStatusData;
-            GetAssetStatusToDraw(
-                assetList[0].path, assetList.Count,
-                mAssetStatusCache,
-                out assetStatus,
-                out lockStatusData);
-
-            AssetMenuOperations assetOperations = AssetMenuUpdater.
-                GetAvailableMenuOperations(selectedGroupInfo);
-
+        static void DrawAssetStatusHeader(
+            AssetsOverlays.AssetStatus assetStatus,
+            LockStatusData lockStatusData,
+            AssetMenuOperations assetOperations)
+        {
             bool guiEnabledBck = GUI.enabled;
             GUI.enabled = true;
             try
@@ -328,7 +345,8 @@ namespace Unity.PlasticSCM.Editor.Inspector
 
         static bool mIsEnabled;
         static IAssetStatusCache mAssetStatusCache;
-        static string mWkPath;
+        static IPlasticAPI mPlasticAPI;
+        static WorkspaceInfo mWkInfo;
 
         const string EXTRA_SPACE = "    ";
 

@@ -21,7 +21,7 @@ using Unity.PlasticSCM.Editor.AssetsOverlays;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
-    internal class PendingChangesTreeView : TreeView
+    internal class PendingChangesTreeView : PlasticTreeView
     {
         internal PendingChangesTreeView(
             WorkspaceInfo wkInfo,
@@ -30,7 +30,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             List<string> columnNames,
             PendingChangesViewMenu menu,
             IAssetStatusCache assetStatusCache)
-            : base(new TreeViewState())
         {
             mWkInfo = wkInfo;
             mIsGluonMode = isGluonMode;
@@ -49,8 +48,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             multiColumnHeader.sortingChanged += SortingChanged;
 
             customFoldoutYOffset = UnityConstants.TREEVIEW_FOLDOUT_Y_OFFSET;
-            rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = false;
 
             mCooldownFilterAction = new CooldownWindowDelayer(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
@@ -91,11 +88,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             SelectionChanged(GetSelection());
         }
 
-        public override IList<TreeViewItem> GetRows()
-        {
-            return mRows;
-        }
-
         public override void OnGUI(Rect rect)
         {
             MultiColumnHeader.DefaultStyles.background =
@@ -130,11 +122,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             return item is ChangeCategoryTreeViewItem || item is ChangelistTreeViewItem;
         }
 
-        protected override TreeViewItem BuildRoot()
-        {
-            return new TreeViewItem(0, -1, string.Empty);
-        }
-
         protected override IList<TreeViewItem> BuildRows(TreeViewItem rootItem)
         {
             try
@@ -165,22 +152,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         {
             mMenu.Popup();
             Repaint();
-        }
-
-        protected override void BeforeRowsGUI()
-        {
-            int firstRowVisible;
-            int lastRowVisible;
-            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
-
-            GUI.DrawTexture(new Rect(0,
-                firstRowVisible * rowHeight,
-                GetRowRect(0).width,
-                (lastRowVisible * rowHeight) + 1000),
-                Images.GetTreeviewBackgroundTexture());
-
-            DrawTreeViewItem.InitializeStyles();
-            base.BeforeRowsGUI();
         }
 
         protected override void RowGUI(RowGUIArgs args)
@@ -997,7 +968,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         TreeViewItemIds<IPlasticTreeNode, PendingChangeInfo> mTreeViewItemIds =
             new TreeViewItemIds<IPlasticTreeNode, PendingChangeInfo>();
-        List<TreeViewItem> mRows = new List<TreeViewItem>();
 
         UnityPendingChangesTree mPendingChangesTree;
         CooldownWindowDelayer mCooldownFilterAction;

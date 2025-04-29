@@ -104,8 +104,9 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             DoDiffTreeViewArea(
                 mDiffTreeView,
-                mEmptyStateContent,
-                mProgressControls.IsOperationRunning());
+                mEmptyStateData,
+                mProgressControls.IsOperationRunning(),
+                mParentWindow.Repaint);
 
             if (mProgressControls.HasNotification())
             {
@@ -147,7 +148,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         SelectedDiffsGroupInfo IDiffTreeViewMenuOperations.GetSelectedDiffsGroupInfo()
         {
             return SelectedDiffsGroupInfo.BuildFromSelectedNodes(
-                DiffSelection.GetSelectedDiffsWithoutMeta(mDiffTreeView));
+                DiffSelection.GetSelectedDiffsWithoutMeta(mDiffTreeView),
+                mWkInfo != null);
         }
 
         void IDiffTreeViewMenuOperations.Diff()
@@ -315,15 +317,19 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                 {
                     ((IProgressControls)mProgressControls).HideProgress();
 
-                    if (waiter.Exception != null)
-                    {
-                        ExceptionsHandler.DisplayException(waiter.Exception);
-                        return;
-                    }
-
                     if (mSelectedMountWithPath != mountWithPath ||
                         mSelectedChangesetInfo != csetInfo)
                         return;
+
+                    if (waiter.Exception != null)
+                    {
+                        ExceptionsHandler.LogException("DiffPanel", waiter.Exception);
+
+                        ((IProgressControls)mProgressControls).ShowError(waiter.Exception.Message);
+
+                        ClearDiffs();
+                        return;
+                    }
 
                     if (mDiffs == null || mDiffs.Count == 0)
                     {
@@ -454,8 +460,9 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         static void DoDiffTreeViewArea(
             DiffTreeView diffTreeView,
-            GUIContent emptyStateContent,
-            bool isOperationRunning)
+            EmptyStateData emptyStateData,
+            bool isOperationRunning,
+            Action repaint)
         {
             GUI.enabled = !isOperationRunning;
 
@@ -463,10 +470,12 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             diffTreeView.OnGUI(rect);
 
-            emptyStateContent.text = GetEmptyStateMessage(diffTreeView);
+            emptyStateData.Update(
+                GetEmptyStateMessage(diffTreeView),
+                rect, Event.current.type, repaint);
 
-            if (!string.IsNullOrEmpty(emptyStateContent.text))
-                DrawTreeViewEmptyState.For(rect, emptyStateContent);
+            if (!emptyStateData.IsEmpty())
+                DrawTreeViewEmptyState.For(emptyStateData);
 
             GUI.enabled = true;
         }
@@ -502,7 +511,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         SearchField mSearchField;
         DiffTreeView mDiffTreeView;
 
-        readonly GUIContent mEmptyStateContent = new GUIContent(string.Empty);
+        readonly EmptyStateData mEmptyStateData = new EmptyStateData();
         readonly ProgressControlsForViews mProgressControls;
         readonly GuiMessage.IGuiMessage mGuiMessage;
         readonly EditorWindow mParentWindow;

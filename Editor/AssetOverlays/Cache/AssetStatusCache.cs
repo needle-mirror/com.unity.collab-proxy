@@ -9,6 +9,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
         LockStatusData GetLockStatusData(string fullPath);
         void Clear();
         void ClearLocks();
+        void Cancel();
     }
 
     internal class AssetStatusCache : IAssetStatusCache
@@ -17,7 +18,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
             WorkspaceInfo wkInfo,
             bool isGluonMode)
         {
-            mLocalStatusCache = new LocalStatusCache(wkInfo);
+            mLocalStatusCache = new LocalStatusCache();
 
             mRemoteStatusCache = new RemoteStatusCache(
                 wkInfo,
@@ -60,6 +61,12 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
         void IAssetStatusCache.ClearLocks()
         {
             mLockStatusCache.Clear();
+        }
+
+        void IAssetStatusCache.Cancel()
+        {
+            mRemoteStatusCache.Cancel();
+            mLockStatusCache.Cancel();
         }
 
         readonly LocalStatusCache mLocalStatusCache;

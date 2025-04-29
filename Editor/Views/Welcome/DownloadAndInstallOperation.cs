@@ -3,11 +3,11 @@ using System.IO;
 using System.Net;
 
 using Codice.Client.Common.Threading;
+using Codice.Client.Common.WebApi.Responses;
 using Codice.CM.Common;
 using Codice.Utils;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
-using PlasticGui.WebApi.Responses;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI.UIElements;
 using Unity.PlasticSCM.Editor.WebApi;

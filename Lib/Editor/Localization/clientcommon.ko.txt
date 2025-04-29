@@ -371,6 +371,9 @@ Xlink '{0}'이(가) 더 이상 서버에 로드되지 않으므로 Xlink 내에�
 == GetRevisionDirectoryNotSupported ==
 GetRevision은 디렉터리에서 지원되지 않습니다. 디렉터리 내용을 가져오려면 이를 워크스페이스 규칙에 로드하십시오.
 
+== GettingSSOProviders ==
+조직 공급자를 가져오는 중...
+
 == GluonPartialUpdateToDifferentBranch ==
 업데이트 작업을 계속할 수 없습니다. 대상 변경 세트가 현재 워크스페이스 브랜치에 있어야 합니다: {0}.
 
@@ -615,6 +618,9 @@ GetRevision은 디렉터리에서 지원되지 않습니다. 디렉터리 내용
 == NoPathBetweenCsets ==
 '{0}' 및 '{1}' 간에 경로가 없습니다.
 
+== NoProvidersForOrganization ==
+지정된 조직은 SSO를 사용한 액세스를 허용하지 않습니다
+
 == NoSuchCodeReview ==
 지정된 코드 검토 '{0}'을(를) 찾을 수 없습니다.
 
@@ -626,6 +632,9 @@ GetRevision은 디렉터리에서 지원되지 않습니다. 디렉터리 내용
 
 == NotValidCmPath ==
 지정된 경로 {0}은(는) 유효한 서버 경로가 아닙니다.
+
+== OAuthSignInCheckMessage ==
+세션을 기다리는 중...
 
 == ObjectNameField ==
 객체 이름
@@ -668,6 +677,9 @@ GetRevision은 디렉터리에서 지원되지 않습니다. 디렉터리 내용
 
 == RestorePathShouldNotExist ==
 복원 경로가 존재하지 않아야 합니다.
+
+== RetrievingOrgsProgress ==
+조직을 가져오는 중...
 
 == RevdatanotfoundForSpec ==
 지정된 개정 사양에 대한 데이터가 없습니다

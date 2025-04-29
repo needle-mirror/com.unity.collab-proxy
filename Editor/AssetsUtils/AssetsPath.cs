@@ -120,7 +120,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
                 "Assets/Plugins/PlasticSCM/Editor/Assets";
         }
 
-        static readonly string mProjectFullPath = ProjectPath.FromApplicationDataPath(ApplicationDataPath.Get());
+        static readonly string mProjectFullPath = ProjectPath.Get();
         static readonly string mProjectPackagesFullPath = Path.Combine(mProjectFullPath, "Packages");
 
         static string mAssetsFolderLocation;

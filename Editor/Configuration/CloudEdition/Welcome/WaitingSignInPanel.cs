@@ -1,12 +1,11 @@
 ﻿using System;
 
 using Codice.Client.Common;
-using Codice.Client.Common.OAuth;
+using Codice.Client.Common.Authentication;
+using Codice.Client.Common.WebApi;
 using Codice.CM.Common;
 
 using PlasticGui;
-using PlasticGui.Configuration.OAuth;
-using PlasticGui.WebApi;
 using Unity.PlasticSCM.Editor.UI.UIElements;
 using UnityEngine.UIElements;
 
@@ -17,14 +16,12 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         internal WaitingSignInPanel(
             IWelcomeWindowNotify parentNotify,
             OAuthSignIn.INotify notify,
-            IPlasticWebRestApi restApi,
-            CmConnection cmConnection)
+            IPlasticWebRestApi restApi)
         {
             mParentNotify = parentNotify;
 
             mNotify = notify;
             mRestApi = restApi;
-            mCmConnection = cmConnection;
 
             InitializeLayoutAndStyles();
 
@@ -32,25 +29,18 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         }
 
         internal void OAuthSignIn(
-            Guid state,
-            Uri signInUrl,
-            string ssoProviderName,
-            IGetOauthToken getToken)
+            AuthProvider provider,
+            IGetCredentialsFromState getCredentialsFromState)
         {
             mSignIn = new OAuthSignIn();
 
-            mSignIn.ForUnityPackage(
-                SEIDWorkingMode.SSOWorkingMode,
-                signInUrl,
-                state,
-                ssoProviderName,
+            mSignIn.SignInForProviderInThreadWaiter(
+                provider,
                 string.Empty,
                 mProgressControls,
                 mNotify,
-                mCmConnection,
                 new OAuthSignIn.Browser(),
-                getToken,
-                mRestApi);
+                getCredentialsFromState);
 
             ShowWaitingSpinner();
         }
@@ -122,7 +112,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         UI.Progress.ProgressControlsForDialogs mProgressControls;
 
         readonly IPlasticWebRestApi mRestApi;
-        readonly CmConnection mCmConnection;
         readonly OAuthSignIn.INotify mNotify;
         readonly IWelcomeWindowNotify mParentNotify;
     }

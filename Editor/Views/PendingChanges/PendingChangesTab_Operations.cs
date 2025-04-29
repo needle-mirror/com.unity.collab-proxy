@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Codice.Client.BaseCommands;
 using Codice.Client.Common;
@@ -10,59 +11,14 @@ using GluonGui.WorkspaceWindow.Views.Checkin.Operations;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Settings;
-using Unity.PlasticSCM.Editor.Tool;
-using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs;
-using Unity.PlasticSCM.Editor.WebApi;
+
+using UnityEditor;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
-    internal partial class PendingChangesTab : GetOperationDelegate.INotifySuccess
+    internal partial class PendingChangesTab
     {
-        void GetOperationDelegate.INotifySuccess.InStatusBar(string message)
-        {
-            mStatusBar.Notify(
-                message,
-                UnityEditor.MessageType.None,
-                Images.GetStepOkIcon());
-        }
-
-        void GetOperationDelegate.INotifySuccess.InEmptyState(string message)
-        {
-            mOperationSuccessfulMessage = message;
-            mCooldownClearOperationSuccessAction.Ping();
-        }
-
-        void GetOperationDelegate.INotifySuccess.EnableInviteMembersIfOrganizationAdmin(string server)
-        {
-            string organizationName = ServerOrganizationParser.GetOrganizationFromServer(server);
-
-            CurrentUserAdminCheckResponse response = null;
-
-            IThreadWaiter waiter = ThreadWaiter.GetWaiter(50);
-            waiter.Execute(
-                /*threadOperationDelegate*/
-                delegate
-                {
-                    string authToken = AuthToken.GetForServer(server);
-
-                    if (string.IsNullOrEmpty(authToken))
-                        return;
-
-                    response = WebRestApiClient.PlasticScm.IsUserAdmin(organizationName, authToken);
-                },
-                /*afterOperationDelegate*/
-                delegate
-                {
-                    if (response == null || !response.IsCurrentUserAdmin)
-                        return;
-
-                    mCanInviteMembersFromPendingChanges = true;
-
-                    mParentWindow.Repaint();
-                });
-        }
-
         void UndoForMode(bool isGluonMode, bool keepLocalChanges)
         {
             List<ChangeInfo> changesToUndo;
@@ -182,7 +138,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             }
 
             bool isCancelled;
-            SaveAssets.ForChangesWithConfirmation(
+            mSaveAssets.ForChangesWithConfirmation(
                 mWkInfo.ClientPath, changesToCheckin, mWorkspaceOperationsMonitor,
                 out isCancelled);
 
@@ -202,8 +158,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 mWorkspaceWindow.GluonProgressOperationHandler,
                 null);
 
-            bool areAllItemsChecked = mPendingChangesTreeView.AreAllItemsChecked();
-
             checkinOperation.Checkin(
                 changesToCheckin,
                 dependenciesCandidates,
@@ -214,14 +168,15 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                     OpenPlasticProjectSettings.InShelveAndSwitchFoldout:
                     (Action)null,
                 isShelve ?
-                    GetOperationDelegate.ForUndoEnd(changesToCheckin, false) :
+                    GetUndoEndOperationDelegate(changesToCheckin, false) :
                     (Action)null,
                 isShelve ?
                     (Action)null :
                     RefreshAsset.UnityAssetDatabase,
-                isShelve ?
-                    GetOperationDelegate.ForShelveSuccess(areAllItemsChecked, this) :
-                    GetOperationDelegate.ForPartialCheckinSuccess(mWkInfo, areAllItemsChecked, this));
+                GetSuccessOperationDelegateForCreatedChangeset(
+                    isShelve ?
+                        CreatedChangesetData.Type.Shelve :
+                        CreatedChangesetData.Type.Checkin));
         }
 
         void CheckinChanges(
@@ -236,14 +191,12 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             }
 
             bool isCancelled;
-            SaveAssets.ForChangesWithConfirmation(
+            mSaveAssets.ForChangesWithConfirmation(
                 mWkInfo.ClientPath, changesToCheckin, mWorkspaceOperationsMonitor,
                 out isCancelled);
 
             if (isCancelled)
                 return;
-
-            bool areAllItemsChecked = mPendingChangesTreeView.AreAllItemsChecked();
 
             mPendingChangesOperations.Checkin(
                 changesToCheckin,
@@ -251,7 +204,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 mCommentText,
                 null,
                 RefreshAsset.UnityAssetDatabase,
-                GetOperationDelegate.ForCheckinSuccess(mWkInfo, areAllItemsChecked, this));
+                GetSuccessOperationDelegateForCreatedChangeset(CreatedChangesetData.Type.Checkin));
         }
 
         void ShelveChanges(
@@ -274,23 +227,21 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             }
 
             bool isCancelled;
-            SaveAssets.ForChangesWithConfirmation(
+            mSaveAssets.ForChangesWithConfirmation(
                 mWkInfo.ClientPath, changesToShelve, mWorkspaceOperationsMonitor,
                 out isCancelled);
 
             if (isCancelled)
                 return;
 
-            bool areAllItemsChecked = mPendingChangesTreeView.AreAllItemsChecked();
-
             mPendingChangesOperations.Shelve(
                 changesToShelve,
                 dependenciesCandidates,
                 mCommentText,
                 OpenPlasticProjectSettings.InShelveAndSwitchFoldout,
-                GetOperationDelegate.ForUndoEnd(changesToShelve, false),
+                GetUndoEndOperationDelegate(changesToShelve, false),
                 null,
-                GetOperationDelegate.ForShelveSuccess(areAllItemsChecked, this));
+                GetSuccessOperationDelegateForCreatedChangeset(CreatedChangesetData.Type.Shelve));
         }
 
         void PartialUndoChanges(
@@ -304,7 +255,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return;
             }
 
-            SaveAssets.ForChangesWithoutConfirmation(
+            mSaveAssets.ForChangesWithoutConfirmation(
                 mWkInfo.ClientPath, changesToUndo, mWorkspaceOperationsMonitor);
 
             UndoUIOperation undoOperation = new UndoUIOperation(
@@ -317,7 +268,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             undoOperation.Undo(
                 changesToUndo,
                 dependenciesCandidates,
-                RefreshAsset.UnityAssetDatabase);
+                RefreshAsset.UnityAssetDatabase,
+                GetSuccessOperationDelegateForUndo());
         }
 
         void UndoChanges(
@@ -332,7 +284,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return;
             }
 
-            SaveAssets.ForChangesWithoutConfirmation(
+            mSaveAssets.ForChangesWithoutConfirmation(
                 mWkInfo.ClientPath, changesToUndo, mWorkspaceOperationsMonitor);
 
             mPendingChangesOperations.Undo(
@@ -340,8 +292,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 dependenciesCandidates,
                 mPendingMergeLinks.Count,
                 keepLocalChanges,
-                GetOperationDelegate.ForUndoEnd(changesToUndo, keepLocalChanges),
-                null);
+                GetUndoEndOperationDelegate(changesToUndo, keepLocalChanges),
+                GetSuccessOperationDelegateForUndo());
         }
 
         void UndoUnchangedChanges(List<ChangeInfo> changesToUndo)
@@ -354,13 +306,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return;
             }
 
-            SaveAssets.ForChangesWithoutConfirmation(
+            mSaveAssets.ForChangesWithoutConfirmation(
                 mWkInfo.ClientPath, changesToUndo, mWorkspaceOperationsMonitor);
 
             mPendingChangesOperations.UndoUnchanged(
                 changesToUndo,
                 RefreshAsset.UnityAssetDatabase,
-                null);
+                GetSuccessOperationDelegateForUndo());
         }
 
         void UndoCheckoutsKeepingLocalChanges()
@@ -373,6 +325,26 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             UndoChanges(changesToUndo, new List<ChangeInfo>(), keepLocalChanges: true);
         }
 
+        Action GetUndoEndOperationDelegate(
+            List<ChangeInfo> changesToUndo, bool keepLocalChanges)
+        {
+            if (keepLocalChanges)
+                return null;
+
+            return () =>
+            {
+                if (changesToUndo.Any(
+                        change => AssetsPath.IsPackagesRootElement(change.Path) &&
+                        !IsAddedChange(change)))
+                {
+                    mAfterOnGUIAction = RefreshAsset.UnityAssetDatabaseAndPackageManagerAsync;
+                    return;
+                }
+
+                mAfterOnGUIAction = RefreshAsset.UnityAssetDatabase;
+            };
+        }
+
         void ShowShelvesView(IViewSwitcher viewSwitcher)
         {
             TrackFeatureUseEvent.For(
@@ -380,6 +352,131 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 TrackFeatureUseEvent.Features.UnityPackage.ShowShelvesViewFromDropdownMenu);
 
             viewSwitcher.ShowShelvesView();
+        }
+
+        SuccessOperationDelegateForCreatedChangeset GetSuccessOperationDelegateForCreatedChangeset(
+            CreatedChangesetData.Type operationType)
+        {
+            return (repSpec, createdChangesetId) =>
+            {
+                CreatedChangesetData createdChangesetData =
+                    new CreatedChangesetData(
+                        operationType,
+                        createdChangesetId,
+                        repSpec);
+
+                Action openChangesetAction = () =>
+                {
+                    OpenChangesetId(createdChangesetData, mShowChangesetInView, mShowShelveInView);
+                };
+
+                Action copyDiffsLinkAction = () =>
+                {
+                    CopyDiffsLink(createdChangesetData);
+                };
+
+                mDrawOperationSuccess = new NotifySuccessForCreatedChangeset(
+                    createdChangesetData,
+                    openChangesetAction,
+                    copyDiffsLinkAction,
+                    mParentWindow.Repaint);
+            };
+        }
+
+        Action GetSuccessOperationDelegateForUndo()
+        {
+            return () => { mDrawOperationSuccess = new NotifySuccessForUndo(mParentWindow.Repaint); };
+        }
+
+        static void OpenChangesetId(
+            CreatedChangesetData data,
+            IShowChangesetInView showChangesetInView,
+            IShowShelveInView showShelveInView)
+        {
+            if (data.OperationType == CreatedChangesetData.Type.Checkin)
+            {
+                ShowChangesetInView(
+                    showChangesetInView,
+                    data.RepositorySpec,
+                    data.CreatedChangesetId);
+                return;
+            }
+
+            ShowShelveInView(
+                showShelveInView,
+                data.RepositorySpec,
+                data.CreatedChangesetId);
+        }
+
+        static void CopyDiffsLink(
+            CreatedChangesetData data)
+        {
+            EditorGUIUtility.systemCopyBuffer = GetDiffPlasticLink.FromChangesetId(
+                data.RepositorySpec,
+                data.CreatedChangesetId);
+        }
+
+        static void ShowShelveInView(
+            IShowShelveInView showShelveInView,
+            RepositorySpec repSpec,
+            long shelvesetId)
+        {
+            ChangesetInfo shelveInfo = null;
+
+            IThreadWaiter waiter = ThreadWaiter.GetWaiter(10);
+            waiter.Execute(
+                /*threadOperationDelegate*/
+                delegate
+                {
+                    shelveInfo = PlasticGui.Plastic.API.GetChangesetInfoFromId(repSpec, shelvesetId);
+                },
+                /*afterOperationDelegate*/
+                delegate
+                {
+                    if (waiter.Exception != null)
+                    {
+                        ExceptionsHandler.DisplayException(waiter.Exception);
+                        return;
+                    }
+
+                    showShelveInView.ShowShelveInView(shelveInfo);
+                });
+        }
+
+        static bool IsAddedChange(ChangeInfo change)
+        {
+            return ChangeTypesOperator.ContainsAny(
+                change.ChangeTypes, ChangeTypesClassifier.ADDED_TYPES);
+        }
+
+        static void ShowChangesetInView(
+            IShowChangesetInView showChangesetInView,
+            RepositorySpec repSpec,
+            long changesetId)
+        {
+
+            ChangesetInfo changesetInfo = null;
+
+            IThreadWaiter waiter = ThreadWaiter.GetWaiter(10);
+            waiter.Execute(
+                /*threadOperationDelegate*/
+                delegate
+                {
+                    changesetInfo = PlasticGui.Plastic.API.GetChangesetInfoFromId(
+                        repSpec,
+                        changesetId);
+                },
+                /*afterOperationDelegate*/
+                delegate
+                {
+                    if (waiter.Exception != null)
+                    {
+                        ExceptionsHandler.DisplayException(waiter.Exception);
+                        return;
+                    }
+
+                    showChangesetInView.ShowChangesetInView(changesetInfo);
+                });
         }
 
         static bool CheckEmptyOperation(List<ChangeInfo> elements)

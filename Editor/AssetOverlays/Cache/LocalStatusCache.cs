@@ -1,19 +1,14 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 using Codice;
 using Codice.Client.BaseCommands;
 using Codice.Client.Commands.WkTree;
-using Codice.CM.Common;
+using PlasticGui.WorkspaceWindow;
 
 namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
 {
     internal class LocalStatusCache
     {
-        internal LocalStatusCache(WorkspaceInfo wkInfo)
-        {
-            mWkInfo = wkInfo;
-        }
-
         internal AssetStatus GetStatus(string fullPath)
         {
             AssetStatus result;
@@ -23,9 +18,8 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
 
             result = CalculateStatus(
                 fullPath,
-                mWkInfo.ClientPath,
-                PlasticGui.Plastic.API.GetIgnoredFilter(),
-                PlasticGui.Plastic.API.GetHiddenChangesFilter());
+                FilterManager.Get().GetIgnoredFilter(),
+                FilterManager.Get().GetHiddenChangesFilter());
 
             mStatusByPathCache.Add(fullPath, result);
 
@@ -39,7 +33,6 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
 
         static AssetStatus CalculateStatus(
             string fullPath,
-            string wkPath,
             IgnoredFilesFilter ignoredFilter,
             HiddenChangesFilesFilter hiddenChangesFilter)
         {
@@ -68,7 +61,5 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
 
         Dictionary<string, AssetStatus> mStatusByPathCache =
             BuildPathDictionary.ForPlatform<AssetStatus>();
-
-        readonly WorkspaceInfo mWkInfo;
     }
 }

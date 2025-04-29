@@ -4,31 +4,18 @@ using UnityEngine;
 using UnityEditor.IMGUI.Controls;
 
 using Codice.CM.Common;
-using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Tree;
 
 namespace Unity.PlasticSCM.Editor.Gluon.Errors
 {
-    internal class ErrorsListView : TreeView
+    internal class ErrorsListView : PlasticTreeView
     {
         internal ErrorsListView(ErrorsListHeaderState headerState)
-            : base(new TreeViewState())
         {
             multiColumnHeader = new MultiColumnHeader(headerState);
             multiColumnHeader.canSort = false;
 
-            rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
             showAlternatingRowBackgrounds = true;
-        }
-
-        public override IList<TreeViewItem> GetRows()
-        {
-            return mRows;
-        }
-
-        protected override TreeViewItem BuildRoot()
-        {
-            return new TreeViewItem(0, -1, string.Empty);
         }
 
         protected override IList<TreeViewItem> BuildRows(TreeViewItem rootItem)
@@ -37,22 +24,6 @@ namespace Unity.PlasticSCM.Editor.Gluon.Errors
                 this, mErrorMessages, rootItem, mRows);
 
             return mRows;
-        }
-
-        protected override void BeforeRowsGUI()
-        {
-            int firstRowVisible;
-            int lastRowVisible;
-            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
-
-            GUI.DrawTexture(new Rect(0,
-                firstRowVisible * rowHeight,
-                GetRowRect(0).width,
-                (lastRowVisible * rowHeight) + 1000),
-                Images.GetTreeviewBackgroundTexture());
-
-            DrawTreeViewItem.InitializeStyles();
-            base.BeforeRowsGUI();
         }
 
         protected override void RowGUI(RowGUIArgs args)
@@ -171,8 +142,6 @@ namespace Unity.PlasticSCM.Editor.Gluon.Errors
             DrawTreeViewItem.ForSecondaryLabel(
                 rect, label, isSelected, isFocused, false);
         }
-
-        List<TreeViewItem> mRows = new List<TreeViewItem>();
 
         List<ErrorMessage> mErrorMessages = new List<ErrorMessage>();
     }

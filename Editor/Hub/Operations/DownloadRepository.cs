@@ -21,18 +21,14 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
 {
     internal class DownloadRepository
     {
-        internal static void LaunchOperation(
-            OperationParams parameters)
+        internal static void LaunchOperation(OperationParams parameters)
         {
-            DownloadRepository downloadOperation =
-                new DownloadRepository();
+            DownloadRepository downloadOperation = new DownloadRepository();
 
-            downloadOperation.DownloadRepositoryOperation(
-                parameters);
+            downloadOperation.DownloadRepositoryOperation(parameters);
         }
 
-        void DownloadRepositoryOperation(
-            OperationParams parameters)
+        void DownloadRepositoryOperation(OperationParams parameters)
         {
             RefreshAsset.BeforeLongAssetOperation();
 
@@ -78,13 +74,6 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
 
             try
             {
-                if (FindWorkspace.HasWorkspace(parameters.WorkspaceFullPath))
-                {
-                    // each domain reload, the package is reloaded.
-                    // way need to check if we already downloaded it
-                    return;
-                }
-
                 mDisplayProgress = true;
 
                 TokenExchangeResponse tokenExchangeResponse =
@@ -96,8 +85,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
                 {
                     mOperationFailed = true;
 
-                    LogTokenExchangeErrorInConsole(
-                        tokenExchangeResponse.Error);
+                    LogTokenExchangeErrorInConsole(tokenExchangeResponse.Error);
                     return;
                 }
 
@@ -143,8 +131,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
 
             EditorUtility.DisplayProgressBar(
                 string.Format("{0} {1}",
-                    PlasticLocalization.GetString(
-                        PlasticLocalization.Name.DownloadingProgress),
+                    PlasticLocalization.Name.DownloadingProgress.GetString(),
                     cloudRepository),
                 totalProgressMessage, totalProgressPercent);
         }
@@ -152,8 +139,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
         static void LogTokenExchangeErrorInConsole(ErrorResponse.ErrorFields error)
         {
             UnityEngine.Debug.LogErrorFormat(
-                PlasticLocalization.GetString(
-                    PlasticLocalization.Name.ErrorDownloadingCloudProject),
+                PlasticLocalization.Name.ErrorDownloadingProjectFromRepository.GetString(),
                 string.Format("Unable to get TokenExchangeResponse: {0} [code {1}]",
                     error.Message, error.ErrorCode));
         }
@@ -161,8 +147,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
         static void LogExceptionErrorInConsole(Exception ex)
         {
             UnityEngine.Debug.LogErrorFormat(
-                PlasticLocalization.GetString(
-                    PlasticLocalization.Name.ErrorDownloadingCloudProject),
+                PlasticLocalization.Name.ErrorDownloadingProjectFromRepository.GetString(),
                 ex.Message);
         }
 

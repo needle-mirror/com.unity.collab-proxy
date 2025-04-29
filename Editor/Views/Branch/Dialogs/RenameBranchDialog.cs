@@ -45,9 +45,11 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
             ProgressControlsForDialogs progressControls)
         {
             var instance = CreateInstance<RenameBranchDialog>();
+            instance.mEnterKeyAction = instance.OkButtonWithValidationAction;
+            instance.mEscapeKeyAction = instance.CancelButtonAction;
             instance.mRepSpec = repSpec;
             instance.mBranchInfo = branchInfo;
-            instance.mBranchName = BranchRenameUserInfo.GetShortBranchName(branchInfo.BranchName);
+            instance.mBranchName = GetShorten.BranchNameFromString(branchInfo.BranchName);
             instance.mTitle = PlasticLocalization.GetString(
                PlasticLocalization.Name.RenameBranchTitle);
             instance.mProgressControls = progressControls;

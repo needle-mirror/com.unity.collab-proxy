@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-
 using UnityEditor;
 using UnityEngine;
 
@@ -8,32 +6,26 @@ using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.LogWrapper;
 using PlasticGui;
-using PlasticGui.Configuration.OAuth;
-using PlasticGui.WebApi.Responses;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.WebApi;
 
 namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 {
-    internal class AutoLogin : OAuthSignIn.INotify
+    internal class AutoLogin
     {
         internal enum State : byte
-        { 
+        {
             Off = 0,
             Started = 1,
             Running = 2,
             ResponseInit = 3,
-            ResponseEnd = 6,
-            ResponseSuccess = 7,
-            OrganizationChoosed = 8,
-            InitializingPlastic = 9,
+            ResponseEnd = 4,
+            ResponseSuccess = 5,
             ErrorNoToken = 20,
             ErrorTokenException = 21,
             ErrorResponseNull = 22,
             ErrorResponseError = 23,
             ErrorTokenEmpty = 24,
-            ErrorResponseCancel = 25
         }
 
         internal void Run()
@@ -42,14 +34,15 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
             if (!string.IsNullOrEmpty(CloudProjectSettings.accessToken))
             {
-                ExchangeTokensAndJoinOrganization(CloudProjectSettings.accessToken);
+                mLog.Debug("Run");
+                ExchangeTokensAndJoinOrganizationInThreadWaiter(CloudProjectSettings.accessToken);
                 return;
             }
-            
+
             mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorNoToken;
         }
 
-        void ExchangeTokensAndJoinOrganization(string unityAccessToken)
+        void ExchangeTokensAndJoinOrganizationInThreadWaiter(string unityAccessToken)
         {
             int ini = Environment.TickCount;
 
@@ -86,7 +79,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                     Debug.LogWarning(warning);
                     return;
                 }
-                   
+
                 if (tokenExchangeResponse.Error != null)
                 {
                     mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorResponseError;
@@ -102,7 +95,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 {
                     mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorTokenEmpty;
                     var warning = string.Format(
-                        PlasticLocalization.GetString(PlasticLocalization.Name.TokenExchangeAccessEmpty), 
+                        PlasticLocalization.GetString(PlasticLocalization.Name.TokenExchangeAccessEmpty),
                         tokenExchangeResponse.User);
                     mLog.InfoFormat(warning);
                     Debug.LogWarning(warning);
@@ -111,80 +104,25 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
                 mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseEnd;
 
-                GetOrganizationList(tokenExchangeResponse.User, tokenExchangeResponse.AccessToken);
+                Credentials credentials = new Credentials(
+                    new SEID(tokenExchangeResponse.User, false, tokenExchangeResponse.AccessToken),
+                    SEIDWorkingMode.SSOWorkingMode);
+
+                ShowOrganizationsPanel(credentials);
             });
         }
 
-        void GetOrganizationList(string userName, string accessToken)
-        {
-            OAuthSignIn.GetOrganizationsFromAccessToken(
-                SsoProvider.UNITY_URL_ACTION,
-                userName,
-                accessToken,
-                OAuthSignIn.Mode.UnityPackage,
-                new ProgressControlsForDialogs(),
-                this,
-                PlasticGui.Plastic.WebRestAPI
-            );
-        }
-
-        void OAuthSignIn.INotify.SuccessForUnityPackage(OrganizationsResponse organizationResponse, string userName, string accessToken)
-        {
-            mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseSuccess;
-            ChooseOrganization(userName, accessToken, organizationResponse);
-        }
-
-        void OAuthSignIn.INotify.SuccessForConfigure(
-            List<string> organizations,
-            bool canCreateAnOrganization,
-            string userName,
-            string accessToken)
-        {
-            // empty implementation
-        }
-
-        void OAuthSignIn.INotify.SuccessForSSO(string organization)
-        {
-            // empty implementation
-        }
-
-        void OAuthSignIn.INotify.SuccessForProfile(string email)
-        {
-            // empty implementation
-        }
-
-        void OAuthSignIn.INotify.SuccessForHomeView(string userName)
-        {
-            // empty implementation
-        }
-
-        void OAuthSignIn.INotify.SuccessForCredentials(
-            string email,
-            string accessToken)
-        {
-            // empty implementation
-        }
-
-        void OAuthSignIn.INotify.Cancel(string errorMessage)
-        {
-            mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorResponseCancel;
-        }
-
-        void ChooseOrganization(string userName, string accessToken, OrganizationsResponse organizationResponse)
+        void ShowOrganizationsPanel(Credentials credentials)
         {
             mPlasticWindow = GetPlasticWindow();
+            mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseSuccess;
 
             CloudEditionWelcomeWindow.ShowWindow(
-                PlasticGui.Plastic.WebRestAPI,
-                mPlasticWindow.CmConnectionForTesting, null, true);
+                PlasticGui.Plastic.WebRestAPI, null, true);
 
             mCloudEditionWelcomeWindow = CloudEditionWelcomeWindow.GetWelcomeWindow();
 
-            mCloudEditionWelcomeWindow.ShowOrganizationsPanelFromAuthResponse(
-                userName,
-                accessToken,
-                organizationResponse,
-                SEIDWorkingMode.SSOWorkingMode);
+            mCloudEditionWelcomeWindow.GetOrganizations(credentials);
 
             mCloudEditionWelcomeWindow.Focus();
         }
@@ -203,6 +141,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         PlasticWindow mPlasticWindow;
         CloudEditionWelcomeWindow mCloudEditionWelcomeWindow;
 
-        static readonly ILog mLog = PlasticApp.GetLogger("TokensExchange");
+        static readonly ILog mLog = PlasticApp.GetLogger("AutoLogin");
     }
 }

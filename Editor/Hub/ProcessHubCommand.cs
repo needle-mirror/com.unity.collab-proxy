@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using UnityEditor;
 
 using Codice.LogWrapper;
+using PlasticGui;
 using Unity.PlasticSCM.Editor.Hub.Operations;
 
 namespace Unity.PlasticSCM.Editor.Hub
@@ -12,8 +13,6 @@ namespace Unity.PlasticSCM.Editor.Hub
     {
         internal const string IS_PROCESS_COMMAND_ALREADY_EXECUTED_KEY =
             "PlasticSCM.ProcessHubCommand.IsAlreadyExecuted";
-        internal const string IS_PLASTIC_COMMAND_KEY =
-            "PlasticSCM.ProcessHubCommand.IsPlasticCommand";
 
         internal static void Initialize()
         {
@@ -57,8 +56,6 @@ namespace Unity.PlasticSCM.Editor.Hub
                return;
             }
 
-            SessionState.SetBool(IS_PLASTIC_COMMAND_KEY, true);
-
             PlasticApp.InitializeIfNeeded();
 
             mLog.DebugFormat("Command line arguments: {0}", string.Join(" ", commandLineArgs));
@@ -66,6 +63,15 @@ namespace Unity.PlasticSCM.Editor.Hub
 
             OperationParams parameters = OperationParams.
                 BuildFromCommand(command, unityAccessToken);
+
+            string errorMessage;
+            if (InputValidator.CheckWorkspaceExists(
+                    null, parameters.WorkspaceFullPath, out errorMessage))
+            {
+                mLog.Error(errorMessage);
+                UnityEngine.Debug.LogError(errorMessage);
+                return;
+            }
 
             switch (command.OperationType)
             {

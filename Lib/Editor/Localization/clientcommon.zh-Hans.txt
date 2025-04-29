@@ -371,6 +371,9 @@ Windows 不允许在文件名中使用尾随点。
 == GetRevisionDirectoryNotSupported ==
 目录不支持 GetRevision。为了获取目录的内容，请在工作区规则中加载该目录。
 
+== GettingSSOProviders ==
+正在获取组织提供者...
+
 == GluonPartialUpdateToDifferentBranch ==
 更新操作无法继续。目标变更集必须位于当前工作区分支：{0}。
 
@@ -615,6 +618,9 @@ Windows 不允许在文件名中使用尾随点。
 == NoPathBetweenCsets ==
 '{0}' 与 '{1}' 之间没有路径。
 
+== NoProvidersForOrganization ==
+指定的组织不允许使用 SSO 进行访问
+
 == NoSuchCodeReview ==
 无法找到指定的代码审查 '{0}'。
 
@@ -626,6 +632,9 @@ Windows 不允许在文件名中使用尾随点。
 
 == NotValidCmPath ==
 指定的路径 {0} 不是有效的服务器路径。
+
+== OAuthSignInCheckMessage ==
+正在等待会话...
 
 == ObjectNameField ==
 对象名称
@@ -668,6 +677,9 @@ Windows 不允许在文件名中使用尾随点。
 
 == RestorePathShouldNotExist ==
 还原路径不应该存在。
+
+== RetrievingOrgsProgress ==
+正在检索组织...
 
 == RevdatanotfoundForSpec ==
 对于给定的修订规格，找不到数据

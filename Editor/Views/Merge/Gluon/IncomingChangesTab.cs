@@ -116,10 +116,11 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
             DoIncomingChangesArea(
                 mIncomingChangesTreeView,
-                mEmptyStateContent,
+                mEmptyStateData,
+                mCooldownClearUpdateSuccessAction,
                 mProgressControls.IsOperationRunning(),
-                mHasNothingToDownload,
-                mIsUpdateSuccessful);
+                mIsUpdateSuccessful,
+                mParentWindow.Repaint);
 
             if (mErrorsPanel.IsVisible)
             {
@@ -134,7 +135,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 DoActionToolbarMessage(
                     mIsMessageLabelVisible,
                     mMessageLabelText,
-                    mHasNothingToDownload,
                     mIsErrorMessageLabelVisible,
                     mErrorMessageLabelText,
                     mFileConflictCount,
@@ -150,7 +150,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                         mIncomingChangesTreeView,
                         mWkInfo,
                         RefreshAsset.BeforeLongAssetOperation,
-                        (c) => AfterProcessMerges(c));
+                        AfterProcessMerges,
+                        MergeSuccessfullyFinished);
                 }
 
                 if (mIsCancelMergesButtonVisible)
@@ -173,6 +174,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 DrawProgressForViews.ForNotificationArea(
                     mProgressControls.ProgressData);
             }
+
+            ExecuteAfterOnGUIAction();
         }
 
         void IIncomingChangesTab.DrawSearchFieldForTab()
@@ -249,15 +252,12 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
             mMessageLabelText = message;
             mIsMessageLabelVisible = true;
-            mHasNothingToDownload = message == PlasticLocalization.GetString(
-                PlasticLocalization.Name.MergeNothingToDownloadForIncomingView);
         }
 
         void IncomingChangesViewLogic.IIncomingChangesView.HideMessage()
         {
             mMessageLabelText = string.Empty;
             mIsMessageLabelVisible = false;
-            mHasNothingToDownload = false;
 
             mErrorMessageLabelText = string.Empty;
             mIsErrorMessageLabelVisible = false;
@@ -295,7 +295,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 PlasticExeLauncher.BuildForMergeSelectedFiles(mWkInfo, true, mShowDownloadPlasticExeWindow),
                 fileConflicts,
                 RefreshAsset.BeforeLongAssetOperation,
-                AfterProcessMerges);
+                AfterProcessMerges,
+                MergeSuccessfullyFinished);
         }
 
         void IIncomingChangesViewMenuOperations.MergeKeepingSourceChanges()
@@ -308,7 +309,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 null,
                 fileConflicts,
                 RefreshAsset.BeforeLongAssetOperation,
-                AfterProcessMerges);
+                AfterProcessMerges,
+                MergeSuccessfullyFinished);
         }
 
         void IIncomingChangesViewMenuOperations.MergeKeepingWorkspaceChanges()
@@ -321,7 +323,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 null,
                 fileConflicts,
                 RefreshAsset.BeforeLongAssetOperation,
-                AfterProcessMerges);
+                AfterProcessMerges,
+                MergeSuccessfullyFinished);
         }
 
         void IIncomingChangesViewMenuOperations.DiffIncomingChanges()
@@ -446,24 +449,13 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         static void DoActionToolbarMessage(
             bool isMessageLabelVisible,
             string messageLabelText,
-            bool hasNothingToDownload,
             bool isErrorMessageLabelVisible,
             string errorMessageLabelText,
             int fileConflictCount,
             MergeViewTexts.ChangesToApplySummary changesSummary)
         {
             if (isMessageLabelVisible)
-            {
-                string message = messageLabelText;
-
-                if (hasNothingToDownload)
-                {
-                    message = PlasticLocalization.GetString(
-                        PlasticLocalization.Name.WorkspaceIsUpToDate);
-                }
-
-                DoInfoMessage(message);
-            }
+                DoInfoMessage(messageLabelText);
 
             if (isErrorMessageLabelVisible)
             {
@@ -483,7 +475,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         {
             EditorGUILayout.BeginHorizontal();
 
-            GUILayout.Label(message, UnityStyles.MergeTab.ChangesToApplySummaryLabel);
+            GUILayout.Label(message, UnityStyles.MergeTab.InfoLabel);
 
             EditorGUILayout.EndHorizontal();
         }
@@ -497,21 +489,23 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             EditorGUILayout.EndHorizontal();
         }
 
-        static void DoIncomingChangesArea(
+        void DoIncomingChangesArea(
             IncomingChangesTreeView incomingChangesTreeView,
-            GUIContent emptyStateContent,
+            EmptyStateData emptyStateData,
+            CooldownWindowDelayer cooldownClearOperationSuccessAction,
             bool isOperationRunning,
-            bool hasNothingToDownload,
-            bool isUpdateSuccessful)
+            bool isUpdateSuccessful,
+            Action repaint)
         {
             EditorGUILayout.BeginVertical();
 
             DoIncomingChangesTreeViewArea(
                 incomingChangesTreeView,
-                emptyStateContent,
+                emptyStateData,
+                cooldownClearOperationSuccessAction,
                 isOperationRunning,
-                hasNothingToDownload,
-                isUpdateSuccessful);
+                isUpdateSuccessful,
+                repaint);
 
             EditorGUILayout.EndVertical();
         }
@@ -524,7 +518,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             IncomingChangesTreeView incomingChangesTreeView,
             WorkspaceInfo wkInfo,
             Action beforeProcessMergesAction,
-            EndOperationDelegateForUpdateProgress afterProcessMergesAction)
+            EndOperationDelegateForUpdateProgress afterProcessMergesAction,
+            Action successProcessMergesAction)
         {
             GUI.enabled = isEnabled;
 
@@ -542,7 +537,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                     incomingChanges,
                     PlasticExeLauncher.BuildForResolveConflicts(wkInfo, true, showDownloadPlasticExeWindow),
                     beforeProcessMergesAction,
-                    afterProcessMergesAction);
+                    afterProcessMergesAction,
+                    successProcessMergesAction);
             }
 
             GUI.enabled = true;
@@ -580,60 +576,105 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             incomingChangesTreeView.Reload();
         }
 
-        static void DoIncomingChangesTreeViewArea(
+        void DoIncomingChangesTreeViewArea(
             IncomingChangesTreeView incomingChangesTreeView,
-            GUIContent emptyStateContent,
+            EmptyStateData emptyStateData,
+            CooldownWindowDelayer cooldownClearOperationSuccessAction,
             bool isOperationRunning,
-            bool hasNothingToDownload,
-            bool isUpdateSuccessful)
+            bool isUpdateSuccessful,
+            Action repaint)
         {
-            GUI.enabled = !isOperationRunning;
+            using (new EditorGUI.DisabledScope(isOperationRunning))
+            {
+                Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
 
-            Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
+                incomingChangesTreeView.OnGUI(rect);
 
-            incomingChangesTreeView.OnGUI(rect);
+                if (isOperationRunning)
+                    return;
 
-            if (hasNothingToDownload)
-                DrawEmptyState(rect, emptyStateContent, isUpdateSuccessful);
+                if (incomingChangesTreeView.GetTotalItemCount() == 0)
+                {
+                    DrawEmptyState(
+                        rect,
+                        emptyStateData,
+                        cooldownClearOperationSuccessAction,
+                        isUpdateSuccessful,
+                        repaint);
+                    return;
+                }
 
-            GUI.enabled = true;
+                if (isUpdateSuccessful)
+                    NotifySuccessInStatusBar();
+            }
         }
 
         static void DrawEmptyState(
             Rect rect,
-            GUIContent emptyStateContent,
-            bool isUpdateSuccessful)
+            EmptyStateData emptyStateData,
+            CooldownWindowDelayer cooldownClearOperationSuccessAction,
+            bool isUpdateSuccessful,
+            Action repaint)
         {
-            if (isUpdateSuccessful)
+            emptyStateData.Update(
+                GetEmptyStateMessage(isUpdateSuccessful),
+                rect, Event.current.type, repaint);
+
+            if (!isUpdateSuccessful)
             {
-                emptyStateContent.text = PlasticLocalization.Name.WorkspaceUpdateCompleted.GetString();
-                DrawTreeViewEmptyState.For(rect, emptyStateContent, Images.GetStepOkIcon());
+                DrawTreeViewEmptyState.For(emptyStateData);
                 return;
             }
 
-            emptyStateContent.text = PlasticLocalization.Name.NoIncomingChanges.GetString();
-            DrawTreeViewEmptyState.For(rect, emptyStateContent);
+            if (!cooldownClearOperationSuccessAction.IsRunning)
+                cooldownClearOperationSuccessAction.Ping();
+
+            DrawTreeViewEmptyState.For(Images.GetStepOkIcon(), emptyStateData);
+        }
+
+        static string GetEmptyStateMessage(
+            bool isUpdateSuccessful)
+        {
+            if (isUpdateSuccessful)
+                return PlasticLocalization.Name.WorkspaceUpdateCompleted.GetString();
+
+            return PlasticLocalization.Name.NoIncomingChanges.GetString();
         }
 
         void AfterProcessMerges(UpdateProgress progress)
         {
-            RefreshAsset.AfterLongAssetOperation(
-                ProjectPackages.ShouldBeResolvedFromUpdateProgress(mWkInfo, progress));
-
-            bool isTreeViewEmpty = mIncomingChangesTreeView.GetCheckedItemCount() ==
-                mIncomingChangesTreeView.GetTotalItemCount();
-
-            if (isTreeViewEmpty)
+            mAfterOnGUIAction = () =>
             {
-                mIsUpdateSuccessful = true;
-                mCooldownClearUpdateSuccessAction.Ping();
-                return;
-            }
+                RefreshAsset.AfterLongAssetOperation(
+                    ProjectPackages.ShouldBeResolvedFromUpdateProgress(mWkInfo, progress));
+            };
+        }
 
+        void ExecuteAfterOnGUIAction()
+        {
+            if (mProgressControls.IsOperationRunning())
+                return;
+
+            if (mAfterOnGUIAction == null)
+                return;
+
+            mAfterOnGUIAction();
+            mAfterOnGUIAction = null;
+        }
+
+        void NotifySuccessInStatusBar()
+        {
             mStatusBar.Notify(
-                PlasticLocalization.GetString(PlasticLocalization.Name.WorkspaceUpdateCompleted),
+                new GUIContentNotification(
+                    PlasticLocalization.Name.WorkspaceUpdateCompleted.GetString()),
                 MessageType.None,
                 Images.GetStepOkIcon());
+            mIsUpdateSuccessful = false;
+        }
+
+        void MergeSuccessfullyFinished()
+        {
+            mIsUpdateSuccessful = true;
         }
 
         void UpdateOverview(
@@ -687,7 +728,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         string mProcessMergesButtonText;
         string mMessageLabelText;
         string mErrorMessageLabelText;
-        bool mHasNothingToDownload;
         bool mIsUpdateSuccessful;
 
         SearchField mSearchField;
@@ -699,10 +739,11 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         MergeViewTexts.ChangesToApplySummary mChangesSummary;
 
         object mErrorsSplitterState;
+        Action mAfterOnGUIAction;
 
         readonly ProgressControlsForViews mProgressControls;
 
-        readonly GUIContent mEmptyStateContent = new GUIContent(string.Empty);
+        readonly EmptyStateData mEmptyStateData = new EmptyStateData();
         readonly CooldownWindowDelayer mCooldownClearUpdateSuccessAction;
 
         readonly IncomingChangesViewLogic mIncomingChangesViewLogic;

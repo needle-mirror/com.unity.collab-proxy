@@ -292,10 +292,18 @@ namespace Unity.PlasticSCM.Editor.UI
                 var style = new GUIStyle(EditorStyles.label);
                 style.alignment = TextAnchor.MiddleCenter;
                 style.fontSize = 14;
-                style.padding = new RectOffset(
-                    0, 0,
-                    UnityConstants.TREEVIEW_STATUS_CONTENT_PADDING, UnityConstants.TREEVIEW_STATUS_CONTENT_PADDING);
                 style.stretchWidth = false;
+                return style;
+            });
+
+            internal static readonly LazyStyle CopyToClipboardButton = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.miniButton);
+                style.alignment = TextAnchor.MiddleCenter;
+                style.fixedWidth = 28;
+                style.fixedHeight = 22;
+                style.margin = new RectOffset(0, 0, 0, 0);
+                style.padding = new RectOffset(0, 0, 2, 2);
                 return style;
             });
 
@@ -454,6 +462,17 @@ namespace Unity.PlasticSCM.Editor.UI
                 style.fixedWidth = 16;
                 return style;
             });
+
+            internal static readonly LazyStyle CopyToClipboardButton = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.miniButton);
+                style.alignment = TextAnchor.MiddleCenter;
+                style.fixedWidth = 28;
+                style.fixedHeight = 22;
+                style.margin = new RectOffset(0, 0, 0, 0);
+                style.padding = new RectOffset(0, 0, 2, 2);
+                return style;
+            });
         }
 
         internal static class DiffPanel
@@ -546,11 +565,21 @@ namespace Unity.PlasticSCM.Editor.UI
                 return style;
             });
 
-            internal static readonly LazyStyle ChangesToApplySummaryLabel = new LazyStyle(() =>
+            internal static readonly LazyStyle InfoLabel = new LazyStyle(() =>
             {
                 var style = new GUIStyle(EditorStyles.label);
                 style.fontSize = 11;
                 style.padding.top = 2;
+                return style;
+            });
+
+            internal static readonly LazyStyle LinkLabel = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(UnityStyles.LinkLabel);
+                style.fontSize = ((GUIStyle)InfoLabel).fontSize;
+                style.padding.top = ((GUIStyle)InfoLabel).padding.top;
+                style.padding.left = 0;
+                style.stretchWidth = false;
                 return style;
             });
         }
@@ -766,9 +795,9 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static readonly LazyStyle LinkLabel = new LazyStyle(() =>
         {
             var style = new GUIStyle(GUI.skin.label);
-            style.normal.textColor = new Color(0.129f, 0.588f, 0.953f);
-            style.hover.textColor = new Color(0.239f, 0.627f, 0.949f);
-            style.active.textColor = new Color(0.239f, 0.627f, 0.949f);
+            style.normal.textColor = EditorStyles.linkLabel.normal.textColor;
+            style.hover.textColor = EditorStyles.linkLabel.hover.textColor;
+            style.active.textColor = EditorStyles.linkLabel.active.textColor;
 
             return style;
         });

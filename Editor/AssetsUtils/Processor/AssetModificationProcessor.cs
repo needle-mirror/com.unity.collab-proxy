@@ -1,25 +1,24 @@
-﻿using UnityEditor;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+
+using UnityEditor;
 
 using Codice.LogWrapper;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.UI;
+
 using AssetOverlays = Unity.PlasticSCM.Editor.AssetsOverlays;
 
 namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 {
     class AssetModificationProcessor : UnityEditor.AssetModificationProcessor
     {
-        internal static bool ForceCheckout { get; private set; }
-
-        /* We need to do a checkout, verifying that the content/date or size has changed. 
-         * In order to do this checkout we need the changes to have reached the disk. 
-         * That's why we save the changed files in this array, and when they are reloaded
-         * in AssetPostprocessor.OnPostprocessAllAssets we process them. */
-        internal static string[] ModifiedAssets { get; set; }
+        internal static bool IsManualCheckoutEnabled { get; private set; }
 
         static AssetModificationProcessor()
         {
-            ForceCheckout = EditorPrefs.GetBool(
+            IsManualCheckoutEnabled = EditorPrefs.GetBool(
                 UnityConstants.FORCE_CHECKOUT_KEY_NAME);
         }
 
@@ -41,17 +40,36 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
             mIsEnabled = false;
 
+            ModifiedAssets.Clear();
+
             mWkPath = null;
             mAssetStatusCache = null;
         }
 
-        internal static void SetForceCheckoutOption(bool isEnabled)
+        internal static void SetManualCheckoutPreference(bool isEnabled)
         {
-            ForceCheckout = isEnabled;
+            if (IsManualCheckoutEnabled == isEnabled)
+                return;
+
+            IsManualCheckoutEnabled = isEnabled;
 
             EditorPrefs.SetBool(
                 UnityConstants.FORCE_CHECKOUT_KEY_NAME,
                 isEnabled);
+        }
+
+        internal static ReadOnlyCollection<string> GetModifiedAssetsToProcess()
+        {
+            return ModifiedAssets.ToList().AsReadOnly();
+        }
+
+        internal static string[] ExtractModifiedAssetsToProcess()
+        {
+            string[] result = ModifiedAssets.ToArray();
+
+            ModifiedAssets.Clear();
+
+            return result;
         }
 
         static string[] OnWillSaveAssets(string[] paths)
@@ -59,11 +77,16 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             if (!mIsEnabled)
                 return paths;
 
-            ModifiedAssets = (string[])paths.Clone();
+            foreach (string path in paths)
+            {
+                ModifiedAssets.Add(path);
+            }
 
             return paths;
         }
 
+        // If IsOpenForEdit returns false, the preCheckoutCallback is invoked
+        // to perform the checkout operation and make the asset editable.
         static bool IsOpenForEdit(string assetPath, out string message)
         {
             message = string.Empty;
@@ -71,7 +94,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             if (!mIsEnabled)
                 return true;
 
-            if (!ForceCheckout)
+            if (!IsManualCheckoutEnabled)
                 return true;
 
             if (assetPath.StartsWith("ProjectSettings/"))
@@ -96,10 +119,16 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             return !AssetOverlays.ClassifyAssetStatus.IsControlled(status);
         }
 
-        static bool mIsEnabled;
+        // We need to process the modified assets to perform their check-out.
+        // To do this, we must verify their content, date, and size to determine if they
+        // have actually changed. This requires the changes to be written to disk first.
+        // To ensure this, we store the modified files in this array and process them
+        // when they are reloaded in AssetPostprocessor.OnPostprocessAllAssets.
+        static readonly HashSet<string> ModifiedAssets = new HashSet<string>();
 
         static IAssetStatusCache mAssetStatusCache;
         static string mWkPath;
+        static bool mIsEnabled;
 
         static readonly ILog mLog = PlasticApp.GetLogger("AssetModificationProcessor");
     }

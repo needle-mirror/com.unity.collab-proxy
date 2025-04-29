@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Collections.Generic;
 
@@ -11,10 +11,11 @@ using PlasticGui;
 using PlasticGui.Gluon.WorkspaceWindow.Views.IncomingChanges;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Tree;
+using Unity.PlasticSCM.Editor.UI.Avatar;
 
 namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 {
-    internal class IncomingChangesTreeView : TreeView
+    internal class IncomingChangesTreeView : PlasticTreeView
     {
         internal IncomingChangesTreeView(
             WorkspaceInfo wkInfo,
@@ -22,7 +23,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             List<string> columnNames,
             IncomingChangesViewMenu menu,
             Action onCheckedNodeChanged)
-            : base(new TreeViewState())
         {
             mWkInfo = wkInfo;
             mColumnNames = columnNames;
@@ -34,26 +34,14 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             multiColumnHeader.sortingChanged += SortingChanged;
 
             customFoldoutYOffset = UnityConstants.TREEVIEW_FOLDOUT_Y_OFFSET;
-            rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = false;
 
             mCooldownFilterAction = new CooldownWindowDelayer(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
         }
 
-        public override IList<TreeViewItem> GetRows()
-        {
-            return mRows;
-        }
-
         protected override bool CanChangeExpandedState(TreeViewItem item)
         {
             return item is ChangeCategoryTreeViewItem;
-        }
-
-        protected override TreeViewItem BuildRoot()
-        {
-            return new TreeViewItem(0, -1, string.Empty);
         }
 
         protected override IList<TreeViewItem> BuildRows(TreeViewItem rootItem)
@@ -86,22 +74,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         protected override void SearchChanged(string newSearch)
         {
             mCooldownFilterAction.Ping();
-        }
-
-        protected override void BeforeRowsGUI()
-        {
-            int firstRowVisible;
-            int lastRowVisible;
-            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
-
-            GUI.DrawTexture(new Rect(0,
-                firstRowVisible * rowHeight,
-                GetRowRect(0).width,
-                (lastRowVisible * rowHeight) + 1000),
-                Images.GetTreeviewBackgroundTexture());
-
-            DrawTreeViewItem.InitializeStyles();
-            base.BeforeRowsGUI();
         }
 
         protected override void RowGUI(RowGUIArgs args)
@@ -143,7 +115,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                     changeTreeViewItem,
                     mOnCheckedNodeChanged, args,
                     isCurrentConflict,
-                    isSolvedConflict);
+                    isSolvedConflict,
+                    Repaint);
                 return;
             }
 
@@ -495,7 +468,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             Action onCheckedNodeChanged,
             RowGUIArgs args,
             bool isCurrentConflict,
-            bool isSolvedConflict)
+            bool isSolvedConflict,
+            Action avatarLoadedAction)
         {
             for (int visibleColumnIdx = 0; visibleColumnIdx < args.GetNumVisibleColumns(); visibleColumnIdx++)
             {
@@ -507,12 +481,13 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 IncomingChangeTreeViewItemCellGUI(
                     wkPath,
                     cellRect,
-                    treeView.rowHeight, 
+                    treeView.rowHeight,
                     incomingChangesTree,
                     treeView,
                     item,
                     onCheckedNodeChanged,
                     column,
+                    avatarLoadedAction,
                     args.selected,
                     args.focused,
                     isCurrentConflict,
@@ -529,6 +504,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             ChangeTreeViewItem item,
             Action onCheckedNodeChanged,
             IncomingChangesTreeColumn column,
+            Action avatarLoadedAction,
             bool isSelected,
             bool isFocused,
             bool isCurrentConflict,
@@ -568,9 +544,25 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 return;
             }
 
+            if (column == IncomingChangesTreeColumn.LastEditedBy)
+            {
+                DrawTreeViewItem.ForItemCell(
+                    rect,
+                    rowHeight,
+                    -1,
+                    GetAvatar.ForEmail(label, avatarLoadedAction),
+                    null,
+                    label,
+                    isSelected,
+                    isFocused,
+                    isCurrentConflict,
+                    false);
+                return;
+            }
+
             if (column == IncomingChangesTreeColumn.Size)
             {
-                // If there is a meta file, add the meta file to the file size so that it is consistent 
+                // If there is a meta file, add the meta file to the file size so that it is consistent
                 // with the Incoming Changes overview
                 if (incomingChangesTree.HasMeta(item.ChangeInfo))
                 {
@@ -650,7 +642,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         TreeViewItemIds<IncomingChangeCategory, IncomingChangeInfo> mTreeViewItemIds =
             new TreeViewItemIds<IncomingChangeCategory, IncomingChangeInfo>();
-        List<TreeViewItem> mRows = new List<TreeViewItem>();
 
         IncomingChangeInfo mCurrentConflict;
         List<IncomingChangeInfo> mSolvedConflicts;

@@ -4,9 +4,9 @@ using UnityEditor;
 using UnityEngine;
 
 using Codice.Client.Common;
+using Codice.Client.Common.WebApi;
 using Codice.CM.Common;
 using PlasticGui;
-using PlasticGui.WebApi;
 using PlasticGui.WorkspaceWindow.Home.Repositories;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;

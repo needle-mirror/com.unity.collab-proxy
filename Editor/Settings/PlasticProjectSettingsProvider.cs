@@ -105,6 +105,14 @@ namespace Unity.PlasticSCM.Editor.Settings
             mIsOtherFoldoutOpen = true;
         }
 
+        internal void OpenDiffAndMergeFoldout()
+        {
+            mIsShelveAndSwitchFoldoutOpen = false;
+            mIsPendingChangesFoldoutOpen = false;
+            mIsDiffAndMergeFoldoutOpen = true;
+            mIsOtherFoldoutOpen = false;
+        }
+
         internal void OpenShelveAndSwitchFoldout()
         {
             mIsShelveAndSwitchFoldoutOpen = true;

@@ -1,7 +1,7 @@
-﻿using Codice.Client.BaseCommands;
+using Codice.Client.BaseCommands;
 using Codice.Client.Common;
+using Codice.Client.Common.WebApi;
 using PlasticGui;
-using PlasticGui.WebApi;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
 using Unity.PlasticSCM.Editor.Configuration.TeamEdition;
@@ -19,14 +19,12 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             PlasticWindow parentWindow,
             CreateWorkspaceView.ICreateWorkspaceListener createWorkspaceListener,
             IPlasticAPI plasticApi,
-            IPlasticWebRestApi plasticWebRestApi,
-            CmConnection cmConnection)
+            IPlasticWebRestApi plasticWebRestApi)
         {
             mParentWindow = parentWindow;
             mCreateWorkspaceListener = createWorkspaceListener;
             mPlasticApi = plasticApi;
             mPlasticWebRestApi = plasticWebRestApi;
-            mCmConnection = cmConnection;
 
             mConfigureProgress = new ProgressControlsForViews();
             autoLoginState = AutoLogin.State.Off;
@@ -58,7 +56,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             ((IProgressControls)mConfigureProgress).HideProgress();
 
             ClientConfig.Reset();
-            CmConnection.Reset();
+            CmConnection.ResetForTesting();
             ClientHandlers.Register();
         }
 
@@ -130,14 +128,14 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
 
         void DoConfigureButton(ProgressControlsForViews configureProgress)
         {
-            bool isAutoLoginRunning = autoLoginState > AutoLogin.State.Running && autoLoginState <= AutoLogin.State.InitializingPlastic;
+            bool isAutoLoginRunning = autoLoginState >= AutoLogin.State.Running && autoLoginState <= AutoLogin.State.ResponseSuccess;
             GUI.enabled = !(configureProgress.ProgressData.IsOperationRunning || isAutoLoginRunning);
 
             if (GUILayout.Button(PlasticLocalization.GetString(
                 PlasticLocalization.Name.LoginOrSignUp),
                 GUILayout.Width(BUTTON_WIDTH)))
             {
-                if (autoLoginState > AutoLogin.State.Off && autoLoginState <= AutoLogin.State.InitializingPlastic)
+                if (autoLoginState > AutoLogin.State.Off && autoLoginState <= AutoLogin.State.ResponseSuccess)
                 {
                     autoLoginState = AutoLogin.State.Running;
                     AutoLogin autoLogin = new AutoLogin();
@@ -152,10 +150,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
                 ((IProgressControls)configureProgress).ShowProgress(string.Empty);
 
                 // Login button defaults to Cloud sign up
-                CloudEditionWelcomeWindow.ShowWindow(
-                        mPlasticWebRestApi,
-                        mCmConnection,
-                        this);
+                CloudEditionWelcomeWindow.ShowWindow(mPlasticWebRestApi, this);
 
                 GUIUtility.ExitGUI();
             }
@@ -270,15 +265,12 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             if (mCreateWorkspaceView != null)
                 return mCreateWorkspaceView;
 
-            string workspacePath = ProjectPath.FromApplicationDataPath(
-                ApplicationDataPath.Get());
-
             mCreateWorkspaceView = new CreateWorkspaceView(
                 mParentWindow,
                 mCreateWorkspaceListener,
                 mPlasticApi,
                 mPlasticWebRestApi,
-                workspacePath);
+                ProjectPath.Get());
 
             return mCreateWorkspaceView;
         }
@@ -289,7 +281,6 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
 
         CreateWorkspaceView mCreateWorkspaceView;
         readonly ProgressControlsForViews mConfigureProgress;
-        readonly CmConnection mCmConnection;
         readonly IPlasticAPI mPlasticApi;
         readonly IPlasticWebRestApi mPlasticWebRestApi;
         readonly CreateWorkspaceView.ICreateWorkspaceListener mCreateWorkspaceListener;

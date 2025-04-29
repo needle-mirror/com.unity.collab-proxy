@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using Codice.Client.Common;
+
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
+using Codice.Client.Common;
 using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Home.Repositories;
@@ -14,14 +14,13 @@ using Unity.PlasticSCM.Editor.UI.Tree;
 namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
 {
     internal class RepositoriesListView :
-        TreeView,
+        PlasticTreeView,
         IPlasticTable<RepositoryInfo>
     {
         internal RepositoriesListView(
             RepositoriesListHeaderState headerState,
             List<string> columnNames,
             Action doubleClickAction)
-            : base(new TreeViewState())
         {
             mColumnNames = columnNames;
             mDoubleClickAction = doubleClickAction;
@@ -31,19 +30,6 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             multiColumnHeader.sortingChanged += SortingChanged;
 
             mColumnComparers = RepositoriesTableDefinition.BuildColumnComparers();
-
-            rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = false;
-        }
-
-        public override IList<TreeViewItem> GetRows()
-        {
-            return mRows;
-        }
-
-        protected override TreeViewItem BuildRoot()
-        {
-            return new TreeViewItem(0, -1, string.Empty);
         }
 
         protected override IList<TreeViewItem> BuildRows(
@@ -69,22 +55,6 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
         protected override void DoubleClickedItem(int id)
         {
             mDoubleClickAction();
-        }
-
-        protected override void BeforeRowsGUI()
-        {
-            int firstRowVisible;
-            int lastRowVisible;
-            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
-
-            GUI.DrawTexture(new Rect(0,
-                firstRowVisible * rowHeight,
-                GetRowRect(0).width,
-                (lastRowVisible * rowHeight) + 1000),
-                Images.GetTreeviewBackgroundTexture());
-
-            DrawTreeViewItem.InitializeStyles();
-            base.BeforeRowsGUI();
         }
 
         protected override void RowGUI(RowGUIArgs args)
@@ -239,8 +209,6 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                 isFocused,
                 false);
         }
-
-        List<TreeViewItem> mRows = new List<TreeViewItem>();
 
         IList<RepositoryInfo> mUnfilteredRepositories = new List<RepositoryInfo>();
         IList<RepositoryInfo> mRepositories = new List<RepositoryInfo>();

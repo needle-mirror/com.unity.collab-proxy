@@ -34,7 +34,8 @@ namespace Unity.PlasticSCM.Editor.Gluon
 
             StatusBar.DrawIcon(icon);
 
-            StatusBar.DrawNotificationLabel(new GUIContent(mData.InfoText));
+            StatusBar.DrawNotification(new GUIContentNotification(
+                new GUIContent(mData.InfoText)));
 
             if (StatusBar.DrawButton(new GUIContent(mData.ActionText, mData.TooltipText)))
             {

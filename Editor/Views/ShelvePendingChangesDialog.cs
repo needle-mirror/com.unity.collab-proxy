@@ -99,6 +99,8 @@ namespace Unity.PlasticSCM.Editor.Views
             bool warnOverwriteExistingShelves)
         {
             var instance = CreateInstance<ShelvePendingChangesDialog>();
+            instance.mEnterKeyAction = instance.DoSwitchAction;
+            instance.mEscapeKeyAction = instance.CancelButtonAction;
             instance.mSrcObject = srcObject;
             instance.mDstObject = dstObject;
             instance.mCanBringPendingChanges = canBringPendingChanges;
@@ -211,6 +213,19 @@ namespace Unity.PlasticSCM.Editor.Views
             if (!NormalButton(PlasticLocalization.Name.SwitchButton.GetString()))
                 return;
 
+            DoSwitchAction();
+        }
+
+        void DoCancelButton()
+        {
+            if (!NormalButton(PlasticLocalization.Name.CancelButton.GetString()))
+                return;
+
+            CancelButtonAction();
+        }
+
+        void DoSwitchAction()
+        {
             if (mWarnOverwriteExistingShelves &&
                 mLeaveRadioToggle &&
                 !AskForOverwriteConfirmation())
@@ -223,14 +238,6 @@ namespace Unity.PlasticSCM.Editor.Views
             }
 
             OkButtonAction();
-        }
-
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.Name.CancelButton.GetString()))
-                return;
-
-            CancelButtonAction();
         }
 
         static void DrawTabbedContent(Action drawContent)

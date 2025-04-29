@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 using UnityEditor;
 
+using Codice.CM.Common;
+using PlasticGui;
 using PlasticGui.WorkspaceWindow;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
@@ -11,11 +13,13 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
     internal class AssetCopyPathOperation : IAssetMenuCopyPathOperation
     {
         internal AssetCopyPathOperation(
-            string workspacePath,
+            WorkspaceInfo wkInfo,
+            IPlasticAPI plasticApi,
             IAssetStatusCache assetStatusCache,
             AssetVcsOperations.IAssetSelection assetSelection)
         {
-            mWorkspacePath = workspacePath;
+            mWkInfo = wkInfo;
+            mPlasticAPI = plasticApi;
             mAssetStatusCache = assetStatusCache;
             mAssetSelection = assetSelection;
         }
@@ -23,8 +27,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         void IAssetMenuCopyPathOperation.CopyFilePath(bool relativePath)
         {
             List<string> selectedPaths = GetSelectedPaths.ForOperation(
-                mWorkspacePath,
+                mWkInfo,
                 mAssetSelection.GetSelectedAssets(),
+                mPlasticAPI,
                 mAssetStatusCache,
                 AssetMenuOperations.CopyFilePath,
                 includeMetaFiles: false);
@@ -32,10 +37,11 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             EditorGUIUtility.systemCopyBuffer = GetFilePathList.FromSelectedPaths(
                 selectedPaths,
                 relativePath,
-                mWorkspacePath);
+                mWkInfo.ClientPath);
         }
 
-        readonly string mWorkspacePath;
+        readonly WorkspaceInfo mWkInfo;
+        readonly IPlasticAPI mPlasticAPI;
         readonly IAssetStatusCache mAssetStatusCache;
         readonly AssetVcsOperations.IAssetSelection mAssetSelection;
     }

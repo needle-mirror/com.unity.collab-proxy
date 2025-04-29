@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 
 using UnityEditor.VersionControl;
@@ -45,7 +45,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         internal static List<string> GetSelectedPaths(
             string wkPath,
-            AssetList assetList)
+            IEnumerable<Asset> assetList)
         {
             List<string> result = new List<string>();
 

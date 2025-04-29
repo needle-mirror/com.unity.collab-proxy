@@ -53,6 +53,11 @@ namespace Unity.PlasticSCM.Editor.UI
             CompleteModal(ResponseType.Apply);
         }
 
+        internal void AddControlConsumingEnterKey(string controlName)
+        {
+            mControlsConsumingEnterKey.Add(controlName);
+        }
+
         internal void RunUtility(EditorWindow parentWindow)
         {
             InitializeVars(parentWindow);
@@ -95,11 +100,6 @@ namespace Unity.PlasticSCM.Editor.UI
                     mIsClosed = true;
                     Close();
                     return;
-                }
-
-                if (Event.current.type == EventType.Layout)
-                {
-                    EditorDispatcher.Update();
                 }
 
                 if (!mFocusedOnce)
@@ -333,32 +333,6 @@ namespace Unity.PlasticSCM.Editor.UI
                 GUILayout.Height(25));
         }
 
-        void IPlasticDialogCloser.CloseDialog()
-        {
-            OkButtonAction();
-        }
-
-        void ProcessKeyActions()
-        {
-            Event e = Event.current;
-
-            if (mEnterKeyAction != null &&
-                Keyboard.IsReturnOrEnterKeyPressed(e))
-            {
-                mEnterKeyAction.Invoke();
-                e.Use();
-                return;
-            }
-
-            if (mEscapeKeyAction != null &&
-                Keyboard.IsKeyPressed(e, KeyCode.Escape))
-            {
-                mEscapeKeyAction.Invoke();
-                e.Use();
-                return;
-            }
-        }
-
         protected static bool AcceptButton(string text, int extraWidth = 10)
         {
             GUI.color = new Color(0.098f, 0.502f, 0.965f, .8f);
@@ -379,10 +353,41 @@ namespace Unity.PlasticSCM.Editor.UI
             return pressed;
         }
 
+        void IPlasticDialogCloser.CloseDialog()
+        {
+            OkButtonAction();
+        }
+
+        void ProcessKeyActions()
+        {
+            Event e = Event.current;
+
+            string focusedControlName = GUI.GetNameOfFocusedControl();
+
+            if (mEnterKeyAction != null &&
+                Keyboard.IsReturnOrEnterKeyPressed(e) &&
+                !ControlConsumesKey(mControlsConsumingEnterKey, focusedControlName))
+            {
+                mEnterKeyAction.Invoke();
+                e.Use();
+                return;
+            }
+
+            if (mEscapeKeyAction != null &&
+                Keyboard.IsKeyPressed(e, KeyCode.Escape))
+            {
+                mEscapeKeyAction.Invoke();
+                e.Use();
+                return;
+            }
+        }
+
         void CompleteModal(ResponseType answer)
         {
             mIsCompleted = true;
             mAnswer = answer;
+
+            Repaint();
         }
 
         void InitializeVars(EditorWindow parentWindow)
@@ -406,6 +411,22 @@ namespace Unity.PlasticSCM.Editor.UI
             minSize = maxSize;
         }
 
+        static bool ControlConsumesKey(
+            List<string> controlsConsumingKey,
+            string focusedControlName)
+        {
+            if (string.IsNullOrEmpty(focusedControlName))
+                return false;
+
+            foreach (string controlName in controlsConsumingKey)
+            {
+                if (focusedControlName.Equals(controlName))
+                    return true;
+            }
+
+            return false;
+        }
+
         static GUISkin GetEditorSkin()
         {
             return EditorGUIUtility.isProSkin ?
@@ -424,6 +445,8 @@ namespace Unity.PlasticSCM.Editor.UI
 
         EditorWindow mParentWindow;
         SizeToContent mSizeToContent = SizeToContent.Automatic;
+
+        List<string> mControlsConsumingEnterKey = new List<string>();
 
         const float DEFAULT_WIDTH = 500f;
         const float DEFAULT_HEIGHT = 180f;

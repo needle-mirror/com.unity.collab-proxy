@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
 using UnityEditor;
@@ -235,7 +235,8 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
                 LocksListHeaderState.GetDefault(),
                 LocksListHeaderState.GetColumnNames(),
                 new LocksViewMenu(this),
-                OnSelectionChanged);
+                OnSelectionChanged,
+                mParentWindow.Repaint);
 
             mLocksListView.Reload();
         }

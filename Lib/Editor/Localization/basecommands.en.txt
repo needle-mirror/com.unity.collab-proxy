@@ -1041,9 +1041,6 @@ allows adding new lock rules
 == ConfirmNewPassword ==
 Confirm password:
 
-== ConnectTubeSucceeded ==
-The Unity VCS server ({0}) was successfully connected to Plastic Tube.
-
 == ConnectionFail ==
 Test connection encountered a problem trying to connect to Unity VCS server
 
@@ -1306,9 +1303,6 @@ This item has been discarded because the item has been moved to the same locatio
 
 == DiscardedSubtractiveFormat ==
 Discarded subtractive merge on item {0} from {1} because {2}
-
-== DisconnectTubeSucceeded ==
-The Unity VCS server ({0}) was successfully disconnected from Plastic Tube.
 
 == DivergentMove ==
 Divergent move conflict
@@ -1727,9 +1721,6 @@ Deleted
 
 == LogMoved ==
 Moved
-
-== MakeTubeSucceeded ==
-The tube {0} -> {1} was correctly created.
 
 == Markers ==
 Markers
@@ -2292,9 +2283,6 @@ Reconciling objects
 == RecurseWkIncompatibleWithWorkspacePath ==
 Can't use '--recursewk' flag with a workspace path.
 
-== RemoveTubeSucceeded ==
-The tube {0} -> {1} was correctly removed.
-
 == Removed ==
 Removed
 
@@ -2411,9 +2399,6 @@ No changes.
 
 == Server ==
 Server
-
-== SetConfigSucceeded ==
-The Plastic Tube configuration was correctly set.
 
 == SettingNewSelector ==
 Setting the new selector...
@@ -2561,12 +2546,6 @@ Total
 
 == Purged ==
 Purged
-
-== TubeStatusConnected ==
-The Unity VCS server ({0}) is connected to Plastic Tube.
-
-== TubeStatusDisconnected ==
-The Unity VCS server ({0}) is not connected to Plastic Tube.
 
 == TypeNewPassword ==
 New password:

@@ -374,6 +374,9 @@ An error has occurred on the server {0}
 == GetRevisionDirectoryNotSupported ==
 GetRevision is not supported for directories. In order to get the contents of a directory, please load it in your workspace rules.
 
+== GettingSSOProviders ==
+Getting organization providers...
+
 == GluonPartialUpdateToDifferentBranch ==
 The update operation cannot continue. The target changeset must be in the current workspace branch: {0}.
 
@@ -609,6 +612,9 @@ A mount point cannot be obtained for a multi repository query (query: '{0}').
 == NoPathBetweenCsets ==
 There is no path between '{0}' and '{1}'.
 
+== NoProvidersForOrganization ==
+The specified organization doesn't allow access with SSO
+
 == NoSuchCodeReview ==
 The specified code review '{0}' could not be found.
 
@@ -620,6 +626,9 @@ The {0} is not a change
 
 == NotValidCmPath ==
 The specified path: {0} is not a valid server path.
+
+== OAuthSignInCheckMessage ==
+Waiting for a session...
 
 == ObjectNameField ==
 Object name
@@ -662,6 +671,9 @@ The repository {0} is mounted twice at '{1}' and '{2}'. Please specify the mount
 
 == RestorePathShouldNotExist ==
 The restore path should not exist.
+
+== RetrievingOrgsProgress ==
+Retrieving organizations...
 
 == RevdatanotfoundForSpec ==
 No data found for the given revision specification

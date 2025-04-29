@@ -1,12 +1,15 @@
 using UnityEditor;
 using UnityEngine.UIElements;
+
+using Codice.Client.Common.Authentication;
 using PlasticGui;
 
 namespace Unity.PlasticSCM.Editor.UI.UIElements
 {
     class ProgressControlsForDialogs :
         VisualElement,
-        IProgressControls
+        IProgressControls,
+        IAuthenticationProgressControls
     {
         internal class Data
         {
@@ -78,6 +81,16 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
 
         void IProgressControls.HideProgress()
         {
+            InternalHideProgress();
+        }
+
+        void IAuthenticationProgressControls.HideProgress()
+        {
+            InternalHideProgress();
+        }
+
+        void InternalHideProgress()
+        {
             EnableActionControls(true);
 
             mData.IsWaitingAsyncResult = false;
@@ -86,6 +99,16 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
         }
 
         void IProgressControls.ShowProgress(string message)
+        {
+            InternalShowProgress(message);
+        }
+
+        void IAuthenticationProgressControls.ShowProgress(string message)
+        {
+            InternalShowProgress(message);
+        }
+
+        void InternalShowProgress(string message)
         {
             EnableActionControls(false);
 

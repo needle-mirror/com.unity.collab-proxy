@@ -1169,6 +1169,42 @@ Cmd+D4
 == PlasticSelectResultContributorShortcutForLinux ==
 Ctrl+D4
 
+== PlasticFirstDifferenceShortcutForWindows ==
+Ctrl+Shift+N
+
+== PlasticFirstDifferenceShortcutForMacOS ==
+Cmd+Shift+N
+
+== PlasticFirstDifferenceShortcutForLinux ==
+Ctrl+Shift+N
+
+== PlasticPrevDifferenceShortcutForWindows ==
+Ctrl+N
+
+== PlasticPrevDifferenceShortcutForMacOS ==
+Cmd+N
+
+== PlasticPrevDifferenceShortcutForLinux ==
+Ctrl+N
+
+== PlasticNextDifferenceShortcutForWindows ==
+Ctrl+M
+
+== PlasticNextDifferenceShortcutForMacOS ==
+Cmd+M
+
+== PlasticNextDifferenceShortcutForLinux ==
+Ctrl+M
+
+== PlasticLastDifferenceShortcutForWindows ==
+Ctrl+Shift+M
+
+== PlasticLastDifferenceShortcutForMacOS ==
+Cmd+Shift+M
+
+== PlasticLastDifferenceShortcutForLinux ==
+Ctrl+Shift+M
+
 == BinMergeUsageTitle ==
 BinMerge Tool Usage
 

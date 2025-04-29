@@ -14,25 +14,26 @@ using Unity.PlasticSCM.Editor.UI.Tree;
 namespace Unity.PlasticSCM.Editor.Views.Locks
 {
     internal sealed class LocksListView :
-        TreeView,
+        PlasticTreeView,
         FillLocksTable.IShowContentView,
         FillLocksTable.ILocksList
     {
         internal GenericMenu Menu { get { return mMenu.Menu; } }
-        internal string EmptyStateMessage { get { return mEmptyStateContent.text; } }
+        internal string EmptyStateMessage { get { return mEmptyStateData.Content.text; } }
 
         internal LocksListView(
             RepositorySpec repSpec,
             LocksListHeaderState headerState,
             List<string> columnNames,
             LocksViewMenu menu,
-            Action selectionChangedAction)
-            : base(new TreeViewState())
+            Action selectionChangedAction,
+            Action repaintAction)
         {
             mRepSpec = repSpec;
             mColumnNames = columnNames;
             mMenu = menu;
             mSelectionChangedAction = selectionChangedAction;
+            mRepaintAction = repaintAction;
 
             mLocksSelector = new LocksSelector(this, mListViewItemIds);
 
@@ -45,17 +46,14 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
             SetupTreeView(headerState);
         }
 
-        public override IList<TreeViewItem> GetRows()
-        {
-            return mRows;
-        }
-
         public override void OnGUI(Rect rect)
         {
             base.OnGUI(rect);
 
+            mEmptyStateData.UpdateValidRect(rect, Event.current.type, mRepaintAction);
+
             if (mRows.Count == 0)
-                DrawTreeViewEmptyState.For(rect, mEmptyStateContent);
+                DrawTreeViewEmptyState.For(mEmptyStateData);
 
             Event e = Event.current;
 
@@ -66,11 +64,6 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
 
             if (isProcessed)
                 e.Use();
-        }
-
-        protected override TreeViewItem BuildRoot()
-        {
-            return new TreeViewItem(0, -1, string.Empty);
         }
 
         protected override IList<TreeViewItem> BuildRows(
@@ -108,22 +101,6 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
             Repaint();
         }
 
-        protected override void BeforeRowsGUI()
-        {
-            int firstRowVisible;
-            int lastRowVisible;
-            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
-
-            GUI.DrawTexture(new Rect(0,
-                firstRowVisible * rowHeight,
-                GetRowRect(0).width,
-                (lastRowVisible * rowHeight) + 1000),
-                Images.GetTreeviewBackgroundTexture());
-
-            DrawTreeViewItem.InitializeStyles();
-            base.BeforeRowsGUI();
-        }
-
         protected override void RowGUI(RowGUIArgs args)
         {
             if (args.item is LocksListViewItem)
@@ -154,7 +131,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
 
         void FillLocksTable.IShowContentView.ShowContentPanel()
         {
-            mEmptyStateContent.text = string.Empty;
+            mEmptyStateData.UpdateText(string.Empty);
 
             Reload();
 
@@ -163,7 +140,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
 
         void FillLocksTable.IShowContentView.ShowEmptyStatePanel(string explanationText)
         {
-            mEmptyStateContent.text = explanationText;
+            mEmptyStateData.UpdateText(explanationText);
 
             Reload();
         }
@@ -174,7 +151,8 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
                 PlasticLocalization.Name.LoadLocksErrorExplanation.GetString(),
                 errorText);
 
-            mEmptyStateContent.text = PlasticLocalization.Name.LoadLocksError.GetString();
+            mEmptyStateData.UpdateText(
+                PlasticLocalization.Name.LoadLocksError.GetString());
 
             mLocksList = null;
             mListViewItemIds.Clear();
@@ -245,9 +223,6 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
             multiColumnHeader = new MultiColumnHeader(headerState);
             multiColumnHeader.canSort = true;
             multiColumnHeader.sortingChanged += SortingChanged;
-
-            rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = false;
         }
 
         static void RegenerateRows(
@@ -303,7 +278,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
                 }
 
                 var column = (LocksListColumn) args.GetColumn(visibleColumnIdx);
-                
+
                 DrawLocksListViewItem.ForCell(
                     repSpec,
                     cellRect,
@@ -318,15 +293,15 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
 
 
         ListViewItemIds<LockInfo> mListViewItemIds = new ListViewItemIds<LockInfo>();
-        List<TreeViewItem> mRows = new List<TreeViewItem>();
 
         LockInfoList mLocksList;
 
-        readonly GUIContent mEmptyStateContent = new GUIContent(string.Empty);
+        readonly EmptyStateData mEmptyStateData = new EmptyStateData();
         readonly CooldownWindowDelayer mCooldownFilterAction;
         readonly CooldownWindowDelayer mCooldownSelectionAction;
         readonly LocksSelector mLocksSelector;
         readonly Action mSelectionChangedAction;
+        readonly Action mRepaintAction;
         readonly LocksViewMenu mMenu;
         readonly List<string> mColumnNames;
         readonly RepositorySpec mRepSpec;

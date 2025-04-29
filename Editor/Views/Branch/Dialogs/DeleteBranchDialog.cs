@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using UnityEditor;
+using UnityEngine;
+
 using Codice.CM.Common;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
-
-using UnityEditor;
-using UnityEngine;
 
 namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
 {
@@ -81,20 +81,33 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
 
         void DoDeleteButton()
         {
-            GUI.enabled = mConfirmDelete;
+            GUI.enabled = IsDeleteButtonEnabled();
 
             if (NormalButton(PlasticLocalization.Name.DeleteButton.GetString()))
-            {
-                OkButtonAction();
-            }
+                DeleteButtonAction();
 
             GUI.enabled = true;
+        }
+
+        void DeleteButtonAction()
+        {
+            if (!IsDeleteButtonEnabled())
+                return;
+
+            OkButtonAction();
+        }
+
+        bool IsDeleteButtonEnabled()
+        {
+            return mConfirmDelete;
         }
 
         static DeleteBranchDialog Create(IList<BranchInfo> branches)
         {
             var instance = CreateInstance<DeleteBranchDialog>();
             instance.mMessage = BuildDeleteBranchesConfirmationMessage(branches);
+            instance.mEnterKeyAction = instance.DeleteButtonAction;
+            instance.mEscapeKeyAction = instance.CancelButtonAction;
             instance.mNumberOfBranches = branches.Count;
             instance.mTitle = PlasticLocalization.Name.ConfirmDeleteTitle.GetString();
             return instance;

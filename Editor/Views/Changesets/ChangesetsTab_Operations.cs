@@ -1,7 +1,10 @@
 using Codice.CM.Common;
+using Codice.CM.Common.Selectors;
 using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer;
+using PlasticGui.WorkspaceWindow.QueryViews.Branches;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.Views.Branches.Dialogs;
 
 namespace Unity.PlasticSCM.Editor.Views.Changesets
 {
@@ -10,7 +13,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         void SwitchToChangesetForMode()
         {
             bool isCancelled;
-            SaveAssets.UnderWorkspaceWithConfirmation(
+            mSaveAssets.UnderWorkspaceWithConfirmation(
                 mWkInfo.ClientPath, mWorkspaceOperationsMonitor,
                 out isCancelled);
 
@@ -45,6 +48,62 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
                 csetInfo.BranchName,
                 csetInfo.ChangesetId,
+                mViewHost,
+                mGluonNewIncomingChangesUpdater,
+                new UnityPlasticGuiMessage(),
+                mProgressControls,
+                mWorkspaceWindow.GluonProgressOperationHandler,
+                mGluonUpdateReport,
+                mWorkspaceWindow,
+                mShelvePendingChangesQuestionerBuilder,
+                mShelvedChangesUpdater,
+                mEnableSwitchAndShelveFeatureDialog,
+                RefreshAsset.BeforeLongAssetOperation,
+                items => RefreshAsset.AfterLongAssetOperation(
+                    ProjectPackages.ShouldBeResolvedFromPaths(mWkInfo, items)));
+        }
+
+        void CreateBranchForMode()
+        {
+            if (mIsGluonMode)
+            {
+                CreateBranchForGluon();
+                return;
+            }
+
+            CreateBranchForDeveloper();
+        }
+
+        void CreateBranchForDeveloper()
+        {
+            RepositorySpec repSpec = ChangesetsSelection.GetSelectedRepository(mChangesetsListView);
+            ChangesetExtendedInfo csetInfo = ChangesetsSelection.GetSelectedChangeset(mChangesetsListView);
+
+            BranchCreationData branchCreationData = CreateBranchDialog.CreateBranchFromChangeset(
+                mParentWindow,
+                repSpec,
+                csetInfo);
+
+            mChangesetOperations.CreateBranch(
+                branchCreationData,
+                RefreshAsset.BeforeLongAssetOperation,
+                items => RefreshAsset.AfterLongAssetOperation(
+                    ProjectPackages.ShouldBeResolvedFromUpdateReport(mWkInfo, items)));
+        }
+
+        void CreateBranchForGluon()
+        {
+            RepositorySpec repSpec = ChangesetsSelection.GetSelectedRepository(mChangesetsListView);
+            ChangesetExtendedInfo csetInfo = ChangesetsSelection.GetSelectedChangeset(mChangesetsListView);
+
+            BranchCreationData branchCreationData = CreateBranchDialog.CreateBranchFromChangeset(
+                mParentWindow,
+                repSpec,
+                csetInfo);
+
+            CreateBranchOperation.CreateBranch(
+                mWkInfo,
+                branchCreationData,
                 mViewHost,
                 mGluonNewIncomingChangesUpdater,
                 new UnityPlasticGuiMessage(),

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Codice.Client.Common;
+using Codice.Client.Common.Authentication;
 using Codice.Client.Common.Threading;
+using Codice.Client.Common.WebApi;
+using Codice.Client.Common.WebApi.Responses;
 using Codice.CM.Common;
 using Codice.LogWrapper;
-using PlasticGui.WebApi.Responses;
 using PlasticGui.WorkspaceWindow.Home;
 
 namespace Unity.PlasticSCM.Editor
@@ -18,13 +20,13 @@ namespace Unity.PlasticSCM.Editor
             return ResolveServer.ToDisplayString(server).EndsWith(UnityOrganizationServer);
         }
 
-        internal static void LoadCloudOrganizationsAsync()
+        internal static void LoadCloudOrganizationsAsync(IPlasticWebRestApi restApi)
         {
             PlasticThreadPool.Run(delegate
             {
                 try
                 {
-                    OrganizationsResponse organizationResponse = PlasticGui.Plastic.WebRestAPI.GetCloudServers();
+                    OrganizationsResponse organizationResponse = restApi.GetCloudServers();
 
                     if (organizationResponse.Error != null)
                     {
@@ -43,37 +45,6 @@ namespace Unity.PlasticSCM.Editor
                     ExceptionsHandler.LogException(typeof(OrganizationsInformation).Name, e);
                 }
             });
-        }
-
-        internal static void UpdateOrganizationSlugs(OrganizationsResponse organizationsResponse)
-        {
-            if (organizationsResponse == null || organizationsResponse.OrganizationInfo == null)
-            {
-                return;
-            }
-
-            List<string> genesisOrgIds = new List<string>();
-            List<string> slugs = new List<string>();
-
-            foreach (string organization in organizationsResponse.Organizations)
-            {
-                OrganizationsResponse.OrganizationInformation info;
-
-                if (!organizationsResponse.OrganizationInfo.TryGetValue(organization, out info))
-                {
-                    continue;
-                }
-
-                if (info.Type != OrganizationsResponse.OrganizationInformation.ORGANIZATION_TYPE_UNITY)
-                {
-                    continue;
-                }
-
-                genesisOrgIds.Add(organization);
-                slugs.Add(info.Slug);
-            }
-
-            PlasticGui.Plastic.API.SetUnityOrganizationsSlugData(genesisOrgIds, slugs);
         }
 
         internal static List<OrganizationInfo> FromServersOrdered(List<string> serverNames)
@@ -143,6 +114,25 @@ namespace Unity.PlasticSCM.Editor
                 mLog.ErrorFormat("Could not resolve the repSpec {0}: {1}", userInputRepSpec, e.Message);
                 return null;
             }
+        }
+
+        static void UpdateOrganizationSlugs(OrganizationsResponse organizationsResponse)
+        {
+            if (organizationsResponse == null || organizationsResponse.OrganizationInfo == null)
+            {
+                return;
+            }
+
+            List<string> genesisOrgIds;
+            List<string> slugs;
+
+            GetCloudOrganizations.BuildOrganizationSlugs(
+                organizationsResponse.Organizations,
+                organizationsResponse.OrganizationInfo,
+                out genesisOrgIds,
+                out slugs);
+
+            CmConnection.Get().SetUnityOrganizationsSlugData(genesisOrgIds, slugs);
         }
 
         static readonly string UnityOrganizationServer = "@unity";

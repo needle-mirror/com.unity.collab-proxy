@@ -79,7 +79,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge
                 label = string.Format(label, count);
 
             GUIContent content = new GUIContent(label);
-            GUILayout.Label(content, UnityStyles.MergeTab.ChangesToApplySummaryLabel);
+            GUILayout.Label(content, UnityStyles.MergeTab.InfoLabel);
 
             GUILayout.Space(5);
 

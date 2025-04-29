@@ -14,7 +14,7 @@ using Unity.PlasticSCM.Editor.UI.Tree;
 
 namespace Unity.PlasticSCM.Editor.Views.Shelves
 {
-    internal class ShelvesListView : TreeView
+    internal class ShelvesListView : PlasticTreeView
     {
         internal GenericMenu Menu { get { return mMenu.Menu; } }
 
@@ -25,7 +25,6 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             Action sizeChangedAction,
             Action selectionChangedAction,
             Action doubleClickAction)
-            : base(new TreeViewState())
         {
             mColumnNames = columnNames;
             mMenu = menu;
@@ -37,9 +36,6 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             multiColumnHeader.canSort = true;
             multiColumnHeader.sortingChanged += SortingChanged;
 
-            rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = false;
-
             mCooldownFilterAction = new CooldownWindowDelayer(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
 
@@ -50,16 +46,6 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
         protected override void SelectionChanged(IList<int> selectedIds)
         {
             mCooldownSelectionAction.Ping();
-        }
-
-        public override IList<TreeViewItem> GetRows()
-        {
-            return mRows;
-        }
-
-        protected override TreeViewItem BuildRoot()
-        {
-            return new TreeViewItem(0, -1, string.Empty);
         }
 
         protected override IList<TreeViewItem> BuildRows(
@@ -115,22 +101,6 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
                 e.Use();
         }
 
-        protected override void BeforeRowsGUI()
-        {
-            int firstRowVisible;
-            int lastRowVisible;
-            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
-
-            GUI.DrawTexture(new Rect(0,
-                firstRowVisible * rowHeight,
-                GetRowRect(0).width,
-                (lastRowVisible * rowHeight) + 1000),
-                Images.GetTreeviewBackgroundTexture());
-
-            DrawTreeViewItem.InitializeStyles();
-            base.BeforeRowsGUI();
-        }
-
         protected override void RowGUI(RowGUIArgs args)
         {
             if (args.item is ShelveListViewItem)
@@ -151,7 +121,7 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
 
         protected override void DoubleClickedItem(int id)
         {
-            if (!HasSelection())
+            if (GetSelection().Count != 1)
                 return;
 
             mDoubleClickAction();
@@ -419,7 +389,6 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
         Rect mLastRect;
 
         ListViewItemIds<object> mListViewItemIds = new ListViewItemIds<object>();
-        List<TreeViewItem> mRows = new List<TreeViewItem>();
 
         ViewQueryResult mQueryResult;
 

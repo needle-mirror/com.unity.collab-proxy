@@ -3,7 +3,6 @@
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-using Codice.Client.Commands;
 using Codice.Client.Common;
 using Codice.CM.Common;
 using Codice.CM.Common.Merge;
@@ -14,7 +13,7 @@ using Unity.PlasticSCM.Editor.UI.Tree;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges.PendingMergeLinks
 {
-    internal class MergeLinksListView : TreeView
+    internal class MergeLinksListView : PlasticTreeView
     {
         internal float DesiredHeight
         {
@@ -22,23 +21,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.PendingMergeLinks
             {
                 return rowHeight * (mMergeLinks.Count + 1);
             }
-        }
-
-        internal MergeLinksListView()
-            : base(new TreeViewState())
-        {
-            rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = false;
-        }
-
-        public override IList<TreeViewItem> GetRows()
-        {
-            return mRows;
-        }
-
-        protected override TreeViewItem BuildRoot()
-        {
-            return new TreeViewItem(0, -1, string.Empty);
         }
 
         protected override IList<TreeViewItem> BuildRows(TreeViewItem rootItem)
@@ -51,22 +33,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.PendingMergeLinks
             IDictionary<MountPoint, IList<PendingMergeLink>> pendingMergeLinks)
         {
             mMergeLinks = BuildMountPendingMergeLink(pendingMergeLinks);
-        }
-
-        protected override void BeforeRowsGUI()
-        {
-            int firstRowVisible;
-            int lastRowVisible;
-            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
-
-            GUI.DrawTexture(new Rect(0,
-                firstRowVisible * rowHeight,
-                GetRowRect(0).width,
-                (lastRowVisible * rowHeight) + 500),
-                Images.GetTreeviewBackgroundTexture());
-
-            DrawTreeViewItem.InitializeStyles();
-            base.BeforeRowsGUI();
         }
 
         static void RegenerateRows(
@@ -130,8 +96,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.PendingMergeLinks
 
             return result;
         }
-
-        List<TreeViewItem> mRows = new List<TreeViewItem>();
 
         List<MountPendingMergeLink> mMergeLinks = new List<MountPendingMergeLink>();
     }

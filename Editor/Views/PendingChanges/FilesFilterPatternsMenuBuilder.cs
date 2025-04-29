@@ -1,4 +1,4 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEngine;
 
 using Codice.Client.BaseCommands;
@@ -57,10 +57,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             }
 
             menu.AddItem(mIgnoredByNameMenuItemContent, false, IgnoredByName_Click);
-            menu.AddItem(mIgnoredByExtensionMenuItemContent, false, IgnoredByExtension_Click);
 
-            if (!operations.HasFlag(FilterMenuOperations.IgnoreByExtension))
-                return;
+            if (operations.HasFlag(FilterMenuOperations.IgnoreByExtension))
+                menu.AddItem(mIgnoredByExtensionMenuItemContent, false, IgnoredByExtension_Click);
 
             menu.AddItem(mIgnoredByFullPathMenuItemContent, false, IgnoredByFullPath_Click);
         }
@@ -74,10 +73,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             }
 
             menu.AddItem(mHiddenChangesByNameMenuItemContent, false, HiddenChangesByName_Click);
-            menu.AddItem(mHiddenChangesByExtensionMenuItemContent, false, HiddenChangesByExtension_Click);
 
-            if (!operations.HasFlag(FilterMenuOperations.HideChangedByExtension))
-                return;
+            if (operations.HasFlag(FilterMenuOperations.HideChangedByExtension))
+                menu.AddItem(mHiddenChangesByExtensionMenuItemContent, false, HiddenChangesByExtension_Click);
 
             menu.AddItem(mHiddenChangesByFullPathMenuItemContent, false, HiddenChangesByFullPath_Click);
         }
@@ -187,7 +185,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         GUIContent mIgnoredByExtensionMenuItemContent;
         GUIContent mHiddenChangesByExtensionMenuItemContent;
 
-        GUIContent mIgnoredByFullPathMenuItemContent;        
+        GUIContent mIgnoredByFullPathMenuItemContent;
         GUIContent mHiddenChangesByFullPathMenuItemContent;
 
         IFilesFilterPatternsMenuOperations mOperations;

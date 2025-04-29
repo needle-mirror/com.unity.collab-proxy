@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
+using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.QueryViews.Branches;
 using Unity.PlasticSCM.Editor.UI;
@@ -65,6 +66,11 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             mBranchMenuOperations.RenameBranch();
         }
 
+        void HideUnhideBranchMenuItem_Click()
+        {
+            mBranchMenuOperations.HideUnhideBranch();
+        }
+
         void DeleteBranchMenuItem_Click()
         {
             mBranchMenuOperations.DeleteBranch();
@@ -75,6 +81,11 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             mBranchMenuOperations.MergeBranch();
         }
 
+        void DiffBranchMenuItem_Click()
+        {
+            mBranchMenuOperations.DiffBranch();
+        }
+
         void CreateCodeReviewMenuItem_Click()
         {
             mBranchMenuOperations.CreateCodeReview();
@@ -82,6 +93,8 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
         void UpdateMenuItems(GenericMenu menu)
         {
+            BranchInfo singleSelectedBranch = mBranchMenuOperations.GetSelectedBranch();
+
             BranchMenuOperations operations = BranchMenuUpdater.GetAvailableMenuOperations(
                 mBranchMenuOperations.GetSelectedBranchesCount(), mIsGluonMode, false);
 
@@ -113,12 +126,39 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
             menu.AddSeparator(string.Empty);
 
+            mDiffBranchMenuItemContent.text = string.Format("{0} {1}",
+                PlasticLocalization.Name.DiffBranchMenuItem.GetString(
+                    GetShorten.BranchNameFromBranch(singleSelectedBranch)),
+                GetPlasticShortcut.ForDiff());
+
+            AddBranchMenuItem(
+                mDiffBranchMenuItemContent,
+                menu,
+                operations,
+                BranchMenuOperations.DiffBranch,
+                DiffBranchMenuItem_Click);
+
+            menu.AddSeparator(string.Empty);
+
             AddBranchMenuItem(
                 mRenameBranchMenuItemContent,
                 menu,
                 operations,
                 BranchMenuOperations.Rename,
                 RenameBranchMenuItem_Click);
+
+            mHideUnhideBranchMenuItemContent.text = string.Format("{0} {1}",
+                mBranchMenuOperations.AreHiddenBranchesShown() ?
+                    PlasticLocalization.Name.BranchMenuItemUnhideBranch.GetString() :
+                    PlasticLocalization.Name.BranchMenuItemHideBranch.GetString(),
+                GetPlasticShortcut.ForHideUnhide());
+
+            AddBranchMenuItem(
+                mHideUnhideBranchMenuItemContent,
+                menu,
+                operations,
+                BranchMenuOperations.HideUnhide,
+                HideUnhideBranchMenuItem_Click);
 
             AddBranchMenuItem(
                 mDeleteBranchMenuItemContent,
@@ -171,6 +211,18 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 branchMenuOperations.MergeBranch();
                 return;
             }
+
+            if (operationToExecute == BranchMenuOperations.DiffBranch)
+            {
+                branchMenuOperations.DiffBranch();
+                return;
+            }
+
+            if (operationToExecute == BranchMenuOperations.HideUnhide)
+            {
+                branchMenuOperations.HideUnhideBranch();
+                return;
+            }
         }
 
         static BranchMenuOperations GetMenuOperations(Event e)
@@ -181,6 +233,14 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             if (Keyboard.IsControlOrCommandKeyPressed(e) &&
                 Keyboard.IsKeyPressed(e, KeyCode.M))
                 return BranchMenuOperations.MergeBranch;
+
+            if (Keyboard.IsControlOrCommandKeyPressed(e) &&
+                Keyboard.IsKeyPressed(e, KeyCode.D))
+                return BranchMenuOperations.DiffBranch;
+
+            if (Keyboard.IsControlOrCommandKeyPressed(e) &&
+                Keyboard.IsKeyPressed(e, KeyCode.H))
+                return BranchMenuOperations.HideUnhide;
 
             return BranchMenuOperations.None;
         }
@@ -194,8 +254,10 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             mMergeBranchMenuItemContent = new GUIContent(string.Format("{0} {1}",
                 PlasticLocalization.GetString(PlasticLocalization.Name.BranchMenuItemMergeFromBranch),
                 GetPlasticShortcut.ForMerge()));
+            mDiffBranchMenuItemContent = new GUIContent();
             mRenameBranchMenuItemContent = new GUIContent(
                 PlasticLocalization.GetString(PlasticLocalization.Name.BranchMenuItemRenameBranch));
+            mHideUnhideBranchMenuItemContent = new GUIContent();
             mDeleteBranchMenuItemContent = new GUIContent(string.Format("{0} {1}",
                 PlasticLocalization.GetString(PlasticLocalization.Name.BranchMenuItemDeleteBranch),
                 GetPlasticShortcut.ForDelete()));
@@ -208,7 +270,9 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         GUIContent mCreateBranchMenuItemContent;
         GUIContent mSwitchToBranchMenuItemContent;
         GUIContent mMergeBranchMenuItemContent;
+        GUIContent mDiffBranchMenuItemContent;
         GUIContent mRenameBranchMenuItemContent;
+        GUIContent mHideUnhideBranchMenuItemContent;
         GUIContent mDeleteBranchMenuItemContent;
         GUIContent mCreateCodeReviewMenuItemContent;
 

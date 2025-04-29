@@ -5,34 +5,34 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 using Codice.Client.Common;
+using Codice.Client.Common.Authentication;
+using Codice.Client.Common.Connection;
+using Codice.Client.Common.WebApi;
+using Codice.Client.Common.WebApi.Responses;
 using Codice.CM.Common;
+using Codice.LogWrapper;
 using PlasticGui;
-using PlasticGui.Configuration.OAuth;
-using PlasticGui.WebApi;
-using PlasticGui.WebApi.Responses;
+using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.Views.Welcome;
 
 namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 {
     internal interface IWelcomeWindowNotify
     {
-        void ProcessLoginResponse(OrganizationsResponse organizationResponse, string userName, string accessToken);
+        void ProcessLoginResponseWithOrganizations(Credentials credentials, List<string> cloudServers);
+
         void Back();
     }
 
     internal class CloudEditionWelcomeWindow :
-        EditorWindow,
-        OAuthSignIn.INotify,
-        IWelcomeWindowNotify
+        EditorWindow, IWelcomeWindowNotify, OAuthSignIn.INotify, GetCloudOrganizations.INotify
     {
         internal static void ShowWindow(
             IPlasticWebRestApi restApi,
-            CmConnection cmConnection,
             WelcomeView welcomeView,
             bool autoLogin = false)
         {
             sRestApi = restApi;
-            sCmConnection = cmConnection;
             sAutoLogin = autoLogin;
             CloudEditionWelcomeWindow window = GetWindow<CloudEditionWelcomeWindow>();
 
@@ -54,6 +54,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         {
             if (sAutoLogin)
             {
+                mLog.Debug("CancelJoinOrganization");
                 GetWindow<PlasticWindow>().GetWelcomeView().autoLoginState = AutoLogin.State.Started;
             }
         }
@@ -69,21 +70,40 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             return mSignInPanel;
         }
 
-        internal void ShowOrganizationsPanelFromAuthResponse(
-            string userName,
-            string accessToken,
-            OrganizationsResponse organizationResponse,
-            SEIDWorkingMode workingMode)
+        internal void GetOrganizations(Credentials credentials)
         {
+            mCredentials = credentials;
+
+            GetCloudOrganizations.GetOrganizationsInThreadWaiter(
+                mCredentials.User.Data,
+                mCredentials.User.Password,
+                new ProgressControlsForDialogs(),
+                this,
+                sRestApi,
+                CmConnection.Get());
+        }
+
+        void ShowOrganizationsPanel(
+            Credentials credentials, List<string> cloudServers, string errorMessage)
+        {
+            mLog.DebugFormat("ShowOrganizationsPanel({0}, {1} orgs) {2}",
+                credentials.Mode, cloudServers.Count, errorMessage);
+
             mOrganizationPanel = new OrganizationPanel(
                 this,
-                organizationResponse,
+                cloudServers,
+                errorMessage,
+                GetWindowTitle(),
                 joinedOrganization =>
                 {
-                    ClientConfiguration.Save(joinedOrganization, workingMode, userName, accessToken);
-                },
-                GetWindowTitle());
-            
+                    mLog.DebugFormat("JoinedOrganization: {0}", joinedOrganization);
+                    ClientConfiguration.Save(
+                        joinedOrganization,
+                        credentials.Mode,
+                        credentials.User.Data,
+                        credentials.User.Password);
+                });
+
             ReplaceRootPanel(mOrganizationPanel);
         }
 
@@ -114,60 +134,43 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                 mOrganizationPanel.Dispose();
         }
 
-        void OAuthSignIn.INotify.SuccessForUnityPackage(
-            OrganizationsResponse organizationResponse,
-            string userName,
-            string accessToken)
+        // Used by WaitingSignInPanel
+        void OAuthSignIn.INotify.SignedInForCloud(
+            string chosenProviderName, Credentials credentials)
         {
-            ShowOrganizationsPanelFromAuthResponse(userName,
-                accessToken,
-                organizationResponse,
-                SEIDWorkingMode.SSOWorkingMode);
+            mLog.Debug("SignedInForCloud");
+
+            GetOrganizations(credentials);
         }
 
-        void OAuthSignIn.INotify.SuccessForConfigure(
-            List<string> organizations,
-            bool canCreateAnOrganization,
-            string userName,
-            string accessToken)
+        void OAuthSignIn.INotify.SignedInForOnPremise(
+            string server, string proxy, Credentials credentials)
         {
-            // empty implementation
+            // Won't run
         }
 
-        void OAuthSignIn.INotify.SuccessForSSO(string organization)
+        void OAuthSignIn.INotify.Cancel(string message)
         {
-            // empty implementation
-        }
-
-        void OAuthSignIn.INotify.SuccessForProfile(string email)
-        {
-            // empty implementation
-        }
-
-        void OAuthSignIn.INotify.SuccessForHomeView(string userName)
-        {
-            // empty implementation
-        }
-
-        void OAuthSignIn.INotify.SuccessForCredentials(
-            string email,
-            string accessToken)
-        {
-            // empty implementation
-        }
-
-        void OAuthSignIn.INotify.Cancel(string errorMessage)
-        {
+            mLog.Debug("Cancel");
             Focus();
         }
 
-        void IWelcomeWindowNotify.ProcessLoginResponse(OrganizationsResponse organizationResponse, string userName, string accessToken)
+        void GetCloudOrganizations.INotify.CloudOrganizationsRetrieved(List<string> cloudServers)
         {
-            ShowOrganizationsPanelFromAuthResponse(
-                userName,
-                accessToken,
-                organizationResponse,
-                SEIDWorkingMode.LDAPWorkingMode);
+            ShowOrganizationsPanel(mCredentials, cloudServers, errorMessage: null);
+        }
+
+        void GetCloudOrganizations.INotify.Error(ErrorResponse.ErrorFields error)
+        {
+            ShowOrganizationsPanel(mCredentials, cloudServers: null, errorMessage: error.Message);
+        }
+
+        void IWelcomeWindowNotify.ProcessLoginResponseWithOrganizations(
+            Credentials credentials, List<string> cloudServers)
+        {
+            mLog.DebugFormat("ProcessLoginResponseWithOrganizations: {0} orgs", cloudServers.Count);
+            mCredentials = credentials;
+            ShowOrganizationsPanel(mCredentials, cloudServers, errorMessage: null);
         }
 
         void IWelcomeWindowNotify.Back()
@@ -182,10 +185,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
             root.Clear();
 
-            mSignInPanel = new SignInPanel(
-                this,
-                sRestApi,
-                sCmConnection);
+            mSignInPanel = new SignInPanel(this, sRestApi);
 
             titleContent = new GUIContent(GetWindowTitle());
 
@@ -198,13 +198,15 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         }
 
         string mUserName;
+        Credentials mCredentials;
 
         OrganizationPanel mOrganizationPanel;
         SignInPanel mSignInPanel;
         WelcomeView mWelcomeView;
 
         static IPlasticWebRestApi sRestApi;
-        static CmConnection sCmConnection;
         static bool sAutoLogin = false;
+
+        static readonly ILog mLog = PlasticApp.GetLogger("CloudEditionWelcomeWindow");
     }
 }

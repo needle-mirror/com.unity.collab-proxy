@@ -28,12 +28,37 @@ namespace Unity.PlasticSCM.Editor.UI
                 GUILayoutUtility.GetLastRect(), MouseCursor.Link);
         }
 
-        internal static void ForMultiLinkLabel(MultiLinkLabelData data)
+        internal static void ForMultiLinkLabelInDialog(
+            MultiLinkLabelData data)
         {
-            GUIStyle labelStyle = new GUIStyle(UnityStyles.Paragraph);
-            labelStyle.margin = labelStyle.padding = new RectOffset(0, 0, 0, 0);
+            ForMultiLinkLabel(
+                data,
+                UnityStyles.Paragraph,
+                areLinkActionsSupported: Application.platform == RuntimePlatform.WindowsEditor,
+                isEndFlexibleSpaceNeeded: true);
+        }
 
-            if (Application.platform == RuntimePlatform.OSXEditor)
+        internal static void ForMultiLinkLabel(
+            MultiLinkLabelData data,
+            GUIStyle style)
+        {
+            ForMultiLinkLabel(
+                data, style,
+                areLinkActionsSupported: true,
+                isEndFlexibleSpaceNeeded: false);
+        }
+
+        static void ForMultiLinkLabel(
+            MultiLinkLabelData data,
+            GUIStyle style,
+            bool areLinkActionsSupported,
+            bool isEndFlexibleSpaceNeeded)
+        {
+            GUIStyle labelStyle = new GUIStyle(style);
+            labelStyle.margin = new RectOffset(0, 0, style.margin.top, style.margin.bottom);
+            labelStyle.padding = new RectOffset(0, 0, style.padding.top, style.padding.bottom);
+
+            if (!areLinkActionsSupported)
             {
                 GUILayout.Label(string.Format(data.Text, data.LinkNames.ToArray()), labelStyle);
                 return;
@@ -41,10 +66,11 @@ namespace Unity.PlasticSCM.Editor.UI
 
             string[] labels = Regex.Split(data.Text, @"\{\d+\}");
 
-            GUIStyle linkStyle = new GUIStyle(UnityStyles.LinkLabel);
-            linkStyle.fontSize = labelStyle.fontSize;
+            GUIStyle linkStyle = new GUIStyle(labelStyle);
+            linkStyle.normal.textColor = EditorStyles.linkLabel.normal.textColor;
+            linkStyle.hover.textColor = EditorStyles.linkLabel.hover.textColor;
+            linkStyle.active.textColor = EditorStyles.linkLabel.active.textColor;
             linkStyle.stretchWidth = false;
-            linkStyle.margin = linkStyle.padding = new RectOffset(0, 0, 0, 0);
 
             using (new EditorGUILayout.HorizontalScope())
             {
@@ -64,7 +90,8 @@ namespace Unity.PlasticSCM.Editor.UI
                         ((Action)data.LinkActions[i]).Invoke();
                 }
 
-                GUILayout.FlexibleSpace();
+                if (isEndFlexibleSpaceNeeded)
+                    GUILayout.FlexibleSpace();
             }
         }
     }

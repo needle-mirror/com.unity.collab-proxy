@@ -83,6 +83,27 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             LaunchTool.IProcessExecutor processExecutor,
             RepositorySpec repSpec,
+            BranchInfo branchInfo,
+            bool isGluonMode)
+        {
+            if (branchInfo == null)
+                return;
+
+            string branchFullSpec = GetBranchFullSpec(
+                repSpec, branchInfo);
+
+            LaunchTool.OpenBranchDiffs(
+                showDownloadPlasticExeWindow,
+                processExecutor,
+                repSpec,
+                branchFullSpec,
+                isGluonMode);
+        }
+
+        internal static void DiffBranch(
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            LaunchTool.IProcessExecutor processExecutor,
+            RepositorySpec repSpec,
             ChangesetExtendedInfo changesetExtendedInfo,
             bool isGluonMode)
         {
@@ -123,6 +144,15 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         {
             return string.Format("cs:{0}@{1}",
                 changesetId, repSpec.ToString());
+        }
+
+        static string GetBranchFullSpec(
+            RepositorySpec repSpec,
+            BranchInfo branchInfo)
+        {
+            return string.Format("br:{0}@{1}",
+                branchInfo.BranchName,
+                repSpec.ToString());
         }
 
         static string GetBranchFullSpec(

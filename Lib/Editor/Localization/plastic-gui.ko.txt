@@ -3726,10 +3726,10 @@ cs:{0} 체인지 세트에서 병합
 == AnnotateOptions ==
 옵션 주석 달기
 
-== AnnotateDiffBranchMenuItem ==
+== DiffBranchMenuItem ==
 브랜치 {0} 비교
 
-== AnnotateDiffChangesetMenuItem ==
+== DiffChangesetMenuItem ==
 체인지 세트 {0} 비교
 
 == AnnotateParentRevisionMenuItem ==
@@ -5292,9 +5292,6 @@ Do not show this message again
 == RetrievingOrgsProgress ==
 조직을 가져오는 중...
 
-== GettingSSOProviders ==
-조직 공급자를 가져오는 중...
-
 == CompleteSignInOnBrowser ==
 브라우저를 사용하여 로그인을 완료하십시오.
 
@@ -5309,9 +5306,6 @@ Single Sign On으로 로그인
 
 == SignInToOrganization ==
 {0}@cloud에 로그인
-
-== NoProvidersForOrganization ==
-지정된 조직은 SSO를 사용한 액세스를 허용하지 않습니다
 
 == DontKnowOrganizationName ==
 조직 이름을 모릅니다

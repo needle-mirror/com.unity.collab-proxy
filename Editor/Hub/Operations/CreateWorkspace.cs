@@ -19,14 +19,11 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
 {
     internal class CreateWorkspace
     {
-        internal static void LaunchOperation(
-            OperationParams parameters)
+        internal static void LaunchOperation(OperationParams parameters)
         {
-            CreateWorkspace createWorkspaceOperation =
-                new CreateWorkspace();
+            CreateWorkspace createWorkspaceOperation = new CreateWorkspace();
 
-            createWorkspaceOperation.CreateWorkspaceOperation(
-                parameters);
+            createWorkspaceOperation.CreateWorkspaceOperation(parameters);
         }
 
         internal static WorkspaceInfo CreateWorkspaceForRepSpec(
@@ -49,15 +46,14 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
                 assistant.GetProposedWorkspaceName(),
                 repositorySpec.ToString());
 
-            log.DebugFormat("Created workspace {0} on {1}",
+            log.DebugFormat("Created workspace '{0}' on '{1}'",
                 wkInfo.Name,
                 wkInfo.ClientPath);
 
             return wkInfo;
         }
 
-        void CreateWorkspaceOperation(
-            OperationParams parameters)
+        void CreateWorkspaceOperation(OperationParams parameters)
         {
             RefreshAsset.BeforeLongAssetOperation();
 
@@ -71,8 +67,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
                 {
                     if (mDisplayProgress)
                     {
-                        DisplayProgress(
-                            mStatus, parameters.Repository);
+                        DisplayProgress(mStatus, parameters.Repository);
                     }
 
                     Thread.Sleep(150);
@@ -98,13 +93,6 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
 
             try
             {
-                if (FindWorkspace.HasWorkspace(parameters.WorkspaceFullPath))
-                {
-                    // each domain reload, the package is reloaded.
-                    // way need to check if we already created it
-                    return;
-                }
-
                 mDisplayProgress = true;
 
                 mStatus = Status.ConfiguringCredentials;
@@ -118,8 +106,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
                 {
                     mOperationFailed = true;
 
-                    LogTokenExchangeErrorInConsole(
-                        tokenExchangeResponse.Error);
+                    LogTokenExchangeErrorInConsole(tokenExchangeResponse.Error);
                     return;
                 }
 
@@ -191,8 +178,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
 
             EditorUtility.DisplayProgressBar(
                 string.Format("{0} {1}",
-                    PlasticLocalization.GetString(
-                        PlasticLocalization.Name.CreatingWorkspaceProgress),
+                    PlasticLocalization.Name.CreatingWorkspaceProgress.GetString(),
                     repository),
                 progressMessage, progressPercent);
         }
@@ -200,8 +186,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
         static void LogTokenExchangeErrorInConsole(ErrorResponse.ErrorFields error)
         {
             UnityEngine.Debug.LogErrorFormat(
-                PlasticLocalization.GetString(
-                    PlasticLocalization.Name.ErrorCreatingWorkspaceForProject),
+                PlasticLocalization.Name.ErrorCreatingWorkspaceForProject.GetString(),
                 string.Format("Unable to get TokenExchangeResponse: {0} [code {1}]",
                     error.Message, error.ErrorCode));
         }
@@ -209,8 +194,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
         static void LogExceptionErrorInConsole(Exception ex)
         {
             UnityEngine.Debug.LogErrorFormat(
-                PlasticLocalization.GetString(
-                    PlasticLocalization.Name.ErrorCreatingWorkspaceForProject),
+                PlasticLocalization.Name.ErrorCreatingWorkspaceForProject.GetString(),
                 ex.Message);
         }
 
@@ -218,9 +202,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
         {
             mLog.WarnFormat("Message: {0}", ex.Message);
 
-            mLog.DebugFormat(
-                "StackTrace:{0}{1}",
-                Environment.NewLine, ex.StackTrace);
+            mLog.DebugFormat("StackTrace:{0}{1}", Environment.NewLine, ex.StackTrace);
         }
 
         static string GetProgressString(Status status)

@@ -376,6 +376,9 @@ Se ha producido un error en el servidor {0}
 == GetRevisionDirectoryNotSupported ==
 GetRevision no está soportado para directorios. Para obetner los contenidos de un directorio, añádelo a tus reglas de workspace.
 
+== GettingSSOProviders ==
+Obteniendo los proveedores de la organización...
+
 == GluonPartialUpdateToDifferentBranch ==
 La operación de update no puede continuar. El changeset destino debe estar en la rama actual del espacio de trabajo: {0}.
 
@@ -611,6 +614,9 @@ No se puede obtener un punto de montaje para un consulta de múltiples repositor
 == NoPathBetweenCsets ==
 No hay un camino entre '{0}' y '{1}'.
 
+== NoProvidersForOrganization ==
+La organización especificada no ha habilitado el acceso por SSO
+
 == NoSuchCodeReview ==
 No se pudo encontrar la revisión de código especificada '{0}'.
 
@@ -622,6 +628,9 @@ La revisión de código no admite el estado: {0}. Los valores posibles son: {1}
 
 == NotValidCmPath ==
 La ruta especificada: {0} no es una ruta de servidor válida.
+
+== OAuthSignInCheckMessage ==
+Esperando sesión...
 
 == ObjectNameField ==
 El nombre del objeto
@@ -664,6 +673,9 @@ El repositorio {0} se monta 2 veces en las rutas '{1}' y '{2}'. Por favor, espec
 
 == RestorePathShouldNotExist ==
 La ruta donde se va a restaurar no debe de estar ocupada.
+
+== RetrievingOrgsProgress ==
+Obteniendo organizaciones...
 
 == RevdatanotfoundForSpec ==
 No se han encontrado datos para la especificación dada

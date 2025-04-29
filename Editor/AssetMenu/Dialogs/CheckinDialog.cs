@@ -6,12 +6,10 @@ using UnityEngine;
 
 using Codice.Client.Common;
 using Codice.Client.Common.EventTracking;
-
 using Codice.CM.Common;
 using GluonGui;
 using PlasticGui;
 using PlasticGui.Gluon;
-
 using Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
@@ -47,6 +45,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             IWorkspaceWindow workspaceWindow,
             ViewHost viewHost,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            ISaveAssets saveAssets,
             GuiMessage.IGuiMessage guiMessage,
             IMergeViewLauncher mergeViewLauncher,
             IGluonViewSwitcher gluonViewSwitcher)
@@ -64,6 +63,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 workspaceWindow,
                 viewHost,
                 workspaceOperationsMonitor,
+                saveAssets,
                 guiMessage,
                 mergeViewLauncher,
                 gluonViewSwitcher);
@@ -179,12 +179,12 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
 
         void DoCheckinButton()
         {
-            GUI.enabled = !string.IsNullOrEmpty(mComment) && !mIsRunningCheckin;
+            GUI.enabled = IsCheckinButtonEnabled();
 
             try
             {
                 if (!AcceptButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.CheckinButton)))
+                        PlasticLocalization.Name.CheckinButton)))
                     return;
             }
             finally
@@ -192,8 +192,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 if (!mSentCheckinTrackEvent)
                 {
                     TrackFeatureUseEvent.For(
-                      PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
-                      TrackFeatureUseEvent.Features.ContextMenuCheckinDialogCheckin);
+                        PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                        TrackFeatureUseEvent.Features.ContextMenuCheckinDialogCheckin);
 
                     mSentCheckinTrackEvent = true;
                 }
@@ -224,8 +224,11 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
 
         void OkButtonWithCheckinAction()
         {
+            if (!IsCheckinButtonEnabled())
+                return;
+
             bool isCancelled;
-            SaveAssets.ForPathsWithConfirmation(
+            mSaveAssets.ForPathsWithConfirmation(
                 mWkInfo.ClientPath, mPaths, mWorkspaceOperationsMonitor,
                 out isCancelled);
 
@@ -261,6 +264,11 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 mMergeViewLauncher);
         }
 
+        bool IsCheckinButtonEnabled()
+        {
+            return !string.IsNullOrEmpty(mComment) && !mIsRunningCheckin;
+        }
+
         static CheckinDialog Create(
             WorkspaceInfo wkInfo,
             List<string> paths,
@@ -271,6 +279,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             IWorkspaceWindow workspaceWindow,
             ViewHost viewHost,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            ISaveAssets saveAssets,
             GuiMessage.IGuiMessage guiMessage,
             IMergeViewLauncher mergeViewLauncher,
             IGluonViewSwitcher gluonViewSwitcher)
@@ -287,9 +296,12 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             instance.mWorkspaceWindow = workspaceWindow;
             instance.mViewHost = viewHost;
             instance.mWorkspaceOperationsMonitor = workspaceOperationsMonitor;
+            instance.mSaveAssets = saveAssets;
             instance.mGuiMessage = guiMessage;
             instance.mMergeViewLauncher = mergeViewLauncher;
             instance.mGluonViewSwitcher = gluonViewSwitcher;
+            instance.mEnterKeyAction = instance.OkButtonWithCheckinAction;
+            instance.AddControlConsumingEnterKey(CHECKIN_TEXTAREA_NAME);
             instance.mEscapeKeyAction = instance.CancelButtonAction;
             return instance;
         }
@@ -313,6 +325,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
 
         IWorkspaceWindow mWorkspaceWindow;
         WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
+        ISaveAssets mSaveAssets;
         ViewHost mViewHost;
         IMergeViewLauncher mMergeViewLauncher;
         IGluonViewSwitcher mGluonViewSwitcher;
@@ -382,8 +395,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 return result;
             }
 
-            HashSet<string> mCache =
-                new HashSet<string>();
+            HashSet<string> mCache = new HashSet<string>();
         }
     }
 }

@@ -1,148 +1,109 @@
-using UnityEditor;
-using UnityEngine;
+using System;
 
-using Codice.CM.Common;
-using PlasticGui;
+using UnityEngine;
 
 namespace Unity.PlasticSCM.Editor.UI.Tree
 {
+    internal class EmptyStateData
+    {
+        internal Rect Rect { get { return mLastValidRect; } }
+        internal GUIContent Content { get { return mContent; } }
+
+        internal bool IsEmpty()
+        {
+            return string.IsNullOrEmpty(mContent.text);
+        }
+
+        internal void Update(string contentText, Rect rect, EventType eventType, Action repaint)
+        {
+            UpdateText(contentText);
+
+            UpdateValidRect(rect, eventType, repaint);
+        }
+
+        internal void UpdateText(string contentText)
+        {
+            mContent.text = contentText;
+        }
+
+        internal void UpdateValidRect(Rect rect, EventType eventType, Action repaint)
+        {
+            mLastValidRect = EnsureValidRect(rect, mLastValidRect, eventType, repaint);
+        }
+
+        internal static Rect EnsureValidRect(
+            Rect rect, Rect lastValidRect, EventType eventType, Action repaint)
+        {
+            if (eventType == EventType.Layout)
+                return lastValidRect;
+
+            if (lastValidRect == rect)
+                return lastValidRect;
+
+            // Unity's layout system initially provides a placeholder rectangle during Layout.
+            // A valid rectangle is only provided on following events like Repaint or Mouse events.
+            //
+            // - If we use the placeholder rectangle, the layout system won't position UI elements correctly.
+            // - If we skip layout processing when the rectangle is invalid, we break GUILayout’s Begin/End pairing.
+            //
+            // To prevent both issues, we save the last valid rectangle and use it for drawing.
+
+            repaint();
+
+            return rect;
+        }
+
+        Rect mLastValidRect;
+
+        readonly GUIContent mContent = new GUIContent(string.Empty);
+    }
+
     internal static class DrawTreeViewEmptyState
     {
-        internal static void For(
-            Rect rect,
-            GUIContent content)
+        internal static void For(EmptyStateData data)
         {
-            Vector2 contentSize = GetContentSize(content);
-
-            GUI.BeginGroup(rect);
-
-            DrawLabel(
-                content,
-                contentSize,
-                (rect.width - contentSize.x) / 2,
-                rect.height / 2);
-
-            GUI.EndGroup();
-        }
-
-        internal static void For(
-            Rect rect,
-            GUIContent content,
-            Texture2D icon)
-        {
-            Vector2 contentSize = GetContentSize(content);
-
-            GUI.BeginGroup(rect);
-
-            DrawLabelWithIcon(
-                content,
-                contentSize,
-                (rect.width - contentSize.x) / 2,
-                rect.height / 2,
-                icon);
-
-            GUI.EndGroup();
-        }
-
-        internal static void ForInviteMembers(
-            Rect rect,
-            GUIContent textContent,
-            Texture2D icon,
-            RepositorySpec repSpec)
-        {
-            Vector2 textContentSize = GetContentSize(textContent);
-
-            GUIContent linkContent = new GUIContent(PlasticLocalization.Name.InviteOtherTeamMembers.GetString());
-            Vector2 linkContentSize = GetContentSize(linkContent, EditorStyles.linkLabel);
-
-            float textContentOffsetY = (rect.height - (textContentSize.y + linkContentSize.y)) / 2;
-            float linkContentOffsetY = textContentOffsetY + textContentSize.y;
-
-            GUI.BeginGroup(rect);
-
-            DrawLabelWithIcon(
-                textContent,
-                textContentSize,
-                (rect.width - textContentSize.x) / 2,
-                textContentOffsetY,
-                icon);
-
-            DrawInviteMembersLink(
-                repSpec,
-                linkContent,
-                linkContentSize,
-                (rect.width - linkContentSize.x) / 2,
-                linkContentOffsetY);
-
-            GUI.EndGroup();
-        }
-
-        static void DrawLabel(
-            GUIContent content,
-            Vector2 contentSize,
-            float offsetX,
-            float offsetY)
-        {
-            GUI.Label(
-                new Rect(offsetX, offsetY, contentSize.x, contentSize.y),
-                content,
-                UnityStyles.Tree.StatusLabel);
-        }
-
-        static void DrawLabelWithIcon(
-            GUIContent content,
-            Vector2 contentSize,
-            float offsetX,
-            float offsetY,
-            Texture2D icon)
-        {
-            int iconSize = UnityConstants.TREEVIEW_STATUS_ICON_SIZE;
-            int padding = UnityConstants.TREEVIEW_STATUS_CONTENT_PADDING;
-
-            float iconOffsetX = offsetX - iconSize + padding;
-            float contentOffsetX = offsetX + iconSize - padding;
-
-            GUI.DrawTexture(
-                new Rect(iconOffsetX, offsetY + padding, iconSize, iconSize),
-                icon,
-                ScaleMode.ScaleToFit);
-
-            DrawLabel(
-                content,
-                contentSize,
-                contentOffsetX,
-                offsetY);
-        }
-
-        static void DrawInviteMembersLink(
-            RepositorySpec repSpec,
-            GUIContent linkContent,
-            Vector2 linkContentSize,
-            float offsetX,
-            float offsetY)
-        {
-            Rect buttonPosition = new Rect(
-                offsetX,
-                offsetY,
-                linkContentSize.x,
-                linkContentSize.y);
-
-            EditorGUIUtility.AddCursorRect(buttonPosition, MouseCursor.Link);
-
-            if (GUI.Button(buttonPosition, linkContent, EditorStyles.linkLabel))
+            DrawCenteredOnRect(data.Rect, ()=>
             {
-                OpenInviteUsersPage.Run(repSpec, UnityUrl.UnityDashboard.UnityCloudRequestSource.Editor);
-            }
+                GUILayout.Label(data.Content, UnityStyles.Tree.StatusLabel);
+            });
         }
 
-        static Vector2 GetContentSize(GUIContent content)
+        internal static void For(Texture2D icon, EmptyStateData data)
         {
-            return GetContentSize(content, UnityStyles.Tree.StatusLabel);
+            DrawCenteredOnRect(data.Rect, () =>
+            {
+                DrawIconAndLabel(icon, data.Content);
+            });
         }
 
-        static Vector2 GetContentSize(GUIContent content, GUIStyle guiStyle)
+        internal static void DrawCenteredOnRect(Rect rect, Action onGUI)
         {
-            return guiStyle.CalcSize(content);
+            GUILayout.BeginArea(rect);
+
+            GUILayout.FlexibleSpace();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+
+            onGUI.Invoke();
+
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+
+            GUILayout.FlexibleSpace();
+
+            GUILayout.EndArea();
+        }
+
+        static void DrawIconAndLabel(Texture2D icon, GUIContent label)
+        {
+            GUILayout.Label(
+                icon,
+                UnityStyles.Tree.StatusLabel,
+                GUILayout.Width(UnityConstants.TREEVIEW_STATUS_ICON_SIZE),
+                GUILayout.Height(UnityConstants.TREEVIEW_STATUS_ICON_SIZE));
+            GUILayout.Space(UnityConstants.TREEVIEW_STATUS_CONTENT_PADDING);
+            GUILayout.Label(label, UnityStyles.Tree.StatusLabel);
         }
     }
 }

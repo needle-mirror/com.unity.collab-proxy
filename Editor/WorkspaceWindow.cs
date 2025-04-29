@@ -23,6 +23,7 @@ using Unity.PlasticSCM.Editor.Configuration;
 using Unity.PlasticSCM.Editor.Developer.UpdateReport;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
+using Unity.PlasticSCM.Editor.UI.StatusBar;
 
 using IGluonUpdateReport = PlasticGui.Gluon.IUpdateReport;
 using IGluonWorkspaceStatusChangeListener = PlasticGui.Gluon.IWorkspaceStatusChangeListener;
@@ -56,6 +57,7 @@ namespace Unity.PlasticSCM.Editor
             WorkspaceInfo wkInfo,
             ViewHost viewHost,
             ViewSwitcher switcher,
+            StatusBar statusBar,
             IMergeViewLauncher mergeViewLauncher,
             NewIncomingChangesUpdater developerNewIncomingChangesUpdater,
             ShelvedChangesUpdater shelvedChangesUpdater,
@@ -64,6 +66,7 @@ namespace Unity.PlasticSCM.Editor
             mWkInfo = wkInfo;
             mViewHost = viewHost;
             mSwitcher = switcher;
+            mStatusBar = statusBar;
             mMergeViewLauncher = mergeViewLauncher;
             mDeveloperNewIncomingChangesUpdater = developerNewIncomingChangesUpdater;
             mShelvedChangesUpdater = shelvedChangesUpdater;
@@ -138,7 +141,7 @@ namespace Unity.PlasticSCM.Editor
             update.Run(
                 UpdateWorkspaceOperation.UpdateType.UpdateToLatest,
                 RefreshAsset.UnityAssetDatabase,
-                null);
+                ShowWorkspaceUpdateSuccess);
         }
 
         internal void UpdateWorkspaceForMode(bool isGluonMode)
@@ -310,6 +313,15 @@ namespace Unity.PlasticSCM.Editor
                 wkInfo, errors, mPlasticWindow);
         }
 
+        void ShowWorkspaceUpdateSuccess()
+        {
+            mStatusBar.Notify(
+                new GUIContentNotification(
+                    PlasticLocalization.Name.WorkspaceUpdateCompleted.GetString()),
+                MessageType.None,
+                Images.GetStepOkIcon());
+        }
+
         void RefreshWorkspaceStatus()
         {
             WorkspaceStatusString.Data status = null;
@@ -457,6 +469,7 @@ namespace Unity.PlasticSCM.Editor
         readonly ShelvedChangesUpdater mShelvedChangesUpdater;
         readonly IMergeViewLauncher mMergeViewLauncher;
         readonly ViewSwitcher mSwitcher;
+        readonly StatusBar mStatusBar;
         readonly ViewHost mViewHost;
         readonly WorkspaceInfo mWkInfo;
     }

@@ -62,5 +62,18 @@ namespace Unity.PlasticSCM.Editor.UI
             return string.Empty;
         }
 
+        internal static string ForHideUnhide()
+        {
+            if (PlatformIdentifier.IsWindows())
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.UnityHideUnhideShortcutForWindows);
+
+            if (PlatformIdentifier.IsMac())
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.UnityHideUnhideShortcutForMacOS);
+
+            return string.Empty;
+        }
+
     }
 }

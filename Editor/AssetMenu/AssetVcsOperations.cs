@@ -43,11 +43,13 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         internal AssetVcsOperations(
             WorkspaceInfo wkInfo,
+            IPlasticAPI plasticApi,
             IWorkspaceWindow workspaceWindow,
             IViewSwitcher viewSwitcher,
             IHistoryViewLauncher historyViewLauncher,
             ViewHost viewHost,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            ISaveAssets saveAssets,
             NewIncomingChangesUpdater newIncomingChangesUpdater,
             ShelvedChangesUpdater shelvedChangesUpdater,
             IAssetStatusCache assetStatusCache,
@@ -58,11 +60,13 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             bool isGluonMode)
         {
             mWkInfo = wkInfo;
+            mPlasticAPI = plasticApi;
             mWorkspaceWindow = workspaceWindow;
             mViewSwitcher = viewSwitcher;
             mHistoryViewLauncher = historyViewLauncher;
             mViewHost = viewHost;
             mWorkspaceOperationsMonitor = workspaceOperationsMonitor;
+            mSaveAssets = saveAssets;
             mNewIncomingChangesUpdater = newIncomingChangesUpdater;
             mShelvedChangesUpdater = shelvedChangesUpdater;
             mAssetStatusCache = assetStatusCache;
@@ -84,8 +88,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         void IAssetMenuVCSOperations.Add()
         {
             List<string> selectedPaths = GetSelectedPaths.ForOperation(
-                mWkInfo.ClientPath,
+                mWkInfo,
                 mAssetSelection.GetSelectedAssets(),
+                mPlasticAPI,
                 mAssetStatusCache,
                 AssetMenuOperations.Add);
 
@@ -116,8 +121,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         void IAssetMenuVCSOperations.Checkout()
         {
             List<string> selectedPaths = GetSelectedPaths.ForOperation(
-                mWkInfo.ClientPath,
+                mWkInfo,
                 mAssetSelection.GetSelectedAssets(),
+                mPlasticAPI,
                 mAssetStatusCache,
                 AssetMenuOperations.Checkout);
 
@@ -148,8 +154,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         void IAssetMenuVCSOperations.Checkin()
         {
             List<string> selectedPaths = GetSelectedPaths.ForOperation(
-                mWkInfo.ClientPath,
+                mWkInfo,
                 mAssetSelection.GetSelectedAssets(),
+                mPlasticAPI,
                 mAssetStatusCache,
                 AssetMenuOperations.Checkin);
 
@@ -161,6 +168,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                     mWorkspaceWindow,
                     mViewHost,
                     mWorkspaceOperationsMonitor,
+                    mSaveAssets,
                     mGuiMessage,
                     mMergeViewLauncher,
                     mGluonViewSwitcher))
@@ -172,12 +180,13 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         void IAssetMenuVCSOperations.Undo()
         {
             List<string> selectedPaths = GetSelectedPaths.ForOperation(
-                mWkInfo.ClientPath,
+                mWkInfo,
                 mAssetSelection.GetSelectedAssets(),
+                mPlasticAPI,
                 mAssetStatusCache,
                 AssetMenuOperations.Undo);
 
-            SaveAssets.ForPathsWithoutConfirmation(
+            mSaveAssets.ForPathsWithoutConfirmation(
                 mWkInfo.ClientPath, selectedPaths, mWorkspaceOperationsMonitor);
 
             if (mIsGluonMode)
@@ -299,11 +308,13 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         }
 
         readonly WorkspaceInfo mWkInfo;
+        readonly IPlasticAPI mPlasticAPI;
         readonly IViewSwitcher mViewSwitcher;
         readonly IHistoryViewLauncher mHistoryViewLauncher;
         readonly IWorkspaceWindow mWorkspaceWindow;
         readonly ViewHost mViewHost;
         readonly WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
+        readonly ISaveAssets mSaveAssets;
         readonly NewIncomingChangesUpdater mNewIncomingChangesUpdater;
         readonly ShelvedChangesUpdater mShelvedChangesUpdater;
         readonly IAssetStatusCache mAssetStatusCache;

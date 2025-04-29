@@ -2,18 +2,19 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
+using Codice.Client.Common;
+using Codice.Client.Common.Authentication;
+using Codice.Client.Common.WebApi;
+using Codice.Client.Common.WebApi.Responses;
+using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.Configuration.CloudEdition.Welcome;
 using PlasticGui.Configuration.CloudEdition;
-using PlasticGui.WebApi;
-using PlasticGui.WebApi.Responses;
 using Unity.PlasticSCM.Editor.UI.UIElements;
 
 namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 {
-    internal class SignInWithEmailPanel :
-        VisualElement,
-        Login.INotify
+    internal class SignInWithEmailPanel : VisualElement, GetCloudOrganizations.INotify
     {
         internal SignInWithEmailPanel(
             IWelcomeWindowNotify notify,
@@ -34,65 +35,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mSignUpButton.clicked -= SignUpButton_Clicked;
         }
 
-        void Login.INotify.SuccessForUnityPackage(
-            OrganizationsResponse organizationResponse,
-            string userName,
-            string accessToken)
-        {
-            mNotify.ProcessLoginResponse(organizationResponse, userName, accessToken);
-        }
-
-        void Login.INotify.SuccessForConfigure(
-            List<string> organizations,
-            bool canCreateAnOrganization,
-            string userName,
-            string password)
-        {
-            // empty implementation
-        }
-
-        void Login.INotify.SuccessForSSO(
-            string organization)
-        {
-            // empty implementation
-        }
-
-        void Login.INotify.SuccessForProfile(
-            string userName)
-        {
-            // empty implementation
-        }
-
-        void Login.INotify.SuccessForCredentials(string userName, string password)
-        {
-            // empty implementation
-        }
-
-        void Login.INotify.SuccessForHomeView(string userName)
-        {
-            // empty implementation
-        }
-
-        void Login.INotify.ValidationFailed(
-            Login.ValidationResult validationResult)
-        {
-            if (validationResult.UserError != null)
-            {
-                mEmailNotificationLabel.text = validationResult.UserError;
-            }
-
-            if (validationResult.PasswordError != null)
-            {
-                mPasswordNotificationLabel.text = validationResult.PasswordError;
-            }
-        }
-
-        void Login.INotify.SignUpNeeded(
-            Login.Data loginData)
-        {
-            ShowSignUpNeeded();
-        }
-
         void ShowSignUpNeeded()
         {
             mSignUpNeededNotificationContainer.Show();
@@ -103,11 +45,23 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mSignUpNeededNotificationContainer.Collapse();
         }
 
-        void Login.INotify.Error(
-            string message)
+        void GetCloudOrganizations.INotify.CloudOrganizationsRetrieved(
+            List<string> cloudServers)
         {
+            mNotify.ProcessLoginResponseWithOrganizations(mCredentials, cloudServers);
+        }
+
+        void GetCloudOrganizations.INotify.Error(
+            ErrorResponse.ErrorFields error)
+        {
+            if (error.ErrorCode == ErrorCodes.UserNotFound)
+            {
+                ShowSignUpNeeded();
+                return;
+            }
+
             HideSignUpNeeded();
-            mProgressControls.ShowError(message);
+            ((IProgressControls)mProgressControls).ShowError(error.Message);
         }
 
         void CleanNotificationLabels()
@@ -122,16 +76,38 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         {
             CleanNotificationLabels();
 
-            Login.Run(
-                mRestApi,
-                new SaveCloudEditionCreds(),
-                mEmailField.text,
-                mPasswordField.text,
-                string.Empty,
-                string.Empty,
-                Login.Mode.UnityPackage,
+            ValidateEmailAndPassword.ValidationResult validationResult;
+            if (!ValidateEmailAndPassword.IsValid(mEmailField.text, mPasswordField.text, out validationResult))
+            {
+                ShowValidationResult(validationResult);
+                return;
+            }
+
+            mCredentials = new Credentials(
+                new SEID(mEmailField.text, false, mPasswordField.text),
+                SEIDWorkingMode.LDAPWorkingMode);
+
+            GetCloudOrganizations.GetOrganizationsInThreadWaiter(
+                mCredentials.User.Data,
+                mCredentials.User.Password,
                 mProgressControls,
-                this);
+                this,
+                mRestApi,
+                CmConnection.Get());
+        }
+
+        void ShowValidationResult(
+            ValidateEmailAndPassword.ValidationResult validationResult)
+        {
+            if (validationResult.UserError != null)
+            {
+                mEmailNotificationLabel.text = validationResult.UserError;
+            }
+
+            if (validationResult.PasswordError != null)
+            {
+                mPasswordNotificationLabel.text = validationResult.PasswordError;
+            }
         }
 
         void BackButton_Clicked()
@@ -144,7 +120,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             this.LoadLayout(typeof(SignInWithEmailPanel).Name);
             this.LoadStyle(typeof(SignInWithEmailPanel).Name);
         }
-        
+
         void SignUpButton_Clicked()
         {
             Application.OpenURL(UnityUrl.DevOps.GetSignUp());
@@ -199,7 +175,8 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         VisualElement mProgressContainer;
         VisualElement mSignUpNeededNotificationContainer;
 
-        IProgressControls mProgressControls;
+        Credentials mCredentials;
+        ProgressControlsForDialogs mProgressControls;
 
         readonly IWelcomeWindowNotify mNotify;
         readonly IPlasticWebRestApi mRestApi;

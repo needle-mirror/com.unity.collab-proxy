@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using Codice;
@@ -72,6 +72,14 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
             }
         }
 
+        internal void Cancel()
+        {
+            lock (mLock)
+            {
+                mCurrentCancelToken.Cancel();
+            }
+        }
+
         void AsyncCalculateStatus(CancelToken cancelToken)
         {
             Dictionary<string, LockStatusData> statusByPathCache = null;
@@ -99,6 +107,9 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
                 },
                 /*afterOperationDelegate*/ delegate
                 {
+                    if (cancelToken.IsCancelled())
+                        return;
+
                     if (waiter.Exception != null)
                     {
                         ExceptionsHandler.LogException(
@@ -106,9 +117,6 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
                             waiter.Exception);
                         return;
                     }
-
-                    if (cancelToken.IsCancelled())
-                        return;
 
                     lock (mLock)
                     {

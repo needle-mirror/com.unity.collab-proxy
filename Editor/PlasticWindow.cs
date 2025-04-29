@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using UnityEditor;
@@ -10,12 +11,15 @@ using Codice.Client.Common.EventTracking;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.LogWrapper;
+using CodiceApp.EventTracking.Plastic;
+using CodiceApp.EventTracking;
 using GluonGui;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.Merge;
 using PlasticGui.WorkspaceWindow.NotificationBar;
 using Unity.PlasticSCM.Editor.AssetMenu;
+using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Configuration;
 using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
 using Unity.PlasticSCM.Editor.Developer;
@@ -52,6 +56,8 @@ namespace Unity.PlasticSCM.Editor
 
         internal ViewSwitcher ViewSwitcherForTesting { get { return mViewSwitcher; } }
 
+        internal ViewHost ViewHostForTesting { get { return mViewHost; } }
+
         internal CmConnection CmConnectionForTesting { get { return CmConnection.Get(); } }
 
         internal IShelvedChangesUpdater ShelvedChangesUpdater { get { return mShelvedChangesUpdater; } }
@@ -65,8 +71,7 @@ namespace Unity.PlasticSCM.Editor
                 this,
                 this,
                 PlasticGui.Plastic.API,
-                PlasticGui.Plastic.WebRestAPI,
-                CmConnection.Get());
+                PlasticGui.Plastic.WebRestAPI);
 
             return mWelcomeView;
         }
@@ -108,12 +113,16 @@ namespace Unity.PlasticSCM.Editor
 
                 mWkInfo = FindWorkspace.InfoForApplicationPath(
                     ApplicationDataPath.Get(), PlasticGui.Plastic.API);
-                mRepSpec = PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo);
 
                 if (mWkInfo == null)
                     return;
 
                 PlasticPlugin.EnableForWorkspace(mWkInfo);
+
+                // PlasticPlugin.EnableForWorkspace may trigger a workspace metadata
+                // upgrade that modifies the repSpec. So, we need to calculate the repSpec
+                // after calling it to ensure it is up-to-date.
+                mRepSpec = PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo);
 
                 DisableVCSIfEnabled(mWkInfo.ClientPath);
 
@@ -122,6 +131,8 @@ namespace Unity.PlasticSCM.Editor
                 mViewHost = new ViewHost();
 
                 mStatusBar = new StatusBar();
+
+                mSaveAssets = new SaveAssets();
 
                 mViewSwitcher = new ViewSwitcher(
                     mRepSpec,
@@ -132,6 +143,7 @@ namespace Unity.PlasticSCM.Editor
                     mShowDownloadPlasticExeWindow,
                     mProcessExecutor,
                     PlasticPlugin.WorkspaceOperationsMonitor,
+                    mSaveAssets,
                     mStatusBar,
                     this);
 
@@ -167,6 +179,7 @@ namespace Unity.PlasticSCM.Editor
                     mWkInfo,
                     mViewHost,
                     mViewSwitcher,
+                    mStatusBar,
                     mViewSwitcher,
                     mDeveloperNewIncomingChangesUpdater,
                     mShelvedChangesUpdater,
@@ -191,11 +204,13 @@ namespace Unity.PlasticSCM.Editor
 
                 AssetMenuItems.BuildOperations(
                     mWkInfo,
+                    PlasticGui.Plastic.API,
                     mWorkspaceWindow,
                     mViewSwitcher,
                     mViewSwitcher,
                     mViewHost,
                     PlasticPlugin.WorkspaceOperationsMonitor,
+                    mSaveAssets,
                     mDeveloperNewIncomingChangesUpdater,
                     mShelvedChangesUpdater,
                     PlasticPlugin.AssetStatusCache,
@@ -206,11 +221,13 @@ namespace Unity.PlasticSCM.Editor
 
                 DrawInspectorOperations.BuildOperations(
                     mWkInfo,
+                    PlasticGui.Plastic.API,
                     mWorkspaceWindow,
                     mViewSwitcher,
                     mViewSwitcher,
                     mViewHost,
                     PlasticPlugin.WorkspaceOperationsMonitor,
+                    mSaveAssets,
                     mDeveloperNewIncomingChangesUpdater,
                     mShelvedChangesUpdater,
                     PlasticPlugin.AssetStatusCache,
@@ -228,6 +245,7 @@ namespace Unity.PlasticSCM.Editor
 
                 // Note: this need to be initialized regardless of the type of the UVCS Edition installed
                 InitializeCloudSubscriptionData();
+                InitializeCurrentUser();
 
                 if (!EditionToken.IsCloudEdition())
                     return;
@@ -397,12 +415,6 @@ namespace Unity.PlasticSCM.Editor
                     welcomeView.autoLoginState = AutoLogin.State.Started;
                 }
 
-                if (welcomeView.autoLoginState == AutoLogin.State.OrganizationChoosed)
-                {
-                    OnEnable();
-                    welcomeView.autoLoginState = AutoLogin.State.InitializingPlastic;
-                }
-
                 if (NeedsToDisplayWelcomeView(clientNeedsConfiguration, mWkInfo))
                 {
                     welcomeView.OnGUI(clientNeedsConfiguration);
@@ -424,7 +436,7 @@ namespace Unity.PlasticSCM.Editor
                     mIsUnityOrganization,
                     mIsUGOSubscription);
 
-                mViewSwitcher.TabViewGUI();
+                mViewSwitcher.TabViewGUI(GetCurrentUser());
 
                 if (mWorkspaceWindow.IsOperationInProgress())
                     DrawProgressForOperations.For(
@@ -589,6 +601,23 @@ namespace Unity.PlasticSCM.Editor
                 });
         }
 
+        void InitializeCurrentUser()
+        {
+            PlasticThreadPool.Run(new WaitCallback(delegate
+            {
+                try
+                {
+                    SetCurrentUser(PlasticGui.Plastic.
+                        API.GetCurrentUser(mRepSpec.Server));
+                }
+                catch (Exception ex)
+                {
+                    mLog.ErrorFormat("Error loading the current user: {0}", ex.Message);
+                    mLog.DebugFormat("Stack trace: {0}", ex.StackTrace);
+                }
+            }));
+        }
+
         void DoNotConnectedArea()
         {
             string labelText = PlasticLocalization.GetString(
@@ -686,9 +715,28 @@ namespace Unity.PlasticSCM.Editor
                 notificationBar,
                 PlasticGui.Plastic.WebRestAPI,
                 new UnityPlasticTimerBuilder(),
-                new NotificationBarUpdater.NotificationBarConfig());
+                new NotificationBarUpdater.NotificationBarConfig(),
+                BuildEventModel.CurrentApplicationString,
+                UVCPackageVersion.Value,
+                BuildEvent.CurrentPlatform.ToString());
             mNotificationBarUpdater.Start();
             mNotificationBarUpdater.SetWorkspace(wkInfo);
+        }
+
+        void SetCurrentUser(ResolvedUser currentUser)
+        {
+            lock (mCurrentUserLock)
+            {
+                mCurrentUser = currentUser;
+            }
+        }
+
+        ResolvedUser GetCurrentUser()
+        {
+            lock (mCurrentUserLock)
+            {
+                return mCurrentUser;
+            }
         }
 
         static void DoTabToolbar(
@@ -804,6 +852,7 @@ namespace Unity.PlasticSCM.Editor
             }
             else if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Branches))
             {
+                viewSwitcher.BranchesTab.DrawShowHiddenBranchesButton();
                 viewSwitcher.BranchesTab.DrawDateFilter();
             }
             else
@@ -931,11 +980,6 @@ namespace Unity.PlasticSCM.Editor
                 EditorStyles.toolbarButton);
         }
 
-        static void OpenUnityDashboardInviteUsersUrl(RepositorySpec repSpec)
-        {
-            OpenInviteUsersPage.Run(repSpec, UnityUrl.UnityDashboard.UnityCloudRequestSource.Editor);
-        }
-
         static void InviteMembers(RepositorySpec repSpec)
         {
             string organizationName = ServerOrganizationParser.GetOrganizationFromServer(repSpec.Server);
@@ -1002,6 +1046,11 @@ namespace Unity.PlasticSCM.Editor
                 });
         }
 
+        static void OpenUnityDashboardInviteUsersUrl(RepositorySpec repSpec)
+        {
+            OpenInviteUsersPage.Run(repSpec, UnityUrl.UnityDashboard.UnityCloudRequestSource.Editor);
+        }
+
         static void ShowSettingsContextMenu(
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             LaunchTool.IProcessExecutor processExecutor,
@@ -1040,12 +1089,12 @@ namespace Unity.PlasticSCM.Editor
                 OpenPlasticProjectSettings.ByDefault);
 
             menu.AddItem(
-                new GUIContent(PlasticAssetModificationProcessor.ForceCheckout ?
+                new GUIContent(PlasticAssetModificationProcessor.IsManualCheckoutEnabled ?
                     PlasticLocalization.Name.DisableForcedCheckout.GetString() :
                     PlasticLocalization.Name.EnableForcedCheckout.GetString()),
                 false,
-                () => PlasticAssetModificationProcessor.SetForceCheckoutOption(
-                    !PlasticAssetModificationProcessor.ForceCheckout));
+                () => PlasticAssetModificationProcessor.SetManualCheckoutPreference(
+                    !PlasticAssetModificationProcessor.IsManualCheckoutEnabled));
 
             menu.ShowAsContext();
         }
@@ -1212,6 +1261,7 @@ namespace Unity.PlasticSCM.Editor
             result.mIsUGOSubscription = window.mIsUGOSubscription;
             result.mLastUpdateTime = window.mLastUpdateTime;
             result.mViewSwitcherState = window.mViewSwitcherState;
+            result.mCurrentUser = window.mCurrentUser;
             result.mException = window.mException;
             result.mWkInfo = window.mWkInfo;
             result.mRepSpec = window.mRepSpec;
@@ -1227,6 +1277,7 @@ namespace Unity.PlasticSCM.Editor
             result.mDeveloperNewIncomingChangesUpdater = window.mDeveloperNewIncomingChangesUpdater;
             result.mGluonNewIncomingChangesUpdater = window.mGluonNewIncomingChangesUpdater;
             result.mShelvedChangesUpdater = window.mShelvedChangesUpdater;
+            result.mSaveAssets = window.mSaveAssets;
             return result;
         }
 
@@ -1291,24 +1342,28 @@ namespace Unity.PlasticSCM.Editor
         bool mIsUGOSubscription;
         double mLastUpdateTime = 0f;
         ViewSwitcherState mViewSwitcherState = new ViewSwitcherState();
+
+        ResolvedUser mCurrentUser;
+
         Exception mException;
+        object mCurrentUserLock = new object();
+        WelcomeView mWelcomeView;
+        WorkspaceWindow mWorkspaceWindow;
+        StatusBar mStatusBar;
 
         [NonSerialized]
         WorkspaceInfo mWkInfo;
         RepositorySpec mRepSpec;
-
-        WelcomeView mWelcomeView;
         ViewSwitcher mViewSwitcher;
-        WorkspaceWindow mWorkspaceWindow;
-        StatusBar mStatusBar;
-        ViewHost mViewHost;
         CooldownWindowDelayer mCooldownAutoRefreshChangesAction;
         StatusBar.IIncomingChangesNotification mIncomingChangesNotification;
         StatusBar.IShelvedChangesNotification mShelvedChangesNotification;
+        ViewHost mViewHost;
         NotificationBarUpdater mNotificationBarUpdater;
         NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
         GluonNewIncomingChangesUpdater mGluonNewIncomingChangesUpdater;
         ShelvedChangesUpdater mShelvedChangesUpdater;
+        ISaveAssets mSaveAssets;
 
         LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow =
             new LaunchTool.ShowDownloadPlasticExeWindow();

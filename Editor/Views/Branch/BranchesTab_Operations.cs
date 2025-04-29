@@ -12,7 +12,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         void SwitchToBranchForMode()
         {
             bool isCancelled;
-            SaveAssets.UnderWorkspaceWithConfirmation(
+            mSaveAssets.UnderWorkspaceWithConfirmation(
                 mWkInfo.ClientPath, mWorkspaceOperationsMonitor,
                 out isCancelled);
 

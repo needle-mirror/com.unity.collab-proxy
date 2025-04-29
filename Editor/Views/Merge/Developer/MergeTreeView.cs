@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -10,12 +11,13 @@ using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Merge;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.UI.Avatar;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using UnityEditor;
 
 namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
 {
-    internal class MergeTreeView : TreeView
+    internal class MergeTreeView : PlasticTreeView
     {
         internal GenericMenu Menu { get { return mMenu.Menu; } }
 
@@ -24,7 +26,6 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             MergeTreeHeaderState headerState,
             List<string> columnNames,
             MergeViewMenu menu)
-            : base(new TreeViewState())
         {
             mWkInfo = wkInfo;
             mColumnNames = columnNames;
@@ -35,26 +36,14 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             multiColumnHeader.sortingChanged += SortingChanged;
 
             customFoldoutYOffset = UnityConstants.TREEVIEW_FOLDOUT_Y_OFFSET;
-            rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = false;
 
             mCooldownFilterAction = new CooldownWindowDelayer(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
         }
 
-        public override IList<TreeViewItem> GetRows()
-        {
-            return mRows;
-        }
-
         protected override bool CanChangeExpandedState(TreeViewItem item)
         {
             return item is ChangeCategoryTreeViewItem;
-        }
-
-        protected override TreeViewItem BuildRoot()
-        {
-            return new TreeViewItem(0, -1, string.Empty);
         }
 
         protected override IList<TreeViewItem> BuildRows(TreeViewItem rootItem)
@@ -108,22 +97,6 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 e.Use();
         }
 
-        protected override void BeforeRowsGUI()
-        {
-            int firstRowVisible;
-            int lastRowVisible;
-            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
-
-            GUI.DrawTexture(new Rect(0,
-                 firstRowVisible * rowHeight,
-                 GetRowRect(0).width,
-                 (lastRowVisible * rowHeight) + 1000),
-                 Images.GetTreeviewBackgroundTexture());
-
-            DrawTreeViewItem.InitializeStyles();
-            base.BeforeRowsGUI();
-        }
-
         protected override void RowGUI(RowGUIArgs args)
         {
             if (args.item is ChangeCategoryTreeViewItem)
@@ -165,7 +138,8 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                     changeTreeViewItem,
                     args,
                     isCurrentConflict,
-                    isSolvedConflict);
+                    isSolvedConflict,
+                    Repaint);
                 return;
             }
 
@@ -335,6 +309,24 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             Reload();
         }
 
+        internal int GetTotalItemCount()
+        {
+            if (mMergeTree == null)
+                return 0;
+
+            List<MergeChangesCategory> categories = mMergeTree.GetNodes();
+
+            if (categories == null)
+                return 0;
+
+            int totalCount = 0;
+            foreach (MergeChangesCategory category in categories)
+            {
+                totalCount += category.GetChildrenCount();
+            }
+            return totalCount;
+        }
+
         static void RegenerateRows(
             UnityMergeTree mergeTree,
             TreeViewItemIds<MergeChangesCategory, MergeChangeInfo> treeViewItemIds,
@@ -436,7 +428,8 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             ChangeTreeViewItem item,
             RowGUIArgs args,
             bool isCurrentConflict,
-            bool isSolvedConflict)
+            bool isSolvedConflict,
+            Action avatarLoadedAction)
         {
             for (int visibleColumnIdx = 0; visibleColumnIdx < args.GetNumVisibleColumns(); visibleColumnIdx++)
             {
@@ -453,6 +446,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                     treeView,
                     item,
                     column,
+                    avatarLoadedAction,
                     args.selected,
                     args.focused,
                     isCurrentConflict,
@@ -468,6 +462,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             MergeTreeView treeView,
             ChangeTreeViewItem item,
             MergeTreeColumn column,
+            Action avatarLoadedAction,
             bool isSelected,
             bool isFocused,
             bool isCurrentConflict,
@@ -501,6 +496,22 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                     isCurrentConflict,
                     false);
 
+                return;
+            }
+
+            if (column == MergeTreeColumn.Author)
+            {
+                DrawTreeViewItem.ForItemCell(
+                    rect,
+                    rowHeight,
+                    -1,
+                    GetAvatar.ForEmail(label, avatarLoadedAction),
+                    null,
+                    label,
+                    isSelected,
+                    isFocused,
+                    isCurrentConflict,
+                    false);
                 return;
             }
 
@@ -612,7 +623,6 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
 
         TreeViewItemIds<MergeChangesCategory, MergeChangeInfo> mTreeViewItemIds =
             new TreeViewItemIds<MergeChangesCategory, MergeChangeInfo>();
-        List<TreeViewItem> mRows = new List<TreeViewItem>();
 
         MergeSolvedFileConflicts mSolvedFileConflicts;
         UnityMergeTree mMergeTree;

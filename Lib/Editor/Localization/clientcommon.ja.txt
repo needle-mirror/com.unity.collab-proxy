@@ -368,6 +368,9 @@ Xlink '{0}' を解決できません。未解決の Xlink の下の変更はチ�
 == GetRevisionDirectoryNotSupported ==
 GetRevision はディレクトリでサポートされていません。ディレクトリのコンテンツを取得するには、ワークスペースの規則にそれをロードしてください。
 
+== GettingSSOProviders ==
+組織のプロバイダーを取得しています...
+
 == GluonPartialUpdateToDifferentBranch ==
 更新操作を続行できません。ターゲットの変更セットが現在のワークスペースブランチにある必要があります: {0}。
 
@@ -609,6 +612,9 @@ GetRevision はディレクトリでサポートされていません。ディ�
 == NoPathBetweenCsets ==
 '{0}' と '{1}' の間にパスがありません。
 
+== NoProvidersForOrganization ==
+指定された組織は SSO によるアクセスを許可していません
+
 == NoSuchCodeReview ==
 指定されたコードレビュー '{0}' を見つけることができませんでした。
 
@@ -620,6 +626,9 @@ GetRevision はディレクトリでサポートされていません。ディ�
 
 == NotValidCmPath ==
 指定されたパス: {0} は有効なサーバーパスではありません。
+
+== OAuthSignInCheckMessage ==
+セッションを待機しています...
 
 == ObjectNameField ==
 オブジェクト名
@@ -662,6 +671,9 @@ GetRevision はディレクトリでサポートされていません。ディ�
 
 == RestorePathShouldNotExist ==
 復元パスが存在していない必要があります。
+
+== RetrievingOrgsProgress ==
+組織を取得しています...
 
 == RevdatanotfoundForSpec ==
 指定されたリビジョン指定でデータが見つかりません

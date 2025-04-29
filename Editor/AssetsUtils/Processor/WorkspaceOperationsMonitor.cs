@@ -16,12 +16,23 @@ using GluonGui;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.Views.Merge;
-using Unity.PlasticSCM.Editor.Views.PendingChanges;
 
 namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 {
-    internal class WorkspaceOperationsMonitor
+    internal interface IWorkspaceOperationsMonitor
+    {
+        void AddAssetsProcessorPathsToAdd(List<string> paths);
+
+        void AddAssetsProcessorPathsToDelete(List<string> paths);
+
+        void AddAssetsProcessorPathsToCheckout(List<string> paths);
+
+        void AddAssetsProcessorPathsToMove(List<AssetPostprocessor.PathToMove> paths);
+
+        void AddPathsToCheckout(List<string> paths);
+    }
+
+    internal class WorkspaceOperationsMonitor : IWorkspaceOperationsMonitor
     {
         // Internal usage. This isn't a public API.
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -55,24 +66,6 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             mWorkspaceWindow = null;
             mViewHost = null;
             mNewIncomingChangesUpdater = null;
-        }
-
-        internal void RegisterPendingChangesView(
-            PendingChangesTab pendingChangesTab)
-        {
-            mPendingChangesTab = pendingChangesTab;
-        }
-
-        internal void RegisterIncomingChangesView(
-            IIncomingChangesTab incomingChangesTab)
-        {
-            mIncomingChangesTab = incomingChangesTab;
-        }
-
-        internal void UnRegisterViews()
-        {
-            mPendingChangesTab = null;
-            mIncomingChangesTab = null;
         }
 
         internal void Start()
@@ -109,7 +102,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             mLog.Debug("Enabled");
         }
 
-        internal void AddAssetsProcessorPathsToAdd(
+        void IWorkspaceOperationsMonitor.AddAssetsProcessorPathsToAdd(
             List<string> paths)
         {
             AddPathsToProcess(
@@ -117,7 +110,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                 mLock, mResetEvent, mIsEnabled);
         }
 
-        internal void AddAssetsProcessorPathsToDelete(
+        void IWorkspaceOperationsMonitor.AddAssetsProcessorPathsToDelete(
             List<string> paths)
         {
             AddPathsToProcess(
@@ -125,7 +118,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                 mLock, mResetEvent, mIsEnabled);
         }
 
-        internal void AddAssetsProcessorPathsToCheckout(
+        void IWorkspaceOperationsMonitor.AddAssetsProcessorPathsToCheckout(
             List<string> paths)
         {
             AddPathsToProcess(
@@ -133,7 +126,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                 mLock, mResetEvent, mIsEnabled);
         }
 
-        internal void AddAssetsProcessorPathsToMove(
+        void IWorkspaceOperationsMonitor.AddAssetsProcessorPathsToMove(
             List<AssetPostprocessor.PathToMove> paths)
         {
             AddPathsToMoveToProcess(
@@ -141,7 +134,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                 mLock, mResetEvent, mIsEnabled);
         }
 
-        internal void AddPathsToCheckout(
+        void IWorkspaceOperationsMonitor.AddPathsToCheckout(
             List<string> paths)
         {
             AddPathsToProcess(
@@ -168,6 +161,11 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     bool hasCheckoutOpsPending = false;
                     ProcessOperations(
                         mPlasticAPI,
+                        FilterManager.Get().GetIgnoredFilter(),
+                        FilterManager.Get().GetHiddenChangesFilter(),
+                        mWorkspaceWindow,
+                        mViewHost,
+                        mNewIncomingChangesUpdater,
                         mAssetsProcessorPathsToAdd,
                         mAssetsProcessorPathsToDelete,
                         mAssetsProcessorPathsToCheckout,
@@ -176,6 +174,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                         mCancelToken,
                         mLock,
                         mDisableAssetsProcessor,
+                        mIsGluonMode,
                         out hasAssetProcessorOpsPending,
                         out hasCheckoutOpsPending);
 
@@ -198,8 +197,55 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             }
         }
 
-        void ProcessOperations(
+        void SetAsFinished()
+        {
+            if (mCancelToken.IsCancelled())
+                return;
+
+            mCancelToken.Cancel();
+
+            CleanPendingOperationsToProcess(
+                mAssetsProcessorPathsToAdd,
+                mAssetsProcessorPathsToDelete,
+                mAssetsProcessorPathsToCheckout,
+                mAssetsProcessorPathsToMove,
+                mPathsToCheckout,
+                mLock);
+
+            mResetEvent.Set();
+        }
+
+        void SleepUntilNextWorkload()
+        {
+            mLog.Debug("SleepUntilNextWorkload");
+
+            mResetEvent.Reset();
+            mResetEvent.WaitOne();
+        }
+
+        static void CleanPendingOperationsToProcess(
+            List<string> assetsProcessorPathsToAdd,
+            List<string> assetsProcessorPathsToDelete,
+            List<string> assetsProcessorPathsToCheckout,
+            List<AssetPostprocessor.PathToMove> assetsProcessorPathsToMove,
+            List<string> pathsToCheckout,
+            object lockObj)
+        {
+            CleanPathsToProcess(assetsProcessorPathsToAdd, lockObj);
+            CleanPathsToProcess(assetsProcessorPathsToDelete, lockObj);
+            CleanPathsToProcess(assetsProcessorPathsToCheckout, lockObj);
+            CleanPathsToMoveToProcess(assetsProcessorPathsToMove, lockObj);
+
+            CleanPathsToProcess(pathsToCheckout, lockObj);
+        }
+
+        static void ProcessOperations(
             IPlasticAPI plasticApi,
+            IIgnoredFilter ignoredFilter,
+            IHiddenChangesFilter hiddenChangesFilter,
+            IWorkspaceWindow workspaceWindow,
+            ViewHost viewHost,
+            NewIncomingChangesUpdater incomingChangesUpdater,
             List<string> assetsProcessorPathsToAdd,
             List<string> assetsProcessorPathsToDelete,
             List<string> assetsProcessorPathsToCheckout,
@@ -208,6 +254,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             CancelToken cancelToken,
             object lockObj,
             IDisableAssetsProcessor disableAssetsProcessor,
+            bool isGluonMode,
             out bool hasAssetProcessorOpsPending,
             out bool hasCheckoutOpsPending)
         {
@@ -219,6 +266,8 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             bool hasAssetProcessorOpsProcessed =
                 ProcessAssetProcessorOperations(
                     plasticApi,
+                    ignoredFilter,
+                    hiddenChangesFilter,
                     assetsProcessorPathsToAdd,
                     assetsProcessorPathsToDelete,
                     assetsProcessorPathsToCheckout,
@@ -238,7 +287,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     lockObj);
 
             mLog.Debug("ProcessOperations - Processed paths ? " +
-                 (hasAssetProcessorOpsProcessed || hasCheckoutOpsProcessed));
+                (hasAssetProcessorOpsProcessed || hasCheckoutOpsProcessed));
 
             if (cancelToken.IsCancelled())
                 return;
@@ -270,66 +319,37 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
             EditorDispatcher.Dispatch(() =>
             {
-                mLog.Debug("AfterProcessOperations");
-
-                RefreshAsset.VersionControlCache();
-
-                if (isAfterAssetProcessorOpNeeded)
-                    AfterAssetProcessorOperation();
-
-                if (isAfterCheckoutOpNeeded)
-                    AfterCheckoutOperation();
+                AfterProcessOperations(
+                    workspaceWindow,
+                    viewHost,
+                    incomingChangesUpdater,
+                    isGluonMode);
             });
         }
 
-        void AfterAssetProcessorOperation()
+        static void AfterProcessOperations(
+            IWorkspaceWindow workspaceWindow,
+            ViewHost viewHost,
+            NewIncomingChangesUpdater incomingChangesUpdater,
+            bool isGluonMode)
         {
-            AutoRefresh.PendingChangesView(mPendingChangesTab);
+            mLog.Debug("AfterProcessOperations");
 
-            AutoRefresh.IncomingChangesView(mIncomingChangesTab);
+            RefreshAsset.VersionControlCache();
 
-            if (mIsGluonMode)
+            if (isGluonMode)
             {
-                RefreshViewsAfterAssetProcessorForGluon(mViewHost);
+                RefreshViewsAfterProcessOperationsForGluon(viewHost);
                 return;
             }
 
-            RefreshViewsAfterAssetProcessorForDeveloper(mWorkspaceWindow);
-        }
-
-        void AfterCheckoutOperation()
-        {
-            if (mIsGluonMode)
-            {
-                RefreshViewsAfterCheckoutForGluon(mViewHost);
-                return;
-            }
-
-            if (mNewIncomingChangesUpdater != null)
-                mNewIncomingChangesUpdater.Update(DateTime.Now);
-
-            RefreshViewsAfterCheckoutForDeveloper(mWorkspaceWindow);
-        }
-
-        void SetAsFinished()
-        {
-            if (mCancelToken.IsCancelled())
-                return;
-
-            mCancelToken.Cancel();
-            mResetEvent.Set();
-        }
-
-        void SleepUntilNextWorkload()
-        {
-            mLog.Debug("SleepUntilNextWorkload");
-
-            mResetEvent.Reset();
-            mResetEvent.WaitOne();
+            RefreshViewsAfterProcessOperationsForDeveloper(workspaceWindow, incomingChangesUpdater);
         }
 
         static bool ProcessAssetProcessorOperations(
             IPlasticAPI plasticApi,
+            IIgnoredFilter ignoredFilter,
+            IHiddenChangesFilter hiddenChangesFilter,
             List<string> assetsProcessorPathsToAdd,
             List<string> assetsProcessorPathsToDelete,
             List<string> assetsProcessorPathsToCheckout,
@@ -345,6 +365,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                 hasProcessedPaths = AssetsProcessorOperations.
                     AddIfNotControlled(
                         plasticApi,
+                        ignoredFilter,
                         ExtractPathsToProcess(assetsProcessorPathsToAdd, lockObj),
                         cancelToken);
 
@@ -372,6 +393,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                 hasProcessedPaths |= AssetsProcessorOperations.
                     CheckoutIfControlledAndChanged(
                         plasticApi,
+                        hiddenChangesFilter,
                         ExtractPathsToProcess(assetsProcessorPathsToCheckout, lockObj),
                         cancelToken);
             }
@@ -462,6 +484,26 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             resetEvent.Set();
         }
 
+        static void CleanPathsToProcess(
+            List<string> pathsToProcess,
+            object lockObj)
+        {
+            lock (lockObj)
+            {
+                pathsToProcess.Clear();
+            }
+        }
+
+        static void CleanPathsToMoveToProcess(
+            List<AssetPostprocessor.PathToMove> pathsToProcess,
+            object lockObj)
+        {
+            lock (lockObj)
+            {
+                pathsToProcess.Clear();
+            }
+        }
+
         static List<string> ExtractPathsToProcess(
             List<string> pathsToProcess,
             object lockObj)
@@ -515,48 +557,30 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             }
         }
 
-        static void RefreshViewsAfterAssetProcessorForGluon(ViewHost viewHost)
+        static void RefreshViewsAfterProcessOperationsForDeveloper(
+            IWorkspaceWindow workspaceWindow,
+            NewIncomingChangesUpdater newIncomingChangesUpdater)
         {
-            if (viewHost == null)
-            {
-                return;
-            }
+            if (newIncomingChangesUpdater != null)
+                newIncomingChangesUpdater.Update(DateTime.Now);
 
-            viewHost.RefreshView(ViewType.LocksView);
-        }
-
-        static void RefreshViewsAfterAssetProcessorForDeveloper(IWorkspaceWindow workspaceWindow)
-        {
-            if (workspaceWindow == null)
-            {
-                return;
-            }
-
-            workspaceWindow.RefreshView(ViewType.LocksView);
-        }
-
-        static void RefreshViewsAfterCheckoutForDeveloper(
-            IWorkspaceWindow workspaceWindow)
-        {
             if (workspaceWindow == null)
                 return;
 
-            workspaceWindow.RefreshView(ViewType.BranchExplorerView);
             workspaceWindow.RefreshView(ViewType.PendingChangesView);
             workspaceWindow.RefreshView(ViewType.HistoryView);
             workspaceWindow.RefreshView(ViewType.LocksView);
         }
 
-        static void RefreshViewsAfterCheckoutForGluon(
+        static void RefreshViewsAfterProcessOperationsForGluon(
             ViewHost viewHost)
         {
             if (viewHost == null)
                 return;
 
-            viewHost.RefreshView(ViewType.WorkspaceExplorerView);
             viewHost.RefreshView(ViewType.CheckinView);
             viewHost.RefreshView(ViewType.IncomingChangesView);
-            viewHost.RefreshView(ViewType.SearchView);
+            viewHost.RefreshView(ViewType.HistoryView);
             viewHost.RefreshView(ViewType.LocksView);
         }
 
@@ -591,12 +615,11 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
         {
             internal static bool AddIfNotControlled(
                 IPlasticAPI plasticApi,
+                IIgnoredFilter ignoredFilter,
                 List<string> paths,
                 CancelToken cancelToken)
             {
                 List<string> result = new List<string>();
-
-                IgnoredFilesFilter ignoredFilter = plasticApi.GetIgnoredFilter();
 
                 foreach (string path in paths)
                 {
@@ -605,18 +628,15 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
                     string metaPath = MetaPath.GetMetaPath(path);
 
-                    if (plasticApi.GetWorkspaceFromPath(path) == null)
-                        return false;
-
                     if (plasticApi.GetWorkspaceTreeNode(path) == null &&
                         !ignoredFilter.IsIgnored(path))
                     {
-                        result.Add(path);
+                            result.Add(path);
                     }
 
                     if (File.Exists(metaPath) &&
                         plasticApi.GetWorkspaceTreeNode(metaPath) == null &&
-                        !ignoredFilter.IsIgnored(path))
+                        !ignoredFilter.IsIgnored(metaPath))
                     {
                         result.Add(metaPath);
                     }
@@ -653,14 +673,10 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     string metaPath = MetaPath.GetMetaPath(path);
 
                     if (plasticApi.GetWorkspaceTreeNode(path) != null)
-                    {
                         processedPaths.Add(path);
-                    }
 
                     if (plasticApi.GetWorkspaceTreeNode(metaPath) != null)
-                    {
                         processedPaths.Add(metaPath);
-                    }
                 }
 
                 if (cancelToken.IsCancelled())
@@ -720,12 +736,11 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
             internal static bool CheckoutIfControlledAndChanged(
                 IPlasticAPI plasticApi,
+                IHiddenChangesFilter hiddenChangesFilter,
                 List<string> paths,
                 CancelToken cancelToken)
             {
                 List<string> result = new List<string>();
-
-                HiddenChangesFilesFilter hiddenChangesFilter = plasticApi.GetHiddenChangesFilter();
 
                 foreach (string path in paths)
                 {
@@ -740,15 +755,15 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     if (node != null &&
                         !CheckWorkspaceTreeNodeStatus.IsCheckedOut(node) &&
                         !hiddenChangesFilter.IsHiddenChanged(path) &&
-                        ChangedFileChecker.IsChanged(node.LocalInfo, path, false))
+                        ChangedFileChecker.IsChanged(node.LocalInfo, path, true))
                     {
                         result.Add(path);
                     }
 
                     if (nodeMeta != null &&
                         !CheckWorkspaceTreeNodeStatus.IsCheckedOut(nodeMeta) &&
-                        !hiddenChangesFilter.IsHiddenChanged(path) &&
-                        ChangedFileChecker.IsChanged(nodeMeta.LocalInfo, metaPath, false))
+                        !hiddenChangesFilter.IsHiddenChanged(metaPath) &&
+                        ChangedFileChecker.IsChanged(nodeMeta.LocalInfo, metaPath, true))
                     {
                         result.Add(metaPath);
                     }
@@ -786,8 +801,6 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
         List<AssetPostprocessor.PathToMove> mAssetsProcessorPathsToMove = new List<AssetPostprocessor.PathToMove>();
         List<string> mPathsToCheckout = new List<string>();
 
-        PendingChangesTab mPendingChangesTab;
-        IIncomingChangesTab mIncomingChangesTab;
         IWorkspaceWindow mWorkspaceWindow;
         ViewHost mViewHost;
         NewIncomingChangesUpdater mNewIncomingChangesUpdater;

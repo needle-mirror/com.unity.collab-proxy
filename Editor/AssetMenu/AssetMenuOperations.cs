@@ -1,9 +1,12 @@
-﻿using System;
+using System;
 
 using UnityEditor.VersionControl;
 
 using Codice;
+using Codice.Client.Commands.Tree;
 using Codice.Client.Commands.WkTree;
+using Codice.CM.Common;
+using PlasticGui;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetUtils;
@@ -33,12 +36,14 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         internal bool IsPrivateSelection;
         internal bool IsAddedSelection;
         internal bool IsFileSelection;
+        internal bool IsMovedSelection;
         internal bool HasAnyAddedInSelection;
         internal bool HasAnyRemoteLockedInSelection;
 
         internal static SelectedAssetGroupInfo BuildFromAssetList(
-            string wkPath,
+            WorkspaceInfo wkInfo,
             AssetList assetList,
+            IPlasticAPI plasticApi,
             IAssetStatusCache statusCache)
         {
             bool isCheckedInSelection = true;
@@ -47,6 +52,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             bool isPrivateSelection = true;
             bool isAddedSelection = true;
             bool isFileSelection = true;
+            bool isMovedSelection = true;
             bool hasAnyAddedInSelection = false;
             bool hasAnyRemoteLockedInSelection = false;
 
@@ -55,13 +61,13 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             foreach (Asset asset in assetList)
             {
                 string fullPath = AssetsPath.GetFullPathUnderWorkspace.
-                    ForAsset(wkPath, asset.path);
+                    ForAsset(wkInfo.ClientPath, asset.path);
 
                 if (fullPath == null)
                     continue;
 
                 SelectedAssetGroupInfo singleFileGroupInfo = BuildFromSingleFile(
-                    fullPath, asset.isFolder, statusCache);
+                    fullPath, asset.isFolder, wkInfo, plasticApi, statusCache);
 
                 if (!singleFileGroupInfo.IsCheckedInSelection)
                     isCheckedInSelection = false;
@@ -81,6 +87,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 if (!singleFileGroupInfo.IsFileSelection)
                     isFileSelection = false;
 
+                if (!singleFileGroupInfo.IsMovedSelection)
+                    isMovedSelection = false;
+
                 if (singleFileGroupInfo.HasAnyAddedInSelection)
                     hasAnyAddedInSelection = true;
 
@@ -98,6 +107,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 IsPrivateSelection = isPrivateSelection,
                 IsAddedSelection = isAddedSelection,
                 IsFileSelection = isFileSelection,
+                IsMovedSelection = isMovedSelection,
                 HasAnyAddedInSelection = hasAnyAddedInSelection,
                 HasAnyRemoteLockedInSelection = hasAnyRemoteLockedInSelection,
                 SelectedCount = selectedCount,
@@ -107,6 +117,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         internal static SelectedAssetGroupInfo BuildFromSingleFile(
             string fullPath,
             bool isDirectory,
+            WorkspaceInfo wkInfo,
+            IPlasticAPI plasticApi,
             IAssetStatusCache statusCache)
         {
             bool isCheckedInSelection = true;
@@ -115,11 +127,12 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             bool isPrivateSelection = true;
             bool isAddedSelection = true;
             bool isFileSelection = true;
+            bool isMovedSelection = false;
             bool hasAnyAddedInSelection = false;
             bool hasAnyRemoteLockedInSelection = false;
 
-            WorkspaceTreeNode wkTreeNode =
-                PlasticGui.Plastic.API.GetWorkspaceTreeNode(fullPath);
+            WorkspaceTreeNode wkTreeNode = plasticApi.
+                GetWorkspaceTreeNode(fullPath);
 
             if (isDirectory)
                 isFileSelection = false;
@@ -139,6 +152,15 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             else
                 isAddedSelection = false;
 
+            if (wkTreeNode != null)
+            {
+                TreeChangedNode treeChangedNode = plasticApi.
+                    GetChangedNodeForPath(wkInfo, fullPath);
+
+                if (treeChangedNode != null)
+                    isMovedSelection = treeChangedNode.MovedDst;
+            }
+
             AssetStatus assetStatus = statusCache.GetStatus(fullPath);
 
             if (ClassifyAssetStatus.IsLockedRemote(assetStatus))
@@ -152,6 +174,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 IsPrivateSelection = isPrivateSelection,
                 IsAddedSelection = isAddedSelection,
                 IsFileSelection = isFileSelection,
+                IsMovedSelection = isMovedSelection,
                 HasAnyAddedInSelection = hasAnyAddedInSelection,
                 HasAnyRemoteLockedInSelection = hasAnyRemoteLockedInSelection,
                 SelectedCount = 1,
@@ -208,6 +231,14 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 info.IsCheckedOutSelection)
             {
                 result |= AssetMenuOperations.Checkin;
+            }
+
+            if ((info.IsControlledSelection &&
+                 info.IsMovedSelection) ||
+                (info.IsFileSelection &&
+                info.IsControlledSelection &&
+                info.IsCheckedOutSelection))
+            {
                 result |= AssetMenuOperations.Undo;
             }
 

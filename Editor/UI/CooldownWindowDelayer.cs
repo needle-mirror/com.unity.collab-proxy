@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using UnityEditor;
 
@@ -9,6 +9,7 @@ namespace Unity.PlasticSCM.Editor.UI
     public class CooldownWindowDelayer
     {
         internal static bool IsUnitTesting { get; set; }
+        internal bool IsRunning { get { return mIsOnCooldown; } }
 
         // Internal usage. This isn't a public API.
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -35,6 +36,24 @@ namespace Unity.PlasticSCM.Editor.UI
             }
 
             StartCooldown();
+        }
+
+        // Internal usage. This isn't a public API.
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void Pause()
+        {
+            mIsPaused = true;
+        }
+
+        // Internal usage. This isn't a public API.
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void Resume()
+        {
+            if (!mIsPaused)
+                return;
+
+            mIsPaused = false;
+            mLastUpdateTime = EditorApplication.timeSinceStartup;
         }
 
         void RefreshCooldown()
@@ -64,6 +83,9 @@ namespace Unity.PlasticSCM.Editor.UI
 
         void OnUpdate()
         {
+            if (mIsPaused)
+                return;
+
             double updateTime = EditorApplication.timeSinceStartup;
             double deltaSeconds = updateTime - mLastUpdateTime;
 
@@ -80,6 +102,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
         double mLastUpdateTime;
         bool mIsOnCooldown;
+        bool mIsPaused;
         double mSecondsOnCooldown;
     }
 }

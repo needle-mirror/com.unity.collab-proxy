@@ -35,9 +35,9 @@ namespace Unity.PlasticSCM.Editor.Configuration
             // and it also updates the profiles.conf and tokens.conf with the new AccessToken
             UserAccounts.SaveAccount(
                 server,
-                workingMode,
                 user,
                 accessToken,
+                workingMode,
                 null,
                 null,
                 null);

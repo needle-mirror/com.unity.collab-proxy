@@ -1,4 +1,4 @@
-﻿using UnityEditor.VersionControl;
+using UnityEditor.VersionControl;
 
 using Codice.CM.Common;
 using Codice.Client.Common.EventTracking;
@@ -7,6 +7,7 @@ using PlasticGui;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.Items;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
+using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.Tool;
@@ -17,6 +18,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
     {
         internal static void Enable(
             WorkspaceInfo wkInfo,
+            IPlasticAPI plasticApi,
             IAssetStatusCache assetStatusCache)
         {
             if (mIsEnabled)
@@ -25,6 +27,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             mLog.Debug("Enable");
 
             mWkInfo = wkInfo;
+            mPlasticAPI = plasticApi;
             mAssetStatusCache = assetStatusCache;
 
             mIsEnabled = true;
@@ -32,9 +35,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             mAssetSelection = new ProjectViewAssetSelection(UpdateFilterMenuItems);
 
             mAssetMenuCopyPathOperation = new AssetCopyPathOperation(
-                wkInfo.ClientPath,
-                assetStatusCache,
-                mAssetSelection);
+                wkInfo, mPlasticAPI, assetStatusCache, mAssetSelection);
 
             mFilterMenuBuilder = new AssetFilesFilterPatternsMenuBuilder(
                 IGNORE_MENU_ITEMS_PRIORITY,
@@ -64,11 +65,13 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         internal static void BuildOperations(
             WorkspaceInfo wkInfo,
+            IPlasticAPI plasticApi,
             WorkspaceWindow workspaceWindow,
             IViewSwitcher viewSwitcher,
             IHistoryViewLauncher historyViewLauncher,
             GluonGui.ViewHost viewHost,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            ISaveAssets saveAssets,
             PlasticGui.WorkspaceWindow.NewIncomingChangesUpdater incomingChangesUpdater,
             ShelvedChangesUpdater shelvedChangesUpdater,
             IAssetStatusCache assetStatusCache,
@@ -78,15 +81,17 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             bool isGluonMode)
         {
             if (!mIsEnabled)
-                Enable(wkInfo, assetStatusCache);
+                Enable(wkInfo, plasticApi, assetStatusCache);
 
             AssetVcsOperations assetVcsOperations = new AssetVcsOperations(
                 wkInfo,
+                plasticApi,
                 workspaceWindow,
                 viewSwitcher,
                 historyViewLauncher,
                 viewHost,
                 workspaceOperationsMonitor,
+                saveAssets,
                 incomingChangesUpdater,
                 shelvedChangesUpdater,
                 mAssetStatusCache,
@@ -205,7 +210,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         static bool ValidateAdd()
         {
             return ShouldMenuItemBeEnabled(
-                mWkInfo.ClientPath, mAssetSelection, mAssetStatusCache,
+                mWkInfo, mAssetSelection, mAssetStatusCache,
                 AssetMenuOperations.Add);
         }
 
@@ -220,7 +225,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         static bool ValidateCheckout()
         {
             return ShouldMenuItemBeEnabled(
-                mWkInfo.ClientPath, mAssetSelection, mAssetStatusCache,
+                mWkInfo, mAssetSelection, mAssetStatusCache,
                 AssetMenuOperations.Checkout);
         }
 
@@ -239,7 +244,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         static bool ValidateCheckin()
         {
             return ShouldMenuItemBeEnabled(
-                mWkInfo.ClientPath, mAssetSelection, mAssetStatusCache,
+                mWkInfo, mAssetSelection, mAssetStatusCache,
                 AssetMenuOperations.Checkin);
         }
 
@@ -254,7 +259,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         static bool ValidateUndo()
         {
             return ShouldMenuItemBeEnabled(
-                mWkInfo.ClientPath, mAssetSelection, mAssetStatusCache,
+                mWkInfo, mAssetSelection, mAssetStatusCache,
                 AssetMenuOperations.Undo);
         }
 
@@ -271,7 +276,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         static bool ValidateCopyFilePath()
         {
             return ShouldMenuItemBeEnabled(
-                mWkInfo.ClientPath, mAssetSelection, mAssetStatusCache,
+                mWkInfo, mAssetSelection, mAssetStatusCache,
                 AssetMenuOperations.CopyFilePath);
         }
 
@@ -286,7 +291,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         static bool ValidateDiff()
         {
             return ShouldMenuItemBeEnabled(
-                mWkInfo.ClientPath, mAssetSelection, mAssetStatusCache,
+                mWkInfo, mAssetSelection, mAssetStatusCache,
                 AssetMenuOperations.Diff);
         }
 
@@ -300,12 +305,12 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         static bool ValidateHistory()
         {
             return ShouldMenuItemBeEnabled(
-                mWkInfo.ClientPath, mAssetSelection, mAssetStatusCache,
+                mWkInfo, mAssetSelection, mAssetStatusCache,
                 AssetMenuOperations.History);
         }
 
         static bool ShouldMenuItemBeEnabled(
-            string wkPath,
+            WorkspaceInfo wkInfo,
             AssetVcsOperations.IAssetSelection assetSelection,
             IAssetStatusCache statusCache,
             AssetMenuOperations operation)
@@ -316,7 +321,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 return false;
 
             SelectedAssetGroupInfo selectedGroupInfo = SelectedAssetGroupInfo.
-                BuildFromAssetList(wkPath, assetList, statusCache);
+                BuildFromAssetList(wkInfo, assetList, mPlasticAPI, statusCache);
 
             if (assetList.Count != selectedGroupInfo.SelectedCount)
                 return false;
@@ -342,6 +347,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
         static bool mIsEnabled;
         static IAssetStatusCache mAssetStatusCache;
+        static IPlasticAPI mPlasticAPI;
         static WorkspaceInfo mWkInfo;
 
 #if UNITY_6000_0_OR_NEWER

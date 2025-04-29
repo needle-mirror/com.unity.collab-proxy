@@ -5,20 +5,23 @@ using UnityEngine;
 using UnityEditor;
 
 using Codice.CM.Common;
-using Codice.Client.Common.OAuth;
+using Codice.Client.Common;
+using Codice.Client.Common.Authentication;
 using Codice.Client.Common.Connection;
+using Codice.Client.Common.WebApi.Responses;
 using PlasticGui;
 using PlasticGui.Configuration.CloudEdition;
 using PlasticGui.Configuration.CloudEdition.Welcome;
-using PlasticGui.Configuration.OAuth;
-using PlasticGui.WebApi.Responses;
 using PlasticGui.WorkspaceWindow.Home;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 
 namespace Unity.PlasticSCM.Editor.Configuration
 {
-    internal class SSOCredentialsDialog : PlasticDialog, OAuthSignIn.INotify, Login.INotify
+    internal class SSOCredentialsDialog :
+        PlasticDialog,
+        OAuthSignIn.INotify,
+        GetCloudOrganizations.INotify
     {
         protected override Rect DefaultRect
         {
@@ -35,7 +38,6 @@ namespace Unity.PlasticSCM.Editor.Configuration
         {
             SSOCredentialsDialog dialog = Create(
                 cloudServer, new ProgressControlsForDialogs());
-
             ResponseType dialogResult = dialog.RunModal(parentWindow);
 
             return dialog.BuildCredentialsDialogData(dialogResult);
@@ -50,7 +52,9 @@ namespace Unity.PlasticSCM.Editor.Configuration
         {
             Title(PlasticLocalization.Name.CredentialsDialogTitle.GetString());
 
-            Paragraph(PlasticLocalization.Name.CredentialsDialogExplanation.GetString(mOrganizationInfo.DisplayName));
+            Paragraph(
+                PlasticLocalization.Name.CredentialsDialogExplanation.GetString(
+                    mOrganizationInfo.DisplayName));
 
             GUILayout.Space(20);
 
@@ -96,9 +100,12 @@ namespace Unity.PlasticSCM.Editor.Configuration
                 Guid state = Guid.NewGuid();
 
                 OAuthSignInForUnityPackage(
-                    GetCloudSsoProviders.BuildAuthInfoForUnityId(string.Empty, state).SignInUrl,
-                    state,
-                    new GetCloudSsoToken(PlasticGui.Plastic.WebRestAPI));
+                    GetAuthProviders.GetUnityIdAuthProvider(string.Empty, state),
+                    GetCredentialsFromState.Build(
+                        string.Empty,
+                        state,
+                        SEIDWorkingMode.SSOWorkingMode,
+                        PlasticGui.Plastic.WebRestAPI));
             }
         }
 
@@ -138,86 +145,52 @@ namespace Unity.PlasticSCM.Editor.Configuration
 
         void OkButtonWithValidationAction()
         {
-            Login.Run(
-                PlasticGui.Plastic.WebRestAPI,
-                new SaveCloudEditionCreds(),
-                mEmail,
-                mPassword,
-                string.Empty,
-                string.Empty,
-                Login.Mode.UnityPackage,
+            mCredentials = new Credentials(
+                new SEID(mEmail, false, mPassword),
+                SEIDWorkingMode.LDAPWorkingMode);
+
+            GetCloudOrganizations.GetOrganizationsInThreadWaiter(
+                mCredentials.User.Data,
+                mCredentials.User.Password,
                 mProgressControls,
-                this);
+                this,
+                PlasticGui.Plastic.WebRestAPI,
+                CmConnection.Get());
         }
 
-        void OAuthSignInForUnityPackage(Uri signInUrl, Guid state, IGetOauthToken getOauthToken)
+        void OAuthSignInForUnityPackage(
+            AuthProvider authProvider, IGetCredentialsFromState getCredentialsFromState)
         {
-            OAuthSignIn mSignIn = new OAuthSignIn();
+            OAuthSignIn oAuthSignIn = new OAuthSignIn();
 
-            mSignIn.ForUnityPackage(
-                SEIDWorkingMode.SSOWorkingMode,
-                signInUrl,
-                state,
-                string.Empty,
+            oAuthSignIn.SignInForProviderInThreadWaiter(
+                authProvider,
                 string.Empty,
                 mProgressControls,
                 this,
-                GetWindow<PlasticWindow>().CmConnectionForTesting,
                 new OAuthSignIn.Browser(),
-                getOauthToken,
-                PlasticGui.Plastic.WebRestAPI);
+                getCredentialsFromState);
         }
 
-        void OAuthSignIn.INotify.SuccessForUnityPackage(OrganizationsResponse organizationResponse, string userName, string accessToken)
+        void OAuthSignIn.INotify.SignedInForCloud(
+            string chosenProviderName, Credentials credentials)
         {
-            if (!organizationResponse.CloudServers.Contains(mOrganizationInfo.Server))
-            {
-                CancelButtonAction();
-                return;
-            }
+            mCredentials = credentials;
 
-            mEmail = userName;
-            mPassword = accessToken;
-
-            ClientConfiguration.Save(
-                mOrganizationInfo.Server,
-                SEIDWorkingMode.SSOWorkingMode,
-                userName,
-                accessToken);
-
-            GetWindow<PlasticWindow>().InitializePlastic();
-            OkButtonAction();
+            GetCloudOrganizations.GetOrganizationsInThreadWaiter(
+                mCredentials.User.Data,
+                mCredentials.User.Password,
+                mProgressControls,
+                this,
+                PlasticGui.Plastic.WebRestAPI,
+                CmConnection.Get());
         }
 
-        void OAuthSignIn.INotify.SuccessForSSO(string organization)
+        void OAuthSignIn.INotify.SignedInForOnPremise(
+            string server, string proxy, Credentials credentials)
         {
-            OkButtonAction();
-        }
-
-        void OAuthSignIn.INotify.SuccessForProfile(string email)
-        {
-            OkButtonAction();
-        }
-
-        void OAuthSignIn.INotify.SuccessForCredentials(
-            string email,
-            string accessToken)
-        {
-            OkButtonAction();
-        }
-
-        void OAuthSignIn.INotify.SuccessForHomeView(string usrName)
-        {
-            OkButtonAction();
-        }
-
-        void OAuthSignIn.INotify.SuccessForConfigure(
-            List<string> organizations,
-            bool canCreateAnOrganization,
-            string userName,
-            string accessToken)
-        {
-            OkButtonAction();
+            // The Plugin does not support SSO for on-premise (OIDCWorkingMode / SAMLWorkingMode)
+            // as it is not prepared to show the necessary UI
         }
 
         void OAuthSignIn.INotify.Cancel(string errorMessage)
@@ -225,85 +198,35 @@ namespace Unity.PlasticSCM.Editor.Configuration
             CancelButtonAction();
         }
 
-        void Login.INotify.SuccessForUnityPackage(
-            OrganizationsResponse organizationResponse,
-            string userName,
-            string accessToken)
+        void GetCloudOrganizations.INotify.CloudOrganizationsRetrieved(
+            List<string> cloudOrganizations)
         {
-            if (!organizationResponse.CloudServers.Contains(mOrganizationInfo.Server))
+            if (!cloudOrganizations.Contains(mOrganizationInfo.Server))
             {
                 CancelButtonAction();
                 return;
             }
 
-            mEmail = userName;
-            mPassword = accessToken;
-
             ClientConfiguration.Save(
                 mOrganizationInfo.Server,
-                SEIDWorkingMode.LDAPWorkingMode,
-                userName,
-                accessToken);
+                mCredentials.Mode,
+                mCredentials.User.Data,
+                mCredentials.User.Password);
 
             GetWindow<PlasticWindow>().InitializePlastic();
             OkButtonAction();
         }
 
-        void Login.INotify.SuccessForConfigure(
-            List<string> organizations,
-            bool canCreateAnOrganization,
-            string userName,
-            string password)
-        {
-            OkButtonAction();
-        }
-
-        void Login.INotify.SuccessForSSO(
-            string organization)
-        {
-            OkButtonAction();
-        }
-
-        void Login.INotify.SuccessForCredentials(string userName, string password)
-        {
-            OkButtonAction();
-        }
-
-        void Login.INotify.SuccessForProfile(
-            string userName)
-        {
-            OkButtonAction();
-        }
-
-        void Login.INotify.SuccessForHomeView(string userName)
-        {
-            OkButtonAction();
-        }
-
-        void Login.INotify.ValidationFailed(
-            Login.ValidationResult validationResult)
+        void GetCloudOrganizations.INotify.Error(ErrorResponse.ErrorFields error)
         {
             CancelButtonAction();
         }
 
-        void Login.INotify.SignUpNeeded(
-            Login.Data loginData)
+        AskCredentialsToUser.DialogData BuildCredentialsDialogData(ResponseType dialogResult)
         {
-            CancelButtonAction();
-        }
-
-        void Login.INotify.Error(
-            string message)
-        {
-            CancelButtonAction();
-        }
-
-        AskCredentialsToUser.DialogData BuildCredentialsDialogData(
-            ResponseType dialogResult)
-        {
-            return new AskCredentialsToUser.DialogData(
-                dialogResult == ResponseType.Ok,
-                mEmail, mPassword, false, SEIDWorkingMode.SSOWorkingMode);
+            return dialogResult == ResponseType.Ok
+                ? AskCredentialsToUser.DialogData.Success(mCredentials)
+                : AskCredentialsToUser.DialogData.Failure(SEIDWorkingMode.SSOWorkingMode);
         }
 
         static SSOCredentialsDialog Create(
@@ -321,6 +244,7 @@ namespace Unity.PlasticSCM.Editor.Configuration
         string mEmail;
         string mPassword = string.Empty;
 
+        Credentials mCredentials;
         ProgressControlsForDialogs mProgressControls;
 
         OrganizationInfo mOrganizationInfo;

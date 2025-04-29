@@ -48,5 +48,11 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
             return revisions[0];
         }
+
+        internal static long GetSelectedChangesetId(
+            HistoryListView listView)
+        {
+            return listView.GetSelectedChangesetId();
+        }
     }
 }

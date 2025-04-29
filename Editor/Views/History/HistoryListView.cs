@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,18 +14,15 @@ using Unity.PlasticSCM.Editor.UI.Tree;
 
 namespace Unity.PlasticSCM.Editor.Views.History
 {
-    internal class HistoryListView : TreeView
+    internal class HistoryListView : PlasticTreeView
     {
         internal HistoryListView(
             string wkPath,
-            RepositorySpec repSpec,
             HistoryListHeaderState headerState,
             HistoryListViewMenu menu,
-            List<string> columnNames) :
-            base(new TreeViewState())
+            List<string> columnNames)
         {
             mWkPath = wkPath;
-            mRepSpec = repSpec;
             mMenu = menu;
             mColumnNames = columnNames;
 
@@ -33,16 +30,8 @@ namespace Unity.PlasticSCM.Editor.Views.History
             multiColumnHeader.canSort = true;
             multiColumnHeader.sortingChanged += SortingChanged;
 
-            rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = false;
-
             mCooldownFilterAction = new CooldownWindowDelayer(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
-        }
-
-        public override IList<TreeViewItem> GetRows()
-        {
-            return mRows;
         }
 
         public override void OnGUI(Rect rect)
@@ -58,11 +47,6 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
             if (isProcessed)
                 e.Use();
-        }
-
-        protected override TreeViewItem BuildRoot()
-        {
-            return new TreeViewItem(0, -1, string.Empty);
         }
 
         protected override IList<TreeViewItem> BuildRows(
@@ -95,23 +79,6 @@ namespace Unity.PlasticSCM.Editor.Views.History
             Repaint();
         }
 
-        protected override void BeforeRowsGUI()
-        {
-            int firstRowVisible;
-            int lastRowVisible;
-            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
-
-            GUI.DrawTexture(new Rect(0,
-                firstRowVisible * rowHeight,
-                GetRowRect(0).width,
-                (lastRowVisible * rowHeight) + 1000),
-                Images.GetTreeviewBackgroundTexture());
-
-            DrawTreeViewItem.InitializeStyles();
-            base.BeforeRowsGUI();
-        }
-
-
         protected override void RowGUI(RowGUIArgs args)
         {
             if (args.item is HistoryListViewItem)
@@ -133,11 +100,13 @@ namespace Unity.PlasticSCM.Editor.Views.History
         }
 
         internal void BuildModel(
+            RepositorySpec repSpec,
             HistoryRevisionList historyRevisionList,
             long loadedRevisionId)
         {
             mListViewItemIds.Clear();
 
+            mRepSpec = repSpec;
             mRevisionsList = historyRevisionList;
             mLoadedRevisionId = loadedRevisionId;
         }
@@ -206,6 +175,25 @@ namespace Unity.PlasticSCM.Editor.Views.History
         internal List<HistoryRevision> GetSelectedHistoryRevisions()
         {
             return GetSelectedRepObjectInfos().OfType<HistoryRevision>().ToList();
+        }
+
+        internal long GetSelectedChangesetId()
+        {
+            List<RepObjectInfo> repObjectInfos = GetSelectedRepObjectInfos();
+
+            foreach (RepObjectInfo info in repObjectInfos)
+            {
+                if (info is HistoryRevision)
+                    return ((HistoryRevision)info).ChangeSet;
+
+                if (info is MoveRealizationInfo)
+                    return ((MoveRealizationInfo)info).DstDirRev.Changeset;
+
+                if (info is RemovedRealizationInfo)
+                    return ((RemovedRealizationInfo)info).DirRev.Changeset;
+            }
+
+            return -1;
         }
 
         internal void SelectRepObjectInfos(
@@ -397,15 +385,14 @@ namespace Unity.PlasticSCM.Editor.Views.History
         }
 
         ListViewItemIds<RepObjectInfo> mListViewItemIds = new ListViewItemIds<RepObjectInfo>();
-        List<TreeViewItem> mRows = new List<TreeViewItem>();
 
         HistoryRevisionList mRevisionsList;
         long mLoadedRevisionId;
+        RepositorySpec mRepSpec;
 
         readonly CooldownWindowDelayer mCooldownFilterAction;
         readonly HistoryListViewMenu mMenu;
         readonly List<string> mColumnNames;
-        readonly RepositorySpec mRepSpec;
         readonly string mWkPath;
     }
 }

@@ -3726,10 +3726,10 @@ Cloud 儲存庫
 == AnnotateOptions ==
 標註選項
 
-== AnnotateDiffBranchMenuItem ==
+== DiffBranchMenuItem ==
 差異比對分支 {0}
 
-== AnnotateDiffChangesetMenuItem ==
+== DiffChangesetMenuItem ==
 差異比對變更集 {0}
 
 == AnnotateParentRevisionMenuItem ==
@@ -5289,9 +5289,6 @@ Do not show this message again
 == RetrievingOrgsProgress ==
 正在擷取組織...
 
-== GettingSSOProviders ==
-正在取得組織提供者...
-
 == CompleteSignInOnBrowser ==
 使用您的瀏覽器完成登入。
 
@@ -5306,9 +5303,6 @@ Do not show this message again
 
 == SignInToOrganization ==
 登入 {0}
-
-== NoProvidersForOrganization ==
-指定的組織不允許使用 SSO 存取
 
 == DontKnowOrganizationName ==
 我不知道組織名稱

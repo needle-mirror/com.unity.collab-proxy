@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 
 using UnityEngine;
 
+using Codice.Client.Common;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
 
@@ -13,11 +14,15 @@ namespace Unity.PlasticSCM.Editor
         {
             return () =>
             {
+                PlasticGuiConfigData plasticGuiConfigData = PlasticGuiConfig.Get().Configuration;
+
+                ClientConfigData clientConfigData = ClientConfig.Get().GetClientConfigData();
+
                 return GetScreenResolution() +
                     GetUnityEditorVersion() +
                     GetUnityPluginVersion() +
-                    GetPingEventExtraInfo.GetChangelistsEnabled(
-                        PlasticGuiConfig.Get().Configuration);
+                    GetPingEventExtraInfo.GetChangelistsEnabled(plasticGuiConfigData) +
+                    GetPingEventExtraInfo.GetSwitchBehaviorWithChangedItems(clientConfigData);
             };
         }
 

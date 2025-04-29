@@ -14,7 +14,7 @@ using Unity.PlasticSCM.Editor.UI.Tree;
 
 namespace Unity.PlasticSCM.Editor.Views.Branches
 {
-    internal class BranchesListView : TreeView
+    internal class BranchesListView : PlasticTreeView
     {
         internal GenericMenu Menu { get { return mMenu.Menu; } }
         internal long LoadedBranchId { get { return mLoadedBranchId; } }
@@ -23,37 +23,25 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             BranchesListHeaderState headerState,
             List<string> columnNames,
             BranchesViewMenu menu,
-            Action sizeChangedAction)
-            : base(new TreeViewState())
+            Action sizeChangedAction,
+            Action doubleClickAction)
         {
             mColumnNames = columnNames;
             mMenu = menu;
             mSizeChangedAction = sizeChangedAction;
+            mDoubleClickAction = doubleClickAction;
 
             multiColumnHeader = new MultiColumnHeader(headerState);
             multiColumnHeader.canSort = true;
             multiColumnHeader.sortingChanged += SortingChanged;
 
-            rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = false;
-
             mCooldownFilterAction = new CooldownWindowDelayer(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
-        }
-
-        public override IList<TreeViewItem> GetRows()
-        {
-            return mRows;
         }
 
         internal void SetLoadedBranchId(long loadedBranchId)
         {
             mLoadedBranchId = loadedBranchId;
-        }
-
-        protected override TreeViewItem BuildRoot()
-        {
-            return new TreeViewItem(0, -1, string.Empty);
         }
 
         protected override IList<TreeViewItem> BuildRows(
@@ -108,22 +96,6 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 e.Use();
         }
 
-        protected override void BeforeRowsGUI()
-        {
-            int firstRowVisible;
-            int lastRowVisible;
-            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
-
-            GUI.DrawTexture(new Rect(0,
-                firstRowVisible * rowHeight,
-                GetRowRect(0).width,
-                (lastRowVisible * rowHeight) + 1000),
-                Images.GetTreeviewBackgroundTexture());
-
-            DrawTreeViewItem.InitializeStyles();
-            base.BeforeRowsGUI();
-        }
-
         protected override void RowGUI(RowGUIArgs args)
         {
             if (args.item is BranchListViewItem)
@@ -142,6 +114,14 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             }
 
             base.RowGUI(args);
+        }
+
+        protected override void DoubleClickedItem(int id)
+        {
+            if (GetSelection().Count != 1)
+                return;
+
+            mDoubleClickAction();
         }
 
         internal void BuildModel(
@@ -404,13 +384,13 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         Rect mLastRect;
 
         ListViewItemIds<object> mListViewItemIds = new ListViewItemIds<object>();
-        List<TreeViewItem> mRows = new List<TreeViewItem>();
 
         ViewQueryResult mQueryResult;
         long mLoadedBranchId;
 
         readonly CooldownWindowDelayer mCooldownFilterAction;
         readonly Action mSizeChangedAction;
+        readonly Action mDoubleClickAction;
         readonly BranchesViewMenu mMenu;
         readonly List<string> mColumnNames;
     }

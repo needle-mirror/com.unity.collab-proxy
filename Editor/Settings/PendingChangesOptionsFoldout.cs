@@ -29,7 +29,7 @@ namespace Unity.PlasticSCM.Editor.Settings
 
             CheckFsWatcher(mWkInfo);
 
-            mAutomaticAdd = AssetPostprocessor.AutomaticAdd;
+            mIsAutomaticAddEnabled = AssetPostprocessor.IsAutomaticAddEnabled;
 
             mPendingChangesSavedOptions = new PendingChangesOptions();
             mPendingChangesSavedOptions.LoadPendingChangesOptions();
@@ -43,7 +43,7 @@ namespace Unity.PlasticSCM.Editor.Settings
 
             try
             {
-                AssetPostprocessor.SetAutomaticAddOption(mAutomaticAdd);
+                AssetPostprocessor.SetAutomaticAddPreference(mIsAutomaticAddEnabled);
 
                 PendingChangesOptions newPendingChangesOptions = GetPendingChangesOptions();
 
@@ -91,7 +91,7 @@ namespace Unity.PlasticSCM.Editor.Settings
 
         void DoGeneralSettings()
         {
-            mAutomaticAdd = EditorGUILayout.Toggle(Styles.AutomaticAdd, mAutomaticAdd);
+            mIsAutomaticAddEnabled = EditorGUILayout.Toggle(Styles.AutomaticAdd, mIsAutomaticAddEnabled);
             mAutoRefresh = EditorGUILayout.Toggle(Styles.AutoRefresh, mAutoRefresh);
         }
 
@@ -482,7 +482,7 @@ namespace Unity.PlasticSCM.Editor.Settings
         WorkspaceInfo mWkInfo;
         PendingChangesOptions mPendingChangesSavedOptions;
 
-        bool mAutomaticAdd;
+        bool mIsAutomaticAddEnabled;
         bool mShowCheckouts;
         bool mAutoRefresh;
         bool mFSWatcherEnabled;

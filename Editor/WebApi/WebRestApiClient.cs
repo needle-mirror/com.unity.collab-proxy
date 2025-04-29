@@ -5,9 +5,10 @@ using System.Net;
 using Unity.Plastic.Newtonsoft.Json;
 
 using Codice.Client.Common.WebApi;
+using Codice.Client.Common.WebApi.Responses;
 using Codice.CM.Common;
 using Codice.LogWrapper;
-using PlasticGui.WebApi.Responses;
+using ErrorResponse = PlasticGui.WebApi.Responses.ErrorResponse;
 
 namespace Unity.PlasticSCM.Editor.WebApi
 {
@@ -70,7 +71,7 @@ namespace Unity.PlasticSCM.Editor.WebApi
                     return null;
                 }
             }
-            
+
             internal static CurrentUserAdminCheckResponse IsUserAdmin(
                 string organizationName,
                 string authToken)
@@ -143,7 +144,6 @@ namespace Unity.PlasticSCM.Editor.WebApi
                     return null;
                 }
             }
-
             const string TokenExchangeEndpoint = "api/oauth/unityid/exchange/{0}";
             const string IsUserAdminEnpoint = "api/cloud/organizations/{0}/is-user-admin";
             const string SubscriptionDetailsEndpoint = "api/cloud/organizations/{0}/subscription-details";

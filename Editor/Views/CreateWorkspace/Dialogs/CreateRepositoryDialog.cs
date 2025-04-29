@@ -6,10 +6,10 @@ using UnityEngine;
 
 using Codice.Client.Common;
 using Codice.Client.Common.Threading;
+using Codice.Client.Common.WebApi;
 using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Home.Repositories;
-using PlasticGui.WebApi;
 using PlasticGui.WorkspaceWindow.Servers;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;

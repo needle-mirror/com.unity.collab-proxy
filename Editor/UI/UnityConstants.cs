@@ -65,7 +65,7 @@ namespace Unity.PlasticSCM.Editor.UI
         public const double PLUGIN_DELAYED_INITIALIZE_INTERVAL = 0.25;
         internal const double REFRESH_ASSET_DATABASE_DELAYED_INTERVAL = 0.25;
 
-        internal const double NOTIFICATION_CLEAR_INTERVAL = 5;
+        internal const double NOTIFICATION_CLEAR_INTERVAL = 8;
 
         internal const string PENDING_CHANGES_TABLE_SETTINGS_NAME = "{0}_PendingChangesTreeV3_{1}";
         internal const string PENDING_CHANGES_ERRORS_TABLE_SETTINGS_NAME = "{0}_PendingChangesErrorsList{1}";

@@ -1039,9 +1039,6 @@ permite añadir nuevas reglas de checkout exclusivo
 == ConfirmNewPassword ==
 Confirmar contraseña:
 
-== ConnectTubeSucceeded ==
-El servidor de Unity VCS ({0}) conectó correctamente con Plastic Tube.
-
 == ConnectionFail ==
 El test de conexión ha encontrado un problema intentando conectar con el servidor de Unity VCS.
 
@@ -1304,9 +1301,6 @@ Este ítem ha sido descartado porque se ha movido a la misma ruta tanto en orige
 
 == DiscardedSubtractiveFormat ==
 Merge subtractivo descartado del item {0} origen {1} porque {2}
-
-== DisconnectTubeSucceeded ==
-El servidor de Unity VCS ({0}) fue desconectado correctamente de Plastic Tube.
 
 == DivergentMove ==
 Conflicto de movido divergente
@@ -1725,9 +1719,6 @@ Borrado
 
 == LogMoved ==
 Movido
-
-== MakeTubeSucceeded ==
-El tubo {0} -> {1} fue correctamente creado.
 
 == Markers ==
 Etiquetas
@@ -2288,9 +2279,6 @@ Reconciliando objetos
 == RecurseWkIncompatibleWithWorkspacePath ==
 No se puede usar la opción '--recursewk' junto a la ruta de un workspace.
 
-== RemoveTubeSucceeded ==
-El tubo {0} -> {1} fue correctamente eliminado.
-
 == Removed ==
 Borrado
 
@@ -2407,9 +2395,6 @@ No hay cambios.
 
 == Server ==
 Servidor
-
-== SetConfigSucceeded ==
-La configuración de Plastic Tube fue correctamente fijada.
 
 == SettingNewSelector ==
 Estableciendo el nuevo selector...
@@ -2558,12 +2543,6 @@ Total
 
 == Purged ==
 Purged
-
-== TubeStatusConnected ==
-El servidor de Unity VCS ({0}) está conectado a Plastic Tube.
-
-== TubeStatusDisconnected ==
-El servidor de Unity VCS ({0}) no está conectado a Plastic Tube.
 
 == TypeNewPassword ==
 Contraseña nueva:

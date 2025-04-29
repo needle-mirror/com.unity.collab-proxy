@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-using PlasticGui.WebApi.Responses;
+using Codice.Client.Common.WebApi.Responses;
 using PlasticGui.WorkspaceWindow.NotificationBar;
 
 namespace Unity.PlasticSCM.Editor.UI.StatusBar
@@ -39,7 +39,7 @@ namespace Unity.PlasticSCM.Editor.UI.StatusBar
 
             if (mSubscriptionPanel.HasNotification)
                 mSubscriptionPanel.OnGUI();
-            
+
             GUILayout.FlexibleSpace();
 
             if (mContactPanel.HasNotification)

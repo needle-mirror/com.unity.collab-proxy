@@ -641,8 +641,7 @@ Examples:
     (Annotates the file starting in changeset 73666 using a server path.)
 
 == CMD_DESCRIPTION_APPLYLOCAL ==
-Checks for local changes (locally moved, locally deleted, and locally changed)
-and applies them, so that Unity VCS starts tracking those changes.
+Checks for local changes (locally moved, locally deleted, and locally changed) and applies them, so that Unity VCS starts tracking those changes.
 
 == CMD_USAGE_APPLYLOCAL ==
 Usage:
@@ -1113,9 +1112,7 @@ Remarks:
     - The command also checks whether the configured user is valid or not.
 
 == CMD_DESCRIPTION_CHECKDB ==
-> **This command is deprecated.** 
-
-Checks the repositories integrity.
+> **This command is deprecated.** Checks the repositories integrity.
 
 == CMD_USAGE_CHECKDB ==
 Usage:
@@ -5334,6 +5331,7 @@ Usage:
 Options:
 
     --^changeset          Updates the partial workspace to a specific changeset.
+                         Using '--^incoming' will override this setting.
     --^silent             No output is shown unless an error happens.
     --^xml                Prints the output in XML format to the standard 
                          output. It is possible to specify an output file.
@@ -5349,6 +5347,8 @@ Options:
     --^dontmerge          Does not merge the file conflicts, it just skips them.
                          The other changes are properly applied. This option can
                          be useful for automation to avoid user interaction.
+    --^incoming           Runs the Incoming Changes operation applying only the
+                         local changes involved in the operation.
     --^machinereadable    Outputs the result in an easy-to-parse format.
     --^startlineseparator Used with the '--^machinereadable' flag,
                          specifies how the lines should start.
@@ -6424,9 +6424,7 @@ Examples:
     (Retrieves the 2 last revisions for the bar.c and foo.c items.)
 
 == CMD_DESCRIPTION_REVISION_TREE ==
-> **This command is deprecated.** 
-
-Shows the revision tree for an item.
+> **This command is deprecated.** Shows the revision tree for an item.
 
 == CMD_USAGE_REVISION_TREE ==
 Usage:
@@ -6671,9 +6669,7 @@ Examples:
     (Sets 'development' group as owner of 'mainRep' repository.)
 
 == CMD_DESCRIPTION_SETSELECTOR ==
-> **This command is deprecated.** 
-
-Sets the selector to a workspace.
+> **This command is deprecated.** Sets the selector to a workspace.
 
 == CMD_USAGE_SETSELECTOR ==
 Selectors are discontinued and its use is not recommended.
@@ -7637,9 +7633,7 @@ Examples:
     cm ^showpermissions
 
 == CMD_DESCRIPTION_SHOWSELECTOR ==
-> **This command is deprecated.**
-
-Shows the workspace selector.
+> **This command is deprecated.** Shows the workspace selector.
 
 == CMD_USAGE_SHOWSELECTOR ==
 Selectors are discontinued and its use is not recommended.
@@ -7786,9 +7780,7 @@ Examples:
     cm ^switch ^sh:2
 
 == CMD_DESCRIPTION_SWITCH_TO_BRANCH ==
-> **This command is deprecated.** Use cm ^switch instead. 
-
-Sets a branch as the working branch. 
+> **This command is deprecated.** Use cm ^switch instead. Sets a branch as the working branch. 
 
 == CMD_USAGE_SWITCH_TO_BRANCH ==
 Usage:

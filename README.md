@@ -4,7 +4,7 @@ This package provides an in-editor interface for teams to work with [Unity Versi
 
 _Note that this project is the natural evolution of the old Collaborate package, hence its technical name "collab-proxy"._
 
-[Documentation](https://docs.unity.com/ugs/en-us/manual/devops/manual/vcs-plugins/unityeditor-plugin/unity-version-control-package) - [Changelog](https://docs.unity3d.com/Packages/com.unity.collab-proxy@2.7/changelog/CHANGELOG.html)
+[Documentation](https://docs.unity.com/ugs/en-us/manual/devops/manual/vcs-plugins/unityeditor-plugin/unity-version-control-package) - [Changelog](https://docs.unity3d.com/Packages/com.unity.collab-proxy@2.8/changelog/CHANGELOG.html)
 
 ## Compatibility
 

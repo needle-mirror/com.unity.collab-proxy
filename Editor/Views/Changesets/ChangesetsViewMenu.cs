@@ -20,16 +20,12 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         }
 
         internal ChangesetsViewMenu(
-            WorkspaceInfo wkInfo,
             IChangesetMenuOperations changesetMenuOperations,
             IMenuOperations menuOperations,
-            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             bool isGluonMode)
         {
-            mWkInfo = wkInfo;
             mChangesetMenuOperations = changesetMenuOperations;
             mMenuOperations = menuOperations;
-            mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
             mIsGluonMode = isGluonMode;
 
             BuildComponents();
@@ -93,6 +89,11 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mMenuOperations.DiffBranch();
         }
 
+        void CreateBranchFromChangesetMenuItem_Click()
+        {
+            mChangesetMenuOperations.CreateBranch();
+        }
+
         void SwitchToChangesetMenuItem_Click()
         {
             mChangesetMenuOperations.SwitchToChangeset();
@@ -146,6 +147,13 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             }
 
             menu.AddSeparator(string.Empty);
+
+            AddChangesetsMenuItem(
+                mCreateBranchMenuItemContent,
+                menu,
+                operations,
+                ChangesetMenuOperations.CreateBranch,
+                CreateBranchFromChangesetMenuItem_Click);
 
             AddChangesetsMenuItem(
                 mSwitchToChangesetMenuItemContent,
@@ -203,12 +211,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 MergeChangesetMenuItem_Click();
                 return;
             }
-
-            if (operationToExecute == ChangesetMenuOperations.CreateCodeReview)
-            {
-                CreateCodeReviewMenuItem_Click();
-                return;
-            }
         }
 
         static void AddChangesetsMenuItem(
@@ -245,7 +247,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
             menuItemContent.text = string.Format("{0} {1}",
                     PlasticLocalization.GetString(
-                        PlasticLocalization.Name.AnnotateDiffChangesetMenuItem,
+                        PlasticLocalization.Name.DiffChangesetMenuItem,
                         changesetName),
                     GetPlasticShortcut.ForDiff());
 
@@ -269,11 +271,9 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             ChangesetMenuOperations operations,
             GenericMenu.MenuFunction menuFunction)
         {
-            string branchName = GetBranchName(changeset);
-
             menuItemContent.text =
-                PlasticLocalization.GetString(PlasticLocalization.Name.AnnotateDiffBranchMenuItem,
-                branchName);
+                PlasticLocalization.Name.DiffBranchMenuItem.GetString(
+                    GetShorten.BranchNameFromChangeset(changeset));
 
             if (operations.HasFlag(ChangesetMenuOperations.DiffChangeset))
             {
@@ -286,21 +286,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
             menu.AddDisabledItem(
                 menuItemContent);
-        }
-
-        static string GetBranchName(ChangesetExtendedInfo changesetInfo)
-        {
-            if (changesetInfo == null)
-                return string.Empty;
-
-            string branchName = changesetInfo.BranchName;
-
-            int lastIndex = changesetInfo.BranchName.LastIndexOf("/");
-
-            if (lastIndex == -1)
-                return branchName;
-
-            return branchName.Substring(lastIndex + 1);
         }
 
         static bool IsOnMainBranch(ChangesetExtendedInfo singleSeletedChangeset)
@@ -334,6 +319,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetMenuItemDiffSelected),
                 GetPlasticShortcut.ForDiff()));
             mDiffBranchMenuItemContent = new GUIContent();
+            mCreateBranchMenuItemContent = new GUIContent(
+                PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetMenuItemCreateBranch));
             mSwitchToChangesetMenuItemContent = new GUIContent(
                 PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetMenuItemSwitchToChangeset));
             mRevertToChangesetMenuItemContent = new GUIContent(
@@ -350,15 +337,14 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         GUIContent mDiffChangesetMenuItemContent;
         GUIContent mDiffSelectedChangesetsMenuItemContent;
         GUIContent mDiffBranchMenuItemContent;
+        GUIContent mCreateBranchMenuItemContent;
         GUIContent mSwitchToChangesetMenuItemContent;
         GUIContent mRevertToChangesetMenuItemContent;
         GUIContent mMergeChangesetMenuItemContent;
         GUIContent mCreateCodeReviewMenuItemContent;
 
-        readonly WorkspaceInfo mWkInfo;
         readonly IChangesetMenuOperations mChangesetMenuOperations;
         readonly IMenuOperations mMenuOperations;
-        readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
         readonly bool mIsGluonMode;
 
         long mLoadedBranchId = -1;

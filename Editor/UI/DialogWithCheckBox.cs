@@ -158,15 +158,15 @@ namespace Unity.PlasticSCM.Editor.UI
                 GUILayout.FlexibleSpace();
             }
 
-            GUILayout.Space(-20);
+            GUILayout.Space(-22);
 
             using (new EditorGUILayout.HorizontalScope())
             {
                 GUILayout.Space(22);
-                DrawTextBlockWithLink.ForMultiLinkLabel(mDontShowAgainContent);
+                DrawTextBlockWithLink.ForMultiLinkLabelInDialog(mDontShowAgainContent);
             }
 
-            GUILayout.Space(-17);
+            GUILayout.Space(-19);
         }
 
         static DialogWithCheckBox Create(

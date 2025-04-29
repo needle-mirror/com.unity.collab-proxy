@@ -14,26 +14,18 @@ using Unity.PlasticSCM.Editor.UI.Tree;
 
 namespace Unity.PlasticSCM.Editor.Views.Diff
 {
-    internal class DiffTreeView : TreeView
+    internal class DiffTreeView : PlasticTreeView
     {
         internal DiffTreeView(DiffTreeViewMenu menu)
-            : base(new TreeViewState())
         {
             mMenu = menu;
 
             customFoldoutYOffset = UnityConstants.TREEVIEW_FOLDOUT_Y_OFFSET;
-            rowHeight = UnityConstants.TREEVIEW_ROW_HEIGHT;
-            showAlternatingRowBackgrounds = false;
 
             mCooldownFilterAction = new CooldownWindowDelayer(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
 
             EnableHorizontalScrollbar();
-        }
-
-        public override IList<TreeViewItem> GetRows()
-        {
-            return mRows;
         }
 
         public override void OnGUI(Rect rect)
@@ -55,11 +47,6 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         {
             return item is ChangeCategoryTreeViewItem
                 || item is MergeCategoryTreeViewItem;
-        }
-
-        protected override TreeViewItem BuildRoot()
-        {
-            return new TreeViewItem(0, -1, string.Empty);
         }
 
         protected override IList<TreeViewItem> BuildRows(TreeViewItem rootItem)
@@ -98,30 +85,13 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             Repaint();
         }
 
-        protected override void BeforeRowsGUI()
-        {
-            int firstRowVisible;
-            int lastRowVisible;
-            GetFirstAndLastVisibleRows(out firstRowVisible, out lastRowVisible);
-
-            GUI.DrawTexture(new Rect(0,
-                firstRowVisible * rowHeight,
-                GetRowRect(0).width + 500,
-                (lastRowVisible * rowHeight) + 1500),
-                Images.GetTreeviewBackgroundTexture());
-
-            DrawTreeViewItem.InitializeStyles();
-            mLargestRowWidth = 0;
-            base.BeforeRowsGUI();
-        }
-
         protected override void RowGUI(RowGUIArgs args)
         {
             float itemWidth;
             TreeViewItemGUI(
                 args.item, args.rowRect, rowHeight, mDiffTree, args.selected, args.focused, out itemWidth);
 
-            float rowWidth = baseIndent + args.item.depth * depthIndentWidth + 
+            float rowWidth = baseIndent + args.item.depth * depthIndentWidth +
                 itemWidth + UnityConstants.TREEVIEW_ROW_WIDTH_OFFSET;
 
             if (rowWidth > mLargestRowWidth)
@@ -232,7 +202,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             MultiColumnHeaderState.Column[] cols = { mHorizontalColumn };
             MultiColumnHeaderState headerState = new MultiColumnHeaderState(cols);
-            
+
             multiColumnHeader = new MultiColumnHeader(headerState);
             multiColumnHeader.height = 0f;
         }
@@ -549,7 +519,6 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         TreeViewItemIds<IDiffCategory, ITreeViewNode> mTreeViewItemIds =
             new TreeViewItemIds<IDiffCategory, ITreeViewNode>();
-        List<TreeViewItem> mRows = new List<TreeViewItem>();
 
         UnityDiffTree mDiffTree = new UnityDiffTree();
 

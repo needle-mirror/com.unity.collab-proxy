@@ -1,73 +1,42 @@
 ﻿using System;
+using System.Threading.Tasks;
+
 using UnityEditor;
 
 using Codice.CM.Common;
-using System.Threading.Tasks;
 using Codice.Client.Common;
 using Codice.Client.Common.Connection;
+using Codice.Client.Common.Threading;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
-using Codice.Client.Common.Threading;
 using Unity.PlasticSCM.Editor.WebApi;
 
 namespace Unity.PlasticSCM.Editor.Configuration
 {
     internal class CredentialsUiImpl : AskCredentialsToUser.IGui
     {
-        AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForCredentials(string servername, SEIDWorkingMode seidWorkingMode)
+        AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForCredentials(
+            string servername, SEIDWorkingMode seidWorkingMode)
         {
-            AskCredentialsToUser.DialogData result = null;
-
             if (!PlasticPlugin.ConnectionMonitor.IsConnected)
-                return result;
+                return AskCredentialsToUser.DialogData.Failure(seidWorkingMode);
+
+            if (seidWorkingMode == SEIDWorkingMode.OIDCWorkingMode
+                || seidWorkingMode == SEIDWorkingMode.SAMLWorkingMode)
+            {
+                throw new NotImplementedException(
+                    string.Format("Authentication for {0} not supported yet.", seidWorkingMode));
+            }
+
+            AskCredentialsToUser.DialogData result = null;
 
             GUIActionRunner.RunGUIAction(delegate
             {
-                result = CredentialsDialog.RequestCredentials(
+                result = seidWorkingMode == SEIDWorkingMode.SSOWorkingMode
+                    ? RunSSOCredentialsRequest(
+                        servername, CloudProjectSettings.accessToken)
+                    : CredentialsDialog.RequestCredentials(
                         servername, seidWorkingMode, ParentWindow.Get());
-            });
-
-            return result;
-        }
-
-        void AskCredentialsToUser.IGui.ShowSaveProfileErrorMessage(string message)
-        {
-            if (!PlasticPlugin.ConnectionMonitor.IsConnected)
-                return;
-
-            GUIActionRunner.RunGUIAction(delegate
-            {
-                GuiMessage.ShowError(string.Format(
-                    PlasticLocalization.GetString(
-                        PlasticLocalization.Name.CredentialsErrorSavingProfile),
-                    message));
-            });
-        }
-
-        AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForOidcCredentials(
-            string server)
-        {
-            throw new NotImplementedException("OIDC authentication not supported yet.");
-        }
-
-        AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForSamlCredentials(
-            string server)
-        {
-            throw new NotImplementedException("SAML authentication not supported yet.");
-        }
-
-        AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForSsoCredentials(
-            string cloudServer)
-        {
-            AskCredentialsToUser.DialogData result = null;
-
-            if (!PlasticPlugin.ConnectionMonitor.IsConnected)
-                return result;
-
-            GUIActionRunner.RunGUIAction(delegate
-            {
-                result = RunSSOCredentialsRequest(
-                    cloudServer, CloudProjectSettings.accessToken);
             });
 
             return result;
@@ -89,19 +58,18 @@ namespace Unity.PlasticSCM.Editor.Configuration
             // There is no internet connection, so no way to get credentials
             if (tokenExchangeResponse == null)
             {
-                return new AskCredentialsToUser.DialogData(
-                    false, null, null, false,
-                    SEIDWorkingMode.SSOWorkingMode);
+                return AskCredentialsToUser.DialogData.Failure(SEIDWorkingMode.SSOWorkingMode);
             }
 
             if (tokenExchangeResponse.Error == null)
             {
-                return new AskCredentialsToUser.DialogData(
-                    true, 
-                    tokenExchangeResponse.User,
-                    tokenExchangeResponse.AccessToken, 
-                    false,
-                    SEIDWorkingMode.SSOWorkingMode);
+                return AskCredentialsToUser.DialogData.Success(
+                    new Credentials(
+                        new SEID(
+                            tokenExchangeResponse.User,
+                            false,
+                            tokenExchangeResponse.AccessToken),
+                        SEIDWorkingMode.SSOWorkingMode));
             }
 
             return SSOCredentialsDialog.RequestCredentials(
@@ -117,8 +85,9 @@ namespace Unity.PlasticSCM.Editor.Configuration
             {
                 try
                 {
-                    result = WebRestApiClient.PlasticScm.
-                        TokenExchange(unityAccessToken);
+                    result = WebRestApiClient
+                        .PlasticScm
+                        .TokenExchange(unityAccessToken);
                 }
                 catch (Exception ex)
                 {

@@ -3,11 +3,12 @@
 using UnityEditor;
 using UnityEngine;
 
+using Codice.Client.Common.Authentication;
 using PlasticGui;
 
 namespace Unity.PlasticSCM.Editor.UI.Progress
 {
-    class ProgressControlsForDialogs : IProgressControls
+    class ProgressControlsForDialogs : IProgressControls, IAuthenticationProgressControls
     {
         internal class Data
         {
@@ -51,11 +52,31 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
 
         void IProgressControls.HideProgress()
         {
+            InternalHideProgress();
+        }
+
+        void IAuthenticationProgressControls.HideProgress()
+        {
+            InternalHideProgress();
+        }
+
+        void InternalHideProgress()
+        {
             mData.IsWaitingAsyncResult = false;
             mData.ProgressMessage = string.Empty;
         }
 
         void IProgressControls.ShowProgress(string message)
+        {
+            InternalShowProgress(message);
+        }
+
+        void IAuthenticationProgressControls.ShowProgress(string message)
+        {
+            InternalShowProgress(message);
+        }
+
+        void InternalShowProgress(string message)
         {
             CleanStatusMessage(mData);
 

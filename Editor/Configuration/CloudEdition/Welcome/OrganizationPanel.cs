@@ -7,7 +7,6 @@ using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 using PlasticGui;
-using PlasticGui.WebApi.Responses;
 using PlasticGui.WorkspaceWindow.Home;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.UIElements;
@@ -18,12 +17,15 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
     {
         internal OrganizationPanel(
             CloudEditionWelcomeWindow parentWindow,
-            OrganizationsResponse organizationResponse,
-            Action<string> organizationJoinedAction,
-            string title)
+            List<string> cloudServers,
+            string errorMessage,
+            string title,
+            Action<string> organizationJoinedAction)
         {
             mParentWindow = parentWindow;
-            mOrganizationResponse = organizationResponse;
+            mPrefetchedCloudServers = cloudServers;
+            mPrefetchedErrorMessage = errorMessage;
+
             mOnOrganizationJoined = organizationJoinedAction;
 
             InitializeLayoutAndStyles();
@@ -35,7 +37,8 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         internal void Dispose()
         {
-            mParentWindow.CancelJoinOrganization();
+            if (!mOrganizationJoined)
+                mParentWindow.CancelJoinOrganization();
 
             if (mJoinSingleOrganizationButton != null)
                 mJoinSingleOrganizationButton.clicked -= JoinOrganizationButton_clicked;
@@ -49,22 +52,20 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         void OnEditorActivated()
         {
-            if (mOrganizationResponse == null || mOrganizationResponse.CloudServers == null)
+            if (!string.IsNullOrEmpty(mPrefetchedErrorMessage))
+            {
+                mProgressControls.ShowError(mPrefetchedErrorMessage);
+                return;
+            }
+
+            if (mPrefetchedCloudServers == null || mPrefetchedCloudServers.Count == 0)
             {
                 mProgressControls.ShowError("Could not find cloud organizations");
                 return;
             }
 
-            if (mOrganizationResponse.Error != null)
-            {
-                mProgressControls.ShowError(mOrganizationResponse.Error.Message);
-                return;
-            }
-
-            // This is crucial to initialize the internal cache of slugs in the plastic library
-            OrganizationsInformation.UpdateOrganizationSlugs(mOrganizationResponse);
-
-            List<OrganizationInfo> organizationsInfo = OrganizationsInformation.FromServersOrdered(mOrganizationResponse.CloudServers);
+            List<OrganizationInfo> organizationsInfo =
+                OrganizationsInformation.FromServersOrdered(mPrefetchedCloudServers);
 
             ProcessOrganizations(organizationsInfo);
         }
@@ -111,6 +112,8 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         void JoinOrganizationButton_clicked()
         {
             mOnOrganizationJoined(mOrganizationToJoin);
+
+            mOrganizationJoined = true;
 
             // TODO: Closing the window for now. Need to connect this event to the main on boarding workflow.
             mParentWindow.Close();
@@ -170,7 +173,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             {
                 string organizationDisplayName = organization.DisplayName;
 
-                toolbarMenu.menu.AppendAction(organizationDisplayName, x => 
+                toolbarMenu.menu.AppendAction(organizationDisplayName, x =>
                 {
                     toolbarMenu.text = organizationDisplayName;
                     mOrganizationToJoin = organization.Server;
@@ -200,6 +203,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         }
 
         string mOrganizationToJoin = "";
+        bool mOrganizationJoined;
 
         Button mJoinSingleOrganizationButton;
         Button mJoinMultipleOrganizationsButton;
@@ -209,7 +213,8 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         IProgressControls mProgressControls;
 
         readonly CloudEditionWelcomeWindow mParentWindow;
-        readonly OrganizationsResponse mOrganizationResponse;
-        private readonly Action<string> mOnOrganizationJoined;
+        readonly List<string> mPrefetchedCloudServers;
+        readonly string mPrefetchedErrorMessage;
+        readonly Action<string> mOnOrganizationJoined;
     }
 }

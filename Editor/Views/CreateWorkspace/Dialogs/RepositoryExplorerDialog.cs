@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,10 +7,10 @@ using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 using Codice.Client.Common;
+using Codice.Client.Common.WebApi;
 using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Home.Repositories;
-using PlasticGui.WebApi;
 using PlasticGui.WorkspaceWindow.Servers;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
@@ -283,6 +283,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
         {
             var instance = CreateInstance<RepositoryExplorerDialog>();
             instance.mGuiMessage = guiMessage;
+            instance.mEnterKeyAction = instance.OkButtonAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
             instance.mProgressControls = progressControls;
             instance.BuildComponents(defaultServer, plasticWebRestApi);

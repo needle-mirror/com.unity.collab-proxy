@@ -1,7 +1,7 @@
 using System.IO;
 
+using Codice.Client.Common.WebApi;
 using Codice.CM.Common;
-using PlasticGui.WebApi;
 
 namespace Unity.PlasticSCM.Editor.Hub.Operations
 {

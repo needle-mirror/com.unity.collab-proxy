@@ -6,10 +6,10 @@ using UnityEngine.UIElements;
 using PlasticGui;
 using Codice.CM.Common;
 using Codice.Client.Common;
+using Codice.Client.Common.WebApi;
 using Unity.PlasticSCM.Editor.UI.UIElements;
 using PlasticGui.Configuration.TeamEdition;
 using PlasticGui.Configuration;
-using PlasticGui.WebApi;
 using Unity.PlasticSCM.Editor.Views.Welcome;
 
 namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
@@ -48,7 +48,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
 
         void ConnectButton_Clicked()
         {
-            ConfigurationConnectServerButtonClickEvent.Click(
+            ConfigurationConnectServerButtonClickEvent.ClickInThreadWaiter(
                 server: mUserAssistant.GetProposedServer(),
                 HideValidation: HideValidation,
                 ShowError: ShowServerValidationError,
@@ -59,8 +59,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
                 EnableButtons: () => { mConnectButton.SetEnabled(true); },
                 UpdatePasswordEntries: (seidWorkingMode) =>
                 {
-                    UpdatePasswordEntries(ValidateServerAndCreds.
-                        IsPasswordRequired(seidWorkingMode));
+                    UpdatePasswordEntries(seidWorkingMode);
                 },
                 NotifyWorkingMode: (mode) => { mSEIDWorkingMode = mode; },
                 NotifyConnectedStatus: (b) => { });
@@ -78,7 +77,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
 
         void CheckConnectionButton_Clicked()
         {
-            ConfigurationCheckCredentialsButtonClickEvent.Click(
+            ConfigurationCheckCredentialsButtonClickEvent.ClickInThreadWaiter(
                 mSEIDWorkingMode,
                 mUserTextField.value,
                 mPasswordTextField.value,
@@ -93,8 +92,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
                 EnableButtons: () => { mCheckConnectionButton.SetEnabled(true); mConnectButton.SetEnabled(true); },
                 NotifyWorkingMode: (mode) => { mSEIDWorkingMode = mode; },
                 NotifyConnectedStatus: (status) => { },
-                restApi: mRestApi,
-                cmConnection: CmConnection.Get());
+                restApi: mRestApi);
         }
 
         void CancelButton_Clicked()
@@ -273,8 +271,11 @@ namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
             mSpinnerLabel.Hide();
         }
 
-        void UpdatePasswordEntries(bool bIsPasswordRequired)
+        void UpdatePasswordEntries(SEIDWorkingMode workingMode)
         {
+            bool bIsPasswordRequired =
+                ValidateServerAndCreds.IsPasswordRequired(workingMode);
+
             if (!bIsPasswordRequired)
             {
                 mPasswordTextField.Collapse();

@@ -41,7 +41,6 @@ namespace Unity.PlasticSCM.Editor.Views.History
         internal HistoryTab(
             WorkspaceInfo wkInfo,
             IWorkspaceWindow workspaceWindow,
-            RepositorySpec repSpec,
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             LaunchTool.IProcessExecutor processExecutor,
             NewIncomingChangesUpdater newIncomingChangesUpdater,
@@ -51,7 +50,6 @@ namespace Unity.PlasticSCM.Editor.Views.History
         {
             mWkInfo = wkInfo;
             mWorkspaceWindow = workspaceWindow;
-            mRepSpec = repSpec;
             mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
             mProcessExecutor = processExecutor;
             mNewIncomingChangesUpdater = newIncomingChangesUpdater;
@@ -59,7 +57,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
             mParentWindow = parentWindow;
             mIsGluonMode = isGluonMode;
 
-            BuildComponents(wkInfo, repSpec);
+            BuildComponents(wkInfo);
 
             mProgressControls = new ProgressControlsForViews();
 
@@ -68,10 +66,12 @@ namespace Unity.PlasticSCM.Editor.Views.History
         }
 
         internal void RefreshForItem(
+            RepositorySpec repSpec,
             long itemId,
             string path,
             bool isDirectory)
         {
+            mRepSpec = repSpec;
             mItemId = itemId;
             mPath = path;
             mIsDirectory = isDirectory;
@@ -93,6 +93,11 @@ namespace Unity.PlasticSCM.Editor.Views.History
             TreeHeaderSettings.Save(
                 mHistoryListView.multiColumnHeader.state,
                 UnityConstants.HISTORY_TABLE_SETTINGS_NAME);
+        }
+
+        internal SerializableHistoryTabState GetSerializableState()
+        {
+            return new SerializableHistoryTabState(mRepSpec, mItemId, mPath, mIsDirectory);
         }
 
         internal void Update()
@@ -153,7 +158,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
             long loadedRevisionId,
             WorkspaceUIConfiguration config)
         {
-            mHistoryListView.BuildModel(list, loadedRevisionId);
+            mHistoryListView.BuildModel(mRepSpec, list, loadedRevisionId);
 
             mHistoryListView.Refilter();
 
@@ -164,13 +169,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         long HistoryListViewMenu.IMenuOperations.GetSelectedChangesetId()
         {
-            HistoryRevision revision = HistorySelection.
-                GetSelectedHistoryRevision(mHistoryListView);
-
-            if (revision == null)
-                return -1;
-
-            return revision.ChangeSet;
+            return HistorySelection.GetSelectedChangesetId(mHistoryListView);
         }
 
         SelectedHistoryGroupInfo IHistoryViewMenuOperations.GetSelectedHistoryGroupInfo()
@@ -214,7 +213,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
         void IHistoryViewMenuOperations.SaveRevisionAs()
         {
             TrackFeatureUseEvent.For(
-                PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                mRepSpec,
                 TrackFeatureUseEvent.Features.SaveRevisionFromFileHistory);
 
             HistoryRevision revision = HistorySelection.
@@ -276,14 +275,13 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         void IHistoryViewMenuOperations.DiffChangeset()
         {
-            HistoryRevision revision = HistorySelection.
-                GetSelectedHistoryRevision(mHistoryListView);
+            long changeset = HistorySelection.GetSelectedChangesetId(mHistoryListView);
 
             LaunchDiffOperations.DiffChangeset(
                 mShowDownloadPlasticExeWindow,
                 mProcessExecutor,
                 mRepSpec,
-                revision.ChangeSet,
+                changeset,
                 mIsGluonMode);
         }
 
@@ -379,9 +377,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 Path.GetFileName(path));
         }
 
-        void BuildComponents(
-            WorkspaceInfo wkInfo,
-            RepositorySpec repSpec)
+        void BuildComponents(WorkspaceInfo wkInfo)
         {
             mSearchField = new SearchField();
             mSearchField.downOrUpArrowKeyPressed += SearchField_OnDownOrUpArrowKeyPressed;
@@ -395,7 +391,6 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
             mHistoryListView = new HistoryListView(
                 wkInfo.ClientPath,
-                repSpec,
                 headerState,
                 new HistoryListViewMenu(this, this, this),
                 HistoryListHeaderState.GetColumnNames());
@@ -406,6 +401,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
         SearchField mSearchField;
         HistoryListView mHistoryListView;
 
+        RepositorySpec mRepSpec;
         long mItemId;
         string mPath;
         bool mIsDirectory;
@@ -417,7 +413,6 @@ namespace Unity.PlasticSCM.Editor.Views.History
         readonly HistoryViewLogic mHistoryViewLogic;
         readonly ProgressControlsForViews mProgressControls;
         readonly IWorkspaceWindow mWorkspaceWindow;
-        readonly RepositorySpec mRepSpec;
         readonly bool mIsGluonMode;
         readonly EditorWindow mParentWindow;
         readonly ViewHost mViewHost;

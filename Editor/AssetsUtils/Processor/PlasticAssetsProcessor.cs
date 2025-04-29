@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using Codice.LogWrapper;
@@ -8,7 +8,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
     internal class PlasticAssetsProcessor : WorkspaceOperationsMonitor.IDisableAssetsProcessor
     {
         internal void SetWorkspaceOperationsMonitor(
-            WorkspaceOperationsMonitor workspaceOperationsMonitor)
+            IWorkspaceOperationsMonitor workspaceOperationsMonitor)
         {
             mWorkspaceOperationsMonitor = workspaceOperationsMonitor;
         }
@@ -100,7 +100,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
         }
 
         DateTime mLastExceptionDateTime = DateTime.MinValue;
-        WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
+        IWorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
 
         static readonly ILog mLog = PlasticApp.GetLogger("PlasticAssetsProcessor");
     }
