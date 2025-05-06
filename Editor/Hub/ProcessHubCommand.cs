@@ -33,7 +33,14 @@ namespace Unity.PlasticSCM.Editor.Hub
 
         static void Execute(string unityAccessToken)
         {
-            if (SessionState.GetBool(IS_PROCESS_COMMAND_ALREADY_EXECUTED_KEY, false))
+            // When the Hub creates a workspace from an Editor with an older Version Control < 2.7.1,
+            // the Editor updates the package to its latest version after the workspace creation.
+            // Because the name of the key was changed in 2.7.1, there is a mismatch between
+            // the first execution with the old package and the second execution with the new one.
+            // This produces a console error that the path is already contained in a workspace.
+            // To prevent that, we have to check with both keys.
+            if (SessionState.GetBool(IS_PROCESS_COMMAND_ALREADY_EXECUTED_KEY, false) ||
+                SessionState.GetBool(IS_PROCESS_COMMAND_ALREADY_EXECUTED_OLD_KEY, false))
             {
                 return;
             }
@@ -83,6 +90,9 @@ namespace Unity.PlasticSCM.Editor.Hub
                     return;
             }
         }
+
+        const string IS_PROCESS_COMMAND_ALREADY_EXECUTED_OLD_KEY =
+            "PlasticSCM.ProcessCommand.IsAlreadyExecuted";
 
         static readonly ILog mLog = PlasticApp.GetLogger("ProcessHubCommand");
     }

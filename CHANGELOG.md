@@ -2,6 +2,10 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.8.2] - 2025-05-06
+
+- Fixed false positive error showing in console if creating a workspace from the Hub with a version of the Unity Editor shipping with a default Version Control package older than version 2.7.1.
+
 ## [2.8.1] - 2025-04-29
 
 ### Added
