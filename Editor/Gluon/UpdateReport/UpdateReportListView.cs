@@ -10,6 +10,9 @@ using Codice.CM.Common;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Tree;
+#if UNITY_6000_2_OR_NEWER
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Gluon.UpdateReport
 {

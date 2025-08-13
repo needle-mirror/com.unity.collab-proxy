@@ -25,7 +25,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             IPlasticAPI plasticApi,
             IProgressControls progressControls,
             CreateWorkspaceView.ICreateWorkspaceListener createWorkspaceListener,
-            PlasticWindow plasticWindow)
+            UVCSWindow uvcsWindow)
         {
             RepositoryInfo repInfo = null;
             bool isEmptyRepository = false;
@@ -56,7 +56,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
 
                 if (!isEmptyRepository)
                 {
-                    plasticWindow.RefreshWorkspaceUI();
+                    uvcsWindow.RefreshWorkspaceUI();
                     return;
                 }
 
@@ -111,12 +111,13 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             string comment = PlasticLocalization.GetString(
                 PlasticLocalization.Name.UnityInitialCheckinComment);
 
-            PerformAdd(paths, plasticApi);
+            PerformAdd(wkInfo, paths, plasticApi);
 
             PerformCheckinForMode(wkInfo, paths, comment, isGluonWorkspace);
         }
 
         static void PerformAdd(
+            WorkspaceInfo wkInfo,
             List<string> paths,
             IPlasticAPI plasticApi)
         {
@@ -128,7 +129,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             options.SkipIgnored = true;
 
             IList checkouts;
-            plasticApi.Add(paths.ToArray(), options, out checkouts);
+            plasticApi.Add(wkInfo, paths.ToArray(), options, out checkouts);
         }
 
         static void PerformCheckinForMode(
@@ -149,7 +150,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             ciParams.time = DateTime.MinValue;
             ciParams.flags = CheckinFlags.Recurse | CheckinFlags.ProcessSymlinks;
 
-            new BaseCommandsImpl().CheckIn(ciParams);
+            new BaseCommandsImpl().CheckIn(wkInfo, ciParams);
         }
 
         static bool IsMergeNeededException(Exception exception)

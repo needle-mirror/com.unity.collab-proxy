@@ -1,5 +1,20 @@
+== AccessTokensAdminAllowlistNotSupportedByServer ==
+The server {0} doesn't support administering the allowlist from the client. Please upgrade the server or configure the allowlist through server.conf.
+
+== AccessTokensAdminListallNotSupportedByServer ==
+The server {0} doesn't support listing access tokens for all users from the client. Please upgrade the server.
+
+== AccessTokensAllowedForAllUsers ==
+Access tokens are available for all users. To add specific users and groups to the allowlist, please first remove from it the special user 'all'.
+
+== AccessTokenLifetimeExceedsMaximum ==
+The requested lifespan of '{0}' exceeds the maximum allowed of '{1}'.
+
 == AccessTokensNotEnabled ==
 Access tokens are not enabled on this server. If you believe this to be an error, please contact your server administrator.
+
+== AccessTokensSeidNotPresentInAllowlist ==
+The user or group is not present in the allowlist. If you believe the user or group is incorrectly gaining access to the feature, this may be due to group membership. Please review the users and groups included in the allowlist carefully.
 
 == AclNotFound ==
 You are working with out-of-date objects. Maybe your client or workspace is out of date, please update it.
@@ -168,8 +183,8 @@ A copied directory with content can't be undone
 == CannotUndoMoved ==
 The move from {0} to {1} can't be undone because {2} has been removed
 
-== CannotWriteToProjectReposInUnityOrg ==
-Project repositories are only catalogs of VCS repositories, and cannot storage data. Please use a VCS repository to store your data.
+== CannotUseProjectRepos ==
+Project repositories are only catalogs of VCS repositories, and cannot store data. Please use a VCS repository to store your data.
 
 == CantCheckSecurityRevisions ==
 Can't check security for revisions

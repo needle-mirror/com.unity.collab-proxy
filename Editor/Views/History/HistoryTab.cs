@@ -16,13 +16,14 @@ using PlasticGui.WorkspaceWindow.Diff;
 using PlasticGui.WorkspaceWindow.History;
 using PlasticGui.WorkspaceWindow.Open;
 using PlasticGui.WorkspaceWindow.Configuration;
+using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
-using Unity.PlasticSCM.Editor.Views.Changesets;
 
+using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
 using GluonRevertOperation = GluonGui.WorkspaceWindow.Views.Details.History.RevertOperation;
 using HistoryDescriptor = GluonGui.WorkspaceWindow.Views.Details.History.HistoryDescriptor;
 using OpenRevisionOperation = PlasticGui.WorkspaceWindow.History.OpenRevisionOperation;
@@ -40,20 +41,26 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         internal HistoryTab(
             WorkspaceInfo wkInfo,
+            ViewHost viewHost,
             IWorkspaceWindow workspaceWindow,
+            IAssetStatusCache assetStatusCache,
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             LaunchTool.IProcessExecutor processExecutor,
-            NewIncomingChangesUpdater newIncomingChangesUpdater,
-            ViewHost viewHost,
+            IPendingChangesUpdater pendingChangesUpdater,
+            IncomingChangesUpdater developerIncomingChangesUpdater,
+            GluonIncomingChangesUpdater gluonIncomingChangesUpdater,
             EditorWindow parentWindow,
             bool isGluonMode)
         {
             mWkInfo = wkInfo;
+            mViewHost = viewHost;
             mWorkspaceWindow = workspaceWindow;
+            mAssetStatusCache = assetStatusCache;
             mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
             mProcessExecutor = processExecutor;
-            mNewIncomingChangesUpdater = newIncomingChangesUpdater;
-            mViewHost = viewHost;
+            mPendingChangesUpdater = pendingChangesUpdater;
+            mDeveloperIncomingChangesUpdater = developerIncomingChangesUpdater;
+            mGluonIncomingChangesUpdater = gluonIncomingChangesUpdater;
             mParentWindow = parentWindow;
             mIsGluonMode = isGluonMode;
 
@@ -303,7 +310,9 @@ namespace Unity.PlasticSCM.Editor.Views.History
                     mProgressControls,
                     historyDescriptor,
                     revision,
-                    RefreshAsset.UnityAssetDatabase);
+                    mPendingChangesUpdater,
+                    mGluonIncomingChangesUpdater,
+                    () => RefreshAsset.UnityAssetDatabase(mAssetStatusCache));
                 return;
             }
 
@@ -314,9 +323,10 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 mRepSpec,
                 revision,
                 fullPath,
-                mNewIncomingChangesUpdater,
+                mPendingChangesUpdater,
+                mDeveloperIncomingChangesUpdater,
                 null,
-                RefreshAsset.UnityAssetDatabase);
+                () => RefreshAsset.UnityAssetDatabase(mAssetStatusCache));
         }
 
         void SearchField_OnDownOrUpArrowKeyPressed()
@@ -345,7 +355,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
             if (progressControls.IsOperationRunning())
             {
-                DrawProgressForViews.ForIndeterminateProgress(
+                DrawProgressForViews.ForIndeterminateProgressBar(
                     progressControls.ProgressData);
             }
 
@@ -365,6 +375,19 @@ namespace Unity.PlasticSCM.Editor.Views.History
             historyListView.OnGUI(rect);
 
             GUI.enabled = true;
+        }
+
+        void OnRowDoubleClickAction()
+        {
+            if (mHistoryListView.GetSelection().Count != 1)
+                return;
+
+            HistoryRevision selectedRevision = HistorySelection.GetSelectedHistoryRevision(mHistoryListView);
+
+            if (selectedRevision == null)
+                return;
+
+            ((IOpenMenuOperations)this).Open();
         }
 
         static string GetViewTitle(string path)
@@ -393,29 +416,33 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 wkInfo.ClientPath,
                 headerState,
                 new HistoryListViewMenu(this, this, this),
-                HistoryListHeaderState.GetColumnNames());
+                HistoryListHeaderState.GetColumnNames(),
+                OnRowDoubleClickAction);
 
             mHistoryListView.Reload();
         }
 
-        SearchField mSearchField;
-        HistoryListView mHistoryListView;
-
-        RepositorySpec mRepSpec;
+        bool mIsDirectory;
         long mItemId;
         string mPath;
-        bool mIsDirectory;
+        RepositorySpec mRepSpec;
+
+        SearchField mSearchField;
+        HistoryListView mHistoryListView;
 
         LaunchTool.IProcessExecutor mProcessExecutor;
         LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
 
-        readonly WorkspaceInfo mWkInfo;
         readonly HistoryViewLogic mHistoryViewLogic;
         readonly ProgressControlsForViews mProgressControls;
-        readonly IWorkspaceWindow mWorkspaceWindow;
         readonly bool mIsGluonMode;
         readonly EditorWindow mParentWindow;
+        readonly IPendingChangesUpdater mPendingChangesUpdater;
+        readonly IncomingChangesUpdater mDeveloperIncomingChangesUpdater;
+        readonly GluonIncomingChangesUpdater mGluonIncomingChangesUpdater;
+        readonly IAssetStatusCache mAssetStatusCache;
+        readonly IWorkspaceWindow mWorkspaceWindow;
         readonly ViewHost mViewHost;
-        readonly NewIncomingChangesUpdater mNewIncomingChangesUpdater;
+        readonly WorkspaceInfo mWkInfo;
     }
 }

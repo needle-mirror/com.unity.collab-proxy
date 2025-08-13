@@ -29,7 +29,7 @@ namespace Unity.PlasticSCM.Editor.Views
                 new MultiLinkLabelData(
                     PlasticLocalization.Name.DontAskMeAgainWithAction.GetString(),
                     PlasticLocalization.Name.OtherOptions.GetString(),
-                    OpenPlasticProjectSettings.InOtherFoldout
+                    OpenUVCSProjectSettings.InOtherFoldout
                 );
 
             bool dontAskMeAgain;

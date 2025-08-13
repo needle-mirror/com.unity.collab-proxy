@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,22 +27,23 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
         }
 
         internal CreateWorkspaceView(
-            PlasticWindow parentWindow,
+            UVCSWindow parentWindow,
             ICreateWorkspaceListener listener,
-            IPlasticAPI plasticApi,
             IPlasticWebRestApi plasticWebRestApi,
+            IPlasticAPI plasticApi,
             string workspacePath)
         {
             mParentWindow = parentWindow;
             mCreateWorkspaceListener = listener;
             mWorkspacePath = workspacePath;
             mPlasticWebRestApi = plasticWebRestApi;
+            mPlasticApi = plasticApi;
 
             mProgressControls = new ProgressControlsForViews();
             mWorkspaceOperations = new WorkspaceOperations(this, mProgressControls, null);
             mCreateWorkspaceState = CreateWorkspaceViewState.BuildForProjectDefaults();
 
-            Initialize(plasticApi, plasticWebRestApi);
+            Initialize(plasticWebRestApi, plasticApi);
         }
 
         internal void Update()
@@ -66,6 +67,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                 ValidateAndCreateWorkspace,
                 mParentWindow,
                 mPlasticWebRestApi,
+                mPlasticApi,
                 mDefaultServer,
                 ref mCreateWorkspaceState);
 
@@ -75,7 +77,9 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             SynchronizeRepositoryAndWorkspace();
         }
 
-        void Initialize(IPlasticAPI plasticApi, IPlasticWebRestApi plasticWebRestApi)
+        void Initialize(
+            IPlasticWebRestApi plasticWebRestApi,
+            IPlasticAPI plasticApi)
         {
             ((IProgressControls) mProgressControls).ShowProgress(string.Empty);
 
@@ -96,7 +100,8 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
 
                     if (OrganizationsInformation.IsUnityOrganization(mDefaultServer))
                     {
-                        List<string> serverProjects = OrganizationsInformation.GetOrganizationProjects(mDefaultServer);
+                        List<string> serverProjects = GetProjectNames.
+                            FromOrganization(plasticApi, mDefaultServer);
 
                         if (serverProjects.Count == 0)
                         {
@@ -128,7 +133,8 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
 
                     if (repositoryProject != null)
                     {
-                        mCreateWorkspaceState.Repository = string.Format("{0}/{1}", repositoryProject, mCreateWorkspaceState.Repository);
+                        mCreateWorkspaceState.Repository = CloudProjectRepository.BuildFullyQualifiedName(
+                            repositoryProject, mCreateWorkspaceState.Repository);
                     }
 
                     string proposedWorkspaceName = mCreateWorkspaceState.Repository.Replace(serverSpecPart, string.Empty);
@@ -337,7 +343,8 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
         readonly ProgressControlsForViews mProgressControls;
         readonly string mWorkspacePath;
         readonly ICreateWorkspaceListener mCreateWorkspaceListener;
-        readonly PlasticWindow mParentWindow;
+        readonly UVCSWindow mParentWindow;
+        readonly IPlasticAPI mPlasticApi;
         readonly IPlasticWebRestApi mPlasticWebRestApi;
     }
 }

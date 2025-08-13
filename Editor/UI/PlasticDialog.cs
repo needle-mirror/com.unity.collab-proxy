@@ -90,77 +90,57 @@ namespace Unity.PlasticSCM.Editor.UI
 
         protected void OnGUI()
         {
-            try
+            // If the Dialog has been saved into the Unity editor layout and persisted between restarts, the methods
+            // to configure the dialogs will be skipped. Simple fix here is to close it when this state is detected.
+            // Fixes a NPE loop when the state mentioned above is occurring.
+            if (!mIsConfigured)
             {
-                // If the Dialog has been saved into the Unity editor layout and persisted between restarts, the methods
-                // to configure the dialogs will be skipped. Simple fix here is to close it when this state is detected.
-                // Fixes a NPE loop when the state mentioned above is occurring.
-                if (!mIsConfigured)
-                {
-                    mIsClosed = true;
-                    Close();
-                    return;
-                }
-
-                if (!mFocusedOnce)
-                {
-                    // Somehow the prevents the dialog from jumping when dragged
-                    // NOTE(rafa): We cannot do every frame because the modal kidnaps focus for all processes (in mac at least)
-                    Focus();
-                    mFocusedOnce = true;
-                }
-
-                ProcessKeyActions();
-
-                if (mIsClosed)
-                    return;
-
-                GUI.Box(new Rect(0, 0, position.width, position.height), GUIContent.none, EditorStyles.label);
-
-                float margin = 25;
-                float marginTop = 25;
-                using (new EditorGUILayout.HorizontalScope(GUILayout.Height(position.height)))
-                {
-                    GUILayout.Space(margin);
-                    using (new EditorGUILayout.VerticalScope(GUILayout.Height(position.height)))
-                    {
-                        GUILayout.Space(marginTop);
-                        OnModalGUI();
-                        GUILayout.Space(margin);
-                    }
-                    GUILayout.Space(margin);
-                }
-
-                if (!IsResizable && mSizeToContent == SizeToContent.Automatic)
-                {
-                    var lastRect = GUILayoutUtility.GetLastRect();
-                    float desiredHeight = lastRect.yMax;
-
-                    if (position.height < desiredHeight)
-                    {
-                        Rect newPos = position;
-                        newPos.height = desiredHeight;
-
-                        position = newPos;
-                    }
-
-                    maxSize = position.size;
-                    minSize = maxSize;
-                }
-
-                if (Event.current.type == EventType.Repaint)
-                {
-                    if (mIsCompleted)
-                    {
-                        mIsClosed = true;
-                        Close();
-                    }
-                }
+                Close();
+                EditorGUIUtility.ExitGUI();
+                return;
             }
-            finally
+
+            if (!mFocusedOnce)
             {
-                if (mIsClosed)
-                    EditorGUIUtility.ExitGUI();
+                // Somehow the prevents the dialog from jumping when dragged
+                // NOTE(rafa): We cannot do every frame because the modal kidnaps focus for all processes (in mac at least)
+                Focus();
+                mFocusedOnce = true;
+            }
+
+            ProcessKeyActions();
+
+            GUI.Box(new Rect(0, 0, position.width, position.height), GUIContent.none, EditorStyles.label);
+
+            float margin = 25;
+            float marginTop = 25;
+            using (new EditorGUILayout.HorizontalScope(GUILayout.Height(position.height)))
+            {
+                GUILayout.Space(margin);
+                using (new EditorGUILayout.VerticalScope(GUILayout.Height(position.height)))
+                {
+                    GUILayout.Space(marginTop);
+                    OnModalGUI();
+                    GUILayout.Space(margin);
+                }
+                GUILayout.Space(margin);
+            }
+
+            if (!IsResizable && mSizeToContent == SizeToContent.Automatic)
+            {
+                var lastRect = GUILayoutUtility.GetLastRect();
+                float desiredHeight = lastRect.yMax;
+
+                if (position.height < desiredHeight)
+                {
+                    Rect newPos = position;
+                    newPos.height = desiredHeight;
+
+                    position = newPos;
+                }
+
+                maxSize = position.size;
+                minSize = maxSize;
             }
         }
 
@@ -178,7 +158,9 @@ namespace Unity.PlasticSCM.Editor.UI
         }
 
         protected virtual void SaveSettings() { }
+
         protected abstract void OnModalGUI();
+
         protected abstract string GetTitle();
 
         protected void Paragraph(string text)
@@ -202,127 +184,17 @@ namespace Unity.PlasticSCM.Editor.UI
 
         protected static void Title(string text)
         {
-            GUILayout.Label(text, UnityStyles.Dialog.Toggle);
+            GUILayout.Label(text, UnityStyles.Dialog.Title);
         }
 
         protected static bool TitleToggle(string text, bool isOn)
         {
-            return EditorGUILayout.ToggleLeft(text, isOn, UnityStyles.Dialog.Toggle);
+            return EditorGUILayout.ToggleLeft(text, isOn, UnityStyles.Dialog.Title);
         }
 
         protected static bool TitleToggle(string text, bool isOn, GUIStyle style)
         {
             return EditorGUILayout.ToggleLeft(text, isOn, style);
-        }
-
-        protected static string TextEntry(
-            string label,
-            string value,
-            float width,
-            float x)
-        {
-            return TextEntry(
-                label,
-                value,
-                null,
-                width,
-                x);
-        }
-
-        protected static string TextEntry(
-            string label, string value, string controlName, float width, float x)
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                EntryLabel(label);
-
-                GUILayout.FlexibleSpace();
-
-                var rt = GUILayoutUtility.GetRect(
-                    new GUIContent(value), UnityStyles.Dialog.EntryLabel);
-                rt.width = width;
-                rt.x = x;
-
-                if (!string.IsNullOrEmpty(controlName))
-                    GUI.SetNextControlName(controlName);
-
-                return GUI.TextField(rt, value);
-            }
-        }
-
-        protected static string ComboBox(
-            string label,
-            string value,
-            List<string> dropDownOptions,
-            GenericMenu.MenuFunction2 optionSelected,
-            float width,
-            float x)
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                EntryLabel(label);
-
-                GUILayout.FlexibleSpace();
-
-                var rt = GUILayoutUtility.GetRect(
-                    new GUIContent(value), UnityStyles.Dialog.EntryLabel);
-                rt.width = width;
-                rt.x = x;
-
-                return DropDownTextField.DoDropDownTextField(
-                    value,
-                    label,
-                    dropDownOptions,
-                    optionSelected,
-                    rt);
-            }
-        }
-
-        protected static string PasswordEntry(
-            string label, string value, float width, float x)
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                EntryLabel(label);
-
-                GUILayout.FlexibleSpace();
-
-                var rt = GUILayoutUtility.GetRect(
-                    new GUIContent(value), UnityStyles.Dialog.EntryLabel);
-                rt.width = width;
-                rt.x = x;
-
-                return GUI.PasswordField(rt, value, '*');
-            }
-        }
-
-        static void EntryLabel(string labelText)
-        {
-            GUIContent labelContent = new GUIContent(labelText);
-            GUIStyle labelStyle = UnityStyles.Dialog.EntryLabel;
-
-            Rect rt = GUILayoutUtility.GetRect(labelContent, labelStyle);
-
-            GUI.Label(rt, labelText, EditorStyles.label);
-        }
-
-        protected static bool ToggleEntry(
-            string label, bool value, float width, float x)
-        {
-            var rt = GUILayoutUtility.GetRect(
-                new GUIContent(label), UnityStyles.Dialog.EntryLabel);
-            rt.width = width;
-            rt.x = x;
-
-            return GUI.Toggle(rt, value, label);
-        }
-
-        protected static bool ToggleEntry(string label, bool value)
-        {
-            var rt = GUILayoutUtility.GetRect(
-                new GUIContent(label), UnityStyles.Dialog.EntryLabel);
-
-            return GUI.Toggle(rt, value, label);
         }
 
         protected static bool NormalButton(string text)
@@ -368,7 +240,7 @@ namespace Unity.PlasticSCM.Editor.UI
                 Keyboard.IsReturnOrEnterKeyPressed(e) &&
                 !ControlConsumesKey(mControlsConsumingEnterKey, focusedControlName))
             {
-                mEnterKeyAction.Invoke();
+                mEnterKeyAction();
                 e.Use();
                 return;
             }
@@ -376,7 +248,7 @@ namespace Unity.PlasticSCM.Editor.UI
             if (mEscapeKeyAction != null &&
                 Keyboard.IsKeyPressed(e, KeyCode.Escape))
             {
-                mEscapeKeyAction.Invoke();
+                mEscapeKeyAction();
                 e.Use();
                 return;
             }
@@ -384,18 +256,19 @@ namespace Unity.PlasticSCM.Editor.UI
 
         void CompleteModal(ResponseType answer)
         {
-            mIsCompleted = true;
             mAnswer = answer;
 
+            if (mParentWindow == null)
+                return;
+
+            Close();
             Repaint();
         }
 
         void InitializeVars(EditorWindow parentWindow)
         {
             mIsConfigured = true;
-            mIsCompleted = false;
-            mIsClosed = false;
-            mAnswer = ResponseType.Cancel;
+            mAnswer = ResponseType.None;
 
             titleContent = new GUIContent(GetTitle());
 
@@ -436,8 +309,6 @@ namespace Unity.PlasticSCM.Editor.UI
 
         bool mFocusedOnce;
         bool mIsConfigured;
-        bool mIsCompleted;
-        bool mIsClosed;
         ResponseType mAnswer;
 
         protected Action mEnterKeyAction = null;

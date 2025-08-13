@@ -30,7 +30,9 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         internal bool ManualAncestorRadioToggleIsChecked { get { return mManualAncestorRadioToggle; } }
         internal string AncestorTextField { set { mAncestorTextField = value; } }
 
-        internal static bool MergeOptions(MergeDialogParameters mergeDialogParameters)
+        internal static bool MergeOptions(
+            EditorWindow parentWindow,
+            MergeDialogParameters mergeDialogParameters)
         {
             MergeOptionsDialog dialog = Create(
                 mergeDialogParameters,
@@ -38,7 +40,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
 
             dialog.SetMergeOptions();
 
-            return dialog.RunModal(focusedWindow) == ResponseType.Ok;
+            return dialog.RunModal(parentWindow) == ResponseType.Ok;
         }
 
         internal static MergeOptionsDialog MergeOptionsForTesting(MergeDialogParameters mergeDialogParameters)

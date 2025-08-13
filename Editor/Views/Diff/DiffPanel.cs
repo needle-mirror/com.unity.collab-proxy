@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -16,6 +15,7 @@ using PlasticGui;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.BrowseRepository;
 using PlasticGui.WorkspaceWindow.Diff;
+using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
@@ -31,25 +31,37 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         DiffTreeViewMenu.IMetaMenuOperations,
         UndeleteClientDiffsOperation.IGetRestorePathDialog
     {
+        internal DiffTreeView Table { get { return mDiffTreeView; } }
         internal DiffPanel(
             WorkspaceInfo wkInfo,
             IWorkspaceWindow workspaceWindow,
-            IRefreshView refreshView,
             IViewSwitcher viewSwitcher,
             IHistoryViewLauncher historyViewLauncher,
+            IRefreshView refreshView,
+            IAssetStatusCache assetStatusCache,
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            IPendingChangesUpdater pendingChangesUpdater,
+            IIncomingChangesUpdater developerIncomingChangesUpdater,
+            IIncomingChangesUpdater gluonIncomingChangesUpdater,
             EditorWindow parentWindow,
             bool isGluonMode)
         {
             mWkInfo = wkInfo;
             mWorkspaceWindow = workspaceWindow;
-            mRefreshView = refreshView;
             mViewSwitcher = viewSwitcher;
             mHistoryViewLauncher = historyViewLauncher;
+            mRefreshView = refreshView;
+            mAssetStatusCache = assetStatusCache;
             mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
+            mPendingChangesUpdater = pendingChangesUpdater;
+            mDeveloperIncomingChangesUpdater = developerIncomingChangesUpdater;
+            mGluonIncomingChangesUpdater = gluonIncomingChangesUpdater;
             mParentWindow = parentWindow;
-            mGuiMessage = new UnityPlasticGuiMessage();
             mIsGluonMode = isGluonMode;
+
+            mGuiMessage = new UnityPlasticGuiMessage();
+
+            mEmptyStatePanel = new EmptyStatePanel(parentWindow.Repaint);
 
             BuildComponents();
 
@@ -65,9 +77,9 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         internal void UpdateInfo(
             MountPointWithPath mountWithPath,
-            ChangesetInfo csetInfo)
+            RepObjectInfo repObjectInfo)
         {
-            FillData(mountWithPath, csetInfo);
+            FillData(mountWithPath, repObjectInfo);
 
             mParentWindow.Repaint();
         }
@@ -104,9 +116,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             DoDiffTreeViewArea(
                 mDiffTreeView,
-                mEmptyStateData,
-                mProgressControls.IsOperationRunning(),
-                mParentWindow.Repaint);
+                mEmptyStatePanel,
+                mProgressControls.IsOperationRunning());
 
             if (mProgressControls.HasNotification())
             {
@@ -185,6 +196,10 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                 mWorkspaceWindow,
                 mProgressControls,
                 mGuiMessage,
+                mPendingChangesUpdater,
+                mIsGluonMode ?
+                    mGluonIncomingChangesUpdater :
+                    mDeveloperIncomingChangesUpdater,
                 AfterRevertOrUndeleteOperation);
         }
 
@@ -197,6 +212,10 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                 mProgressControls,
                 this,
                 mGuiMessage,
+                mPendingChangesUpdater,
+                mIsGluonMode ?
+                    mGluonIncomingChangesUpdater :
+                    mDeveloperIncomingChangesUpdater,
                 AfterRevertOrUndeleteOperation);
         }
 
@@ -209,6 +228,10 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                 mProgressControls,
                 this,
                 mGuiMessage,
+                mPendingChangesUpdater,
+                mIsGluonMode ?
+                    mGluonIncomingChangesUpdater :
+                    mDeveloperIncomingChangesUpdater,
                 AfterRevertOrUndeleteOperation);
         }
 
@@ -277,7 +300,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void AfterRevertOrUndeleteOperation()
         {
-            RefreshAsset.UnityAssetDatabase();
+            RefreshAsset.UnityAssetDatabase(mAssetStatusCache);
 
             mViewSwitcher.ShowPendingChanges();
         }
@@ -285,7 +308,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         void ClearData()
         {
             mSelectedMountWithPath = null;
-            mSelectedChangesetInfo = null;
+            mSelectedRepObjectInfo = null;
 
             mDiffs = null;
 
@@ -294,10 +317,10 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void FillData(
             MountPointWithPath mountWithPath,
-            ChangesetInfo csetInfo)
+            RepObjectInfo repObjectInfo)
         {
             mSelectedMountWithPath = mountWithPath;
-            mSelectedChangesetInfo = csetInfo;
+            mSelectedRepObjectInfo = repObjectInfo;
 
             ((IProgressControls)mProgressControls).ShowProgress(
                 PlasticLocalization.GetString(PlasticLocalization.Name.Loading));
@@ -306,19 +329,30 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             IThreadWaiter waiter = ThreadWaiter.GetWaiter(100);
             waiter.Execute(
-                /*threadOperationDelegate*/ delegate
+                threadOperationDelegate: delegate
                 {
-                    mDiffs = PlasticGui.Plastic.API.GetChangesetDifferences(
-                        mountWithPath, csetInfo);
+                    if (repObjectInfo is BranchInfo)
+                    {
+                        mDiffs = PlasticGui.Plastic.API.GetBranchDifferencesForMountPoint(
+                            mountWithPath,
+                            (BranchInfo)repObjectInfo);
+                    }
+
+                    if (repObjectInfo is ChangesetInfo)
+                    {
+                        mDiffs = PlasticGui.Plastic.API.GetChangesetDifferences(
+                            mountWithPath,
+                            (ChangesetInfo)repObjectInfo);
+                    }
 
                     mDiffsBranchResolver = BuildBranchResolver.ForDiffs(mDiffs);
                 },
-                /*afterOperationDelegate*/ delegate
+                afterOperationDelegate: delegate
                 {
                     ((IProgressControls)mProgressControls).HideProgress();
 
                     if (mSelectedMountWithPath != mountWithPath ||
-                        mSelectedChangesetInfo != csetInfo)
+                        mSelectedRepObjectInfo != repObjectInfo)
                         return;
 
                     if (waiter.Exception != null)
@@ -398,7 +432,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             if (progressControls.IsOperationRunning())
             {
-                DrawProgressForViews.ForIndeterminateProgress(
+                DrawProgressForViews.ForIndeterminateProgressBar(
                     progressControls.ProgressData);
             }
 
@@ -458,11 +492,32 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             mIsSkipMergeTrackingButtonChecked = isChecked;
         }
 
+        void OnRowDoubleClickAction()
+        {
+            if (mDiffTreeView.GetSelection().Count != 1)
+                return;
+
+            if (DiffSelection.IsApplicableDiffClientDiff(mDiffTreeView))
+            {
+                ((IDiffTreeViewMenuOperations)this).Diff();
+                return;
+            }
+
+            int selectedNode = mDiffTreeView.GetSelection()[0];
+
+            if (mDiffTreeView.IsExpanded(selectedNode))
+            {
+                mDiffTreeView.SetExpanded(selectedNode, expanded: false);
+                return;
+            }
+
+            mDiffTreeView.SetExpanded(selectedNode, expanded: true);
+        }
+
         static void DoDiffTreeViewArea(
             DiffTreeView diffTreeView,
-            EmptyStateData emptyStateData,
-            bool isOperationRunning,
-            Action repaint)
+            EmptyStatePanel emptyStatePanel,
+            bool isOperationRunning)
         {
             GUI.enabled = !isOperationRunning;
 
@@ -470,12 +525,10 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             diffTreeView.OnGUI(rect);
 
-            emptyStateData.Update(
-                GetEmptyStateMessage(diffTreeView),
-                rect, Event.current.type, repaint);
+            emptyStatePanel.UpdateContent(GetEmptyStateMessage(diffTreeView));
 
-            if (!emptyStateData.IsEmpty())
-                DrawTreeViewEmptyState.For(emptyStateData);
+            if (!emptyStatePanel.IsEmpty())
+                emptyStatePanel.OnGUI(rect);
 
             GUI.enabled = true;
         }
@@ -495,14 +548,16 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             mSearchField = new SearchField();
             mSearchField.downOrUpArrowKeyPressed += SearchField_OnDownOrUpArrowKeyPressed;
 
-            mDiffTreeView = new DiffTreeView(new DiffTreeViewMenu(this, this));
+            DiffTreeViewMenu diffTreeViewMenu = new DiffTreeViewMenu(this, this);
+            mDiffTreeView = new DiffTreeView(diffTreeViewMenu, OnRowDoubleClickAction);
+
             mDiffTreeView.Reload();
         }
 
         bool mIsSkipMergeTrackingButtonVisible;
         bool mIsSkipMergeTrackingButtonChecked;
 
-        ChangesetInfo mSelectedChangesetInfo;
+        RepObjectInfo mSelectedRepObjectInfo;
         MountPointWithPath mSelectedMountWithPath;
 
         volatile List<ClientDiff> mDiffs;
@@ -511,16 +566,20 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         SearchField mSearchField;
         DiffTreeView mDiffTreeView;
 
-        readonly EmptyStateData mEmptyStateData = new EmptyStateData();
+        readonly IPendingChangesUpdater mPendingChangesUpdater;
+        readonly IIncomingChangesUpdater mDeveloperIncomingChangesUpdater;
+        readonly IIncomingChangesUpdater mGluonIncomingChangesUpdater;
         readonly ProgressControlsForViews mProgressControls;
+        readonly EmptyStatePanel mEmptyStatePanel;
         readonly GuiMessage.IGuiMessage mGuiMessage;
+        readonly bool mIsGluonMode;
         readonly EditorWindow mParentWindow;
         readonly IRefreshView mRefreshView;
-        readonly IWorkspaceWindow mWorkspaceWindow;
+        readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
+        readonly IAssetStatusCache mAssetStatusCache;
         readonly IHistoryViewLauncher mHistoryViewLauncher;
         readonly IViewSwitcher mViewSwitcher;
-        readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
+        readonly IWorkspaceWindow mWorkspaceWindow;
         readonly WorkspaceInfo mWkInfo;
-        readonly bool mIsGluonMode;
     }
 }

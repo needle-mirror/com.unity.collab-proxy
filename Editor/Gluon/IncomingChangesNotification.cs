@@ -1,110 +1,75 @@
 using UnityEngine;
+
 using Codice.CM.Common;
-using PlasticGui.Gluon.WorkspaceWindow;
 using PlasticGui.Gluon;
-using Unity.PlasticSCM.Editor.UI.StatusBar;
+using PlasticGui.Gluon.WorkspaceWindow;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.StatusBar;
 
 namespace Unity.PlasticSCM.Editor.Gluon
 {
     internal class IncomingChangesNotification :
-        StatusBar.IIncomingChangesNotification,
-        CheckIncomingChanges.IUpdateIncomingChanges
+        WindowStatusBar.IIncomingChangesNotification
     {
         internal IncomingChangesNotification(
             WorkspaceInfo wkInfo,
-            IGluonViewSwitcher gluonViewSwitcher,
-            PlasticWindow plasticWindow)
+            IGluonViewSwitcher gluonViewSwitcher)
         {
             mWkInfo = wkInfo;
             mGluonViewSwitcher = gluonViewSwitcher;
-            mPlasticWindow = plasticWindow;
         }
 
-        bool StatusBar.IIncomingChangesNotification.HasNotification
+        bool WindowStatusBar.IIncomingChangesNotification.HasNotification
         {
             get { return mHasNotification; }
         }
 
-        void StatusBar.IIncomingChangesNotification.OnGUI()
+        void WindowStatusBar.IIncomingChangesNotification.OnGUI()
         {
-            Texture2D icon = mData.Status == PlasticNotification.Status.Conflicts ?
+            Texture2D icon = mData.Status == UVCSNotificationStatus.IncomingChangesStatus.Conflicts ?
                 Images.GetConflictedIcon() :
                 Images.GetOutOfSyncIcon();
 
-            StatusBar.DrawIcon(icon);
+            WindowStatusBar.DrawIcon(icon);
 
-            StatusBar.DrawNotification(new GUIContentNotification(
+            WindowStatusBar.DrawNotification(new GUIContentNotification(
                 new GUIContent(mData.InfoText)));
 
-            if (StatusBar.DrawButton(new GUIContent(mData.ActionText, mData.TooltipText)))
+            if (WindowStatusBar.DrawButton(new GUIContent(mData.ActionText, mData.TooltipText)))
             {
                 ShowIncomingChanges.FromNotificationBar(mWkInfo, mGluonViewSwitcher);
             }
         }
 
-        void CheckIncomingChanges.IUpdateIncomingChanges.Hide(WorkspaceInfo wkInfo)
-        {
-            if (!wkInfo.Equals(mWkInfo))
-                return;
-
-            PlasticPlugin.SetNotificationStatus(
-                mPlasticWindow,
-                PlasticNotification.Status.None);
-
-            mData.Clear();
-
-            mHasNotification = false;
-
-            mPlasticWindow.Repaint();
-        }
-
-        void CheckIncomingChanges.IUpdateIncomingChanges.Show(
-            WorkspaceInfo wkInfo,
+        void WindowStatusBar.IIncomingChangesNotification.Show(
             string infoText,
             string actionText,
             string tooltipText,
-            CheckIncomingChanges.Severity severity)
+            bool hasUpdateAction,
+            UVCSNotificationStatus.IncomingChangesStatus status)
         {
-            if (!wkInfo.Equals(mWkInfo))
-                return;
-
-            PlasticNotification.Status status = GetStatusFromSeverity(severity);
-
             mData.UpdateData(
                 infoText,
                 actionText,
                 tooltipText,
-                false,
+                hasUpdateAction,
                 status);
 
             mHasNotification = true;
-
-            PlasticPlugin.SetNotificationStatus(
-                mPlasticWindow,
-                status);
-
-            mPlasticWindow.Repaint();
         }
 
-        static PlasticNotification.Status GetStatusFromSeverity(
-            CheckIncomingChanges.Severity severity)
+        void WindowStatusBar.IIncomingChangesNotification.Hide()
         {
-            if (severity == CheckIncomingChanges.Severity.Info)
-                return PlasticNotification.Status.IncomingChanges;
+            mData.Clear();
 
-            if (severity == CheckIncomingChanges.Severity.Warning)
-                return PlasticNotification.Status.Conflicts;
-
-            return PlasticNotification.Status.None;
+            mHasNotification = false;
         }
 
         bool mHasNotification;
-        StatusBar.IncomingChangesNotificationData mData =
-            new StatusBar.IncomingChangesNotificationData();
+        WindowStatusBar.IncomingChangesNotificationData mData =
+            new WindowStatusBar.IncomingChangesNotificationData();
 
-        readonly WorkspaceInfo mWkInfo;
         readonly IGluonViewSwitcher mGluonViewSwitcher;
-        readonly PlasticWindow mPlasticWindow;
+        readonly WorkspaceInfo mWkInfo;
     }
 }

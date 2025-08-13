@@ -4,6 +4,10 @@ using Codice.CM.Common;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using UnityEditor.IMGUI.Controls;
 
+#if UNITY_6000_2_OR_NEWER
+using TreeView = UnityEditor.IMGUI.Controls.TreeView<int>;
+#endif
+
 namespace Unity.PlasticSCM.Editor.Views.Locks
 {
     internal sealed class LocksSelector

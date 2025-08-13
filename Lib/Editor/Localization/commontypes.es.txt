@@ -1,5 +1,20 @@
+== AccessTokensAdminAllowlistNotSupportedByServer ==
+El servidor {0} no soporta administrar la allowlist desde el cliente. Por favor, actualice el servidor o configure la allowlist a través de server.conf.
+
+== AccessTokensAdminListallNotSupportedByServer ==
+El servidor {0} no soporta listar los tókenes de acceso para todos los usuarios desde el cliente. Por favor, actualice el servidor.
+
+== AccessTokensAllowedForAllUsers ==
+Los tókenes de acceso están habilitados para todos los usuarios. Para añadir usuarios y grupos específicos a la allowlist, primero quite al usuario especial 'all'.
+
+== AccessTokenLifetimeExceedsMaximum ==
+El tiempo de vida pedido de '{0}' excede el máximo permitido de '{1}'.
+
 == AccessTokensNotEnabled ==
 Los tókenes de acceso no están habilitados en este servidor. Si cree que es un error, por favor, contacte con el administrador del servidor de repositorios.
+
+== AccessTokensSeidNotPresentInAllowlist ==
+El usuario o grupo no está presente en la allowlist. Si considera que el usuario o grupo está obteniendo acceso a la funcionalidad de forma incorrecta, podría deberse a su pertenencia a un grupo. Por favor, revise detenidamente los usuarios y grupos incluidos en la allowlist.
 
 == AclNotFound ==
 Está trabajando con objetos desactualizados. Puede que su cliente o su espacio de trabajo este desactualizado, por favor actualicelo.
@@ -168,7 +183,7 @@ No puede deshacerse el copiado de un directorio con contenido
 == CannotUndoMoved ==
 No puede deshacerse el movido desde {0} a {1} porque {2} ha sido borrado
 
-== CannotWriteToProjectReposInUnityOrg ==
+== CannotUseProjectRepos ==
 Los repositorios de tipo Proyecto son solamente catálogos de repositorios tipo VCS, y no pueden almacenar datos. Por favor, utiliza un repositorio tipo VCS para almacenar tus datos.
 
 == CantCheckSecurityRevisions ==
@@ -1638,7 +1653,7 @@ El espacio de trabajo {0} en {1} contiene el espacio de trabajo {2} del usuario 
 El espacio de trabajo {0} no existe.
 
 == WktreeCorrupt ==
-El fichero de metadatos del workspace ({0}) está corrupto. Por favor, actualize el workspace.
+El fichero de metadatos del workspace ({0}) está corrupto. Por favor, actualice el workspace.
 
 == WorkingModeDoesNotSupportUserPasswd ==
 El modo {0} no soporta configuración con usuario y password.

@@ -6,8 +6,8 @@ using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 using Codice.Client.Common.EventTracking;
-using Codice.Client.Common.Threading;
 using Codice.CM.Common;
+using Codice.CM.Common.Mount;
 using GluonGui;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
@@ -17,14 +17,15 @@ using PlasticGui.WorkspaceWindow.QueryViews.Branches;
 using PlasticGui.WorkspaceWindow.Update;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
+using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.Branches.Dialogs;
-using Unity.PlasticSCM.Editor.Views.Changesets;
 
-using GluonNewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncomingChangesUpdater;
+using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
+using Unity.PlasticSCM.Editor.Views.Diff;
 using IGluonUpdateReport = PlasticGui.Gluon.IUpdateReport;
 
 namespace Unity.PlasticSCM.Editor.Views.Branches
@@ -33,77 +34,124 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         IRefreshableView,
         IQueryRefreshableView,
         IBranchMenuOperations,
-        ILaunchCodeReviewWindow
+        ILaunchCodeReviewWindow,
+        IGetQueryText,
+        IGetFilter,
+        FillBranchesView.IShowContentView,
+        FillBranchesView.IShowHiddenBranchesButton
     {
+        internal string EmptyStateMessage { get { return mEmptyStatePanel.Text; } }
         internal bool ShowHiddenBranchesForTesting { set { mShowHiddenBranches = value; } }
-        internal string EmptyStateMessage { get { return mEmptyStateData.Content.text; } }
-        internal BranchesListView Table { get { return mBranchesListView; } }
+        internal DateFilter DateFilterForTesting { set { mDateFilter = value; } }
         internal IBranchMenuOperations Operations { get { return this; } }
+        internal BranchesListView Table { get { return mBranchesListView; } }
 
         internal BranchesTab(
             WorkspaceInfo wkInfo,
+            ViewHost viewHost,
             WorkspaceWindow workspaceWindow,
             IViewSwitcher viewSwitcher,
             IMergeViewLauncher mergeViewLauncher,
-            ViewHost viewHost,
+            IHistoryViewLauncher historyViewLauncher,
             IUpdateReport updateReport,
             IGluonUpdateReport gluonUpdateReport,
-            NewIncomingChangesUpdater developerNewIncomingChangesUpdater,
-            GluonNewIncomingChangesUpdater gluonNewIncomingChangesUpdater,
             IShelvedChangesUpdater shelvedChangesUpdater,
+            IAssetStatusCache assetStatusCache,
+            ISaveAssets saveAssets,
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             LaunchTool.IProcessExecutor processExecutor,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
-            ISaveAssets saveAssets,
+            IPendingChangesUpdater pendingChangesUpdater,
+            IncomingChangesUpdater developerIncomingChangesUpdater,
+            GluonIncomingChangesUpdater gluonIncomingChangesUpdater,
             EditorWindow parentWindow,
             bool isGluonMode,
             bool showHiddenBranches)
         {
             mWkInfo = wkInfo;
-            mParentWindow = parentWindow;
-            mGluonUpdateReport = gluonUpdateReport;
             mViewHost = viewHost;
             mWorkspaceWindow = workspaceWindow;
-            mIsGluonMode = isGluonMode;
-            mShowHiddenBranches = showHiddenBranches;
-            mProgressControls = new ProgressControlsForViews();
-
-            mDeveloperNewIncomingChangesUpdater = developerNewIncomingChangesUpdater;
-            mGluonNewIncomingChangesUpdater = gluonNewIncomingChangesUpdater;
+            mGluonUpdateReport = gluonUpdateReport;
             mShelvedChangesUpdater = shelvedChangesUpdater;
+            mAssetStatusCache = assetStatusCache;
+            mSaveAssets = saveAssets;
             mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
             mProcessExecutor = processExecutor;
             mWorkspaceOperationsMonitor = workspaceOperationsMonitor;
-            mSaveAssets = saveAssets;
+            mPendingChangesUpdater = pendingChangesUpdater;
+            mDeveloperIncomingChangesUpdater = developerIncomingChangesUpdater;
+            mGluonIncomingChangesUpdater = gluonIncomingChangesUpdater;
+            mParentWindow = parentWindow;
+            mIsGluonMode = isGluonMode;
+            mShowHiddenBranches = showHiddenBranches;
+
+            mProgressControls = new ProgressControlsForViews();
             mShelvePendingChangesQuestionerBuilder =
                 new ShelvePendingChangesQuestionerBuilder(parentWindow);
             mEnableSwitchAndShelveFeatureDialog = new EnableSwitchAndShelveFeature(
                 PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
                 mParentWindow);
+            mEmptyStatePanel = new EmptyStatePanel(parentWindow.Repaint);
+
+            mFillBranchesView = new FillBranchesView(
+                wkInfo,
+                null,
+                null,
+                this,
+                this,
+                this,
+                this);
 
             BuildComponents(
                 wkInfo,
                 workspaceWindow,
+                workspaceWindow,
                 viewSwitcher,
+                historyViewLauncher,
+                pendingChangesUpdater,
+                developerIncomingChangesUpdater,
+                gluonIncomingChangesUpdater,
+                parentWindow,
+                mFillBranchesView);
+
+            mSplitterState = PlasticSplitterGUILayout.InitSplitterState(
+                new float[] { 0.50f, 0.50f },
+                new int[] { 100, (int)UnityConstants.BROWSE_REPOSITORY_PANEL_MIN_WIDTH },
+                new int[] { 100000, 100000 }
+            );
+
+            mBranchOperations = new BranchOperations(
+                wkInfo,
+                workspaceWindow,
                 mergeViewLauncher,
+                this,
+                ViewType.BranchesView,
+                mProgressControls,
                 updateReport,
-                developerNewIncomingChangesUpdater,
-                shelvedChangesUpdater,
+                null,
+                new ContinueWithPendingChangesQuestionerBuilder(viewSwitcher, parentWindow),
                 mShelvePendingChangesQuestionerBuilder,
-                mEnableSwitchAndShelveFeatureDialog,
-                parentWindow);
+                new ApplyShelveWithConflictsQuestionerBuilder(),
+                pendingChangesUpdater,
+                developerIncomingChangesUpdater,
+                shelvedChangesUpdater,
+                mEnableSwitchAndShelveFeatureDialog);
 
             ((IRefreshableView)this).Refresh();
         }
 
         internal void OnEnable()
         {
+            mDiffPanel.OnEnable();
+
             mSearchField.downOrUpArrowKeyPressed +=
                 SearchField_OnDownOrUpArrowKeyPressed;
         }
 
         internal void OnDisable()
         {
+            mDiffPanel.OnDisable();
+
             mSearchField.downOrUpArrowKeyPressed -=
                 SearchField_OnDownOrUpArrowKeyPressed;
 
@@ -112,27 +160,39 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 UnityConstants.BRANCHES_TABLE_SETTINGS_NAME);
         }
 
+        internal void Update()
+        {
+            mDiffPanel.Update();
+
+            mProgressControls.UpdateProgress(mParentWindow);
+        }
+
         internal SerializableBranchesTabState GetSerializableState()
         {
             return new SerializableBranchesTabState(mShowHiddenBranches);
-        }
-
-        internal void Update()
-        {
-            mProgressControls.UpdateProgress(mParentWindow);
         }
 
         internal void OnGUI()
         {
             DoActionsToolbar(mProgressControls);
 
+            PlasticSplitterGUILayout.BeginHorizontalSplit(mSplitterState);
+
             DoBranchesArea(
                 mBranchesListView,
-                mEmptyStateData,
-                mProgressControls.IsOperationRunning(),
-                mShowHiddenBranches,
-                HasFiltersApplied(mDateFilter, mBranchesListView),
-                mParentWindow.Repaint);
+                mEmptyStatePanel,
+                mProgressControls.IsOperationRunning());
+
+            EditorGUILayout.BeginHorizontal();
+
+            Rect border = GUILayoutUtility.GetRect(1, 0, 1, 100000);
+            EditorGUI.DrawRect(border, UnityStyles.Colors.BarBorder);
+
+            DoChangesArea(mDiffPanel);
+
+            EditorGUILayout.EndHorizontal();
+
+            PlasticSplitterGUILayout.EndHorizontalSplit();
         }
 
         internal void DrawSearchFieldForTab()
@@ -141,6 +201,30 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 mSearchField,
                 mBranchesListView,
                 UnityConstants.SEARCH_FIELD_WIDTH);
+        }
+
+        internal void DrawDateFilter()
+        {
+            GUI.enabled = !mProgressControls.IsOperationRunning();
+
+            EditorGUI.BeginChangeCheck();
+
+            mDateFilter.FilterType = (DateFilter.Type)
+                EditorGUILayout.EnumPopup(
+                    mDateFilter.FilterType,
+                    EditorStyles.toolbarDropDown,
+                    GUILayout.Width(100));
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                EnumPopupSetting<DateFilter.Type>.Save(
+                    mDateFilter.FilterType,
+                    UnityConstants.BRANCHES_DATE_FILTER_SETTING_NAME);
+
+                ((IRefreshableView)this).Refresh();
+            }
+
+            GUI.enabled = true;
         }
 
         internal void DrawShowHiddenBranchesButton()
@@ -173,38 +257,9 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             GUI.enabled = true;
         }
 
-        internal void DrawDateFilter()
+        internal void SetWorkingObjectInfo(BranchInfo branchInfo)
         {
-            GUI.enabled = !mProgressControls.IsOperationRunning();
-
-            EditorGUI.BeginChangeCheck();
-
-            mDateFilter.FilterType = (DateFilter.Type)
-                EditorGUILayout.EnumPopup(
-                    mDateFilter.FilterType,
-                    EditorStyles.toolbarDropDown,
-                    GUILayout.Width(100));
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                EnumPopupSetting<DateFilter.Type>.Save(
-                    mDateFilter.FilterType,
-                    UnityConstants.BRANCHES_DATE_FILTER_SETTING_NAME);
-
-                ((IRefreshableView)this).Refresh();
-            }
-
-            GUI.enabled = true;
-        }
-
-        internal void SetWorkingObjectInfo(WorkingObjectInfo homeInfo)
-        {
-            lock (mLock)
-            {
-                mLoadedBranchId = homeInfo.BranchInfo.BranchId;
-            }
-
-            mBranchesListView.SetLoadedBranchId(mLoadedBranchId);
+            mFillBranchesView.UpdateWorkingObject(branchInfo, mWkInfo);
         }
 
         internal void SetLaunchToolForTesting(
@@ -220,26 +275,33 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             // VCS-1005209 - There are scenarios where the list of branches need to check for incoming changes.
             // For example, deleting the active branch will automatically switch your workspace to the parent changeset,
             // which might have incoming changes.
-            if (mDeveloperNewIncomingChangesUpdater != null)
-                mDeveloperNewIncomingChangesUpdater.Update(DateTime.Now);
+            if (mDeveloperIncomingChangesUpdater != null)
+                mDeveloperIncomingChangesUpdater.Update(DateTime.Now);
 
-            if (mGluonNewIncomingChangesUpdater != null)
-                mGluonNewIncomingChangesUpdater.Update(DateTime.Now);
+            if (mGluonIncomingChangesUpdater != null)
+                mGluonIncomingChangesUpdater.Update(DateTime.Now);
 
-            string query = QueryConstants.BuildBranchesQuery(
-                mDateFilter.GetLayoutFilter(), mShowHiddenBranches);
-
-            FillBranches(mWkInfo, query, BranchesSelection.
-                GetSelectedRepObjectInfos(mBranchesListView));
+            RefreshAndSelect(null);
         }
 
         //IQueryRefreshableView
-        public void RefreshAndSelect(RepObjectInfo repObj)
+        public void RefreshAndSelect(RepObjectInfo objectToSelect)
         {
-            string query = QueryConstants.BuildBranchesQuery(
-                mDateFilter.GetLayoutFilter(), mShowHiddenBranches);
+            List<IPlasticTreeNode> branchesToSelect = objectToSelect == null ?
+                null : new List<IPlasticTreeNode> { new BranchTreeNode(
+                    null, (BranchInfo)objectToSelect, null) };
 
-            FillBranches(mWkInfo, query, new List<RepObjectInfo> { repObj });
+            mDiffPanel.ClearInfo();
+
+            mFillBranchesView.FillView(
+                mBranchesListView,
+                mProgressControls,
+                null,
+                null,
+                null,
+                branchesToSelect,
+                FillBranchesView.ViewMode.List,
+                mShowHiddenBranches);
         }
 
         BranchInfo IBranchMenuOperations.GetSelectedBranch()
@@ -334,7 +396,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         {
             var branchesToDelete = BranchesSelection.GetSelectedBranches(mBranchesListView);
 
-            if (!DeleteBranchDialog.ConfirmDelete(branchesToDelete))
+            if (!DeleteBranchDialog.ConfirmDelete(mParentWindow, branchesToDelete))
                 return;
 
             mBranchOperations.DeleteBranch(
@@ -382,143 +444,56 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
         void IBranchMenuOperations.ViewPermissions() { }
 
+        string IGetQueryText.Get()
+        {
+            return QueryConstants.BuildBranchesQuery(
+                mDateFilter.GetLayoutFilter(), mShowHiddenBranches);
+        }
+
+        Filter IGetFilter.Get()
+        {
+            return new Filter(mBranchesListView.searchString);
+        }
+
+        void IGetFilter.Clear()
+        {
+            // Not used by the Plugin, needed for the Reset filters button
+        }
+
+        void FillBranchesView.IShowContentView.ShowContentPanel()
+        {
+            mEmptyStatePanel.UpdateContent(string.Empty);
+        }
+
+        void FillBranchesView.IShowContentView.ShowEmptyStatePanel(
+            string explanationText, bool showResetFilterButton)
+        {
+            mEmptyStatePanel.UpdateContent(explanationText);
+        }
+
+        bool FillBranchesView.IShowHiddenBranchesButton.IsChecked
+        {
+            get { return mShowHiddenBranches; }
+            set { mShowHiddenBranches = value; }
+        }
+
         void SearchField_OnDownOrUpArrowKeyPressed()
         {
             mBranchesListView.SetFocusAndEnsureSelectedItem();
         }
 
-        void OnBranchesListViewSizeChanged()
+        void OnSelectionChanged()
         {
-            if (!mShouldScrollToSelection)
+            List<RepObjectInfo> selectedBranches = BranchesSelection.
+                GetSelectedRepObjectInfos(mBranchesListView);
+
+            if (selectedBranches.Count != 1)
                 return;
 
-            mShouldScrollToSelection = false;
-            TableViewOperations.ScrollToSelection(mBranchesListView);
-        }
-
-        void FillBranches(
-            WorkspaceInfo wkInfo,
-            string query,
-            List<RepObjectInfo> branchesToSelect)
-        {
-            if (mIsRefreshing)
-                return;
-
-            mIsRefreshing = true;
-
-            int defaultRow = TableViewOperations.
-                GetFirstSelectedRow(mBranchesListView);
-
-            ((IProgressControls)mProgressControls).ShowProgress(
-                PlasticLocalization.GetString(
-                    PlasticLocalization.Name.LoadingBranches));
-
-            ViewQueryResult queryResult = null;
-
-            IThreadWaiter waiter = ThreadWaiter.GetWaiter();
-            waiter.Execute(
-                /*threadOperationDelegate*/ delegate
-                {
-                    long loadedBranchId = GetLoadedBranchId(wkInfo);
-                    lock(mLock)
-                    {
-                        mLoadedBranchId = loadedBranchId;
-                    }
-
-                    queryResult = new ViewQueryResult(
-                        PlasticGui.Plastic.API.FindQuery(wkInfo, query));
-                },
-                /*afterOperationDelegate*/ delegate
-                {
-                    try
-                    {
-                        if (waiter.Exception != null)
-                        {
-                            ExceptionsHandler.DisplayException(waiter.Exception);
-                            return;
-                        }
-
-                        UpdateBranchesList(
-                            mBranchesListView,
-                            queryResult,
-                            mLoadedBranchId);
-
-                        int branchesCount = GetBranchesCount(queryResult);
-
-                        if (branchesCount == 0)
-                        {
-                            return;
-                        }
-
-                        BranchesSelection.SelectBranches(
-                            mBranchesListView, branchesToSelect, defaultRow);
-                    }
-                    finally
-                    {
-                        ((IProgressControls)mProgressControls).HideProgress();
-                        mIsRefreshing = false;
-                    }
-                });
-        }
-
-        static void UpdateBranchesList(
-             BranchesListView branchesListView,
-             ViewQueryResult queryResult,
-             long loadedBranchId)
-        {
-            branchesListView.BuildModel(
-                queryResult, loadedBranchId);
-
-            branchesListView.Refilter();
-
-            branchesListView.Sort();
-
-            branchesListView.Reload();
-        }
-
-        static string GetEmptyStateMessage(
-            BranchesListView branchesListView,
-            bool isOperationRunning,
-            bool showHiddenBranches,
-            bool hasFiltersApplied)
-        {
-            if (isOperationRunning ||
-                branchesListView.GetRows().Count > 0)
-                return string.Empty;
-
-            if (!showHiddenBranches)
-                return PlasticLocalization.Name.BranchesEmptyState.GetString();
-
-            return hasFiltersApplied ?
-                PlasticLocalization.Name.HiddenBranchesEmptyState.GetString() :
-                PlasticLocalization.Name.HiddenBranchesInRepositoryEmptyState.GetString();
-        }
-
-        static long GetLoadedBranchId(WorkspaceInfo wkInfo)
-        {
-            BranchInfo brInfo = PlasticGui.Plastic.API.GetWorkingBranch(wkInfo);
-
-            if (brInfo != null)
-                return brInfo.BranchId;
-
-            return -1;
-        }
-
-        static int GetBranchesCount(
-            ViewQueryResult queryResult)
-        {
-            if (queryResult == null)
-                return 0;
-
-            return queryResult.Count();
-        }
-
-        static bool HasFiltersApplied(
-            DateFilter dateFilter,
-            BranchesListView branchesListView)
-        {
-            return dateFilter.FilterType != DateFilter.Type.AllTime
-                || branchesListView.searchString != string.Empty;
+            mDiffPanel.UpdateInfo(
+                MountPointWithPath.BuildWorkspaceRootMountPoint(
+                    BranchesSelection.GetSelectedRepository(mBranchesListView)),
+                selectedBranches[0]);
         }
 
         static void DoActionsToolbar(ProgressControlsForViews progressControls)
@@ -527,7 +502,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
             if (progressControls.IsOperationRunning())
             {
-                DrawProgressForViews.ForIndeterminateProgress(
+                DrawProgressForViews.ForIndeterminateProgressBar(
                     progressControls.ProgressData);
             }
 
@@ -538,11 +513,8 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
         static void DoBranchesArea(
             BranchesListView branchesListView,
-            EmptyStateData emptyStateData,
-            bool isOperationRunning,
-            bool showHiddenBranches,
-            bool hasFiltersApplied,
-            Action repaint)
+            EmptyStatePanel emptyStatePanel,
+            bool isOperationRunning)
         {
             EditorGUILayout.BeginVertical();
 
@@ -552,18 +524,19 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
             branchesListView.OnGUI(rect);
 
-            emptyStateData.Update(
-                GetEmptyStateMessage(
-                    branchesListView,
-                    isOperationRunning,
-                    showHiddenBranches,
-                    hasFiltersApplied),
-                rect, Event.current.type, repaint);
-
-            if (!emptyStateData.IsEmpty())
-                DrawTreeViewEmptyState.For(emptyStateData);
+            if (!emptyStatePanel.IsEmpty())
+                emptyStatePanel.OnGUI(rect);
 
             GUI.enabled = true;
+
+            EditorGUILayout.EndVertical();
+        }
+
+        static void DoChangesArea(DiffPanel diffPanel)
+        {
+            EditorGUILayout.BeginVertical();
+
+            diffPanel.OnGUI();
 
             EditorGUILayout.EndVertical();
         }
@@ -571,14 +544,14 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         void BuildComponents(
             WorkspaceInfo wkInfo,
             IWorkspaceWindow workspaceWindow,
+            IRefreshView refreshView,
             IViewSwitcher viewSwitcher,
-            IMergeViewLauncher mergeViewLauncher,
-            IUpdateReport updateReport,
-            NewIncomingChangesUpdater developerNewIncomingChangesUpdater,
-            IShelvedChangesUpdater shelvedChangesUpdater,
-            IShelvePendingChangesQuestionerBuilder shelvePendingChangesQuestionerBuilder,
-            SwitchAndShelve.IEnableSwitchAndShelveFeatureDialog enableSwitchAndShelveFeatureDialog,
-            EditorWindow parentWindow)
+            IHistoryViewLauncher historyViewLauncher,
+            IPendingChangesUpdater pendingChangesUpdater,
+            IncomingChangesUpdater developerIncomingChangesUpdater,
+            GluonIncomingChangesUpdater gluonIncomingChangesUpdater,
+            EditorWindow parentWindow,
+            FillBranchesView fillBranchesView)
         {
             mSearchField = new SearchField();
             mSearchField.downOrUpArrowKeyPressed += SearchField_OnDownOrUpArrowKeyPressed;
@@ -599,57 +572,59 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             mBranchesListView = new BranchesListView(
                 headerState,
                 BranchesListHeaderState.GetColumnNames(),
-                new BranchesViewMenu(this, mGluonNewIncomingChangesUpdater != null),
-                sizeChangedAction: OnBranchesListViewSizeChanged,
-                doubleClickAction: ((IBranchMenuOperations)this).DiffBranch);
-
+                new BranchesViewMenu(this, mGluonIncomingChangesUpdater != null),
+                fillBranchesView,
+                fillBranchesView,
+                selectionChangedAction: OnSelectionChanged,
+                doubleClickAction: ((IBranchMenuOperations)this).DiffBranch,
+                afterItemsChangedAction: fillBranchesView.ShowContentOrEmptyState);
             mBranchesListView.Reload();
 
-            mBranchOperations = new BranchOperations(
+            mDiffPanel = new DiffPanel(
                 wkInfo,
                 workspaceWindow,
-                mergeViewLauncher,
-                this,
-                ViewType.BranchesView,
-                mProgressControls,
-                updateReport,
-                new ContinueWithPendingChangesQuestionerBuilder(viewSwitcher, parentWindow),
-                shelvePendingChangesQuestionerBuilder,
-                new ApplyShelveWithConflictsQuestionerBuilder(),
-                developerNewIncomingChangesUpdater,
-                shelvedChangesUpdater,
-                enableSwitchAndShelveFeatureDialog);
+                viewSwitcher,
+                historyViewLauncher,
+                refreshView,
+                mAssetStatusCache,
+                mShowDownloadPlasticExeWindow,
+                pendingChangesUpdater,
+                developerIncomingChangesUpdater,
+                gluonIncomingChangesUpdater,
+                parentWindow,
+                mIsGluonMode);
         }
 
-        bool mIsRefreshing;
         bool mShowHiddenBranches;
-        bool mShouldScrollToSelection;
 
-        long mLoadedBranchId = -1;
-        object mLock = new object();
-
-        SearchField mSearchField;
         DateFilter mDateFilter;
+        SearchField mSearchField;
         BranchesListView mBranchesListView;
-        BranchOperations mBranchOperations;
+        DiffPanel mDiffPanel;
 
         LaunchTool.IProcessExecutor mProcessExecutor;
         LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
 
-        readonly EmptyStateData mEmptyStateData = new EmptyStateData();
-        readonly WorkspaceInfo mWkInfo;
+        readonly object mSplitterState;
+
+        readonly BranchOperations mBranchOperations;
+        readonly FillBranchesView mFillBranchesView;
+        readonly EmptyStatePanel mEmptyStatePanel;
+        readonly SwitchAndShelve.IEnableSwitchAndShelveFeatureDialog mEnableSwitchAndShelveFeatureDialog;
+        readonly IShelvePendingChangesQuestionerBuilder mShelvePendingChangesQuestionerBuilder;
+        readonly ProgressControlsForViews mProgressControls;
+        readonly bool mIsGluonMode;
         readonly EditorWindow mParentWindow;
+        readonly IPendingChangesUpdater mPendingChangesUpdater;
+        readonly GluonIncomingChangesUpdater mGluonIncomingChangesUpdater;
+        readonly IncomingChangesUpdater mDeveloperIncomingChangesUpdater;
+        readonly WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
         readonly ISaveAssets mSaveAssets;
+        readonly IAssetStatusCache mAssetStatusCache;
+        readonly IShelvedChangesUpdater mShelvedChangesUpdater;
         readonly IGluonUpdateReport mGluonUpdateReport;
         readonly WorkspaceWindow mWorkspaceWindow;
         readonly ViewHost mViewHost;
-        readonly bool mIsGluonMode;
-        readonly ProgressControlsForViews mProgressControls;
-        readonly NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
-        readonly GluonNewIncomingChangesUpdater mGluonNewIncomingChangesUpdater;
-        readonly IShelvedChangesUpdater mShelvedChangesUpdater;
-        readonly WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
-        readonly IShelvePendingChangesQuestionerBuilder mShelvePendingChangesQuestionerBuilder;
-        readonly SwitchAndShelve.IEnableSwitchAndShelveFeatureDialog mEnableSwitchAndShelveFeatureDialog;
+        readonly WorkspaceInfo mWkInfo;
     }
 }

@@ -116,6 +116,9 @@ https://www.plasticscm.com/documentation/cmdrunner/plastic-scm-version-control-c
 == Description ==
 説明
 
+== Group ==
+Group
+
 == EnterPassword ==
 パスワード: 
 
@@ -137,6 +140,15 @@ https://www.plasticscm.com/documentation/cmdrunner/plastic-scm-version-control-c
 == MsgNocommands ==
 コマンドが定義されていません!
 
+== OpenThisUrlInYourBrowser ==
+Open the following URL in your browser:
+
+== SelectSignInProvider ==
+Select the system you want to use to sign in to: {0}
+
+== SelectYourProviderToSignin ==
+Select your system [{0}-{1}] 
+
 == ShortName ==
 短い 
 
@@ -145,3 +157,6 @@ https://www.plasticscm.com/documentation/cmdrunner/plastic-scm-version-control-c
 
 == WkUpgradeStarted ==
 ワークスペースをアップグレードしています...
+
+== User ==
+User

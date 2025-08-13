@@ -14,17 +14,19 @@ using PlasticGui.Gluon.WorkspaceWindow.Views.IncomingChanges;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.Diff;
 using PlasticGui.WorkspaceWindow.Merge;
+using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
-using Unity.PlasticSCM.Editor.Gluon.Errors;
+using Unity.PlasticSCM.Editor.StatusBar;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.UI.Errors;
 using Unity.PlasticSCM.Editor.UI.Progress;
-using Unity.PlasticSCM.Editor.UI.StatusBar;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.Merge;
 using UnityEditor.IMGUI.Controls;
+
 using CheckIncomingChanges = PlasticGui.Gluon.WorkspaceWindow.CheckIncomingChanges;
-using NewIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.NewIncomingChangesUpdater;
+using IncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
 
 namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 {
@@ -39,23 +41,28 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             WorkspaceInfo wkInfo,
             ViewHost viewHost,
             WorkspaceWindow workspaceWindow,
-            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
-            NewIncomingChangesUpdater newIncomingChangesUpdater,
             CheckIncomingChanges.IUpdateIncomingChanges updateIncomingChanges,
-            StatusBar statusBar,
+            IAssetStatusCache assetStatusCache,
+            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            PendingChangesUpdater pendingChangesUpdater,
+            IncomingChangesUpdater incomingChangesUpdater,
+            WindowStatusBar windowStatusBar,
             EditorWindow parentWindow)
         {
             mWkInfo = wkInfo;
+            mAssetStatusCache = assetStatusCache;
             mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
-            mNewIncomingChangesUpdater = newIncomingChangesUpdater;
+            mIncomingChangesUpdater = incomingChangesUpdater;
+            mWindowStatusBar = windowStatusBar;
             mParentWindow = parentWindow;
-            mStatusBar = statusBar;
+
+            mEmptyStatePanel = new EmptyStatePanel(parentWindow.Repaint);
 
             BuildComponents();
 
             mProgressControls = new ProgressControlsForViews();
 
-            mCooldownClearUpdateSuccessAction = new CooldownWindowDelayer(
+            mDelayedClearUpdateSuccessAction = new DelayedActionBySecondsRunner(
                 DelayedClearUpdateSuccess,
                 UnityConstants.NOTIFICATION_CLEAR_INTERVAL);
 
@@ -66,8 +73,14 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             );
 
             mIncomingChangesViewLogic = new IncomingChangesViewLogic(
-                wkInfo, viewHost, this, new UnityPlasticGuiMessage(),
-                mProgressControls, updateIncomingChanges,
+                wkInfo,
+                viewHost,
+                this,
+                new UnityPlasticGuiMessage(),
+                mProgressControls,
+                pendingChangesUpdater,
+                mIncomingChangesUpdater,
+                updateIncomingChanges,
                 workspaceWindow.GluonProgressOperationHandler, workspaceWindow,
                 new IncomingChangesViewLogic.ApplyGluonWorkspaceLocalChanges(),
                 new IncomingChangesViewLogic.OutOfDateItemsOperations(),
@@ -116,11 +129,10 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
             DoIncomingChangesArea(
                 mIncomingChangesTreeView,
-                mEmptyStateData,
-                mCooldownClearUpdateSuccessAction,
+                mEmptyStatePanel,
+                mDelayedClearUpdateSuccessAction,
                 mProgressControls.IsOperationRunning(),
-                mIsUpdateSuccessful,
-                mParentWindow.Repaint);
+                mIsUpdateSuccessful);
 
             if (mErrorsPanel.IsVisible)
             {
@@ -163,7 +175,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             }
             else
             {
-                DrawProgressForViews.ForIndeterminateProgress(
+                DrawProgressForViews.ForIndeterminateProgressBar(
                     mProgressControls.ProgressData);
             }
 
@@ -202,8 +214,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         void IRefreshableView.Refresh()
         {
-            if (mNewIncomingChangesUpdater != null)
-                mNewIncomingChangesUpdater.Update(DateTime.Now);
+            if (mIncomingChangesUpdater != null)
+                mIncomingChangesUpdater.Update(DateTime.Now);
 
             mIncomingChangesViewLogic.Refresh();
         }
@@ -491,21 +503,19 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         void DoIncomingChangesArea(
             IncomingChangesTreeView incomingChangesTreeView,
-            EmptyStateData emptyStateData,
-            CooldownWindowDelayer cooldownClearOperationSuccessAction,
+            EmptyStatePanel emptyStatePanel,
+            DelayedActionBySecondsRunner delayedClearOperationSuccessAction,
             bool isOperationRunning,
-            bool isUpdateSuccessful,
-            Action repaint)
+            bool isUpdateSuccessful)
         {
             EditorGUILayout.BeginVertical();
 
             DoIncomingChangesTreeViewArea(
                 incomingChangesTreeView,
-                emptyStateData,
-                cooldownClearOperationSuccessAction,
+                emptyStatePanel,
+                delayedClearOperationSuccessAction,
                 isOperationRunning,
-                isUpdateSuccessful,
-                repaint);
+                isUpdateSuccessful);
 
             EditorGUILayout.EndVertical();
         }
@@ -578,11 +588,10 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         void DoIncomingChangesTreeViewArea(
             IncomingChangesTreeView incomingChangesTreeView,
-            EmptyStateData emptyStateData,
-            CooldownWindowDelayer cooldownClearOperationSuccessAction,
+            EmptyStatePanel emptyStatePanel,
+            DelayedActionBySecondsRunner delayedClearOperationSuccessAction,
             bool isOperationRunning,
-            bool isUpdateSuccessful,
-            Action repaint)
+            bool isUpdateSuccessful)
         {
             using (new EditorGUI.DisabledScope(isOperationRunning))
             {
@@ -597,10 +606,9 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 {
                     DrawEmptyState(
                         rect,
-                        emptyStateData,
-                        cooldownClearOperationSuccessAction,
-                        isUpdateSuccessful,
-                        repaint);
+                        emptyStatePanel,
+                        delayedClearOperationSuccessAction,
+                        isUpdateSuccessful);
                     return;
                 }
 
@@ -611,25 +619,17 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         static void DrawEmptyState(
             Rect rect,
-            EmptyStateData emptyStateData,
-            CooldownWindowDelayer cooldownClearOperationSuccessAction,
-            bool isUpdateSuccessful,
-            Action repaint)
+            EmptyStatePanel emptyStatePanel,
+            DelayedActionBySecondsRunner delayedClearOperationSuccessAction,
+            bool isUpdateSuccessful)
         {
-            emptyStateData.Update(
+            if (isUpdateSuccessful && !delayedClearOperationSuccessAction.IsRunning)
+                delayedClearOperationSuccessAction.Run();
+
+            emptyStatePanel.UpdateContent(
                 GetEmptyStateMessage(isUpdateSuccessful),
-                rect, Event.current.type, repaint);
-
-            if (!isUpdateSuccessful)
-            {
-                DrawTreeViewEmptyState.For(emptyStateData);
-                return;
-            }
-
-            if (!cooldownClearOperationSuccessAction.IsRunning)
-                cooldownClearOperationSuccessAction.Ping();
-
-            DrawTreeViewEmptyState.For(Images.GetStepOkIcon(), emptyStateData);
+                bDrawOkIcon: isUpdateSuccessful);
+            emptyStatePanel.OnGUI(rect);
         }
 
         static string GetEmptyStateMessage(
@@ -646,9 +646,10 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             mAfterOnGUIAction = () =>
             {
                 RefreshAsset.AfterLongAssetOperation(
+                    mAssetStatusCache,
                     ProjectPackages.ShouldBeResolvedFromUpdateProgress(mWkInfo, progress));
             };
-        }
+            }
 
         void ExecuteAfterOnGUIAction()
         {
@@ -664,7 +665,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         void NotifySuccessInStatusBar()
         {
-            mStatusBar.Notify(
+            mWindowStatusBar.Notify(
                 new GUIContentNotification(
                     PlasticLocalization.Name.WorkspaceUpdateCompleted.GetString()),
                 MessageType.None,
@@ -721,36 +722,31 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         bool mIsCancelMergesButtonVisible;
         bool mIsMessageLabelVisible;
         bool mIsErrorMessageLabelVisible;
-
         bool mIsProcessMergesButtonEnabled;
         bool mIsCancelMergesButtonEnabled;
-
+        bool mIsUpdateSuccessful;
         string mProcessMergesButtonText;
         string mMessageLabelText;
         string mErrorMessageLabelText;
-        bool mIsUpdateSuccessful;
-
-        SearchField mSearchField;
-
-        IncomingChangesTreeView mIncomingChangesTreeView;
-        ErrorsPanel mErrorsPanel;
+        object mErrorsSplitterState;
+        Action mAfterOnGUIAction;
 
         int mFileConflictCount;
         MergeViewTexts.ChangesToApplySummary mChangesSummary;
 
-        object mErrorsSplitterState;
-        Action mAfterOnGUIAction;
-
-        readonly ProgressControlsForViews mProgressControls;
-
-        readonly EmptyStateData mEmptyStateData = new EmptyStateData();
-        readonly CooldownWindowDelayer mCooldownClearUpdateSuccessAction;
+        SearchField mSearchField;
+        IncomingChangesTreeView mIncomingChangesTreeView;
+        ErrorsPanel mErrorsPanel;
 
         readonly IncomingChangesViewLogic mIncomingChangesViewLogic;
+        readonly DelayedActionBySecondsRunner mDelayedClearUpdateSuccessAction;
+        readonly ProgressControlsForViews mProgressControls;
+        readonly EmptyStatePanel mEmptyStatePanel;
         readonly EditorWindow mParentWindow;
-        readonly StatusBar mStatusBar;
-        readonly NewIncomingChangesUpdater mNewIncomingChangesUpdater;
+        readonly WindowStatusBar mWindowStatusBar;
+        readonly IncomingChangesUpdater mIncomingChangesUpdater;
         readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
+        readonly IAssetStatusCache mAssetStatusCache;
         readonly WorkspaceInfo mWkInfo;
     }
 }

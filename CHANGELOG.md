@@ -2,6 +2,39 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.9.1] - 2025-08-13
+
+### Added
+
+- Added the diff panel in the branches view
+- Added a new view to manage labels
+- New feature to inform users about available updates in the package
+- Improved checkout speed for thousands of files
+- Enriched scene assets in the hierarchy view with status overlay icon
+- Enriched sub scene assets in the hierarchy view with status overlay icon
+- Added Version Control actions to the scene header menu in the hierarchy view
+- Added Version Control actions to sub scenes menu in the hierarchy view
+- Implemented double-click action for pending changes view
+- Implemented double-click action for the diff panel
+- Implemented double-click action for the history view
+- Updated all usages of TreeView to the new generic version in Unity 6000.2
+- New feature to recommend users to enable Manual Checkout for Unity Assets when there are Lock Rules configured for the project
+- Added empty states for different scenarios
+- Added tutorial link for Smart Locks in empty state for locks view
+- Added extra icons for known Unity file extensions
+
+### Fixed
+
+- Fixed undo shortcut for the PendingChanges view comments TextBox
+- Fixed error message when clicking the 'Incoming changes' tab
+- Fixed the error 'EndLayoutGroup: BeginLayoutGroup must be called first' in different scenarios
+- Updated LoadingSpinner to fix VisualElement.transform becoming obsolete
+- Fixed an issue in the Login process not allowing to retry
+- Fixed some empty states that flickered when resizing the splitter or scrolling the table
+- Fixed an issue provoked by the auto-refresh of the Pending changes view
+- Fixed aesthetic shaking issue when the package view is re-dimensioned
+
+
 ## [2.8.2] - 2025-05-06
 
 - Fixed false positive error showing in console if creating a workspace from the Hub with a version of the Unity Editor shipping with a default Version Control package older than version 2.7.1.

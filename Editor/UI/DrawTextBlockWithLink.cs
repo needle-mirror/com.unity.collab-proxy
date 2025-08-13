@@ -33,44 +33,39 @@ namespace Unity.PlasticSCM.Editor.UI
         {
             ForMultiLinkLabel(
                 data,
-                UnityStyles.Paragraph,
+                UnityStyles.Dialog.ParagraphForMultiLinkLabel,
+                UnityStyles.Dialog.LinkForMultiLinkLabel,
                 areLinkActionsSupported: Application.platform == RuntimePlatform.WindowsEditor,
                 isEndFlexibleSpaceNeeded: true);
         }
 
         internal static void ForMultiLinkLabel(
             MultiLinkLabelData data,
-            GUIStyle style)
+            GUIStyle labelStyle,
+            GUIStyle linkStyle)
         {
             ForMultiLinkLabel(
-                data, style,
+                data, labelStyle, linkStyle,
                 areLinkActionsSupported: true,
                 isEndFlexibleSpaceNeeded: false);
         }
 
         static void ForMultiLinkLabel(
             MultiLinkLabelData data,
-            GUIStyle style,
+            GUIStyle labelStyle,
+            GUIStyle linkStyle,
             bool areLinkActionsSupported,
             bool isEndFlexibleSpaceNeeded)
         {
-            GUIStyle labelStyle = new GUIStyle(style);
-            labelStyle.margin = new RectOffset(0, 0, style.margin.top, style.margin.bottom);
-            labelStyle.padding = new RectOffset(0, 0, style.padding.top, style.padding.bottom);
-
             if (!areLinkActionsSupported)
             {
-                GUILayout.Label(string.Format(data.Text, data.LinkNames.ToArray()), labelStyle);
+                GUILayout.Label(
+                    string.Format(data.Text, data.LinkNames.ToArray()),
+                    labelStyle);
                 return;
             }
 
             string[] labels = Regex.Split(data.Text, @"\{\d+\}");
-
-            GUIStyle linkStyle = new GUIStyle(labelStyle);
-            linkStyle.normal.textColor = EditorStyles.linkLabel.normal.textColor;
-            linkStyle.hover.textColor = EditorStyles.linkLabel.hover.textColor;
-            linkStyle.active.textColor = EditorStyles.linkLabel.active.textColor;
-            linkStyle.stretchWidth = false;
 
             using (new EditorGUILayout.HorizontalScope())
             {
@@ -87,7 +82,7 @@ namespace Unity.PlasticSCM.Editor.UI
                         GUILayoutUtility.GetLastRect(), MouseCursor.Link);
 
                     if (buttonResult)
-                        ((Action)data.LinkActions[i]).Invoke();
+                        ((Action)data.LinkActions[i])();
                 }
 
                 if (isEndFlexibleSpaceNeeded)

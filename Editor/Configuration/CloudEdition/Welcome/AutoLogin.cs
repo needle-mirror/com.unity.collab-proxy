@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -28,18 +28,23 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             ErrorTokenEmpty = 24,
         }
 
-        internal void Run()
+        internal bool Run()
         {
-            mPlasticWindow = GetPlasticWindow();
+            mLog.Debug("Run");
 
-            if (!string.IsNullOrEmpty(CloudProjectSettings.accessToken))
+            mUVCSWindow = GetUVCSWindow();
+
+            if (string.IsNullOrEmpty(CloudProjectSettings.accessToken))
             {
-                mLog.Debug("Run");
-                ExchangeTokensAndJoinOrganizationInThreadWaiter(CloudProjectSettings.accessToken);
-                return;
+                mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorNoToken;
+                return false;
             }
 
-            mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorNoToken;
+            mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.Running;
+
+            ExchangeTokensAndJoinOrganizationInThreadWaiter(CloudProjectSettings.accessToken);
+
+            return true;
         }
 
         void ExchangeTokensAndJoinOrganizationInThreadWaiter(string unityAccessToken)
@@ -52,7 +57,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             waiter.Execute(
             /*threadOperationDelegate*/ delegate
             {
-                mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseInit;
+                mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseInit;
                 tokenExchangeResponse = WebRestApiClient.PlasticScm.TokenExchange(unityAccessToken);
             },
             /*afterOperationDelegate*/ delegate
@@ -63,7 +68,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
                 if (waiter.Exception != null)
                 {
-                    mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorTokenException;
+                    mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorTokenException;
                     ExceptionsHandler.LogException(
                         "TokenExchangeSetting",
                         waiter.Exception);
@@ -73,7 +78,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
                 if (tokenExchangeResponse == null)
                 {
-                    mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorResponseNull;
+                    mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorResponseNull;
                     var warning = PlasticLocalization.GetString(PlasticLocalization.Name.TokenExchangeResponseNull);
                     mLog.Warn(warning);
                     Debug.LogWarning(warning);
@@ -82,7 +87,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
                 if (tokenExchangeResponse.Error != null)
                 {
-                    mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorResponseError;
+                    mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorResponseError;
                     var warning = string.Format(
                         PlasticLocalization.GetString(PlasticLocalization.Name.TokenExchangeResponseError),
                         tokenExchangeResponse.Error.Message, tokenExchangeResponse.Error.ErrorCode);
@@ -93,7 +98,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
                 if (string.IsNullOrEmpty(tokenExchangeResponse.AccessToken))
                 {
-                    mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorTokenEmpty;
+                    mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorTokenEmpty;
                     var warning = string.Format(
                         PlasticLocalization.GetString(PlasticLocalization.Name.TokenExchangeAccessEmpty),
                         tokenExchangeResponse.User);
@@ -102,7 +107,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                     return;
                 }
 
-                mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseEnd;
+                mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseEnd;
 
                 Credentials credentials = new Credentials(
                     new SEID(tokenExchangeResponse.User, false, tokenExchangeResponse.AccessToken),
@@ -114,8 +119,8 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         void ShowOrganizationsPanel(Credentials credentials)
         {
-            mPlasticWindow = GetPlasticWindow();
-            mPlasticWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseSuccess;
+            mUVCSWindow = GetUVCSWindow();
+            mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseSuccess;
 
             CloudEditionWelcomeWindow.ShowWindow(
                 PlasticGui.Plastic.WebRestAPI, null, true);
@@ -127,18 +132,18 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mCloudEditionWelcomeWindow.Focus();
         }
 
-        static PlasticWindow GetPlasticWindow()
+        static UVCSWindow GetUVCSWindow()
         {
-            var windows = Resources.FindObjectsOfTypeAll<PlasticWindow>();
-            PlasticWindow plasticWindow = windows.Length > 0 ? windows[0] : null;
+            var windows = Resources.FindObjectsOfTypeAll<UVCSWindow>();
+            UVCSWindow uvcsWindow = windows.Length > 0 ? windows[0] : null;
 
-            if (plasticWindow == null)
-                plasticWindow = ShowWindow.Plastic();
+            if (uvcsWindow == null)
+                uvcsWindow = ShowWindow.UVCS();
 
-            return plasticWindow;
+            return uvcsWindow;
         }
 
-        PlasticWindow mPlasticWindow;
+        UVCSWindow mUVCSWindow;
         CloudEditionWelcomeWindow mCloudEditionWelcomeWindow;
 
         static readonly ILog mLog = PlasticApp.GetLogger("AutoLogin");

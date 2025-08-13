@@ -1,12 +1,7 @@
-using System;
 using System.Collections.Generic;
 
-using Codice.Client.BaseCommands;
-using Codice.Client.Commands;
 using Codice.Client.Common;
 using Codice.Client.Common.Threading;
-using Codice.Client.GameUI;
-using Codice.Client.GameUI.Update;
 using Codice.CM.Common;
 using Codice.CM.Common.Merge;
 using Codice.CM.Common.Mount;
@@ -14,6 +9,7 @@ using Codice.CM.Common.Partial;
 using Codice.CM.Common.Update.Partial;
 using Codice.Utils;
 using GluonGui.WorkspaceWindow.Views;
+using Unity.PlasticSCM.Editor.AssetUtils;
 
 namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
 {
@@ -21,14 +17,10 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
     {
         internal RemoteStatusCache(
             WorkspaceInfo wkInfo,
-            bool isGluonMode,
-            Action repaintProjectWindow,
-            Action repaintInspector)
+            bool isGluonMode)
         {
             mWkInfo = wkInfo;
             mIsGluonMode = isGluonMode;
-            mRepaintProjectWindow = repaintProjectWindow;
-            mRepaintInspector = repaintInspector;
         }
 
         internal AssetStatus GetStatus(string fullPath)
@@ -111,8 +103,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
                         mStatusByPathCache = statusByPathCache;
                     }
 
-                    mRepaintProjectWindow();
-                    mRepaintInspector();
+                    RepaintEditor.AllWindowsWithOverlays();
                 });
         }
 
@@ -182,8 +173,6 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
 
         Dictionary<string, AssetStatus> mStatusByPathCache;
 
-        readonly Action mRepaintInspector;
-        readonly Action mRepaintProjectWindow;
         readonly bool mIsGluonMode;
         readonly WorkspaceInfo mWkInfo;
 

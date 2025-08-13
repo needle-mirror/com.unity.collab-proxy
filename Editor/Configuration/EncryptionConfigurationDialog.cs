@@ -72,12 +72,14 @@ namespace Unity.PlasticSCM.Editor.Configuration
 
             GUILayout.Space(5);
 
-            mPassword = PasswordEntry(PlasticLocalization.Name.Password.GetString(),
+            mPassword = EntryBuilder.CreatePasswordEntry(
+                PlasticLocalization.Name.Password.GetString(),
                 mPassword, PASSWORD_TEXT_WIDTH, PASSWORD_TEXT_X);
 
             GUILayout.Space(5);
 
-            mRetypePassword = PasswordEntry(PlasticLocalization.Name.RetypePassword.GetString(),
+            mRetypePassword = EntryBuilder.CreatePasswordEntry(
+                PlasticLocalization.Name.RetypePassword.GetString(),
                 mRetypePassword, PASSWORD_TEXT_WIDTH, PASSWORD_TEXT_X);
 
             GUILayout.Space(18f);

@@ -4721,26 +4721,12 @@ Jira 參數 (皆為強制):
 == CMD_USAGE_QUERY ==
 用法：
 
-    cm ^query <sql_命令> [--^outputfile=<輸出_檔案>]
-                           [--^solveuser=<欄_名>[,...]]
-                           [--^solvepath=<欄_名>[,...]]
-                           [--^columnwidth=<值>] [--^nocolumnname]
-                           [--^columnseparator=<分隔符號>] [--^repository=<名稱>]
+    cm ^query <sql_命令> [--^repository=<名稱>]
 
     sql_命令         要執行的 sql 查詢。
 
 選項：
 
-    --^outputfile        將結果寫入輸出檔案。
-    --^solveuser         將指定的欄位設為 [使用者名稱] 欄位。查詢
-                        解譯器會將這些欄位的資料假定
-                        為使用者，並將因此嘗試進行解析。
-    --^solvepath         將指定的欄位設為 [項目 ID] 欄位。查詢解譯器
-                        將嘗試將項目 ID 解析為檔案系統
-                        路徑。
-    --^columnwidth       指定每個欄的寬度以格式化輸出。
-    --^nocolumnname      不列印欄名。
-    --^columnseparator   使用字元做為欄分隔符號，而不使用定位字元 (\t)。
     --^repository        要查詢的儲存庫。
 
 == CMD_HELP_QUERY ==
@@ -4752,32 +4738,6 @@ Jira 參數 (皆為強制):
     使用者和路徑：
     - '^SolveUser(<使用者名稱>)'：將使用者名稱解析為 Unity VCS 格式。
     - '^SolvePath(<路徑>)'：將磁碟路徑解析為項目 ID。
-
-    此外，您可以使用選項以人類可讀的格式顯示查詢結果。
-
-    您可以使用 '--^solveuser=<欄_名>' 和
-    '--^solvepath=<欄_名>' 選項，指定查詢解譯器
-    必須轉換為可讀文字的欄。您可以指定多個欄名，
-    並使用逗號分隔。
-
-範例：
-
-    cm ^query "^SELECT * ^FROM ^revision" --^columnwidth=25 --^repository=reptest
-    (從 'reptest' 儲存庫的 '修訂' 表格擷取資料)
-
-    cm ^query "^SELECT b.^sname ^as 分支_名稱, o.^dtimestamp ^as 日期 ^from ^branch b, \
-        ^object o, ^seid s ^where b.^iobjid=o.^iobjid ^and o.^fidowner=s.^iseidid ^and \
-        s.^scode='^SolveUser(john)'" --^outputfile=query.txt
-    (輸出至以擁有者 'john' 做為分支的檔案。)
-
-    cm ^query "^select r.^iobjid, r.^fiditem ^as 路徑, s.^scode ^as 使用者名稱 ^FROM \
-        ^revision r, ^object o, ^seid s ^WHERE r.^iobjid=o.^iobjid ^and \
-        o.^fidowner=s.^iseidid ^and o.^dtimestamp>2014/04/25" \
-    --^solveuser=使用者名稱 --^solvepath=路徑 --^repository=reptest@server2:9095
-    (從所選儲存庫擷取所選資料。)
-
-    cm ^query "^SELECT * ^FROM ^revision ^WHERE ^fiditem=^SolvePath(c:\mywkpath\info)"
-    (擷取路徑 'info' 的所有修訂資料。)
 
 == CMD_DESCRIPTION_ATTRIBUTE_DELETE ==
 刪除一或多個屬性。

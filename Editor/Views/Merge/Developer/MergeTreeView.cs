@@ -14,6 +14,9 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Avatar;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using UnityEditor;
+#if UNITY_6000_2_OR_NEWER
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
 {
@@ -37,7 +40,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
 
             customFoldoutYOffset = UnityConstants.TREEVIEW_FOLDOUT_Y_OFFSET;
 
-            mCooldownFilterAction = new CooldownWindowDelayer(
+            mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
         }
 
@@ -73,7 +76,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
 
         protected override void SearchChanged(string newSearch)
         {
-            mCooldownFilterAction.Ping();
+            mDelayedFilterAction.Run();
         }
 
         protected override void ContextClickedItem(int id)
@@ -410,7 +413,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 solvedChildrenCount,
                 isSelected);
 
-            DrawTreeViewItem.ForCategoryItem(
+            DrawTreeViewItem.ForIndentedItem(
                 rowRect,
                 item.depth,
                 label,
@@ -546,7 +549,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 Type == EnumRevisionType.enDirectory;
 
             if (isDirectory || mergeChange.IsXLink())
-                return Images.GetDirectoryIcon();
+                return Images.GetFolderIcon();
 
             string fullPath = WorkspacePath.GetWorkspacePathFromCmPath(
                 wkPath,
@@ -626,7 +629,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
 
         MergeSolvedFileConflicts mSolvedFileConflicts;
         UnityMergeTree mMergeTree;
-        CooldownWindowDelayer mCooldownFilterAction;
+        DelayedActionBySecondsRunner mDelayedFilterAction;
 
         readonly MergeViewMenu mMenu;
         readonly List<string> mColumnNames;

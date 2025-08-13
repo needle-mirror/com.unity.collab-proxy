@@ -1,5 +1,5 @@
 ﻿== CMD_DESCRIPTION_ACCESS_TOKEN ==
-Permite al usuario administrar tókenes de acceso.
+Permite al usuario administrar Tókenes Personales de Acceso.
 
 == CMD_USAGE_ACCESS_TOKEN ==
 Sintaxis:
@@ -12,6 +12,7 @@ Comandos:
     - list
     - reveal
     - revoke
+    - admin
 
     Para obtener más información de cada uno de los comandos use lo siguiente:
     cm accesstoken <command> --usage
@@ -20,21 +21,298 @@ Comandos:
 == CMD_HELP_ACCESS_TOKEN ==
 Ejemplos:
 
-    cm accesstoken create "Para ser usado por el servidor de compilación"
+    cm accesstoken create "Para ser usado por el servidor de compilación" 4w
     cm accesstoken list
     cm accesstoken reveal 19c57d0f-c525-4767-8670-82f7ecc2ccdb
     cm accesstoken revoke 19c57d0f-c525-4767-8670-82f7ecc2ccdb
+    cm accesstoken admin allowlist show
+    cm accesstoken admin listall
+    cm accesstoken admin revoke 19c57d0f-c525-4767-8670-82f7ecc2ccdb
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_ADMIN ==
+Permite al propietario del servidor de repositorio administrar algunos aspectos
+de los Tókenes Personales de Acceso.
+
+== CMD_USAGE_ACCESS_TOKEN_ADMIN ==
+Sintaxis:
+
+    cm accesstoken admin <command> [options]
+
+Comandos:
+
+    - allowlist
+    - listall
+    - revoke
+
+    Para obtener más información sobre cada comando, ejecuta:
+    cm accesstoken admin <command> --usage
+    cm accesstoken admin <command> --help
+
+== CMD_HELP_ACCESS_TOKEN_ADMIN ==
+Ejemplos:
+
+    cm accesstoken admin allowlist add --user=john.doe@mail.domain
+    cm accesstoken admin allowlist remove --user=john.doe@mail.domain
+    cm accesstoken admin allowlist show
+    cm accesstoken admin listall
+    cm accesstoken admin revoke 19c57d0f-c525-4767-8670-82f7ecc2ccdb
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_ADMIN_ALLOWLIST ==
+Permite al propietario del servidor de repositorio administrar qué usuarios y
+grupos pueden utilizar Tókenes Personales de Acceso.
+
+== CMD_USAGE_ACCESS_TOKEN_ADMIN_ALLOWLIST ==
+Sintaxis:
+
+    cm accesstoken admin allowlist <command> [options]
+
+Comandos:
+
+    - add
+    - remove
+    - show
+
+    Para obtener más información sobre cada comando, ejecuta:
+    cm accesstoken admin allowlist <command> --usage
+    cm accesstoken admin allowlist <command> --help
+
+== CMD_HELP_ACCESS_TOKEN_ADMIN_ALLOWLIST ==
+Notas:
+
+    Los Tókenes Personales de Acceso solo pueden ser utilizados por los usuarios
+    y grupos incluidos en la allowlist.
+
+    Para permitir acceso a la funcionalidad a todos los usuarios presentes
+    y futuros al mismo tiempo, puede usar el usuario especial 'all':
+
+    cm accesstoken admin allowlist add --user=all
+
+    No podrá añadir usuarios y grupos concretos a la allowlist mientras el
+    usuario especial 'all' esté presente.
+    No podrá añadir el usuario especial 'all' a la allowlist mientras haya
+    usuarios y grupos concretos presentes.
+
+    Un usuario puede tener acceso a la funcionalidad por pertenecer a un grupo,
+    incluso si no está incluido explícitamente en la allowlist. Recuerde esto
+    al decidir qué usuarios podrán crear y administrar Tókenes Personales de
+    Acceso.
+
+Ejemplos:
+
+    cm accesstoken admin allowlist add --users=john.doe@mail.domain
+    cm accesstoken admin allowlist remove --users=john.doe@mail.domain
+    cm accesstoken admin allowlist show
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_ADMIN_ALLOWLIST_ADD ==
+Permite al propietario del servidor de repositorio añadir usuarios y grupos
+a la allowlist de los Tókenes Personales de Acceso.
+
+== CMD_USAGE_ACCESS_TOKEN_ADMIN_ALLOWLIST_ADD ==
+Sintaxis:
+
+    cm accesstoken admin allowlist add
+        (--users=<usuarios>) (--groups=<grupos>) [<repserverspec>]
+
+    repserverspec       Especificación del servidor de repositorios.
+                        (Use 'cm help objectspec' para más información sobre
+                        especificaciones de servidor de repositorios.)
+    --users             Lista separada por comas con los nombres de los usuarios
+                        que se añadirán a la allowlist.
+    --groups            Lista separada por comas con los nombres de los grupos
+                        que se añadirán a la allowlist.
+
+== CMD_HELP_ACCESS_TOKEN_ADMIN_ALLOWLIST_ADD ==
+Notas:
+
+    Los Tókenes Personales de Acceso solo pueden ser utilizados por los usuarios
+    y grupos incluidos en la allowlist.
+
+    Para permitir acceso a la funcionalidad a todos los usuarios presentes
+    y futuros al mismo tiempo, puede usar el usuario especial 'all':
+
+    cm accesstoken admin allowlist add --user=all
+
+    No podrá añadir usuarios y grupos concretos a la allowlist mientras el
+    usuario especial 'all' esté presente.
+    No podrá añadir el usuario especial 'all' a la allowlist mientras haya
+    usuarios y grupos concretos presentes.
+
+    Un usuario puede tener acceso a la funcionalidad por pertenecer a un grupo,
+    incluso si no está incluido explícitamente en la allowlist. Recuerde esto
+    al decidir qué usuarios podrán crear y administrar Tókenes Personales de
+    Acceso.
+
+Ejemplos:
+
+    cm accesstoken admin allowlist add
+      --users=john.doe@mail.domain,jane.doe@mail.domain
+    (Añade a los usuarios john.doe@mail.domain y jane.doe@mail.domain a la
+     allowlist en el servidor de repositorio por defecto.)
+
+    cm accesstoken admin allowlist add
+      --users=john.doe@mail.domain --groups=CICD,Automations orgname@cloud
+    (Añade al usuario john.doe@mail.domain y a los grupos CICD y Automations
+     a la allowlist en la organización orgname@cloud.)
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_ADMIN_ALLOWLIST_REMOVE ==
+Permite al propietario del servidor de repositorio eliminar usuarios y grupos
+de la allowlist de los Tókenes Personales de Acceso.
+
+== CMD_USAGE_ACCESS_TOKEN_ADMIN_ALLOWLIST_REMOVE ==
+Sintaxis:
+
+    cm accesstoken admin allowlist remove
+        (--users=<usuarios>) (--groups=<grupos>) [<repserverspec>]
+
+    repserverspec       Especificación del servidor de repositorios.
+                        (Use 'cm help objectspec' para más información sobre
+                        especificaciones de servidor de repositorios.)
+    --users             Lista separada por comas con los nombres de los usuarios
+                        que se eliminarán de la allowlist.
+    --groups            Lista separada por comas con los nombres de los grupos
+                        que se eliminarán de la allowlist.
+
+== CMD_HELP_ACCESS_TOKEN_ADMIN_ALLOWLIST_REMOVE ==
+Notas:
+
+    Intentar eliminar un usuario o grupo que no esté en la allowlist
+    producirá un error. En este caso, la allowlist no será modificada.
+
+Ejemplos:
+
+    cm accesstoken admin allowlist remove
+      --users=john.doe@mail.domain,jane.doe@mail.domain
+    (Elimina a los usuarios john.doe@mail.domain y jane.doe@mail.domain de la
+     allowlist en el servidor de repositorio por defecto.)
+
+    cm accesstoken admin allowlist remove
+     --users=john.doe@mail.domain --groups=CICD,Automations orgname@cloud
+    (Elimina al usuario john.doe@mail.domain y a los grupos CID y Automations
+      de la allowlist en la organización orgname@cloud.)
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_ADMIN_ALLOWLIST_SHOW ==
+Permite al propietario del servidor de repositorio mostrar los usuarios y
+grupos presentes en la allowlist de los Tókenes Personales de Acceso.
+
+== CMD_USAGE_ACCESS_TOKEN_ADMIN_ALLOWLIST_SHOW ==
+Sintaxis:
+
+    cm accesstoken admin allowlist show [<repserverspec>]
+
+    repserverspec       Especificación del servidor de repositorios.
+                        (Use 'cm help objectspec' para más información sobre
+                        especificaciones de servidor de repositorios.)
+
+== CMD_HELP_ACCESS_TOKEN_ADMIN_ALLOWLIST_SHOW ==
+Ejemplos:
+
+    cm accesstoken admin allowlist show
+    (Muestra la allowlist del servidor de repositorios por defecto.)
+
+    cm accesstoken admin allowlist show orgname@cloud
+    (Muestra la allowlist de la organización orgname@cloud.)
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_ADMIN_LISTALL ==
+Permite al propietario del servidor de repositorio listar todos los
+Tókenes Personales de Acceso, de todos los usuarios.
+
+== CMD_USAGE_ACCESS_TOKEN_ADMIN_LISTALL ==
+Sintaxis:
+
+    cm accesstoken admin listall [<repserverspec>]
+        [--format=<str_format>] [--dateformat=<str_date_format>]
+
+    repserverspec       Especificación del servidor de repositorios.
+                        (Use 'cm help objectspec' para más información sobre
+                        especificaciones de servidor de repositorios.)
+    --format            Muestra el mensaje de salida en el formato indicado.
+                        Consulte las Notas para más información.
+    --dateformat        Configura el formato de salida para la impresión de fechas.
+
+== CMD_HELP_ACCESS_TOKEN_ADMIN_LISTALL ==
+Notas:
+
+    Los Tókenes Personales de Acceso revocados no son devueltos en el resultado.
+    Sin embargo, los tókenes caducados sí.
+
+    Parámetros de formato de salida (opción --format):
+
+        Este comando acepta una cadena de formato para mostrar la salida.
+
+        Los parámetros de salida de este comando son los siguientes:
+        {id}             | {0}         Identificador del token.
+        {description}    | {1}         Descripción del token.
+        {owner}          | {2}         Propietario del token.
+        {creationdate}   | {3}         Fecha de creación del token.
+        {expirationdate} | {4}         Fecha de expiración del token.
+        {lastusedate}    | {5}         Fecha de último uso del token.
+        {tab}                          Inserta un tabulador.
+        {newline}                      Inserta una nueva línea.
+
+    Si el valor de opción '--format' no se especifica, la salida se imprimirá
+    en formato tabla.
+
+Ejemplos:
+
+    cm accesstoken admin listall
+    (Lista todos los tókenes del servidor de repositorios por defecto.)
+
+    cm accesstoken admin listall skull:8087
+    (Lista todos los tókenes del servidor de repositorios skull:8087.)
+
+    cm accesstoken admin listall --format="{id}"
+    (Lista todos los tókenes del servidor de repositorios por defecto
+     y muestra únicamente su ID.)
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_ADMIN_REVOKE ==
+Permite al propietario del servidor de repositorio revocar un
+Token Personal de Acceso, independientemente de quién sea el propietario.
+
+== CMD_USAGE_ACCESS_TOKEN_ADMIN_REVOKE ==
+Sintaxis:
+
+    cm accesstoken admin revoke <id> [<repserverspec>]
+
+    id                  El ID del token a ser revocado.
+    repserverspec       Especificación del servidor de repositorios.
+                        (Use 'cm help objectspec' para más información sobre
+                        especificaciones de servidor de repositorios.)
+
+== CMD_HELP_ACCESS_TOKEN_ADMIN_REVOKE ==
+Notas:
+
+    Tratar de revocar un Token Personal de Acceso que no exista resultará en un
+    error.
+
+    Para revocar un token es necesario usar su ID completo.
+
+    Revocar un token no significa que los tókenes de Unity VCS ya revelados
+    dejen de funcionar inmediatamente, si no que el token no será renovado
+    una vez expire.
+    (Use 'cm accesstoken reveal --help' para más información.)
+
+Ejemplos:
+
+    cm accesstoken admin revoke de0be8a4-2a7a-44c6-9c4c-82c8222dbc6f
+    (Revoca el token con el ID especificado del servidor de repositorios
+     por defecto.)
+
+    cm ^accesstoken admin ^revoke de0be8a4-2a7a-44c6-9c4c-82c8222dbc6f skull:8087
+    (Revoca el token con el ID especificado del servidor de repositorios
+     skull:8087.)
 
 == CMD_DESCRIPTION_ACCESS_TOKEN_CREATE== 
-Crea un nuevo token de acceso.
+Crea un nuevo Token Personal de Acceso.
 
 == CMD_USAGE_ACCESS_TOKEN_CREATE == 
 Sintaxis:
 
-    cm accesstoken create <description> [<repserverspec>]
+    cm accesstoken create <description> <lifetime> [<repserverspec>]
         [--format=<str_format>] [--dateformat=<str_date_format>]
 
-    description         Descripción que ayuda a identificar el token de acceso.
+    description         Descripción que ayuda a identificar el token.
+    lifetime            Tiempo de vida del token, en formato "estilo Go" o
+                        "sufijo Unix". Consulte las Notas para más información.
     repserverspec       Especificación del servidor de repositorios.
                         (Use 'cm help objectspec' para más información sobre
                         especificaciones de servidor de repositorios.)
@@ -45,19 +323,34 @@ Sintaxis:
 == CMD_HELP_ACCESS_TOKEN_CREATE ==
 Notas:
 
-    El tiempo de vida del token de acceso vendrá determinado por la
-    configuración del servidor. No es posible determinar el tiempo de vida
-    durante la creación del token.
+    El tiempo de vida del token se especifica con una cadena de texto,
+    consistente en una secuencia de parejas <número><unidad>[<n><u>...],
+    donde las siguientes unidades son válidas:
+        w                   Semanas
+        d                   Días
+        h                   Horas
+        m                   Minutos
+        s                   Segundos
+
+    Los siguientes ejemplos son cadenas válidas:
+        1w                  1 semana
+        5d                  5 días
+        12h                 12 horas
+        30m                 30 minutos
+        35s                 35 segundos
+        1h30m               1 hora y 30 minutos
 
     Parámetros de formato de salida (opción --format):
-        Este comando acepta una cadena de formato para mostrar la salida.
-        Los parámetros de salida de este comando son los siguientes:
-        {id}             | {0}         Identificador del token de acceso.
-        {description}    | {1}         Descripción del token de acceso.
-        {owner}          | {2}         Propietario del token de acceso.
-        {creationdate}   | {3}         Fecha de creación del token de acceso.
-        {expirationdate} | {4}         Fecha de expiración del token de acceso.
-        {lastusedate}    | {5}         Fecha de último uso del token de acceso.
+
+    Este comando acepta una cadena de formato para mostrar la salida.
+
+    Los parámetros de salida de este comando son los siguientes:
+        {id}             | {0}         Identificador del token.
+        {description}    | {1}         Descripción del token.
+        {owner}          | {2}         Propietario del token.
+        {creationdate}   | {3}         Fecha de creación del token.
+        {expirationdate} | {4}         Fecha de expiración del token.
+        {lastusedate}    | {5}         Fecha de último uso del token.
         {tab}                          Inserta un tabulador.
         {newline}                      Inserta una nueva línea.
 
@@ -66,20 +359,20 @@ Notas:
 
 Ejemplos:
 
-    cm accesstoken create "Token del servidor de compilación"
-    (Crea un nuevo token de acceso con la descripción dada contra el servidor
-     de repositorios por defecto.)
+    cm accesstoken create "Token del servidor de compilación" 4w
+    (Crea un nuevo token con la descripción dada y un tiempo de vida
+     de 4 semanas contra el servidor de repositorios por defecto.)
 
-    cm accesstoken create "Token del servidor de compilación" skull:8087
-    (Crea un nuevo token de acceso con la descripción dada en el servidor de
-     repositorios skull:8087.)
+    cm accesstoken create "Token del servidor de compilación" 365d skull:8087
+    (Crea un nuevo token con la descripción dada y un tiempo de vida de 365 días
+     en el servidor de repositorios skull:8087.)
 
-    cm accesstoken create "Token del servidor de compilación" --format="{id}"
-    (Crea un nuevo token de acceso con la descripción dada contra el servidor
-     de repositorios por defecto y muestra únicamente su ID.)
+    cm accesstoken create "Token del servidor de compilación" 12h --format="{id}"
+    (Crea un nuevo token con la descripción dada y un tiempo de vida de 12 horas
+     contra el servidor de repositorios por defecto, y muestra únicamente su ID.)
 
 == CMD_DESCRIPTION_ACCESS_TOKEN_LIST ==
-Permite al usuario listar tókenes de acceso.
+Lista Tókenes Personales de Acceso.
 
 == CMD_USAGE_ACCESS_TOKEN_LIST ==
 Sintaxis:
@@ -97,19 +390,21 @@ Sintaxis:
 == CMD_HELP_ACCESS_TOKEN_LIST ==
 Notas:
 
-    Solo puede listar sus propios tókenes de acceso. Los tókenes de acceso revocados
-    no serán devueltos como parte del resultado. Por otro lado, los tókenes de
-    acceso cuyo tiempo de vida haya expirado sí serán devueltos.
+    Solo puede listar sus propios Tókenes Personales de Acceso.
+    Los tókenes revocados no son devueltos en el resultado. Sin embargo,
+    los tókenes caducados sí.
 
     Parámetros de formato de salida (opción --format):
+
         Este comando acepta una cadena de formato para mostrar la salida.
+
         Los parámetros de salida de este comando son los siguientes:
-        {id}             | {0}         Identificador del token de acceso.
-        {description}    | {1}         Descripción del token de acceso.
-        {owner}          | {2}         Propietario del token de acceso.
-        {creationdate}   | {3}         Fecha de creación del token de acceso.
-        {expirationdate} | {4}         Fecha de expiración del token de acceso.
-        {lastusedate}    | {5}         Fecha de último uso del token de acceso.
+        {id}             | {0}         Identificador del token.
+        {description}    | {1}         Descripción del token.
+        {owner}          | {2}         Propietario del token.
+        {creationdate}   | {3}         Fecha de creación del token.
+        {expirationdate} | {4}         Fecha de expiración del token.
+        {lastusedate}    | {5}         Fecha de último uso del token.
         {tab}                          Inserta un tabulador.
         {newline}                      Inserta una nueva línea.
 
@@ -119,24 +414,24 @@ Notas:
 Ejemplos:
 
     cm accesstoken list
-    (Lista los tókenes de acceso en el servidor de repositorios por defecto.)
+    (Lista los tókenes en el servidor de repositorios por defecto.)
 
     cm accesstoken list skull:8087
-    (Lista los tókenes de acceso en el servidor de repositorios skull:8087.)
+    (Lista los tókenes en el servidor de repositorios skull:8087.)
 
     cm accesstoken list --format="{id}"
-    (Lista los tókenes de acceso en el servidor de repositorios por defecto
-     y muestra únicamente su ID.)
+    (Lista los tókenes en el servidor de repositorios por defecto y muestra
+    únicamente su ID.)
 
 == CMD_DESCRIPTION_ACCESS_TOKEN_REVOKE ==
-Revoca un token de acceso existente.
+Revoca un Token Personal de Acceso existente.
 
 == CMD_USAGE_ACCESS_TOKEN_REVOKE ==
 Sintaxis:
 
     cm accesstoken revoke <id> [<repserverspec>]
 
-    id                  El ID del token de acceso a ser revocado.
+    id                  El ID del token a ser revocado.
     repserverspec       Especificación del servidor de repositorios.
                         (Use 'cm help objectspec' para más información sobre
                         especificaciones de servidor de repositorios.)
@@ -144,41 +439,37 @@ Sintaxis:
 == CMD_HELP_ACCESS_TOKEN_REVOKE ==
 Notas:
 
-    Solo puede revocar sus propios tókenes de acceso. Tratar de revocar un token
-    de acceso que no exista o que no le pertenezca resultará en un error.
+    Solo puede revocar sus propios Tókenes Personales de Acceso.
+    Tratar de revocar un token que no exista o que no le pertenezca resultará
+    en un error.
     (Use 'cm accesstoken list' para más información.)
 
-    Para revocar un token de acceso es necesario usar su ID completo.
+    Para revocar un token es necesario usar su ID completo.
 
-    Revocar un token de acceso no significa que los tókenes de Unity VCS ya
-    revelados dejen de funcionar inmediatamente.
-    El máximo tiempo que puede pasar desde que se revoca un tóken de acceso hasta
-    que los tókenes de Unity VCS revelados con él dejen de funcionar depende de
-    la clave de configuración 'TokenExpirationTimeSpan' de su server.conf.
-    Por defecto, este valor es de 1 hora.
-    Si necesita saber el valor exacto configurado para su servidor de Unity VCS,
-    por favor, contacte con su administrador.
+    Revocar un token no significa que los tókenes de Unity VCS ya revelados
+    dejen de funcionar inmediatamente, si no que el token no será renovado
+    una vez expire.
     (Use 'cm accesstoken reveal --help' para más información.)
 
 Ejemplos:
 
     cm accesstoken revoke de0be8a4-2a7a-44c6-9c4c-82c8222dbc6f
-    (Revoca el token de acceso con el ID especificado del servidor de repositorios
+    (Revoca el token con el ID especificado del servidor de repositorios
      por defecto.)
 
     cm ^accesstoken ^revoke de0be8a4-2a7a-44c6-9c4c-82c8222dbc6f skull:8087
-    (Revoca el token de acceso con el ID especificado del servidor de repositorios
+    (Revoca el token con el ID especificado del servidor de repositorios
      skull:8087.)
 
 == CMD_DESCRIPTION_ACCESS_TOKEN_REVEAL ==
-Muestra un token de acceso para que pueda ser utilizado como credenciales.
+Muestra un Token Personal de Acceso para que pueda ser utilizado como credencial.
 
 == CMD_USAGE_ACCESS_TOKEN_REVEAL ==
 Sintaxis:
 
     cm accesstoken reveal <id> [<repserverspec>]
 
-    id                  El ID del token de acceso a ser revelado.
+    id                  El ID del token a ser revelado.
     repserverspec       Especificación del servidor de repositorios.
                         (Use 'cm help objectspec' para más información sobre
                         especificaciones de servidor de repositorios.)
@@ -186,11 +477,12 @@ Sintaxis:
 == CMD_HELP_ACCESS_TOKEN_REVEAL ==
 Notas:
 
-    Solo puede revelar sus propios tókenes de acceso. Tratar de revelar un token
-    de acceso que no exista o que no le pertenezca resultará en un error.
+    Solo puede revelar sus propios Tókenes Personales de Acceso.
+    Tratar de revelar un token que no exista o que no le pertenezca resultará
+    en un error.
     (Use 'cm accesstoken list' para más información.)
 
-    Para revelar un token de acceso es necesario usar su ID completo.
+    Para revelar un token es necesario usar su ID completo.
 
     El token revelado puede ser utilizado en automatizaciones. Puede utilizarlo
     en posteriores comandos del 'cm' (tanto en la misma máquina como en una
@@ -203,18 +495,18 @@ Notas:
             --server=skull:8087
 
     El token revelado será válido desde el mismo momento en el que se muestra,
-    y se renovará automáticamente mientras que el token de acceso relacionado
-    no haya expirado ni haya sido revocado.
+    y se renovará automáticamente mientras que el Token Persona de Acceso
+    relacionado no haya expirado ni haya sido revocado.
 
 Ejemplos:
 
     cm accesstoken reveal d2f43753-f612-4e51-b9b4-3c2883d7cf95
-    (Revela el token de acceso con el ID proporcionado en el servidor
-     de repositorios por defecto.)
+    (Revela el token con el ID proporcionado en el servidor de repositorios
+     por defecto.)
 
     cm accesstoken reveal d2f43753-f612-4e51-b9b4-3c2883d7cf95 skull:8087
-    (Revela el token de acceso con el ID proporcionado en el servidor
-     de repositorios skull:8087.)
+    (Revela el token con el ID proporcionado en el servidor de repositorios
+     skull:8087.)
 
 == CMD_DESCRIPTION_ACL ==
 Configura permisos para un objeto.
@@ -2384,7 +2676,7 @@ Obtiene información de configuración.
 Sintaxis:
 
     cm getconfig [setfileasreadonly] [location] [extensionworkingmode]
-                 [extensionprefix] [defaultrepserver]
+                 [extensionprefix] [defaultrepserver] [organization]
 
     setfileasreadonly       Muestra si los ficheros protegidos se dejan en modo
                             solo lectura o no.
@@ -2393,12 +2685,45 @@ Sintaxis:
     extensionworkingmode    Muestra el modo de trabajo de la extensión.
     extensionprefix         Muestra el prefijo de la extensión configurada.
     defaultrepserver        Muestra el servidor de repositorios configurado por
-    defecto.
+                            defecto.
+    organization            Muestra la información de la organización del workspace
+                            o predeterminada tal y como figura en la configuración.
 
 == CMD_HELP_GETCONFIG ==
 Ejemplos:
 
     cm getconfig setfileasreadonly
+
+== CMD_DESCRIPTION_GETCONFIG_GETORGANIZATION ==
+Obtiene información de una organización Cloud de la configuración.
+Si no se proporciona ninguna, se usará implicitamente la organización
+del workspace o la predeterminada.
+
+== CMD_USAGE_GETCONFIG_GETORGANIZATION ==
+Sintaxis:
+
+    cm getconfig getorganization [organization] [--format=<str_format>]
+
+    organization    Una especificación de servidor explícita incluyendo la organización.
+    --format        Muestra el mensaje de salida en el formato indicado.
+                    Consulte las Notas para más información.
+
+== CMD_HELP_GETCONFIG_GETORGANIZATION ==
+Notas:
+
+    Parámetros de formato de salida (opción --format):
+    Este comando acepta una cadena de formato para mostrar la salida.
+
+    Los parámetros de salida de este comando son los siguientes:
+    {name}       Nombre de la organización.
+    {type}       Puede ser 'cloud' o 'unity'.
+    {unityid}    El ID de la organización de Unity (si lo tuviese, de lo contrario sería -1).
+    {region}     La región de la organización.
+
+Ejemplos:
+
+    cm getconfig organization --format={unityid}
+    cm getconfig organization myorg@cloud
 
 == CMD_DESCRIPTION_GETFILE ==
 Descarga el contenido de una revisión especificada.
@@ -5091,6 +5416,9 @@ Sintaxis:
 Opciones:
     --encoding=codificación: Especifica la codificación de los ficheros de
       origen (por ejemplo, UTF-8 o Unicode)
+    --dontcheckout: No hace checkout de los ficheros con cambios a aplicar,
+      los mantiene como cambios locales. Esto es útil para evitar el checkout
+      exclusivo al aplicar un shelve.
     --comparisonmethod=tipo: cualquiera de las siguientes opciones:
       ignoreeol:               Ignora diferencias de final de línea.
       ignorewhitespaces:       Ignora diferencias de espacios en blanco.
@@ -5719,101 +6047,15 @@ Ejecuta una consulta SQL contra la base de datos del servidor.
 == CMD_USAGE_QUERY ==
 Uso:
 
-    cm query comandosql [--outputfile=ruta]
-                        [--solveuser=nombre_columna1,nombre_columna2,...]
-                        [--solvepath=nombre_columna1,nombre_columna2,...]
-                        [--columnwidth=valor]
+    cm query comandosql [--repository=<name>]
 
-    --outputfile: Escribe en un fichero el resultado de la consulta.
-    --solveuser: Indica al intérprete de consultas que la(s) columna(s)
-    especificada(s) contiene(n) usuarios. Se tratarán de resolver
-    identificadores de usuario a nombres de usuario.
-    --solvepath: Indica al intérprete de consultas que la(s) columna(s)
-     especificadas(s) contiene(n) identificadores de ítem. Se tratarán de
-     resolver los identificadores a rutas de disco.
-    --columnwidth: Especifica la anchura de cada columna del resultado de la
-    consulta.
+    --repository: repositorio para consultar.
 
 == CMD_HELP_QUERY ==
 Notas:
 
     Este comando permite a los usuarios ejecutar consultas SQL directamente
     contra la base de datos del servidor.
-    A continuación se detalla el esquema (tablas y campos de cada tabla)
-    disponibles para realizar consultas.
-
-    ITEMS
-        OBJECTID        (integer)
-        CREATIONDATE    (datetime)
-        OWNER           (string)
-
-    REVISIONS
-        OBJECTID        (integer)
-        SIZEBYTES       (integer)
-        ITEMID          (integer)
-        BRANCHID        (integer)
-        CHANGESET       (integer)
-        COMMENT         (string)
-        CREATIONDATE    (datetime)
-        OWNER           (string)
-
-    CHECKOUTS
-        REVISIONID      (integer)
-        WORKSPACESERVER (string)
-        CLIENTMACHINE   (string)
-        EXCLUSIVE       (char)
-        CREATIONDATE    (datetime)
-        OWNER           (string)
-
-    BRANCHES
-        OBJECTID        (integer)
-        NAME            (string)
-        PARENTBRANCHID  (integer)
-        CREATIONDATE    (datetime)
-        OWNER           (string)
-
-    LABELS
-        OBJECTID        (integer)
-        NAME            (string)
-        CREATIONDATE    (datetime)
-        OWNER           (string)
-
-    LABELEDREVISIONS
-        LABELID         (integer)
-        REVISIONID      (integer)
-        CREATIONDATE    (datetime)
-        OWNER           (string)
-
-    LINKS
-        OBJECTID        (integer)
-        NAME            (string)
-        CREATIONDATE    (datetime)
-        OWNER           (string)
-
-     LINKEDOBJECTS
-        LINKID              (integer)
-        SOURCEOBJECTID      (integer)
-        DESTINATIONOBJECTID (integer)
-        CREATIONDATE        (datetime)
-        OWNER               (string)
-
-    ATTRIBUTES
-        OBJECTID        (integer)
-        NAME            (string)
-        CREATIONDATE    (datetime)
-        OWNER           (string)
-
-    OBJECTSWITHATTRIBUTES
-        ATTRIBUTEID     (integer)
-        SOURCEOBJECTID  (integer)
-        ATTRIBUTEVALUE  (string)
-        CREATIONDATE    (datetime)
-        OWNER           (string)
-
-    CHANGESETS
-        CHANGESETNUMBER (integer)
-        CREATIONDATE    (datetime)
-        OWNER           (string)
 
 Además, a la hora de escribir consultas, existen dos functiones predefinidas
 para trabajar con usuarios y rutas de disco.
@@ -5822,28 +6064,6 @@ Estas funciones son las siguientes:
 * SolveUser(nombre_usuario), resuelve el nombre de usuario dado al formato que
 maneja Unity VCS.
 * SolvePath(path), resuelve rutas de disco a identificadores de ítem itemid.
-
-Para mostrar el resultado de las consultas de forma legible al usuario, se
-puede indicar al intérprete de consultas que convierta identificadores de
-usuario a nombres de usuario, e identificadores de ítem a rutas de disco.
-Para ello se utilizan las opciones:
-
---solveuser=nombre_columna
---solvepath=nombre_columna
-
-Se pueden especificar varios nombres de columnas separados por comas.
-
-Ejemplos:
-
-    cm query "SELECT * FROM revision"
-
-    cm query "SELECT b.sname as br_name, o.dtimestamp as date from branch b, object o, seid s
-    where b.iobjid=o.iobjid and o.fidowner=s.iseidid and s.scode='SolveUser(juan)'"
-
-    cm query "SELECT * FROM REVISION WHERE itemid=SolvePath(c:\mi_workspace)"
-
-    cm query "SELECT r.iobjid, r.fiditem as ruta, s.scode as nombre_usuario FROM revision r, object o, seid s
-    WHERE r.iobjid=o.iobjid and o.fidowner=s.iseidid" --solveuser=nombre_usuario --solvepath=ruta
 
 == CMD_DESCRIPTION_ATTRIBUTE_DELETE ==
 Borra uno o más atributos.
@@ -7255,10 +7475,13 @@ Sintaxis:
     ninguna ruta se aplican todos los cambios del shelve.
 
 Opciones:
-    --preview: Muestra los cambios a aplicar en el workpsace sin aplicarles
+    --preview: Muestra los cambios a aplicar en el workspace sin aplicarles
     --mount: El punto de montaje del respositorio especificado.
     --encoding=codificación: Especifica la codificación de los ficheros de
       origen (por ejemplo, UTF-8 o Unicode)
+    --dontcheckout: No hace checkout de los ficheros con cambios a aplicar,
+      los mantiene como cambios locales. Esto es útil para evitar el checkout
+      exclusivo al aplicar un shelve.       
     --comparisonmethod=tipo: cualquiera de las siguientes opciones:
       ignoreeol:               Ignora diferencias de final de línea.
       ignorewhitespaces:       Ignora diferencias de espacios en blanco.

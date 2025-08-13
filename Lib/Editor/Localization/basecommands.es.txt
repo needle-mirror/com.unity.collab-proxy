@@ -16,6 +16,9 @@ Expiración
 == AccessTokenLastUsedAt ==
 Último uso
 
+== AccessTokenLifetimeHasDefaultValue ==
+El servidor '{0}' no soporta tiempos de vida personalizados para los tókenes. El token resultante tiene el tiempo de vida por defecto.
+
 == WrongRevFormat3D ==
 El formato de la revision especificado no es valido
 
@@ -655,6 +658,9 @@ Las opciones '--silent' y '--machinereadable' no son compatibles.
 == CmUncoIncompatibleFlag ==
 La opción '--keepchanges' no es compatible con workspaces dinámicos.
 
+== CmdAccessTokenAllowlistCorrectlyUpdated ==
+La allowlist de los tókenes de acceso se ha actualizado correctamente.
+
 == CmdApiPressEnterToExit ==
 API REST cliente de Unity VCS: Pulse <ENTER> para salir.
 
@@ -726,6 +732,9 @@ El tipo {0} no es válido. Recuerde que su formato es subtipo-tipo.
 
 == CmdErrorNoSuchUser ==
 El usuario {0} no existe
+
+== CmdErrorNoSuchGroup ==
+El grupo {0} no existe
 
 == CmdErrorNoSuchUserDuCommandHint ==
 Quizá necesite especificar la opción "--nosolveuser" para desactivar un usuario que ya no existe en el sistema de autenticación.
@@ -2102,6 +2111,9 @@ Operación lectura iniciada
 
 == OperationStartingPush ==
 Operación exportar iniciada
+
+== OrganizationConfigNotFound ==
+No se encontró configuración para la organización '{0}'.
 
 == Owner ==
 Propietario

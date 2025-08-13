@@ -26,11 +26,13 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
             }
         }
 
-        internal static bool ConfirmDelete(IList<BranchInfo> branches)
+        internal static bool ConfirmDelete(
+            EditorWindow parentWindow,
+            IList<BranchInfo> branches)
         {
             DeleteBranchDialog dialog = Create(branches);
 
-            return dialog.RunModal(null) == ResponseType.Ok;
+            return dialog.RunModal(parentWindow) == ResponseType.Ok;
         }
 
         protected override string GetTitle()
@@ -52,8 +54,8 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
             using (new EditorGUILayout.HorizontalScope())
             {
                 GUILayout.FlexibleSpace();
-                
-                mConfirmDelete = ToggleEntry(
+
+                mConfirmDelete = EntryBuilder.CreateToggleEntry(
                     PlasticLocalization.Name.ConfirmationCheckBox.GetString(),
                     mConfirmDelete);
 

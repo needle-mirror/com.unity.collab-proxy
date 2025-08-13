@@ -6,42 +6,32 @@ using PlasticGui.WebApi.Responses;
 
 namespace Unity.PlasticSCM.Editor.WebApi
 {
-    // Internal usage. This isn't a public API.
+    // Placeholder. This isn't a public API.
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete("ChangesetFromCollabCommitResponse is deprecated and will be removed in a future release", false)]
     public class ChangesetFromCollabCommitResponse
     {
-        /// <summary>
-        /// Error caused by the request.
-        /// </summary>
+        // Placeholder. This isn't a public API.
         [EditorBrowsable(EditorBrowsableState.Never)]
         [JsonProperty("error")]
         public ErrorResponse.ErrorFields Error { get; set; }
 
-        /// <summary>
-        /// The repository ID
-        /// </summary>
+        // Placeholder. This isn't a public API.
         [EditorBrowsable(EditorBrowsableState.Never)]
         [JsonProperty("repId")]
         public uint RepId { get; set; }
 
-        /// <summary>
-        /// The repository module ID
-        /// </summary>
+        // Placeholder. This isn't a public API.
         [EditorBrowsable(EditorBrowsableState.Never)]
         [JsonProperty("repModuleId")]
         public uint RepModuleId { get; set; }
 
-        /// <summary>
-        /// The changeset ID
-        /// </summary>
+        // Placeholder. This isn't a public API.
         [EditorBrowsable(EditorBrowsableState.Never)]
         [JsonProperty("changesetId")]
         public long ChangesetId { get; set; }
 
-        /// <summary>
-        /// The branch ID
-        /// </summary>
+        // Placeholder. This isn't a public API.
         [EditorBrowsable(EditorBrowsableState.Never)]
         [JsonProperty("branchId")]
         public long BranchId { get; set; }

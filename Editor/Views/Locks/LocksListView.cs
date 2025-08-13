@@ -5,11 +5,17 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
+using Codice.Client.Common;
+
 using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Locks;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Tree;
+
+#if UNITY_6000_2_OR_NEWER
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.Locks
 {
@@ -19,7 +25,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
         FillLocksTable.ILocksList
     {
         internal GenericMenu Menu { get { return mMenu.Menu; } }
-        internal string EmptyStateMessage { get { return mEmptyStateData.Content.text; } }
+        internal string EmptyStateMessage { get { return mEmptyStatePanel.Text; } }
 
         internal LocksListView(
             RepositorySpec repSpec,
@@ -33,14 +39,18 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
             mColumnNames = columnNames;
             mMenu = menu;
             mSelectionChangedAction = selectionChangedAction;
-            mRepaintAction = repaintAction;
+            mEmptyStatePanel = new EmptyStatePanel(repaintAction);
+            mMultiLinkLabelData =  new MultiLinkLabelData(
+                PlasticLocalization.Name.LocksTutorialLabel.GetString(),
+                new List<string> { PlasticLocalization.Name.LocksTutorialButton.GetString() },
+                new List<Action> { () => { Codice.Utils.OpenBrowser.TryOpen(LOCKS_TUTORIAL_LINK); } });
 
             mLocksSelector = new LocksSelector(this, mListViewItemIds);
 
-            mCooldownFilterAction = new CooldownWindowDelayer(
+            mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
 
-            mCooldownSelectionAction = new CooldownWindowDelayer(
+            mDelayedSelectionAction = new DelayedActionBySecondsRunner(
                 DelayedSelectionChanged, UnityConstants.SELECTION_DELAYED_INPUT_ACTION_INTERVAL);
 
             SetupTreeView(headerState);
@@ -50,10 +60,8 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
         {
             base.OnGUI(rect);
 
-            mEmptyStateData.UpdateValidRect(rect, Event.current.type, mRepaintAction);
-
-            if (mRows.Count == 0)
-                DrawTreeViewEmptyState.For(mEmptyStateData);
+            if (mRows.Count == 0 && !mEmptyStatePanel.IsEmpty())
+                mEmptyStatePanel.OnGUI(rect);
 
             Event e = Event.current;
 
@@ -87,12 +95,12 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
 
         protected override void SearchChanged(string newSearch)
         {
-            mCooldownFilterAction.Ping();
+            mDelayedFilterAction.Run();
         }
 
         protected override void SelectionChanged(IList<int> selectedIds)
         {
-            mCooldownSelectionAction.Ping();
+            mDelayedSelectionAction.Run();
         }
 
         protected override void ContextClickedItem(int id)
@@ -131,7 +139,9 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
 
         void FillLocksTable.IShowContentView.ShowContentPanel()
         {
-            mEmptyStateData.UpdateText(string.Empty);
+            mEmptyStatePanel.UpdateContent(
+                string.Empty,
+                multiLinkLabelData: mMultiLinkLabelData);
 
             Reload();
 
@@ -140,7 +150,9 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
 
         void FillLocksTable.IShowContentView.ShowEmptyStatePanel(string explanationText)
         {
-            mEmptyStateData.UpdateText(explanationText);
+            mEmptyStatePanel.UpdateContent(
+                explanationText,
+                multiLinkLabelData: mMultiLinkLabelData);
 
             Reload();
         }
@@ -151,8 +163,9 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
                 PlasticLocalization.Name.LoadLocksErrorExplanation.GetString(),
                 errorText);
 
-            mEmptyStateData.UpdateText(
-                PlasticLocalization.Name.LoadLocksError.GetString());
+            mEmptyStatePanel.UpdateContent(
+                PlasticLocalization.Name.LoadLocksError.GetString(),
+                multiLinkLabelData: mMultiLinkLabelData);
 
             mLocksList = null;
             mListViewItemIds.Clear();
@@ -291,19 +304,20 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
             }
         }
 
-
         ListViewItemIds<LockInfo> mListViewItemIds = new ListViewItemIds<LockInfo>();
 
         LockInfoList mLocksList;
 
-        readonly EmptyStateData mEmptyStateData = new EmptyStateData();
-        readonly CooldownWindowDelayer mCooldownFilterAction;
-        readonly CooldownWindowDelayer mCooldownSelectionAction;
+        readonly EmptyStatePanel mEmptyStatePanel;
+        readonly MultiLinkLabelData mMultiLinkLabelData;
+        readonly DelayedActionBySecondsRunner mDelayedFilterAction;
+        readonly DelayedActionBySecondsRunner mDelayedSelectionAction;
         readonly LocksSelector mLocksSelector;
         readonly Action mSelectionChangedAction;
-        readonly Action mRepaintAction;
         readonly LocksViewMenu mMenu;
         readonly List<string> mColumnNames;
         readonly RepositorySpec mRepSpec;
+
+        const string LOCKS_TUTORIAL_LINK = "https://learn.unity.com/tutorial/6650a6abedbc2a2ccccb05a4";
     }
 }

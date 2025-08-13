@@ -64,43 +64,27 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
 
         internal static string GetLayoutsFolderRelativePath()
         {
-            return string.Concat(mAssetsFolderLocation, "/Layouts");
+            return string.Concat(mAssetsFolderRelativePath, "/Layouts");
         }
 
         internal static string GetStylesFolderRelativePath()
         {
-            return string.Concat(mAssetsFolderLocation, "/Styles");
+            return string.Concat(mAssetsFolderRelativePath, "/Styles");
         }
 
         internal static string GetImagesFolderRelativePath()
         {
-            return string.Concat(mAssetsFolderLocation, "/Images");
+            return string.Concat(mAssetsFolderRelativePath, "/Images");
+        }
+
+        internal static string GetLibEditorFolderFullPath()
+        {
+            return mLibEditorFolderFullPath;
         }
 
         internal static string GetRelativePath(string fullPath)
         {
-            return PathHelper.GetRelativePath(
-                mProjectFullPath, fullPath).Substring(1);
-        }
-
-        internal static bool IsRunningAsUPMPackage()
-        {
-            string unityPlasticDllPath = Path.GetFullPath(
-                AssemblyLocation.GetAssemblyDirectory(
-                    Assembly.GetAssembly(typeof(PlasticLocalization))));
-
-            // The Plastic Dll path when running as a UPM package is either
-            // "Packages/com.unity.collab-proxy@xxx/Lib/Editor/unityplastic.dll" when running as an UPM package
-            // "Assets/Plugins/PlasticSCM/Lib/Editor/unityplastic.dll" in the development environment
-            return unityPlasticDllPath.Contains("com.unity.collab-proxy");
-        }
-
-        static string GetAssetPath(string guid)
-        {
-            if (string.IsNullOrEmpty(guid))
-                return null;
-
-            return AssetDatabase.GUIDToAssetPath(guid);
+            return PathHelper.GetRelativePath(mProjectFullPath, fullPath).Substring(1);
         }
 
         internal static bool IsPackagesRootElement(string path)
@@ -113,9 +97,34 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
             return Path.GetExtension(path).Equals(".cs");
         }
 
+        internal static bool IsRunningAsUPMPackage()
+        {
+            return IsRunningAsUPMPackage(mLibEditorFolderFullPath);
+        }
+
+        static string GetAssetPath(string guid)
+        {
+            if (string.IsNullOrEmpty(guid))
+                return null;
+
+            return AssetDatabase.GUIDToAssetPath(guid);
+        }
+
+        static bool IsRunningAsUPMPackage(string libEditorFolderFullPath)
+        {
+            // The Lib/Editor path containing the "unityplastic.dll" ends with
+            // - "Packages/com.unity.collab-proxy@xxx/Lib/Editor" when running as an UPM package
+            // - "Assets/Plugins/PlasticSCM/Lib/Editor" in the development environment
+            return libEditorFolderFullPath.Contains(PackageInfo.NAME);
+        }
+
         static AssetsPath()
         {
-            mAssetsFolderLocation = (IsRunningAsUPMPackage()) ?
+            mLibEditorFolderFullPath = Path.GetFullPath(
+                AssemblyLocation.GetAssemblyDirectory(
+                    Assembly.GetAssembly(typeof(PlasticLocalization))));
+
+            mAssetsFolderRelativePath = IsRunningAsUPMPackage(mLibEditorFolderFullPath) ?
                 "Packages/com.unity.collab-proxy/Editor/Assets" :
                 "Assets/Plugins/PlasticSCM/Editor/Assets";
         }
@@ -123,6 +132,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
         static readonly string mProjectFullPath = ProjectPath.Get();
         static readonly string mProjectPackagesFullPath = Path.Combine(mProjectFullPath, "Packages");
 
-        static string mAssetsFolderLocation;
+        static string mLibEditorFolderFullPath;
+        static string mAssetsFolderRelativePath;
     }
 }

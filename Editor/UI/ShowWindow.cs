@@ -2,19 +2,34 @@ using System;
 
 using UnityEditor;
 
+using Unity.PlasticSCM.Editor.CloudDrive;
+
 namespace Unity.PlasticSCM.Editor.UI
 {
     internal static class ShowWindow
     {
-        internal static PlasticWindow Plastic()
+        internal static UVCSWindow UVCS()
         {
-            PlasticWindow window = EditorWindow.GetWindow<PlasticWindow>(
-                UnityConstants.PLASTIC_WINDOW_TITLE,
+            UVCSWindow window = EditorWindow.GetWindow<UVCSWindow>(
+                UnityConstants.UVCS_WINDOW_TITLE,
                 true,
                 mConsoleWindowType,
                 mProjectBrowserType);
 
-            window.UpdateWindowIcon(PlasticPlugin.GetNotificationStatus());
+            window.titleContent.image = UVCSPlugin.Instance.GetPluginStatusIcon();
+
+            return window;
+        }
+
+        internal static CloudDriveWindow CloudDrive()
+        {
+            CloudDriveWindow window = EditorWindow.GetWindow<CloudDriveWindow>(
+                UnityConstants.CloudDrive.WINDOW_TITLE,
+                true,
+                mConsoleWindowType,
+                mProjectBrowserType);
+
+            window.titleContent.image = Images.GetCloudDriveViewIcon();
 
             return window;
         }

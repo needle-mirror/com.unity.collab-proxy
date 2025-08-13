@@ -110,7 +110,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
                 this,
                 mRefreshView,
                 mProgressControls,
-                RefreshAsset.VersionControlCache);
+                () => RefreshAsset.VersionControlCache(mAssetStatusCache));
         }
 
         void ILockMenuOperations.RemoveLocks()
@@ -121,7 +121,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
                 this,
                 mRefreshView,
                 mProgressControls,
-                RefreshAsset.VersionControlCache);
+                () => RefreshAsset.VersionControlCache(mAssetStatusCache));
         }
 
         void SearchField_OnDownOrUpArrowKeyPressed()
@@ -159,7 +159,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
 
             if (progressControls.IsOperationRunning())
             {
-                DrawProgressForViews.ForIndeterminateProgress(
+                DrawProgressForViews.ForIndeterminateProgressBar(
                     progressControls.ProgressData);
             }
 

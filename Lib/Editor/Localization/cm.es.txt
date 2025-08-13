@@ -71,6 +71,9 @@ Comandos de automatización:
 == Description ==
 Descripción
 
+== Group ==
+Grupo
+
 == LongName ==
 Comando
 
@@ -83,15 +86,6 @@ Error:
 == MsgNocommands ==
 Error grave: No hay comandos definidos
 
-== ShortName ==
-Nombre corto  
-
-== WkUpgradeFinished ==
-Comprobación de workspaces finalizada.
-
-== WkUpgradeStarted ==
-Comprobando contenido de los workspaces...
-
 == EnterUserCredentials ==
 Introduzca credenciales para conectar al servidor [{0}]
 
@@ -101,11 +95,23 @@ Usuario:
 == EnterPassword ==
 Contraseña: 
 
+== OpenThisUrlInYourBrowser ==
+Abra la siguiente URL en su navegador:
+
 == SelectSignInProvider ==
 Seleccione el sistema que desea usar para acceder a: {0}
 
 == SelectYourProviderToSignin ==
 Seleccione un sistema de autenticación [{0}-{1}] 
 
-== OpenThisUrlInYourBrowser ==
-Abra la siguiente URL en su navegador:
+== ShortName ==
+Nombre corto  
+
+== User ==
+Usuario
+
+== WkUpgradeFinished ==
+Comprobación de workspaces finalizada.
+
+== WkUpgradeStarted ==
+Comprobando contenido de los workspaces...

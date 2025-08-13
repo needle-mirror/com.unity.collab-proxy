@@ -6,6 +6,7 @@ using Codice.Client.BaseCommands;
 using Codice.Client.Commands;
 using Codice.CM.Common;
 using PlasticGui;
+using PlasticGui.WorkspaceWindow.Diff;
 using PlasticGui.WorkspaceWindow.PendingChanges;
 using PlasticGui.WorkspaceWindow.PendingChanges.Changelists;
 
@@ -138,6 +139,16 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             PendingChangesTreeView treeView)
         {
             return treeView.GetSelectedRow();
+        }
+
+        internal static bool IsApplicableDiffWorkspaceContent(PendingChangesTreeView treeView)
+        {
+            ChangeInfo selectedRow = GetSelectedChange(treeView);
+
+            if (selectedRow == null)
+                return false;
+
+            return DiffOperation.IsApplicableDiffWorkspaceContent(selectedRow);
         }
 
         static List<ChangeListInfo> GetInvolvedChangelists(List<PendingChangeInfo> changes)

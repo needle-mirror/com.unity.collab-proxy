@@ -3,6 +3,9 @@ using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 using Unity.PlasticSCM.Editor.Views.PendingChanges;
+#if UNITY_6000_2_OR_NEWER
+using TreeView = UnityEditor.IMGUI.Controls.TreeView<int>;
+#endif
 
 namespace Unity.PlasticSCM.Editor
 {

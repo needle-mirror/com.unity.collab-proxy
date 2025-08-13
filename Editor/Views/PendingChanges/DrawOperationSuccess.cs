@@ -6,9 +6,9 @@ using UnityEngine;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using PlasticGui;
+using Unity.PlasticSCM.Editor.StatusBar;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.StatusBar;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.WebApi;
 
@@ -16,7 +16,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
     internal interface IDrawOperationSuccess
     {
-        void InStatusBar(StatusBar statusBar);
+        void InStatusBar(WindowStatusBar windowStatusBar);
         void InEmptyState(Rect rect);
     }
 
@@ -32,16 +32,18 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mOpenLink = openLink;
             mCopyLink = copyLink;
             mRepaint = repaint;
+            mEmptyStatePanel = new CreatedChangesetEmptyStatePanel(repaint);
         }
 
-        void IDrawOperationSuccess.InStatusBar(StatusBar statusBar)
+        void IDrawOperationSuccess.InStatusBar(WindowStatusBar WindowStatusBar)
         {
-            INotificationContent notificationContent = new PendingChangesStatusSuccessNotificationContent(
-                mCreatedChangesetData,
-                mOpenLink,
-                mCopyLink);
+            INotificationContent notificationContent =
+                new PendingChangesStatusSuccessNotificationContent(
+                    mCreatedChangesetData,
+                    mOpenLink,
+                    mCopyLink);
 
-            statusBar.Notify(
+            WindowStatusBar.Notify(
                 notificationContent,
                 MessageType.None,
                 Images.GetStepOkIcon());
@@ -56,24 +58,12 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 mCanInviteMembersFromPendingChangesAlreadyCalculated = true;
             }
 
-            mEmptyStateLastValidRect = EmptyStateData.EnsureValidRect(
-                rect, mEmptyStateLastValidRect, Event.current.type, mRepaint);
-
-            if (mCanInviteMembersFromPendingChanges)
-            {
-                DrawPendingChangesEmptyState.ForNotifySuccessDataWithInviteMembers(
-                    mEmptyStateLastValidRect,
-                    mCreatedChangesetData,
-                    mOpenLink,
-                    mCopyLink);
-                return;
-            }
-
-            DrawPendingChangesEmptyState.ForNotifySuccessData(
-                mEmptyStateLastValidRect,
+            mEmptyStatePanel.UpdateContent(
                 mCreatedChangesetData,
                 mOpenLink,
-                mCopyLink);
+                mCopyLink,
+                mCanInviteMembersFromPendingChanges);
+            mEmptyStatePanel.OnGUI(rect);
         }
 
         void EnableInviteMembersIfFirstCheckinAndAdmin(string server)
@@ -119,27 +109,27 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         bool mCanInviteMembersFromPendingChangesAlreadyCalculated;
         bool mCanInviteMembersFromPendingChanges;
-        Rect mEmptyStateLastValidRect;
 
         readonly Action mRepaint;
         readonly Action mCopyLink;
         readonly Action mOpenLink;
         readonly CreatedChangesetData mCreatedChangesetData;
+        readonly CreatedChangesetEmptyStatePanel mEmptyStatePanel;
     }
 
     internal class NotifySuccessForUndo : IDrawOperationSuccess
     {
         internal NotifySuccessForUndo(Action repaint)
         {
-            mRepaint = repaint;
+            mEmptyStatePanel = new EmptyStatePanel(repaint);
         }
 
-        void IDrawOperationSuccess.InStatusBar(StatusBar statusBar)
+        void IDrawOperationSuccess.InStatusBar(WindowStatusBar windowStatusBar)
         {
             INotificationContent notificationContent = new GUIContentNotification(
                 PlasticLocalization.Name.UndoCompleted.GetString());
 
-            statusBar.Notify(
+            windowStatusBar.Notify(
                 notificationContent,
                 MessageType.None,
                 Images.GetStepOkIcon());
@@ -147,14 +137,12 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         void IDrawOperationSuccess.InEmptyState(Rect rect)
         {
-            mEmptyStateData.Update(
+            mEmptyStatePanel.UpdateContent(
                 PlasticLocalization.Name.UndoCompleted.GetString(),
-                rect, Event.current.type, mRepaint);
-
-            DrawTreeViewEmptyState.For(Images.GetStepOkIcon(), mEmptyStateData);
+                bDrawOkIcon: true);
+            mEmptyStatePanel.OnGUI(rect);
         }
 
-        readonly EmptyStateData mEmptyStateData = new EmptyStateData();
-        readonly Action mRepaint;
+        readonly EmptyStatePanel mEmptyStatePanel;
     }
 }

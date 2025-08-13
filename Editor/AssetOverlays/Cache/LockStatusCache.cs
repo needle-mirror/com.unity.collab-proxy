@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 
 using Codice;
-using Codice.Client.Commands;
 using Codice.Client.Commands.WkTree;
 using Codice.Client.Common;
 using Codice.Client.Common.Locks;
@@ -13,19 +11,16 @@ using Codice.CM.Common.Mount;
 using Codice.Utils;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.Items.Locks;
+using Unity.PlasticSCM.Editor.AssetUtils;
 
 namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
 {
     internal class LockStatusCache
     {
         internal LockStatusCache(
-            WorkspaceInfo wkInfo,
-            Action repaintProjectWindow,
-            Action repaintInspector)
+            WorkspaceInfo wkInfo)
         {
             mWkInfo = wkInfo;
-            mRepaintProjectWindow = repaintProjectWindow;
-            mRepaintInspector = repaintInspector;
         }
 
         internal AssetStatus GetStatus(string fullPath)
@@ -123,8 +118,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
                         mStatusByPathCache = statusByPathCache;
                     }
 
-                    mRepaintProjectWindow();
-                    mRepaintInspector();
+                    RepaintEditor.AllWindowsWithOverlays();
                 });
         }
 
@@ -183,8 +177,6 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
 
         Dictionary<string, LockStatusData> mStatusByPathCache;
 
-        readonly Action mRepaintInspector;
-        readonly Action mRepaintProjectWindow;
         readonly WorkspaceInfo mWkInfo;
 
         static object mLock = new object();

@@ -1,12 +1,9 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-using Codice.Client.Common.EventTracking;
-using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Diff;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.Tool;
 
 namespace Unity.PlasticSCM.Editor.Views.Diff
 {

@@ -10,6 +10,7 @@ using Codice.CM.Common;
 using GluonGui;
 using PlasticGui;
 using PlasticGui.Gluon;
+using PlasticGui.WorkspaceWindow;
 using Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
@@ -45,6 +46,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             IWorkspaceWindow workspaceWindow,
             ViewHost viewHost,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            IPendingChangesUpdater pendingChangesUpdater,
             ISaveAssets saveAssets,
             GuiMessage.IGuiMessage guiMessage,
             IMergeViewLauncher mergeViewLauncher,
@@ -63,6 +65,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 workspaceWindow,
                 viewHost,
                 workspaceOperationsMonitor,
+                pendingChangesUpdater,
                 saveAssets,
                 guiMessage,
                 mergeViewLauncher,
@@ -121,7 +124,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                     continue;
 
                 Texture fileIcon = Directory.Exists(path) ?
-                    Images.GetDirectoryIcon() :
+                    Images.GetFolderIcon() :
                     Images.GetFileIcon(path);
 
                 string label = WorkspacePath.GetWorkspaceRelativePath(
@@ -147,8 +150,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             string label,
             AssetsOverlays.AssetStatus statusToDraw)
         {
-            Texture overlayIcon = DrawAssetOverlay.DrawOverlayIcon.
-                GetOverlayIcon(statusToDraw);
+            Texture overlayIcon = DrawAssetOverlayIcon.GetOverlayIcon(statusToDraw);
 
             itemRect = DrawTreeViewItem.DrawIconLeft(
                 itemRect,
@@ -193,7 +195,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 {
                     TrackFeatureUseEvent.For(
                         PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
-                        TrackFeatureUseEvent.Features.ContextMenuCheckinDialogCheckin);
+                        TrackFeatureUseEvent.Features.UnityPackage.ContextMenuCheckinDialogCheckin);
 
                     mSentCheckinTrackEvent = true;
                 }
@@ -214,7 +216,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             {
                 TrackFeatureUseEvent.For(
                     PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
-                    TrackFeatureUseEvent.Features.ContextMenuCheckinDialogCancel);
+                    TrackFeatureUseEvent.Features.UnityPackage.ContextMenuCheckinDialogCancel);
 
                 mSentCancelTrackEvent = true;
             }
@@ -249,7 +251,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                     this,
                     mGuiMessage,
                     mProgressControls,
-                    mGluonViewSwitcher);
+                    mGluonViewSwitcher,
+                    mPendingChangesUpdater);
                 return;
             }
 
@@ -261,7 +264,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 this,
                 mGuiMessage,
                 mProgressControls,
-                mMergeViewLauncher);
+                mMergeViewLauncher,
+                mPendingChangesUpdater);
         }
 
         bool IsCheckinButtonEnabled()
@@ -279,6 +283,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             IWorkspaceWindow workspaceWindow,
             ViewHost viewHost,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            IPendingChangesUpdater pendingChangesUpdater,
             ISaveAssets saveAssets,
             GuiMessage.IGuiMessage guiMessage,
             IMergeViewLauncher mergeViewLauncher,
@@ -296,6 +301,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             instance.mWorkspaceWindow = workspaceWindow;
             instance.mViewHost = viewHost;
             instance.mWorkspaceOperationsMonitor = workspaceOperationsMonitor;
+            instance.mPendingChangesUpdater = pendingChangesUpdater;
             instance.mSaveAssets = saveAssets;
             instance.mGuiMessage = guiMessage;
             instance.mMergeViewLauncher = mergeViewLauncher;
@@ -325,6 +331,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
 
         IWorkspaceWindow mWorkspaceWindow;
         WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
+        IPendingChangesUpdater mPendingChangesUpdater;
         ISaveAssets mSaveAssets;
         ViewHost mViewHost;
         IMergeViewLauncher mMergeViewLauncher;

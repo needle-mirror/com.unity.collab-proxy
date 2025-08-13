@@ -42,8 +42,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
             mCancelButton.clicked -= CancelButton_Clicked;
             mServerTextField.UnregisterValueChangedCallback(OnServerTextFieldChanged);
             mUseSslToggle.UnregisterValueChangedCallback(OnUseSslToggleChanged);
-
-            mLoadingSpinner.Dispose();
         }
 
         void ConnectButton_Clicked()

@@ -156,23 +156,24 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                     mParentWindow),
                 this,
                 mWorkspaceWindow.GluonProgressOperationHandler,
-                null);
+                null,
+                mPendingChangesUpdater);
 
             checkinOperation.Checkin(
                 changesToCheckin,
                 dependenciesCandidates,
-                mCommentText,
+                mCommentTextArea.Text,
                 keepItemsLocked,
                 isShelve,
                 isShelve ?
-                    OpenPlasticProjectSettings.InShelveAndSwitchFoldout:
+                    OpenUVCSProjectSettings.InShelveAndSwitchFoldout:
                     (Action)null,
                 isShelve ?
                     GetUndoEndOperationDelegate(changesToCheckin, false) :
                     (Action)null,
                 isShelve ?
                     (Action)null :
-                    RefreshAsset.UnityAssetDatabase,
+                    () => RefreshAsset.UnityAssetDatabase(mAssetStatusCache),
                 GetSuccessOperationDelegateForCreatedChangeset(
                     isShelve ?
                         CreatedChangesetData.Type.Shelve :
@@ -201,9 +202,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mPendingChangesOperations.Checkin(
                 changesToCheckin,
                 dependenciesCandidates,
-                mCommentText,
+                mCommentTextArea.Text,
                 null,
-                RefreshAsset.UnityAssetDatabase,
+                () => RefreshAsset.UnityAssetDatabase(mAssetStatusCache),
                 GetSuccessOperationDelegateForCreatedChangeset(CreatedChangesetData.Type.Checkin));
         }
 
@@ -237,8 +238,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mPendingChangesOperations.Shelve(
                 changesToShelve,
                 dependenciesCandidates,
-                mCommentText,
-                OpenPlasticProjectSettings.InShelveAndSwitchFoldout,
+                mCommentTextArea.Text,
+                OpenUVCSProjectSettings.InShelveAndSwitchFoldout,
                 GetUndoEndOperationDelegate(changesToShelve, false),
                 null,
                 GetSuccessOperationDelegateForCreatedChangeset(CreatedChangesetData.Type.Shelve));
@@ -259,16 +260,19 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 mWkInfo.ClientPath, changesToUndo, mWorkspaceOperationsMonitor);
 
             UndoUIOperation undoOperation = new UndoUIOperation(
-                mWkInfo, mViewHost,
+                mWkInfo,
+                mViewHost,
                 new LaunchDependenciesDialog(
                     PlasticLocalization.GetString(PlasticLocalization.Name.UndoButton),
                     mParentWindow),
-                mProgressControls);
+                mProgressControls,
+                mPendingChangesUpdater,
+                mGluonIncomingChangesUpdater);
 
             undoOperation.Undo(
                 changesToUndo,
                 dependenciesCandidates,
-                RefreshAsset.UnityAssetDatabase,
+                () => RefreshAsset.UnityAssetDatabase(mAssetStatusCache),
                 GetSuccessOperationDelegateForUndo());
         }
 
@@ -311,7 +315,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             mPendingChangesOperations.UndoUnchanged(
                 changesToUndo,
-                RefreshAsset.UnityAssetDatabase,
+                () => RefreshAsset.UnityAssetDatabase(mAssetStatusCache),
                 GetSuccessOperationDelegateForUndo());
         }
 
@@ -337,11 +341,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                         change => AssetsPath.IsPackagesRootElement(change.Path) &&
                         !IsAddedChange(change)))
                 {
-                    mAfterOnGUIAction = RefreshAsset.UnityAssetDatabaseAndPackageManagerAsync;
+                    mAfterOnGUIAction = () => RefreshAsset.
+                        UnityAssetDatabaseAndPackageManagerAsync(mAssetStatusCache);
                     return;
                 }
 
-                mAfterOnGUIAction = RefreshAsset.UnityAssetDatabase;
+                mAfterOnGUIAction = () => RefreshAsset.
+                    UnityAssetDatabase(mAssetStatusCache);
             };
         }
 

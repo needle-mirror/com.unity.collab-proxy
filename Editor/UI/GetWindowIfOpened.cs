@@ -1,15 +1,25 @@
-﻿using UnityEditor;
+using UnityEditor;
+
+using Unity.PlasticSCM.Editor.CloudDrive;
 
 namespace Unity.PlasticSCM.Editor.UI
 {
     internal static class GetWindowIfOpened
     {
-        internal static PlasticWindow Plastic()
+        internal static UVCSWindow UVCS()
         {
-            if (!EditorWindow.HasOpenInstances<PlasticWindow>())
+            if (!EditorWindow.HasOpenInstances<UVCSWindow>())
                 return null;
 
-            return EditorWindow.GetWindow<PlasticWindow>(null, false);
+            return EditorWindow.GetWindow<UVCSWindow>(null, false);
+        }
+
+        internal static CloudDriveWindow CloudDrive()
+        {
+            if (!EditorWindow.HasOpenInstances<CloudDriveWindow>())
+                return null;
+
+            return EditorWindow.GetWindow<CloudDriveWindow>(null, false);
         }
     }
 }

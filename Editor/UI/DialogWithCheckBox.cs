@@ -37,10 +37,15 @@ namespace Unity.PlasticSCM.Editor.UI
                 dontShowAgainContent);
 
             ResponseType result = dialog.RunModal(parentWindow);
-            if (result == ResponseType.Cancel || result == ResponseType.None)
-                return GuiMessage.GuiMessageResponseButton.Neutral;
+
+            if (result == ResponseType.None)
+                return GuiMessage.GuiMessageResponseButton.None;
 
             checkBoxValue = dialog.mCheckBox;
+
+            if (result == ResponseType.Cancel)
+                return GuiMessage.GuiMessageResponseButton.Neutral;
+
             if (result == ResponseType.Ok)
                 return GuiMessage.GuiMessageResponseButton.Positive;
 
@@ -57,6 +62,9 @@ namespace Unity.PlasticSCM.Editor.UI
             DoMainContentSection();
 
             DoButtonsArea();
+
+            if (mDontShowAgainContent == null)
+                return;
 
             DoCheckboxSection();
         }

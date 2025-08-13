@@ -11,6 +11,9 @@ using PlasticGui.WorkspaceWindow.History;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Avatar;
 using Unity.PlasticSCM.Editor.UI.Tree;
+#if UNITY_6000_2_OR_NEWER
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.History
 {
@@ -20,17 +23,19 @@ namespace Unity.PlasticSCM.Editor.Views.History
             string wkPath,
             HistoryListHeaderState headerState,
             HistoryListViewMenu menu,
-            List<string> columnNames)
+            List<string> columnNames,
+            Action doubleClickAction)
         {
             mWkPath = wkPath;
             mMenu = menu;
             mColumnNames = columnNames;
+            mDoubleClickAction = doubleClickAction;
 
             multiColumnHeader = new MultiColumnHeader(headerState);
             multiColumnHeader.canSort = true;
             multiColumnHeader.sortingChanged += SortingChanged;
 
-            mCooldownFilterAction = new CooldownWindowDelayer(
+            mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
         }
 
@@ -70,7 +75,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         protected override void SearchChanged(string newSearch)
         {
-            mCooldownFilterAction.Ping();
+            mDelayedFilterAction.Run();
         }
 
         protected override void ContextClickedItem(int id)
@@ -97,6 +102,11 @@ namespace Unity.PlasticSCM.Editor.Views.History
             }
 
             base.RowGUI(args);
+        }
+
+        protected override void DoubleClickedItem(int id)
+        {
+            mDoubleClickAction();
         }
 
         internal void BuildModel(
@@ -390,9 +400,10 @@ namespace Unity.PlasticSCM.Editor.Views.History
         long mLoadedRevisionId;
         RepositorySpec mRepSpec;
 
-        readonly CooldownWindowDelayer mCooldownFilterAction;
+        readonly DelayedActionBySecondsRunner mDelayedFilterAction;
         readonly HistoryListViewMenu mMenu;
         readonly List<string> mColumnNames;
+        readonly Action mDoubleClickAction;
         readonly string mWkPath;
     }
 }

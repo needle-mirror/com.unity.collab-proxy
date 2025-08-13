@@ -3,6 +3,7 @@ using UnityEngine;
 
 using PlasticGui;
 using Unity.PlasticSCM.Editor;
+using Unity.PlasticSCM.Editor.Configuration;
 
 namespace Unity.Cloud.Collaborate
 {
@@ -11,51 +12,56 @@ namespace Unity.Cloud.Collaborate
     {
         static ToolbarBootstrap()
         {
-            ToolbarButton.InitializeIfNeeded();
+            if (ToolConfig.EnableNewUVCSToolbarButtonTokenExists())
+                return;
+
+            ToolbarButton.Initialize(UVCSPlugin.Instance);
         }
     }
 
     internal class ToolbarButton : SubToolbar
     {
-        internal static void InitializeIfNeeded()
+        internal static void Initialize(UVCSPlugin uvcsPlugin)
         {
-            ToolbarButton toolbar = new ToolbarButton { Width = 32f };
+            ToolbarButton toolbar = new ToolbarButton(uvcsPlugin);
             Toolbar.AddSubToolbar(toolbar);
         }
 
-        ToolbarButton()
+        ToolbarButton(UVCSPlugin uvcsPlugin)
         {
-            PlasticPlugin.OnNotificationUpdated += OnPlasticNotificationUpdated;
-
+            mUVCSPlugin = uvcsPlugin;
             mButtonGUIContent = new GUIContent(
                 string.Empty, PlasticLocalization.Name.UnityVersionControl.GetString());
+
+            Width = 32f;
+
+            mUVCSPlugin.OnNotificationStatusUpdated += OnUVCSNotificationUpdated;
         }
 
         ~ToolbarButton()
         {
-            PlasticPlugin.OnNotificationUpdated -= OnPlasticNotificationUpdated;
+            mUVCSPlugin.OnNotificationStatusUpdated -= OnUVCSNotificationUpdated;
         }
 
-        void OnPlasticNotificationUpdated()
+        void OnUVCSNotificationUpdated()
         {
             Toolbar.RepaintToolbar();
         }
 
         public override void OnGUI(Rect rect)
         {
-            Texture icon = PlasticPlugin.GetPluginStatusIcon();
+            Texture icon = mUVCSPlugin.GetPluginStatusIcon();
             EditorGUIUtility.SetIconSize(new Vector2(16, 16));
 
             mButtonGUIContent.image = icon;
 
             if (GUI.Button(rect, mButtonGUIContent, "AppCommand"))
-            {
-                PlasticPlugin.OpenPlasticWindowDisablingOfflineModeIfNeeded();
-            }
+                SwitchUVCSPlugin.OnIfNeeded(mUVCSPlugin);
 
             EditorGUIUtility.SetIconSize(Vector2.zero);
         }
 
-        GUIContent mButtonGUIContent;
+        readonly GUIContent mButtonGUIContent;
+        readonly UVCSPlugin mUVCSPlugin;
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Codice.CM.Common;
-using Unity.PlasticSCM.Editor.AssetUtils;
 
 namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
 {
@@ -18,18 +17,9 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
             WorkspaceInfo wkInfo,
             bool isGluonMode)
         {
-            mLocalStatusCache = new LocalStatusCache();
-
-            mRemoteStatusCache = new RemoteStatusCache(
-                wkInfo,
-                isGluonMode,
-                ProjectWindow.Repaint,
-                RepaintInspector.All);
-
-            mLockStatusCache = new LockStatusCache(
-                wkInfo,
-                ProjectWindow.Repaint,
-                RepaintInspector.All);
+            mLocalStatusCache = new LocalStatusCache(wkInfo);
+            mRemoteStatusCache = new RemoteStatusCache(wkInfo, isGluonMode);
+            mLockStatusCache = new LockStatusCache(wkInfo);
         }
 
         AssetStatus IAssetStatusCache.GetStatus(string fullPath)

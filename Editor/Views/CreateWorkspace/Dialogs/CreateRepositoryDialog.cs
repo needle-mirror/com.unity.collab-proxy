@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
 using UnityEditor;
@@ -33,6 +33,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
         internal static RepositoryCreationData CreateRepository(
             EditorWindow parentWindow,
             IPlasticWebRestApi plasticWebRestApi,
+            IPlasticAPI plasticApi,
             string proposedRepositoryName,
             string proposedServer,
             string lastUsedRepServer,
@@ -43,6 +44,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
 
             CreateRepositoryDialog dialog = Create(
                 plasticWebRestApi,
+                plasticApi,
                 new ProgressControlsForDialogs(),
                 proposedRepositoryName,
                 server);
@@ -104,7 +106,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
 
         void DoEntriesArea()
         {
-            mRepositoryName = TextEntry(
+            mRepositoryName = EntryBuilder.CreateTextEntry(
                 PlasticLocalization.Name.RepositoryNameShortLabel.GetString(),
                 mRepositoryName,
                 REPONAME_CONTROL_NAME,
@@ -119,7 +121,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
 
             GUILayout.Space(5);
 
-            mSelectedServer = ComboBox(
+            mSelectedServer = EntryBuilder.CreateComboBoxEntry(
                 PlasticLocalization.Name.RepositoryServerOrOrganizationLabel.GetString(),
                 mSelectedServer,
                 mKnownServers,
@@ -148,7 +150,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                 GUI.enabled = false;
             }
 
-            ComboBox(
+            EntryBuilder.CreateComboBoxEntry(
                 PlasticLocalization.Name.OrganizationProjectLabel.GetString(),
                 mSelectedProject,
                 mCurrentServerProjects,
@@ -242,7 +244,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                 {
                     string serverName = ResolveServer.FromUserInput(server, CmConnection.Get().UnityOrgResolver);
 
-                    serverProjects = OrganizationsInformation.GetOrganizationProjects(serverName);
+                    serverProjects = GetProjectNames.FromOrganization(mPlasticApi, server);
                 },
                 /*afterOperationDelegate*/ delegate
                 {
@@ -358,9 +360,9 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
         {
             string resolvedServer = OrganizationsInformation.TryResolveServerFromInput(mSelectedServer);
 
-            string repositoryName = mSelectedProject != null
-                ? string.Format("{0}/{1}", mSelectedProject, mRepositoryName)
-                : mRepositoryName;
+            string repositoryName = mSelectedProject != null ?
+                CloudProjectRepository.BuildFullyQualifiedName(mSelectedProject, mRepositoryName) :
+                mRepositoryName;
 
             return new RepositoryCreationData(
                 repositoryName,
@@ -369,6 +371,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
 
         static CreateRepositoryDialog Create(
             IPlasticWebRestApi plasticWebRestApi,
+            IPlasticAPI plasticApi,
             ProgressControlsForDialogs progressControls,
             string proposedRepositoryName,
             string proposedServer)
@@ -377,6 +380,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             instance.mEnterKeyAction = instance.OnEnterKeyAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
             instance.mPlasticWebRestApi = plasticWebRestApi;
+            instance.mPlasticApi = plasticApi;
             instance.mProgressControls = progressControls;
             instance.BuildComponents(proposedRepositoryName, proposedServer);
             return instance;
@@ -389,7 +393,8 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
 
             if (OrganizationsInformation.IsUnityOrganization(proposedServer))
             {
-                string[] repositoryNameParts = proposedRepositoryName.Split('/');
+                string[] repositoryNameParts = proposedRepositoryName.
+                    Split(CloudProjectRepository.Separator);
 
                 if (repositoryNameParts.Length > 1)
                 {
@@ -416,6 +421,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             return result;
         }
 
+        IPlasticAPI mPlasticApi;
         IPlasticWebRestApi mPlasticWebRestApi;
         bool mFocusIsAreadySet;
 

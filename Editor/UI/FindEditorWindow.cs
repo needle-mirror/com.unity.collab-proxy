@@ -36,6 +36,16 @@ namespace Unity.PlasticSCM.Editor.UI
             return candidateWindows.FirstOrDefault();
         }
 
+        internal static EditorWindow FirstAvailableWindow()
+        {
+            List<EditorWindow> windows = GetAvailableWindows();
+
+            if (windows == null || windows.Count == 0)
+                return null;
+
+            return windows[0];
+        }
+
         static List<EditorWindow> GetAvailableWindows()
         {
             List<EditorWindow> result = new List<EditorWindow>();

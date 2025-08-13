@@ -1,6 +1,9 @@
 ﻿using UnityEditor.IMGUI.Controls;
 
 using PlasticGui.WorkspaceWindow.PendingChanges;
+#if UNITY_6000_2_OR_NEWER
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {

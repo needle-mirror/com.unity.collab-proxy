@@ -1,8 +1,8 @@
 using UnityEditor;
 using UnityEditor.PackageManager;
+using Unity.PlasticSCM.Editor.AssetUtils.Processor;
+using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.UI;
-
-using AssetPostprocessor = Unity.PlasticSCM.Editor.AssetUtils.Processor.AssetPostprocessor;
 
 namespace Unity.PlasticSCM.Editor.AssetUtils
 {
@@ -13,66 +13,66 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
             AssetDatabase.DisallowAutoRefresh();
         }
 
-        internal static void AfterLongAssetOperation()
+        internal static void AfterLongAssetOperation(IAssetStatusCache assetStatusCache)
         {
-            AfterLongAssetOperation(true);
+            AfterLongAssetOperation(assetStatusCache, true);
         }
 
-        internal static void AfterLongAssetOperation(bool isPackagesReimportNeeded)
+        internal static void AfterLongAssetOperation(
+            IAssetStatusCache assetStatusCache,
+            bool isPackagesReimportNeeded)
         {
             AssetDatabase.AllowAutoRefresh();
 
             if (isPackagesReimportNeeded)
             {
-                UnityAssetDatabaseAndPackageManagerAsync();
+                UnityAssetDatabaseAndPackageManagerAsync(assetStatusCache);
+                return;
             }
-            else
-            {
-                RefreshUnityAssetDatabase();
-            }
-        }
 
-        internal static void UnityAssetDatabase()
+            RefreshUnityAssetDatabase(assetStatusCache);
+            }
+
+        internal static void UnityAssetDatabase(IAssetStatusCache assetStatusCache)
         {
-            RefreshUnityAssetDatabase();
+            RefreshUnityAssetDatabase(assetStatusCache);
         }
 
-        internal static void UnityAssetDatabaseAndPackageManagerAsync()
+        internal static void UnityAssetDatabaseAndPackageManagerAsync(
+            IAssetStatusCache assetStatusCache)
         {
             // Client.Resolve() will resolve any pending packages added or removed from the project
             // VCS-1004718 - This is important so the domain gets reloaded first if needed
             Client.Resolve();
 
-            mCooldownRefreshAssetsAction.Ping();
+            new DelayedActionBySecondsRunner(
+                    () => RefreshUnityAssetDatabase(assetStatusCache),
+                    UnityConstants.REFRESH_ASSET_DATABASE_DELAYED_INTERVAL)
+                .Run();
         }
 
-        internal static void VersionControlCache()
+        internal static void VersionControlCache(IAssetStatusCache assetStatusCache)
         {
-            ClearVersionControlCaches();
+            ClearVersionControlCaches(assetStatusCache);
 
-            ProjectWindow.Repaint();
-            RepaintInspector.All();
+            RepaintEditor.AllWindowsWithOverlays();
         }
 
-        static void ClearVersionControlCaches()
+        static void ClearVersionControlCaches(IAssetStatusCache assetStatusCache)
         {
             UnityEditor.VersionControl.Provider.ClearCache();
 
-            if (PlasticPlugin.AssetStatusCache != null)
-                PlasticPlugin.AssetStatusCache.Clear();
+            if (assetStatusCache != null)
+                assetStatusCache.Clear();
         }
 
-        static void RefreshUnityAssetDatabase()
+        static void RefreshUnityAssetDatabase(IAssetStatusCache assetStatusCache)
         {
             AssetDatabase.Refresh(ImportAssetOptions.Default);
 
-            ClearVersionControlCaches();
+            ClearVersionControlCaches(assetStatusCache);
 
-            AssetPostprocessor.SetIsRepaintNeededAfterAssetDatabaseRefresh();
+            UVCSAssetPostprocessor.SetIsRepaintNeededAfterAssetDatabaseRefresh();
         }
-
-        static CooldownWindowDelayer mCooldownRefreshAssetsAction = new CooldownWindowDelayer(
-            RefreshUnityAssetDatabase,
-            UnityConstants.REFRESH_ASSET_DATABASE_DELAYED_INTERVAL);
     }
 }

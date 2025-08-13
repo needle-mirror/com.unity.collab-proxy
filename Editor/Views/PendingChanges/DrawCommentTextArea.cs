@@ -3,14 +3,15 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.UI.UndoRedo;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
     internal static class DrawCommentTextArea
     {
         internal static void For(
+            UndoRedoTextArea textArea,
             PendingChangesTab pendingChangesTab,
             float width,
             bool isOperationRunning)
@@ -20,26 +21,18 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 EditorGUILayout.BeginHorizontal();
 
                 Rect textAreaRect = BuildTextAreaRect(
-                    pendingChangesTab.CommentText,
+                    textArea.Text,
                     width);
 
                 EditorGUI.BeginChangeCheck();
 
-                pendingChangesTab.UpdateComment(
-                    DoTextArea(
-                        pendingChangesTab.CommentText ?? string.Empty,
-                        pendingChangesTab.ForceToShowComment,
-                        textAreaRect));
+                textArea.OnGUI(
+                    textAreaRect,
+                    UnityStyles.PendingChangesTab.CommentTextArea,
+                    UnityStyles.PendingChangesTab.CommentPlaceHolder);
 
                 if (EditorGUI.EndChangeCheck())
                     OnTextAreaChanged(pendingChangesTab);
-
-                if (string.IsNullOrEmpty(pendingChangesTab.CommentText))
-                {
-                    DoPlaceholderIfNeeded(
-                        PlasticLocalization.Name.CheckinComment.GetString(),
-                        textAreaRect);
-                }
 
                 EditorGUILayout.EndHorizontal();
             }
@@ -50,52 +43,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             pendingChangesTab.ClearIsCommentWarningNeeded();
         }
 
-        static string DoTextArea(
-            string text,
-            bool forceToShowText,
-            Rect textAreaRect)
-        {
-            // while the text area has the focus, the changes to
-            // the source string will not be picked up by the text editor.
-            // so, when we want to change the text programmatically
-            // we have to remove the focus, set the text and then reset the focus.
-
-            TextEditor textEditor = typeof(EditorGUI)
-                .GetField("activeEditor", BindingFlags.Static | BindingFlags.NonPublic)
-                .GetValue(null) as TextEditor;
-
-            bool shouldBeFocusFixed = forceToShowText && textEditor != null;
-
-            if (shouldBeFocusFixed)
-                EditorGUIUtility.keyboardControl = 0;
-
-            var modifiedTextAreaStyle = new GUIStyle(EditorStyles.textArea);
-            modifiedTextAreaStyle.padding.left = 7;
-            modifiedTextAreaStyle.padding.top = 5;
-            modifiedTextAreaStyle.stretchWidth = false;
-            modifiedTextAreaStyle.stretchHeight = false;
-
-            text = EditorGUI.TextArea(textAreaRect, text, modifiedTextAreaStyle);
-
-            if (shouldBeFocusFixed)
-                EditorGUIUtility.keyboardControl = textEditor.controlID;
-
-            return text;
-        }
-
-        static void DoPlaceholderIfNeeded(string placeholder, Rect textAreaRect)
-        {
-            int textAreaControlId = GUIUtility.GetControlID(FocusType.Passive) - 1;
-
-            if (EditorGUIUtility.keyboardControl == textAreaControlId)
-                return;
-
-            Rect hintRect = textAreaRect;
-            hintRect.height = EditorStyles.textArea.lineHeight;
-
-            GUI.Label(hintRect, placeholder, UnityStyles.PendingChangesTab.CommentPlaceHolder);
-        }
-
         static Rect BuildTextAreaRect(string text, float width)
         {
             GUIStyle commentTextAreaStyle = UnityStyles.PendingChangesTab.CommentTextArea;
@@ -103,10 +50,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             Rect result = GUILayoutUtility.GetRect(
                 width,
-                UnityConstants.PLASTIC_WINDOW_COMMENT_SECTION_HEIGHT);
+                UnityConstants.PENDING_CHANGES_COMMENT_HEIGHT);
 
             result.width = width;
-            result.height = UnityConstants.PLASTIC_WINDOW_COMMENT_SECTION_HEIGHT;
+            result.height = UnityConstants.PENDING_CHANGES_COMMENT_HEIGHT;
             result.xMin = 50f;
 
             return result;

@@ -77,5 +77,14 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
         {
             return listView.GetSelectedRepositories();
         }
+
+        internal static List<RepObjectInfo> GetShelvesToSelect(
+            ShelvesListView listView, ChangesetInfo shelveToSelect)
+        {
+            if (shelveToSelect == null)
+                return ShelvesSelection.GetSelectedRepObjectInfos(listView);
+
+            return new List<RepObjectInfo> { shelveToSelect };
+        }
     }
 }

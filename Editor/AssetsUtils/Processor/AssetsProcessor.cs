@@ -1,4 +1,4 @@
-﻿using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
+using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 
 namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 {
@@ -6,17 +6,17 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
     {
         internal static void Enable(
             string wkPath,
-            PlasticAssetsProcessor plasticAssetsProcessor,
+            UVCSAssetsProcessor uvcsAssetsProcessor,
             IAssetStatusCache assetStatusCache)
         {
-            AssetPostprocessor.Enable(wkPath, plasticAssetsProcessor);
-            AssetModificationProcessor.Enable(wkPath, assetStatusCache);
+            UVCSAssetPostprocessor.Enable(wkPath, uvcsAssetsProcessor);
+            UVCSAssetModificationProcessor.Enable(wkPath, assetStatusCache);
         }
 
         internal static void Disable()
         {
-            AssetPostprocessor.Disable();
-            AssetModificationProcessor.Disable();
+            UVCSAssetPostprocessor.Disable();
+            UVCSAssetModificationProcessor.Disable();
         }
     }
 }

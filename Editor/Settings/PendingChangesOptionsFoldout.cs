@@ -9,27 +9,24 @@ using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.Utils;
 using PlasticGui;
+using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.PendingChanges;
+using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.UI;
-
-using AssetPostprocessor = Unity.PlasticSCM.Editor.AssetUtils.Processor.AssetPostprocessor;
 
 namespace Unity.PlasticSCM.Editor.Settings
 {
     class PendingChangesOptionsFoldout
     {
-        internal void OnActivate(WorkspaceInfo wkInfo)
+        internal void OnActivate(WorkspaceInfo wkInfo, PendingChangesUpdater pendingChangesUpdater)
         {
             mWkInfo = wkInfo;
 
-            IAutoRefreshView autoRefreshView = GetPendingChangesView();
-
-            if (autoRefreshView != null)
-                autoRefreshView.DisableAutoRefresh();
+            DisableAutoRefresh(pendingChangesUpdater);
 
             CheckFsWatcher(mWkInfo);
 
-            mIsAutomaticAddEnabled = AssetPostprocessor.IsAutomaticAddEnabled;
+            mIsAutomaticAddEnabled = UVCSAssetPostprocessor.IsAutomaticAddEnabled;
 
             mPendingChangesSavedOptions = new PendingChangesOptions();
             mPendingChangesSavedOptions.LoadPendingChangesOptions();
@@ -37,13 +34,13 @@ namespace Unity.PlasticSCM.Editor.Settings
             SetPendingChangesOptions(mPendingChangesSavedOptions);
         }
 
-        internal void OnDeactivate()
+        internal void OnDeactivate(PendingChangesUpdater pendingChangesUpdater)
         {
             bool arePendingChangesOptionsChanged = false;
 
             try
             {
-                AssetPostprocessor.SetAutomaticAddPreference(mIsAutomaticAddEnabled);
+                UVCSAssetPostprocessor.SetAutomaticAddPreference(mIsAutomaticAddEnabled);
 
                 PendingChangesOptions newPendingChangesOptions = GetPendingChangesOptions();
 
@@ -56,17 +53,7 @@ namespace Unity.PlasticSCM.Editor.Settings
             }
             finally
             {
-                IAutoRefreshView autoRefreshView = GetPendingChangesView();
-
-                if (autoRefreshView != null)
-                {
-                    autoRefreshView.EnableAutoRefresh();
-
-                    if (arePendingChangesOptionsChanged)
-                    {
-                        autoRefreshView.ForceRefresh();
-                    }
-                }
+                EnableAutoRefresh(pendingChangesUpdater, arePendingChangesOptionsChanged);
             }
         }
 
@@ -276,6 +263,38 @@ namespace Unity.PlasticSCM.Editor.Settings
                 mCheckFileContent);
         }
 
+        static void EnableAutoRefresh(
+            PendingChangesUpdater pendingChangesUpdater, bool arePendingChangesOptionsChanged)
+        {
+            if (pendingChangesUpdater != null)
+                pendingChangesUpdater.EnableAutoUpdate();
+
+            IAutoRefreshView autoRefreshView = GetPendingChangesView();
+
+            if (autoRefreshView == null)
+                return;
+
+            autoRefreshView.EnableAutoRefresh();
+
+            if (!arePendingChangesOptionsChanged)
+                return;
+
+            autoRefreshView.ForceRefresh();
+        }
+
+        static void DisableAutoRefresh(PendingChangesUpdater pendingChangesUpdater)
+        {
+            if (pendingChangesUpdater != null)
+                pendingChangesUpdater.DisableAutoUpdate();
+
+            IAutoRefreshView autoRefreshView = GetPendingChangesView();
+
+            if (autoRefreshView == null)
+                return;
+
+            autoRefreshView.DisableAutoRefresh();
+        }
+
         static void DrawSettingsSection(Action drawSettings)
         {
             float originalLabelWidth = EditorGUIUtility.labelWidth;
@@ -333,7 +352,7 @@ namespace Unity.PlasticSCM.Editor.Settings
 
         static IAutoRefreshView GetPendingChangesView()
         {
-            PlasticWindow window = GetWindowIfOpened.Plastic();
+            UVCSWindow window = GetWindowIfOpened.UVCS();
 
             if (window == null)
                 return null;

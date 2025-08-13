@@ -20,6 +20,8 @@ using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.Tool;
 
+using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
+
 namespace Unity.PlasticSCM.Editor.Inspector
 {
     static class DrawInspectorOperations
@@ -45,7 +47,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
             UnityEditor.Editor.finishedDefaultHeaderGUI +=
                 Editor_finishedDefaultHeaderGUI;
 
-            RepaintInspector.All();
+            RepaintEditor.InspectorWindow();
         }
 
         internal static void Disable()
@@ -57,7 +59,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
             UnityEditor.Editor.finishedDefaultHeaderGUI -=
                 Editor_finishedDefaultHeaderGUI;
 
-            RepaintInspector.All();
+            RepaintEditor.InspectorWindow();
 
             mWkInfo = null;
             mAssetStatusCache = null;
@@ -68,39 +70,43 @@ namespace Unity.PlasticSCM.Editor.Inspector
         internal static void BuildOperations(
             WorkspaceInfo wkInfo,
             IPlasticAPI plasticApi,
+            GluonGui.ViewHost viewHost,
             WorkspaceWindow workspaceWindow,
             IViewSwitcher viewSwitcher,
-            IHistoryViewLauncher historyViewLauncher,
-            GluonGui.ViewHost viewHost,
-            WorkspaceOperationsMonitor workspaceOperationsMonitor,
-            ISaveAssets saveAssets,
-            PlasticGui.WorkspaceWindow.NewIncomingChangesUpdater incomingChangesUpdater,
-            ShelvedChangesUpdater shelvedChangesUpdater,
-            IAssetStatusCache assetStatusCache,
-            IMergeViewLauncher mergeViewLauncher,
             PlasticGui.Gluon.IGluonViewSwitcher gluonViewSwitcher,
+            IMergeViewLauncher mergeViewLauncher,
+            IHistoryViewLauncher historyViewLauncher,
+            IAssetStatusCache assetStatusCache,
+            ISaveAssets saveAssets,
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            PendingChangesUpdater pendingChangesUpdater,
+            IncomingChangesUpdater developerIncomingChangesUpdater,
+            GluonIncomingChangesUpdater gluonIncomingChangesUpdater,
+            ShelvedChangesUpdater shelvedChangesUpdater,
             bool isGluonMode)
         {
             if (!mIsEnabled)
                 Enable(wkInfo, plasticApi, assetStatusCache);
 
-            mOperations = new AssetVcsOperations(
+            mOperations = new AssetUVCSOperations(
                 wkInfo,
                 plasticApi,
+                viewHost,
                 workspaceWindow,
                 viewSwitcher,
-                historyViewLauncher,
-                viewHost,
-                workspaceOperationsMonitor,
-                saveAssets,
-                incomingChangesUpdater,
-                shelvedChangesUpdater,
-                mAssetStatusCache,
-                mergeViewLauncher,
                 gluonViewSwitcher,
+                mergeViewLauncher,
+                historyViewLauncher,
+                assetStatusCache,
                 mAssetSelection,
+                saveAssets,
                 showDownloadPlasticExeWindow,
+                workspaceOperationsMonitor,
+                pendingChangesUpdater,
+                developerIncomingChangesUpdater,
+                gluonIncomingChangesUpdater,
+                shelvedChangesUpdater,
                 isGluonMode);
         }
 
@@ -113,7 +119,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
 
                 mAssetSelection.SetActiveInspector(inspector);
 
-                AssetList assetList = ((AssetVcsOperations.IAssetSelection)
+                AssetList assetList = ((AssetUVCSOperations.IAssetSelection)
                     mAssetSelection).GetSelectedAssets();
 
                 if (assetList.Count == 0)
@@ -238,17 +244,13 @@ namespace Unity.PlasticSCM.Editor.Inspector
             AssetsOverlays.AssetStatus assetStatus,
             LockStatusData lockStatusData)
         {
-            Texture overlayIcon = DrawAssetOverlay.DrawOverlayIcon.
-                GetOverlayIcon(assetStatus);
+            Texture overlayIcon = DrawAssetOverlayIcon.GetOverlayIcon(assetStatus);
 
             if (overlayIcon == null)
                 return;
 
-            string statusText = DrawAssetOverlay.
-                GetStatusString(assetStatus);
-
-            string tooltipText = DrawAssetOverlay.GetTooltipText(
-                assetStatus, lockStatusData);
+            string statusText = AssetOverlay.GetStatusString(assetStatus);
+            string tooltipText = AssetOverlay.GetTooltipText(assetStatus, lockStatusData);
 
             Rect selectionRect = GUILayoutUtility.GetRect(
                 new GUIContent(statusText + EXTRA_SPACE, overlayIcon),
@@ -277,7 +279,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
             if (GUILayout.Button(string.Format("{0}", buttonText), EditorStyles.miniButton))
             {
                 if (mOperations == null)
-                    ShowWindow.Plastic();
+                    ShowWindow.UVCS();
 
                 mOperations.Add();
             }
@@ -289,7 +291,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
             if (GUILayout.Button(string.Format("{0}", buttonText), EditorStyles.miniButton))
             {
                 if (mOperations == null)
-                    ShowWindow.Plastic();
+                    ShowWindow.UVCS();
 
                 mOperations.Checkout();
             }
@@ -301,7 +303,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
             if (GUILayout.Button(string.Format("{0}", buttonText), EditorStyles.miniButton))
             {
                 if (mOperations == null)
-                    ShowWindow.Plastic();
+                    ShowWindow.UVCS();
 
                 mOperations.Checkin();
                 EditorGUIUtility.ExitGUI();
@@ -314,7 +316,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
             if (GUILayout.Button(string.Format("{0}", buttonText), EditorStyles.miniButton))
             {
                 if (mOperations == null)
-                    ShowWindow.Plastic();
+                    ShowWindow.UVCS();
 
                 mOperations.Undo();
                 EditorGUIUtility.ExitGUI();
@@ -340,7 +342,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
             lockStatusData = statusCache.GetLockStatusData(selectedFullPath);
         }
 
-        static IAssetMenuVCSOperations mOperations;
+        static IAssetMenuUVCSOperations mOperations;
         static InspectorAssetSelection mAssetSelection;
 
         static bool mIsEnabled;

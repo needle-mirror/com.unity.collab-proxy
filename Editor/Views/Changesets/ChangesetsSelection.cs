@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Linq;
 
 using Codice.CM.Common;
 using Unity.PlasticSCM.Editor.UI.Tree;
@@ -63,6 +64,15 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 return null;
 
             return selectedRepositories[0];
+        }
+
+        internal static List<RepObjectInfo> GetChangesetsToSelect(
+            ChangesetsListView listView, List<object> entriesToSelect)
+        {
+            if (entriesToSelect == null || entriesToSelect.Count == 0)
+                return GetSelectedRepObjectInfos(listView);
+
+            return entriesToSelect.Cast<RepObjectInfo>().ToList();
         }
     }
 }

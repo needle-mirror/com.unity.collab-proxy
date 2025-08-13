@@ -1342,8 +1342,11 @@ Aún no se han creado shelves
 == NoContentToCompareExplanation ==
 No hay contenido que comparar
 
+== NoContentToBrowseExplanation ==
+No hay contenido para explorar
+
 == NoLocksCreatedExplanation ==
-Aún no se han creado bloqueos en ficheros
+Aún no se han creado bloqueos en ficheros.
 
 == LoadLocksError ==
 No se pudo recuperar la información de bloqueos
@@ -1932,6 +1935,12 @@ Traer cambios a {0}
 
 == BringChangesExplanation ==
 Tus cambios serán aplicados automáticamente en destino. Serás notificado si hay algún conflicto que haya que resolver
+
+== ApplyShelveReportTitle ==
+Informe de aplicación del shelve.
+
+== ApplyShelveReportExplanation ==
+La aplicación del shelve encontró algunos problemas. Por favor, revíselos.
 
 == ApplyShelveWithConflictsTitle ==
 Se requiere resolución de conflictos
@@ -6418,6 +6427,18 @@ Add packages and project settings to Unity Version Control.
 == UnityInitialCheckinProgress ==
 Checking in the packages and project settings files...
 
+== UnityUpdateVersionControlPackage ==
+Update Unity Version Control
+
+== UnityUpdateVersionControlPackageTooltip ==
+Update Unity Version Control {0} to {1}
+
+== UnityVersionControlPackageIsUpToDate ==
+Unity Version Control is up to date
+
+== UnityVersionControlPackageIsUpToDateTooltip ==
+Unity Version Control {0} is up to date
+
 == Default ==
 Por defecto
 
@@ -7066,11 +7087,19 @@ Keyboard shortcuts:
   Enter: focus the next search result
   Ctrl+Enter: focus the previous one
 
-== DisableForcedCheckout ==
+== DisableManualCheckout ==
 Disable Manual Checkout for Unity Assets
 
-== EnableForcedCheckout ==
+== EnableManualCheckout ==
 Enable Manual Checkout for Unity Assets
+
+== RecommendToEnableManualCheckoutSinceLockRulesAreConfigured ==
+Locks are currently configured for your project. 
+We recommend that you enable ‘Manual Checkout’.
+
+This will reduce conflicts, preventing other team members from modifying an asset that is locked. 
+
+Do you want to enable Manual Checkout?
 
 == StatusBarReady ==
 Ready
@@ -7095,6 +7124,12 @@ Nueva versión {0} lista para instalar
 
 == RestartAndUpgradeButton ==
 Reiniciar y Actualizar
+
+== AboutVersionControlPackage ==
+About Version Control package {0}
+
+== UpdateVersionControlPackage ==
+Update Version Control package to {0}
 
 == ItemDeletedDialogTitle ==
 No se puede mostrar el item
@@ -7716,9 +7751,6 @@ Colores de changeset
 
 == SelectUsersDialogDescription ==
 Por favor, seleccione uno o más usuarios de la lista:
-
-== ClickToSetOtherName ==
-Click para fijar otro nombre
 
 == ClickToSetAlias ==
 Click para fijar alias
@@ -8640,7 +8672,7 @@ Cargando rama principal...
 Conectando workspace al repositorio UVCS...
 
 == SharingWorkspace ==
-Compartiendo workspace...
+Compartiendo drive...
 
 == ExecuteQueryClearsFiltersWarningTitle ==
 Advertencia de limpieza de filtros
@@ -8746,6 +8778,90 @@ Su workspace no se puede sincronizar
 
 == WorkspacesUnableToSyncPlural ==
 {0} workspaces no se pueden sincronizar
+
+== NoDirectorySelectedEmptyState ==
+Selecciona un directorio para ver su contenido
+
+== EmptyDirectoryEmptyState ==
+El directorio seleccionado está vacío
+
+== CopyingFilesIndeterminateProgress ==
+Copiando archivos...
+
+== CopyingFilesProgress ==
+Copiando archivo {0} de {1}: {2}
+
+== AskUserForExistingFileTitle ==
+El archivo ya existe
+
+== AskUserForExistingFileMessage ==
+El archivo {0} ya existe. ¿Cómo quieres manejarlo?
+
+== ReplaceButton ==
+Reemplazar
+
+== KeepBothButton ==
+Mantener ambos
+
+== SkipButton ==
+Saltar
+
+== ApplyToAllFollowingFiles ==
+Aplicar a todos los siguientes archivos
+
+== CopyFileErrorsTitle == 
+Resultado de la copia de archivos
+
+== CopyFileErrorsMessage == 
+Los siguientes archivos no se pudieron copiar al cloud workspace '{0}'.
+Por favor, revisa los detalles de error a continuación.
+
+== CreateCloudWorkspaceTitle ==
+Crea un nuevo cloud drive
+
+== CreateCloudWorkspaceExplanation ==
+Selecciona {0} para tu cloud drive donde puedes almacenar tus creaciones, y colaborar con gente.
+
+Un cloud drive contiene el historial completo, incluidos todos los cambios de sus archivos y directorios.
+
+== CreateCloudWorkspaceExplanationSelectForCloudOrg ==
+la organización
+
+== CreateCloudWorkspaceExplanationSelectForUnityOrg ==
+la organización y el proyecto
+
+== OrganizationLabel ==
+Organización:
+
+== GettingOrganizations ==
+Obteniendo organizaciones...
+
+== GettingProjects ==
+Obteniendo proyectos...
+
+== CreatingCloudWorkspace ==
+Creando drive {0}...
+
+== CloudWorkspaceNameEntry ==
+Nombre del drive:
+
+== CloudWorkspaceNameEmpty ==
+El nombre del drive no puede estar vacío
+
+== CreateCloudWorkspaceButton ==
+Crear drive
+
+== ShareDriveTitle ==
+Compartir drive con:
+
+== ShareDriveExplanation ==
+Otorga acceso a los miembros de tu equipo a este drive para compartir assets al instante y colaborar eficientemente.
+
+== CollaboratorsListEmptyState ==
+Esta organización no tiene usuarios
+
+== ManageUsersDashboardLink ==
+Administrar usuarios en el Dashboard
 
 == CannotLoadBranches ==
 No se pueden cargar las ramas
@@ -8960,3 +9076,48 @@ Ctrl+D2
 
 == OpeningWorkspace ==
 Abriendo workspace...
+
+== LocksTutorialLabel ==
+Aprende a configurar locks en este {0}.
+
+== LocksTutorialButton ==
+tutorial de Unity Learn
+
+== ShowLabelsButton ==
+Mostrar etiquetas
+
+== UnityLabelShortcutForWindows ==
+%l
+
+== UnityLabelShortcutForMacOS ==
+#%l
+
+== UseUnityVersionControlToManageYourProject ==
+Usa Unity Version Control para gestionar tu proyecto
+
+== UseUnityVersionControl ==
+Usa Unity Version Control...
+
+== HideVersionControlToolbar ==
+Ocultar el botón de Unity Version Control
+
+== LearnMoreAboutUnityVersionControl ==
+Más información sobre Unity Version Control
+
+== CheckinPendingChanges ==
+Check-in de Cambios Pendientes
+
+== ViewIncomingChanges ==
+Ver Incoming Changes
+
+== UnitySwitchShortcutForWindows ==
+%#w
+
+== UnitySwitchShortcutForMacOS ==
+#%w
+
+== ShowUnityVersionControlToolbarButton ==
+Mostrar el botón de Unity Version Control en la barra de herramientas
+
+== PendingChangesInfo ==
+{0} cambios pendientes en tu workspace

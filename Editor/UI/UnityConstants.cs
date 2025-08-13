@@ -20,8 +20,6 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const float TREEVIEW_CHECKBOX_SIZE = 17f;
         internal const float TREEVIEW_BASE_INDENT = 16f;
         internal const float TREEVIEW_ROW_WIDTH_OFFSET = 24f;
-        internal const int TREEVIEW_STATUS_ICON_SIZE = 16;
-        internal const int TREEVIEW_STATUS_CONTENT_PADDING = 4;
         internal const float FIRST_COLUMN_WITHOUT_ICON_INDENT = 5f;
         internal const int OVERLAY_STATUS_ICON_SIZE = 16;
 
@@ -40,19 +38,23 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const float INSPECTOR_ACTIONS_BACK_RECTANGLE_TOP_MARGIN = -2f;
 
         internal const int INSPECTOR_ACTIONS_HEADER_BACK_RECTANGLE_HEIGHT = 7;
+        internal const int EMPTY_STATE_HORIZONTAL_PADDING = 3;
+
+        internal const int EMPTY_STATE_FONT_SIZE = 12;
+        internal const int EMPTY_STATE_VERTICAL_PADDING = 4;
 
         internal const int LEFT_MOUSE_BUTTON = 0;
         internal const int RIGHT_MOUSE_BUTTON = 1;
 
         internal const int UNSORT_COLUMN_ID = -1;
 
-        internal const string PLASTIC_WINDOW_TITLE = "Unity Version Control";
+        internal const string UVCS_WINDOW_TITLE = "Unity Version Control";
         internal const string PROJECT_SETTINGS_TAB_PATH = "Project/Version Control/Unity Version Control";
         internal const string PROJECT_SETTINGS_TAB_TITLE = "Unity Version Control Settings";
 
-        internal const float PLASTIC_WINDOW_MIN_SIZE_WIDTH = 600f;
-        internal const float PLASTIC_WINDOW_MIN_SIZE_HEIGHT = 350f;
-        internal const float PLASTIC_WINDOW_COMMENT_SECTION_HEIGHT = 55f;
+        internal const float UVCS_WINDOW_MIN_SIZE_WIDTH = 600f;
+        internal const float UVCS_WINDOW_MIN_SIZE_HEIGHT = 350f;
+        internal const float PENDING_CHANGES_COMMENT_HEIGHT = 55f;
 
         internal const int ACTIVE_TAB_UNDERLINE_HEIGHT = 1;
         internal const int SPLITTER_INDICATOR_HEIGHT = 1;
@@ -63,6 +65,7 @@ namespace Unity.PlasticSCM.Editor.UI
         // Internal usage. This isn't a public API.
         [EditorBrowsable(EditorBrowsableState.Never)]
         public const double PLUGIN_DELAYED_INITIALIZE_INTERVAL = 0.25;
+        internal const int RECOMMEND_MANUAL_CHECKOUT_DELAYED_FRAMES = 2;
         internal const double REFRESH_ASSET_DATABASE_DELAYED_INTERVAL = 0.25;
 
         internal const double NOTIFICATION_CLEAR_INTERVAL = 8;
@@ -85,8 +88,13 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const string LOCKS_TABLE_SETTINGS_NAME = "{0}_LocksListV2_{1}";
         internal const string SHELVES_TABLE_SETTINGS_NAME = "{0}_ShelvesList_{1}";
         internal const string SHELVES_OWNER_FILTER_SETTING_NAME = "{0}_ShelvesOwnerFilter_{1}";
+        internal const string LABELS_TABLE_SETTINGS_NAME = "{0}_LabelsList_{1}";
+        internal const string LABELS_DATE_FILTER_SETTING_NAME = "{0}_LabelsDateFilter_{1}";
+        internal const string BROWSE_REPOSITORY_TABLE_SETTINGS_NAME = "{0}_BrowseRepositoryList_{1}";
 
-        internal const string PLASTIC_PLUGIN_IS_ENABLED_KEY_NAME = "{0}_PlasticPluginIsEnabled";
+        internal const string UVCS_PLUGIN_IS_ENABLED_KEY_NAME = "{0}_UVCSPluginIsEnabled";
+        internal const string UVCS_PLUGIN_IS_ENABLED_OLD_KEY_NAME = "{0}_PlasticPluginIsEnabled";
+        internal const string SHOW_UVCS_TOOLBAR_BUTTON_KEY_NAME = "{0}_ShowUVCSToolbarButton";
         internal const string SHOW_BRANCHES_VIEW_KEY_NAME = "{0}_ShowBranchesView";
         internal const string SHOW_LOCKS_VIEW_KEY_NAME = "{0}_ShowLocksView";
         internal const string SHOW_SHELVES_VIEW_KEY_NAME = "{0}_ShowShelvesView";
@@ -94,10 +102,15 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const string FIRST_CHECKIN_SUBMITTED = "{0}_FirstCheckinSubmitted";
 
         internal const string SHOW_NOTIFICATION_KEY_NAME = "ShowNotification";
-        internal const string FORCE_CHECKOUT_KEY_NAME = "forceCheckoutPlasticSCM";
+        internal const string SHOW_LABELS_VIEW_KEY_NAME = "{0}_ShowLabelsView";
+        internal const string IS_MANUAL_CHECKOUT_ENABLED_KEY_NAME = "{0}_IsManualCheckoutEnabled";
+        internal const string IS_MANUAL_CHECKOUT_ALREADY_RECOMMENDED_KEY_NAME = "{0}_IsManualCheckoutAlreadyRecommended";
+        internal const string PROJECT_LOADED_COUNTER_KEY_NAME = "{0}_ProjectLoadedCounter";
         internal const string AUTOMATIC_ADD_KEY_NAME = "{0}_AutomaticAdd";
         internal const string PENDING_CHANGES_CI_COMMENTS_KEY_NAME = "CheckInComments";
         internal const string PENDING_CHANGES_UNCHECKED_ITEMS_KEY_NAME = "PendingChangesUnchecked";
+
+        internal const float BROWSE_REPOSITORY_PANEL_MIN_WIDTH = SEARCH_FIELD_WIDTH / 2f + 8f;
 
         internal static class ChangesetsColumns
         {
@@ -157,6 +170,51 @@ namespace Unity.PlasticSCM.Editor.UI
             internal const float CREATEDBY_MIN_WIDTH = 110f;
             internal const float COMMENT_WIDTH = 300f;
             internal const float COMMENT_MIN_WIDTH = 100f;
+            internal const float REPOSITORY_WIDTH = 180f;
+            internal const float REPOSITORY_MIN_WIDTH = 90f;
+        }
+
+        internal static class CloudDrive
+        {
+            internal const string WINDOW_TITLE = "Unity Cloud Drive";
+            internal const string ERRORS_DIALOG_SETTINGS_NAME = "{0}_CloudDriveErrorsDialog{1}";
+            internal const string COLLABORATORS_TABLE_SETTINGS_NAME = "{0}_CollaboratorsList_{1}";
+        }
+
+        internal static class LabelsColumns
+        {
+            internal const float LABELS_NAME_WIDTH = 160f;
+            internal const float LABELS_NAME_MIN_WIDTH = 80f;
+            internal const float CREATION_DATE_WIDTH = 150f;
+            internal const float CREATION_DATE_MIN_WIDTH = 100f;
+            internal const float CREATEDBY_WIDTH = 200f;
+            internal const float CREATEDBY_MIN_WIDTH = 110f;
+            internal const float COMMENT_WIDTH = 300f;
+            internal const float COMMENT_MIN_WIDTH = 100f;
+            internal const float REPOSITORY_WIDTH = 180f;
+            internal const float REPOSITORY_MIN_WIDTH = 90f;
+            internal const float CHANGESET_NUMBER_WIDTH = 80f;
+            internal const float CHANGESET_NUMBER_MIN_WIDTH = 50f;
+            internal const float BRANCH_WIDTH = 180f;
+            internal const float BRANCH_MIN_WIDTH = 70f;
+        }
+
+        internal static class BrowseRepositoryColumns
+        {
+            internal const float ITEM_WIDTH = 300f;
+            internal const float ITEM_MIN_WIDTH = 160f;
+            internal const float SIZE_WIDTH = 80f;
+            internal const float SIZE_MIN_WIDTH = 80f;
+            internal const float TYPE_WIDTH = 80f;
+            internal const float TYPE_MIN_WIDTH = 80f;
+            internal const float BRANCH_NAME_WIDTH = 180f;
+            internal const float BRANCH_NAME_MIN_WIDTH = 90f;
+            internal const float CHANGESET_NUMBER_WIDTH = 80f;
+            internal const float CHANGESET_NUMBER_MIN_WIDTH = 50f;
+            internal const float CREATEDBY_WIDTH = 200f;
+            internal const float CREATEDBY_MIN_WIDTH = 110f;
+            internal const float MODIFICATION_DATE_WIDTH = 150f;
+            internal const float MODIFICATION_DATE_MIN_WIDTH = 100f;
             internal const float REPOSITORY_WIDTH = 180f;
             internal const float REPOSITORY_MIN_WIDTH = 90f;
         }

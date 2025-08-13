@@ -24,7 +24,20 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             if (!treeView.HasSelection())
                 return null;
 
-            return treeView.GetSelectedDiffs(false)[0];
+            List<ClientDiffInfo> selectedDiffs = treeView.GetSelectedDiffs(false);
+
+            return selectedDiffs.Count > 0 ? selectedDiffs[0] : null;
+        }
+
+        internal static bool IsApplicableDiffClientDiff(
+            DiffTreeView treeView)
+        {
+            ClientDiffInfo selectedDiff = GetSelectedDiff(treeView);
+
+            if (selectedDiff == null)
+                return false;
+
+            return DiffOperation.IsApplicableDiffClientDiff(selectedDiff.DiffWithMount.Difference);
         }
     }
 }

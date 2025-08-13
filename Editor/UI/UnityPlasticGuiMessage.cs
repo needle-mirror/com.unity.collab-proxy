@@ -1,7 +1,8 @@
-﻿using UnityEditor;
+using UnityEditor;
 
 using Codice.Client.Common;
 using PlasticGui;
+using Unity.PlasticSCM.Editor.CloudDrive;
 
 namespace Unity.PlasticSCM.Editor.UI
 {
@@ -12,7 +13,7 @@ namespace Unity.PlasticSCM.Editor.UI
             string message,
             GuiMessage.GuiMessageType messageType)
         {
-            if (!PlasticPlugin.ConnectionMonitor.IsConnected)
+            if (!UVCSPlugin.Instance.ConnectionMonitor.IsConnected)
                 return;
 
             EditorUtility.DisplayDialog(
@@ -23,7 +24,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
         void GuiMessage.IGuiMessage.ShowError(string message)
         {
-            if (!PlasticPlugin.ConnectionMonitor.IsConnected)
+            if (!UVCSPlugin.Instance.ConnectionMonitor.IsConnected)
                 return;
 
             EditorUtility.DisplayDialog(
@@ -142,14 +143,18 @@ namespace Unity.PlasticSCM.Editor.UI
 
         static string GetDialogTitle(string title)
         {
-            if (string.IsNullOrEmpty(title))
-                return UnityConstants.PLASTIC_WINDOW_TITLE;
+            string defaultWindowTitle =
+                CloudDrivePlugin.Instance.IsEnabled() && !UVCSPlugin.Instance.IsEnabled() ?
+                UnityConstants.CloudDrive.WINDOW_TITLE :
+                UnityConstants.UVCS_WINDOW_TITLE;
 
-            if (title.Contains(UnityConstants.PLASTIC_WINDOW_TITLE))
+            if (string.IsNullOrEmpty(title))
+                return defaultWindowTitle;
+
+            if (title.Contains(defaultWindowTitle))
                 return title;
 
-            return string.Format("{0} - {1}",
-                UnityConstants.PLASTIC_WINDOW_TITLE, title);
+            return string.Format("{0} - {1}", defaultWindowTitle, title);
         }
 
         static string GetDialogTitleForMessageType(

@@ -1,13 +1,16 @@
-﻿using Codice.Client.Common;
+using Codice.Client.Common;
 using PlasticGui;
 
 namespace Unity.PlasticSCM.Editor.UI
 {
     internal class EditorProgressControls : IProgressControls
     {
-        internal EditorProgressControls(GuiMessage.IGuiMessage guiMessage)
+        internal EditorProgressControls(
+            GuiMessage.IGuiMessage guiMessage,
+            string title)
         {
             mGuiMessage = guiMessage;
+            mTitle = title;
         }
 
         void IProgressControls.HideProgress()
@@ -23,9 +26,7 @@ namespace Unity.PlasticSCM.Editor.UI
         void IProgressControls.ShowNotification(string message)
         {
             mGuiMessage.ShowMessage(
-                UnityConstants.PLASTIC_WINDOW_TITLE,
-                message,
-                GuiMessage.GuiMessageType.Informational);
+                mTitle, message, GuiMessage.GuiMessageType.Informational);
         }
 
         void IProgressControls.ShowProgress(string message)
@@ -36,19 +37,16 @@ namespace Unity.PlasticSCM.Editor.UI
         void IProgressControls.ShowSuccess(string message)
         {
             mGuiMessage.ShowMessage(
-                UnityConstants.PLASTIC_WINDOW_TITLE,
-                message,
-                GuiMessage.GuiMessageType.Informational);
+                mTitle, message, GuiMessage.GuiMessageType.Informational);
         }
 
         void IProgressControls.ShowWarning(string message)
         {
             mGuiMessage.ShowMessage(
-                UnityConstants.PLASTIC_WINDOW_TITLE,
-                message,
-                GuiMessage.GuiMessageType.Warning);
+                mTitle, message, GuiMessage.GuiMessageType.Warning);
         }
 
-        GuiMessage.IGuiMessage mGuiMessage;
+        readonly string mTitle;
+        readonly GuiMessage.IGuiMessage mGuiMessage;
     }
 }

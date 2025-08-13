@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -82,13 +82,13 @@ namespace Unity.PlasticSCM.Editor.Configuration
 
             Paragraph("Sign in with email");
 
-            mEmail = TextEntry(
+            mEmail = EntryBuilder.CreateTextEntry(
                 PlasticLocalization.Name.Email.GetString(),
                 mEmail, ENTRY_WIDTH, ENTRY_X);
 
             GUILayout.Space(5);
 
-            mPassword = PasswordEntry(
+            mPassword = EntryBuilder.CreatePasswordEntry(
                 PlasticLocalization.Name.Password.GetString(),
                 mPassword, ENTRY_WIDTH, ENTRY_X);
         }
@@ -213,7 +213,7 @@ namespace Unity.PlasticSCM.Editor.Configuration
                 mCredentials.User.Data,
                 mCredentials.User.Password);
 
-            GetWindow<PlasticWindow>().InitializePlastic();
+            GetWindow<UVCSWindow>().InitializePlastic();
             OkButtonAction();
         }
 

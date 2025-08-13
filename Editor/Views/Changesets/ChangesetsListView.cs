@@ -11,10 +11,16 @@ using PlasticGui.WorkspaceWindow.QueryViews;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Avatar;
 using Unity.PlasticSCM.Editor.UI.Tree;
+using Unity.PlasticSCM.Editor.Views.Labels.Dialogs;
+#if UNITY_6000_2_OR_NEWER
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.Changesets
 {
-    internal class ChangesetsListView : PlasticTreeView
+    internal class ChangesetsListView :
+        PlasticTreeView,
+        IPlasticTable<object>
     {
         internal GenericMenu Menu { get { return mMenu.Menu; } }
 
@@ -22,35 +28,34 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             ChangesetsListHeaderState headerState,
             List<string> columnNames,
             ChangesetsViewMenu menu,
-            Action sizeChangedAction,
+            IGetRepositorySpec getRepositorySpec,
+            IGetWorkingObject getWorkingObject,
             Action selectionChangedAction,
-            Action doubleClickAction)
+            Action doubleClickAction,
+            Action<IEnumerable<object>> afterItemsChangedAction)
         {
             mColumnNames = columnNames;
             mMenu = menu;
-            mSizeChangedAction = sizeChangedAction;
+            mGetRepositorySpec = getRepositorySpec;
+            mGetWorkingObject = getWorkingObject;
             mSelectionChangedAction = selectionChangedAction;
             mDoubleClickAction = doubleClickAction;
+            mAfterItemsChangedAction = afterItemsChangedAction;
 
             multiColumnHeader = new MultiColumnHeader(headerState);
             multiColumnHeader.canSort = true;
             multiColumnHeader.sortingChanged += SortingChanged;
 
-            mCooldownFilterAction = new CooldownWindowDelayer(
+            mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
 
-            mCooldownSelectionAction = new CooldownWindowDelayer(
+            mDelayedSelectionAction = new DelayedActionBySecondsRunner(
                 DelayedSelectionChanged, UnityConstants.SELECTION_DELAYED_INPUT_ACTION_INTERVAL);
         }
 
         protected override void SelectionChanged(IList<int> selectedIds)
         {
-            mCooldownSelectionAction.Ping();
-        }
-
-        internal void SetLoadedChangesetId(long loadedChangesetId)
-        {
-            mLoadedChangesetId = loadedChangesetId;
+            mDelayedSelectionAction.Run();
         }
 
         protected override IList<TreeViewItem> BuildRows(
@@ -73,30 +78,36 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         protected override void SearchChanged(string newSearch)
         {
-            mCooldownFilterAction.Ping();
+            // HACK: if CreateLabelDialog is open, update the results
+            // since the mDelayedFilterAction does not work properly
+            if (EditorWindow.HasOpenInstances<CreateLabelDialog>())
+            {
+                UpdateResults();
+                return;
+            }
+
+            mDelayedFilterAction.Run();
         }
 
         protected override void ContextClickedItem(int id)
         {
+            if (mMenu == null)
+                return;
+
             mMenu.Popup();
             Repaint();
         }
 
         public override void OnGUI(Rect rect)
         {
-            if (Event.current.type == EventType.Layout)
-            {
-                if (IsSizeChanged(treeViewRect, mLastRect))
-                    mSizeChangedAction();
-            }
-
-            mLastRect = treeViewRect;
-
             base.OnGUI(rect);
 
             Event e = Event.current;
 
             if (e.type != EventType.KeyDown)
+                return;
+
+            if (mMenu == null)
                 return;
 
             bool isProcessed = mMenu.ProcessKeyActionIfNeeded(e);
@@ -110,14 +121,14 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             if (args.item is ChangesetListViewItem)
             {
                 ChangesetListViewItem changesetListViewItem = (ChangesetListViewItem)args.item;
-                ChangesetInfo changesetInfo = (ChangesetInfo)changesetListViewItem.ObjectInfo;
 
                 ChangesetsListViewItemGUI(
                     mQueryResult,
                     rowHeight,
                     changesetListViewItem,
                     args,
-                    changesetInfo.ChangesetId == mLoadedChangesetId,
+                    RepObjectInfoView.IsHighlighted(
+                        changesetListViewItem.ObjectInfo, mGetWorkingObject.Get()),
                     Repaint);
                 return;
             }
@@ -131,16 +142,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 return;
 
             mDoubleClickAction();
-        }
-
-        internal void BuildModel(
-            ViewQueryResult queryResult,
-            long loadedChangesetId)
-        {
-            mListViewItemIds.Clear();
-
-            mQueryResult = queryResult;
-            mLoadedChangesetId = loadedChangesetId;
         }
 
         internal void Refilter()
@@ -229,32 +230,29 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             TableViewOperations.SetSelectionAndScroll(this, idsToSelect);
         }
 
-        int GetTreeIdForItem(RepObjectInfo repObjectInfo)
+        void IPlasticTable<object>.FillEntriesAndSelectRows(
+            IList<object> entries,
+            List<object> entriesToSelect,
+            string currentFilter)
         {
-            foreach (KeyValuePair<object, int> item in mListViewItemIds.GetInfoItems())
-            {
-                RepObjectInfo currentRepObjectInfo =
-                    mQueryResult.GetRepObjectInfo(item.Key);
+            List<RepObjectInfo> changesetsToSelect = ChangesetsSelection.GetChangesetsToSelect(
+                this, entriesToSelect);
 
-                if (!currentRepObjectInfo.Equals(repObjectInfo))
-                    continue;
+            int defaultRow = TableViewOperations.GetFirstSelectedRow(this);
 
-                if (!currentRepObjectInfo.GUID.Equals(repObjectInfo.GUID))
-                    continue;
+            mListViewItemIds.Clear();
 
-                return item.Value;
-            }
+            mQueryResult = new ViewQueryResult(
+                EnumQueryObjectType.Changeset, entries, mGetRepositorySpec.Get());
 
-            return -1;
+            UpdateResults();
+
+            ChangesetsSelection.SelectChangesets(this, changesetsToSelect, defaultRow);
         }
 
         void DelayedSearchChanged()
         {
-            Refilter();
-
-            Sort();
-
-            Reload();
+            UpdateResults();
 
             TableViewOperations.ScrollToSelection(this);
         }
@@ -272,6 +270,36 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             Sort();
 
             Reload();
+        }
+
+        void UpdateResults()
+        {
+            Refilter();
+
+            Sort();
+
+            mAfterItemsChangedAction(mQueryResult.GetObjects());
+
+            Reload();
+        }
+
+        int GetTreeIdForItem(RepObjectInfo repObjectInfo)
+        {
+            foreach (KeyValuePair<object, int> item in mListViewItemIds.GetInfoItems())
+            {
+                RepObjectInfo currentRepObjectInfo =
+                    mQueryResult.GetRepObjectInfo(item.Key);
+
+                if (!currentRepObjectInfo.Equals(repObjectInfo))
+                    continue;
+
+                if (!currentRepObjectInfo.GUID.Equals(repObjectInfo.GUID))
+                    continue;
+
+                return item.Value;
+            }
+
+            return -1;
         }
 
         static void RegenerateRows(
@@ -389,30 +417,17 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 rect, columnText, isSelected, isFocused, isBoldText);
         }
 
-        static bool IsSizeChanged(
-            Rect currentRect, Rect lastRect)
-        {
-            if (currentRect.width != lastRect.width)
-                return true;
-
-            if (currentRect.height != lastRect.height)
-                return true;
-
-            return false;
-        }
-
-        Rect mLastRect;
-
         ListViewItemIds<object> mListViewItemIds = new ListViewItemIds<object>();
 
         ViewQueryResult mQueryResult;
-        long mLoadedChangesetId;
 
-        readonly CooldownWindowDelayer mCooldownFilterAction;
-        readonly CooldownWindowDelayer mCooldownSelectionAction;
+        readonly DelayedActionBySecondsRunner mDelayedFilterAction;
+        readonly DelayedActionBySecondsRunner mDelayedSelectionAction;
+        readonly Action<IEnumerable<object>> mAfterItemsChangedAction;
         readonly Action mDoubleClickAction;
         readonly Action mSelectionChangedAction;
-        readonly Action mSizeChangedAction;
+        readonly IGetWorkingObject mGetWorkingObject;
+        readonly IGetRepositorySpec mGetRepositorySpec;
         readonly ChangesetsViewMenu mMenu;
         readonly List<string> mColumnNames;
     }

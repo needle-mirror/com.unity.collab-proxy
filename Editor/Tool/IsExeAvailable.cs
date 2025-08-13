@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -114,17 +114,17 @@ namespace Unity.PlasticSCM.Editor.Tool
             {
                 mLog.DebugFormat("No installation found, behaving as {0} Edition",
                     EditionToken.IsCloudEdition() ? "Cloud" : "Enterprise");
+                return;
             }
-            else
-            {
-                bool isCloudPlasticInstall = File.Exists(Path.Combine(plasticClientBinDir, EditionToken.CLOUD_EDITION_FILE_NAME));
 
-                mLog.DebugFormat("{0} Edition detected - installation directory: {1}",
-                    isCloudPlasticInstall ? "Cloud" : "Enterprise",
-                    plasticClientBinDir);
-                mLog.DebugFormat("Local token: {0} Edition",
-                    EditionToken.IsCloudEdition() ? "Cloud" : "Enterprise");
-            }
+            string cloudEditionTokenFilePath = Path.Combine(
+                plasticClientBinDir, EditionToken.CLOUD_EDITION_FILE_NAME);
+
+            mLog.DebugFormat("{0} Edition detected - installation directory: {1}",
+                File.Exists(cloudEditionTokenFilePath) ? "Cloud" : "Enterprise",
+                plasticClientBinDir);
+            mLog.DebugFormat("Local token: {0} Edition",
+                EditionToken.IsCloudEdition() ? "Cloud" : "Enterprise");
         }
 
         static string GetToolCommand(string tool)

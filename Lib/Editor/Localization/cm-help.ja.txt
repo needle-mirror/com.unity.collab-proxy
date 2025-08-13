@@ -4721,26 +4721,12 @@ SQL クエリを実行します。SQL ストレージが必要です。
 == CMD_USAGE_QUERY ==
 使用方法:
 
-    cm ^query <SQL コマンド> [--^outputfile=<出力ファイル>]
-                           [--^solveuser=<列名>[,...]]
-                           [--^solvepath=<列名>[,...]]
-                           [--^columnwidth=<値>] [--^nocolumnname]
-                           [--^columnseparator=<セパレーター>] [--^repository=<名前>]
+    cm ^query <SQL コマンド> [--^repository=<名前>]
 
     SQL コマンド        実行する SQL クエリ。
 
 オプション:
 
-    --^outputfile        結果を出力ファイルに書き込みます。
-    --^solveuser         指定された列をユーザー名列として設定します。
-                        クエリインタープリターでは、これらの列のデータが
-                        ユーザーであると想定され、それらの解決が試行されます。
-    --^solvepath         指定された列を項目 ID 列として設定します。クエリ
-                        インタープリターでは、項目 ID のファイルシステムパスへの
-                        解決が試行されます。
-    --^columnwidth       各列の幅を指定して出力を書式設定します。
-    --^nocolumnname      列名を出力しません。
-    --^columnseparator   タブ (\t) ではなく文字を列セパレーターとして使用します。
     --^repository        クエリするリポジトリ。
 
 == CMD_HELP_QUERY ==
@@ -4752,32 +4738,6 @@ SQL クエリを実行します。SQL ストレージが必要です。
     管理します。
     - ユーザー名を Unity VCS 形式に解決する「^SolveUser(<ユーザー名>)」。
     - ディスクパスを項目 ID に解決する「^SolvePath(<パス>)」。
-
-    また、クエリ結果を人間が判読可能な形式で表示するオプションを使用することもできます。
-
-    オプション「--^solveuser=<列名>」および「--^solvepath=<列名>」
-    を使用して、クエリインタープリターが判読可能なテキストに変換する
-    必要のある列を指定できます。複数の列名をコンマで区切って
-    指定できます。
-
-例:
-
-    cm ^query "^SELECT * ^FROM ^revision" --^columnwidth=25 --^repository=reptest
-    (リポジトリ「reptest」にある「リビジョン」テーブルからデータを取得します。)
-
-    cm ^query "^SELECT b.^sname ^as ブランチ名, o.^dtimestamp ^as 日付 ^from ^branch b, \
-        ^object o, ^seid s ^where b.^iobjid=o.^iobjid ^and o.^fidowner=s.^iseidid ^and \
-        s.^scode='^SolveUser(john)'" --^outputfile=query.txt
-    (所有者が「john」のブランチをファイルに出力します。)
-
-    cm ^query "^select r.^iobjid, r.^fiditem ^as パス, s.^scode ^as ユーザー名 ^FROM \
-        ^revision r, ^object o, ^seid s ^WHERE r.^iobjid=o.^iobjid ^and \
-        o.^fidowner=s.^iseidid ^and o.^dtimestamp>2014/04/25" \
-    --^solveuser=ユーザー名 --^solvepath=パス --^repository=reptest@server2:9095
-    (選択したデータを選択したリポジトリから取得します。)
-
-    cm ^query "^SELECT * ^FROM ^revision ^WHERE ^fiditem=^SolvePath(c:\mywkpath\info)"
-    (パス「info」のすべてのリビジョンデータを取得します。)
 
 == CMD_DESCRIPTION_ATTRIBUTE_DELETE ==
 1 つ以上の属性を削除します。

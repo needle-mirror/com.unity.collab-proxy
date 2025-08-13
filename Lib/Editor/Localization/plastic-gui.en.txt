@@ -1345,8 +1345,11 @@ There are no shelves created yet
 == NoContentToCompareExplanation ==
 There is no content to compare
 
+== NoContentToBrowseExplanation ==
+There is no content to browse
+
 == NoLocksCreatedExplanation ==
-There are no file locks created yet
+There are no file locks created yet.
 
 == LoadLocksError ==
 Cannot retrieve the locks information
@@ -1932,6 +1935,12 @@ Bring changes to {0}
 
 == BringChangesExplanation ==
 Your changes will be applied automatically on the destination. You will be notified if any conflicts need to be resolved
+
+== ApplyShelveReportTitle ==
+Apply shelve report
+
+== ApplyShelveReportExplanation ==
+The apply shelve operation found some issues. Please review them.
 
 == ApplyShelveWithConflictsTitle ==
 Conflict Resolution Required
@@ -6418,6 +6427,18 @@ Add packages and project settings to Unity Version Control.
 == UnityInitialCheckinProgress ==
 Checking in the packages and project settings files...
 
+== UnityUpdateVersionControlPackage ==
+Update Unity Version Control
+
+== UnityUpdateVersionControlPackageTooltip ==
+Update Unity Version Control {0} to {1}
+
+== UnityVersionControlPackageIsUpToDate ==
+Unity Version Control is up to date
+
+== UnityVersionControlPackageIsUpToDateTooltip ==
+Unity Version Control {0} is up to date
+
 == Default ==
 Default
 
@@ -7066,11 +7087,19 @@ Keyboard shortcuts:
   Enter: focus the next search result
   Ctrl+Enter: focus the previous one
 
-== DisableForcedCheckout ==
+== DisableManualCheckout ==
 Disable Manual Checkout for Unity Assets
 
-== EnableForcedCheckout ==
+== EnableManualCheckout ==
 Enable Manual Checkout for Unity Assets
+
+== RecommendToEnableManualCheckoutSinceLockRulesAreConfigured ==
+Locks are currently configured for your project. 
+We recommend that you enable ‘Manual Checkout’.
+
+This will reduce conflicts, preventing other team members from modifying an asset that is locked. 
+
+Do you want to enable Manual Checkout?
 
 == StatusBarReady ==
 Ready
@@ -7716,9 +7745,6 @@ Changeset colors
 
 == SelectUsersDialogDescription ==
 Please select one or more users from the list below:
-
-== ClickToSetOtherName ==
-Click to set other name
 
 == ClickToSetAlias ==
 Click to set alias
@@ -8640,7 +8666,7 @@ Loading main branch...
 Connecting workspace to the UVCS repository...
 
 == SharingWorkspace ==
-Sharing workspace...
+Sharing drive...
 
 == ExecuteQueryClearsFiltersWarningTitle ==
 Clear filters warning
@@ -8746,6 +8772,90 @@ Your workspace is unable to sync
 
 == WorkspacesUnableToSyncPlural ==
 {0} workspaces are unable to sync
+
+== NoDirectorySelectedEmptyState ==
+Select a directory in the tree to see its contents
+
+== EmptyDirectoryEmptyState ==
+The selected directory is empty
+
+== CopyingFilesIndeterminateProgress ==
+Copying files...
+
+== CopyingFilesProgress ==
+Copying file {0} of {1}: {2}
+
+== AskUserForExistingFileTitle ==
+File already exists
+
+== AskUserForExistingFileMessage ==
+The file {0} already exists. How would you like to handle it?
+
+== ReplaceButton ==
+Replace
+
+== KeepBothButton ==
+Keep both
+
+== SkipButton ==
+Skip
+
+== ApplyToAllFollowingFiles ==
+Apply to all following files
+
+== CopyFileErrorsTitle == 
+Copy files result
+
+== CopyFileErrorsMessage == 
+The following files couldn't be copied to the cloud workspace '{0}'.
+Please check the error details below.
+
+== CreateCloudWorkspaceTitle ==
+Create a new cloud drive
+
+== CreateCloudWorkspaceExplanation ==
+Select {0} for your cloud drive where you can store all your creations, and collaborate with people.
+
+A cloud drive contains the entire history, including all the changes of its files and directories.
+
+== CreateCloudWorkspaceExplanationSelectForCloudOrg ==
+the organization
+
+== CreateCloudWorkspaceExplanationSelectForUnityOrg ==
+the organization and the project
+
+== OrganizationLabel ==
+Organization:
+
+== GettingOrganizations ==
+Getting organizations...
+
+== GettingProjects ==
+Getting projects...
+
+== CreatingCloudWorkspace ==
+Creating drive {0}...
+
+== CloudWorkspaceNameEntry ==
+Drive name:
+
+== CloudWorkspaceNameEmpty ==
+Drive name must not be empty
+
+== CreateCloudWorkspaceButton ==
+Create drive
+
+== ShareDriveTitle ==
+Share drive to:
+
+== ShareDriveExplanation ==
+Grant your team members access to this drive for instant asset sharing and seamless collaboration.
+
+== CollaboratorsListEmptyState ==
+This organization has no users
+
+== ManageUsersDashboardLink ==
+Manage users in Dashboard
 
 == CannotLoadBranches ==
 Cannot load branches
@@ -8959,3 +9069,63 @@ Ctrl+D2
 
 == OpeningWorkspace ==
 Opening workspace...
+
+== LocksTutorialLabel ==
+Learn how to configure locks in this {0}.
+
+== LocksTutorialButton ==
+Unity Learn tutorial
+
+== ShowLabelsButton ==
+Show labels
+
+== UnityLabelShortcutForWindows ==
+%l
+
+== UnityLabelShortcutForMacOS ==
+#%l
+
+== UseUnityVersionControlToManageYourProject ==
+Use Unity Version Control to manage your project
+
+== UseUnityVersionControl ==
+Use Unity Version Control...
+
+== HideVersionControlToolbar ==
+Hide Version Control Toolbar
+
+== LearnMoreAboutUnityVersionControl ==
+Learn more about Unity Version Control
+
+== CheckinPendingChanges ==
+Check-in Pending Changes...
+
+== UseUnityVersionControl ==
+Use Unity Version Control...
+
+== HideVersionControlToolbar ==
+Hide Version Control Toolbar
+
+== LearnMoreAboutUnityVersionControl ==
+Learn more about Unity Version Control
+
+== CheckinPendingChanges ==
+Check-in Pending Changes...
+
+== ViewIncomingChanges ==
+View incoming changes
+
+== ViewIncomingChanges ==
+View incoming changes
+
+== UnitySwitchShortcutForWindows ==
+%#w
+
+== UnitySwitchShortcutForMacOS ==
+#%w
+
+== ShowUnityVersionControlToolbarButton ==
+Show Unity Version Control button in toolbar
+
+== PendingChangesInfo ==
+{0} pending changes in your workspace

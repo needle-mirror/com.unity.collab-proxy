@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using UnityEditor;
 using UnityEngine;
@@ -22,6 +22,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             Action<CreateWorkspaceViewState> createWorkspaceAction,
             EditorWindow parentWindow,
             IPlasticWebRestApi plasticWebRestApi,
+            IPlasticAPI plasticApi,
             string defaultServer,
             ref CreateWorkspaceViewState state)
         {
@@ -34,6 +35,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                 createRepositoryAction,
                 parentWindow,
                 plasticWebRestApi,
+                plasticApi,
                 defaultServer,
                 ref state);
 
@@ -73,6 +75,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             Action<RepositoryCreationData> createRepositoryAction,
             EditorWindow parentWindow,
             IPlasticWebRestApi plasticWebRestApi,
+            IPlasticAPI plasticApi,
             string defaultServer,
             ref CreateWorkspaceViewState state)
         {
@@ -81,6 +84,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                 createRepositoryAction,
                 parentWindow,
                 plasticWebRestApi,
+                plasticApi,
                 defaultServer,
                 ref state);
 
@@ -92,6 +96,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             Action<RepositoryCreationData> createRepositoryAction,
             EditorWindow parentWindow,
             IPlasticWebRestApi plasticWebRestApi,
+            IPlasticAPI plasticApi,
             string defaultServer,
             ref CreateWorkspaceViewState state)
         {
@@ -140,6 +145,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                     createRepositoryAction,
                     parentWindow,
                     plasticWebRestApi,
+                    plasticApi,
                     state.Repository,
                     defaultServer);
 
@@ -207,7 +213,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             Action<CreateWorkspaceViewState> createWorkspaceAction,
             ref CreateWorkspaceViewState state)
         {
-            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.BeginHorizontal(GUILayout.Height(24));
 
             bool isButtonEnabled =
                 IsValidState(state) &&
@@ -216,18 +222,16 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             string buttonText = PlasticLocalization.GetString(
                 PlasticLocalization.Name.CreateWorkspace);
 
-            bool isButtonClicked = DoButton(buttonText, isButtonEnabled,
-                CREATE_WORKSPACE_BUTTON_MARGIN, CREATE_WORKSPACE_BUTTON_WIDTH);
+            bool isButtonClicked = DoButton(
+                buttonText,
+                isButtonEnabled,
+                CREATE_WORKSPACE_BUTTON_MARGIN,
+                CREATE_WORKSPACE_BUTTON_WIDTH);
 
-            GUI.enabled = true;
+            GUILayout.Space(5);
 
             if (state.ProgressData.IsOperationRunning)
-            {
-                DoProgress(state.ProgressData,
-                    CREATE_WORKSPACE_BUTTON_MARGIN +
-                    PROGRESS_MARGIN +
-                    CREATE_WORKSPACE_BUTTON_WIDTH);
-            }
+                DoProgress(state.ProgressData);
 
             EditorGUILayout.EndHorizontal();
 
@@ -256,6 +260,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             Action<RepositoryCreationData> createRepositoryAction,
             EditorWindow parentWindow,
             IPlasticWebRestApi plasticWebRestApi,
+            IPlasticAPI plasticApi,
             string repositorySpecInput,
             string defaultServer)
         {
@@ -278,6 +283,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             RepositoryCreationData creationData = CreateRepositoryDialog.CreateRepository(
                 parentWindow,
                 plasticWebRestApi,
+                plasticApi,
                 proposedRepositoryName,
                 proposedServer,
                 defaultServer,
@@ -372,15 +378,17 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
         {
             GUI.enabled = isEnabled;
 
-            var rect = GUILayoutUtility.GetRect(
+            Rect rect = GUILayoutUtility.GetRect(
                 new GUIContent(text),
-                UnityStyles.Dialog.EntryLabel);
-
-            rect.width = buttonWidth;
+                UnityStyles.Dialog.EntryLabel,
+                GUILayout.MinWidth(buttonWidth),
+                GUILayout.MaxWidth(buttonWidth));
             rect.x = buttonLeft;
 
             bool result = GUI.Button(rect, text);
+
             GUI.enabled = true;
+
             return result;
         }
 
@@ -428,19 +436,12 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
         }
 
         static void DoProgress(
-            ProgressControlsForViews.Data data,
-            float progressLeft)
+            ProgressControlsForViews.Data data)
         {
             if (string.IsNullOrEmpty(data.ProgressMessage))
                 return;
 
-            var rect = GUILayoutUtility.GetRect(
-                new GUIContent(data.ProgressMessage),
-                UnityStyles.Dialog.EntryLabel);
-
-            rect.x = progressLeft;
-
-            GUI.Label(rect, data.ProgressMessage);
+            DrawProgressForViews.ForIndeterminateProgressSpinner(data);
         }
 
         static bool IsValidState(
@@ -499,7 +500,6 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
         const float LABEL_MARGIN = 2;
         const float RADIO_BUTTON_MARGIN = 38;
         const int RADIO_BUTTON_LEFT_PADDING = 20;
-        const float PROGRESS_MARGIN = 5;
         const float CREATE_WORKSPACE_BUTTON_MARGIN = 32;
         const float CREATE_WORKSPACE_BUTTON_WIDTH = 160;
         const int LEARN_MORE_LABEL_LEFT_PADDING = 10;

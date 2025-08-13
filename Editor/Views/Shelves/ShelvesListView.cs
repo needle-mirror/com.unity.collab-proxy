@@ -8,13 +8,19 @@ using UnityEngine;
 using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.QueryViews;
+using PlasticGui.WorkspaceWindow.QueryViews.Shelves;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Avatar;
 using Unity.PlasticSCM.Editor.UI.Tree;
+#if UNITY_6000_2_OR_NEWER
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.Shelves
 {
-    internal class ShelvesListView : PlasticTreeView
+    internal class ShelvesListView :
+        PlasticTreeView,
+        FillShelvesView.IShelvesList
     {
         internal GenericMenu Menu { get { return mMenu.Menu; } }
 
@@ -22,30 +28,32 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             ShelvesListHeaderState headerState,
             List<string> columnNames,
             ShelvesViewMenu menu,
-            Action sizeChangedAction,
+            IGetRepositorySpec getRepositorySpec,
             Action selectionChangedAction,
-            Action doubleClickAction)
+            Action doubleClickAction,
+            Action<IEnumerable<object>> afterItemsChangedAction)
         {
             mColumnNames = columnNames;
             mMenu = menu;
-            mSizeChangedAction = sizeChangedAction;
+            mGetRepositorySpec = getRepositorySpec;
             mSelectionChangedAction = selectionChangedAction;
             mDoubleClickAction = doubleClickAction;
+            mAfterItemsChangedAction = afterItemsChangedAction;
 
             multiColumnHeader = new MultiColumnHeader(headerState);
             multiColumnHeader.canSort = true;
             multiColumnHeader.sortingChanged += SortingChanged;
 
-            mCooldownFilterAction = new CooldownWindowDelayer(
+            mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
 
-            mCooldownSelectionAction = new CooldownWindowDelayer(
+            mDelayedSelectionAction = new DelayedActionBySecondsRunner(
                 DelayedSelectionChanged, UnityConstants.SELECTION_DELAYED_INPUT_ACTION_INTERVAL);
         }
 
         protected override void SelectionChanged(IList<int> selectedIds)
         {
-            mCooldownSelectionAction.Ping();
+            mDelayedSelectionAction.Run();
         }
 
         protected override IList<TreeViewItem> BuildRows(
@@ -69,7 +77,7 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
 
         protected override void SearchChanged(string newSearch)
         {
-            mCooldownFilterAction.Ping();
+            mDelayedFilterAction.Run();
         }
 
         protected override void ContextClickedItem(int id)
@@ -80,14 +88,6 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
 
         public override void OnGUI(Rect rect)
         {
-            if (Event.current.type == EventType.Layout)
-            {
-                if (IsSizeChanged(treeViewRect, mLastRect))
-                    mSizeChangedAction();
-            }
-
-            mLastRect = treeViewRect;
-
             base.OnGUI(rect);
 
             Event e = Event.current;
@@ -105,12 +105,10 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
         {
             if (args.item is ShelveListViewItem)
             {
-                ShelveListViewItem shelveListViewItem = (ShelveListViewItem)args.item;
-
                 ShelvesListViewItemGUI(
                     mQueryResult,
                     rowHeight,
-                    shelveListViewItem,
+                    (ShelveListViewItem)args.item,
                     args,
                     Repaint);
                 return;
@@ -125,13 +123,6 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
                 return;
 
             mDoubleClickAction();
-        }
-
-        internal void BuildModel(ViewQueryResult queryResult)
-        {
-            mListViewItemIds.Clear();
-
-            mQueryResult = queryResult;
         }
 
         internal void Refilter()
@@ -220,32 +211,29 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             TableViewOperations.SetSelectionAndScroll(this, idsToSelect);
         }
 
-        int GetTreeIdForItem(RepObjectInfo repObjectInfo)
+        void FillShelvesView.IShelvesList.Fill(
+            List<object> shelves,
+            ChangesetInfo shelveToSelect,
+            Filter filter)
         {
-            foreach (KeyValuePair<object, int> item in mListViewItemIds.GetInfoItems())
-            {
-                RepObjectInfo currentRepObjectInfo =
-                    mQueryResult.GetRepObjectInfo(item.Key);
+            List<RepObjectInfo> shelvesToSelect = ShelvesSelection.GetShelvesToSelect(
+                this, shelveToSelect);
 
-                if (!currentRepObjectInfo.Equals(repObjectInfo))
-                    continue;
+            int defaultRow = TableViewOperations.GetFirstSelectedRow(this);
 
-                if (!currentRepObjectInfo.GUID.Equals(repObjectInfo.GUID))
-                    continue;
+            mListViewItemIds.Clear();
 
-                return item.Value;
-            }
+            mQueryResult = new ViewQueryResult(
+                EnumQueryObjectType.Shelve, shelves, mGetRepositorySpec.Get());
 
-            return -1;
+            UpdateResults();
+
+            ShelvesSelection.SelectShelves(this, shelvesToSelect, defaultRow);
         }
 
         void DelayedSearchChanged()
         {
-            Refilter();
-
-            Sort();
-
-            Reload();
+            UpdateResults();
 
             TableViewOperations.ScrollToSelection(this);
         }
@@ -263,6 +251,36 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             Sort();
 
             Reload();
+        }
+
+        void UpdateResults()
+        {
+            Refilter();
+
+            Sort();
+
+            mAfterItemsChangedAction(mQueryResult.GetObjects());
+
+            Reload();
+        }
+
+        int GetTreeIdForItem(RepObjectInfo repObjectInfo)
+        {
+            foreach (KeyValuePair<object, int> item in mListViewItemIds.GetInfoItems())
+            {
+                RepObjectInfo currentRepObjectInfo =
+                    mQueryResult.GetRepObjectInfo(item.Key);
+
+                if (!currentRepObjectInfo.Equals(repObjectInfo))
+                    continue;
+
+                if (!currentRepObjectInfo.GUID.Equals(repObjectInfo.GUID))
+                    continue;
+
+                return item.Value;
+            }
+
+            return -1;
         }
 
         static void RegenerateRows(
@@ -374,29 +392,16 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
                 rect, columnText, isSelected, isFocused, false);
         }
 
-        static bool IsSizeChanged(
-            Rect currentRect, Rect lastRect)
-        {
-            if (currentRect.width != lastRect.width)
-                return true;
-
-            if (currentRect.height != lastRect.height)
-                return true;
-
-            return false;
-        }
-
-        Rect mLastRect;
-
         ListViewItemIds<object> mListViewItemIds = new ListViewItemIds<object>();
 
         ViewQueryResult mQueryResult;
 
-        readonly CooldownWindowDelayer mCooldownFilterAction;
-        readonly CooldownWindowDelayer mCooldownSelectionAction;
+        readonly DelayedActionBySecondsRunner mDelayedFilterAction;
+        readonly DelayedActionBySecondsRunner mDelayedSelectionAction;
+        readonly Action<IEnumerable<object>> mAfterItemsChangedAction;
         readonly Action mDoubleClickAction;
         readonly Action mSelectionChangedAction;
-        readonly Action mSizeChangedAction;
+        readonly IGetRepositorySpec mGetRepositorySpec;
         readonly ShelvesViewMenu mMenu;
         readonly List<string> mColumnNames;
     }

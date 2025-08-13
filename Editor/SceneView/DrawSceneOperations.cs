@@ -13,8 +13,6 @@ using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 
-using PlasticAssetModificationProcessor = Unity.PlasticSCM.Editor.AssetUtils.Processor.AssetModificationProcessor;
-
 namespace Unity.PlasticSCM.Editor.SceneView
 {
     static class DrawSceneOperations
@@ -65,7 +63,7 @@ namespace Unity.PlasticSCM.Editor.SceneView
                     return true;
 
                 List<Asset> assets = GetUnmodifiedAssets(
-                    list, PlasticAssetModificationProcessor.GetModifiedAssetsToProcess());
+                    list, UVCSAssetModificationProcessor.GetModifiedAssetsToProcess());
 
                 if (assets.Count == 0)
                     return true;

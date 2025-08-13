@@ -1,5 +1,5 @@
 == CMD_DESCRIPTION_ACCESS_TOKEN ==
-Allows the user to manage Access Tokens.
+Allows the user to manage Personal Access Tokens.
 
 == CMD_USAGE_ACCESS_TOKEN ==
 Usage:
@@ -12,6 +12,7 @@ Commands:
     - ^list
     - ^reveal
     - ^revoke
+    - ^admin
 
     To get more information about each command run:
     cm ^accesstoken <command> --^usage
@@ -20,22 +21,295 @@ Commands:
 == CMD_HELP_ACCESS_TOKEN ==
 Examples:
 
-    cm ^accesstoken ^create "To be used by the Build Server"
+    cm ^accesstoken ^create "To be used by the Build Server" 4w
     cm ^accesstoken ^list
     cm ^accesstoken ^reveal 19c57d0f-c525-4767-8670-82f7ecc2ccdb
     cm ^accesstoken ^revoke 19c57d0f-c525-4767-8670-82f7ecc2ccdb
+    cm ^accesstoken ^admin ^allowlist ^show
+    cm ^accesstoken ^admin ^listall
+    cm ^accesstoken ^admin ^revoke 19c57d0f-c525-4767-8670-82f7ecc2ccdb
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_ADMIN ==
+Allows the repository server owner to administer some aspects of
+Personal Access Tokens.
+
+== CMD_USAGE_ACCESS_TOKEN_ADMIN ==
+Usage:
+
+    cm ^accesstoken ^admin <command> [options]
+
+Commands:
+
+    - ^allowlist
+    - ^listall
+    - ^revoke
+
+    To get more information about each command run:
+    cm ^accesstoken ^admin <command> --^usage
+    cm ^accesstoken ^admin <command> --^help
+
+== CMD_HELP_ACCESS_TOKEN_ADMIN ==
+Examples:
+
+    cm ^accesstoken ^admin ^allowlist ^add --user=john.doe@mail.domain
+    cm ^accesstoken ^admin ^allowlist ^remove --user=john.doe@mail.domain
+    cm ^accesstoken ^admin ^allowlist ^show
+    cm ^accesstoken ^admin ^listall
+    cm ^accesstoken ^admin ^revoke 19c57d0f-c525-4767-8670-82f7ecc2ccdb
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_ADMIN_ALLOWLIST ==
+Allows the repository server owner to administer which users and groups can use
+Personal Access Tokens.
+
+== CMD_USAGE_ACCESS_TOKEN_ADMIN_ALLOWLIST ==
+Usage:
+
+    cm ^accesstoken ^admin ^allowlist <command> [options]
+
+Commands:
+
+    - ^add
+    - ^remove
+    - ^show
+
+    To get more information about each command run:
+    cm ^accesstoken ^admin ^allowlist <command> --^usage
+    cm ^accesstoken ^admin ^allowlist <command> --^help
+
+== CMD_HELP_ACCESS_TOKEN_ADMIN_ALLOWLIST ==
+Remarks:
+
+    Personal Access Tokens can only be used by the users and groups in the
+    allowlist.
+
+    To grant Personal Access Token usage permission to all present and future
+    users at the same time, you can use the special user 'all':
+
+    cm ^accesstoken ^admin ^allowlist ^add --^users='^all'
+
+    You won't be able to add specific users and groups to the allowlist while
+    the special user 'all' is present.
+    Adding the special user 'all' will override the current allowlist content.
+
+    A user might get access to the feature through group membership, even if the
+    user is not explicitly present in the allowlist. Remember this when
+    considering which users should be able to create and manage
+    Personal Access Tokens.
+
+Examples:
+
+    cm ^accesstoken ^admin ^allowlist ^add --users=john.doe@mail.domain
+    cm ^accesstoken ^admin ^allowlist ^remove --users=john.doe@mail.domain
+    cm ^accesstoken ^admin ^allowlist ^show
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_ADMIN_ALLOWLIST_ADD ==
+Allows the repository server owner to add users and groups to the
+Personal Access Tokens allowlist.
+
+== CMD_USAGE_ACCESS_TOKEN_ADMIN_ALLOWLIST_ADD ==
+Usage:
+
+    cm ^accesstoken ^admin ^allowlist ^add
+        (--^users=<users-list>) (--^groups=<groups-list>) [<repserverspec>]
+
+    repserverpsec       Repository server specification.
+                        (Use 'cm ^help ^objectspec' to learn more about rep server
+                        specs.)
+    --^users             A comma-separated list of the names of the users to be
+                        added to the allowlist.
+    --^groups            A comma-separated list of the names of the groups to be
+                        added to the allowlist.
+
+== CMD_HELP_ACCESS_TOKEN_ADMIN_ALLOWLIST_ADD ==
+Remarks:
+
+    Personal Access Tokens can only be used by the users and groups in the
+    allowlist.
+
+    To grant Personal Access Token usage permission to all present and future
+    users at the same time, you can use the special user 'all':
+
+    cm ^accesstoken ^admin ^allowlist ^add --^users='^all'
+
+    You won't be able to add specific users and groups to the allowlist while
+    the special user 'all' is present.
+    Adding the special user 'all' will override the current allowlist content.
+
+    A user might get access to the feature through group membership, even if the
+    user is not explicitly present in the allowlist. Remember this when
+    considering which users should be able to create and manage
+    Personal Access Tokens.
+
+Examples:
+
+    cm ^accesstoken ^admin ^allowlist ^add
+      --^users=john.doe@mail.domain,jane.doe@mail.domain
+    (Adds users john.doe@mail.domain and jane.doe@mail.domain to the allowlist
+     in the default repository server.)
+
+    cm ^accesstoken ^admin ^allowlist ^add
+      --^users=john.doe@mail.domain --^groups=CICD,Automations orgname@cloud
+    (Adds user john.doe@mail.domain and groups CICD and Automations to the
+     allowlist in the organization orgname@cloud.)
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_ADMIN_ALLOWLIST_REMOVE ==
+Allows the repository server owner to remove users and groups from the
+Personal Access Tokens allowlist.
+
+== CMD_USAGE_ACCESS_TOKEN_ADMIN_ALLOWLIST_REMOVE ==
+Usage:
+
+    cm ^accesstoken ^admin ^allowlist ^remove
+        (--^users=<users-list>) (--^groups=<groups-list>) [<repserverspec>]
+
+    repserverpsec       Repository server specification.
+                        (Use 'cm ^help ^objectspec' to learn more about rep server
+                        specs.)
+    --^users             A comma-separated list of the names of the users to be
+                        removed from the allowlist.
+    --^groups            A comma-separated list of the names of the groups to be
+                        removed from the allowlist.
+
+== CMD_HELP_ACCESS_TOKEN_ADMIN_ALLOWLIST_REMOVE ==
+Remarks:
+
+    Trying to remove a user or a group not present in the allowlist will result
+    in an error. In such case, the allowlist will not be modified.
+
+Examples:
+
+    cm ^accesstoken ^admin ^allowlist ^remove
+      --^users=john.doe@mail.domain,jane.doe@mail.domain
+    (Removes users john.doe@mail.domain and jane.doe@mail.domain from the
+     allowlist in the default repository server.)
+
+    cm ^accesstoken ^admin ^allowlist ^remove
+      --^users=john.doe@mail.domain --^groups=CICD,Automations orgname@cloud
+    (Removes user john.doe@mail.domain and groups CICD and Automations from the
+     allowlist in the organization orgname@cloud.)
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_ADMIN_ALLOWLIST_SHOW ==
+Allows the repository server owner to show the users and groups present in the
+Personal Access Tokens allowlist.
+
+== CMD_USAGE_ACCESS_TOKEN_ADMIN_ALLOWLIST_SHOW ==
+Usage:
+
+    cm ^accesstoken ^admin ^allowlist ^show [<repserverspec>]
+
+    repserverpsec       Repository server specification.
+                        (Use 'cm ^help ^objectspec' to learn more about rep server
+                        specs.)
+
+== CMD_HELP_ACCESS_TOKEN_ADMIN_ALLOWLIST_SHOW ==
+Examples:
+
+    cm ^accesstoken ^admin ^allowlist ^show
+    (Shows the allowlist from the default repository server.)
+
+    cm ^accesstoken ^admin ^allowlist ^show orgname@cloud
+    (Shows the allowlist from the organization orgname@cloud.)
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_ADMIN_LISTALL ==
+Allows the repository server owner to list all the Personal Access Tokens,
+from all users.
+
+== CMD_USAGE_ACCESS_TOKEN_ADMIN_LISTALL ==
+Usage:
+
+    cm ^accesstoken ^admin ^listall [<repserverspec>]
+        [--^format=<str_format>] [--^dateformat=<str_date_format>]
+
+    repserverspec       Repository server specification.
+                        (Use 'cm ^help ^objectspec' to learn more about rep server
+                        specs.)
+    --^format            Retrieves the output message in a specific format. See
+                        Remarks for more info.
+    --^dateformat        Sets the output format to print dates.
+
+== CMD_HELP_ACCESS_TOKEN_ADMIN_LISTALL ==
+Remarks:
+
+    Revoked Personal Access Tokens will not be returned as part of the result.
+    On the other hand, expired tokens will.
+
+    Output format parameters (--^format option):
+
+    This command accepts a format string to show the output.
+
+    The output parameters of this command are the following:
+        {^id}             | {0}         Token's ID.
+        {^description}    | {1}         Token's description.
+        {^owner}          | {2}         Token's owner.
+        {^creationdate}   | {3}         Token's creation date.
+        {^expirationdate} | {4}         Token's expiration date.
+        {^lastusedate}    | {5}         Token's last use date.
+    {^tab}                          Inserts a tab space.
+    {^newline}                      Inserts a new line.
+
+    If the format parameter is not specified, the output will be printed
+    using a table format.
+
+Examples:
+
+    cm ^accesstoken ^admin ^listall
+    (Lists all tokens from the default repserver.)
+
+    cm ^accesstoken ^admin ^listall skull:8087
+    (Lists all access tokens from repserver skull:8087.)
+
+    cm ^accesstoken ^admin ^listall --^format="{^id}"
+    (Lists all access tokens from the default repserver and only displays their
+     IDs.)
+
+== CMD_DESCRIPTION_ACCESS_TOKEN_ADMIN_REVOKE ==
+Allows the repository server owner to revoke any Personal Access Token,
+from any user.
+
+== CMD_USAGE_ACCESS_TOKEN_ADMIN_REVOKE ==
+Usage:
+
+    cm ^accesstoken ^admin ^revoke <id> [<repserverspec>]
+
+    id                  The ID of the token to be revoked.
+    repserverspec       Repository server specification.
+                        (Use 'cm ^help ^objectspec' to learn more about rep server
+                        specs.)
+
+== CMD_HELP_ACCESS_TOKEN_ADMIN_REVOKE ==
+Remarks:
+
+    Trying to revoke a Personal Access Token that does not exist will result in
+    an error.
+
+    To revoke a token you need to provide the full ID.
+
+    Revoking a token does not mean that the already revealed Unity VCS tokens
+    will stop functioning immediately, but that the token won't be renewed once
+    it expires.
+    (See '^cm ^accesstoken ^reveal --^help' for further information.)
+
+Examples:
+
+    cm ^accesstoken ^admin ^revoke de0be8a4-2a7a-44c6-9c4c-82c8222dbc6f
+    (Revokes the token with the provided ID from the default repserver.)
+
+    cm ^accesstoken ^admin ^revoke de0be8a4-2a7a-44c6-9c4c-82c8222dbc6f skull:8087
+    (Revokes the token with the provided ID from repserver skull:8087.)
 
 == CMD_DESCRIPTION_ACCESS_TOKEN_CREATE == 
-Creates a new access token.
+Creates a new Personal Access Token.
 
 == CMD_USAGE_ACCESS_TOKEN_CREATE == 
 Usage:
 
-    cm ^accesstoken ^create <description> [<repserverspec>]
+    cm ^accesstoken ^create <description> <lifetime> [<repserverspec>]
         [--^format=<str_format>] [--dateformat=<str_date_format>]
 
     description         A description that helps identify the purpose
-                        of the access token.
+                        of the token.
+    lifetime            The desired lifetime for the token, in "Go-style" or
+                        "Unix-suffix" format. See Remarks for more info.
     repserverspec       Repository server specification.
                         (Use 'cm ^help ^objectspec' to learn more about rep server
                         specs.)
@@ -46,20 +320,34 @@ Usage:
 == CMD_HELP_ACCESS_TOKEN_CREATE ==
 Remarks:
 
-    The access token lifespan will be determined by the server configuration.
-    It is not possible to set the token lifespan at creation time.
+    The token's lifetime is specified with a string, consisting on a sequence
+    of pairs of the form <number><unit>[<n><u>...], where the following units
+    are valid:
+        w               Weeks
+        d               Days
+        h               Hours
+        m               Minutes
+        s               Seconds
+
+    The following examples are valid strings:
+        1w              1 week
+        5d              5 days
+        12h             12 hours
+        30m             30 minutes
+        35s             35 seconds
+        1h30m           1 hour and 30 minutes
 
     Output format parameters (--^format option):
 
     This command accepts a format string to show the output.
 
     The output parameters of this command are the following:
-    {^id}             | {0}         ID of the access token.
-    {^description}    | {1}         Description of the access token.
-    {^owner}          | {2}         Owner of the access token.
-    {^creationdate}   | {3}         Creation date of the access token.
-    {^expirationdate} | {4}         Expiration date of the access token.
-    {^lastusedate}    | {5}         Last use date of the access token.
+        {^id}             | {0}         Token's ID.
+        {^description}    | {1}         Token's description.
+        {^owner}          | {2}         Token's owner.
+        {^creationdate}   | {3}         Token's creation date.
+        {^expirationdate} | {4}         Token's expiration date.
+        {^lastusedate}    | {5}         Token's last use date.
     {^tab}                          Inserts a tab space.
     {^newline}                      Inserts a new line.
 
@@ -68,19 +356,20 @@ Remarks:
 
 Examples:
 
-    cm ^accesstoken ^create "Token for Build Server"
-    (Creates a new access token with the provided description against the default
-     repserver.)
+    cm ^accesstoken ^create "Token for Build Server" 4w
+    (Creates a new token with the provided description and a lifetime
+     of 4 weeks against the default repserver.)
 
-    cm ^accesstoken ^create "Token for Build Server" skull:8087
-    (Creates a new access token with the provided description on repserver skull:8087.)
+    cm ^accesstoken ^create "Token for Build Server" 365d skull:8087
+    (Creates a new token with the provided description and a lifetime
+     of 365 days on repserver skull:8087.)
 
-    cm ^accesstoken ^create "Token for Build Server" --^format="{^id}"
-    (Creates a new access token with the provided description against the default
-     repserver and only displays its ID.)
+    cm ^accesstoken ^create "Token for Build Server" 12h --^format="{^id}"
+    (Creates a new token with the provided description and a lifetime
+     of 12 hours against the default repserver and only displays its ID.)
 
 == CMD_DESCRIPTION_ACCESS_TOKEN_LIST ==
-Lists access tokens.
+Lists Personal Access Tokens.
 
 == CMD_USAGE_ACCESS_TOKEN_LIST ==
 Usage:
@@ -98,20 +387,21 @@ Usage:
 == CMD_HELP_ACCESS_TOKEN_LIST ==
 Remarks:
 
-    You can only list your own access tokens. Revoked access tokens will not be
-    returned as part of the result. On the other hand, expired access tokens will.
+    You can only list your own Personal Access Tokens.
+    Revoked tokens will not be returned as part of the result. On the other hand,
+    expired tokens will.
 
     Output format parameters (--^format option):
 
     This command accepts a format string to show the output.
 
     The output parameters of this command are the following:
-    {^id}             | {0}         ID of the access token.
-    {^description}    | {1}         Description of the access token.
-    {^owner}          | {2}         Owner of the access token.
-    {^creationdate}   | {3}         Creation date of the access token.
-    {^expirationdate} | {4}         Expiration date of the access token.
-    {^lastusedate}    | {5}         Last use date of the access token.
+        {^id}             | {0}         Token's ID.
+        {^description}    | {1}         Token's description.
+        {^owner}          | {2}         Token's owner.
+        {^creationdate}   | {3}         Token's creation date.
+        {^expirationdate} | {4}         Token's expiration date.
+        {^lastusedate}    | {5}         Token's last use date.
     {^tab}                          Inserts a tab space.
     {^newline}                      Inserts a new line.
 
@@ -121,23 +411,23 @@ Remarks:
 Examples:
 
     cm ^accesstoken ^list
-    (Lists access tokens on the default repserver.)
+    (Lists tokens on the default repserver.)
 
     cm ^accesstoken ^list skull:8087
-    (Lists access tokens on repserver skull:8087.)
+    (Lists tokens on repserver skull:8087.)
 
     cm ^accesstoken ^list --^format="{^id}"
-    (Lists access tokens on the default repserver and only displays their IDs.)
+    (Lists tokens on the default repserver and only displays their IDs.)
 
 == CMD_DESCRIPTION_ACCESS_TOKEN_REVOKE ==
-Revokes an existing access token.
+Revokes an existing Personal Access Token.
 
 == CMD_USAGE_ACCESS_TOKEN_REVOKE ==
 Usage:
 
     cm ^accesstoken ^revoke <id> [<repserverspec>]
 
-    id                  The ID of the access token to be revoked.
+    id                  The ID of the token to be revoked.
     repserverspec       Repository server specification.
                         (Use 'cm ^help ^objectspec' to learn more about rep server
                         specs.)
@@ -145,39 +435,35 @@ Usage:
 == CMD_HELP_ACCESS_TOKEN_REVOKE ==
 Remarks:
 
-    You can only revoke your own access tokens. Trying to revoke an access token
-    that does not exist or does not belong to you will result in an error.
+    You can only revoke your own Personal Access Tokens.
+    Trying to revoke a token that does not exist or does not belong to you
+    will result in an error.
     (See '^cm ^accesstoken ^list --^help' for further information.)
 
-    To revoke an access token you need to provide the full ID.
+    To revoke a token you need to provide the full ID.
 
-    Revoking an access token does not mean that the already revealed Unity VCS
-    tokens will stop functioning immediately.
-    The maximum amount of time that can pass between revoking an access token
-    and the revealed Unity VCS token stopping working depends on the
-    'TokenExpirationTimeSpan' configuration key in your server.conf.
-    By default, it is 1 hour.
-    If you need to know the exact value configured for your Unity VCS server,
-    please contact your repository server administrator.
+    Revoking a token does not mean that the already revealed Unity VCS tokens
+    will stop functioning immediately, but that the token won't be renewed once
+    it expires.
     (See '^cm ^accesstoken ^reveal --^help' for further information.)
 
 Examples:
 
     cm ^accesstoken ^revoke de0be8a4-2a7a-44c6-9c4c-82c8222dbc6f
-    (Revokes the access token with the provided ID from the default repserver.)
+    (Revokes the token with the provided ID from the default repserver.)
 
     cm ^accesstoken ^revoke de0be8a4-2a7a-44c6-9c4c-82c8222dbc6f skull:8087
-    (Revokes the access token with the provided ID from repserver skull:8087.)
+    (Revokes the token with the provided ID from repserver skull:8087.)
 
 == CMD_DESCRIPTION_ACCESS_TOKEN_REVEAL ==
-Reveals an access token so it can be used as the authentication credentials.
+Reveals a Personal Access Token so it can be used as the authentication credentials.
 
 == CMD_USAGE_ACCESS_TOKEN_REVEAL ==
 Usage:
 
     cm ^accesstoken ^reveal <id> [<repserverspec>]
 
-    id                  The ID of the access token to be revealed.
+    id                  The ID of the token to be revealed.
     repserverspec       Repository server specification.
                         (Use 'cm ^help ^objectspec' to learn more about rep server
                         specs.)
@@ -186,11 +472,12 @@ Usage:
 == CMD_HELP_ACCESS_TOKEN_REVEAL ==
 Remarks:
 
-    You can only reveal your own access tokens. Trying to reveal an access token
-    that does not exist or does not belong to you will result in an error.
+    You can only reveal your own Personal Access Tokens.
+    Trying to reveal a token that does not exist or does not belong to you
+    will result in an error.
     (See '^cm ^accesstoken ^list --^help' for further information.)
 
-    To reveal an access token you need to provide the full ID.
+    To reveal a token you need to provide the full ID.
 
     The revealed token can be used for automation purposes. You can pass it down
     in subsequent 'cm' commands (either in the same machine or a different one)
@@ -203,16 +490,16 @@ Remarks:
             --^server=skull:8087
 
     The revealed token will be valid from the very moment it was revealed, and
-    will be automatically renewed as long as the related access token is not
-    expired nor revoked.
+    will be automatically renewed as long as the related Personal Access Token
+    is not expired nor revoked.
 
 Examples:
 
     cm ^accesstoken ^reveal d2f43753-f612-4e51-b9b4-3c2883d7cf95
-    (Reveals the access token with the provided ID on the default repserver.)
+    (Reveals the token with the provided ID on the default repserver.)
 
     cm ^accesstoken ^reveal d2f43753-f612-4e51-b9b4-3c2883d7cf95 skull:8087
-    (Reveals the access token with the provided ID on repserver skull:8087.)
+    (Reveals the token with the provided ID on repserver skull:8087.)
 
 == CMD_DESCRIPTION_ACL ==
 Sets permissions on an object.
@@ -2304,7 +2591,7 @@ Obtains configuration info.
 Usage:
 
     cm ^getconfig [^setfileasreadonly] [^location] [^extensionworkingmode]
-                 [^extensionprefix] [^defaultrepserver]
+                 [^extensionprefix] [^defaultrepserver] [^organization]
 
 Options:
 
@@ -2315,11 +2602,46 @@ Options:
     ^extensionprefix         Returns the configured extension prefix.
     ^defaultrepserver        Returns the location of the default repository
                             server.
+    ^organization            Returns the workspace or default organization info
+                            as stored in the configuration.
 
 == CMD_HELP_GETCONFIG ==
 Examples:
 
     cm ^getconfig ^setfileasreadonly
+
+== CMD_DESCRIPTION_GETCONFIG_GETORGANIZATION ==
+Obtains the configuration information from a Cloud organization.
+If no organization is provided, the workspace or the default organization
+will be implicitly used.
+
+== CMD_USAGE_GETCONFIG_GETORGANIZATION ==
+Usage:
+
+    cm ^getconfig ^getorganization [organization] [--^format=<str_format>]
+
+Options:
+
+    organization             An explicit server spec including the organization.
+    --^format                 Retrieves the output message in a specific format. See
+                             Remarks for more info.
+
+== CMD_HELP_GETCONFIG_GETORGANIZATION ==
+Remarks:
+    Output format parameters (--^format option):
+    This command accepts a format string to show the output.
+
+    The output parameters of this command are the following:
+
+    {^name}        Organization name.
+    {^type}        Either 'cloud' or 'unity'.
+    {^unityid}     The Unity organization ID (if any, -1 otherwise).
+    {^region}      The organization region.
+
+Examples:
+
+    cm ^getconfig ^organization --format={unityid}
+    cm ^getconfig ^organization myorg@cloud
 
 == CMD_DESCRIPTION_GETFILE ==
 Downloads the content of a given revision.
@@ -5026,7 +5348,7 @@ Applies a stored shelveset.
 == CMD_USAGE_PARTIAL_SHELVESET_APPLY ==
 Usage:
 
-    cm ^partial ^shelveset ^apply <sh_spec> [--^encoding=<name>]
+    cm ^partial ^shelveset ^apply <sh_spec> [--^encoding=<name>] [--^dontcheckout]
                        [--^comparisonmethod=(^ignoreeol | ^ignorewhitespaces| \
                                             ^ignoreeolandwhitespaces | ^recognizeall)]
 
@@ -5035,8 +5357,12 @@ Options:
     --^encoding          Specifies the output encoding, i.e.: utf-8.
                         See the MSDN documentation at
                         http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
-                        to get the table of supported encodings and its format, 
+                        to get the table of supported encodings and its format,
                         (at the end of the page, in the "Name" column).
+    --^dontcheckout      Does not checkout the file conflicts or the changed
+                        files to apply. It just keeps them as local changes.
+                        This is useful to avoid the exclusive checkout when
+                        applying a shelveset.
     --^comparisonmethod  Sets the comparison method. See Remarks for more info.
     sh_spec              Shelveset specification. (Use 'cm ^help ^objectspec' to
                         learn more about shelveset specs.)
@@ -5637,24 +5963,9 @@ Executes SQL queries. Requires SQL storage.
 == CMD_USAGE_QUERY ==
 Usage:
 
-    cm ^query <sql_command> [--^outputfile=<output_file>]
-                           [--^solveuser=<column_name>[,...]]
-                           [--^solvepath=<column_name>[,...]]
-                           [--^columnwidth=<value>] [--^nocolumnname]
-                           [--^columnseparator=<sep>] [--^repository=<name>]
+    cm ^query <sql_command> [--^repository=<name>]
 
 Options:
-
-    --^outputfile        Writes the result in an output file.
-    --^solveuser         Sets the specified columns as username columns. The
-                        query interpreter will assume that data of these columns
-                        will be users, and will try to solve them.
-    --^solvepath         Sets the specified columns as itemid column. The query
-                        interpreter will try to solve item id to filesystem
-                        paths.
-    --^columnwidth       Specifies the width of each column to format the output.
-    --^nocolumnname      Does not print column name.
-    --^columnseparator   Uses char as column separator instead of a tab (\t).
     --^repository        Repository to query.
     sql_command          The sql query to be executed.
 
@@ -5667,32 +5978,6 @@ Remarks:
     users and paths:
     - '^SolveUser(<username>)' that resolves a username into Unity VCS format.
     - '^SolvePath(<path>)' that resolves a disk path into an item id.
-
-    Also, you can use options to show query results in a human readable form.
-
-    You can use the options '--^solveuser=<column_name>' and 
-    '--^solvepath=<column_name>' to specify columns that query interpreter
-    must convert to a legible text. You can specify more than one column name,
-    comma separated.
-
-Examples:
-
-    cm ^query "^SELECT * ^FROM ^revision" --^columnwidth=25 --^repository=reptest
-    (Retrieves data from 'revision' table from repository 'reptest'.)
-
-    cm ^query "^SELECT b.^sname ^as br_name, o.^dtimestamp ^as date ^from ^branch b, \
-        ^object o, ^seid s ^where b.^iobjid=o.^iobjid ^and o.^fidowner=s.^iseidid ^and \
-        s.^scode='^SolveUser(john)'" --^outputfile=query.txt
-    (Outputs into a file the branches with owner 'john'.)
-
-    cm ^query "^select r.^iobjid, r.^fiditem ^as path, s.^scode ^as username ^FROM \
-        ^revision r, ^object o, ^seid s ^WHERE r.^iobjid=o.^iobjid ^and \
-        o.^fidowner=s.^iseidid ^and o.^dtimestamp>04/25/2014" \
-    --^solveuser=username --^solvepath=path --^repository=reptest@server2:9095
-    (Retrieves selected data from selected repository.)
-
-    cm ^query "^SELECT * ^FROM ^revision ^WHERE ^fiditem=^SolvePath(c:\mywkpath\info)"
-    (Retrieves all revision data of path 'info'.)
 
 == CMD_DESCRIPTION_ATTRIBUTE_DELETE ==
 Deletes one or more attributes.
@@ -6935,26 +7220,30 @@ Applies a stored shelveset.
 Usage:
 
     cm ^shelveset ^apply <sh_spec> [<change_path>[ ...]] [--^preview] 
-                       [--^mount] [--^encoding=<name>]
+                       [--^mount] [--^encoding=<name>] [--^dontcheckout]
                        [--^comparisonmethod=(^ignoreeol | ^ignorewhitespaces| \
                                             ^ignoreeolandwhitespaces | ^recognizeall)]
 
 Options:
 
     --^preview           Prints the changes to apply on the workspace without
-                         applying them
+                        applying them
     --^mount             The mount point for the given repository.
     --^encoding          Specifies the output encoding, i.e.: utf-8.
-                         See the MSDN documentation at
-                         http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
-                         to get the table of supported encodings and its format, 
-                         (at the end of the page, in the "Name" column).
+                        See the MSDN documentation at
+                        http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx
+                        to get the table of supported encodings and its format, 
+                        (at the end of the page, in the "Name" column).
+    --^dontcheckout      Does not checkout the file conflicts or the changed
+                        files to apply. It just keeps them as local changes.
+                        This is useful to avoid the exclusive checkout when 
+                        applying a shelveset.
     --^comparisonmethod  Sets the comparison method. See Remarks for more info.
-    sh_spec              Shelveset specification. (Use 'cm ^help ^objectspec' to
-                         learn more about shelveset specs.)
-    change_path          The change path(s) of the shelve to apply. It's a 
-                         server path, the one printed by the --preview option. 
-                         When no path is set, all changes will be applied.
+    sh_spec             Shelveset specification. (Use 'cm ^help ^objectspec' to
+                        learn more about shelveset specs.)
+    change_path         The change path(s) of the shelve to apply. It's a 
+                        server path, the one printed by the --preview option. 
+                        When no path is set, all changes will be applied.
 
 == CMD_HELP_SHELVESET_APPLY ==
 The '^shelveset ^apply' command restores the contents of a stored shelveset.

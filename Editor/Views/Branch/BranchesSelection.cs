@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
 using Codice.CM.Common;
+using PlasticGui;
+using PlasticGui.WorkspaceWindow.QueryViews.Branches;
 using Unity.PlasticSCM.Editor.UI.Tree;
 
 namespace Unity.PlasticSCM.Editor.Views.Branches
@@ -76,6 +78,20 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             BranchesListView listView)
         {
             return listView.GetSelectedRepositories();
+        }
+
+        internal static List<RepObjectInfo> GetBranchesToSelect(
+            BranchesListView listView, List<IPlasticTreeNode> itemsToSelect)
+        {
+            if (itemsToSelect == null || itemsToSelect.Count == 0)
+                return GetSelectedRepObjectInfos(listView);
+
+            List<RepObjectInfo> result = new List<RepObjectInfo>();
+
+            foreach (BranchTreeNode node in itemsToSelect)
+                result.Add(node.BranchInfo);
+
+            return result;
         }
     }
 }

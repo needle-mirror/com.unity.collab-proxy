@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.CM.Common.Mount;
 using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer;
@@ -13,44 +11,53 @@ using PlasticGui;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.QueryViews;
 using PlasticGui.WorkspaceWindow.QueryViews.Shelves;
+using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
-using Unity.PlasticSCM.Editor.Views.Changesets;
-using Unity.PlasticSCM.Editor.Views.Diff;
 
+using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
+using Unity.PlasticSCM.Editor.Views.Diff;
 using GluonShelveOperations = GluonGui.WorkspaceWindow.Views.Shelves.ShelveOperations;
 
 namespace Unity.PlasticSCM.Editor.Views.Shelves
 {
     internal partial class ShelvesTab :
         IRefreshableView,
-        IShelveMenuOperations
+        IShelveMenuOperations,
+        IGetQueryText,
+        IGetFilter,
+        FillShelvesView.IShowContentView
     {
-        internal string EmptyStateMessage { get { return mEmptyStateData.Content.text; } }
+        internal string EmptyStateMessage { get { return mEmptyStatePanel.Text; } }
         internal ShelvesListView Table { get { return mShelvesListView; } }
         internal IShelveMenuOperations Operations { get { return this; } }
         internal IProgressControls ProgressControls { get { return mProgressControls; } }
+        internal DiffPanel DiffPanel { get { return mDiffPanel; } }
 
         internal ShelvesTab(
             WorkspaceInfo wkInfo,
             RepositorySpec repSpec,
-            WorkspaceWindow workspaceWindow,
             ChangesetInfo shelveToSelect,
+            WorkspaceWindow workspaceWindow,
             IViewSwitcher viewSwitcher,
             IMergeViewLauncher mergeViewLauncher,
+            IHistoryViewLauncher historyViewLauncher,
             GluonShelveOperations.ICheckinView pendingChangesTab,
             IProgressOperationHandler progressOperationHandler,
             IUpdateProgress updateProgress,
-            IHistoryViewLauncher historyViewLauncher,
             IShelvedChangesUpdater shelvedChangesUpdater,
+            IAssetStatusCache assetStatusCache,
+            ISaveAssets saveAssets,
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             LaunchTool.IProcessExecutor processExecutor,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
-            ISaveAssets saveAssets,
+            IPendingChangesUpdater pendingChangesUpdater,
+            IncomingChangesUpdater developerIncomingChangesUpdater,
+            GluonIncomingChangesUpdater gluonIncomingChangesUpdater,
             EditorWindow parentWindow,
             bool isGluonMode)
         {
@@ -62,14 +69,23 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             mProgressOperationHandler = progressOperationHandler;
             mUpdateProgress = updateProgress;
             mShelvedChangesUpdater = shelvedChangesUpdater;
+            mAssetStatusCache = assetStatusCache;
+            mSaveAssets = saveAssets;
             mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
             mProcessExecutor = processExecutor;
             mWorkspaceOperationsMonitor = workspaceOperationsMonitor;
-            mSaveAssets = saveAssets;
             mParentWindow = parentWindow;
             mIsGluonMode = isGluonMode;
 
+            mEmptyStatePanel = new EmptyStatePanel(parentWindow.Repaint);
+
             mProgressControls = new ProgressControlsForViews();
+
+            mFillShelvesView = new FillShelvesView(
+                wkInfo,
+                this,
+                this,
+                this);
 
             BuildComponents(
                 wkInfo,
@@ -77,7 +93,11 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
                 workspaceWindow,
                 viewSwitcher,
                 historyViewLauncher,
-                parentWindow);
+                pendingChangesUpdater,
+                developerIncomingChangesUpdater,
+                gluonIncomingChangesUpdater,
+                parentWindow,
+                mFillShelvesView);
 
             mSplitterState = PlasticSplitterGUILayout.InitSplitterState(
                 new float[] { 0.50f, 0.50f },
@@ -123,9 +143,8 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
 
             DoShelvesArea(
                 mShelvesListView,
-                mEmptyStateData,
-                mProgressControls.IsOperationRunning(),
-                mParentWindow.Repaint);
+                mEmptyStatePanel,
+                mProgressControls.IsOperationRunning());
 
             EditorGUILayout.BeginHorizontal();
 
@@ -179,14 +198,14 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
         //IQueryRefreshableView
         public void RefreshAndSelect(RepObjectInfo repObj)
         {
-            List<RepObjectInfo> shelvesToSelect = repObj == null ?
-                ShelvesSelection.GetSelectedRepObjectInfos(mShelvesListView) :
-                new List<RepObjectInfo> { repObj };
+            mDiffPanel.ClearInfo();
 
-            FillShelves(
-                mWkInfo,
-                QueryConstants.BuildShelvesQuery(mOwnerFilter == OwnerFilter.MyShelves),
-                shelvesToSelect);
+            mFillShelvesView.FillView(
+                mShelvesListView,
+                mProgressControls,
+                null,
+                null,
+                (ChangesetInfo)repObj);
         }
 
         int IShelveMenuOperations.GetSelectedShelvesCount()
@@ -250,18 +269,35 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
                 mShelvedChangesUpdater);
         }
 
+        string IGetQueryText.Get()
+        {
+            return QueryConstants.BuildShelvesQuery(mOwnerFilter == OwnerFilter.MyShelves);
+        }
+
+        Filter IGetFilter.Get()
+        {
+            return new Filter(mShelvesListView.searchString);
+        }
+
+        void IGetFilter.Clear()
+        {
+            // Not used by the Plugin, needed for the Reset filters button
+        }
+
+        void FillShelvesView.IShowContentView.ShowContentPanel()
+        {
+            mEmptyStatePanel.UpdateContent(string.Empty);
+        }
+
+        void FillShelvesView.IShowContentView.ShowEmptyStatePanel(
+            string explanationText, bool showResetFilterButton)
+        {
+            mEmptyStatePanel.UpdateContent(explanationText);
+        }
+
         void SearchField_OnDownOrUpArrowKeyPressed()
         {
             mShelvesListView.SetFocusAndEnsureSelectedItem();
-        }
-
-        void OnShelvesListViewSizeChanged()
-        {
-            if (!mShouldScrollToSelection)
-                return;
-
-            mShouldScrollToSelection = false;
-            TableViewOperations.ScrollToSelection(mShelvesListView);
         }
 
         void OnSelectionChanged()
@@ -275,87 +311,7 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             mDiffPanel.UpdateInfo(
                 MountPointWithPath.BuildWorkspaceRootMountPoint(
                     ShelvesSelection.GetSelectedRepository(mShelvesListView)),
-                (ChangesetInfo)selectedShelves[0]);
-        }
-
-        void FillShelves(
-            WorkspaceInfo wkInfo,
-            string query,
-            List<RepObjectInfo> shelvesToSelect)
-        {
-            if (mIsRefreshing)
-                return;
-
-            mIsRefreshing = true;
-
-            int defaultRow = TableViewOperations.
-                GetFirstSelectedRow(mShelvesListView);
-
-            ((IProgressControls)mProgressControls).ShowProgress(
-                PlasticLocalization.GetString(
-                    PlasticLocalization.Name.LoadingShelves));
-
-            ViewQueryResult queryResult = null;
-
-            IThreadWaiter waiter = ThreadWaiter.GetWaiter();
-            waiter.Execute(
-                /*threadOperationDelegate*/ delegate
-                {
-                    queryResult = new ViewQueryResult(
-                        PlasticGui.Plastic.API.FindQuery(wkInfo, query));
-                },
-                /*afterOperationDelegate*/ delegate
-                {
-                    try
-                    {
-                        if (waiter.Exception != null)
-                        {
-                            mDiffPanel.ClearInfo();
-
-                            ExceptionsHandler.DisplayException(waiter.Exception);
-                            return;
-                        }
-
-                        UpdateShelvesList(mShelvesListView, queryResult);
-
-                        int shelvesCount = GetShelvesCount(queryResult);
-
-                        if (shelvesCount == 0)
-                        {
-                            mDiffPanel.ClearInfo();
-                            return;
-                        }
-
-                        ShelvesSelection.SelectShelves(
-                            mShelvesListView, shelvesToSelect, defaultRow);
-                    }
-                    finally
-                    {
-                        ((IProgressControls)mProgressControls).HideProgress();
-                        mIsRefreshing = false;
-                    }
-                });
-        }
-
-        static void UpdateShelvesList(
-             ShelvesListView shelvesListView,
-             ViewQueryResult queryResult)
-        {
-            shelvesListView.BuildModel(queryResult);
-
-            shelvesListView.Refilter();
-
-            shelvesListView.Sort();
-
-            shelvesListView.Reload();
-        }
-
-        static int GetShelvesCount(ViewQueryResult queryResult)
-        {
-            if (queryResult == null)
-                return 0;
-
-            return queryResult.Count();
+                selectedShelves[0]);
         }
 
         static void DoActionsToolbar(ProgressControlsForViews progressControls)
@@ -364,7 +320,7 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
 
             if (progressControls.IsOperationRunning())
             {
-                DrawProgressForViews.ForIndeterminateProgress(
+                DrawProgressForViews.ForIndeterminateProgressBar(
                     progressControls.ProgressData);
             }
 
@@ -373,11 +329,10 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             EditorGUILayout.EndHorizontal();
         }
 
-        void DoShelvesArea(
+        static void DoShelvesArea(
             ShelvesListView shelvesListView,
-            EmptyStateData emptyStateData,
-            bool isOperationRunning,
-            Action repaint)
+            EmptyStatePanel emptyStatePanel,
+            bool isOperationRunning)
         {
             EditorGUILayout.BeginVertical();
 
@@ -387,12 +342,8 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
 
             shelvesListView.OnGUI(rect);
 
-            emptyStateData.Update(
-                GetEmptyStateMessage(shelvesListView),
-                rect, Event.current.type, repaint);
-
-            if (!emptyStateData.IsEmpty())
-                DrawTreeViewEmptyState.For(emptyStateData);
+            if (!emptyStatePanel.IsEmpty())
+                emptyStatePanel.OnGUI(rect);
 
             GUI.enabled = true;
 
@@ -408,23 +359,17 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             EditorGUILayout.EndVertical();
         }
 
-        static string GetEmptyStateMessage(ShelvesListView shelvesListView)
-        {
-            if (shelvesListView.GetRows().Count > 0)
-                return string.Empty;
-
-            return string.IsNullOrEmpty(shelvesListView.searchString) ?
-                PlasticLocalization.Name.NoShelvesCreatedExplanation.GetString() :
-                PlasticLocalization.Name.ShelvesEmptyState.GetString();
-        }
-
         void BuildComponents(
             WorkspaceInfo wkInfo,
             IWorkspaceWindow workspaceWindow,
             IRefreshView refreshView,
             IViewSwitcher viewSwitcher,
             IHistoryViewLauncher historyViewLauncher,
-            EditorWindow parentWindow)
+            IPendingChangesUpdater pendingChangesUpdater,
+            IncomingChangesUpdater developerIncomingChangesUpdater,
+            GluonIncomingChangesUpdater gluonIncomingChangesUpdater,
+            EditorWindow parentWindow,
+            FillShelvesView fillShelvesView)
         {
             mSearchField = new SearchField();
             mSearchField.downOrUpArrowKeyPressed += SearchField_OnDownOrUpArrowKeyPressed;
@@ -446,16 +391,26 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
                 headerState,
                 ShelvesListHeaderState.GetColumnNames(),
                 new ShelvesViewMenu(this),
-                sizeChangedAction: OnShelvesListViewSizeChanged,
+                fillShelvesView,
                 selectionChangedAction: OnSelectionChanged,
-                doubleClickAction: ((IShelveMenuOperations)this).OpenSelectedShelveInNewWindow);
+                doubleClickAction: ((IShelveMenuOperations)this).OpenSelectedShelveInNewWindow,
+                afterItemsChangedAction: fillShelvesView.ShowContentOrEmptyState);
 
             mShelvesListView.Reload();
 
             mDiffPanel = new DiffPanel(
-                wkInfo, workspaceWindow, refreshView, viewSwitcher,
-                historyViewLauncher, mShowDownloadPlasticExeWindow,
-                parentWindow, mIsGluonMode);
+                wkInfo,
+                workspaceWindow,
+                viewSwitcher,
+                historyViewLauncher,
+                refreshView,
+                mAssetStatusCache,
+                mShowDownloadPlasticExeWindow,
+                pendingChangesUpdater,
+                developerIncomingChangesUpdater,
+                gluonIncomingChangesUpdater,
+                parentWindow,
+                mIsGluonMode);
         }
 
         internal enum OwnerFilter
@@ -464,30 +419,29 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             AllShelves
         }
 
-        bool mIsRefreshing;
-        bool mShouldScrollToSelection;
-        OwnerFilter mOwnerFilter;
-
         object mSplitterState;
+        OwnerFilter mOwnerFilter;
         SearchField mSearchField;
         ShelvesListView mShelvesListView;
         DiffPanel mDiffPanel;
-
-        readonly EmptyStateData mEmptyStateData = new EmptyStateData();
+        readonly FillShelvesView mFillShelvesView;
         readonly ProgressControlsForViews mProgressControls;
+
+        readonly EmptyStatePanel mEmptyStatePanel;
         readonly bool mIsGluonMode;
         readonly EditorWindow mParentWindow;
-        readonly LaunchTool.IProcessExecutor mProcessExecutor;
         readonly WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
+        readonly LaunchTool.IProcessExecutor mProcessExecutor;
         readonly ISaveAssets mSaveAssets;
         readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
+        readonly IAssetStatusCache mAssetStatusCache;
         readonly IShelvedChangesUpdater mShelvedChangesUpdater;
         readonly IUpdateProgress mUpdateProgress;
         readonly IProgressOperationHandler mProgressOperationHandler;
         readonly GluonShelveOperations.ICheckinView mPendingChangesTab;
         readonly IMergeViewLauncher mMergeViewLauncher;
         readonly IRefreshView mRefreshView;
-        readonly WorkspaceInfo mWkInfo;
         readonly RepositorySpec mRepSpec;
+        readonly WorkspaceInfo mWkInfo;
     }
 }

@@ -2,9 +2,9 @@ using UnityEditor;
 using UnityEngine;
 
 using Codice.CM.Common;
-using PlasticGui.WorkspaceWindow.QueryViews.Changesets;
+using PlasticGui.WorkspaceWindow.QueryViews;
 using PlasticGui;
-using Unity.PlasticSCM.Editor.Tool;
+using PlasticGui.WorkspaceWindow.QueryViews.Changesets;
 using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor.Views.Changesets
@@ -22,10 +22,12 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         internal ChangesetsViewMenu(
             IChangesetMenuOperations changesetMenuOperations,
             IMenuOperations menuOperations,
+            IGetWorkingObject getWorkingObject,
             bool isGluonMode)
         {
             mChangesetMenuOperations = changesetMenuOperations;
             mMenuOperations = menuOperations;
+            mGetWorkingObject = getWorkingObject;
             mIsGluonMode = isGluonMode;
 
             BuildComponents();
@@ -54,7 +56,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 selectedChangesetsCount,
                 mIsGluonMode,
                 mMenuOperations.GetSelectedChangeset().BranchId,
-                mLoadedBranchId,
+                GetWorkingBranchId(mGetWorkingObject, mIsGluonMode),
                 false);
 
             if (!operations.HasFlag(operationToExecute))
@@ -62,11 +64,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
             ProcessMenuOperation(operationToExecute);
             return true;
-        }
-
-        internal void SetLoadedBranchId(long loadedBranchId)
-        {
-            mLoadedBranchId = loadedBranchId;
         }
 
         void DiffChangesetMenuItem_Click()
@@ -94,6 +91,11 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mChangesetMenuOperations.CreateBranch();
         }
 
+        void LabelChangesetMenuItem_Click()
+        {
+            mChangesetMenuOperations.LabelChangeset();
+        }
+
         void SwitchToChangesetMenuItem_Click()
         {
             mChangesetMenuOperations.SwitchToChangeset();
@@ -117,7 +119,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 mChangesetMenuOperations.GetSelectedChangesetsCount(),
                 mIsGluonMode,
                 singleSelectedChangeset.BranchId,
-                mLoadedBranchId,
+                GetWorkingBranchId(mGetWorkingObject, mIsGluonMode),
                 false);
 
             AddDiffChangesetMenuItem(
@@ -154,6 +156,16 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 operations,
                 ChangesetMenuOperations.CreateBranch,
                 CreateBranchFromChangesetMenuItem_Click);
+
+            if (!mIsGluonMode)
+            {
+                AddChangesetsMenuItem(
+                    mLabelChangesetMenuItemContent,
+                    menu,
+                    operations,
+                    ChangesetMenuOperations.LabelChangeset,
+                    LabelChangesetMenuItem_Click);
+            }
 
             AddChangesetsMenuItem(
                 mSwitchToChangesetMenuItemContent,
@@ -203,6 +215,12 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             if (operationToExecute == ChangesetMenuOperations.DiffSelectedChangesets)
             {
                 DiffSelectedChangesetsMenuItem_Click();
+                return;
+            }
+
+            if (operationToExecute == ChangesetMenuOperations.LabelChangeset)
+            {
+                LabelChangesetMenuItem_Click();
                 return;
             }
 
@@ -296,6 +314,14 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             return singleSeletedChangeset.BranchName == MAIN_BRANCH_NAME;
         }
 
+        static long GetWorkingBranchId(IGetWorkingObject getWorkingObject, bool isGluonMode)
+        {
+            if (isGluonMode)
+                return -1;
+
+            return ((ChangesetInfo)getWorkingObject.Get()).BranchId;
+        }
+
         static ChangesetMenuOperations GetMenuOperations(
             Event e, bool isMultipleSelection)
         {
@@ -304,6 +330,10 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 return isMultipleSelection ?
                     ChangesetMenuOperations.DiffSelectedChangesets :
                     ChangesetMenuOperations.DiffChangeset;
+
+            if (Keyboard.IsControlOrCommandKeyPressed(e) &&
+                Keyboard.IsKeyPressed(e, KeyCode.L))
+                return ChangesetMenuOperations.LabelChangeset;
 
             if (Keyboard.IsControlOrCommandKeyPressed(e) &&
                 Keyboard.IsKeyPressed(e, KeyCode.M))
@@ -321,6 +351,9 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mDiffBranchMenuItemContent = new GUIContent();
             mCreateBranchMenuItemContent = new GUIContent(
                 PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetMenuItemCreateBranch));
+            mLabelChangesetMenuItemContent = new GUIContent(string.Format("{0} {1}",
+                PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetMenuItemLabelChangeset),
+                GetPlasticShortcut.ForLabel()));
             mSwitchToChangesetMenuItemContent = new GUIContent(
                 PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetMenuItemSwitchToChangeset));
             mRevertToChangesetMenuItemContent = new GUIContent(
@@ -338,6 +371,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         GUIContent mDiffSelectedChangesetsMenuItemContent;
         GUIContent mDiffBranchMenuItemContent;
         GUIContent mCreateBranchMenuItemContent;
+        GUIContent mLabelChangesetMenuItemContent;
         GUIContent mSwitchToChangesetMenuItemContent;
         GUIContent mRevertToChangesetMenuItemContent;
         GUIContent mMergeChangesetMenuItemContent;
@@ -345,9 +379,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         readonly IChangesetMenuOperations mChangesetMenuOperations;
         readonly IMenuOperations mMenuOperations;
+        readonly IGetWorkingObject mGetWorkingObject;
         readonly bool mIsGluonMode;
-
-        long mLoadedBranchId = -1;
 
         const string MAIN_BRANCH_NAME = "/main";
     }

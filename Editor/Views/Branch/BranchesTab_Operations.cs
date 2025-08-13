@@ -38,6 +38,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 branchInfo,
                 RefreshAsset.BeforeLongAssetOperation,
                 items => RefreshAsset.AfterLongAssetOperation(
+                    mAssetStatusCache,
                     ProjectPackages.ShouldBeResolvedFromUpdateReport(mWkInfo, items)));
         }
 
@@ -49,7 +50,8 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 mWkInfo,
                 branchInfo,
                 mViewHost,
-                mGluonNewIncomingChangesUpdater,
+                mPendingChangesUpdater,
+                mGluonIncomingChangesUpdater,
                 new UnityPlasticGuiMessage(),
                 mProgressControls,
                 mWorkspaceWindow.GluonProgressOperationHandler,
@@ -60,6 +62,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 mEnableSwitchAndShelveFeatureDialog,
                 RefreshAsset.BeforeLongAssetOperation,
                 items => RefreshAsset.AfterLongAssetOperation(
+                    mAssetStatusCache,
                     ProjectPackages.ShouldBeResolvedFromPaths(mWkInfo, items)));
         }
 
@@ -82,12 +85,14 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             BranchCreationData branchCreationData = CreateBranchDialog.CreateBranchFromLastParentBranchChangeset(
                 mParentWindow,
                 repSpec,
-                branchInfo);
+                branchInfo,
+                null);
 
             mBranchOperations.CreateBranch(
                 branchCreationData,
                 RefreshAsset.BeforeLongAssetOperation,
                 items => RefreshAsset.AfterLongAssetOperation(
+                    mAssetStatusCache,
                     ProjectPackages.ShouldBeResolvedFromUpdateReport(mWkInfo, items)));
         }
 
@@ -99,13 +104,15 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             BranchCreationData branchCreationData = CreateBranchDialog.CreateBranchFromLastParentBranchChangeset(
                 mParentWindow,
                 repSpec,
-                branchInfo);
+                branchInfo,
+                null);
 
             CreateBranchOperation.CreateBranch(
                 mWkInfo,
                 branchCreationData,
                 mViewHost,
-                mGluonNewIncomingChangesUpdater,
+                mPendingChangesUpdater,
+                mGluonIncomingChangesUpdater,
                 new UnityPlasticGuiMessage(),
                 mProgressControls,
                 mWorkspaceWindow.GluonProgressOperationHandler,
@@ -116,6 +123,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 mEnableSwitchAndShelveFeatureDialog,
                 RefreshAsset.BeforeLongAssetOperation,
                 items => RefreshAsset.AfterLongAssetOperation(
+                    mAssetStatusCache,
                     ProjectPackages.ShouldBeResolvedFromPaths(mWkInfo, items)));
         }
     }

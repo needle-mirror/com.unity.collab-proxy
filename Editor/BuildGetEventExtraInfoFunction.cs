@@ -54,7 +54,7 @@ namespace Unity.PlasticSCM.Editor
 
         static string GetUnityPluginVersion()
         {
-            string unityPluginVersion = UVCPackageVersion.Value;
+            string unityPluginVersion = PackageInfo.Data.Version;
 
             if (string.IsNullOrEmpty(unityPluginVersion))
                 return string.Empty;

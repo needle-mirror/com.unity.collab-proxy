@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using UnityEditor;
 using UnityEngine;
@@ -35,7 +35,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
             GUIContent buttonContent = new GUIContent(buttonText);
 
-            GUIStyle buttonStyle = UnityStyles.PlasticWindow.TabButton;
+            GUIStyle buttonStyle = UnityStyles.UVCSWindow.TabButton;
 
             Rect toggleRect = GUILayoutUtility.GetRect(
                 buttonContent, buttonStyle,
@@ -131,7 +131,7 @@ namespace Unity.PlasticSCM.Editor.UI
         static void DrawUnderline(Rect toggleRect)
         {
             GUIStyle activeTabStyle =
-                UnityStyles.PlasticWindow.ActiveTabUnderline;
+                UnityStyles.UVCSWindow.ActiveTabUnderline;
 
             Rect underlineRect = new Rect(
                 toggleRect.x,

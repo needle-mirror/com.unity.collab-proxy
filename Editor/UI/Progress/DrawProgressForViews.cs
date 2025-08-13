@@ -1,4 +1,4 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEngine;
 
 namespace Unity.PlasticSCM.Editor.UI.Progress
@@ -17,7 +17,7 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
             EditorGUILayout.EndHorizontal();
         }
 
-        internal static void ForIndeterminateProgress(
+        internal static void ForIndeterminateProgressBar(
             ProgressControlsForViews.Data data)
         {
             EditorGUILayout.BeginHorizontal();
@@ -28,7 +28,23 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
 
             GUILayout.Space(3);
 
-            DoProgressLabel(data.ProgressMessage);
+            DoProgressBarLabel(data.ProgressMessage);
+
+            GUILayout.FlexibleSpace();
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        internal static void ForIndeterminateProgressSpinner(
+            ProgressControlsForViews.Data data)
+        {
+            EditorGUILayout.BeginHorizontal();
+
+            GUILayout.Space(10);
+
+            DoProgressSpinner(data.ProgressPercent);
+
+            DoProgressSpinnerLabel(data.ProgressMessage);
 
             GUILayout.FlexibleSpace();
 
@@ -50,11 +66,39 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
             EditorGUILayout.EndVertical();
         }
 
-        static void DoProgressLabel(string progressMessage)
+        static void DoProgressSpinner(float progressPercent)
         {
             EditorGUILayout.BeginVertical();
 
             GUILayout.FlexibleSpace();
+
+            LoadingSpinner.OnGUI(progressPercent);
+
+            GUILayout.FlexibleSpace();
+
+            EditorGUILayout.EndVertical();
+        }
+
+        static void DoProgressBarLabel(string progressMessage)
+        {
+            EditorGUILayout.BeginVertical();
+
+            GUILayout.FlexibleSpace();
+
+            GUILayout.Label(progressMessage, UnityStyles.ProgressLabel);
+
+            GUILayout.FlexibleSpace();
+
+            EditorGUILayout.EndVertical();
+        }
+
+        static void DoProgressSpinnerLabel(string progressMessage)
+        {
+            EditorGUILayout.BeginVertical();
+
+            GUILayout.FlexibleSpace();
+
+            GUILayout.Space(1);
 
             GUILayout.Label(progressMessage, UnityStyles.ProgressLabel);
 

@@ -116,6 +116,9 @@ Security commands:
 == Description ==
 Description
 
+== Group ==
+Group
+
 == EnterPassword ==
 Password: 
 
@@ -137,14 +140,8 @@ Error:
 == MsgNocommands ==
 No commands defined!
 
-== ShortName ==
-Short 
-
-== WkUpgradeFinished ==
-Workspaces upgraded.
-
-== WkUpgradeStarted ==
-Upgrading workspaces...
+== OpenThisUrlInYourBrowser ==
+Open the following URL in your browser:
 
 == SelectSignInProvider ==
 Select the system you want to use to sign in to: {0}
@@ -152,5 +149,14 @@ Select the system you want to use to sign in to: {0}
 == SelectYourProviderToSignin ==
 Select your system [{0}-{1}] 
 
-== OpenThisUrlInYourBrowser ==
-Open the following URL in your browser:
+== ShortName ==
+Short 
+
+== User ==
+User
+
+== WkUpgradeFinished ==
+Workspaces upgraded.
+
+== WkUpgradeStarted ==
+Upgrading workspaces...

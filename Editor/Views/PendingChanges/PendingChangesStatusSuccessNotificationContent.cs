@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 
+using UnityEngine;
+
 using Codice.Client.Common;
 using PlasticGui;
+using Unity.PlasticSCM.Editor.StatusBar;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.StatusBar;
-
-using UnityEngine;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
@@ -93,7 +93,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                     text,
                     new List<string> { linkText },
                     new List<Action> { openLink }),
-                UnityStyles.StatusBar.NotificationLabel);
+                UnityStyles.StatusBar.NotificationLabelForMultiLinkLabel,
+                UnityStyles.StatusBar.LinkForMultiLinkLabel);
 
             GUILayout.Space(4);
 

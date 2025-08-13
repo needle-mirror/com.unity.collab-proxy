@@ -16,6 +16,9 @@ Expires at
 == AccessTokenLastUsedAt ==
 Last used at
 
+== AccessTokenLifetimeHasDefaultValue ==
+Server '{0}' doesn't support custom lifetimes for tokens. The resulting token has the default lifetime.
+
 == WrongRevFormat3D ==
 The revision format specified is not valid
 
@@ -657,6 +660,9 @@ The flags '--silent' and '--machinereadable' are not compatible.
 == CmUncoIncompatibleFlag ==
 The '--keepchanges' option is not compatible with dynamic workspaces.
 
+== CmdAccessTokenAllowlistCorrectlyUpdated ==
+The Access Tokens allowlist has been correctly updated.
+
 == CmdApiInvalidPort ==
 Incorrect port number: {0}
 
@@ -728,6 +734,9 @@ Type {0} is not valid. Remember that its format is subtype-type.
 
 == CmdErrorNoSuchUser ==
 The user {0} does not exist
+
+== CmdErrorNoSuchGroup ==
+The group {0} does not exist
 
 == CmdErrorNoSuchUserDuCommandHint ==
 Maybe you have to use the flag "--nosolveuser" to deactivate a user that doesn't exist in the authentication system anymore.
@@ -2106,6 +2115,9 @@ Starting Fetch
 
 == OperationStartingPush ==
 Starting Push
+
+== OrganizationConfigNotFound ==
+Organization configuration not found for '{0}'.
 
 == Owner ==
 Owner

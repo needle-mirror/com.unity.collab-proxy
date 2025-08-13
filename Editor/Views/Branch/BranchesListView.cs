@@ -8,40 +8,54 @@ using UnityEditor.IMGUI.Controls;
 using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.QueryViews;
+using PlasticGui.WorkspaceWindow.QueryViews.Branches;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Avatar;
 using Unity.PlasticSCM.Editor.UI.Tree;
+#if UNITY_6000_2_OR_NEWER
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.Branches
 {
-    internal class BranchesListView : PlasticTreeView
+    internal class BranchesListView :
+        PlasticTreeView,
+        IPlasticTree<BranchTreeNode>
     {
         internal GenericMenu Menu { get { return mMenu.Menu; } }
-        internal long LoadedBranchId { get { return mLoadedBranchId; } }
 
         internal BranchesListView(
             BranchesListHeaderState headerState,
             List<string> columnNames,
             BranchesViewMenu menu,
-            Action sizeChangedAction,
-            Action doubleClickAction)
+            IGetRepositorySpec getRepositorySpec,
+            IGetWorkingObject getWorkingObject,
+            Action selectionChangedAction,
+            Action doubleClickAction,
+            Action<IEnumerable<object>> afterItemsChangedAction)
         {
             mColumnNames = columnNames;
             mMenu = menu;
-            mSizeChangedAction = sizeChangedAction;
+            mGetRepositorySpec = getRepositorySpec;
+            mGetWorkingObject = getWorkingObject;
+            mSelectionChangedAction = selectionChangedAction;
             mDoubleClickAction = doubleClickAction;
+            mAfterItemsChangedAction = afterItemsChangedAction;
 
             multiColumnHeader = new MultiColumnHeader(headerState);
             multiColumnHeader.canSort = true;
             multiColumnHeader.sortingChanged += SortingChanged;
 
-            mCooldownFilterAction = new CooldownWindowDelayer(
+            mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
+
+            mDelayedSelectionAction = new DelayedActionBySecondsRunner(
+                DelayedSelectionChanged, UnityConstants.SELECTION_DELAYED_INPUT_ACTION_INTERVAL);
         }
 
-        internal void SetLoadedBranchId(long loadedBranchId)
+        protected override void SelectionChanged(IList<int> selectedIds)
         {
-            mLoadedBranchId = loadedBranchId;
+            mDelayedSelectionAction.Run();
         }
 
         protected override IList<TreeViewItem> BuildRows(
@@ -64,7 +78,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
         protected override void SearchChanged(string newSearch)
         {
-            mCooldownFilterAction.Ping();
+            mDelayedFilterAction.Run();
         }
 
         protected override void ContextClickedItem(int id)
@@ -75,14 +89,6 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
         public override void OnGUI(Rect rect)
         {
-            if (Event.current.type == EventType.Layout)
-            {
-                if (IsSizeChanged(treeViewRect, mLastRect))
-                    mSizeChangedAction();
-            }
-
-            mLastRect = treeViewRect;
-
             base.OnGUI(rect);
 
             Event e = Event.current;
@@ -101,14 +107,14 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             if (args.item is BranchListViewItem)
             {
                 BranchListViewItem branchListViewItem = (BranchListViewItem)args.item;
-                BranchInfo branchInfo = (BranchInfo)branchListViewItem.ObjectInfo;
 
                 BranchesListViewItemGUI(
                     mQueryResult,
                     rowHeight,
                     branchListViewItem,
                     args,
-                    branchInfo.BranchId == mLoadedBranchId,
+                    RepObjectInfoView.IsHighlighted(
+                        branchListViewItem.ObjectInfo, mGetWorkingObject.Get()),
                     Repaint);
                 return;
             }
@@ -122,16 +128,6 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 return;
 
             mDoubleClickAction();
-        }
-
-        internal void BuildModel(
-            ViewQueryResult queryResult,
-            long loadedBranchId)
-        {
-            mListViewItemIds.Clear();
-
-            mQueryResult = queryResult;
-            mLoadedBranchId = loadedBranchId;
         }
 
         internal void Refilter()
@@ -220,6 +216,59 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             TableViewOperations.SetSelectionAndScroll(this, idsToSelect);
         }
 
+        void IPlasticTree<BranchTreeNode>.FillItemsAndSelectRows(
+            IPlasticTree treeModel,
+            List<IPlasticTreeNode> itemsToSelect,
+            Filter currentFilter)
+        {
+            List<RepObjectInfo> branchesToSelect = BranchesSelection.GetBranchesToSelect(
+                this, itemsToSelect);
+
+            int defaultRow = TableViewOperations.GetFirstSelectedRow(this);
+
+            mListViewItemIds.Clear();
+
+            mQueryResult = BuildViewQueryResult(
+                EnumQueryObjectType.Branch, treeModel, mGetRepositorySpec.Get());
+
+            UpdateResults();
+
+            BranchesSelection.SelectBranches(this, branchesToSelect, defaultRow);
+        }
+
+        void DelayedSearchChanged()
+        {
+            UpdateResults();
+
+            TableViewOperations.ScrollToSelection(this);
+        }
+
+        void UpdateResults()
+        {
+            Refilter();
+
+            Sort();
+
+            mAfterItemsChangedAction(mQueryResult.GetObjects());
+
+            Reload();
+        }
+
+        void DelayedSelectionChanged()
+        {
+            if (!HasSelection())
+                return;
+
+            mSelectionChangedAction();
+        }
+
+        void SortingChanged(MultiColumnHeader multiColumnHeader)
+        {
+            Sort();
+
+            Reload();
+        }
+
         int GetTreeIdForItem(RepObjectInfo repObjectInfo)
         {
             foreach (KeyValuePair<object, int> item in mListViewItemIds.GetInfoItems())
@@ -237,24 +286,6 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             }
 
             return -1;
-        }
-
-        void DelayedSearchChanged()
-        {
-            Refilter();
-
-            Sort();
-
-            Reload();
-
-            TableViewOperations.ScrollToSelection(this);
-        }
-
-        void SortingChanged(MultiColumnHeader multiColumnHeader)
-        {
-            Sort();
-
-            Reload();
         }
 
         static void RegenerateRows(
@@ -369,27 +400,28 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 rect, columnText, isSelected, isFocused, isBoldText);
         }
 
-        static bool IsSizeChanged(
-            Rect currentRect, Rect lastRect)
+        static ViewQueryResult BuildViewQueryResult(
+            EnumQueryObjectType objectType, IPlasticTree treeModel, RepositorySpec repositorySpec)
         {
-            if (currentRect.width != lastRect.width)
-                return true;
+            IList<object> resultObjects = new List<object>();
+            foreach (BranchTreeNode node in treeModel.GetNodes())
+            {
+                resultObjects.Add(node.BranchInfo);
+            }
 
-            if (currentRect.height != lastRect.height)
-                return true;
-
-            return false;
+            return new ViewQueryResult(objectType, resultObjects, repositorySpec);
         }
-
-        Rect mLastRect;
 
         ListViewItemIds<object> mListViewItemIds = new ListViewItemIds<object>();
 
         ViewQueryResult mQueryResult;
-        long mLoadedBranchId;
 
-        readonly CooldownWindowDelayer mCooldownFilterAction;
-        readonly Action mSizeChangedAction;
+        readonly DelayedActionBySecondsRunner mDelayedFilterAction;
+        readonly DelayedActionBySecondsRunner mDelayedSelectionAction;
+        readonly Action<IEnumerable<object>> mAfterItemsChangedAction;
+        readonly Action mSelectionChangedAction;
+        readonly IGetWorkingObject mGetWorkingObject;
+        readonly IGetRepositorySpec mGetRepositorySpec;
         readonly Action mDoubleClickAction;
         readonly BranchesViewMenu mMenu;
         readonly List<string> mColumnNames;

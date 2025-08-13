@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 using UnityEditor;
 using UnityEngine;
@@ -55,7 +55,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             if (sAutoLogin)
             {
                 mLog.Debug("CancelJoinOrganization");
-                GetWindow<PlasticWindow>().GetWelcomeView().autoLoginState = AutoLogin.State.Started;
+                GetWindow<UVCSWindow>().GetWelcomeView().autoLoginState = AutoLogin.State.Started;
             }
         }
 
@@ -197,7 +197,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             }
         }
 
-        string mUserName;
         Credentials mCredentials;
 
         OrganizationPanel mOrganizationPanel;

@@ -132,7 +132,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             bool hasAnyRemoteLockedInSelection = false;
 
             WorkspaceTreeNode wkTreeNode = plasticApi.
-                GetWorkspaceTreeNode(fullPath);
+                GetWorkspaceTreeNode(wkInfo, fullPath);
 
             if (isDirectory)
                 isFileSelection = false;
@@ -182,7 +182,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         }
     }
 
-    internal interface IAssetMenuVCSOperations
+    internal interface IAssetMenuUVCSOperations
     {
         void ShowPendingChanges();
         void Add();
@@ -258,6 +258,30 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             }
 
             return result;
+        }
+
+        internal static bool ShouldMenuOperationBeEnabled(
+            WorkspaceInfo wkInfo,
+            IPlasticAPI plasticAPI,
+            AssetUVCSOperations.IAssetSelection assetSelection,
+            IAssetStatusCache statusCache,
+            AssetMenuOperations operation)
+        {
+            AssetList assetList = assetSelection.GetSelectedAssets();
+
+            if (assetList.Count == 0)
+                return false;
+
+            SelectedAssetGroupInfo selectedGroupInfo = SelectedAssetGroupInfo.
+                BuildFromAssetList(wkInfo, assetList, plasticAPI, statusCache);
+
+            if (assetList.Count != selectedGroupInfo.SelectedCount)
+                return false;
+
+            AssetMenuOperations operations = AssetMenuUpdater.
+                GetAvailableMenuOperations(selectedGroupInfo);
+
+            return operations.HasFlag(operation);
         }
     }
 }

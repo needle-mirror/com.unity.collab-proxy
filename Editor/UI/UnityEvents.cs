@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 using Codice.Utils;
 
@@ -6,13 +6,29 @@ namespace Unity.PlasticSCM.Editor.UI
 {
     internal static class Keyboard
     {
+        internal static bool IsTabPressed(Event e)
+        {
+            if (e == null)
+                return false;
+
+            return IsKeyPressed(e, KeyCode.Tab);
+        }
+
         internal static bool IsShiftPressed(Event e)
         {
             if (e == null)
                 return false;
 
             return e.type == EventType.KeyDown
-                && e.shift;
+                && e.modifiers == EventModifiers.Shift;
+        }
+
+        internal static bool HasShiftModifier(Event e)
+        {
+            if (e == null)
+                return false;
+
+            return (e.modifiers & EventModifiers.Shift) == EventModifiers.Shift;
         }
 
         internal static bool IsReturnOrEnterKeyPressed(Event e)
@@ -39,14 +55,44 @@ namespace Unity.PlasticSCM.Editor.UI
                 return false;
 
             if (PlatformIdentifier.IsMac())
-                return e.type == EventType.KeyDown && e.command;
+                return e.type == EventType.KeyDown && e.modifiers == EventModifiers.Command;
 
-            return e.type == EventType.KeyDown && e.control;
+            return e.type == EventType.KeyDown && e.modifiers == EventModifiers.Control;
+        }
+
+        internal static bool HasControlOrCommandModifier(Event e)
+        {
+            if (e == null)
+                return false;
+
+            if (PlatformIdentifier.IsMac())
+                return (e.modifiers & EventModifiers.Command) == EventModifiers.Command;
+
+            return (e.modifiers & EventModifiers.Control) == EventModifiers.Control;
+        }
+
+        internal static bool IsControlOrCommandAndShiftKeyPressed(Event e)
+        {
+            if (e == null)
+                return false;
+
+            if (PlatformIdentifier.IsMac())
+                return e.type == EventType.KeyDown &&
+                       e.modifiers == (EventModifiers.Command | EventModifiers.Shift);
+
+            return e.type == EventType.KeyDown &&
+                   e.modifiers == (EventModifiers.Control | EventModifiers.Shift);
         }
     }
 
     internal class Mouse
     {
+        internal static bool IsLeftMouseButtonDoubleClicked(Event e)
+        {
+            return IsLeftMouseButtonPressed(e)
+                && e.clickCount == 2;
+        }
+
         internal static bool IsLeftMouseButtonPressed(Event e)
         {
             if (e == null)
@@ -55,8 +101,8 @@ namespace Unity.PlasticSCM.Editor.UI
             if (!e.isMouse)
                 return false;
 
-            return e.button == UnityConstants.LEFT_MOUSE_BUTTON
-                && e.type == EventType.MouseDown;
+            return e.type == EventType.MouseDown
+                && e.button == UnityConstants.LEFT_MOUSE_BUTTON;
         }
 
         internal static bool IsRightMouseButtonPressed(Event e)
@@ -67,8 +113,8 @@ namespace Unity.PlasticSCM.Editor.UI
             if (!e.isMouse)
                 return false;
 
-            return e.button == UnityConstants.RIGHT_MOUSE_BUTTON
-                && e.type == EventType.MouseDown;
+            return e.type == EventType.MouseDown
+                && e.button == UnityConstants.RIGHT_MOUSE_BUTTON;
         }
     }
 }

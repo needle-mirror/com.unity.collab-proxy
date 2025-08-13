@@ -7,57 +7,60 @@ using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.Topbar;
+using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Tool;
+using Unity.PlasticSCM.Editor.StatusBar;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.StatusBar;
 
 using GluonShelveOperations = GluonGui.WorkspaceWindow.Views.Shelves.ShelveOperations;
 
 namespace Unity.PlasticSCM.Editor.Gluon
 {
     internal class ShelvedChangesNotification :
-        StatusBar.IShelvedChangesNotification,
+        WindowStatusBar.IShelvedChangesNotification,
         CheckShelvedChanges.IUpdateShelvedChangesNotification
     {
         internal ShelvedChangesNotification(
             WorkspaceInfo wkInfo,
             RepositorySpec repSpec,
             ViewSwitcher viewSwitcher,
+            IAssetStatusCache assetStatusCache,
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
-            PlasticWindow plasticWindow)
+            UVCSWindow uvcsWindow)
         {
             mWkInfo = wkInfo;
             mRepSpec = repSpec;
             mViewSwitcher = viewSwitcher;
+            mAssetStatusCache = assetStatusCache;
             mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
-            mPlasticWindow = plasticWindow;
+            mUVCSWindow = uvcsWindow;
         }
 
-        bool StatusBar.IShelvedChangesNotification.HasNotification
+        bool WindowStatusBar.IShelvedChangesNotification.HasNotification
         {
             get { return mHasNotification; }
         }
 
-        void StatusBar.IShelvedChangesNotification.SetWorkspaceWindow(
+        void WindowStatusBar.IShelvedChangesNotification.SetWorkspaceWindow(
             WorkspaceWindow workspaceWindow)
         {
             mWorkspaceWindow = workspaceWindow;
         }
 
-        void StatusBar.IShelvedChangesNotification.SetShelvedChangesUpdater(
+        void WindowStatusBar.IShelvedChangesNotification.SetShelvedChangesUpdater(
             IShelvedChangesUpdater shelvedChangesUpdater)
         {
             mShelvedChangesUpdater = shelvedChangesUpdater;
         }
 
-        void StatusBar.IShelvedChangesNotification.OnGUI()
+        void WindowStatusBar.IShelvedChangesNotification.OnGUI()
         {
             Texture2D icon = Images.GetInfoBellNotificationIcon();
 
-            StatusBar.DrawIcon(icon, UnityConstants.STATUS_BAR_ICON_SIZE - 2);
+            WindowStatusBar.DrawIcon(icon, UnityConstants.STATUS_BAR_ICON_SIZE - 2);
 
-            StatusBar.DrawNotification(new GUIContentNotification(
+            WindowStatusBar.DrawNotification(new GUIContentNotification(
                 new GUIContent(
                     PlasticLocalization.Name.ShelvedChanges.GetString(),
                     PlasticLocalization.Name.ShelvedChangesExplanation.GetString())));
@@ -91,7 +94,7 @@ namespace Unity.PlasticSCM.Editor.Gluon
 
             mHasNotification = false;
 
-            mPlasticWindow.Repaint();
+            mUVCSWindow.Repaint();
         }
 
         void CheckShelvedChanges.IUpdateShelvedChangesNotification.Show(
@@ -106,7 +109,7 @@ namespace Unity.PlasticSCM.Editor.Gluon
 
             mHasNotification = true;
 
-            mPlasticWindow.Repaint();
+            mUVCSWindow.Repaint();
         }
 
         void ApplyPartialShelveset()
@@ -124,7 +127,7 @@ namespace Unity.PlasticSCM.Editor.Gluon
                 mWorkspaceWindow.GluonProgressOperationHandler,
                 mShelvedChangesUpdater,
                 RefreshAsset.BeforeLongAssetOperation,
-                RefreshAsset.AfterLongAssetOperation);
+                () => RefreshAsset.AfterLongAssetOperation(mAssetStatusCache));
         }
 
         void DiscardShelvedChanges()
@@ -156,7 +159,8 @@ namespace Unity.PlasticSCM.Editor.Gluon
         readonly WorkspaceInfo mWkInfo;
         readonly RepositorySpec mRepSpec;
         readonly ViewSwitcher mViewSwitcher;
+        readonly IAssetStatusCache mAssetStatusCache;
         readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
-        readonly PlasticWindow mPlasticWindow;
+        readonly UVCSWindow mUVCSWindow;
     }
 }

@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Codice.Client.Common;
-using Codice.Client.Common.Authentication;
 using Codice.Client.Common.Threading;
 using Codice.Client.Common.WebApi;
 using Codice.Client.Common.WebApi.Responses;
 using Codice.CM.Common;
 using Codice.LogWrapper;
+using PlasticGui;
 using PlasticGui.WorkspaceWindow.Home;
 
 namespace Unity.PlasticSCM.Editor
@@ -17,16 +16,22 @@ namespace Unity.PlasticSCM.Editor
     {
         internal static bool IsUnityOrganization(string server)
         {
-            return ResolveServer.ToDisplayString(server).EndsWith(UnityOrganizationServer);
+            string resolvedServer = ResolveServer.ToDisplayString(server);
+            return CloudServer.IsUnityOrganization(resolvedServer);
         }
 
-        internal static void LoadCloudOrganizationsAsync(IPlasticWebRestApi restApi)
+        internal static void UpdateCloudOrganizationSlugsAsync(
+            IPlasticWebRestApi restApi,
+            IPlasticAPI plasticApi)
         {
             PlasticThreadPool.Run(delegate
             {
                 try
                 {
                     OrganizationsResponse organizationResponse = restApi.GetCloudServers();
+
+                    if (organizationResponse == null)
+                        return;
 
                     if (organizationResponse.Error != null)
                     {
@@ -38,7 +43,7 @@ namespace Unity.PlasticSCM.Editor
                         return;
                     }
 
-                    UpdateOrganizationSlugs(organizationResponse);
+                    UpdateCloudOrganizationSlugs.For(plasticApi, organizationResponse);
                 }
                 catch (Exception e)
                 {
@@ -73,21 +78,6 @@ namespace Unity.PlasticSCM.Editor
                     OrganizationInfo.OrganizationType.Cloud );
         }
 
-        internal static List<string> GetOrganizationProjects(string organizationServer)
-        {
-            RepositoryInfo[] allServerProjects = CmConnection.Get().GetRepositoryHandler(organizationServer)
-                .GetRepositoryList(RepositoryType.Project);
-
-            List<string> serverProjects = allServerProjects
-                .Where(project => !RepositoryInfo.IsDeleted(project))
-                .Select(project => project.Name)
-                .ToList();
-
-            serverProjects.Sort();
-
-            return serverProjects;
-        }
-
         internal static string TryResolveServerFromInput(string userInputServer)
         {
             try
@@ -115,27 +105,6 @@ namespace Unity.PlasticSCM.Editor
                 return null;
             }
         }
-
-        static void UpdateOrganizationSlugs(OrganizationsResponse organizationsResponse)
-        {
-            if (organizationsResponse == null || organizationsResponse.OrganizationInfo == null)
-            {
-                return;
-            }
-
-            List<string> genesisOrgIds;
-            List<string> slugs;
-
-            GetCloudOrganizations.BuildOrganizationSlugs(
-                organizationsResponse.Organizations,
-                organizationsResponse.OrganizationInfo,
-                out genesisOrgIds,
-                out slugs);
-
-            CmConnection.Get().SetUnityOrganizationsSlugData(genesisOrgIds, slugs);
-        }
-
-        static readonly string UnityOrganizationServer = "@unity";
 
         static readonly ILog mLog = PlasticApp.GetLogger("OrganizationsInformation");
     }

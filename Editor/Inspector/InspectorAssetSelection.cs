@@ -1,13 +1,13 @@
-﻿using UnityEditor.VersionControl;
+using UnityEditor.VersionControl;
 
 using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetUtils;
 
 namespace Unity.PlasticSCM.Editor.Inspector
 {
-    internal class InspectorAssetSelection : AssetVcsOperations.IAssetSelection
+    internal class InspectorAssetSelection : AssetUVCSOperations.IAssetSelection
     {
-        AssetList AssetVcsOperations.IAssetSelection.GetSelectedAssets()
+        AssetList AssetUVCSOperations.IAssetSelection.GetSelectedAssets()
         {
             return GetInspectorAssets(mActiveInspector);
         }

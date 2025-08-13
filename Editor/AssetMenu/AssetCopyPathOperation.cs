@@ -16,7 +16,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             WorkspaceInfo wkInfo,
             IPlasticAPI plasticApi,
             IAssetStatusCache assetStatusCache,
-            AssetVcsOperations.IAssetSelection assetSelection)
+            AssetUVCSOperations.IAssetSelection assetSelection)
         {
             mWkInfo = wkInfo;
             mPlasticAPI = plasticApi;
@@ -43,6 +43,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         readonly WorkspaceInfo mWkInfo;
         readonly IPlasticAPI mPlasticAPI;
         readonly IAssetStatusCache mAssetStatusCache;
-        readonly AssetVcsOperations.IAssetSelection mAssetSelection;
+        readonly AssetUVCSOperations.IAssetSelection mAssetSelection;
     }
 }

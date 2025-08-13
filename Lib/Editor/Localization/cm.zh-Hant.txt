@@ -119,6 +119,9 @@ https://www.plasticscm.com/documentation/cmdrunner/plastic-scm-version-control-c
 == EnterPassword ==
 密碼: 
 
+== Group ==
+Group
+
 == EnterUser ==
 使用者: 
 
@@ -137,11 +140,23 @@ https://www.plasticscm.com/documentation/cmdrunner/plastic-scm-version-control-c
 == MsgNocommands ==
 無定義的命令!
 
+== OpenThisUrlInYourBrowser ==
+Open the following URL in your browser:
+
 == ShortName ==
 短 
+
+== SelectSignInProvider ==
+Select the system you want to use to sign in to: {0}
+
+== SelectYourProviderToSignin ==
+Select your system [{0}-{1}] 
 
 == WkUpgradeFinished ==
 已升級工作區。
 
 == WkUpgradeStarted ==
 正在升級工作區...
+
+== User ==
+User

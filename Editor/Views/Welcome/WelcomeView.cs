@@ -16,7 +16,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
     internal class WelcomeView
     {
         internal WelcomeView(
-            PlasticWindow parentWindow,
+            UVCSWindow parentWindow,
             CreateWorkspaceView.ICreateWorkspaceListener createWorkspaceListener,
             IPlasticAPI plasticApi,
             IPlasticWebRestApi plasticWebRestApi)
@@ -42,11 +42,13 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
         {
             GUILayout.BeginHorizontal();
 
-            GUILayout.Space(LEFT_MARGIN);
+            GUILayout.Space(HORIZONTAL_MARGIN);
 
             DoContentViewArea(
                 clientNeedsConfiguration,
                 mIsCreateWorkspaceButtonClicked);
+
+            GUILayout.Space(HORIZONTAL_MARGIN);
 
             GUILayout.EndHorizontal();
         }
@@ -135,21 +137,14 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
                 PlasticLocalization.Name.LoginOrSignUp),
                 GUILayout.Width(BUTTON_WIDTH)))
             {
-                if (autoLoginState > AutoLogin.State.Off && autoLoginState <= AutoLogin.State.ResponseSuccess)
-                {
-                    autoLoginState = AutoLogin.State.Running;
-                    AutoLogin autoLogin = new AutoLogin();
-                    autoLogin.Run();
-                }
-
-                if (autoLoginState != AutoLogin.State.ErrorNoToken)
+                if (new AutoLogin().Run())
                 {
                     return;
                 }
 
+                // If AutoLogin failed with No Token the Login button opens the manual Cloud sign up
                 ((IProgressControls)configureProgress).ShowProgress(string.Empty);
 
-                // Login button defaults to Cloud sign up
                 CloudEditionWelcomeWindow.ShowWindow(mPlasticWebRestApi, this);
 
                 GUIUtility.ExitGUI();
@@ -268,8 +263,8 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             mCreateWorkspaceView = new CreateWorkspaceView(
                 mParentWindow,
                 mCreateWorkspaceListener,
-                mPlasticApi,
                 mPlasticWebRestApi,
+                mPlasticApi,
                 ProjectPath.Get());
 
             return mCreateWorkspaceView;
@@ -284,9 +279,9 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
         readonly IPlasticAPI mPlasticApi;
         readonly IPlasticWebRestApi mPlasticWebRestApi;
         readonly CreateWorkspaceView.ICreateWorkspaceListener mCreateWorkspaceListener;
-        readonly PlasticWindow mParentWindow;
+        readonly UVCSWindow mParentWindow;
 
-        const int LEFT_MARGIN = 30;
+        const int HORIZONTAL_MARGIN = 30;
         const int TOP_MARGIN = 20;
         const int STEPS_TOP_MARGIN = 5;
         const int STEPS_LEFT_MARGIN = 12;

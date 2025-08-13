@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,6 +19,9 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetsOverlays;
+#if UNITY_6000_2_OR_NEWER
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
@@ -29,7 +33,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             PendingChangesTreeHeaderState headerState,
             List<string> columnNames,
             PendingChangesViewMenu menu,
-            IAssetStatusCache assetStatusCache)
+            IAssetStatusCache assetStatusCache,
+            Action doubleClickAction)
         {
             mWkInfo = wkInfo;
             mIsGluonMode = isGluonMode;
@@ -37,6 +42,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mHeaderState = headerState;
             mMenu = menu;
             mAssetStatusCache = assetStatusCache;
+            mDoubleClickAction = doubleClickAction;
 
             mPendingChangesTree = new UnityPendingChangesTree();
 
@@ -49,7 +55,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             customFoldoutYOffset = UnityConstants.TREEVIEW_FOLDOUT_Y_OFFSET;
 
-            mCooldownFilterAction = new CooldownWindowDelayer(
+            mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
         }
 
@@ -145,7 +151,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         protected override void SearchChanged(string newSearch)
         {
-            mCooldownFilterAction.Ping();
+            mDelayedFilterAction.Run();
         }
 
         protected override void ContextClickedItem(int id)
@@ -192,7 +198,14 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             base.RowGUI(args);
         }
 
-        internal void BuildModel(List<ChangeInfo> changes, PendingChangesViewCheckedStateManager checkedStateManager)
+        protected override void DoubleClickedItem(int id)
+        {
+            mDoubleClickAction();
+        }
+
+        internal void BuildModel(
+            List<ChangeInfo> changes,
+            PendingChangesViewCheckedStateManager checkedStateManager)
         {
             mTreeViewItemIds.Clear();
 
@@ -639,7 +652,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             bool hadPartiallyCheckedChildren =
                 ((ICheckablePlasticTreeCategoryGroup)item.Changelist).GetPartiallyCheckedCategoriesCount() > 0;
 
-            bool isChecked = DrawTreeViewItem.ForCheckableCategoryItem(
+            bool isChecked = DrawTreeViewItem.ForCheckableIndentedItem(
                 rowRect,
                 rowHeight,
                 item.depth,
@@ -673,7 +686,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             bool hadCheckedChildren =
                 ((ICheckablePlasticTreeCategory)item.Category).GetCheckedChangesCount() > 0;
 
-            bool isChecked = DrawTreeViewItem.ForCheckableCategoryItem(
+            bool isChecked = DrawTreeViewItem.ForCheckableIndentedItem(
                 rowRect,
                 rowHeight,
                 item.depth,
@@ -945,7 +958,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         static Texture GetIcon(PendingChangeInfo change)
         {
             if (change.ChangeInfo.IsDirectory)
-                return Images.GetDirectoryIcon();
+                return Images.GetFolderIcon();
 
             string fullPath = change.ChangeInfo.GetFullPath();
             return Images.GetFileIcon(fullPath);
@@ -970,11 +983,12 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             new TreeViewItemIds<IPlasticTreeNode, PendingChangeInfo>();
 
         UnityPendingChangesTree mPendingChangesTree;
-        CooldownWindowDelayer mCooldownFilterAction;
+        DelayedActionBySecondsRunner mDelayedFilterAction;
 
-        readonly PendingChangesTreeHeaderState mHeaderState;
-        readonly PendingChangesViewMenu mMenu;
+        readonly Action mDoubleClickAction;
         readonly IAssetStatusCache mAssetStatusCache;
+        readonly PendingChangesViewMenu mMenu;
+        readonly PendingChangesTreeHeaderState mHeaderState;
         readonly List<string> mColumnNames;
         readonly bool mIsGluonMode;
         readonly WorkspaceInfo mWkInfo;

@@ -119,6 +119,9 @@ https://www.plasticscm.com/documentation/cmdrunner/plastic-scm-version-control-c
 == EnterPassword ==
 비밀번호: 
 
+== Group ==
+Group
+
 == EnterUser ==
 사용자: 
 
@@ -137,6 +140,15 @@ https://www.plasticscm.com/documentation/cmdrunner/plastic-scm-version-control-c
 == MsgNocommands ==
 정의된 명령이 없습니다.
 
+== OpenThisUrlInYourBrowser ==
+Open the following URL in your browser:
+
+== SelectSignInProvider ==
+Select the system you want to use to sign in to: {0}
+
+== SelectYourProviderToSignin ==
+Select your system [{0}-{1}] 
+
 == ShortName ==
 단축형 
 
@@ -145,3 +157,6 @@ https://www.plasticscm.com/documentation/cmdrunner/plastic-scm-version-control-c
 
 == WkUpgradeStarted ==
 워크스페이스 업그레이드 중...
+
+== User ==
+User

@@ -58,12 +58,12 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
             {
                 EditorUtility.ClearProgressBar();
 
-                RefreshAsset.AfterLongAssetOperation();
+                RefreshAsset.AfterLongAssetOperation(null);
 
                 if (!mOperationFailed)
                 {
-                    PlasticPlugin.Enable();
-                    ShowWindow.Plastic();
+                    UVCSPlugin.Instance.Enable();
+                    ShowWindow.UVCS();
                 }
             }
         }

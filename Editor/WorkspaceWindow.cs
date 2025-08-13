@@ -19,12 +19,15 @@ using PlasticGui.WorkspaceWindow.Topbar;
 using PlasticGui.WorkspaceWindow.Replication;
 using PlasticGui.WorkspaceWindow.Update;
 using Unity.PlasticSCM.Editor.AssetUtils;
+using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.Configuration;
 using Unity.PlasticSCM.Editor.Developer.UpdateReport;
+using Unity.PlasticSCM.Editor.StatusBar;
+using Unity.PlasticSCM.Editor.Toolbar;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
-using Unity.PlasticSCM.Editor.UI.StatusBar;
 
+using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
 using IGluonUpdateReport = PlasticGui.Gluon.IUpdateReport;
 using IGluonWorkspaceStatusChangeListener = PlasticGui.Gluon.IWorkspaceStatusChangeListener;
 using GluonUpdateReportDialog = Unity.PlasticSCM.Editor.Gluon.UpdateReport.UpdateReportDialog;
@@ -57,20 +60,26 @@ namespace Unity.PlasticSCM.Editor
             WorkspaceInfo wkInfo,
             ViewHost viewHost,
             ViewSwitcher switcher,
-            StatusBar statusBar,
+            WindowStatusBar windowStatusBar,
+            IAssetStatusCache assetStatusCache,
             IMergeViewLauncher mergeViewLauncher,
-            NewIncomingChangesUpdater developerNewIncomingChangesUpdater,
+            PendingChangesUpdater pendingChangesUpdater,
+            IncomingChangesUpdater developerIncomingChangesUpdater,
+            GluonIncomingChangesUpdater gluonIncomingChangesUpdater,
             ShelvedChangesUpdater shelvedChangesUpdater,
             EditorWindow parentWindow)
         {
             mWkInfo = wkInfo;
             mViewHost = viewHost;
             mSwitcher = switcher;
-            mStatusBar = statusBar;
+            mWindowStatusBar = windowStatusBar;
+            mAssetStatusCache = assetStatusCache;
             mMergeViewLauncher = mergeViewLauncher;
-            mDeveloperNewIncomingChangesUpdater = developerNewIncomingChangesUpdater;
+            mPendingChangesUpdater = pendingChangesUpdater;
+            mDeveloperIncomingChangesUpdater = developerIncomingChangesUpdater;
+            mGluonIncomingChangesUpdater = gluonIncomingChangesUpdater;
             mShelvedChangesUpdater = shelvedChangesUpdater;
-            mPlasticWindow = parentWindow;
+            mParentWindow = parentWindow;
             mGuiMessage = new UnityPlasticGuiMessage();
 
             mDeveloperProgressOperationHandler = new Developer.ProgressOperationHandler(mWkInfo, this);
@@ -119,7 +128,7 @@ namespace Unity.PlasticSCM.Editor
                 if (mDeveloperProgressOperationHandler.IsOperationInProgress())
                     mDeveloperProgressOperationHandler.Update(elapsedSeconds);
 
-                mPlasticWindow.Repaint();
+                mParentWindow.Repaint();
 
                 mRequestedRepaint = false;
             }
@@ -133,14 +142,19 @@ namespace Unity.PlasticSCM.Editor
         internal void UpdateWorkspace()
         {
             UpdateWorkspaceOperation update = new UpdateWorkspaceOperation(
-                mWkInfo, this, mSwitcher, mMergeViewLauncher, this,
-                mDeveloperNewIncomingChangesUpdater,
+                mWkInfo,
+                this,
+                mSwitcher,
+                mMergeViewLauncher,
+                this,
+                mPendingChangesUpdater,
+                mDeveloperIncomingChangesUpdater,
                 mShelvedChangesUpdater,
                 null);
 
             update.Run(
                 UpdateWorkspaceOperation.UpdateType.UpdateToLatest,
-                RefreshAsset.UnityAssetDatabase,
+                () => RefreshAsset.UnityAssetDatabase(mAssetStatusCache),
                 ShowWorkspaceUpdateSuccess);
         }
 
@@ -160,18 +174,15 @@ namespace Unity.PlasticSCM.Editor
             mSwitcher.RefreshView(viewType);
         }
 
-        void IWorkspaceWindow.RefreshWorkingObjectViews(
-            ViewType viewType,
-            WorkingObjectInfo workingObjectInfo)
+        void IWorkspaceWindow.RefreshWorkingObjectViews(WorkingObjectInfo workingObjectInfo)
         {
-            mSwitcher.RefreshWorkingObjectInfoForSelectedView(
-                viewType,
-                workingObjectInfo);
+            mSwitcher.RefreshWorkingObjectViews(workingObjectInfo);
         }
 
         void IWorkspaceWindow.UpdateTitle()
         {
             RefreshWorkspaceStatus();
+            UVCSToolbar.Controller.RefreshWorkspaceWorkingInfo();
         }
 
         bool IWorkspaceWindow.IsOperationInProgress()
@@ -259,7 +270,7 @@ namespace Unity.PlasticSCM.Editor
 
         EncryptionConfigurationDialogData IWorkspaceWindow.RequestEncryptionPassword(string server)
         {
-            return EncryptionConfigurationDialog.RequestEncryptionPassword(server, mPlasticWindow);
+            return EncryptionConfigurationDialog.RequestEncryptionPassword(server, mParentWindow);
         }
 
         void IWorkspaceWindow.RegisterView(
@@ -293,7 +304,7 @@ namespace Unity.PlasticSCM.Editor
             UpdateReportDialog.ShowReportDialog(
                 wkInfo,
                 reportLines,
-                mPlasticWindow);
+                mParentWindow);
         }
 
         void IGluonUpdateReport.AppendReport(string updateReport)
@@ -303,6 +314,7 @@ namespace Unity.PlasticSCM.Editor
         void IGluonWorkspaceStatusChangeListener.OnWorkspaceStatusChanged()
         {
             RefreshWorkspaceStatus();
+            UVCSToolbar.Controller.RefreshWorkspaceWorkingInfo();
             RefreshWorkingObject();
         }
 
@@ -310,12 +322,12 @@ namespace Unity.PlasticSCM.Editor
             WorkspaceInfo wkInfo, List<ErrorMessage> errors)
         {
             return GluonUpdateReportDialog.ShowUpdateReport(
-                wkInfo, errors, mPlasticWindow);
+                wkInfo, errors, mParentWindow);
         }
 
         void ShowWorkspaceUpdateSuccess()
         {
-            mStatusBar.Notify(
+            mWindowStatusBar.Notify(
                 new GUIContentNotification(
                     PlasticLocalization.Name.WorkspaceUpdateCompleted.GetString()),
                 MessageType.None,
@@ -365,7 +377,7 @@ namespace Unity.PlasticSCM.Editor
                     if (waiter.Exception != null)
                         return;
 
-                    mSwitcher.BranchesTab.SetWorkingObjectInfo(workingObjectInfo);
+                    mSwitcher.BranchesTab.SetWorkingObjectInfo(workingObjectInfo.BranchInfo);
                 });
         }
 
@@ -393,10 +405,13 @@ namespace Unity.PlasticSCM.Editor
 
                     ((IUpdateProgress)mGluonProgressOperationHandler).EndProgress();
 
-                    mViewHost.RefreshView(ViewType.CheckinView);
-                    mViewHost.RefreshView(ViewType.IncomingChangesView);
+                    if (mPendingChangesUpdater != null)
+                        mPendingChangesUpdater.Update(DateTime.Now);
 
-                    RefreshAsset.UnityAssetDatabase();
+                    if (mGluonIncomingChangesUpdater != null)
+                        mGluonIncomingChangesUpdater.Update(DateTime.Now);
+
+                    RefreshAsset.UnityAssetDatabase(mAssetStatusCache);
 
                     if (waiter.Exception != null)
                     {
@@ -405,8 +420,14 @@ namespace Unity.PlasticSCM.Editor
                     }
 
                     ShowUpdateReportDialog(
-                        mWkInfo, mViewHost, outOfDateUpdater.Progress, mProgressControls,
-                        mGuiMessage, mGluonProgressOperationHandler, this);
+                        mWkInfo,
+                        mViewHost,
+                        outOfDateUpdater.Progress,
+                        mProgressControls,
+                        mGuiMessage,
+                        mGluonProgressOperationHandler,
+                        this,
+                        mGluonIncomingChangesUpdater);
                 },
                 /*timerTickDelegate*/ delegate
                 {
@@ -435,7 +456,8 @@ namespace Unity.PlasticSCM.Editor
             IProgressControls progressControls,
             GuiMessage.IGuiMessage guiMessage,
             IUpdateProgress updateProgress,
-            IGluonUpdateReport updateReport)
+            IGluonUpdateReport updateReport,
+            GluonIncomingChangesUpdater gluonIncomingChangesUpdater)
         {
             if (progress.ErrorMessages.Count == 0)
                 return;
@@ -447,8 +469,14 @@ namespace Unity.PlasticSCM.Editor
                 return;
 
             UpdateForcedOperation updateForced = new UpdateForcedOperation(
-                wkInfo, viewHost, progress, progressControls,
-                guiMessage, updateProgress, updateReport);
+                wkInfo,
+                viewHost,
+                progress,
+                progressControls,
+                guiMessage,
+                updateProgress,
+                updateReport,
+                gluonIncomingChangesUpdater);
 
             updateForced.UpdateForced(
                 updateReportResult.UpdateForcedPaths,
@@ -464,12 +492,15 @@ namespace Unity.PlasticSCM.Editor
         readonly Developer.ProgressOperationHandler mDeveloperProgressOperationHandler;
         readonly Gluon.ProgressOperationHandler mGluonProgressOperationHandler;
         readonly GuiMessage.IGuiMessage mGuiMessage;
-        readonly EditorWindow mPlasticWindow;
-        readonly NewIncomingChangesUpdater mDeveloperNewIncomingChangesUpdater;
+        readonly EditorWindow mParentWindow;
+        readonly PendingChangesUpdater mPendingChangesUpdater;
+        readonly IncomingChangesUpdater mDeveloperIncomingChangesUpdater;
+        readonly GluonIncomingChangesUpdater mGluonIncomingChangesUpdater;
         readonly ShelvedChangesUpdater mShelvedChangesUpdater;
         readonly IMergeViewLauncher mMergeViewLauncher;
+        readonly IAssetStatusCache mAssetStatusCache;
         readonly ViewSwitcher mSwitcher;
-        readonly StatusBar mStatusBar;
+        readonly WindowStatusBar mWindowStatusBar;
         readonly ViewHost mViewHost;
         readonly WorkspaceInfo mWkInfo;
     }

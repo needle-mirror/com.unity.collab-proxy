@@ -57,7 +57,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         internal void IgnoredByName_Click()
         {
             if (mOperations == null)
-                ShowWindow.Plastic();
+                ShowWindow.UVCS();
 
             mOperations.AddFilesFilterPatterns(
                 FilterTypes.Ignored, FilterActions.ByName,
@@ -67,7 +67,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         internal void IgnoredByExtension_Click()
         {
             if (mOperations == null)
-                ShowWindow.Plastic();
+                ShowWindow.UVCS();
 
             mOperations.AddFilesFilterPatterns(
                 FilterTypes.Ignored, FilterActions.ByExtension,
@@ -77,7 +77,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         internal void IgnoredByFullPath_Click()
         {
             if (mOperations == null)
-                ShowWindow.Plastic();
+                ShowWindow.UVCS();
 
             mOperations.AddFilesFilterPatterns(
                 FilterTypes.Ignored, FilterActions.ByFullPath,
@@ -87,7 +87,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         internal void HiddenChangesByName_Click()
         {
             if (mOperations == null)
-                ShowWindow.Plastic();
+                ShowWindow.UVCS();
 
             mOperations.AddFilesFilterPatterns(
                 FilterTypes.HiddenChanges, FilterActions.ByName,
@@ -97,7 +97,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         internal void HiddenChangesByExtension_Click()
         {
             if (mOperations == null)
-                ShowWindow.Plastic();
+                ShowWindow.UVCS();
 
             mOperations.AddFilesFilterPatterns(
                 FilterTypes.HiddenChanges, FilterActions.ByExtension,
@@ -107,7 +107,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         internal void HiddenChangesByFullPath_Click()
         {
             if (mOperations == null)
-                ShowWindow.Plastic();
+                ShowWindow.UVCS();
 
             mOperations.AddFilesFilterPatterns(
                 FilterTypes.HiddenChanges, FilterActions.ByFullPath,

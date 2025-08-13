@@ -1,6 +1,9 @@
 ﻿using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+#if UNITY_6000_2_OR_NEWER
+using TreeView = UnityEditor.IMGUI.Controls.TreeView<int>;
+#endif
 
 namespace Unity.PlasticSCM.Editor.UI.Tree
 {
@@ -15,7 +18,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             TreeView.DefaultStyles.boldLabel = UnityStyles.Tree.BoldLabel;
         }
 
-        internal static void ForCategoryItem(
+        internal static void ForIndentedItem(
             Rect rowRect,
             int depth,
             string label,
@@ -38,7 +41,25 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                 DrawInfolabel(rowRect, label, infoLabel);
         }
 
-        internal static bool ForCheckableCategoryItem(
+        internal static void ForIndentedItemWithIcon(
+            Rect rowRect,
+            int depth,
+            string label,
+            string infoLabel,
+            Texture icon)
+        {
+            float indent = GetIndent(depth);
+
+            rowRect.x += indent;
+            rowRect.width -= indent;
+
+            EditorGUI.LabelField(rowRect, new GUIContent(label, icon), UnityStyles.Tree.IconStyle);
+
+            if (!string.IsNullOrEmpty(infoLabel))
+                DrawInfolabel(rowRect, label, infoLabel);
+        }
+
+        internal static bool ForCheckableIndentedItem(
             Rect rowRect,
             float rowHeight,
             int depth,
@@ -198,10 +219,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 
         static float GetIndent(int depth)
         {
-            if (depth == -1)
-                return 0;
-
-            return 16 + (depth * 16);
+            return 16 * (depth + 1);
         }
 
         internal static void ForSecondaryLabelRightAligned(

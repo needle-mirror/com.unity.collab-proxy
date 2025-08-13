@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -11,18 +12,25 @@ using PlasticGui;
 using PlasticGui.WorkspaceWindow.Diff;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Tree;
+#if UNITY_6000_2_OR_NEWER
+using TreeView = UnityEditor.IMGUI.Controls.TreeView<int>;
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.Diff
 {
     internal class DiffTreeView : PlasticTreeView
     {
-        internal DiffTreeView(DiffTreeViewMenu menu)
+        internal DiffTreeView(
+            DiffTreeViewMenu menu,
+            Action doubleClickAction)
         {
             mMenu = menu;
+            mDoubleClickAction = doubleClickAction;
 
             customFoldoutYOffset = UnityConstants.TREEVIEW_FOLDOUT_Y_OFFSET;
 
-            mCooldownFilterAction = new CooldownWindowDelayer(
+            mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
 
             EnableHorizontalScrollbar();
@@ -76,7 +84,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         protected override void SearchChanged(string newSearch)
         {
-            mCooldownFilterAction.Ping();
+            mDelayedFilterAction.Run();
         }
 
         protected override void ContextClickedItem(int id)
@@ -104,6 +112,11 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                 mHorizontalColumn.width = mLargestRowWidth;
 
             base.AfterRowsGUI();
+        }
+
+        protected override void DoubleClickedItem(int id)
+        {
+            mDoubleClickAction();
         }
 
         internal void ClearModel()
@@ -421,7 +434,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             itemWidth = CalculateLabelWidth(label);
 
-            DrawTreeViewItem.ForCategoryItem(
+            DrawTreeViewItem.ForIndentedItem(
                 rowRect,
                 item.depth,
                 label,
@@ -443,7 +456,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             itemWidth = CalculateLabelWidth(label);
 
-            DrawTreeViewItem.ForCategoryItem(
+            DrawTreeViewItem.ForIndentedItem(
                 rowRect,
                 item.depth,
                 label,
@@ -510,7 +523,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         static Texture GetClientDiffIcon(bool isDirectory, string path)
         {
             if (isDirectory)
-                return Images.GetDirectoryIcon();
+                return Images.GetFolderIcon();
 
             return Images.GetFileIconFromCmPath(path);
         }
@@ -525,10 +538,11 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         MultiColumnHeaderState.Column mHorizontalColumn;
         float mLargestRowWidth;
 
-        readonly CooldownWindowDelayer mCooldownFilterAction;
+        readonly DelayedActionBySecondsRunner mDelayedFilterAction;
 
         static readonly List<string> ColumnsNames = new List<string> {
             PlasticLocalization.GetString(PlasticLocalization.Name.PathColumn)};
         readonly DiffTreeViewMenu mMenu;
+        readonly Action mDoubleClickAction;
     }
 }

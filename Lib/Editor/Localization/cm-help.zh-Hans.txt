@@ -4721,26 +4721,12 @@ Jira 参数（全部为必需参数）：
 == CMD_USAGE_QUERY ==
 用法：
 
-    cm ^query <SQL_命令> [--^outputfile=<输出文件>]
-                           [--^solveuser=<列名称>[,...]]
-                           [--^solvepath=<列名称>[,...]]
-                           [--^columnwidth=<值>] [--^nocolumnname]
-                           [--^columnseparator=<分隔符>] [--^repository=<名称>]
+    cm ^query <SQL_命令> [--^repository=<名称>]
 
     SQL_命令         要执行的 SQL 查询。
 
 选项：
 
-    --^outputfile        将结果写入输出文件中。
-    --^solveuser         将指定的列设置为用户名列。查询
-                        解释器将假定这些列的数据将是用户，
-                        并将尝试解析这些数据。
-    --^solvepath         将指定的列设置为 itemid 列。查询
-                        解释器将尝试将项 ID 解析为文件系统
-                        路径。
-    --^columnwidth       指定每列的宽度以便格式化输出。
-    --^nocolumnname      不打印列名称。
-    --^columnseparator   使用字符作为列分隔符，而不是使用制表符 (\t)。
     --^repository        要查询的存储库。
 
 == CMD_HELP_QUERY ==
@@ -4752,32 +4738,6 @@ Jira 参数（全部为必需参数）：
     用户和路径：
     - '^SolveUser(<用户名>)'，将用户名解析为 Unity VCS 格式。
     - '^SolvePath(<路径>)'，将磁盘路径解析为项 ID。
-
-    此外，还可使用选项以便于人工阅读的形式显示查询结果。
-
-    可以使用选项 '--^solveuser=<列名称>' 和
-    '--^solvepath=<列名称>' 来指定必须由查询解释器
-    转换为易读文本的列。可以指定多个列名称，
-    以逗号分隔。
-
-示例：
-
-    cm ^query "^SELECT * ^FROM ^revision" --^columnwidth=25 --^repository=reptest
-    （从存储库 'reptest' 中的 '修订' 表检索数据。）
-
-    cm ^query "^SELECT b.^sname ^as 分支名称, o.^dtimestamp ^as 日期 ^from ^branch b, \
-        ^object o, ^seid s ^where b.^iobjid=o.^iobjid ^and o.^fidowner=s.^iseidid ^and \
-        s.^scode='^SolveUser(john)'" --^outputfile=query.txt
-    （将所有者为 'john' 的分支输出到文件中。）
-
-    cm ^query "^select r.^iobjid, r.^fiditem ^as 路径, s.^scode ^as 用户名 ^FROM \
-        ^revision r, ^object o, ^seid s ^WHERE r.^iobjid=o.^iobjid ^and \
-        o.^fidowner=s.^iseidid ^and o.^dtimestamp>2014/04/25" \
-    --^solveuser=用户名 --^solvepath=路径 --^repository=reptest@server2:9095
-    （从所选存储库检索选定数据。）
-
-    cm ^query "^SELECT * ^FROM ^revision ^WHERE ^fiditem=^SolvePath(c:\mywkpath\info)"
-    （检索路径 'info' 的所有修订数据。）
 
 == CMD_DESCRIPTION_ATTRIBUTE_DELETE ==
 删除一个或多个属性。

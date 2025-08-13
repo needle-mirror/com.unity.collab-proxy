@@ -1,4 +1,4 @@
-﻿using Codice.Utils;
+using Codice.Utils;
 using PlasticGui;
 
 namespace Unity.PlasticSCM.Editor.UI
@@ -75,5 +75,28 @@ namespace Unity.PlasticSCM.Editor.UI
             return string.Empty;
         }
 
+        internal static string ForLabel()
+        {
+            if (PlatformIdentifier.IsWindows())
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.UnityLabelShortcutForWindows);
+
+            if (PlatformIdentifier.IsMac())
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.UnityLabelShortcutForMacOS);
+
+            return string.Empty;
+        }
+
+        internal static string ForSwitch()
+        {
+            if (PlatformIdentifier.IsWindows())
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.UnitySwitchShortcutForWindows);
+            if (PlatformIdentifier.IsMac())
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.UnitySwitchShortcutForMacOS);
+            return string.Empty;
+        }
     }
 }

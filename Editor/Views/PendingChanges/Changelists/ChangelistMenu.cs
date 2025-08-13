@@ -185,6 +185,5 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Changelists
         GUIContent mDeleteChangelistMenuItemContent;
 
         readonly IChangelistMenuOperations mChangelistMenuOperations;
-        bool mIsGluonMode;
     }
 }

@@ -84,7 +84,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     if (repositoryProject == null || !repositoryProject.GUID.ToString().Equals(mCachedCloudSettings.ProjectId))
                     {
                         string repositoryOrganizationName = CloudServer.GetOrganizationName(ResolveServer.ToDisplayString(repSpec.Server));
-                        string repositoryProjectName = CloudProject.GetProjectName(repSpec.Name);
+                        string repositoryProjectName = CloudProjectRepository.GetProjectName(repSpec.Name);
 
                         LogMismatchingProject(
                             mCachedCloudSettings.OrganizationName, mCachedCloudSettings.ProjectName,

@@ -1,4 +1,4 @@
-﻿using Unity.PlasticSCM.Editor.Views.Merge;
+using Unity.PlasticSCM.Editor.Views.Merge;
 using Unity.PlasticSCM.Editor.Views.PendingChanges;
 
 namespace Unity.PlasticSCM.Editor
@@ -8,6 +8,9 @@ namespace Unity.PlasticSCM.Editor
         internal static void PendingChangesView(PendingChangesTab pendingChangesTab)
         {
             if (pendingChangesTab == null)
+                return;
+
+            if (!pendingChangesTab.IsVisible)
                 return;
 
             pendingChangesTab.AutoRefresh();

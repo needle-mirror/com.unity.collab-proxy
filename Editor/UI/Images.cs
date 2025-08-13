@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 
 using Codice.LogWrapper;
@@ -47,6 +48,8 @@ namespace Unity.PlasticSCM.Editor.UI
             IconPlasticView,
             IconPlasticNotifyIncoming,
             IconPlasticNotifyConflict,
+            IconPlasticNotifyPendingChanges,
+            IconPackageUpdateAvailable,
             Loading,
             IconEmptyGravatar,
             Step1,
@@ -59,12 +62,21 @@ namespace Unity.PlasticSCM.Editor.UI
             IconBranch,
             IconBranches,
             IconBrEx,
+            IconCurrentBranch,
+            IconBranchPendingChanges,
+            IconBranchIncomingChanges,
             IconUndo,
             Refresh,
             IconInviteUsers,
             IconLock,
             IconShelve,
             IconClipboard,
+            IconLabel,
+            HideVersionControl,
+            GetIncomingChangesIcon,
+
+            // Cloud Drive plugin
+            IconCloudDriveView,
         }
 
         internal static Texture2D GetImage(Name image)
@@ -91,9 +103,19 @@ namespace Unity.PlasticSCM.Editor.UI
             return GetIconFromEditorGUI("icon dropdown");
         }
 
-        internal static Texture GetDirectoryIcon()
+        internal static Texture GetFolderIcon()
         {
             return GetIconFromEditorGUI("Folder Icon");
+        }
+
+        internal static Texture GetFolderOpenedIcon()
+        {
+            return GetIconFromEditorGUI("FolderOpened Icon");
+        }
+
+        internal static Texture GetCloudWorkspaceIcon()
+        {
+            return GetShelveIcon();
         }
 
         internal static Texture GetPrivatedOverlayIcon()
@@ -264,6 +286,14 @@ namespace Unity.PlasticSCM.Editor.UI
             return mHoveredCloseIcon;
         }
 
+        internal static Texture GetHideVersionControlIcon()
+        {
+            if (mHideVersionControlIcon == null)
+                mHideVersionControlIcon = GetImage(Name.HideVersionControl);
+
+            return mHideVersionControlIcon;
+        }
+
         internal static Texture2D GetUndoIcon()
         {
             if (mUndoIcon == null)
@@ -312,6 +342,30 @@ namespace Unity.PlasticSCM.Editor.UI
             return mBranchExplorerIcon;
         }
 
+        internal static Texture2D GetCurrentBranchIcon()
+        {
+            if (mCurrentBranchIcon == null)
+                mCurrentBranchIcon = GetImage(Name.IconCurrentBranch);
+
+            return mCurrentBranchIcon;
+        }
+
+        internal static Texture2D GetIconBranchIncomingChanges()
+        {
+            if (mBranchIconIncomingChanges == null)
+                mBranchIconIncomingChanges = GetImage(Name.IconBranchIncomingChanges);
+
+            return mBranchIconIncomingChanges;
+        }
+
+        internal static Texture2D GetIconBranchPendingChanges()
+        {
+            if (mBranchIconPendingChanges == null)
+                mBranchIconPendingChanges = GetImage(Name.IconBranchPendingChanges);
+
+            return mBranchIconPendingChanges;
+        }
+
         internal static Texture2D GetConflictedIcon()
         {
             if (mConflictedIcon == null)
@@ -358,6 +412,30 @@ namespace Unity.PlasticSCM.Editor.UI
                 mPlasticNotifyConflictIcon = GetImage(Name.IconPlasticNotifyConflict);
 
             return mPlasticNotifyConflictIcon;
+        }
+
+        internal static Texture2D GetPlasticNotifyPendingChangesIcon()
+        {
+            if (mPlasticNotifyPendingChangesIcon == null)
+                mPlasticNotifyPendingChangesIcon = GetImage(Name.IconPlasticNotifyPendingChanges);
+
+            return mPlasticNotifyPendingChangesIcon;
+        }
+
+        internal static Texture2D GetCloudDriveViewIcon()
+        {
+            if (mCloudDriveViewIcon == null)
+                mCloudDriveViewIcon = GetImage(Name.IconCloudDriveView);
+
+            return mCloudDriveViewIcon;
+        }
+
+        internal static Texture2D GetPackageUpdateAvailableIcon()
+        {
+            if (mPackageUpdateAvailabledIcon == null)
+                mPackageUpdateAvailabledIcon = GetImage(Name.IconPackageUpdateAvailable);
+
+            return mPackageUpdateAvailabledIcon;
         }
 
         internal static Texture2D GetEmptyGravatar()
@@ -480,6 +558,14 @@ namespace Unity.PlasticSCM.Editor.UI
                 mShelveIcon = GetImage(Name.IconShelve);
 
             return mShelveIcon;
+        }
+
+        internal static Texture2D GetLabelIcon()
+        {
+            if (mLabelIcon == null)
+                mLabelIcon = GetImage(Name.IconLabel);
+
+            return mLabelIcon;
         }
 
         internal static Texture2D GetLockIcon()
@@ -620,39 +706,19 @@ namespace Unity.PlasticSCM.Editor.UI
                     relativePath.Length- UnityConstants.TREEVIEW_META_LABEL.Length);
             }
 
+            Texture result = InternalEditorUtility.FindIconForFile(relativePath);
+
+            if (result != null)
+                return result;
+
             string extension = Path.GetExtension(relativePath).ToLower();
 
-            if (extension.Equals(".cs"))
-                return GetIconFromEditorGUI("cs Script Icon");
+            if (extension == ".anim")
+                return GetIconFromAssetPreview(typeof(UnityEngine.AnimationClip));
 
-            if (extension.Equals(".png") || extension.Equals(".jpg")
-             || extension.Equals(".jpeg") || extension.Equals(".gif")
-             || extension.Equals(".tga") || extension.Equals(".bmp")
-             || extension.Equals(".tif") || extension.Equals(".tiff"))
-                return GetIconFromEditorGUI("d_Texture Icon");
-
-            if (extension.Equals(".mat"))
-                return GetIconFromAssetPreview(typeof(UnityEngine.Material));
-
-            if (extension.Equals(".fbx") || extension.Equals(".ma")
-             || extension.Equals(".mb") || extension.Equals(".blend")
-             || extension.Equals(".max") )
-                return GetIconFromAssetPreview(typeof(UnityEngine.GameObject));
-
-            if (extension.Equals(".wav") || extension.Equals(".mp3"))
-                return GetIconFromAssetPreview(typeof(UnityEngine.AudioClip));
-
-            if (extension.Equals(".anim"))
-                return GetIconFromAssetPreview(typeof(UnityEngine.Animation));
-
-            if (extension.Equals(".animator"))
-                return GetIconFromAssetPreview(typeof(UnityEngine.Animator));
-
-            if (extension.Equals(".shader"))
-                return GetIconFromEditorGUI("d_Shader Icon");
-
-            if (extension.Equals(".asset") && relativePath.StartsWith("ProjectSettings\\"))
-                return GetIconFromEditorGUI("EditorSettings Icon");
+            if (extension == ".controller" ||
+                extension == ".overridecontroller")
+                return GetIconFromEditorGUI("AnimatorController Icon");
 
             return null;
         }
@@ -767,6 +833,7 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture mCloseIcon;
         static Texture mClickedCloseIcon;
         static Texture mHoveredCloseIcon;
+        static Texture mHideVersionControlIcon;
 
         static Texture2D mLinkUnderlineImage;
 
@@ -782,16 +849,24 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mBranchIcon;
         static Texture2D mBranchesIcon;
         static Texture2D mBranchExplorerIcon;
+        static Texture2D mCurrentBranchIcon;
+        static Texture2D mBranchIconIncomingChanges;
+        static Texture2D mBranchIconPendingChanges;
         static Texture2D mConflictedIcon;
         static Texture2D mOutOfSyncIcon;
         static Texture2D mIncomingNotificationIcon;
         static Texture2D mInviteUsersIcon;
         static Texture2D mShelveIcon;
         static Texture2D mLockIcon;
+        static Texture2D mLabelIcon;
 
         static Texture2D mPlasticViewIcon;
         static Texture2D mPlasticNotifyIncomingIcon;
         static Texture2D mPlasticNotifyConflictIcon;
+        static Texture2D mPlasticNotifyPendingChangesIcon;
+        static Texture2D mCloudDriveViewIcon;
+
+        static Texture2D mPackageUpdateAvailabledIcon;
 
         static Texture2D mEmptyGravatarIcon;
         static Texture2D mStepOkIcon;
@@ -804,6 +879,15 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mDeletedIcon;
         static Texture2D mMovedIcon;
         static Texture2D mRepositoryIcon;
+
+        static readonly HashSet<string> mAudioExtensions = new HashSet<string> {
+            ".wav", ".mp3", ".ogg", ".aiff", ".aif" };
+        static readonly HashSet<string> mFontExtensions = new HashSet<string> {
+            ".ttf", ".otf" };
+        static readonly HashSet<string> mImageExtensions = new HashSet<string> {
+            ".png", ".jpg", ".jpeg", ".gif", ".tga", ".bmp", ".tif", ".tiff", ".psd" };
+        static readonly HashSet<string> mModelExtensions = new HashSet<string> {
+            ".fbx", ".ma", ".mb", ".blend", ".max", ".obj" };
 
         static readonly ILog mLog = PlasticApp.GetLogger("Images");
     }

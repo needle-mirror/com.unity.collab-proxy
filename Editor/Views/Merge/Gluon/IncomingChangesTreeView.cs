@@ -12,6 +12,9 @@ using PlasticGui.Gluon.WorkspaceWindow.Views.IncomingChanges;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.UI.Avatar;
+#if UNITY_6000_2_OR_NEWER
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 {
@@ -35,7 +38,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
             customFoldoutYOffset = UnityConstants.TREEVIEW_FOLDOUT_Y_OFFSET;
 
-            mCooldownFilterAction = new CooldownWindowDelayer(
+            mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
         }
 
@@ -73,7 +76,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         protected override void SearchChanged(string newSearch)
         {
-            mCooldownFilterAction.Ping();
+            mDelayedFilterAction.Run();
         }
 
         protected override void RowGUI(RowGUIArgs args)
@@ -431,7 +434,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             DefaultStyles.label = GetCategoryStyle(
                 item.Category, solvedConflictsCount, isSelected);
 
-            bool isChecked = DrawTreeViewItem.ForCheckableCategoryItem(
+            bool isChecked = DrawTreeViewItem.ForCheckableIndentedItem(
                 rowRect,
                 rowHeight,
                 item.depth,
@@ -590,7 +593,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 Type == EnumRevisionType.enDirectory;
 
             if (isDirectory || incomingChange.IsXLink())
-                return Images.GetDirectoryIcon();
+                return Images.GetFolderIcon();
 
             string fullPath = WorkspacePath.GetWorkspacePathFromCmPath(
                 wkPath, incomingChange.GetPath(), Path.DirectorySeparatorChar);
@@ -646,7 +649,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         IncomingChangeInfo mCurrentConflict;
         List<IncomingChangeInfo> mSolvedConflicts;
         UnityIncomingChangesTree mIncomingChangesTree;
-        CooldownWindowDelayer mCooldownFilterAction;
+        DelayedActionBySecondsRunner mDelayedFilterAction;
 
         readonly Action mOnCheckedNodeChanged;
         readonly IncomingChangesViewMenu mMenu;

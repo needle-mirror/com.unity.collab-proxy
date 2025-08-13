@@ -1,4 +1,4 @@
-Version Control copyright © 2025 Unity Technologies
+Unity Version Control copyright © 2025 Unity Technologies
 
 Licensed under the Unity Package Distribution License (see https://unity.com/legal/licenses/unity-package-distribution-license).
 

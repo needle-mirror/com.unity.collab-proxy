@@ -1,18 +1,16 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using Codice.Client.BaseCommands;
 using Codice.Client.Commands.CheckIn;
 using Codice.Client.Common;
 using Codice.Client.Common.Threading;
-using Codice.Client.GameUI.Checkin;
 using Codice.CM.Common;
 using Codice.CM.Common.Checkin.Partial;
-
 using GluonGui;
-
 using PlasticGui;
 using PlasticGui.Gluon;
+using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.PendingChanges;
 
 namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
@@ -27,7 +25,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             CheckinDialog dialog,
             GuiMessage.IGuiMessage guiMessage,
             IProgressControls progressControls,
-            IMergeViewLauncher mergeViewLauncher)
+            IMergeViewLauncher mergeViewLauncher,
+            IPendingChangesUpdater pendingChangesUpdater)
         {
             BaseCommandsImpl baseCommands = new BaseCommandsImpl();
 
@@ -43,7 +42,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                     ciParams.time = DateTime.MinValue;
                     ciParams.flags = CheckinFlags.Recurse | CheckinFlags.ProcessSymlinks;
 
-                    baseCommands.CheckIn(ciParams);
+                    baseCommands.CheckIn(wkInfo, ciParams);
                 },
                 /*afterOperationDelegate*/ delegate
                 {
@@ -73,7 +72,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                         return;
                     }
 
-                    workspaceWindow.RefreshView(ViewType.PendingChangesView);
+                    if (pendingChangesUpdater != null)
+                        pendingChangesUpdater.Update(DateTime.Now);
+
                     workspaceWindow.RefreshView(ViewType.HistoryView);
                     workspaceWindow.RefreshView(ViewType.BranchesView);
                     workspaceWindow.RefreshView(ViewType.ChangesetsView);
@@ -89,7 +90,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             CheckinDialog dialog,
             GuiMessage.IGuiMessage guiMessage,
             IProgressControls progressControls,
-            IGluonViewSwitcher gluonViewSwitcher)
+            IGluonViewSwitcher gluonViewSwitcher,
+            IPendingChangesUpdater pendingChangesUpdater)
         {
             BaseCommandsImpl baseCommands = new BaseCommandsImpl();
 
@@ -127,7 +129,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                         return;
                     }
 
-                    viewHost.RefreshView(ViewType.CheckinView);
+                    if (pendingChangesUpdater != null)
+                        pendingChangesUpdater.Update(DateTime.Now);
+
                     viewHost.RefreshView(ViewType.HistoryView);
                     viewHost.RefreshView(ViewType.LocksView);
                 });

@@ -7,7 +7,7 @@ using Unity.PlasticSCM.Editor.AssetUtils;
 
 namespace Unity.PlasticSCM.Editor.AssetMenu
 {
-    internal class ProjectViewAssetSelection : AssetVcsOperations.IAssetSelection
+    internal class ProjectViewAssetSelection : AssetUVCSOperations.IAssetSelection
     {
         internal ProjectViewAssetSelection(Action assetSelectionChangedAction)
         {
@@ -30,7 +30,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 mAssetSelectionChangedAction();
         }
 
-        AssetList AssetVcsOperations.IAssetSelection.GetSelectedAssets()
+        AssetList AssetUVCSOperations.IAssetSelection.GetSelectedAssets()
         {
             if (Selection.assetGUIDs.Length == 0)
                 return new AssetList();

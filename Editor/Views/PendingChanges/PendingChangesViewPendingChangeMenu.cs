@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Codice.Client.BaseCommands;
 using UnityEditor;
@@ -551,7 +551,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         GUIContent mViewHistoryMenuItemContent;
         GUIContent mViewHistoryMetaMenuItemContent;
 
-        readonly WorkspaceInfo mWkInfo;
         readonly IMetaMenuOperations mMetaMenuOperations;
         readonly IOpenMenuOperations mOpenMenuOperations;
         readonly IChangelistMenuOperations mChangelistMenuOperations;

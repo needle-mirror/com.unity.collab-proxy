@@ -39,25 +39,28 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
         internal static BranchCreationData CreateBranchFromLastParentBranchChangeset(
             EditorWindow parentWindow,
             RepositorySpec repSpec,
-            BranchInfo parentBranchInfo)
+            BranchInfo parentBranchInfo,
+            string proposedBranchName)
         {
             string changesetStr = PlasticLocalization.Name.LastChangeset.GetString();
 
             string explanation = BranchCreationUserInfo.GetFromObjectString(
                 repSpec, parentBranchInfo, changesetStr);
 
-            CreateBranchDialog dialog = Create(repSpec, parentBranchInfo, -1 , explanation);
-            ResponseType dialogueResult = dialog.RunModal(parentWindow);
-
-            BranchCreationData result = dialog.BuildCreationData();
-            result.Result = dialogueResult == ResponseType.Ok;
-            return result;
+            return CreateBranch(
+                parentWindow,
+                repSpec,
+                parentBranchInfo,
+                -1,
+                explanation,
+                proposedBranchName);
         }
 
         internal static BranchCreationData CreateBranchFromChangeset(
             EditorWindow parentWindow,
             RepositorySpec repSpec,
-            ChangesetExtendedInfo changesetInfo)
+            ChangesetExtendedInfo changesetInfo,
+            string proposedBranchName)
         {
             BranchInfo parentBranchInfo = BranchInfoCache.GetBranch(
                 repSpec, changesetInfo.BranchId);
@@ -67,7 +70,49 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
             string explanation = BranchCreationUserInfo.GetFromObjectString(
                 repSpec, parentBranchInfo, changesetStr);
 
-            CreateBranchDialog dialog = Create(repSpec, parentBranchInfo, changesetInfo.ChangesetId, explanation);
+            return CreateBranch(
+                parentWindow,
+                repSpec,
+                parentBranchInfo,
+                changesetInfo.ChangesetId,
+                explanation,
+                proposedBranchName);
+        }
+
+        internal static BranchCreationData CreateBranchFromLabel(
+            EditorWindow parentWindow,
+            RepositorySpec repSpec,
+            MarkerExtendedInfo labelInfo)
+        {
+            BranchInfo parentBranchInfo = BranchInfoCache.GetBranch(
+                repSpec, labelInfo.BranchId);
+
+            string explanation = BranchCreationUserInfo.GetFromObjectString(
+                repSpec, labelInfo);
+
+            return CreateBranch(
+                parentWindow,
+                repSpec,
+                parentBranchInfo,
+                labelInfo.Changeset,
+                explanation,
+                null);
+        }
+
+        static BranchCreationData CreateBranch(
+            EditorWindow parentWindow,
+            RepositorySpec repSpec,
+            BranchInfo parentBranchInfo,
+            long changesetId,
+            string explanation,
+            string proposedBranchName)
+        {
+            CreateBranchDialog dialog = Create(
+                repSpec,
+                parentBranchInfo,
+                changesetId,
+                explanation,
+                proposedBranchName);
             ResponseType dialogueResult = dialog.RunModal(parentWindow);
 
             BranchCreationData result = dialog.BuildCreationData();
@@ -178,7 +223,11 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
         }
 
         static CreateBranchDialog Create(
-            RepositorySpec repSpec, BranchInfo parentBranchInfo, long changesetId, string explanation)
+            RepositorySpec repSpec,
+            BranchInfo parentBranchInfo,
+            long changesetId,
+            string explanation,
+            string proposedBranchName)
         {
             var instance = CreateInstance<CreateBranchDialog>();
             instance.IsResizable = false;
@@ -187,7 +236,8 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
             instance.mEscapeKeyAction = instance.CloseButtonAction;
             instance.mRepositorySpec = repSpec;
             instance.mParentBranchInfo = parentBranchInfo;
-            instance.mNewBranchName = "";
+            instance.mNewBranchName = proposedBranchName == null ?
+                string.Empty : proposedBranchName;
             instance.mComment = "";
             instance.mSwitchToBranch = true;
             instance.mProgressControls = new ProgressControlsForDialogs();

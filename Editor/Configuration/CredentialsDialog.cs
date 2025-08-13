@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 using UnityEditor;
 
@@ -74,17 +74,20 @@ namespace Unity.PlasticSCM.Editor.Configuration
 
         void DoEntriesArea()
         {
-            mUser = TextEntry(PlasticLocalization.Name.UserName.GetString(),
+            mUser = EntryBuilder.CreateTextEntry(
+                PlasticLocalization.Name.UserName.GetString(),
                 mUser, ENTRY_WIDTH, ENTRY_X);
 
             GUILayout.Space(5);
 
-            mPassword = PasswordEntry(PlasticLocalization.Name.Password.GetString(),
+            mPassword = EntryBuilder.CreatePasswordEntry(
+                PlasticLocalization.Name.Password.GetString(),
                 mPassword, ENTRY_WIDTH, ENTRY_X);
 
             GUILayout.Space(5);
 
-            mSaveProfile = ToggleEntry(PlasticLocalization.Name.RememberCredentialsAsProfile.GetString(),
+            mSaveProfile = EntryBuilder.CreateToggleEntry(
+                PlasticLocalization.Name.RememberCredentialsAsProfile.GetString(),
                 mSaveProfile, ENTRY_WIDTH, ENTRY_X);
         }
 

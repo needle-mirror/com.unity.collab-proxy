@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine.UIElements;
 
 namespace Unity.PlasticSCM.Editor.UI.UIElements
@@ -8,8 +7,6 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
     {
         internal LoadingSpinner()
         {
-            mStarted = false;
-
             // add child elements to set up centered spinner rotation
             mSpinner = new VisualElement();
             Add(mSpinner);
@@ -28,54 +25,40 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
             style.top = 8;
         }
 
-        internal void Dispose()
-        {
-            if (mStarted)
-                EditorApplication.update -= UpdateProgress;
-        }
-
         internal void Start()
         {
-            if (mStarted)
+            if (mRotationEvent != null)
                 return;
 
-            mRotation = 0;
-            mLastRotationTime = EditorApplication.timeSinceStartup;
+            mRotationEvent = mSpinner.schedule.Execute(UpdateProgress).Every(ROTATION_REFRESH_RATE);
 
-            EditorApplication.update += UpdateProgress;
-
-            mStarted = true;
+            mStartTime = EditorApplication.timeSinceStartup;
         }
 
         internal void Stop()
         {
-            if (!mStarted)
+            if (mRotationEvent == null)
                 return;
 
-            EditorApplication.update -= UpdateProgress;
-
-            mStarted = false;
+            mRotationEvent.Pause();
+            mRotationEvent = null;
         }
 
         void UpdateProgress()
         {
-            double currentTime = EditorApplication.timeSinceStartup;
-            double deltaTime = currentTime - mLastRotationTime;
+            double elapsedTime = EditorApplication.timeSinceStartup - mStartTime;
+            int rotation = (int)(ROTATION_SPEED * elapsedTime) % 360;
 
-            mSpinner.transform.rotation = Quaternion.Euler(0, 0, mRotation);
-
-            mRotation += (int)(ROTATION_SPEED * deltaTime);
-            mRotation = mRotation % 360;
-            if (mRotation < 0) mRotation += 360;
-
-            mLastRotationTime = currentTime;
+            mSpinnerStyleRotate.value = new Rotate(rotation);
+            mSpinner.style.rotate = mSpinnerStyleRotate;
         }
 
-        int mRotation;
-        double mLastRotationTime;
-        bool mStarted;
+        double mStartTime;
         VisualElement mSpinner;
+        IVisualElementScheduledItem mRotationEvent;
+        StyleRotate mSpinnerStyleRotate;
 
         const int ROTATION_SPEED = 360; // Euler degrees per second
+        const int ROTATION_REFRESH_RATE = 32; // (ms) roughly 30 FPS
     }
 }

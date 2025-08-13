@@ -29,7 +29,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
         static Rect BuildUserIconAreaRect(float sizeOfImage)
         {
-            GUIStyle commentTextAreaStyle = UnityStyles.PendingChangesTab.CommentTextArea;
+            GUIStyle commentTextAreaStyle = UnityStyles.PendingChangesTab.UserIcon;
 
             Rect result = GUILayoutUtility.GetRect(sizeOfImage, sizeOfImage); // Needs to be a square
             result.x = commentTextAreaStyle.margin.left;
