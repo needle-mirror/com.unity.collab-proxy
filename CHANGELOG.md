@@ -2,6 +2,11 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.9.2] - 2025-08-19
+
+### Fixed
+- Fixed obsolete references to TreeViewState
+
 ## [2.9.1] - 2025-08-13
 
 ### Added
