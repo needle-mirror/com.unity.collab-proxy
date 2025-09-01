@@ -2,9 +2,16 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.9.3] - 2025-09-01
+
+### Fixed
+
+- Fixed the error that was thrown when the "Configure Unity Version Control" button is pressed in the Build Automation settings in Build Profiles
+
 ## [2.9.2] - 2025-08-19
 
 ### Fixed
+
 - Fixed obsolete references to TreeViewState
 
 ## [2.9.1] - 2025-08-13

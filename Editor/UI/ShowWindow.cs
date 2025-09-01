@@ -8,6 +8,14 @@ namespace Unity.PlasticSCM.Editor.UI
 {
     internal static class ShowWindow
     {
+        // This legacy method is kept for backward compatibility with the Build Automation package
+        // (it was the only method up to com.unity.collab-proxy "2.8.2")
+        // UUM-115391 "Failed to open UVCS Window" error is thrown [...] settings in Build Profiles
+        internal static UVCSWindow Plastic()
+        {
+            return UVCS();
+        }
+
         internal static UVCSWindow UVCS()
         {
             UVCSWindow window = EditorWindow.GetWindow<UVCSWindow>(
