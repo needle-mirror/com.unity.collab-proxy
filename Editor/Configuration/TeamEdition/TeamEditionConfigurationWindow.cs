@@ -10,13 +10,15 @@ using Codice.Client.Common.WebApi;
 using Unity.PlasticSCM.Editor.UI.UIElements;
 using PlasticGui.Configuration.TeamEdition;
 using PlasticGui.Configuration;
+using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
 using Unity.PlasticSCM.Editor.Views.Welcome;
 
 namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
 {
     internal class TeamEditionConfigurationWindow : EditorWindow
     {
-        internal static void ShowWindow(IPlasticWebRestApi restApi, WelcomeView welcomeView)
+        internal static void ShowWindow(
+            IPlasticWebRestApi restApi, AutoLogin.IWelcomeView welcomeView)
         {
             TeamEditionConfigurationWindow window = GetWindow<TeamEditionConfigurationWindow>();
             window.mRestApi = restApi;
@@ -307,7 +309,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.TeamEdition
             new ConfigurationDialogUserAssistant();
 
         IPlasticWebRestApi mRestApi;
-        WelcomeView mWelcomeView;
+        AutoLogin.IWelcomeView mWelcomeView;
         TextField mUserTextField;
     }
 }

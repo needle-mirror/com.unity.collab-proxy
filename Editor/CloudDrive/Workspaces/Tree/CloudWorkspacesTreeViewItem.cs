@@ -22,4 +22,15 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
             displayName = expandedTreeNode.RelativePath;
         }
     }
+
+    internal class CloudWorkspacesLabelTreeViewItem : TreeViewItem
+    {
+        internal string Label { get; private set; }
+
+        internal CloudWorkspacesLabelTreeViewItem(int id, string label) : base(id, 0)
+        {
+            Label = label;
+            displayName = label;
+        }
+    }
 }

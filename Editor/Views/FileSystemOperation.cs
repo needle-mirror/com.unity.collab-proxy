@@ -40,6 +40,19 @@ namespace Unity.PlasticSCM.Editor.Views
             }
         }
 
+        internal static void OpenInExplorer(List<string> paths)
+        {
+            try
+            {
+                foreach (string path in paths)
+                    OpenInExplorer(path);
+            }
+            catch (Exception ex)
+            {
+                ExceptionsHandler.DisplayException(ex);
+            }
+        }
+
         internal static void OpenInExplorer(string path)
         {
             EditorUtility.RevealInFinder(path);

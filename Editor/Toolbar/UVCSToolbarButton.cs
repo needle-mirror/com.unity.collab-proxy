@@ -74,28 +74,15 @@ namespace Unity.Cloud.Collaborate
             }
         }
 
-        internal Texture LeftIcon
+        internal Texture Icon
         {
-            get { return mLeftIcon; }
+            get { return mIcon; }
             set
             {
-                if (mLeftIcon == value)
+                if (mIcon == value)
                     return;
 
-                mLeftIcon = value;
-                InvalidateLayout();
-            }
-        }
-
-        internal Texture RightIcon
-        {
-            get { return mRightIcon; }
-            set
-            {
-                if (mRightIcon == value)
-                    return;
-
-                mRightIcon = value;
+                mIcon = value;
                 InvalidateLayout();
             }
         }
@@ -156,11 +143,13 @@ namespace Unity.Cloud.Collaborate
                 Width = mLayout.TotalWidth;
             }
 
+            if (rect.width == 0)
+                return;
+            
             Rect buttonRect = DrawButton(rect);
 
-            DrawLeftIcon(buttonRect);
+            DrawIcon(buttonRect);
             DrawText(buttonRect);
-            DrawRightIcon(buttonRect);
             DrawDropDownIcon(buttonRect);
         }
 
@@ -180,18 +169,18 @@ namespace Unity.Cloud.Collaborate
             return buttonRect;
         }
 
-        void DrawLeftIcon(Rect buttonRect)
+        void DrawIcon(Rect buttonRect)
         {
-            if (LeftIcon == null)
+            if (Icon == null)
                 return;
 
-            Rect leftIconRect = new Rect(
-                mLayout.LeftIconX,
-                buttonRect.y + (buttonRect.height - Layout.LEFT_ICON_SIZE) / 2,
-                Layout.LEFT_ICON_SIZE,
-                Layout.LEFT_ICON_SIZE);
+            Rect iconRect = new Rect(
+                mLayout.IconX,
+                buttonRect.y + (buttonRect.height - Layout.ICON_SIZE) / 2,
+                Layout.ICON_SIZE,
+                Layout.ICON_SIZE);
 
-            GUI.DrawTexture(leftIconRect, LeftIcon);
+            GUI.DrawTexture(iconRect, Icon);
         }
 
         void DrawText(Rect buttonRect)
@@ -203,20 +192,6 @@ namespace Unity.Cloud.Collaborate
                 mLayout.TextSize.y);
 
             GUI.Label(textRect, mTruncatedTextGUIContent, mTextStyle);
-        }
-
-        void DrawRightIcon(Rect buttonRect)
-        {
-            if (RightIcon == null)
-                return;
-
-            Rect rightIconRect = new Rect(
-                mLayout.RightIconX,
-                buttonRect.y + (buttonRect.height - Layout.RIGHT_ICON_SIZE) / 2,
-                Layout.RIGHT_ICON_SIZE,
-                Layout.RIGHT_ICON_SIZE);
-
-            GUI.DrawTexture(rightIconRect, RightIcon);
         }
 
         void DrawDropDownIcon(Rect buttonRect)
@@ -239,16 +214,16 @@ namespace Unity.Cloud.Collaborate
 
             int margin = 2;
 
-            mLayout.LeftIconX = mButtonStyle.margin.left + mButtonStyle.padding.left;
-            mLayout.TextX = LeftIcon != null ? mLayout.LeftIconX + Layout.LEFT_ICON_SIZE + margin : mLayout.LeftIconX;
-            mLayout.RightIconX = mLayout.TextX + mLayout.TextSize.x + margin;
-            mLayout.DropDownIconX =
-                RightIcon != null ? mLayout.RightIconX + Layout.RIGHT_ICON_SIZE + margin : mLayout.RightIconX;
+            mLayout.IconX = mButtonStyle.margin.left + mButtonStyle.padding.left;
+            mLayout.TextX = Icon != null ? mLayout.IconX + Layout.ICON_SIZE + margin : mLayout.IconX;
+            mLayout.DropDownIconX = mLayout.TextX + mLayout.TextSize.x + margin;
             mLayout.TotalWidth =
                 mLayout.DropDownIconX +
                 (mDropDownIcon != null ? Layout.DROPDOWN_ICON_SIZE : 0) +
                 mButtonStyle.margin.right +
                 mButtonStyle.margin.right;
+
+            mIsLayoutValid = true;
         }
 
         static string Truncate(string text, int maxTextLength)
@@ -270,8 +245,7 @@ namespace Unity.Cloud.Collaborate
         bool mIsVisible;
         bool mIsLayoutValid;
 
-        Texture mLeftIcon;
-        Texture mRightIcon;
+        Texture mIcon;
         Texture mDropDownIcon;
 
         int mMaxTextLenght = 35;
@@ -285,13 +259,11 @@ namespace Unity.Cloud.Collaborate
         struct Layout
         {
             internal const int DROPDOWN_ICON_SIZE = 12;
-            internal const int LEFT_ICON_SIZE = 16;
-            internal const int RIGHT_ICON_SIZE = 16;
+            internal const int ICON_SIZE = 16;
 
-            internal float LeftIconX;
+            internal float IconX;
             internal Vector2 TextSize;
             internal float TextX;
-            internal float RightIconX;
             internal float DropDownIconX;
             internal float TotalWidth;
         }

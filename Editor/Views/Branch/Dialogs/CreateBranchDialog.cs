@@ -1,8 +1,8 @@
 using UnityEditor;
 using UnityEngine;
 
-using Codice.CM.Common;
 using Codice.Client.Common;
+using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.QueryViews.Branches;
@@ -13,6 +13,10 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
 {
     class CreateBranchDialog : PlasticDialog
     {
+        internal BranchInfo SelectedBranchBase { get { return mSelectedBaseBranch; } }
+        internal string NewBranchName { get { return mNewBranchName; } set { mNewBranchName = value; } }
+        internal bool AllowToChangeBaseBranch { get { return mAllowToChangeBaseBranch; } }
+
         protected override Rect DefaultRect
         {
             get
@@ -36,6 +40,30 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
             DoButtonsArea();
         }
 
+        internal static BranchCreationData CreateBranchFromMainOrCurrentBranch(
+            EditorWindow parentWindow,
+            RepositorySpec repSpec,
+            BranchInfo mainBranch,
+            BranchInfo currentBranch,
+            string proposedBranchName)
+        {
+            string changesetStr = PlasticLocalization.Name.LastChangeset.GetString();
+
+            string explanation = BranchCreationUserInfo.GetFromObjectString(
+                repSpec, currentBranch, changesetStr);
+
+            return CreateBranch(
+                parentWindow,
+                repSpec,
+                mainBranch,
+                mainBranch,
+                currentBranch,
+                -1,
+                explanation,
+                true,
+                proposedBranchName);
+        }
+
         internal static BranchCreationData CreateBranchFromLastParentBranchChangeset(
             EditorWindow parentWindow,
             RepositorySpec repSpec,
@@ -51,8 +79,11 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
                 parentWindow,
                 repSpec,
                 parentBranchInfo,
+                null,
+                null,
                 -1,
                 explanation,
+                false,
                 proposedBranchName);
         }
 
@@ -74,8 +105,11 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
                 parentWindow,
                 repSpec,
                 parentBranchInfo,
+                null,
+                null,
                 changesetInfo.ChangesetId,
                 explanation,
+                false,
                 proposedBranchName);
         }
 
@@ -94,24 +128,47 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
                 parentWindow,
                 repSpec,
                 parentBranchInfo,
+                null,
+                null,
                 labelInfo.Changeset,
                 explanation,
+                false,
                 null);
+        }
+
+        internal void CheckMainBranchRadioToggle()
+        {
+            mIsMainBranchSelected = true;
+            mIsCurrentBranchSelected = false;
+            mSelectedBaseBranch = mMainBranch;
+        }
+
+        internal void CheckCurrentBranchRadioToggle()
+        {
+            mIsMainBranchSelected = false;
+            mIsCurrentBranchSelected = true;
+            mSelectedBaseBranch = mCurrentBranch;
         }
 
         static BranchCreationData CreateBranch(
             EditorWindow parentWindow,
             RepositorySpec repSpec,
-            BranchInfo parentBranchInfo,
+            BranchInfo baseBranch,
+            BranchInfo mainBranch,
+            BranchInfo currentBranch,
             long changesetId,
             string explanation,
+            bool allowToChangeBaseBranch,
             string proposedBranchName)
         {
             CreateBranchDialog dialog = Create(
                 repSpec,
-                parentBranchInfo,
+                baseBranch,
+                mainBranch,
+                currentBranch,
                 changesetId,
                 explanation,
+                allowToChangeBaseBranch,
                 proposedBranchName);
             ResponseType dialogueResult = dialog.RunModal(parentWindow);
 
@@ -124,12 +181,72 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
         {
             GUILayout.BeginVertical();
 
-            Title(PlasticLocalization.Name.CreateChildBranchTitle.GetString());
+            string title = mAllowToChangeBaseBranch ?
+                PlasticLocalization.Name.CreateChildBranchBasedOnTitle.GetString() :
+                PlasticLocalization.Name.CreateChildBranchTitle.GetString();
+
+            Title(title);
 
             GUILayout.Space(5);
 
+            DoTopArea();
+
+            GUILayout.EndVertical();
+        }
+
+        void DoTopArea()
+        {
+            if (mAllowToChangeBaseBranch)
+            {
+                DoBranchSelectionArea();
+                return;
+            }
+
             Paragraph(string.Format("{0} {1}",
                 PlasticLocalization.Name.CreateChildBranchExplanation.GetString(), mExplanation));
+        }
+
+        void DoBranchSelectionArea()
+        {
+            int descriptionLabelLeftMargin = 25;
+
+            GUILayout.BeginVertical();
+
+            if (GUILayout.Toggle(
+                mIsMainBranchSelected,
+                GetBranchName.FromFullBranchName(mMainBranch.Name),
+                UnityStyles.Dialog.BoldRadioToggle))
+            {
+                mIsMainBranchSelected = true;
+                mIsCurrentBranchSelected = false;
+                mSelectedBaseBranch = mMainBranch;
+            }
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(descriptionLabelLeftMargin);
+            GUILayout.Label(
+                PlasticLocalization.Name.CreateChildBranchBasedOnMainExplanation.GetString(),
+                EditorStyles.miniLabel);
+            GUILayout.EndHorizontal();
+
+            if (GUILayout.Toggle(
+                    mIsCurrentBranchSelected,
+                    GetBranchName.FromFullBranchName(mCurrentBranch.Name),
+                    UnityStyles.Dialog.BoldRadioToggle))
+            {
+                mIsMainBranchSelected = false;
+                mIsCurrentBranchSelected = true;
+                mSelectedBaseBranch = mCurrentBranch;
+            }
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(descriptionLabelLeftMargin);
+            GUILayout.Label(
+                PlasticLocalization.Name.CreateChildBranchBasedOnCurrentBranchExplanation.GetString(),
+                EditorStyles.miniLabel);
+            GUILayout.EndHorizontal();
+
+            GUILayout.Space(15);
 
             GUILayout.EndVertical();
         }
@@ -222,20 +339,34 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
                 BuildCreationData(), this, mProgressControls);
         }
 
-        static CreateBranchDialog Create(
+        internal static CreateBranchDialog Create(
             RepositorySpec repSpec,
-            BranchInfo parentBranchInfo,
+            BranchInfo baseBranch,
+            BranchInfo mainBranch,
+            BranchInfo currentBranch,
             long changesetId,
             string explanation,
+            bool allowToChangeBaseBranch,
             string proposedBranchName)
         {
+            CreateBranchDialogAssertions.AssertValidBaseBranchChangeArguments(
+                mainBranch,
+                currentBranch,
+                allowToChangeBaseBranch);
+
+            if (allowToChangeBaseBranch && currentBranch.IsMainBranch())
+                allowToChangeBaseBranch = false;
+
             var instance = CreateInstance<CreateBranchDialog>();
             instance.IsResizable = false;
             instance.mEnterKeyAction = instance.CreateButtonAction;
             instance.AddControlConsumingEnterKey(COMMENT_TEXTAREA_CONTROL_NAME);
             instance.mEscapeKeyAction = instance.CloseButtonAction;
             instance.mRepositorySpec = repSpec;
-            instance.mParentBranchInfo = parentBranchInfo;
+            instance.mSelectedBaseBranch = baseBranch;
+            instance.mMainBranch = mainBranch;
+            instance.mCurrentBranch = currentBranch;
+            instance.mAllowToChangeBaseBranch = allowToChangeBaseBranch;
             instance.mNewBranchName = proposedBranchName == null ?
                 string.Empty : proposedBranchName;
             instance.mComment = "";
@@ -250,7 +381,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
         {
             return new BranchCreationData(
                 mRepositorySpec,
-                mParentBranchInfo,
+                mSelectedBaseBranch,
                 mChangesetId,
                 mNewBranchName,
                 mComment,
@@ -261,7 +392,10 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
         ProgressControlsForDialogs mProgressControls;
 
         RepositorySpec mRepositorySpec;
-        BranchInfo mParentBranchInfo;
+        BranchInfo mSelectedBaseBranch;
+        BranchInfo mMainBranch;
+        BranchInfo mCurrentBranch;
+        bool mAllowToChangeBaseBranch;
         long mChangesetId;
 
         string mNewBranchName;
@@ -270,6 +404,8 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
         string mExplanation;
 
         bool mWasNameFieldFocused;
+        bool mIsMainBranchSelected = true;
+        bool mIsCurrentBranchSelected;
         const string NAME_FIELD_CONTROL_NAME = "CreateBranchNameField";
         const string COMMENT_TEXTAREA_CONTROL_NAME = "CreateBranchCommentTextArea";
     }

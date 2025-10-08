@@ -1,3 +1,4 @@
+using System.IO;
 using UnityEditor;
 
 using Codice.Client.Common;
@@ -21,7 +22,8 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DragAndDrop
         {
             GuiMessage.GuiMessageResponseButton response = DialogWithCheckBox.Show(
                 PlasticLocalization.Name.AskUserForExistingFileTitle.GetString(),
-                PlasticLocalization.Name.AskUserForExistingFileMessage.GetString(filePath),
+                PlasticLocalization.Name.AskUserForExistingFileMessage.GetString(
+                    Path.GetFullPath(filePath)),
                 PlasticLocalization.Name.ReplaceButton.GetString(),
                 PlasticLocalization.Name.KeepBothButton.GetString(),
                 PlasticLocalization.Name.SkipButton.GetString(),

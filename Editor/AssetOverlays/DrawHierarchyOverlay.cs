@@ -1,6 +1,7 @@
 using System;
 
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,6 +9,8 @@ using Codice.Client.Common.Threading;
 using Codice.LogWrapper;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
+
+using Object = UnityEngine.Object;
 
 namespace Unity.PlasticSCM.Editor.AssetsOverlays
 {
@@ -92,6 +95,12 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
                 return subSceneAssetPath;
             }
 
+            string prefabAssetPath;
+            if (TryGetAssetPathForPrefab(instanceID, out prefabAssetPath))
+            {
+                return prefabAssetPath;
+            }
+
             return null;
         }
 
@@ -99,7 +108,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
         {
             assetPath = null;
 
-            if (EditorUtility.InstanceIDToObject(instanceID) != null)
+            if (FindUnityObject.ForInstanceID(instanceID) != null)
                 return false;
 
             assetPath = FindScenePathForHandle(instanceID);
@@ -132,6 +141,26 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             {
                 assetPath = subSceneAssetPath;
             }
+
+            return assetPath != null;
+        }
+
+        static bool TryGetAssetPathForPrefab(int instanceID, out string assetPath)
+        {
+            assetPath = null;
+
+            PrefabStage prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+
+            if (prefabStage == null)
+                return false;
+
+            Object hierarchyObject = FindUnityObject.ForInstanceID(instanceID);
+
+            if (hierarchyObject == null)
+                return false;
+
+            if (prefabStage.prefabContentsRoot == hierarchyObject)
+                assetPath = prefabStage.assetPath;
 
             return assetPath != null;
         }

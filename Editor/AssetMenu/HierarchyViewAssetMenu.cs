@@ -43,6 +43,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
             SceneHierarchyHooks.addItemsToSceneHeaderContextMenu += OnSceneHeaderContextMenu;
             SceneHierarchyHooks.addItemsToSubSceneHeaderContextMenu += OnSubSceneHeaderContextMenu;
+            SceneHierarchyHooks.addItemsToGameObjectContextMenu += OnGameObjectContextMenu;
         }
 
         internal static void Disable()
@@ -60,6 +61,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
             SceneHierarchyHooks.addItemsToSceneHeaderContextMenu -= OnSceneHeaderContextMenu;
             SceneHierarchyHooks.addItemsToSubSceneHeaderContextMenu -= OnSubSceneHeaderContextMenu;
+            SceneHierarchyHooks.addItemsToGameObjectContextMenu -= OnGameObjectContextMenu;
         }
 
         internal static void BuildOperations(
@@ -115,6 +117,29 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         static void OnSubSceneHeaderContextMenu(GenericMenu menu, SceneHierarchyHooks.SubSceneInfo subSceneInfo)
         {
             LoadMenuForAssetPath(menu, subSceneInfo.scene.path);
+        }
+
+        static void OnGameObjectContextMenu(GenericMenu menu, GameObject gameObject)
+        {
+            string prefabAssetPath;
+            if (TryGetAssetPathForPrefab(gameObject, out prefabAssetPath))
+            {
+                LoadMenuForAssetPath(menu, prefabAssetPath);
+            }
+        }
+
+        static bool TryGetAssetPathForPrefab(GameObject gameObject, out string assetPath)
+        {
+            assetPath = null;
+
+            PrefabStage prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+
+            if (prefabStage != null && prefabStage.prefabContentsRoot == gameObject)
+            {
+                assetPath = prefabStage.assetPath;
+            }
+
+            return assetPath != null;
         }
 
         static void LoadMenuForAssetPath(GenericMenu menu, string assetPath)

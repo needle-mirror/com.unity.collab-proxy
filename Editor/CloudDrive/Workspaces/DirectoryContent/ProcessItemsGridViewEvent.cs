@@ -15,6 +15,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
 
         internal static bool IfNeeded(
             Event e,
+            DirectoryContentPanelMenu menu,
             IItemsGridView itemsGridView,
             IDragAndDrop dragAndDrop,
             EditorWindow parentWindow,
@@ -26,6 +27,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             float scrollPosition,
             int columnsCount,
             int itemsCount,
+            bool hasFocus,
             bool isScrollbarVisible,
             bool isDragAvailable)
         {
@@ -34,12 +36,13 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
                 return true;
 
             if (ProcessMouseClickIfNeeded(
-                    e, itemsGridView, doubleClickAction, selectedItemsIndexes, rect,
-                    itemSize, scrollPosition, columnsCount, itemsCount, isScrollbarVisible))
+                    e, menu, itemsGridView, doubleClickAction, selectedItemsIndexes, rect, itemSize,
+                    scrollPosition, columnsCount, itemsCount, isScrollbarVisible))
                 return true;
 
-            if (ProcessKeyDownIfNeeded(
-                    e, itemsGridView, doubleClickAction, navigateBackAction,
+            if (hasFocus &&
+                ProcessKeyDownIfNeeded(
+                    e, menu, itemsGridView, navigateBackAction,
                     selectedItemsIndexes, columnsCount, itemsCount))
                 return true;
 
@@ -67,6 +70,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
 
         static bool ProcessMouseClickIfNeeded(
             Event e,
+            DirectoryContentPanelMenu menu,
             IItemsGridView itemsGridView,
             Action doubleClickAction,
             List<int> selectedItemsIndexes,
@@ -92,9 +96,11 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             int itemIndexToSelect = ItemsPosition.GetItemIndexFromMousePosition(
                 mousePosition, itemSize, scrollPosition, columnsCount, itemsCount);
 
-            bool shouldUpdateSelectionOnMouseUp =
-                selectedItemsIndexes.Contains(itemIndexToSelect) &&
-                !Keyboard.HasControlOrCommandModifier(e);
+            bool shouldUpdateSelection = ShouldUpdateSelection(
+                selectedItemsIndexes.Contains(itemIndexToSelect),
+                Keyboard.HasControlOrCommandModifier(e),
+                Mouse.IsRightMouseButtonPressed(e),
+                e.type == EventType.MouseDown);
 
             if (ProcessMouseDownIfNeeded(
                     e,
@@ -102,15 +108,16 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
                     doubleClickAction,
                     selectedItemsIndexes,
                     itemIndexToSelect,
-                    !shouldUpdateSelectionOnMouseUp))
+                    shouldUpdateSelection))
                 return true;
 
             if (ProcessMouseUpIfNeeded(
                     e,
+                    menu,
                     itemsGridView,
                     selectedItemsIndexes,
                     itemIndexToSelect,
-                    shouldUpdateSelectionOnMouseUp))
+                    shouldUpdateSelection))
                 return true;
 
             return false;
@@ -149,6 +156,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
 
         static bool ProcessMouseUpIfNeeded(
             Event e,
+            DirectoryContentPanelMenu menu,
             IItemsGridView itemsGridView,
             List<int> selectedItemsIndexes,
             int itemIndexToSelect,
@@ -159,6 +167,12 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
 
             if (Mouse.IsLeftMouseButtonDoubleClicked(e))
                 return false;
+
+            if (Mouse.IsRightMouseButtonPressed(e))
+            {
+                menu.Popup();
+                return true;
+            }
 
             if (!shouldUpdateSelection)
                 return true;
@@ -173,8 +187,8 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
 
         static bool ProcessKeyDownIfNeeded(
             Event e,
+            DirectoryContentPanelMenu menu,
             IItemsGridView itemsGridView,
-            Action doubleClickAction,
             Action navigateBackAction,
             List<int> selectedItemsIndexes,
             int columnsCount,
@@ -183,17 +197,15 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             if (e.type != EventType.KeyDown)
                 return false;
 
+            if (menu.ProcessKeyActionIfNeeded(e))
+                return true;
+
             bool shouldExtendSelection =
                 Keyboard.HasControlOrCommandModifier(e) ||
                 Keyboard.HasShiftModifier(e);
 
             switch (e.keyCode)
             {
-                case KeyCode.Return:
-                case KeyCode.KeypadEnter:
-                    doubleClickAction();
-                    break;
-
                 case KeyCode.Backspace:
                     navigateBackAction();
                     break;
@@ -348,6 +360,21 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             }
 
             itemsGridView.SetSelection(indexesToSelect);
+        }
+
+        static bool ShouldUpdateSelection(
+            bool clickedOnSelection,
+            bool hasControlPressed,
+            bool isRightClick,
+            bool isMouseDown)
+        {
+            if (isRightClick)
+                return !clickedOnSelection && !hasControlPressed && isMouseDown;
+
+            if (clickedOnSelection && !hasControlPressed)
+                return !isMouseDown;
+
+            return isMouseDown;
         }
 
         static int GetItemIndexToSelectForOffset(

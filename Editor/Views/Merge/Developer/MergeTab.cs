@@ -256,7 +256,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 NewChangesInWk.Build(mWkInfo, new BuildWorkspacekIsRelevantNewChange()),
                 mProgressControls,
                 null,
-                null);
+                new ApplyShelveReport(parentWindow));
         }
 
         internal void OnEnable()

@@ -621,6 +621,9 @@ Can't get client user and machine context.
 == GetRevinfo ==
 Could not get revision information for {0}.
 
+== GenericException ==
+{0}
+
 == GenericInvalidCredentials ==
 Invalid user credentials.
 

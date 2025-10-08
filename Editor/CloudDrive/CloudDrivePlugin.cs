@@ -1,6 +1,7 @@
 using Codice.Client.Common;
 using Codice.LogWrapper;
 using PlasticGui;
+using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.Configuration;
 using Unity.PlasticSCM.Editor.UI;
 
@@ -25,6 +26,8 @@ namespace Unity.PlasticSCM.Editor.CloudDrive
                 return;
 
             CloudDriveMenuItem.AddMenuItem();
+
+            ProjectViewCloudDriveAssetMenu.AddMenuItem();
         }
 
         internal bool IsEnabled()

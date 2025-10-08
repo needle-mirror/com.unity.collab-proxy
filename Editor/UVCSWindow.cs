@@ -88,12 +88,12 @@ namespace Unity.PlasticSCM.Editor
             return mViewSwitcher != null ? mViewSwitcher.PendingChangesTab : null;
         }
 
-        internal void UpdateWindowIcon(Texture windowIcon)
+        internal void UpdateWindowIcon(Texture2D windowIcon)
         {
             if (titleContent.image == windowIcon)
                 return;
 
-            titleContent.image = windowIcon;
+            titleContent.image = Images.ResizeTextureForWindowTitleContent(windowIcon);
             Repaint();
         }
 
@@ -265,7 +265,7 @@ namespace Unity.PlasticSCM.Editor
 
                 UnityStyles.Initialize(Repaint);
 
-                ProjectViewAssetMenu.BuildOperations(
+                ProjectViewUVCSAssetMenu.BuildOperations(
                     mWkInfo,
                     PlasticGui.Plastic.API,
                     mViewHost,
@@ -442,6 +442,7 @@ namespace Unity.PlasticSCM.Editor
 
             mUVCSPlugin = UVCSPlugin.Instance;
 
+            titleContent = EditorGUIUtility.TrTextContent(UnityConstants.UVCS_WINDOW_TITLE);
             UpdateWindowIcon(mUVCSPlugin.GetPluginStatusIcon());
 
             if (!mUVCSPlugin.ConnectionMonitor.IsConnected)
@@ -543,9 +544,9 @@ namespace Unity.PlasticSCM.Editor
 
                 WelcomeView welcomeView = GetWelcomeView();
 
-                if (clientNeedsConfiguration && welcomeView.autoLoginState == AutoLogin.State.Off)
+                if (clientNeedsConfiguration && ((AutoLogin.IWelcomeView)welcomeView).AutoLoginState == AutoLogin.State.Off)
                 {
-                    welcomeView.autoLoginState = AutoLogin.State.Started;
+                    ((AutoLogin.IWelcomeView)welcomeView).AutoLoginState = AutoLogin.State.Started;
                 }
 
                 if (NeedsToDisplayWelcomeView(clientNeedsConfiguration, mWkInfo))

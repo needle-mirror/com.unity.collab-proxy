@@ -244,7 +244,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                 {
                     string serverName = ResolveServer.FromUserInput(server, CmConnection.Get().UnityOrgResolver);
 
-                    serverProjects = GetProjectNames.FromOrganization(mPlasticApi, server);
+                    serverProjects = GetProjectNames.FromOrganization(mPlasticApi, serverName);
                 },
                 /*afterOperationDelegate*/ delegate
                 {

@@ -244,29 +244,42 @@ namespace Unity.PlasticSCM.Editor.Inspector
             AssetsOverlays.AssetStatus assetStatus,
             LockStatusData lockStatusData)
         {
-            Texture overlayIcon = DrawAssetOverlayIcon.GetOverlayIcon(assetStatus);
-
-            if (overlayIcon == null)
-                return;
-
             string statusText = AssetOverlay.GetStatusString(assetStatus);
             string tooltipText = AssetOverlay.GetTooltipText(assetStatus, lockStatusData);
 
+            Texture statusIcon = DrawAssetOverlayIcon.GetOverlayIcon(assetStatus);
+
             Rect selectionRect = GUILayoutUtility.GetRect(
-                new GUIContent(statusText + EXTRA_SPACE, overlayIcon),
+                new GUIContent(statusText + EXTRA_SPACE, statusIcon),
                 GUIStyle.none);
 
             selectionRect.height = UnityConstants.OVERLAY_STATUS_ICON_SIZE;
 
-            Rect overlayRect = OverlayRect.GetCenteredRect(selectionRect);
+            if (statusIcon == null)
+            {
+                int labelMarginWithoutIcon = 5;
+                selectionRect.x += labelMarginWithoutIcon;
+                GUI.Label(
+                    selectionRect,
+                    new GUIContent(statusText, tooltipText));
+                return;
+            }
+
+            Rect statusIconRect = new Rect(
+                selectionRect.x + 3f,
+                selectionRect.y - 1f,
+                UnityConstants.INSPECTOR_STATUS_ICON_SIZE,
+                UnityConstants.INSPECTOR_STATUS_ICON_SIZE);
 
             GUI.DrawTexture(
-                overlayRect,
-                overlayIcon,
+                statusIconRect,
+                statusIcon,
                 ScaleMode.ScaleToFit);
 
-            selectionRect.x += UnityConstants.OVERLAY_STATUS_ICON_SIZE;
-            selectionRect.width -= UnityConstants.OVERLAY_STATUS_ICON_SIZE;
+            int margin = 2;
+
+            selectionRect.x += UnityConstants.INSPECTOR_STATUS_ICON_SIZE + margin;
+            selectionRect.width -= UnityConstants.INSPECTOR_STATUS_ICON_SIZE;
 
             GUI.Label(
                 selectionRect,

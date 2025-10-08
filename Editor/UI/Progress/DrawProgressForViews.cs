@@ -20,6 +20,17 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
         internal static void ForIndeterminateProgressBar(
             ProgressControlsForViews.Data data)
         {
+            ForProgressBar(data, false);
+        }
+
+        internal static void ForDeterminateProgressBar(
+            ProgressControlsForViews.Data data)
+        {
+            ForProgressBar(data, true);
+        }
+
+        static void ForProgressBar(ProgressControlsForViews.Data data, bool showPercentage)
+        {
             EditorGUILayout.BeginHorizontal();
 
             GUILayout.Space(10);
@@ -28,7 +39,7 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
 
             GUILayout.Space(3);
 
-            DoProgressBarLabel(data.ProgressMessage);
+            DoProgressBarLabel(data, showPercentage);
 
             GUILayout.FlexibleSpace();
 
@@ -53,7 +64,7 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
 
         static void DoProgressBar(float progressPercent)
         {
-            EditorGUILayout.BeginVertical();
+            EditorGUILayout.BeginVertical(GUILayout.Height(22));
 
             GUILayout.FlexibleSpace();
 
@@ -68,7 +79,7 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
 
         static void DoProgressSpinner(float progressPercent)
         {
-            EditorGUILayout.BeginVertical();
+            EditorGUILayout.BeginVertical(GUILayout.Height(22));
 
             GUILayout.FlexibleSpace();
 
@@ -79,13 +90,17 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
             EditorGUILayout.EndVertical();
         }
 
-        static void DoProgressBarLabel(string progressMessage)
+        static void DoProgressBarLabel(ProgressControlsForViews.Data data, bool showPercentage)
         {
-            EditorGUILayout.BeginVertical();
+            EditorGUILayout.BeginVertical(GUILayout.Height(22));
 
             GUILayout.FlexibleSpace();
 
-            GUILayout.Label(progressMessage, UnityStyles.ProgressLabel);
+            GUILayout.Label(
+                showPercentage ?
+                    string.Format("{0} ({1}%)", data.ProgressMessage, (int)(data.ProgressPercent * 100)) :
+                    data.ProgressMessage,
+                UnityStyles.ProgressLabel);
 
             GUILayout.FlexibleSpace();
 
@@ -94,7 +109,7 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
 
         static void DoProgressSpinnerLabel(string progressMessage)
         {
-            EditorGUILayout.BeginVertical();
+            EditorGUILayout.BeginVertical(GUILayout.Height(EditorGUIUtility.singleLineHeight));
 
             GUILayout.FlexibleSpace();
 

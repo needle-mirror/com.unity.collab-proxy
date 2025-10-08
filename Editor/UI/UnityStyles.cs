@@ -320,6 +320,15 @@ namespace Unity.PlasticSCM.Editor.UI
                 return style;
             });
 
+            internal static readonly LazyStyle BoldLabelWithMargin = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(TreeView.DefaultStyles.boldLabel);
+                style.fontSize = UnityConstants.LABEL_FONT_SIZE;
+                style.alignment = TextAnchor.MiddleLeft;
+                style.contentOffset = new Vector2(5, 0);
+                return style;
+            });
+
             internal static readonly LazyStyle LabelRightAligned = new LazyStyle(() =>
             {
                 var style = new GUIStyle(TreeView.DefaultStyles.label);
@@ -1012,6 +1021,12 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal static class CloudDrive
         {
+            internal static readonly LazyStyle Title = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.label);
+                style.fontSize = 25;
+                return style;
+            });
 
             internal static readonly LazyStyle ItemsListLabel = new LazyStyle(() =>
             {

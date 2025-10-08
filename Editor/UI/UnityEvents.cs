@@ -40,6 +40,14 @@ namespace Unity.PlasticSCM.Editor.UI
                    IsKeyPressed(e, KeyCode.KeypadEnter);
         }
 
+        internal static bool IsDeleteKeyPressed(Event e)
+        {
+            if (e == null)
+                return false;
+
+            return IsKeyPressed(e, KeyCode.Delete);
+        }
+
         internal static bool IsKeyPressed(Event e, KeyCode keyCode)
         {
             if (e == null)
@@ -101,7 +109,7 @@ namespace Unity.PlasticSCM.Editor.UI
             if (!e.isMouse)
                 return false;
 
-            return e.type == EventType.MouseDown
+            return (e.type == EventType.MouseDown || e.type == EventType.MouseUp)
                 && e.button == UnityConstants.LEFT_MOUSE_BUTTON;
         }
 
@@ -113,7 +121,7 @@ namespace Unity.PlasticSCM.Editor.UI
             if (!e.isMouse)
                 return false;
 
-            return e.type == EventType.MouseDown
+            return (e.type == EventType.MouseDown || e.type == EventType.MouseUp)
                 && e.button == UnityConstants.RIGHT_MOUSE_BUTTON;
         }
     }

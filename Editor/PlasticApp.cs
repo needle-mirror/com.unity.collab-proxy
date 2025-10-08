@@ -69,6 +69,7 @@ namespace Unity.PlasticSCM.Editor
 
             RegisterExceptionHandlers();
             RegisterApplicationFocusHandlers();
+            RegisterPlayModeHandler();
             RegisterBeforeAssemblyReloadHandler();
             RegisterEditorWantsToQuit();
             RegisterEditorQuitting();
@@ -132,6 +133,7 @@ namespace Unity.PlasticSCM.Editor
             UnRegisterDomainUnloadHandler();
             UnRegisterExceptionHandlers();
             UnRegisterApplicationFocusHandlers();
+            UnRegisterPlayModeHandler();
             UnRegisterBeforeAssemblyReloadHandler();
             UnRegisterEditorWantsToQuit();
             UnRegisterEditorQuitting();
@@ -175,6 +177,11 @@ namespace Unity.PlasticSCM.Editor
             EditorWindowFocus.OnApplicationDeactivated += OnApplicationDeactivated;
         }
 
+        static void RegisterPlayModeHandler()
+        {
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+        }
+
         static void RegisterBeforeAssemblyReloadHandler()
         {
             AssemblyReloadEvents.beforeAssemblyReload += BeforeAssemblyReload;
@@ -207,6 +214,11 @@ namespace Unity.PlasticSCM.Editor
             EditorWindowFocus.OnApplicationActivated -= OnApplicationActivated;
 
             EditorWindowFocus.OnApplicationDeactivated -= OnApplicationDeactivated;
+        }
+
+        static void UnRegisterPlayModeHandler()
+        {
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
         }
 
         static void UnRegisterBeforeAssemblyReloadHandler()
@@ -281,6 +293,14 @@ namespace Unity.PlasticSCM.Editor
 
             if (UVCSPlugin.Instance.IsEnabled())
                 UVCSPlugin.Instance.OnApplicationDeactivated();
+        }
+
+        static void OnPlayModeStateChanged(PlayModeStateChange change)
+        {
+            mLog.Debug("OnPlayModeStateChanged: " + change);
+
+            if (UVCSPlugin.Instance.IsEnabled())
+                UVCSPlugin.Instance.OnPlayModeStateChanged(change);
         }
 
         static void BeforeAssemblyReload()

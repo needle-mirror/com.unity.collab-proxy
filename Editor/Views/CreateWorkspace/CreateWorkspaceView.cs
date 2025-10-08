@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
 
 using Codice.Client.Common;
@@ -9,7 +10,6 @@ using Codice.Client.Common.Threading;
 using Codice.Client.Common.WebApi;
 using Codice.CM.Common;
 using PlasticGui;
-using PlasticGui.Configuration.CloudEdition;
 using PlasticGui.WorkspaceWindow.Home.Repositories;
 using PlasticGui.WorkspaceWindow.Home.Workspaces;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
@@ -93,7 +93,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             waiter.Execute(
                 /*threadOperationDelegate*/ delegate
                 {
-                    mDefaultServer = GetDefaultServer.ToCreateWorkspace(plasticWebRestApi);
+                    mDefaultServer = GetDefaultServer.FromConfig(plasticWebRestApi);
 
                     allWorkspaces = plasticApi.GetAllWorkspacesArray();
                     allRepositories = plasticApi.GetAllRepositories(mDefaultServer, true);
@@ -300,36 +300,6 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
 
             progressControls.ShowError(
                 ExceptionsHandler.GetCorrectExceptionMessage(ex));
-        }
-
-        class GetDefaultServer
-        {
-            internal static string ToCreateWorkspace(IPlasticWebRestApi plasticWebRestApi)
-            {
-                string clientConfServer = PlasticGui.Plastic.ConfigAPI.GetClientConfServer();
-
-                if (!EditionToken.IsCloudEdition())
-                    return clientConfServer;
-
-                string cloudServer = PlasticGuiConfig.Get().
-                    Configuration.DefaultCloudServer;
-
-                if (!string.IsNullOrEmpty(cloudServer))
-                    return cloudServer;
-
-                CloudEditionCreds.Data config =
-                    CloudEditionCreds.GetFromClientConf();
-
-                cloudServer = GetFirstCloudServer.
-                    GetCloudServer(plasticWebRestApi, config.Email, config.Password);
-
-                if (string.IsNullOrEmpty(cloudServer))
-                    return clientConfServer;
-
-                SaveCloudServer.ToPlasticGuiConfig(cloudServer);
-
-                return cloudServer;
-            }
         }
 
         WorkspaceCreationData mWkCreationData;

@@ -2,7 +2,26 @@
 
 All notable changes to this package will be documented in this file.
 
-## [2.9.3] - 2025-09-01
+## [2.10.0] - 2025-10-08
+
+### Added
+
+- Added a new Editor Toolbar Button for Unity Version Control that lets you view project status, track changes, and perform key actions with one click.
+- Added Unity Version Control status icons to prefab assets in the hierarchy view in "Edit Mode".
+- Added Unity Version Control actions to the prefab and prefab variant header context menus.
+
+### Changed
+
+- Improved overlay icons to align with the Unity Editor design. Added icons for "Controlled" and "Changed" items, removed the icon for "Private" items, and added a "Contains Changes" overlay for directories containing changes.
+
+### Fixed
+
+- Fixed applying shelves when some files cannot be checked out due to exclusive checkout lock rules. These files are now applied as local changes instead of failing the whole operation. A shelve report popup is displayed to the user.
+- Fixed the missing "Hide" contextual menu on the Unity Version Control button in the Unity 6.3 Toolbar.
+- Fixed incorrect tab name showing as "Unity.PlasticSCM.Editor.x" with no icon when upgrading a project to Unity 6.x.
+- Fixed debug log "Package com.unity.collab-proxy version: 0.0.0" to output the actual package version.
+
+## [2.9.3] - 2025-08-29
 
 ### Fixed
 

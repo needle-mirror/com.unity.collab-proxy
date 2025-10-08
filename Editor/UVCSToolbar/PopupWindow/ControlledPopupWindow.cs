@@ -136,6 +136,15 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow
                 return;
             }
 
+#if UNITY_EDITOR_WIN && UNITY_6000_0_OR_NEWER && !UNITY_6000_3_OR_NEWER
+            // Workaround for Unity 6.0-6.2 on Windows: close popup if mouse goes above toolbar
+            if (ToolbarMouseBoundary.IsAboveToolbar(rect, Event.current.mousePosition))
+            {
+                editorWindow.Close();
+                return;
+            }
+#endif
+
             EditorGUILayout.BeginVertical();
 
             GUILayout.Space(1);
@@ -144,7 +153,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow
 
             if (PopupWindowDrawing.DrawMenuItem(
                     PlasticLocalization.Name.CheckinPendingChanges.GetString(),
-                    null,
+                    Images.GetPendingChangesIcon(),
                     ToolbarOperationsShortcut.GetPendingChangesShortcutString(),
                     out checkinRect))
             {
@@ -156,7 +165,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow
 
             if (PopupWindowDrawing.DrawMenuItem(
                     PlasticLocalization.Name.ViewIncomingChanges.GetString(),
-                    Images.GetIconBranchIncomingChanges(),
+                    Images.GetOutOfSyncIcon(),
                     ToolbarOperationsShortcut.GetIncomingChangesShortcutString(),
                     out incomingChangesRect))
             {
@@ -232,6 +241,12 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow
             EditorGUILayout.EndVertical();
 
             EditorGUI.FocusTextInControl("SearchField");
+
+#if UNITY_EDITOR_WIN && UNITY_6000_0_OR_NEWER && !UNITY_6000_3_OR_NEWER
+            // Request continuous repaint to track mouse position even outside popup rect
+            if (editorWindow != null)
+                editorWindow.Repaint();
+#endif
         }
 
         void DrawBranchesModel(BranchesListModel model)

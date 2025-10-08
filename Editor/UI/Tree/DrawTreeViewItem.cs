@@ -180,9 +180,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 
             if (overlayIcon != null)
             {
-                Rect overlayIconRect = OverlayRect.GetOverlayRect(
-                    iconRect,
-                    OVERLAY_ICON_OFFSET);
+                Rect overlayIconRect = GetOverlayRect.ForPendingChanges(iconRect);
 
                 GUI.DrawTexture(
                     overlayIconRect, overlayIcon,
@@ -298,7 +296,5 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             normalLabel.Draw(
                 rect, label, false, true, isSelected, isFocused);
         }
-
-        const float OVERLAY_ICON_OFFSET = 16f;
     }
 }

@@ -6,14 +6,12 @@ using UnityEngine.UIElements;
 
 using Codice.Client.Common;
 using Codice.Client.Common.Authentication;
-using Codice.Client.Common.Connection;
 using Codice.Client.Common.WebApi;
 using Codice.Client.Common.WebApi.Responses;
 using Codice.CM.Common;
 using Codice.LogWrapper;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI.Progress;
-using Unity.PlasticSCM.Editor.Views.Welcome;
 
 namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 {
@@ -29,7 +27,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
     {
         internal static void ShowWindow(
             IPlasticWebRestApi restApi,
-            WelcomeView welcomeView,
+            AutoLogin.IWelcomeView welcomeView,
             bool autoLogin = false)
         {
             sRestApi = restApi;
@@ -55,7 +53,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             if (sAutoLogin)
             {
                 mLog.Debug("CancelJoinOrganization");
-                GetWindow<UVCSWindow>().GetWelcomeView().autoLoginState = AutoLogin.State.Started;
+                mWelcomeView.AutoLoginState = AutoLogin.State.Started;
             }
         }
 
@@ -201,7 +199,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         OrganizationPanel mOrganizationPanel;
         SignInPanel mSignInPanel;
-        WelcomeView mWelcomeView;
+        AutoLogin.IWelcomeView mWelcomeView;
 
         static IPlasticWebRestApi sRestApi;
         static bool sAutoLogin = false;

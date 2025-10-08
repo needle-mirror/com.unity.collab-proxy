@@ -9,6 +9,7 @@ using Codice.CM.Common;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.Toolbar;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.Configuration;
 
 namespace Unity.PlasticSCM.Editor.Settings
 {
@@ -17,9 +18,6 @@ namespace Unity.PlasticSCM.Editor.Settings
         [SettingsProvider]
         internal static SettingsProvider CreateSettingsProvider()
         {
-            if (!FindWorkspace.HasWorkspace(ApplicationDataPath.Get()))
-                return null;
-
             PlasticApp.InitializeIfNeeded();
 
             return new UVCSProjectSettingsProvider(
@@ -55,6 +53,9 @@ namespace Unity.PlasticSCM.Editor.Settings
             mWkInfo = FindWorkspace.InfoForApplicationPath(
                 ApplicationDataPath.Get(), PlasticGui.Plastic.API);
 
+            if (mWkInfo == null)
+                return;
+            
             mIsProjectSettingsActivated = true;
 
             mPendingChangesOptionsFoldout.OnActivate(mWkInfo, mUVCSPlugin.PendingChangesUpdater);
@@ -80,9 +81,11 @@ namespace Unity.PlasticSCM.Editor.Settings
         {
             DrawSettingsSection(DoIsEnabledSetting);
 
-            // DrawSettingsSection(DoShowToolbarButtonSetting);
+#if !UNITY_6000_3_OR_NEWER
+            DrawSettingsSection(DoShowToolbarButtonSetting);
+#endif
 
-            if (!mIsUVCSPluginEnabled)
+            if (!mIsUVCSPluginEnabled || mWkInfo == null)
                 return;
 
             mIsPendingChangesFoldoutOpen = DrawFoldout(
@@ -185,8 +188,8 @@ namespace Unity.PlasticSCM.Editor.Settings
             {
                 mIsUVCSPluginEnabled = true;
 
-                TrackFeatureUseEvent.For(
-                    PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                TrackFeatureEvent(
+                    mWkInfo,
                     TrackFeatureUseEvent.Features.UnityPackage.EnableManually);
 
                 SwitchUVCSPlugin.On(mUVCSPlugin);
@@ -197,8 +200,8 @@ namespace Unity.PlasticSCM.Editor.Settings
             {
                 mIsUVCSPluginEnabled = false;
 
-                TrackFeatureUseEvent.For(
-                    PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                TrackFeatureEvent(
+                    mWkInfo,
                     TrackFeatureUseEvent.Features.UnityPackage.DisableManually);
 
                 SwitchUVCSPlugin.Off(mUVCSPlugin);
@@ -280,6 +283,16 @@ namespace Unity.PlasticSCM.Editor.Settings
             EditorGUILayout.EndVertical();
 
             return result;
+        }
+
+        static void TrackFeatureEvent(WorkspaceInfo wkInfo, string eventName)
+        {
+            if (wkInfo == null)
+                return;
+
+            TrackFeatureUseEvent.For(
+                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
+                eventName);
         }
 
         class Styles

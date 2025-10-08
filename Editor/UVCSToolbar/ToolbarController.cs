@@ -31,22 +31,26 @@ namespace Unity.PlasticSCM.Editor.Toolbar
         IRefreshableView,
         IUpdateToolbarButtonVisibility
     {
+        public const string ToolbarButtonPath = "Services/Version Control"; // used by Unity 6.3+
+
         public event Action OnToolbarButtonInvalidated = delegate { };
         public event Action OnToolbarInvalidated = delegate { };
 
         internal ToolbarController(UVCSPlugin uvcsPlugin)
         {
             mUVCSPlugin = uvcsPlugin;
-            mDropDownButtonData = UVCSToolbarButtonData.BuildDefault();
+        }
+
+        internal bool IsControlledProject()
+        {
+            return mWkInfo != null;
         }
 
         internal void PopupClicked(Rect rect)
         {
             Vector2 buttonBottom = new Vector2(rect.x, rect.y + rect.height);
 
-            bool isControlledProject = mWkInfo != null;
-
-            if (isControlledProject)
+            if (IsControlledProject())
             {
                 ShowControlledPopup(buttonBottom);
                 return;
@@ -87,16 +91,9 @@ namespace Unity.PlasticSCM.Editor.Toolbar
                 this);
         }
 
-        internal void UpdateLeftIcon(Texture icon)
+        internal void UpdateIcon(Texture icon)
         {
-            mDropDownButtonData.LeftIcon = icon;
-
-            FireOnToolbarButtonInvalidated();
-        }
-
-        internal void UpdateRightIcon(Texture icon)
-        {
-            mDropDownButtonData.RightIcon = icon;
+            mDropDownButtonData.Icon = icon;
 
             FireOnToolbarButtonInvalidated();
         }
@@ -117,8 +114,8 @@ namespace Unity.PlasticSCM.Editor.Toolbar
 
         internal UVCSToolbarButtonData GetButtonData()
         {
-            if (mDropDownButtonData.LeftIcon == null)
-                mDropDownButtonData.LeftIcon = Images.GetPlasticViewIcon();
+            if (mDropDownButtonData.Icon == null)
+                mDropDownButtonData.Icon = UVCSPlugin.Instance.GetPluginStatusIcon();
 
             return mDropDownButtonData;
         }
@@ -134,11 +131,14 @@ namespace Unity.PlasticSCM.Editor.Toolbar
 
         void IUpdateToolbarButtonVisibility.Hide()
         {
+#if UNITY_6000_3_OR_NEWER
+
+            UnityEditor.Toolbars.MainToolbar.HideAll(ToolbarButtonPath);
+#else
             UVCSToolbarButtonIsShownPreference.Disable();
-
             mDropDownButtonData.IsVisible = false;
-
             FireOnToolbarButtonInvalidated();
+#endif
         }
 
         void IRefreshableView.Refresh()
@@ -291,6 +291,8 @@ namespace Unity.PlasticSCM.Editor.Toolbar
             lock (mModelLock)
             {
                 mModel = branches;
+                mMainBranch = (mModel.Branches == null) ?
+                    null : mModel.Branches.MainBranch;
             }
         }
 
@@ -304,6 +306,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar
                 this,
                 SetWorkingBranch,
                 () => mModel == null ? null : mModel.RepSpec,
+                () => GetMainBranch(mWkInfo),
                 () => mWorkingBranch);
 
             ControlledPopupWindow window = new ControlledPopupWindow(
@@ -366,6 +369,9 @@ namespace Unity.PlasticSCM.Editor.Toolbar
                 RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(wkInfo);
                 QueryResult queryResult = PlasticGui.Plastic.API.FindQuery(wkInfo, "find branches");
 
+                if (repSpec == null || queryResult == null)
+                    return BranchesListModel.BuildEmpty();
+
                 ClassifiedBranchesList result = new ClassifiedBranchesList(
                     queryResult.Result[0].Cast<BranchInfo>().ToList(),
                     RecentBranchesSettings.GetRecentBranches(PlasticGuiConfig.GetConfigFile(), wkInfo.Id),
@@ -382,13 +388,22 @@ namespace Unity.PlasticSCM.Editor.Toolbar
             }
         }
 
+        BranchInfo GetMainBranch(WorkspaceInfo wkInfo)
+        {
+            if (mMainBranch != null)
+                return mMainBranch;
+
+            return PlasticGui.Plastic.API.GetMainBranch(wkInfo);
+        }
+
         WorkspaceInfo mWkInfo;
+        BranchInfo mMainBranch;
         BranchInfo mWorkingBranch;
         bool mIsGluonMode;
         BranchesListModel mModel = BranchesListModel.BuildEmpty();
         ButtonTooltipData mButtonTooltipData = new ButtonTooltipData();
 
-        readonly UVCSToolbarButtonData mDropDownButtonData = new UVCSToolbarButtonData();
+        readonly UVCSToolbarButtonData mDropDownButtonData = UVCSToolbarButtonData.BuildDefault();
         readonly object mModelLock = new object();
         readonly UVCSPlugin mUVCSPlugin;
 

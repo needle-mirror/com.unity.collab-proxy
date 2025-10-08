@@ -29,11 +29,13 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
     internal class ItemsGridView : IItemsGridView
     {
         internal ItemsGridView(
+            DirectoryContentPanelMenu menu,
             IDragAndDrop dragAndDrop,
             EditorWindow parentWindow,
             Action doubleClickAction,
             Action navigateBackAction)
         {
+            mMenu = menu;
             mDragAndDrop = dragAndDrop;
             mParentWindow = parentWindow;
             mDoubleClickAction = doubleClickAction;
@@ -61,16 +63,6 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             return mItems[mSelectedItemsIndexes[0]];
         }
 
-        internal List<string> GetSelectedItems()
-        {
-            List<string> result = new List<string>();
-
-            foreach (int selectedItemIndex in mSelectedItemsIndexes)
-                result.Add(mItems[selectedItemIndex].GetFullPath());
-
-            return result;
-        }
-
         internal List<string> GetSelectedItemsPaths()
         {
             List<string> result = new List<string>(mSelectedItemsIndexes.Count);
@@ -83,6 +75,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
 
         internal void CleanItems()
         {
+            mItemsDirPath = null;
             mItems = null;
 
             mEmptyStatePanel.UpdateContent(GetEmptyStateText(nodes: null));
@@ -99,8 +92,14 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
 
         internal void UpdateItems(string itemsDirPath, List<ExpandedTreeNode> items)
         {
+            mItems = new List<ExpandedTreeNode>();
+            foreach (ExpandedTreeNode item in items)
+            {
+                if (ExpandedTreeNode.IsOnDisk(item))
+                    mItems.Add(item);
+            }
+
             mItemsDirPath = itemsDirPath;
-            mItems = items;
 
             mEmptyStatePanel.UpdateContent(GetEmptyStateText(mItems));
         }
@@ -143,9 +142,22 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             Event e = Event.current;
 
             if (ProcessItemsGridViewEvent.IfNeeded(
-                    e, this, mDragAndDrop, mParentWindow, mDoubleClickAction, mNavigateBackAction,
-                    mSelectedItemsIndexes, rect, mItemSize, mScrollPosition.y, mColumns, itemsCount,
-                    shouldScrollbarBeVisible, mItemsDirPath != null))
+                    e,
+                    mMenu,
+                    this,
+                    mDragAndDrop,
+                    mParentWindow,
+                    mDoubleClickAction,
+                    mNavigateBackAction,
+                    mSelectedItemsIndexes,
+                    rect,
+                    mItemSize,
+                    mScrollPosition.y,
+                    mColumns,
+                    itemsCount,
+                    hasFocus,
+                    shouldScrollbarBeVisible,
+                    mItemsDirPath != null))
                 e.Use();
         }
 
@@ -280,6 +292,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
 
         readonly List<int> mSelectedItemsIndexes = new List<int>();
         readonly EmptyStatePanel mEmptyStatePanel;
+        readonly DirectoryContentPanelMenu mMenu;
         readonly IDragAndDrop mDragAndDrop;
         readonly EditorWindow mParentWindow;
         readonly Action mDoubleClickAction;

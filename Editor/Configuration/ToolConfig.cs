@@ -19,11 +19,6 @@ namespace Unity.PlasticSCM.Editor.Configuration
             return File.Exists(GetConfigFilePath(ENABLE_CLOUD_DRIVE_TOKEN_FILE));
         }
 
-        internal static bool EnableNewUVCSToolbarButtonTokenExists()
-        {
-            return File.Exists(GetConfigFilePath(ENABLE_NEW_UVCS_TOOLBAR_BUTTON_TOKEN_FILE));
-        }
-
         internal static void InitializeLogConfigFolderForTesting(string logConfigFolder)
         {
             mLogConfigFolder = logConfigFolder;
@@ -48,7 +43,6 @@ namespace Unity.PlasticSCM.Editor.Configuration
         static string mLogConfigFolder;
 
         const string ENABLE_CLOUD_DRIVE_TOKEN_FILE = "enableclouddrive.token";
-        const string ENABLE_NEW_UVCS_TOOLBAR_BUTTON_TOKEN_FILE = "enablenewuvcstoolbarbutton.token";
         const string LOG_CONFIG_FILE = "unityplastic.log.conf";
     }
 }

@@ -2,6 +2,8 @@ using System;
 
 using UnityEditor;
 
+using Codice.Client.Common.Threading;
+
 using PlasticGui;
 
 namespace Unity.PlasticSCM.Editor.UI.Progress
@@ -48,7 +50,7 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
 
         void IProgressControls.ShowError(string message)
         {
-            throw new NotImplementedException();
+            ExceptionsHandler.HandleError(message);
         }
 
         void IProgressControls.ShowNotification(string message)

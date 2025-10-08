@@ -10,8 +10,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar
         internal bool IsVisible { get; set; }
         internal string Text { get; set; }
         internal string Tooltip { get; set; }
-        internal Texture LeftIcon { get; set; }
-        internal Texture RightIcon { get; set; }
+        internal Texture Icon { get; set; }
 
         internal static UVCSToolbarButtonData BuildDefault()
         {
@@ -19,8 +18,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar
             {
                 Text = PlasticLocalization.Name.UnityVersionControl.GetString(),
                 Tooltip = PlasticLocalization.Name.UseUnityVersionControlToManageYourProject.GetString(),
-                LeftIcon = Images.GetPlasticViewIcon(),
-                RightIcon = null,
+                Icon = Images.GetPlasticViewIcon(),
                 IsVisible = UVCSToolbarButtonIsShownPreference.IsEnabled(),
             };
         }

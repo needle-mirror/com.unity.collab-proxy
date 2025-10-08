@@ -7,7 +7,9 @@ using UnityEngine;
 
 using Codice.Client.Common;
 using Codice.CM.Common;
+using Codice.CM.Common.Workspaces;
 using PlasticGui;
+using PlasticGui.CloudDrive.Workspaces;
 using PlasticGui.WorkspaceWindow.Security;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Avatar;
@@ -23,10 +25,12 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace
         SelectUserGroupDialogOperations.ISelectUserGroupDialog
     {
         internal CollaboratorsListView(
+            WorkspaceInfo wkInfo,
             IProgressControls progressControls,
             CollaboratorsListViewHeaderState headerState,
             Action repaintAction)
         {
+            mWkInfo = wkInfo;
             mProgressControls = progressControls;
 
             multiColumnHeader = new CollaboratorsMultiColumnHeader(this, headerState);
@@ -55,14 +59,66 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace
                 this);
         }
 
-        internal List<SecurityMember> GetCollaborators()
+        internal List<SecurityMember> GetCollaboratorsToAdd()
         {
-            List<SecurityMember> result = new List<SecurityMember>();
+            List<SecurityMember> collaboratorsToAdd = new List<SecurityMember>();
 
-            foreach (CollaboratorsListViewItem item in mCheckedItems)
-                result.Add(item.User);
+            foreach (CollaboratorsListViewItem checkedRow in mCheckedItems)
+            {
+                bool isAlreadyShared = false;
 
-            return result;
+                foreach (WorkspaceShareInfo share in mShares)
+                {
+                    if (share.User.Data == checkedRow.User.Name)
+                    {
+                        isAlreadyShared = true;
+                        break;
+                    }
+                }
+
+                if (!isAlreadyShared)
+                    collaboratorsToAdd.Add(checkedRow.User);
+            }
+
+            return collaboratorsToAdd;
+        }
+
+        internal List<SecurityMember> GetCollaboratorsToRemove()
+        {
+            List<SecurityMember> collaboratorsToRemove = new List<SecurityMember>();
+
+            foreach (SecurityMember user in mUnfilteredUsers)
+            {
+                bool isUserChecked = false;
+
+                foreach (CollaboratorsListViewItem checkedRow in mCheckedItems)
+                {
+                    if (user.Name == checkedRow.User.Name)
+                    {
+                        isUserChecked = true;
+                        break;
+                    }
+                }
+
+                if (isUserChecked)
+                    continue;
+
+                bool isCollaborator = false;
+
+                foreach (WorkspaceShareInfo share in mShares)
+                {
+                    if (user.Name == share.User.Data)
+                    {
+                        isCollaborator = true;
+                        break;
+                    }
+                }
+
+                if (isCollaborator)
+                    collaboratorsToRemove.Add(user);
+            }
+
+            return collaboratorsToRemove;
         }
 
         internal bool IsAnyItemChecked()
@@ -107,6 +163,29 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace
             Sort();
 
             Reload();
+
+            if (mUnfilteredUsers.Count == 0 || mWkInfo == null)
+                return;
+
+            WorkspaceShareOperations.GetWorkspaceShares(
+                mWkInfo,
+                mProgressControls,
+                (shares) =>
+                {
+                    mShares = shares;
+
+                    foreach (CollaboratorsListViewItem row in mRows)
+                    {
+                        foreach (WorkspaceShareInfo share in shares)
+                        {
+                            if (share.User.Data == row.User.Name)
+                            {
+                                mCheckedItems.Add(row);
+                                break;
+                            }
+                        }
+                    }
+                });
         }
 
         void SelectUserGroupDialogOperations.ISelectUserGroupDialog.SetShouldFilterOnServer()
@@ -272,7 +351,9 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace
         List<SecurityMember> mUsers = new List<SecurityMember>();
         HashSet<CollaboratorsListViewItem> mCheckedItems = new HashSet<CollaboratorsListViewItem>();
         DelayedActionBySecondsRunner mDelayedFilterAction;
+        List<WorkspaceShareInfo> mShares = new List<WorkspaceShareInfo>();
 
+        readonly WorkspaceInfo mWkInfo;
         readonly EmptyStatePanel mEmptyStatePanel;
         readonly IComparer<SecurityMember> mUsersComparer;
         readonly IProgressControls mProgressControls;

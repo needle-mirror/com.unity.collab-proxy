@@ -22,7 +22,7 @@ namespace Unity.PlasticSCM.Editor.Entities
         {
             assetPath = null;
 
-            Object hierarchyObject = EditorUtility.InstanceIDToObject(instanceID);
+            Object hierarchyObject = FindUnityObject.ForInstanceID(instanceID);
 
             if (hierarchyObject == null || hierarchyObject is not GameObject)
                 return false;

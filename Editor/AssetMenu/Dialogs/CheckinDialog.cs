@@ -133,10 +133,12 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 if (metaCache.HasMeta(path))
                     label = string.Concat(label, UnityConstants.TREEVIEW_META_LABEL);
 
-                AssetsOverlays.AssetStatus assetStatus = 
+                AssetsOverlays.AssetStatus assetStatus =
                     assetStatusCache.GetStatus(path);
 
-                Rect selectionRect = EditorGUILayout.GetControlRect();
+                Rect selectionRect = EditorGUILayout.GetControlRect(
+                    true,
+                    UnityConstants.TREEVIEW_ROW_HEIGHT);
 
                 DoListViewItem(selectionRect, fileIcon, label, assetStatus);
             }
@@ -150,11 +152,13 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             string label,
             AssetsOverlays.AssetStatus statusToDraw)
         {
+            int iconPadding = 2;
+
             Texture overlayIcon = DrawAssetOverlayIcon.GetOverlayIcon(statusToDraw);
 
             itemRect = DrawTreeViewItem.DrawIconLeft(
                 itemRect,
-                UnityConstants.TREEVIEW_ROW_HEIGHT,
+                itemRect.height - 2 * iconPadding,
                 fileIcon,
                 overlayIcon);
 

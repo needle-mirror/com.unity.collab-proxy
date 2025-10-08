@@ -26,6 +26,7 @@ using Unity.PlasticSCM.Editor.Views.Branches.Dialogs;
 
 using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
 using Unity.PlasticSCM.Editor.Views.Diff;
+using Unity.PlasticSCM.Editor.Views.Merge;
 using IGluonUpdateReport = PlasticGui.Gluon.IUpdateReport;
 
 namespace Unity.PlasticSCM.Editor.Views.Branches
@@ -128,7 +129,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 ViewType.BranchesView,
                 mProgressControls,
                 updateReport,
-                null,
+                new ApplyShelveReport(parentWindow),
                 new ContinueWithPendingChangesQuestionerBuilder(viewSwitcher, parentWindow),
                 mShelvePendingChangesQuestionerBuilder,
                 new ApplyShelveWithConflictsQuestionerBuilder(),

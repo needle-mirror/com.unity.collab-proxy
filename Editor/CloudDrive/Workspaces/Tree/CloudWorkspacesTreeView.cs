@@ -9,12 +9,16 @@ using UnityEngine;
 
 using Codice.Client.Common;
 using Codice.CM.Common;
+using Codice.Utils;
+using PlasticGui;
 using PlasticGui.CloudDrive.Workspaces;
 using PlasticGui.WorkspaceWindow.Items;
+using Unity.PlasticSCM.Editor.CloudDrive.ShareWorkspace;
 using Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
+using Unity.PlasticSCM.Editor.Views;
 
 #if UNITY_6000_2_OR_NEWER
 using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
@@ -24,38 +28,62 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
 {
     internal class CloudWorkspacesTreeView :
         PlasticTreeView,
-        FillCloudWorkspacesView.ICloudWorkspacesTree,
-        DirectoryContentPanel.ICloudWorkspacesTreeView
+        FillCloudWorkspaces.ICloudWorkspacesTree,
+        DirectoryContentPanel.ICloudWorkspacesTreeView,
+        ICloudWorkspacesTreeMenuOperations
     {
-        internal CloudWorkspacesTreeView(Action selectionChangedAction) :
-            base(showCustomBackground: false)
+        internal float Width { get { return mLastValidWidth; } }
+        internal WorkspaceInfo WorkspaceToSelect { set { mWorkspaceToSelect = value; } }
+
+        internal CloudWorkspacesTreeView(
+            Action selectionChangedAction,
+            IProgressControls progressControls,
+            EditorWindow parentWindow) : base(showCustomBackground: false)
         {
             mSelectionChangedAction = selectionChangedAction;
+            mProgressControls = progressControls;
+            mParentWindow = parentWindow;
 
             mDelayedSelectionAction = new DelayedActionBySecondsRunner(
                 SelectionChanged, UnityConstants.SELECTION_DELAYED_INPUT_ACTION_INTERVAL);
+
+            mMenu = new CloudWorkspacesTreeViewMenu(this);
 
             rowHeight = 16;
         }
 
         protected override bool CanChangeExpandedState(TreeViewItem item)
         {
+            if (item is CloudWorkspacesLabelTreeViewItem)
+                return false;
+
             return ((CloudWorkspacesTreeViewItem)item).IsExpandable;
         }
 
         protected override IList<TreeViewItem> BuildRows(TreeViewItem rootItem)
         {
             RegenerateRows(
-                mExpandedTreesByWorkspace.Values.ToList(),
+                mMyDrivesByWorkspace.Values.ToList(),
+                mDrivesSharedWithMeByWorkspace.Values.ToList(),
                 mTreeViewItemIds,
                 this,
                 rootItem,
                 mRows);
 
+            SelectWorkspaceIfNeeded();
+
             if (GetSelectedNode() != null)
                 SelectionChanged();
 
             return mRows;
+        }
+
+        protected override float GetCustomRowHeight(int row, TreeViewItem item)
+        {
+            if (item is CloudWorkspacesLabelTreeViewItem)
+                return 30f;
+
+            return base.GetCustomRowHeight(row, item);
         }
 
         public override void OnGUI(Rect rect)
@@ -64,10 +92,38 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
                 mLastValidWidth = rect.width;
 
             base.OnGUI(rect);
+
+            if (!HasFocus())
+                return;
+
+            Event e = Event.current;
+
+            if (e.type != EventType.KeyDown)
+                return;
+
+            bool isProcessed = mMenu.ProcessKeyActionIfNeeded(e);
+
+            if (isProcessed)
+                e.Use();
+        }
+
+        protected override void ContextClickedItem(int id)
+        {
+            mMenu.Popup();
+            Repaint();
         }
 
         protected override void RowGUI(RowGUIArgs args)
         {
+            if (args.item is CloudWorkspacesLabelTreeViewItem)
+            {
+                EditorGUI.LabelField(
+                    args.rowRect,
+                    ((CloudWorkspacesLabelTreeViewItem)args.item).Label,
+                    UnityStyles.Tree.BoldLabelWithMargin);
+                return;
+            }
+
             if (args.item is CloudWorkspacesTreeViewItem)
             {
                 CloudWorkspacesTreeViewItem item = (CloudWorkspacesTreeViewItem)args.item;
@@ -89,6 +145,16 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
 
         protected override void SelectionChanged(IList<int> selectedIds)
         {
+            List<int> selectedIdsToSet = new List<int>();
+
+            foreach (int selectedId in selectedIds)
+            {
+                ExpandedTreeNode selectedNode;
+                if (mTreeViewItemIds.TryGetItemById(selectedId, out selectedNode))
+                    selectedIdsToSet.Add(selectedId);
+            }
+
+            SetSelection(selectedIdsToSet);
             mDelayedSelectionAction.Run();
         }
 
@@ -99,7 +165,8 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
             ReloadExpandedTreeNodes(
                 expandedIds.Except(mLastExpandedIds),
                 mTreeViewItemIds,
-                mExpandedTreesByWorkspace);
+                mMyDrivesByWorkspace,
+                mDrivesSharedWithMeByWorkspace);
 
             mLastExpandedIds = expandedIds;
         }
@@ -118,6 +185,11 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
 
         internal ProgressControlsForViews GetWorkspaceProgressControls(WorkspaceInfo wkInfo)
         {
+            ProgressControlsForViews result;
+            if (mProgressControlsByWorkspace.TryGetValue(wkInfo, out result))
+                return result;
+
+            mProgressControlsByWorkspace[wkInfo] = new ProgressControlsForViews();
             return mProgressControlsByWorkspace[wkInfo];
         }
 
@@ -174,11 +246,16 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
             }
         }
 
-        void FillCloudWorkspacesView.ICloudWorkspacesTree.Fill(List<ExpandedTree> expandedTrees)
+        void FillCloudWorkspaces.ICloudWorkspacesTree.ExpandedTreesRetrieved(
+            List<ExpandedTree> myDrives,
+            List<ExpandedTree> drivesSharedWithMe)
         {
-            mExpandedTreesByWorkspace = BuildExpandedTrees(expandedTrees);
+            mMyDrivesByWorkspace = BuildExpandedTrees(myDrives);
+            mDrivesSharedWithMeByWorkspace = BuildExpandedTrees(drivesSharedWithMe);
 
-            BuildProgressControls(expandedTrees, mProgressControlsByWorkspace);
+            BuildProgressControls(
+                myDrives.Concat(drivesSharedWithMe),
+                mProgressControlsByWorkspace);
 
             Reload();
         }
@@ -187,6 +264,173 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
             string wkPath, string fullPath)
         {
             SelectNode(wkPath, fullPath);
+        }
+
+        int ICloudWorkspacesTreeMenuOperations.GetSelectedItemsCount()
+        {
+            return GetSelection().Count;
+        }
+
+        bool ICloudWorkspacesTreeMenuOperations.IsAnyNonRootItemSelected()
+        {
+            List<ExpandedTreeNode> selectedNodes = GetSelectedNodes();
+
+            foreach (ExpandedTreeNode node in selectedNodes)
+            {
+                if (!ExpandedTreeNode.IsRootNode(node))
+                    return true;
+            }
+
+            return false;
+        }
+
+        bool ICloudWorkspacesTreeMenuOperations.IsAnySharedDriveSelected()
+        {
+            List<ExpandedTreeNode> selectedNodes = GetSelectedNodes();
+
+            foreach (ExpandedTreeNode node in selectedNodes)
+            {
+                if (mDrivesSharedWithMeByWorkspace.ContainsKey(node.WkInfo))
+                    return true;
+            }
+
+            return false;
+        }
+
+        void ICloudWorkspacesTreeMenuOperations.OpenInExplorer()
+        {
+            List<ExpandedTreeNode> selectedNodes = GetSelectedNodes();
+
+            if (selectedNodes.Count != 1)
+                return;
+
+            FileSystemOperation.OpenInExplorer(selectedNodes[0].GetFullPath());
+        }
+
+        void ICloudWorkspacesTreeMenuOperations.OpenUnityCloud()
+        {
+            List<ExpandedTreeNode> selectedNodes = GetSelectedNodes();
+
+            if (selectedNodes.Count != 1)
+                return;
+
+            WorkspaceInfo workspaceInfo = selectedNodes[0].WkInfo;
+
+            RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(workspaceInfo);
+            string cloudServer = CloudServer.GetOrganizationName(repSpec.Server);
+            RepositoryInfo repInfo = PlasticGui.Plastic.API.GetRepositoryInfo(repSpec);
+
+            OpenBrowser.TryOpen(UnityUrl.UnityDashboard.
+                CloudDrive.GetWorkspace(cloudServer, repInfo.GUID.ToString()));
+        }
+
+        void ICloudWorkspacesTreeMenuOperations.Delete()
+        {
+            List<ExpandedTreeNode> selectedNodes = GetSelectedNodes();
+
+            if (selectedNodes.Count != 1)
+                return;
+
+            WorkspaceInfo workspaceInfo = selectedNodes[0].WkInfo;
+
+            ProgressControlsForViews workspaceProgressControls =
+                GetWorkspaceProgressControls(workspaceInfo);
+
+            if (workspaceProgressControls.IsOperationRunning())
+            {
+                GuiMessage.ShowInformation(
+                    PlasticLocalization.Name.OperationInProgress.GetString());
+                return;
+            }
+
+            string workspaceName = Path.GetFileName(workspaceInfo.ClientPath);
+            if (!DeleteWorkspaceDialog.UserConfirmsDelete(workspaceName, mParentWindow))
+                return;
+
+            DeleteWorkspaceOperation.DeleteWorkspace(
+                workspaceInfo,
+                mProgressControls,
+                Reload);
+        }
+
+        void ICloudWorkspacesTreeMenuOperations.Share()
+        {
+            List<ExpandedTreeNode> selectedNodes = GetSelectedNodes();
+
+            if (selectedNodes.Count != 1)
+                return;
+
+            WorkspaceInfo workspaceInfo = selectedNodes[0].WkInfo;
+
+            ProgressControlsForViews workspaceProgressControls =
+                GetWorkspaceProgressControls(workspaceInfo);
+
+            if (workspaceProgressControls.IsOperationRunning())
+            {
+                GuiMessage.ShowInformation(
+                    PlasticLocalization.Name.OperationInProgress.GetString());
+                return;
+            }
+
+            List<SecurityMember> collaboratorsToAdd;
+            List<SecurityMember> collaboratorsToRemove;
+            if (!ShareWorkspaceDialog.ShareWorkspace(
+                    workspaceInfo,
+                    mParentWindow,
+                    out collaboratorsToAdd,
+                    out collaboratorsToRemove))
+                return;
+
+            WorkspaceShareOperations.ShareWorkspace(
+                workspaceInfo, collaboratorsToAdd, mProgressControls);
+            WorkspaceShareOperations.UnshareWorkspace(
+                workspaceInfo, collaboratorsToRemove, mProgressControls);
+        }
+
+        void ICloudWorkspacesTreeMenuOperations.UnshareWithMe()
+        {
+            List<ExpandedTreeNode> selectedNodes = GetSelectedNodes();
+
+            if (selectedNodes.Count != 1)
+                return;
+
+            WorkspaceInfo workspaceInfo = selectedNodes[0].WkInfo;
+
+            ProgressControlsForViews workspaceProgressControls =
+                GetWorkspaceProgressControls(workspaceInfo);
+
+            if (workspaceProgressControls.IsOperationRunning())
+            {
+                GuiMessage.ShowInformation(
+                    PlasticLocalization.Name.OperationInProgress.GetString());
+                return;
+            }
+
+            if (!GuiMessage.ShowQuestion(
+                PlasticLocalization.Name.UnshareWithMeMenuItem.GetString(),
+                PlasticLocalization.Name.UnshareConfirmationMessage.GetString(),
+                PlasticLocalization.Name.UnshareButton.GetString()))
+            {
+                return;
+            }
+
+            WorkspaceShareOperations.UnshareWorkspaceWithMe(
+                workspaceInfo,
+                mProgressControls,
+                Reload);
+        }
+
+        void SelectWorkspaceIfNeeded()
+        {
+            if (mWorkspaceToSelect == null)
+                return;
+
+            int idToSelect;
+            if (!mTreeViewItemIds.TryGetItemIdByKey(mWorkspaceToSelect.ClientPath, out idToSelect))
+                return;
+
+            SetSelection(new List<int> { idToSelect });
+            mWorkspaceToSelect = null;
         }
 
         void SelectionChanged()
@@ -198,7 +442,10 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
 
             if (selectedIds.Count == 1)
                 ReloadExpandedTreeNodeIfChildrenNotLoaded(
-                    selectedIds[0], mTreeViewItemIds, mExpandedTreesByWorkspace);
+                    selectedIds[0],
+                    mTreeViewItemIds,
+                    mMyDrivesByWorkspace,
+                    mDrivesSharedWithMeByWorkspace);
 
             mSelectionChangedAction();
         }
@@ -270,7 +517,8 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
         static void ReloadExpandedTreeNodes(
             IEnumerable<int> idsToReload,
             TreeViewItemIds<ExpandedTreeNode> treeViewItemIds,
-            Dictionary<WorkspaceInfo, ExpandedTree> expandedTreesByWorkspace)
+            Dictionary<WorkspaceInfo, ExpandedTree> myDrivesByWorkspace,
+            Dictionary<WorkspaceInfo, ExpandedTree> drivesSharedWithMeByWorkspace)
         {
             foreach (int id in idsToReload)
             {
@@ -279,7 +527,8 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
                     continue;
 
                 ExpandedTree expandedTree;
-                if (!expandedTreesByWorkspace.TryGetValue(node.WkInfo, out expandedTree))
+                if (!myDrivesByWorkspace.TryGetValue(node.WkInfo, out expandedTree) &&
+                    !drivesSharedWithMeByWorkspace.TryGetValue(node.WkInfo, out expandedTree))
                     continue;
 
                 expandedTree.ReloadNode(node);
@@ -289,7 +538,8 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
         static void ReloadExpandedTreeNodeIfChildrenNotLoaded(
             int idToReload,
             TreeViewItemIds<ExpandedTreeNode> treeViewItemIds,
-            Dictionary<WorkspaceInfo, ExpandedTree> expandedTreesByWorkspace)
+            Dictionary<WorkspaceInfo, ExpandedTree> myDrivesByWorkspace,
+            Dictionary<WorkspaceInfo, ExpandedTree> drivesSharedWithMeByWorkspace)
         {
             ExpandedTreeNode node;
             if (!treeViewItemIds.TryGetItemById(idToReload, out node))
@@ -299,7 +549,8 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
                 return;
 
             ExpandedTree expandedTree;
-            if (!expandedTreesByWorkspace.TryGetValue(node.WkInfo, out expandedTree))
+            if (!myDrivesByWorkspace.TryGetValue(node.WkInfo, out expandedTree) &&
+                !drivesSharedWithMeByWorkspace.TryGetValue(node.WkInfo, out expandedTree))
                 return;
 
             expandedTree.ReloadNode(node);
@@ -331,7 +582,8 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
         }
 
         static void RegenerateRows(
-            List<ExpandedTree> expandedTrees,
+            List<ExpandedTree> myDrives,
+            List<ExpandedTree> drivesSharedWithMe,
             TreeViewItemIds<ExpandedTreeNode> treeViewItemIds,
             CloudWorkspacesTreeView treeView,
             TreeViewItem rootItem,
@@ -341,6 +593,23 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
 
             treeViewItemIds.ClearItems();
 
+            AddLabelRow(PlasticLocalization.Name.MyDrivesLabel.GetString(), treeViewItemIds, rows);
+
+            AddExpandedTrees(myDrives, treeViewItemIds, treeView, rootItem, rows);
+
+            AddLabelRow(
+                PlasticLocalization.Name.DrivesSharedWithMeLabel.GetString(), treeViewItemIds, rows);
+
+            AddExpandedTrees(drivesSharedWithMe, treeViewItemIds, treeView, rootItem, rows);
+        }
+
+        static void AddExpandedTrees(
+            List<ExpandedTree> expandedTrees,
+            TreeViewItemIds<ExpandedTreeNode> treeViewItemIds,
+            CloudWorkspacesTreeView treeView,
+            TreeViewItem rootItem,
+            List<TreeViewItem> rows)
+        {
             foreach (ExpandedTree expandedTree in expandedTrees)
             {
                 ExpandedTreeNode rootNode = expandedTree.GetRootNode();
@@ -358,6 +627,18 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
             }
         }
 
+        static void AddLabelRow(
+            string label,
+            TreeViewItemIds<ExpandedTreeNode> treeViewItemIds,
+            List<TreeViewItem> rows)
+        {
+            int nodeId;
+            if (!treeViewItemIds.TryGetItemIdByKey(label, out nodeId))
+                nodeId = treeViewItemIds.AddItemIdByKey(label);
+
+            rows.Add(new CloudWorkspacesLabelTreeViewItem(nodeId, label));
+        }
+
         static void AddNode(
             ExpandedTreeNode node,
             ExpandedTree expandedTree,
@@ -366,6 +647,9 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
             TreeViewItem parentItem,
             List<TreeViewItem> rows)
         {
+            if (!ExpandedTreeNode.IsOnDisk(node))
+                return;
+
             int nodeId;
             if (!treeViewItemIds.TryGetItemIdByKey(node.GetFullPath(), out nodeId))
                 nodeId = treeViewItemIds.AddItemIdByKey(node.GetFullPath());
@@ -439,7 +723,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
         }
 
         static void BuildProgressControls(
-            List<ExpandedTree> expandedTrees,
+            IEnumerable<ExpandedTree> expandedTrees,
             Dictionary<WorkspaceInfo, ProgressControlsForViews> progressControlsByWorkspace)
         {
             List<WorkspaceInfo> workspaceInfos = new List<WorkspaceInfo>();
@@ -447,8 +731,10 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
             foreach (ExpandedTree expandedTree in expandedTrees)
                 workspaceInfos.Add(expandedTree.GetRootNode().WkInfo);
 
-            foreach (WorkspaceInfo wkInfo in progressControlsByWorkspace.Keys)
+            for (int i = progressControlsByWorkspace.Keys.Count - 1; i >= 0; i--)
             {
+                WorkspaceInfo wkInfo = progressControlsByWorkspace.Keys.ElementAt(i);
+
                 if (!workspaceInfos.Contains(wkInfo))
                     progressControlsByWorkspace.Remove(wkInfo);
             }
@@ -497,11 +783,19 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
         float mLastValidWidth;
         bool mIsSelectionChangedEventDisabled = false;
         IEnumerable<int> mLastExpandedIds = new List<int>();
-        Dictionary<WorkspaceInfo, ExpandedTree> mExpandedTreesByWorkspace =
+        Dictionary<WorkspaceInfo, ExpandedTree> mMyDrivesByWorkspace =
             new Dictionary<WorkspaceInfo, ExpandedTree>();
+        Dictionary<WorkspaceInfo, ExpandedTree> mDrivesSharedWithMeByWorkspace =
+            new Dictionary<WorkspaceInfo, ExpandedTree>();
+        WorkspaceInfo mWorkspaceToSelect;
 
+        readonly CloudWorkspacesTreeViewMenu mMenu;
         readonly DelayedActionBySecondsRunner mDelayedSelectionAction;
+
         readonly Action mSelectionChangedAction;
+        readonly IProgressControls mProgressControls;
+        readonly EditorWindow mParentWindow;
+
         readonly TreeViewItemIds<ExpandedTreeNode> mTreeViewItemIds =
             new TreeViewItemIds<ExpandedTreeNode>();
         readonly Dictionary<WorkspaceInfo, ProgressControlsForViews> mProgressControlsByWorkspace =

@@ -5,20 +5,24 @@ using UnityEditor;
 using UnityEngine;
 
 using Codice.Client.Common;
+using Codice.Client.Common.EventTracking;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.LogWrapper;
 using PlasticGui;
+using PlasticGui.CloudDrive.Workspaces;
 using Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace;
 using Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace.Welcome;
 using Unity.PlasticSCM.Editor.CloudDrive.Workspaces;
+using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 
 namespace Unity.PlasticSCM.Editor.CloudDrive
 {
     internal class CloudDriveWindow : EditorWindow,
-        CreateWorkspaceView.ICreateWorkspaceListener
+        CreateWorkspaceView.ICreateWorkspaceListener,
+        WelcomeView.ICloudDriveWindow
     {
         internal CloudWorkspacesView CloudWorkspacesView { get { return mCloudWorkspacesView; } }
 
@@ -39,15 +43,70 @@ namespace Unity.PlasticSCM.Editor.CloudDrive
                 mCloudWorkspacesView.AutoRefresh();
         }
 
-        void CreateWorkspaceView.ICreateWorkspaceListener.OnWorkspaceCreated()
+        internal void CopyPaths(
+            string organization,
+            string project,
+            WorkspaceInfo wkInfo,
+            string[] assetPaths,
+            string dstRelativePath)
         {
+            if (mCloudWorkspacesView == null)
+                return;
+
+            mCloudWorkspacesView.SelectWorkspaceAndCopyPaths(
+                organization, project, wkInfo, assetPaths, dstRelativePath);
+        }
+
+        void CreateWorkspaceView.ICreateWorkspaceListener.OnWorkspaceCreated(
+            WorkspaceCreationData wkCreationData,
+            WorkspaceInfo createdWorkspace)
+        {
+            TrackFeatureUseEvent.For(
+                PlasticGui.Plastic.API.GetRepositorySpec(createdWorkspace),
+                TrackFeatureUseEvent.Features.UnityPackage.CloudDriveCreateWorkspaceFromWelcomeView);
+
             mWelcomeView = null;
 
-            mHasWorkspaceCreated = true;
+            mHasCloudDriveWorkspaces = true;
+
+            InitializeCloudDrive(
+                wkCreationData.CloudServer,
+                CloudProjectRepository.GetProjectName(wkCreationData.WorkspaceName),
+                createdWorkspace);
+
+            Repaint();
+        }
+
+        void WelcomeView.ICloudDriveWindow.ShowWorkspacesView()
+        {
+            mWelcomeView = null;
 
             InitializeCloudDrive();
 
             Repaint();
+        }
+
+        internal static bool HasCloudDriveWorkspaces()
+        {
+            List<WorkspaceInfo> workspaces =
+                PlasticGui.Plastic.API.GetAllCloudDriveWorkspaces();
+
+            return workspaces != null && workspaces.Count > 0;
+        }
+
+        internal WelcomeView GetWelcomeView()
+        {
+            if (mWelcomeView != null)
+                return mWelcomeView;
+
+            mWelcomeView = new WelcomeView(
+                this,
+                this,
+                this,
+                PlasticGui.Plastic.API,
+                PlasticGui.Plastic.WebRestAPI);
+
+            return mWelcomeView;
         }
 
         void OnEnable()
@@ -57,7 +116,8 @@ namespace Unity.PlasticSCM.Editor.CloudDrive
             // reasons until CloudDrivePlugin.Enable() is called
             mLog.Debug("OnEnable");
 
-            titleContent.image = Images.GetCloudDriveViewIcon();
+            titleContent.image = Images.ResizeTextureForWindowTitleContent(
+                Images.GetCloudDriveViewIcon());
 
             mCloudDrivePlugin = CloudDrivePlugin.Instance;
 
@@ -146,7 +206,10 @@ namespace Unity.PlasticSCM.Editor.CloudDrive
             {
                 DoContentViewArea(
                     GetContentAreaRect(position),
-                    mWelcomeView, mCloudWorkspacesView, mHasFocus);
+                    GetWelcomeView(),
+                    mCloudWorkspacesView,
+                    mHasCloudDriveWorkspaces,
+                    mHasFocus);
 
                 WindowStatusBar.OnGUI(
                     GetStatusBarRect(position),
@@ -199,6 +262,14 @@ namespace Unity.PlasticSCM.Editor.CloudDrive
 
         void InitializeCloudDrive()
         {
+            InitializeCloudDrive(string.Empty, string.Empty, null);
+        }
+
+        void InitializeCloudDrive(
+            string proposedCloudServer,
+            string proposedProject,
+            WorkspaceInfo workspaceToSelect)
+        {
             if (mForceToReOpen)
             {
                 mForceToReOpen = false;
@@ -211,21 +282,17 @@ namespace Unity.PlasticSCM.Editor.CloudDrive
                     CloudWorkspacesView.MIN_WIDTH,
                     minSize.y);
 
+                mHasCloudDriveWorkspaces |= HasCloudDriveWorkspaces();
+
                 mProgressControls = new ProgressControlsForWindow();
-
-                if (!HasCloudDriveWorkspaces(mHasWorkspaceCreated) ||
-                    TestingPreference.IsShowCloudDriveWelcomeViewEnabled())
-                {
-                    mWelcomeView = new WelcomeView(
-                        PlasticGui.Plastic.WebRestAPI,
-                        PlasticGui.Plastic.API,
-                        this,
-                        this);
-                    return;
-                }
-
                 mCloudWorkspacesView = new CloudWorkspacesView(
-                    mProgressControls, this);
+                    proposedCloudServer,
+                    proposedProject,
+                    workspaceToSelect,
+                    PlasticGui.Plastic.WebRestAPI,
+                    PlasticGui.Plastic.API,
+                    mProgressControls,
+                    this);
             }
             catch (Exception ex)
             {
@@ -268,11 +335,23 @@ namespace Unity.PlasticSCM.Editor.CloudDrive
             Rect rect,
             WelcomeView welcomeView,
             CloudWorkspacesView cloudWorkspacesView,
+            bool hasCloudDriveWorkspaces,
             bool hasFocus)
         {
-            if (welcomeView != null)
+            bool clientNeedsConfiguration = UnityConfigurationChecker.NeedsConfiguration();
+
+            bool shouldShowWelcomeView =
+                PlasticGuiConfig.Get().Configuration.ShowCloudDriveWelcomeView ||
+                clientNeedsConfiguration ||
+                !hasCloudDriveWorkspaces ||
+                TestingPreference.IsShowCloudDriveWelcomeViewEnabled();
+
+            if (shouldShowWelcomeView)
             {
-                welcomeView.OnGUI(rect);
+                if (((AutoLogin.IWelcomeView)welcomeView).AutoLoginState == AutoLogin.State.Off)
+                    ((AutoLogin.IWelcomeView)welcomeView).AutoLoginState = AutoLogin.State.Started;
+
+                welcomeView.OnGUI(rect, clientNeedsConfiguration);
                 return;
             }
 
@@ -289,6 +368,9 @@ namespace Unity.PlasticSCM.Editor.CloudDrive
         {
             if (window.mCloudWorkspacesView != null)
                 window.mCloudWorkspacesView.OnDisable();
+
+            if (window.mWelcomeView != null)
+                window.mWelcomeView.OnDisable();
         }
 
         static void ReOpenWindow(CloudDriveWindow closedWindow)
@@ -310,7 +392,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive
         {
             CloudDriveWindow result = Instantiate(window);
             result.mHasFocus = window.mHasFocus;
-            result.mHasWorkspaceCreated = window.mHasWorkspaceCreated;
+            result.mHasCloudDriveWorkspaces = window.mHasCloudDriveWorkspaces;
             result.mException = window.mException;
             result.mWelcomeView = window.mWelcomeView;
             result.mCloudWorkspacesView = window.mCloudWorkspacesView;
@@ -337,21 +419,10 @@ namespace Unity.PlasticSCM.Editor.CloudDrive
                 UnityConstants.STATUS_BAR_HEIGHT);
         }
 
-        static bool HasCloudDriveWorkspaces(bool hasWorkspaceCreated)
-        {
-            if (hasWorkspaceCreated)
-                return true;
-
-            List<WorkspaceInfo> workspaces =
-                PlasticGui.Plastic.API.GetAllCloudDriveWorkspaces();
-
-            return workspaces != null || workspaces.Count > 0;
-        }
-
         [SerializeField]
         bool mForceToReOpen;
         bool mHasFocus;
-        bool mHasWorkspaceCreated;
+        bool mHasCloudDriveWorkspaces;
         Exception mException;
         WelcomeView mWelcomeView;
         CloudWorkspacesView mCloudWorkspacesView;

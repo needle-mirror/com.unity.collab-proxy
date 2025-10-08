@@ -6,6 +6,7 @@ using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.LogWrapper;
 using PlasticGui;
+using Unity.PlasticSCM.Editor.CloudDrive;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.WebApi;
 
@@ -13,6 +14,12 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 {
     internal class AutoLogin
     {
+        internal interface IWelcomeView
+        {
+            State AutoLoginState { get; set; }
+            void OnUserClosedConfigurationWindow();
+        }
+
         internal enum State : byte
         {
             Off = 0,
@@ -28,19 +35,22 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             ErrorTokenEmpty = 24,
         }
 
-        internal bool Run()
+        internal bool Run(IWelcomeView welcomeView)
         {
             mLog.Debug("Run");
 
-            mUVCSWindow = GetUVCSWindow();
+            if (welcomeView == null)
+                welcomeView = GetWelcomeView();
+
+            mWelcomeView = welcomeView;
 
             if (string.IsNullOrEmpty(CloudProjectSettings.accessToken))
             {
-                mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorNoToken;
+                mWelcomeView.AutoLoginState = AutoLogin.State.ErrorNoToken;
                 return false;
             }
 
-            mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.Running;
+            mWelcomeView.AutoLoginState = AutoLogin.State.Running;
 
             ExchangeTokensAndJoinOrganizationInThreadWaiter(CloudProjectSettings.accessToken);
 
@@ -57,7 +67,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             waiter.Execute(
             /*threadOperationDelegate*/ delegate
             {
-                mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseInit;
+                mWelcomeView.AutoLoginState = AutoLogin.State.ResponseInit;
                 tokenExchangeResponse = WebRestApiClient.PlasticScm.TokenExchange(unityAccessToken);
             },
             /*afterOperationDelegate*/ delegate
@@ -68,7 +78,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
                 if (waiter.Exception != null)
                 {
-                    mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorTokenException;
+                    mWelcomeView.AutoLoginState = AutoLogin.State.ErrorTokenException;
                     ExceptionsHandler.LogException(
                         "TokenExchangeSetting",
                         waiter.Exception);
@@ -78,7 +88,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
                 if (tokenExchangeResponse == null)
                 {
-                    mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorResponseNull;
+                    mWelcomeView.AutoLoginState = AutoLogin.State.ErrorResponseNull;
                     var warning = PlasticLocalization.GetString(PlasticLocalization.Name.TokenExchangeResponseNull);
                     mLog.Warn(warning);
                     Debug.LogWarning(warning);
@@ -87,7 +97,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
                 if (tokenExchangeResponse.Error != null)
                 {
-                    mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorResponseError;
+                    mWelcomeView.AutoLoginState = AutoLogin.State.ErrorResponseError;
                     var warning = string.Format(
                         PlasticLocalization.GetString(PlasticLocalization.Name.TokenExchangeResponseError),
                         tokenExchangeResponse.Error.Message, tokenExchangeResponse.Error.ErrorCode);
@@ -98,7 +108,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
                 if (string.IsNullOrEmpty(tokenExchangeResponse.AccessToken))
                 {
-                    mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ErrorTokenEmpty;
+                    mWelcomeView.AutoLoginState = AutoLogin.State.ErrorTokenEmpty;
                     var warning = string.Format(
                         PlasticLocalization.GetString(PlasticLocalization.Name.TokenExchangeAccessEmpty),
                         tokenExchangeResponse.User);
@@ -107,7 +117,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                     return;
                 }
 
-                mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseEnd;
+                mWelcomeView.AutoLoginState = AutoLogin.State.ResponseEnd;
 
                 Credentials credentials = new Credentials(
                     new SEID(tokenExchangeResponse.User, false, tokenExchangeResponse.AccessToken),
@@ -119,11 +129,13 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         void ShowOrganizationsPanel(Credentials credentials)
         {
-            mUVCSWindow = GetUVCSWindow();
-            mUVCSWindow.GetWelcomeView().autoLoginState = AutoLogin.State.ResponseSuccess;
+            if (mWelcomeView == null)
+                mWelcomeView = GetWelcomeView();
+
+            mWelcomeView.AutoLoginState = AutoLogin.State.ResponseSuccess;
 
             CloudEditionWelcomeWindow.ShowWindow(
-                PlasticGui.Plastic.WebRestAPI, null, true);
+                PlasticGui.Plastic.WebRestAPI, mWelcomeView, true);
 
             mCloudEditionWelcomeWindow = CloudEditionWelcomeWindow.GetWelcomeWindow();
 
@@ -132,18 +144,24 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mCloudEditionWelcomeWindow.Focus();
         }
 
-        static UVCSWindow GetUVCSWindow()
+        static IWelcomeView GetWelcomeView()
         {
-            var windows = Resources.FindObjectsOfTypeAll<UVCSWindow>();
-            UVCSWindow uvcsWindow = windows.Length > 0 ? windows[0] : null;
+            var uvcsWindows = Resources.FindObjectsOfTypeAll<UVCSWindow>();
+            UVCSWindow uvcsWindow = uvcsWindows.Length > 0 ? uvcsWindows[0] : null;
 
-            if (uvcsWindow == null)
-                uvcsWindow = ShowWindow.UVCS();
+            if (uvcsWindow != null)
+                return uvcsWindow.GetWelcomeView();
 
-            return uvcsWindow;
+            var cloudDriveWindows = Resources.FindObjectsOfTypeAll<CloudDriveWindow>();
+            CloudDriveWindow cloudDriveWindow = cloudDriveWindows.Length > 0 ? cloudDriveWindows[0] : null;
+
+            if (cloudDriveWindow != null)
+                return cloudDriveWindow.GetWelcomeView();
+
+            return ShowWindow.UVCS().GetWelcomeView();
         }
 
-        UVCSWindow mUVCSWindow;
+        IWelcomeView mWelcomeView;
         CloudEditionWelcomeWindow mCloudEditionWelcomeWindow;
 
         static readonly ILog mLog = PlasticApp.GetLogger("AutoLogin");

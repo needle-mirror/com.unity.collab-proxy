@@ -9,8 +9,9 @@ using Codice.Utils;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
 using Unity.PlasticSCM.Editor.Tool;
-using Unity.PlasticSCM.Editor.UI.UIElements;
+using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.WebApi;
+using ProgressControlsForDialogs = Unity.PlasticSCM.Editor.UI.UIElements.ProgressControlsForDialogs;
 
 namespace Unity.PlasticSCM.Editor.Views.Welcome
 {
@@ -18,20 +19,25 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
     {
         internal interface INotify
         {
+            void DownloadStarted();
+            void DownloadFinished();
             void InstallationStarted();
             void InstallationFinished();
         }
 
         internal static void Run(
             Edition plasticEdition,
-            string installerDestinationPath,
-            ProgressControlsForDialogs progressControls,
+            IProgressControls progressControls,
             INotify notify)
         {
-            ((IProgressControls)progressControls).ShowProgress(
+            progressControls.ShowProgress(
                 PlasticLocalization.GetString(PlasticLocalization.Name.DownloadingProgress));
 
+            notify.DownloadStarted();
+
             NewVersionResponse plasticVersion = null;
+
+            string installerDestinationPath = null;
 
             IThreadWaiter waiter = ThreadWaiter.GetWaiter();
             waiter.Execute(
@@ -47,9 +53,8 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
                         plasticVersion.Version,
                         plasticEdition == Edition.Cloud);
 
-                    DownloadInstaller(
+                    installerDestinationPath = DownloadInstaller(
                         installerUrl,
-                        installerDestinationPath,
                         progressControls);
 
                     if (!PlatformIdentifier.IsMac())
@@ -60,18 +65,19 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
                 },
                 /*afterOperationDelegate*/ delegate
                 {
-                    ((IProgressControls)progressControls).HideProgress();
+                    notify.DownloadFinished();
+                    progressControls.HideProgress();
 
                     if (waiter.Exception != null)
                     {
-                        ((IProgressControls)progressControls).ShowError(
+                        progressControls.ShowError(
                             waiter.Exception.Message);
                         return;
                     }
 
                     if (plasticVersion == null)
                     {
-                        ((IProgressControls)progressControls).ShowError(
+                        progressControls.ShowError(
                             PlasticLocalization.GetString(PlasticLocalization.Name.ConnectingError));
                         return;
                     }
@@ -88,12 +94,15 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
 
         static void RunInstaller(
             string installerPath,
-            ProgressControlsForDialogs progressControls,
+            IProgressControls progressControls,
             INotify notify)
         {
-            progressControls.ProgressData.ProgressPercent = -1;
+            if (progressControls is ProgressControlsForDialogs)
+                ((ProgressControlsForDialogs)progressControls).ProgressData.ProgressPercent = -1;
+            else if (progressControls is ProgressControlsForViews)
+                ((ProgressControlsForViews)progressControls).ProgressData.ProgressPercent = -1;
 
-            ((IProgressControls)progressControls).ShowProgress(
+            progressControls.ShowProgress(
                 PlasticLocalization.GetString(PlasticLocalization.Name.InstallingProgress));
 
             notify.InstallationStarted();
@@ -117,11 +126,11 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
                 /*afterOperationDelegate*/ delegate
                 {
                     notify.InstallationFinished();
-                    ((IProgressControls)progressControls).HideProgress();
+                    progressControls.HideProgress();
 
                     if (waiter.Exception != null)
                     {
-                        ((IProgressControls)progressControls).ShowError(
+                        progressControls.ShowError(
                             waiter.Exception.Message);
                         return;
                     }
@@ -130,21 +139,25 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
                 });
         }
 
-        static void DownloadInstaller(
+        static string DownloadInstaller(
             string url,
-            string destinationPath,
-            ProgressControlsForDialogs progressControls)
+            IProgressControls progressControls)
         {
             int bytesProcessed = 0;
 
             Stream remoteStream = null;
             Stream localStream = null;
             WebResponse response = null;
+            string destinationPath;
 
             try
             {
                 WebRequest request = WebRequest.Create(url);
                 response = request.GetResponse();
+
+                destinationPath = Path.Combine(
+                    Path.GetTempPath(),
+                    Path.GetFileName(response.ResponseUri.AbsolutePath));
 
                 long totalBytes = response.ContentLength;
 
@@ -154,7 +167,8 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
                     UnityEngine.Debug.LogFormat(
                         PlasticLocalization.GetString(PlasticLocalization.Name.SkippingDownloadFileExists),
                         destinationPath);
-                    return;
+
+                    return destinationPath;
                 }
 
                 remoteStream = response.GetResponseStream();
@@ -170,10 +184,14 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
                     localStream.Write(buffer, 0, bytesRead);
                     bytesProcessed += bytesRead;
 
-                    progressControls.ProgressData.ProgressPercent =
-                        GetProgressBarPercent.ForTransfer(
-                            bytesProcessed,
-                            totalBytes) / 100f;
+                    float progressPercent = GetProgressBarPercent.ForTransfer(
+                        bytesProcessed,
+                        totalBytes) / 100f;
+
+                    if (progressControls is ProgressControlsForDialogs)
+                        ((ProgressControlsForDialogs)progressControls).ProgressData.ProgressPercent = progressPercent;
+                    else if (progressControls is ProgressControlsForViews)
+                        ((ProgressControlsForViews)progressControls).ProgressData.ProgressPercent = progressPercent;
                 } while (bytesRead > 0);
             }
             finally
@@ -187,6 +205,8 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
                 if (localStream != null)
                     localStream.Close();
             }
+
+            return destinationPath;
         }
 
         static string UnZipMacOsPackage(

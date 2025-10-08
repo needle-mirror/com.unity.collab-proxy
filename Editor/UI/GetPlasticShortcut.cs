@@ -98,5 +98,44 @@ namespace Unity.PlasticSCM.Editor.UI
                     PlasticLocalization.Name.UnitySwitchShortcutForMacOS);
             return string.Empty;
         }
+
+        internal static string ForRename()
+        {
+            if (PlatformIdentifier.IsWindows())
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.UnityRenameShortcutForWindows);
+
+            if (PlatformIdentifier.IsMac())
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.UnityRenameShortcutForMacOS);
+
+            return string.Empty;
+        }
+
+        internal static string ForShowInExplorer()
+        {
+            if (PlatformIdentifier.IsWindows())
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.UnityShowInExplorerShortcutForWindows);
+
+            if (PlatformIdentifier.IsMac())
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.UnityShowInExplorerShortcutForMacOS);
+
+            return string.Empty;
+        }
+
+        internal static string ForEnter()
+        {
+            if (PlatformIdentifier.IsWindows())
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.UnityEnterShortcutForWindows);
+
+            if (PlatformIdentifier.IsMac())
+                return PlasticLocalization.GetString(
+                    PlasticLocalization.Name.UnityEnterShortcutForMacOS);
+
+            return string.Empty;
+        }
     }
 }

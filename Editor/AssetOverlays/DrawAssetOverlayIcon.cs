@@ -16,9 +16,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             if (overlayIcon == null)
                 return;
 
-            Rect overlayRect = OverlayRect.GetOverlayRect(
-                selectionRect,
-                OVERLAY_ICON_OFFSET);
+            Rect overlayRect = GetOverlayRect.ForSelectionRect(selectionRect);
 
             GUI.DrawTexture(overlayRect, overlayIcon, ScaleMode.ScaleToFit);
 
@@ -29,9 +27,6 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
 
         internal static Texture GetOverlayIcon(AssetStatus assetStatus)
         {
-            if (ClassifyAssetStatus.IsPrivate(assetStatus))
-                return Images.GetPrivatedOverlayIcon();
-
             if (ClassifyAssetStatus.IsIgnored(assetStatus))
                 return Images.GetIgnoredOverlayIcon();
 
@@ -56,8 +51,13 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             if (ClassifyAssetStatus.IsRetained(assetStatus))
                 return Images.GetRetainedOverlayIcon();
 
-            if (ClassifyAssetStatus.IsCheckedOut(assetStatus))
+            if (ClassifyAssetStatus.IsCheckedOut(assetStatus) ||
+                ClassifyAssetStatus.IsChanged(assetStatus) ||
+                ClassifyAssetStatus.ContainsChanges(assetStatus))
                 return Images.GetCheckedOutOverlayIcon();
+
+            if (ClassifyAssetStatus.IsControlled(assetStatus))
+                return Images.GetControlledOverlayIcon();
 
             return null;
         }
@@ -82,7 +82,5 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
 
             return Inflate(overlayRect, 3f, 3f);
         }
-
-        const float OVERLAY_ICON_OFFSET = 20f;
     }
 }

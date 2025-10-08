@@ -20,8 +20,8 @@ namespace Unity.PlasticSCM.Editor.UI
             IconPressedCloseButton,
             IconAddedLocal,
             IconAddedOverlay,
-            IconPrivateOverlay,
             IconCheckedOutLocalOverlay,
+            IconControlledOverlay,
             IconDeleted,
             IconDeletedLocalOverlay,
             IconDeletedRemote,
@@ -32,7 +32,8 @@ namespace Unity.PlasticSCM.Editor.UI
             IconMoved,
             IconMergeLink,
             Ignored,
-            IgnoredOverlay,
+            IconIgnoredOverlay,
+            IconPendingChanges,
             IconConflicted,
             IconConflictedOverlay,
             IconConflictResolvedOverlay,
@@ -40,15 +41,14 @@ namespace Unity.PlasticSCM.Editor.UI
             IconLockedRemoteOverlay,
             IconRetainedOverlay,
             XLink,
-            Ok,
             SecondaryTabClose,
             SecondaryTabCloseHover,
-            NotOnDisk,
             IconRepository,
             IconPlasticView,
             IconPlasticNotifyIncoming,
             IconPlasticNotifyConflict,
             IconPlasticNotifyPendingChanges,
+            IconPlasticNotifyPendingChangesAndIncoming,
             IconPackageUpdateAvailable,
             Loading,
             IconEmptyGravatar,
@@ -63,8 +63,6 @@ namespace Unity.PlasticSCM.Editor.UI
             IconBranches,
             IconBrEx,
             IconCurrentBranch,
-            IconBranchPendingChanges,
-            IconBranchIncomingChanges,
             IconUndo,
             Refresh,
             IconInviteUsers,
@@ -77,6 +75,29 @@ namespace Unity.PlasticSCM.Editor.UI
 
             // Cloud Drive plugin
             IconCloudDriveView,
+        }
+
+        internal static Texture2D ResizeTextureForWindowTitleContent(Texture2D source)
+        {
+            return ResizeTexture(source, 16, 16);
+        }
+
+        internal static Texture2D ResizeTexture(Texture2D source, int width, int height)
+        {
+            RenderTexture previous = RenderTexture.active;
+            RenderTexture rt = RenderTexture.GetTemporary(width, height);
+
+            Graphics.Blit(source, rt);
+
+            RenderTexture.active = rt;
+            Texture2D result = new Texture2D(width, height);
+            result.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+            result.Apply();
+
+            RenderTexture.active = previous;
+            RenderTexture.ReleaseTemporary(rt);
+
+            return result;
         }
 
         internal static Texture2D GetImage(Name image)
@@ -118,14 +139,6 @@ namespace Unity.PlasticSCM.Editor.UI
             return GetShelveIcon();
         }
 
-        internal static Texture GetPrivatedOverlayIcon()
-        {
-            if (mPrivatedOverlayIcon == null)
-                mPrivatedOverlayIcon = GetOverlay(Name.IconPrivateOverlay);
-
-            return mPrivatedOverlayIcon;
-        }
-
         internal static Texture GetAddedOverlayIcon()
         {
             if (mAddedOverlayIcon == null)
@@ -156,6 +169,14 @@ namespace Unity.PlasticSCM.Editor.UI
                 mCheckedOutOverlayIcon = GetOverlay(Name.IconCheckedOutLocalOverlay);
 
             return mCheckedOutOverlayIcon;
+        }
+
+        internal static Texture GetControlledOverlayIcon()
+        {
+            if (mControlledOverlayIcon == null)
+                mControlledOverlayIcon = GetOverlay(Name.IconControlledOverlay);
+
+            return mControlledOverlayIcon;
         }
 
         internal static Texture GetOutOfSyncOverlayIcon()
@@ -208,10 +229,10 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal static Texture GetIgnoredOverlayIcon()
         {
-            if (mIgnoredverlayIcon == null)
-                mIgnoredverlayIcon = GetOverlay(Name.IgnoredOverlay);
+            if (mIgnoredOverlayIcon == null)
+                mIgnoredOverlayIcon = GetOverlay(Name.IconIgnoredOverlay);
 
-            return mIgnoredverlayIcon;
+            return mIgnoredOverlayIcon;
         }
 
         internal static Texture GetWarnIcon()
@@ -260,6 +281,11 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static Texture GetSettingsIcon()
         {
             return GetIconFromEditorGUI("settings");
+        }
+
+        internal static Texture GetCloudIcon()
+        {
+            return GetIconFromEditorGUI("CloudConnect@2x");
         }
 
         internal static Texture GetCloseIcon()
@@ -350,28 +376,20 @@ namespace Unity.PlasticSCM.Editor.UI
             return mCurrentBranchIcon;
         }
 
-        internal static Texture2D GetIconBranchIncomingChanges()
-        {
-            if (mBranchIconIncomingChanges == null)
-                mBranchIconIncomingChanges = GetImage(Name.IconBranchIncomingChanges);
-
-            return mBranchIconIncomingChanges;
-        }
-
-        internal static Texture2D GetIconBranchPendingChanges()
-        {
-            if (mBranchIconPendingChanges == null)
-                mBranchIconPendingChanges = GetImage(Name.IconBranchPendingChanges);
-
-            return mBranchIconPendingChanges;
-        }
-
         internal static Texture2D GetConflictedIcon()
         {
             if (mConflictedIcon == null)
                 mConflictedIcon = GetImage(Name.IconConflicted);
 
             return mConflictedIcon;
+        }
+
+        internal static Texture2D GetPendingChangesIcon()
+        {
+            if (mPendingChangesIcon == null)
+                mPendingChangesIcon = GetImage(Name.IconPendingChanges);
+
+            return mPendingChangesIcon;
         }
 
         internal static Texture2D GetOutOfSyncIcon()
@@ -422,6 +440,14 @@ namespace Unity.PlasticSCM.Editor.UI
             return mPlasticNotifyPendingChangesIcon;
         }
 
+        internal static Texture2D GetPlasticNotifyPendingChangesAndIncomingIcon()
+        {
+            if (mPlasticNotifyPendingChangesAndIncomingIcon == null)
+                mPlasticNotifyPendingChangesAndIncomingIcon = GetImage(Name.IconPlasticNotifyPendingChangesAndIncoming);
+
+            return mPlasticNotifyPendingChangesAndIncomingIcon;
+        }
+
         internal static Texture2D GetCloudDriveViewIcon()
         {
             if (mCloudDriveViewIcon == null)
@@ -468,6 +494,14 @@ namespace Unity.PlasticSCM.Editor.UI
                 mStep2Icon = Images.GetImage(Images.Name.Step2);
 
             return mStep2Icon;
+        }
+
+        internal static Texture2D GetStep3Icon()
+        {
+            if (mStep3Icon == null)
+                mStep3Icon = Images.GetImage(Images.Name.Step3);
+
+            return mStep3Icon;
         }
 
         internal static Texture2D GetMergeLinkIcon()
@@ -815,18 +849,18 @@ namespace Unity.PlasticSCM.Editor.UI
 
         static Texture mFileIcon;
 
-        static Texture mPrivatedOverlayIcon;
         static Texture mAddedOverlayIcon;
         static Texture mDeletedLocalOverlayIcon;
         static Texture mDeletedRemoteOverlayIcon;
         static Texture mCheckedOutOverlayIcon;
+        static Texture mControlledOverlayIcon;
         static Texture mOutOfSyncOverlayIcon;
         static Texture mConflictedOverlayIcon;
         static Texture mConflictResolvedOverlayIcon;
         static Texture mLockedLocalOverlayIcon;
         static Texture mLockedRemoteOverlayIcon;
         static Texture mRetainedOverlayIcon;
-        static Texture mIgnoredverlayIcon;
+        static Texture mIgnoredOverlayIcon;
 
         static Texture mRefreshIcon;
 
@@ -850,8 +884,7 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mBranchesIcon;
         static Texture2D mBranchExplorerIcon;
         static Texture2D mCurrentBranchIcon;
-        static Texture2D mBranchIconIncomingChanges;
-        static Texture2D mBranchIconPendingChanges;
+        static Texture2D mPendingChangesIcon;
         static Texture2D mConflictedIcon;
         static Texture2D mOutOfSyncIcon;
         static Texture2D mIncomingNotificationIcon;
@@ -864,6 +897,7 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mPlasticNotifyIncomingIcon;
         static Texture2D mPlasticNotifyConflictIcon;
         static Texture2D mPlasticNotifyPendingChangesIcon;
+        static Texture2D mPlasticNotifyPendingChangesAndIncomingIcon;
         static Texture2D mCloudDriveViewIcon;
 
         static Texture2D mPackageUpdateAvailabledIcon;
@@ -872,6 +906,7 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mStepOkIcon;
         static Texture2D mStep1Icon;
         static Texture2D mStep2Icon;
+        static Texture2D mStep3Icon;
 
         static Texture2D mMergeLinkIcon;
         static Texture2D mAddedLocalIcon;

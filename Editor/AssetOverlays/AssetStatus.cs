@@ -12,13 +12,15 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
         Checkout        = 1 << 4,
         Controlled      = 1 << 5,
         UpToDate        = 1 << 6,
-        OutOfDate       = 1 << 7,
-        Conflicted      = 1 << 8,
-        DeletedOnServer = 1 << 9,
-        Locked          = 1 << 10,
-        LockedRemote    = 1 << 11,
-        Retained  = 1 << 12,
-        HiddenChanged   = 1 << 13,
+        Changed         = 1 << 7,
+        ContainsChanges = 1 << 8,
+        OutOfDate       = 1 << 9,
+        Conflicted      = 1 << 10,
+        DeletedOnServer = 1 << 11,
+        Locked          = 1 << 12,
+        LockedRemote    = 1 << 13,
+        Retained        = 1 << 14,
+        HiddenChanged   = 1 << 15,
     }
 
     internal class LockStatusData
@@ -68,8 +70,8 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
         internal static bool IsRetained(AssetStatus status)
         {
             return ContainsAny(status, AssetStatus.Retained);
-        }        
-        
+        }
+
         internal static bool IsOutOfDate(AssetStatus status)
         {
             return ContainsAny(status, AssetStatus.OutOfDate);
@@ -93,6 +95,16 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
         internal static bool IsCheckedOut(AssetStatus status)
         {
             return ContainsAny(status, AssetStatus.Checkout);
+        }
+
+        internal static bool IsChanged(AssetStatus status)
+        {
+            return ContainsAny(status, AssetStatus.Changed);
+        }
+
+        internal static bool ContainsChanges(AssetStatus status)
+        {
+            return ContainsAny(status, AssetStatus.ContainsChanges);
         }
 
         internal static bool IsHiddenChanged(AssetStatus status)

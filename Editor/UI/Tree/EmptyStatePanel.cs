@@ -49,7 +49,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                     if (hasOkIcon)
                         GUILayout.Label(Images.GetStepOkIcon(), UnityStyles.EmptyState.Icon);
 
-                    GUILayout.Label(text);
+                    GUILayout.Label(text, UnityStyles.EmptyState.Label);
                 }
             };
 

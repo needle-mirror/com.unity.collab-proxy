@@ -22,6 +22,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const float TREEVIEW_ROW_WIDTH_OFFSET = 24f;
         internal const float FIRST_COLUMN_WITHOUT_ICON_INDENT = 5f;
         internal const int OVERLAY_STATUS_ICON_SIZE = 16;
+        internal const int INSPECTOR_STATUS_ICON_SIZE = 19;
 
         internal const int SETTINGS_GUI_WIDTH = 425;
 
@@ -67,6 +68,7 @@ namespace Unity.PlasticSCM.Editor.UI
         public const double PLUGIN_DELAYED_INITIALIZE_INTERVAL = 0.25;
         internal const int RECOMMEND_MANUAL_CHECKOUT_DELAYED_FRAMES = 2;
         internal const double REFRESH_ASSET_DATABASE_DELAYED_INTERVAL = 0.25;
+        internal const int CHECK_CLOUD_DRIVE_EXE_DELAYED_INTERVAL_MS = 2000;
 
         internal const double NOTIFICATION_CLEAR_INTERVAL = 8;
 

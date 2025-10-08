@@ -23,6 +23,7 @@ using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.Changesets.Dialogs;
 using Unity.PlasticSCM.Editor.Views.Diff;
+using Unity.PlasticSCM.Editor.Views.Merge;
 
 using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
 using IGluonUpdateReport = PlasticGui.Gluon.IUpdateReport;
@@ -128,7 +129,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 mergeViewLauncher,
                 mProgressControls,
                 updateReport,
-                null,
+                new ApplyShelveReport(parentWindow),
                 new ContinueWithPendingChangesQuestionerBuilder(viewSwitcher, parentWindow),
                 mShelvePendingChangesQuestionerBuilder,
                 new ApplyShelveWithConflictsQuestionerBuilder(),

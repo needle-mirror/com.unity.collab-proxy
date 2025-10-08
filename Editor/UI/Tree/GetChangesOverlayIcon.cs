@@ -80,11 +80,9 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             if (type.HasFlag(ItemIconImageType.Deleted))
                 return ForDeleted();
 
-            if (type.HasFlag(ItemIconImageType.CheckedOut))
+            if (type.HasFlag(ItemIconImageType.CheckedOut) ||
+                type.HasFlag(ItemIconImageType.Changed))
                 return ForCheckedOut();
-
-            if (type.HasFlag(ItemIconImageType.Private))
-                return ForPrivated();
 
             return null;
         }
@@ -105,11 +103,6 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
         static Texture ForIgnored()
         {
             return Images.GetIgnoredOverlayIcon();
-        }
-
-        static Texture ForPrivated()
-        {
-            return Images.GetPrivatedOverlayIcon();
         }
 
         static Texture ForAdded()

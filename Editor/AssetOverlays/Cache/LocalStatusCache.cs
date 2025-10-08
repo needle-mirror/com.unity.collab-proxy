@@ -44,28 +44,51 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
             IgnoredFilesFilter ignoredFilter,
             HiddenChangesFilesFilter hiddenChangesFilter)
         {
-            WorkspaceTreeNode treeNode = PlasticGui.Plastic.API.GetWorkspaceTreeNode(
+            WorkspaceTreeNode node = PlasticGui.Plastic.API.GetWorkspaceTreeNode(
                 wkInfo, fullPath);
 
-            if (CheckWorkspaceTreeNodeStatus.IsPrivate(treeNode))
+            if (CheckWorkspaceTreeNodeStatus.IsPrivate(node))
             {
                 return ignoredFilter.IsIgnored(fullPath) ?
                     AssetStatus.Ignored : AssetStatus.Private;
             }
 
-            if (CheckWorkspaceTreeNodeStatus.IsAdded(treeNode))
+            if (CheckWorkspaceTreeNodeStatus.IsAdded(node))
                 return AssetStatus.Added;
 
-            AssetStatus result = AssetStatus.Controlled;
+            AssetStatus status = AssetStatus.Controlled;
 
-            if (CheckWorkspaceTreeNodeStatus.IsCheckedOut(treeNode) &&
-                !CheckWorkspaceTreeNodeStatus.IsDirectory(treeNode))
-                result |= AssetStatus.Checkout;
+            status |= CalculateControlledFlags(wkInfo, fullPath, node);
+            status |= GetHiddenChangeFlag(fullPath, hiddenChangesFilter);
 
-            if (hiddenChangesFilter.IsHiddenChanged(fullPath))
-                result |= AssetStatus.HiddenChanged;
+            return status;
+        }
 
-            return result;
+        static AssetStatus CalculateControlledFlags(
+            WorkspaceInfo wkInfo,
+            string fullPath,
+            WorkspaceTreeNode node)
+        {
+            if (CheckWorkspaceTreeNodeStatus.IsCheckedOut(node))
+                return AssetStatus.Checkout;
+
+            if (CheckWorkspaceTreeNodeStatus.IsDirectory(node))
+                return PlasticGui.Plastic.API.IsOnChangedTree(wkInfo, fullPath)
+                    ? AssetStatus.ContainsChanges
+                    : AssetStatus.None;
+
+            return ChangedFileChecker.IsChanged(node.LocalInfo, fullPath, false)
+                ? AssetStatus.Changed
+                : AssetStatus.None;
+        }
+
+        static AssetStatus GetHiddenChangeFlag(
+            string fullPath,
+            HiddenChangesFilesFilter hiddenChangesFilter)
+        {
+            return hiddenChangesFilter.IsHiddenChanged(fullPath)
+                ? AssetStatus.HiddenChanged
+                : AssetStatus.None;
         }
 
         readonly WorkspaceInfo mWkInfo;

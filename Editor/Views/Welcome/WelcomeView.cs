@@ -1,3 +1,6 @@
+using UnityEditor;
+using UnityEngine;
+
 using Codice.Client.BaseCommands;
 using Codice.Client.Common;
 using Codice.Client.Common.WebApi;
@@ -8,13 +11,13 @@ using Unity.PlasticSCM.Editor.Configuration.TeamEdition;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.Views.CreateWorkspace;
-using UnityEditor;
-using UnityEngine;
 
 namespace Unity.PlasticSCM.Editor.Views.Welcome
 {
-    internal class WelcomeView
+    internal class WelcomeView : AutoLogin.IWelcomeView
     {
+        AutoLogin.State AutoLogin.IWelcomeView.AutoLoginState { get; set; }
+
         internal WelcomeView(
             UVCSWindow parentWindow,
             CreateWorkspaceView.ICreateWorkspaceListener createWorkspaceListener,
@@ -27,7 +30,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             mPlasticWebRestApi = plasticWebRestApi;
 
             mConfigureProgress = new ProgressControlsForViews();
-            autoLoginState = AutoLogin.State.Off;
+            ((AutoLogin.IWelcomeView)this).AutoLoginState = AutoLogin.State.Off;
         }
 
         internal void Update()
@@ -53,7 +56,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             GUILayout.EndHorizontal();
         }
 
-        internal void OnUserClosedConfigurationWindow()
+        void AutoLogin.IWelcomeView.OnUserClosedConfigurationWindow()
         {
             ((IProgressControls)mConfigureProgress).HideProgress();
 
@@ -130,14 +133,16 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
 
         void DoConfigureButton(ProgressControlsForViews configureProgress)
         {
-            bool isAutoLoginRunning = autoLoginState >= AutoLogin.State.Running && autoLoginState <= AutoLogin.State.ResponseSuccess;
+            bool isAutoLoginRunning =
+                ((AutoLogin.IWelcomeView)this).AutoLoginState >= AutoLogin.State.Running &&
+                ((AutoLogin.IWelcomeView)this).AutoLoginState <= AutoLogin.State.ResponseSuccess;
             GUI.enabled = !(configureProgress.ProgressData.IsOperationRunning || isAutoLoginRunning);
 
             if (GUILayout.Button(PlasticLocalization.GetString(
                 PlasticLocalization.Name.LoginOrSignUp),
                 GUILayout.Width(BUTTON_WIDTH)))
             {
-                if (new AutoLogin().Run())
+                if (new AutoLogin().Run(this))
                 {
                     return;
                 }
@@ -269,8 +274,6 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
 
             return mCreateWorkspaceView;
         }
-
-        internal AutoLogin.State autoLoginState = AutoLogin.State.Off;
 
         bool mIsCreateWorkspaceButtonClicked = false;
 

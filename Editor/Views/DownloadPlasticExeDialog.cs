@@ -67,7 +67,6 @@ namespace Unity.PlasticSCM.Editor.Views
             instance.mCancelInstallFrom = cancelInstallFrom;
             instance.mIsGluonMode = isGluonMode;
             instance.mProgressData = progressData;
-            instance.mInstallerFile = GetInstallerTmpFileName.ForPlatform();
             instance.mIsCloudEdition = EditionToken.IsCloudEdition();
             instance.mTitle = PlasticLocalization.Name.UnityVersionControl.GetString();
             return instance;
@@ -132,14 +131,14 @@ namespace Unity.PlasticSCM.Editor.Views
                 TrackFeatureUseEvent.For(mRepSpec, mInstallCloudFrom);
 
                 DownloadAndInstallOperation.Run(
-                    Edition.Cloud, mInstallerFile, mProgressControls, this);
+                    Edition.Cloud, mProgressControls, this);
             }
             else
             {
                 TrackFeatureUseEvent.For(mRepSpec, mInstallEnterpriseFrom);
 
                 DownloadAndInstallOperation.Run(
-                    Edition.Enterprise, mInstallerFile, mProgressControls, this);
+                    Edition.Enterprise, mProgressControls, this);
             }
         }
 
@@ -151,6 +150,14 @@ namespace Unity.PlasticSCM.Editor.Views
         void DownloadAndInstallOperation.INotify.InstallationFinished()
         {
             mIsPlasticInstalling = false;
+        }
+
+        void DownloadAndInstallOperation.INotify.DownloadStarted()
+        {
+        }
+
+        void DownloadAndInstallOperation.INotify.DownloadFinished()
+        {
         }
 
         bool InstallationFinished()
@@ -248,7 +255,6 @@ namespace Unity.PlasticSCM.Editor.Views
         string mInstallCloudFrom;
         string mInstallEnterpriseFrom;
         string mCancelInstallFrom;
-        string mInstallerFile;
         bool mIsCloudEdition;
         bool mIsGluonMode;
         bool mIsPlasticInstalling;

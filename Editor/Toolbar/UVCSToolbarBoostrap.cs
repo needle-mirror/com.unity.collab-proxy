@@ -1,53 +1,59 @@
+#if UNITY_6000_3_OR_NEWER
 using UnityEditor;
+using UnityEngine;
+using UnityEditor.Toolbars;
 
-using Unity.PlasticSCM.Editor.Configuration;
 using Unity.PlasticSCM.Editor.Toolbar;
 
-namespace Unity.Cloud.Collaborate
+namespace Assets.Plugins.PlasticSCM.Editor.Toolbar
 {
     [InitializeOnLoad]
     static class UVCSToolbarBoostrap
     {
         static UVCSToolbarBoostrap()
         {
-            if (!ToolConfig.EnableNewUVCSToolbarButtonTokenExists())
-                return;
-
-            mDropDownButton = new UVCSToolbarButton(
-                UVCSToolbar.Controller.PopupClicked,
-                Toolbar.RepaintToolbar);
-
-            Toolbar.AddSubToolbar(mDropDownButton);
-
-            UVCSToolbar.Controller.OnToolbarInvalidated += ToolbarInvalidated;
-            UVCSToolbar.Controller.OnToolbarButtonInvalidated += ButtonInvalidated;
+            UVCSToolbar.Controller.OnToolbarInvalidated += RebuildToolbarButton;
+            UVCSToolbar.Controller.OnToolbarButtonInvalidated += RebuildToolbarButton;
         }
 
-        static void ToolbarInvalidated()
-        {
-            Toolbar.RepaintToolbar();
-        }
-
-        static void ButtonInvalidated()
+        [MainToolbarElement(ToolbarController.ToolbarButtonPath, defaultDockPosition = MainToolbarDockPosition.Left, defaultDockIndex = 11)]
+        [UnityOnlyMainToolbarPreset]
+        static MainToolbarDropdown CreateControl()
         {
             UVCSToolbarButtonData buttonData = UVCSToolbar.Controller.GetButtonData();
 
-            mDropDownButton.BeginUpdate();
+            if (!buttonData.IsVisible)
+                return null;
 
-            try
-            {
-                mDropDownButton.Text = buttonData.Text;
-                mDropDownButton.Tooltip = buttonData.Tooltip;
-                mDropDownButton.LeftIcon = buttonData.LeftIcon;
-                mDropDownButton.RightIcon = buttonData.RightIcon;
-                mDropDownButton.IsVisible = buttonData.IsVisible;
-            }
-            finally
-            {
-                mDropDownButton.EndUpdate();
-            }
+            return new MainToolbarDropdown(
+                new MainToolbarContent(
+                    Truncate(buttonData.Text, mMaxTextLength),
+                    buttonData.Icon as Texture2D,
+                    buttonData.Tooltip),
+                OpenDropdown);
         }
 
-        static UVCSToolbarButton mDropDownButton;
+        static string Truncate(string text, int maxTextLength)
+        {
+            const string ellipsis = "...";
+
+            if (text.Length <= maxTextLength)
+                return text;
+
+            return string.Concat(text.Substring(0, maxTextLength - ellipsis.Length), ellipsis);
+        }
+
+        static void RebuildToolbarButton()
+        {
+            MainToolbar.Refresh(ToolbarController.ToolbarButtonPath);
+        }
+
+        static void OpenDropdown(Rect rect)
+        {
+            UVCSToolbar.Controller.PopupClicked(rect);
+        }
+
+        const int mMaxTextLength = 35;
     }
 }
+#endif

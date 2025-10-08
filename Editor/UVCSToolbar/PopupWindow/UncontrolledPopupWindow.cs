@@ -47,6 +47,15 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow
                 return;
             }
 
+#if UNITY_EDITOR_WIN && UNITY_6000_0_OR_NEWER && !UNITY_6000_3_OR_NEWER
+            // Workaround for Unity 6.0-6.2 on Windows: close popup if mouse goes above toolbar
+            if (ToolbarMouseBoundary.IsAboveToolbar(rect, Event.current.mousePosition))
+            {
+                editorWindow.Close();
+                return;
+            }
+#endif
+
             GUILayout.Space(1);
 
             Rect useVersionControlRect;
@@ -124,6 +133,12 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow
                 hideVersionControlRect,
                 settingsRect,
                 learnMoreRect);
+
+#if UNITY_EDITOR_WIN && UNITY_6000_0_OR_NEWER && !UNITY_6000_3_OR_NEWER
+            // Request continuous repaint to track mouse position even outside popup rect
+            if (editorWindow != null)
+                editorWindow.Repaint();
+#endif
         }
 
         void ExecuteAndClosePopup(Action action)

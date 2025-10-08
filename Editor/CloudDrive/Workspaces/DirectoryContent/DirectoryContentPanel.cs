@@ -1,18 +1,22 @@
-using System;
 using System.Collections.Generic;
+using System.IO;
 
+using Codice.CM.Common;
+using Codice.Utils;
 using UnityEditor;
 using UnityEngine;
 
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Items;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.Views;
 
 namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
 {
-    internal interface IDirectoryContentMenuOperations
+    internal interface ICloudWorkspacesOperations
     {
-        void Open(ExpandedTreeNode node);
+        void ImportInProject(string[] srcPaths, string dstProjectPath);
+        void DeleteItems(List<string> paths);
     }
 
     internal class DirectoryContentPanel : IDirectoryContentMenuOperations
@@ -28,12 +32,17 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
         internal DirectoryContentPanel(
             ICloudWorkspacesTreeView treeView,
             IDragAndDrop dragAndDrop,
+            ICloudWorkspacesOperations cloudWorkspacesOperations,
             EditorWindow parentWindow)
         {
             mTreeView = treeView;
-            mRepaintAction = parentWindow.Repaint;
+            mCloudWorkspacesOperations = cloudWorkspacesOperations;
+            mParentWindow = parentWindow;
 
-            BuildComponents(dragAndDrop, parentWindow);
+            BuildComponents(
+                new DirectoryContentPanelMenu(this),
+                dragAndDrop,
+                parentWindow);
         }
 
         internal void OnGUI(Rect rect, bool hasFocus)
@@ -41,7 +50,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             if (Event.current.type == EventType.Repaint && rect != mLastValidRect)
             {
                 mLastValidRect = rect;
-                mRepaintAction();
+                mParentWindow.Repaint();
             }
 
             mItemsGridView.OnGUI(
@@ -76,18 +85,111 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
                 itemsPathsToSelect,
                 mItemsGridView);
 
-            mRepaintAction();
+            mParentWindow.Repaint();
         }
 
         internal void CleanItems()
         {
+            mItemsDirNode = null;
+
             mItemsGridView.CleanItems();
 
-            mRepaintAction();
+            mParentWindow.Repaint();
         }
 
-        void IDirectoryContentMenuOperations.Open(ExpandedTreeNode node)
+        int IDirectoryContentMenuOperations.GetSelectedItemsCount()
         {
+            return mItemsGridView.GetSelectedItemsCount();
+        }
+
+        bool IDirectoryContentMenuOperations.IsAnyFileSelected()
+        {
+            List<string> selectedPaths = mItemsGridView.GetSelectedItemsPaths();
+
+            foreach (string path in selectedPaths)
+            {
+                if (File.Exists(path))
+                    return true;
+            }
+
+            return false;
+        }
+
+        bool IDirectoryContentMenuOperations.IsPathSelected()
+        {
+            return mItemsDirNode != null;
+        }
+
+        void IDirectoryContentMenuOperations.CreateFolder()
+        {
+            List<string> selectedPaths = mItemsGridView.GetSelectedItemsPaths();
+
+            string parentPath;
+            if (selectedPaths.Count == 0 && mItemsDirNode != null)
+                parentPath = mItemsDirNode.GetFullPath();
+            else if (selectedPaths.Count == 1)
+                parentPath = selectedPaths[0];
+            else
+                return;
+
+            string newName = NewNameDialog.GetNewNameForCreate(
+                parentPath, true, mParentWindow);
+
+            if (string.IsNullOrEmpty(newName))
+                return;
+
+            Directory.CreateDirectory(
+                Path.Combine(parentPath, newName));
+        }
+
+        void IDirectoryContentMenuOperations.OpenInExplorer()
+        {
+            if (mItemsDirNode == null)
+                return;
+
+            List<string> selectedPaths = mItemsGridView.GetSelectedItemsPaths();
+
+            if (selectedPaths.Count == 0)
+            {
+                FileSystemOperation.OpenInExplorer(mItemsDirNode.GetFullPath());
+                return;
+            }
+
+            FileSystemOperation.OpenInExplorer(selectedPaths);
+        }
+
+        void IDirectoryContentMenuOperations.OpenUnityCloud()
+        {
+            ExpandedTreeNode selectedNode = mItemsGridView.GetSelectedItem();
+
+            if (selectedNode == null)
+                selectedNode = mItemsDirNode;
+
+            WorkspaceInfo workspaceInfo = selectedNode.WkInfo;
+
+            RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(workspaceInfo);
+            string cloudServer = CloudServer.GetOrganizationName(repSpec.Server);
+            RepositoryInfo repInfo = PlasticGui.Plastic.API.GetRepositoryInfo(repSpec);
+
+            if (ExpandedTreeNode.IsDirectory(selectedNode))
+            {
+                OpenBrowser.TryOpen(UnityUrl.UnityDashboard.CloudDrive.GetWorkspaceDirPath(
+                    cloudServer,
+                    repInfo.GUID.ToString(),
+                    selectedNode.RelativePath));
+                return;
+            }
+
+            OpenBrowser.TryOpen(UnityUrl.UnityDashboard.CloudDrive.GetWorkspaceItemPath(
+                cloudServer,
+                repInfo.GUID.ToString(),
+                selectedNode.RelativePath));
+        }
+
+        void IDirectoryContentMenuOperations.Open()
+        {
+            ExpandedTreeNode node = mItemsGridView.GetSelectedItem();
+
             if (node == null)
                 return;
 
@@ -100,8 +202,77 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             mTreeView.SelectNode(node.WkInfo.ClientPath, node.GetFullPath());
         }
 
+        void IDirectoryContentMenuOperations.Delete()
+        {
+            List<string> selectedPaths = mItemsGridView.GetSelectedItemsPaths();
+
+            if (selectedPaths.Count == 0)
+            {
+                mCloudWorkspacesOperations.DeleteItems(
+                    new List<string> { mItemsDirNode.GetFullPath() });
+                return;
+            }
+
+            mCloudWorkspacesOperations.DeleteItems(selectedPaths);
+        }
+
+        void IDirectoryContentMenuOperations.Rename()
+        {
+            ExpandedTreeNode node = mItemsGridView.GetSelectedItem();
+
+            string currentPath = node == null ?
+                mItemsDirNode.GetFullPath() : node.GetFullPath();
+
+            string parentPath = Path.GetDirectoryName(currentPath);
+            string currentName = Path.GetFileName(currentPath);
+            bool isDirectory = Directory.Exists(currentPath);
+
+            string newName = NewNameDialog.GetNewNameForRename(
+                parentPath,
+                currentName,
+                isDirectory,
+                mParentWindow);
+
+            if (string.IsNullOrEmpty(newName) || newName == currentName)
+                return;
+
+            string newPath = Path.Combine(parentPath, newName);
+
+            if (File.Exists(currentPath))
+                File.Move(currentPath, newPath);
+            else
+                Directory.Move(currentPath, newPath);
+        }
+
+        void IDirectoryContentMenuOperations.ImportInProject()
+        {
+            if (mItemsDirNode == null)
+                return;
+
+            bool hasItemsSelected = mItemsGridView.GetSelectedItemsCount() > 0;
+
+            string projectPath = ImportInProjectDialog.GetProjectPathToImport(
+                hasItemsSelected ?
+                    mItemsDirNode.GetFullPath() :
+                    Path.GetDirectoryName(mItemsDirNode.GetFullPath()),
+                mItemsDirNode.WkInfo.ClientPath,
+                mParentWindow);
+
+            if (string.IsNullOrEmpty(projectPath))
+                return;
+
+            mCloudWorkspacesOperations.ImportInProject(
+                hasItemsSelected ?
+                    mItemsGridView.GetSelectedItemsPaths().ToArray() :
+                    new string[] { mItemsDirNode.GetFullPath() },
+                projectPath);
+        }
+
         void NavigateBackAction()
         {
+            if (mItemsDirNode == null)
+                return;
+
             ExpandedTreeNode parentNode = (ExpandedTreeNode)
                 ((IPlasticTreeNode)mItemsDirNode).GetParent();
 
@@ -116,7 +287,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             if (mItemsGridView.GetSelectedItemsCount() != 1)
                 return;
 
-            ((IDirectoryContentMenuOperations)this).Open(mItemsGridView.GetSelectedItem());
+            ((IDirectoryContentMenuOperations)this).Open();
         }
 
         static Rect GetGridAreaRect(Rect rect)
@@ -141,10 +312,12 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
         }
 
         void BuildComponents(
+            DirectoryContentPanelMenu menu,
             IDragAndDrop dragAndDrop,
             EditorWindow parentWindow)
         {
             mItemsGridView = new ItemsGridView(
+                menu,
                 dragAndDrop,
                 parentWindow,
                 OnItemDoubleClickAction,
@@ -156,8 +329,9 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
 
         ExpandedTreeNode mItemsDirNode;
 
-        readonly Action mRepaintAction;
         readonly ICloudWorkspacesTreeView mTreeView;
+        readonly ICloudWorkspacesOperations mCloudWorkspacesOperations;
+        readonly EditorWindow mParentWindow;
 
         const int SEPARATOR_HEIGHT = 1;
         const int ITEM_NAME_BAR_HEIGHT = 20;

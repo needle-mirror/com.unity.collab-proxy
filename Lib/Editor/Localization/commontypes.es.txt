@@ -621,6 +621,9 @@ No se pudieron cargar datos del usuario y la máquina clientes.
 == GetRevinfo ==
 No se ha podido cargar información de revisiones de {0}.
 
+== GenericException ==
+{0}
+
 == GenericInvalidCredentials ==
 Las credenciales del usuario no son válidas.
 

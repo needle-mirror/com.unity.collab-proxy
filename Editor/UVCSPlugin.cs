@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
+using UnityEditor;
 using UnityEngine;
 
 using Codice.Client.BaseCommands;
@@ -136,7 +137,7 @@ namespace Unity.PlasticSCM.Editor
             return TransactionManager.Get().ExistsAnyWorkspaceTransaction(mWkInfo);
         }
 
-        internal Texture GetPluginStatusIcon()
+        internal Texture2D GetPluginStatusIcon()
         {
             return mNotificationStatus.GetIcon();
         }
@@ -216,7 +217,7 @@ namespace Unity.PlasticSCM.Editor
 
             AssetsProcessors.Enable(
                 mWkInfo.ClientPath, uvcsAssetsProcessor, mAssetStatusCache);
-            ProjectViewAssetMenu.Enable(
+            ProjectViewUVCSAssetMenu.Enable(
                 mWkInfo, PlasticGui.Plastic.API, mAssetStatusCache);
             DrawProjectOverlay.Enable(
                 mWkInfo.ClientPath, mAssetStatusCache);
@@ -229,9 +230,6 @@ namespace Unity.PlasticSCM.Editor
                 mWkInfo, PlasticGui.Plastic.API, mAssetStatusCache);
 
             EnsureServerConnectionAsync(mWkInfo, mUVCSConnectionMonitor);
-
-            if (!ToolConfig.EnableNewUVCSToolbarButtonTokenExists())
-                return;
 
             UVCSToolbar.Controller.SetWorkspace(wkInfo, mIsGluonMode);
         }
@@ -322,6 +320,15 @@ namespace Unity.PlasticSCM.Editor
                 return;
 
             window.OnApplicationDeactivated();
+        }
+
+        internal void OnPlayModeStateChanged(PlayModeStateChange state)
+        {
+            mLog.Debug("OnPlayModeStateChanged: " + state);
+
+            if (state == PlayModeStateChange.ExitingPlayMode ||
+                state == PlayModeStateChange.EnteredEditMode)
+                UVCSToolbar.Controller.UpdateIcon(GetPluginStatusIcon());
         }
 
         internal bool OnEditorWantsToQuit()
@@ -496,7 +503,7 @@ namespace Unity.PlasticSCM.Editor
             mAssetStatusCache.Cancel();
 
             AssetsProcessors.Disable();
-            ProjectViewAssetMenu.Disable();
+            ProjectViewUVCSAssetMenu.Disable();
             DrawProjectOverlay.Disable();
             DrawInspectorOperations.Disable();
             DrawSceneOperations.Disable();
@@ -585,12 +592,12 @@ namespace Unity.PlasticSCM.Editor
         {
             notificationStatus.WorkspaceStatusResult = workspaceStatusResult;
 
-            Texture pluginStatusIcon = notificationStatus.GetIcon();
+            Texture2D pluginStatusIcon = notificationStatus.GetIcon();
 
             if (window != null)
                 window.UpdateWindowIcon(pluginStatusIcon);
 
-            UVCSToolbar.Controller.UpdateLeftIcon(pluginStatusIcon);
+            UVCSToolbar.Controller.UpdateIcon(pluginStatusIcon);
             UVCSToolbar.Controller.UpdatePendingChangesInfoTooltipText(
                 notificationStatus.GetPendingChangesInfoTooltipText());
 
@@ -610,7 +617,7 @@ namespace Unity.PlasticSCM.Editor
         {
             notificationStatus.IncomingChanges = incomingChangesStatus;
 
-            Texture pluginStatusIcon = notificationStatus.GetIcon();
+            Texture2D pluginStatusIcon = notificationStatus.GetIcon();
 
             if (window != null)
             {
@@ -619,7 +626,7 @@ namespace Unity.PlasticSCM.Editor
                 window.UpdateWindowIcon(pluginStatusIcon);
             }
 
-            UVCSToolbar.Controller.UpdateLeftIcon(pluginStatusIcon);
+            UVCSToolbar.Controller.UpdateIcon(pluginStatusIcon);
             UVCSToolbar.Controller.UpdateIncomingChangesInfoTooltipText(infoText);
 
             if (onNotificationStatusUpdated != null)

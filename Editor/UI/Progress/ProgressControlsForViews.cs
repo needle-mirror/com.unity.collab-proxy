@@ -60,6 +60,24 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
             }
         }
 
+        internal void ForcedUpdateProgress(EditorWindow parentWindow)
+        {
+            double updateTime;
+            float progressPercent;
+            GetUpdateProgress(
+                mLastUpdateTime, mData.ProgressPercent,
+                out updateTime, out progressPercent);
+
+            mLastUpdateTime = updateTime;
+
+            if (!IsOperationRunning())
+                return;
+
+            mData.ProgressPercent = progressPercent;
+
+            parentWindow.Repaint();
+        }
+
         void IProgressControls.HideProgress()
         {
             HideNotification();
@@ -131,8 +149,25 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
                 mData.ProgressPercent = .1f;
         }
 
+        static void GetUpdateProgress(
+            double lastUpdateTime, float lastProgressPercent,
+            out double updateTime, out float progressPercent)
+        {
+            updateTime = EditorApplication.timeSinceStartup;
+
+            double deltaTime = System.Math.Min(0.1, updateTime - lastUpdateTime);
+            double deltaPercent = (deltaTime / 0.1) * PERCENT_PER_SECONDS;
+
+            progressPercent = UnityEngine.Mathf.Repeat(
+                lastProgressPercent + (float)deltaPercent, 1f);
+        }
+
+        double mLastUpdateTime = 0.0;
+
         Data mData = new Data();
 
         bool mRequestedRepaint;
+
+        const double PERCENT_PER_SECONDS = 0.06;
     }
 }

@@ -80,7 +80,7 @@ namespace Unity.PlasticSCM.Editor
                 return null;
             }
 
-            mLog.DebugFormat("Package {0} version: {1}", NAME, Data.Version);
+            mLog.DebugFormat("Package {0} version: {1}", NAME, packageInfo.version);
             return packageInfo;
         }
 

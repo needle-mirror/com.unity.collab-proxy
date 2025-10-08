@@ -19,17 +19,30 @@ namespace Unity.PlasticSCM.Editor
             Conflicts
         }
 
-        internal Texture GetIcon()
+        internal Texture2D GetIcon()
         {
-            if (IncomingChanges == IncomingChangesStatus.Changes)
-                return Images.GetPlasticNotifyIncomingIcon();
-
+            // conflicts has precedence over everything else
             if (IncomingChanges == IncomingChangesStatus.Conflicts)
                 return Images.GetPlasticNotifyConflictIcon();
 
+            // incoming changes scenarios
+            if (IncomingChanges == IncomingChangesStatus.Changes)
+            {
+                if (WorkspaceStatusResult != null)
+                {
+                    // both incoming changes and pending changes
+                    return Images.GetPlasticNotifyPendingChangesAndIncomingIcon();
+                }
+
+                // incoming changes only
+                return Images.GetPlasticNotifyIncomingIcon();
+            }
+
+            // pending changes only
             if (WorkspaceStatusResult != null)
                 return Images.GetPlasticNotifyPendingChangesIcon();
 
+            // default state
             return Images.GetPlasticViewIcon();
         }
 

@@ -16,6 +16,7 @@ using Unity.PlasticSCM.Editor.Toolbar.Headless;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.Views;
 using Unity.PlasticSCM.Editor.Views.Branches.Dialogs;
+using Unity.PlasticSCM.Editor.Views.Merge;
 
 namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
 {
@@ -29,6 +30,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
             IRefreshableView branchesListPopupPanel,
             Action<BranchInfo> setWorkingBranch,
             Func<RepositorySpec> fetchRepSpec,
+            Func<BranchInfo> fetchMainBranch,
             Func<BranchInfo> fetchWorkingBranch)
         {
             mWkInfo = wkInfo;
@@ -38,6 +40,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
             mRefreshWorkspaceWorkingInfo = refreshWorkspaceWorkingInfo;
             mBranchesListPopupPanel = branchesListPopupPanel;
             mFetchRepSpec = fetchRepSpec;
+            mFetchMainBranch = fetchMainBranch;
             mFetchWorkingBranch = fetchWorkingBranch;
             mWindow = FindEditorWindow.FirstAvailableWindow();
 
@@ -58,7 +61,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
                 ViewType.BranchesListPopup,
                 mProgressControls,
                 new HeadlessUpdateReport(),
-                null,                
+                new ApplyShelveReport(mWindow),
                 new ContinueWithPendingChangesQuestionerBuilder(new HeadlessViewSwitcher(), mWindow),
                 mShelvePendingChangesQuestionerBuilder,
                 new ApplyShelveWithConflictsQuestionerBuilder(),
@@ -103,6 +106,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
         internal void CreateBranch(string proposedBranchName)
         {
             RepositorySpec repSpec = mFetchRepSpec();
+            BranchInfo mainBranch = mFetchMainBranch();
             BranchInfo workingBranch = mFetchWorkingBranch();
 
             if (repSpec == null || workingBranch == null)
@@ -110,11 +114,19 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
 
             if (mIsGluonMode)
             {
-                CreateBranchForGluonMode(proposedBranchName, repSpec, workingBranch);
+                CreateBranchForGluonMode(
+                    proposedBranchName,
+                    repSpec,
+                    mainBranch,
+                    workingBranch);
                 return;
             }
 
-            CreateBranchForDeveloperMode(proposedBranchName, repSpec, workingBranch);
+            CreateBranchForDeveloperMode(
+                proposedBranchName,
+                repSpec,
+                mainBranch,
+                workingBranch);
         }
 
         void IQueryRefreshableView.RefreshAndSelect(RepObjectInfo repObj)
@@ -126,11 +138,13 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
         void CreateBranchForGluonMode(
             string proposedBranchName,
             RepositorySpec repSpec,
+            BranchInfo mainBranch,
             BranchInfo workingBranch)
         {
-            BranchCreationData branchCreationData = CreateBranchDialog.CreateBranchFromLastParentBranchChangeset(
+            BranchCreationData branchCreationData = CreateBranchDialog.CreateBranchFromMainOrCurrentBranch(
                 mWindow,
                 repSpec,
+                mainBranch,
                 workingBranch,
                 proposedBranchName);
 
@@ -157,11 +171,13 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
         void CreateBranchForDeveloperMode(
             string proposedBranchName,
             RepositorySpec repSpec,
+            BranchInfo mainBranch,
             BranchInfo workingBranch)
         {
-            BranchCreationData branchCreationData = CreateBranchDialog.CreateBranchFromLastParentBranchChangeset(
+            BranchCreationData branchCreationData = CreateBranchDialog.CreateBranchFromMainOrCurrentBranch(
                 mWindow,
                 repSpec,
+                mainBranch,
                 workingBranch,
                 proposedBranchName);
 
@@ -210,9 +226,34 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
                     ProjectPackages.ShouldBeResolvedFromUpdateReport(mWkInfo, items)));
         }
 
-        /*[Shortcut("UVCS/ShowPendingChangesView",
-                  ToolbarOperationsShortcut.PendingChangesShortcutKey,
-                  ToolbarOperationsShortcut.PendingChangesShortcutModifiers)]*/
+        [Shortcut("UVCS/ShowPendingChangesView",
+          ToolbarOperationsShortcut.PendingChangesShortcutKey,
+          ToolbarOperationsShortcut.PendingChangesShortcutModifiers)]
+        static void ExecuteShowPendingChangesViewShortcut()
+        {
+            if (!UVCSPlugin.Instance.IsEnabled())
+                return;
+
+            if (!UVCSToolbar.Controller.IsControlledProject())
+                return;
+
+            DoShowPendingChangesView(UVCSPlugin.Instance);
+        }
+
+        [Shortcut("UVCS/ShowIncomingChangesView",
+          ToolbarOperationsShortcut.IncomingChangesShortcutKey,
+          ToolbarOperationsShortcut.IncomingChangesShortcutModifiers)]
+        static void ExecuteShowIncomingViewShortcut()
+        {
+            if (!UVCSPlugin.Instance.IsEnabled())
+                return;
+
+            if (!UVCSToolbar.Controller.IsControlledProject())
+                return;
+
+            DoShowIncomingChangesView(UVCSPlugin.Instance);
+        }
+
         static void DoShowPendingChangesView(UVCSPlugin uvcsPlugin)
         {
             UVCSWindow window = SwitchUVCSPlugin.OnIfNeeded(uvcsPlugin);
@@ -220,9 +261,6 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
             window.ShowPendingChangesView();
         }
 
-        /*[Shortcut("UVCS/ShowIncomingChangesView",
-                  ToolbarOperationsShortcut.IncomingChangesShortcutKey,
-                  ToolbarOperationsShortcut.IncomingChangesShortcutModifiers)]*/
         static void DoShowIncomingChangesView(UVCSPlugin uvcsPlugin)
         {
             UVCSWindow window = SwitchUVCSPlugin.OnIfNeeded(uvcsPlugin);
@@ -251,6 +289,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
         readonly IProgressControls mProgressControls;
         readonly BranchOperations mBranchOperations;
         readonly Func<RepositorySpec> mFetchRepSpec;
+        readonly Func<BranchInfo> mFetchMainBranch;
         readonly Func<BranchInfo> mFetchWorkingBranch;
         readonly HeadlessGluonViewHost mViewHost;
         readonly EditorWindow mWindow;

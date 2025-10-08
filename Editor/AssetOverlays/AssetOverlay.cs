@@ -38,6 +38,15 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             if (ClassifyAssetStatus.IsCheckedOut(assetStatus))
                 return PlasticLocalization.Name.StatusCheckout.GetString();
 
+            if (ClassifyAssetStatus.IsChanged(assetStatus))
+                return PlasticLocalization.Name.ChangedStatus.GetString();
+
+            if (ClassifyAssetStatus.ContainsChanges(assetStatus))
+                return PlasticLocalization.Name.ContainsChanges.GetString();
+
+            if (ClassifyAssetStatus.IsControlled(assetStatus))
+                return PlasticLocalization.Name.Controlled.GetString();
+
             return string.Empty;
         }
 

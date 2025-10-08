@@ -23,6 +23,11 @@ namespace Unity.PlasticSCM.Editor.Tool
         {
             return !string.IsNullOrEmpty(PlasticInstallPath.GetLocalPlasticServerExePath());
         }
+
+        internal static bool ForCloudDrive()
+        {
+            return !string.IsNullOrEmpty(PlasticInstallPath.GetCloudDrivePath());
+        }
     }
 
     internal static class PlasticInstallPath
@@ -106,6 +111,19 @@ namespace Unity.PlasticSCM.Editor.Tool
             return null;
         }
 
+        internal static string GetCloudDrivePath()
+        {
+            if (PlatformIdentifier.IsWindows())
+                return FindTool.ObtainToolCommand(
+                    Plastic.CLOUD_DRIVE_WINDOWS,
+                    new List<String>() { GetWindowsClientInstallationFolder() });
+
+            if (PlatformIdentifier.IsMac())
+                return GetToolCommand(Plastic.CLOUD_DRIVE_MACOS);
+
+            return null;
+        }
+
         internal static void LogInstallationInfo()
         {
             string plasticClientBinDir = GetClientBinDir();
@@ -165,9 +183,11 @@ namespace Unity.PlasticSCM.Editor.Tool
         {
             internal const string GUI_WINDOWS = "plastic.exe";
             internal const string LOCAL_SERVER_WINDOWS = "plasticd.exe";
+            internal const string CLOUD_DRIVE_WINDOWS = "unityclouddrive.exe";
             internal const string LEGACY_GUI_MACOS = "/Applications/PlasticSCM.app/Contents/MacOS/PlasticSCM";
             internal const string NEW_GUI_MACOS = "/Applications/PlasticSCM.app/Contents/MacOS/macplasticx";
             internal const string LOCAL_SERVER_MACOS = "/Applications/PlasticSCMServer.app/Contents/MacOS/plasticd";
+            internal const string CLOUD_DRIVE_MACOS = "/Applications/PlasticSCM.app/Contents/Applications/Unity Cloud Drive.app/Contents/MacOS/unityclouddrive"; // TODO: Check this path
         }
 
         class Gluon

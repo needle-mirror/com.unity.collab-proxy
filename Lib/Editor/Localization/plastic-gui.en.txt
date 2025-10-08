@@ -1848,6 +1848,15 @@ Custom extension
 == CreateChildBranchTitle ==
 Create Branch
 
+== CreateChildBranchBasedOnTitle ==
+Create Branch based on
+
+== CreateChildBranchBasedOnMainExplanation ==
+The main branch of the repository. Choose this if you want to start something new, independent of your current work.
+
+== CreateChildBranchBasedOnCurrentBranchExplanation ==
+Your current branch. Choose this if you want to continue building on its existing changes.
+
 == CreateChildBranchExplanation ==
 Create a new child branch from
 
@@ -5615,6 +5624,15 @@ This action cannot be undone.
 == DeleteRepositoryConfirmEntry ==
 delete
 
+== DeleteCloudDriveTitle ==
+Confirm cloud drive deletion
+
+== DeleteCloudDriveWarningText ==
+You are about to delete the drive '{0}'.
+
+== DeleteCloudDriveConfirmText ==
+To confirm, type the name of the drive
+
 == UndeleteRepositoryConfirmText ==
 You are about to undelete the following repositories: {0}. Do you want to proceed?
 
@@ -6409,6 +6427,24 @@ _Del
 == UnityOpenShortcut ==
 #o
 
+== UnityRenameShortcutForWindows ==
+_F2
+
+== UnityRenameShortcutForMacOS ==
+_F2
+
+== UnityShowInExplorerShortcutForWindows ==
+#%s
+
+== UnityShowInExplorerShortcutForMacOS ==
+#%s
+
+== UnityEnterShortcutForWindows ==
+_Enter
+
+== UnityEnterShortcutForMacOS ==
+_Enter
+
 == CheckinInFilesProgress ==
 Checking in files...
 
@@ -7094,10 +7130,10 @@ Disable Manual Checkout for Unity Assets
 Enable Manual Checkout for Unity Assets
 
 == RecommendToEnableManualCheckoutSinceLockRulesAreConfigured ==
-Locks are currently configured for your project. 
+Locks are currently configured for your project.
 We recommend that you enable ‘Manual Checkout’.
 
-This will reduce conflicts, preventing other team members from modifying an asset that is locked. 
+This will reduce conflicts, preventing other team members from modifying an asset that is locked.
 
 Do you want to enable Manual Checkout?
 
@@ -8627,31 +8663,31 @@ Comments
 {0} unresolved issues (change requests and questions)
 
 == CreateWorkspacePanelTitle ==
-Create your cloud workspace on {0} organization
+Create your cloud drive on {0} organization
 
 == CreateWorkspacePanelDescription ==
-Do you want to connect this workspace to an existing repository?
+Do you want to connect this drive to an existing repository?
 
 == WorkspaceWithUvcsConnectionSelectorName ==
-Connect workspace to a repository
+Connect drive to a repository
 
 == WorkspaceWithUvcsConnectionSelectorDescription ==
-I want to load source files from a Unity UVCS repository to this workspace.
+I want to load source files from a Unity UVCS repository to this drive.
 
 == WorkspaceWithoutConnectionSelectorName ==
-Don't connect workspace to a repository
+Don't connect drive to a repository
 
 == WorkspaceWithoutConnectionSelectorDescription ==
 I want to import files from a local drive.
 
 == WorkspaceNameEntry ==
-Workspace name:
+Drive name:
 
 == NoRepositoriesToConnect ==
-There are no repositories to connect the workspace to
+There are no repositories to connect the drive to
 
 == RepositoryAndBranchOnlyAvailableForConnectedWks ==
-The repository and the branch are only available for connected workspaces
+The repository and the branch are only available for connected drives
 
 == CollaboratorsEmptyState ==
 There are no collaborators yet
@@ -8663,7 +8699,7 @@ Collaborators
 Loading main branch...
 
 == ConnectingWorkspaceToRepository ==
-Connecting workspace to the UVCS repository...
+Connecting drive to the UVCS repository...
 
 == SharingWorkspace ==
 Sharing drive...
@@ -8690,10 +8726,10 @@ Apply filter
 You have a custom query set up for this view. Toggling between hidden/unhidden branches will clear it.
 
 == ResumeSyncWhenOpenWorkspaceLinkTitle ==
-Open cloud drive workspace
+Open cloud drive
 
 == ResumeSyncWhenOpenWorkspaceLinkMessage ==
-You are trying to open the '{0}' workspace on your disk but the syncing is paused, so the workspace could be out-of-date. Do you want to resume the syncing now?
+You are trying to open the '{0}' drive on your disk but the syncing is paused, so the drive could be out-of-date. Do you want to resume the syncing now?
 
 == RepositoriesAndWorkspaces ==
 Repositories and workspaces
@@ -8737,6 +8773,12 @@ Continue anyway
 == ViewSyncIssuesMenuItem ==
 View sync issues
 
+== ForceSyncNowMenuItem ==
+Force sync now
+
+== ActivityDialogTitle ==
+Activity
+
 == SyncIssuesDialogTitle ==
 Sync issues
 
@@ -8768,16 +8810,18 @@ synced {0}
 Issues found
 
 == WorkspacesUnableToSyncSingular ==
-Your workspace is unable to sync
+Your drive is unable to sync
 
 == WorkspacesUnableToSyncPlural ==
-{0} workspaces are unable to sync
+{0} drives are unable to sync
 
 == NoDirectorySelectedEmptyState ==
 Select a directory in the tree to see its contents
 
 == EmptyDirectoryEmptyState ==
 The selected directory is empty
+
+You can drag files/folders from the Project window to add them to Unity Cloud Drive
 
 == CopyingFilesIndeterminateProgress ==
 Copying files...
@@ -8803,10 +8847,10 @@ Skip
 == ApplyToAllFollowingFiles ==
 Apply to all following files
 
-== CopyFileErrorsTitle == 
+== CopyFileErrorsTitle ==
 Copy files result
 
-== CopyFileErrorsMessage == 
+== CopyFileErrorsMessage ==
 The following files couldn't be copied to the cloud workspace '{0}'.
 Please check the error details below.
 
@@ -8856,6 +8900,152 @@ This organization has no users
 
 == ManageUsersDashboardLink ==
 Manage users in Dashboard
+
+== MyDrivesLabel ==
+My Drives
+
+== DrivesSharedWithMeLabel ==
+Shared with me
+
+== OrganizationsComboBoxLabel ==
+Organization: {0}
+
+==  ProjectsComboBoxLabel ==
+Project: {0}
+
+== NewDriveButton ==
+New Drive
+
+== WaitingForDriveMessage ==
+Waiting for the drive '{0}' to be ready to use...
+
+== UnityCloudDriveTitle ==
+Unity Cloud Drive
+
+== LoginCloudDriveStep ==
+Login or sign up in Unity Cloud Drive
+
+== InstallCloudDriveButton ==
+Download and install
+
+== InstallCloudDriveProgress ==
+Unity Cloud Drive is being installed. Please wait...
+
+== DownloadCloudDriveStep ==
+Download and install Unity Cloud Drive
+
+== DownloadCloudDriveProgress ==
+Unity Cloud Drive is being downloaded. Please wait...
+
+== StartCloudDriveStep ==
+Start Unity Cloud Drive process
+
+== StartCloudDriveButton ==
+Start process
+
+== StartCloudDriveProgress ==
+Unity Cloud Drive is starting. Please wait...
+
+== GetStartedButton ==
+Get Started
+
+== GetStartedTitle ==
+Get started with Unity Cloud Drive
+
+== GetStartedExplanation ==
+Effortlessly edit files, save changes to the cloud from your creative tools, and collaborate in real time—all within the Unity Editor. With seamless cloud integration, your team can stay aligned, accelerate workflows, and bring ideas to life faster than ever.
+
+== AddToUnityCloudDriveMenu ==
+Assets/Add to Unity Cloud Drive
+
+== AddToUnityCloudDriveTitle ==
+Add to Unity Cloud Drive
+
+== AddToCloudDriveDescription ==
+Select the cloud drive and specify the path where you want to add the selected assets.
+
+== ProjectLabel ==
+Project:
+
+== CloudDriveLabel ==
+Cloud Drive:
+
+== RelativePathLabel ==
+Relative Path:
+
+== SelectCloudDriveFirst ==
+Please select a cloud drive first.
+
+== SelectDestinationPath ==
+Select Destination Path
+
+== PathMustBeWithinWorkspace ==
+Please choose a folder within your Unity Cloud Drive.
+
+== AddToCloudDriveButton ==
+Add
+
+== ShowInExplorerMenuItem ==
+Show in Explorer
+
+== CreateFolderMenuItem ==
+Create folder
+
+== ImportInProjectMenuItem ==
+Import in project
+
+== ShareMenuItem ==
+Share...
+
+== UnshareWithMeMenuItem ==
+Remove my access
+
+== ImportInProjectDialogTitle ==
+Import in Project
+
+== ImportInProjectDialogExplanation ==
+Select the relative project path where the assets will be imported from the Cloud Drive.
+
+== ProjectPathLabel ==
+Project Path:
+
+== SelectProjectPathDialogTitle ==
+Select Project Path
+
+== PathMustBeInsideProjectFolder ==
+Path must be inside the Unity project folder.
+
+== ImportButton ==
+Import
+
+== PathMustStartWithSlash ==
+Path must start with '/'
+
+== ShareWorkspaceDialogTitle ==
+Share Cloud Drive
+
+== ShareButton ==
+Share
+
+== CollaboratorsUnchanged ==
+The collaborators list has not been modified.
+
+== RemovingDriveShare ==
+Removing drive share...
+
+== WaitingForDriveToBeDeleted ==
+Waiting for drive to be deleted on disk...
+
+== DeletingDrive ==
+Deleting drive...
+
+== UnshareConfirmationMessage ==
+You are about to remove your access to this drive. The drive will not be deleted, but you won’t be able to open it anymore.
+
+Are you sure you want to continue?
+
+== UnshareButton ==
+Remove access
 
 == CannotLoadBranches ==
 Cannot load branches
@@ -9129,3 +9319,18 @@ Show Unity Version Control button in toolbar
 
 == PendingChangesInfo ==
 {0} pending changes in your workspace
+
+== CloudDriveSyncStatusPausing ==
+Pausing...
+
+== CloudDriveSyncStatusPaused ==
+Paused
+
+== CloudDriveSyncStatusSyncing ==
+Syncing...
+
+== CloudDriveSyncStatusUpToDate ==
+Up to date
+
+== CloudDriveSyncUpdatingCloudDrives ==
+Updating your cloud drives...

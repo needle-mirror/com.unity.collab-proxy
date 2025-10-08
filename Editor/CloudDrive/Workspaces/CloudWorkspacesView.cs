@@ -6,15 +6,20 @@ using UnityEditor;
 using UnityEngine;
 
 using Codice.Client.Common;
+using Codice.Client.Common.EventTracking;
+using Codice.Client.Common.WebApi;
 using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.CloudDrive;
 using PlasticGui.CloudDrive.Workspaces;
 using PlasticGui.WorkspaceWindow.Items;
+using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace;
 using Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent;
 using Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DragAndDrop;
 using Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree;
+using Unity.PlasticSCM.Editor.UI.Errors;
 using Unity.PlasticSCM.Editor.UI.Progress;
 
 namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
@@ -32,7 +37,9 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
 
     internal class CloudWorkspacesView :
         IRefreshableView,
-        CopyPathsOperation.INotify,
+        INotifyUpdatePaths,
+        FillOrganizationsAndProjects.INotify,
+        ICloudWorkspacesOperations,
         IDragAndDrop
     {
         internal const float MIN_WIDTH =
@@ -41,15 +48,23 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
             DIRECTORY_CONTENT_MIN_SIZE;
 
         internal CloudWorkspacesView(
+            string proposedCloudServer,
+            string proposedProject,
+            WorkspaceInfo workspaceToSelect,
+            IPlasticWebRestApi restApi,
+            IPlasticAPI plasticApi,
             IProgressControls progressControls,
             EditorWindow parentWindow)
         {
+            mRestApi = restApi;
+            mPlasticApi = plasticApi;
             mProgressControls = progressControls;
             mParentWindow = parentWindow;
 
-            mFillCloudWorkspacesView = new FillCloudWorkspacesView();
+            mFillCloudWorkspacesView = new FillCloudWorkspaces();
 
-            BuildComponents(parentWindow);
+            InitializeProposedOrganizationProject(proposedCloudServer, proposedProject);
+            BuildComponents(workspaceToSelect, parentWindow);
 
             mSplitterState = PlasticSplitterGUILayout.InitSplitterState(
                 new float[] { 0.25f, 0.75f },
@@ -57,9 +72,41 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
                 new int[] { 100000, 100000 }
             );
 
+#if UNITY_6000_3_OR_NEWER
+            UnityEditor.DragAndDrop.AddDropHandlerV2(ProjectBrowserDropHandler);
+#else
             UnityEditor.DragAndDrop.AddDropHandler(ProjectBrowserDropHandler);
+#endif
 
             Refresh();
+        }
+
+        internal void SelectWorkspaceAndCopyPaths(
+            string organization,
+            string project,
+            WorkspaceInfo wkInfo,
+            string[] assetPaths,
+            string dstRelativePath)
+        {
+            OnOrganizationSelected(organization);
+            OnProjectSelected(project);
+            mCloudWorkspacesTreeView.WorkspaceToSelect = wkInfo;
+            mCloudWorkspacesTreeView.Reload();
+
+            TrackFeatureUseEvent.For(
+                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
+                TrackFeatureUseEvent.Features.UnityPackage.AddAssetsToCloudDrive);
+
+            CopyPaths(
+                assetPaths,
+                Path.GetFullPath(string.Concat(wkInfo.ClientPath, dstRelativePath)),
+                mCloudWorkspacesTreeView,
+                wkInfo,
+                mParentWindow,
+                this,
+                beforeStartingOperationDelegate: null,
+                endOperationDelegate: null,
+                shouldRefreshView: true);
         }
 
         internal bool IsOperationRunning()
@@ -93,17 +140,30 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
                 rect.height - EditorStyles.toolbar.fixedHeight,
                 hasFocus);
 
-            DoToolbar(GetToolbarRect(rect), this);
+            DoToolbar(
+                GetToolbarRect(rect),
+                mCloudWorkspacesTreeView.Width,
+                mOrganizations,
+                mProjects,
+                this);
         }
 
         internal void OnEnable()
         {
+#if UNITY_6000_3_OR_NEWER
+            UnityEditor.DragAndDrop.AddDropHandlerV2(ProjectBrowserDropHandler);
+#else
             UnityEditor.DragAndDrop.AddDropHandler(ProjectBrowserDropHandler);
+#endif
         }
 
         internal void OnDisable()
         {
+#if UNITY_6000_3_OR_NEWER
+            UnityEditor.DragAndDrop.RemoveDropHandlerV2(ProjectBrowserDropHandler);
+#else
             UnityEditor.DragAndDrop.RemoveDropHandler(ProjectBrowserDropHandler);
+#endif
         }
 
         internal void Update(EditorWindow parentWindow)
@@ -116,14 +176,48 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
             Refresh();
         }
 
-        void CopyPathsOperation.INotify.RefreshViewSilently()
+        void INotifyUpdatePaths.RefreshViewSilently()
         {
-            mFillCloudWorkspacesView.FillView(mCloudWorkspacesTreeView, progressControls: null);
+            mFillCloudWorkspacesView.LoadExpandedTrees(
+                mSelectedOrganization,
+                mSelectedProject,
+                mCloudWorkspacesTreeView,
+                progressControls: null);
         }
 
-        void CopyPathsOperation.INotify.ShowErrors(string wkName, List<ErrorMessage> errors)
+        void INotifyUpdatePaths.ShowErrors(string wkName, List<ErrorMessage> errors)
         {
-            ErrorsDialog.ShowDialog(wkName, errors, mParentWindow);
+            ErrorsDialog.ShowDialog(
+                PlasticLocalization.Name.CopyFileErrorsTitle.GetString(),
+                PlasticLocalization.Name.CopyFileErrorsMessage.GetString(wkName),
+                errors,
+                mParentWindow);
+        }
+
+        void FillOrganizationsAndProjects.INotify.OrganizationsRetrieved(List<string> organizations)
+        {
+            mOrganizations = organizations;
+
+            mSelectedOrganization = GetDefaultValue(mProposedOrganization, mOrganizations);
+
+            if (mSelectedOrganization == null)
+                return;
+
+            OnOrganizationSelected(mSelectedOrganization);
+        }
+
+        void FillOrganizationsAndProjects.INotify.ProjectsRetrieved(List<string> projects)
+        {
+            mProjects = projects;
+            mProjects.Insert(0, PlasticLocalization.Name.AllProjects.GetString());
+            mProjects.Insert(1, string.Empty);
+
+            mSelectedProject = GetDefaultValue(mProposedProject, mProjects);
+
+            if (mSelectedProject == null)
+                return;
+
+            OnProjectSelected(mSelectedProject);
         }
 
         List<string> IDragAndDrop.GetDragSourcePaths()
@@ -143,10 +237,17 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
 
         void IDragAndDrop.ExecuteDropAction(string[] paths)
         {
+            WorkspaceInfo wkInfo = mCloudWorkspacesTreeView.GetSelectedWorkspaceInfo();
+
+            TrackFeatureUseEvent.For(
+                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
+                TrackFeatureUseEvent.Features.UnityPackage.CloudDriveDragToWindow);
+
             CopyPaths(
                 paths,
                 mDragTargetPath,
                 mCloudWorkspacesTreeView,
+                wkInfo,
                 mParentWindow,
                 this,
                 beforeStartingOperationDelegate: null,
@@ -154,9 +255,61 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
                 shouldRefreshView: true);
         }
 
+        void ICloudWorkspacesOperations.DeleteItems(List<string> paths)
+        {
+            WorkspaceInfo wkInfo = mCloudWorkspacesTreeView.GetSelectedWorkspaceInfo();
+
+            ProgressControlsForViews workspaceProgressControls =
+                mCloudWorkspacesTreeView.GetWorkspaceProgressControls(wkInfo);
+
+            if (workspaceProgressControls.IsOperationRunning())
+            {
+                GuiMessage.ShowInformation(PlasticLocalization.Name.OperationInProgress.GetString());
+                return;
+            }
+
+            DeletePathsOperation.DeleteRecursively(
+                paths.ToArray(),
+                Path.GetFileName(wkInfo.ClientPath),
+                this,
+                workspaceProgressControls);
+        }
+
+        void ICloudWorkspacesOperations.ImportInProject(string[] paths, string projectPath)
+        {
+            WorkspaceInfo wkInfo = mCloudWorkspacesTreeView.GetSelectedWorkspaceInfo();
+
+            TrackFeatureUseEvent.For(
+                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
+                TrackFeatureUseEvent.Features.UnityPackage.CloudDriveImportToProject);
+
+            CopyPaths(
+                paths,
+                Path.GetFullPath(string.Join(ProjectPath.Get(), projectPath)),
+                mCloudWorkspacesTreeView,
+                wkInfo,
+                mParentWindow,
+                this,
+                BeforeCopyPathsForProjectBrowserDropAction,
+                AfterCopyPathsForProjectBrowserDropAction,
+                shouldRefreshView: false);
+        }
+
         void Refresh()
         {
-            mFillCloudWorkspacesView.FillView(mCloudWorkspacesTreeView, mProgressControls);
+            FillOrganizationsAndProjects.LoadOrganizations(
+                mRestApi, mPlasticApi, mProgressControls, this);
+
+            RefreshTree();
+        }
+
+        void RefreshTree()
+        {
+            mFillCloudWorkspacesView.LoadExpandedTrees(
+                mSelectedOrganization,
+                mSelectedProject,
+                mCloudWorkspacesTreeView,
+                mProgressControls);
         }
 
         void OnTreeViewSelectionChanged()
@@ -174,7 +327,11 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
         }
 
         DragAndDropVisualMode ProjectBrowserDropHandler(
+#if UNITY_6000_3_OR_NEWER
+            EntityId dragEntityId, string dropUponPath, bool perform)
+#else
             int dragInstanceId, string dropUponPath, bool perform)
+#endif
         {
             if (perform == false)
                 return DragAndDropVisualMode.None;
@@ -183,10 +340,17 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
                 UnityEditor.DragAndDrop.objectReferences[0] != mParentWindow)
                 return DragAndDropVisualMode.None;
 
+            WorkspaceInfo wkInfo = mCloudWorkspacesTreeView.GetSelectedWorkspaceInfo();
+
+            TrackFeatureUseEvent.For(
+                PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
+                TrackFeatureUseEvent.Features.UnityPackage.CloudDriveDragToProjectView);
+
             CopyPaths(
                 UnityEditor.DragAndDrop.paths,
                 Path.GetFullPath(dropUponPath),
                 mCloudWorkspacesTreeView,
+                wkInfo,
                 mParentWindow,
                 this,
                 BeforeCopyPathsForProjectBrowserDropAction,
@@ -212,18 +376,49 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
             mCopyPathsForProjectBrowserDropCount--;
         }
 
+        void OnOrganizationSelected(object organization)
+        {
+            mSelectedOrganization = organization.ToString();
+            mProposedOrganization = mSelectedOrganization;
+            mSelectedProject = null;
+
+            PlasticGuiConfig.Get().Configuration.LastUsedCloudDriveServer = mSelectedOrganization;
+            PlasticGuiConfig.Get().Save();
+
+            mProjects.Clear();
+
+            if (!CloudServer.IsUnityOrganization(mSelectedOrganization))
+            {
+                OnProjectSelected(string.Empty);
+                return;
+            }
+
+            FillOrganizationsAndProjects.LoadProjects(
+                mSelectedOrganization, mPlasticApi, mProgressControls, this);
+        }
+
+        void OnProjectSelected(object project)
+        {
+            mSelectedProject = project.ToString();
+            mProposedProject = mSelectedProject;
+
+            PlasticGuiConfig.Get().Configuration.LastUsedCloudDriveProject = mSelectedProject;
+            PlasticGuiConfig.Get().Save();
+
+            RefreshTree();
+        }
+
         static void CopyPaths(
             string[] paths,
             string targetPath,
             CloudWorkspacesTreeView cloudWorkspacesTreeView,
+            WorkspaceInfo wkInfo,
             EditorWindow parentWindow,
-            CopyPathsOperation.INotify notify,
+            INotifyUpdatePaths notify,
             Action beforeStartingOperationDelegate,
             Action endOperationDelegate,
             bool shouldRefreshView)
         {
-            WorkspaceInfo wkInfo = cloudWorkspacesTreeView.GetSelectedWorkspaceInfo();
-
             ProgressControlsForViews workspaceProgressControls =
                 cloudWorkspacesTreeView.GetWorkspaceProgressControls(wkInfo);
 
@@ -290,7 +485,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
             GUI.FocusControl(null);
         }
 
-        static void DoContentArea(
+        void DoContentArea(
             CloudWorkspacesTreeView cloudWorkspacesTreeView,
             DirectoryContentPanel directoryContentPanel,
             object splitterState,
@@ -299,11 +494,11 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
             bool hasFocus)
         {
             PlasticSplitterGUILayout.BeginHorizontalSplit(splitterState);
-            Rect treeRect = GetTreeRect(width, height);
+            Rect treeAreaRect = GetTreeRect(width, height);
             Rect directoryContentPanelRect = GetDirectoryContentPanelRect(width, height);
             PlasticSplitterGUILayout.EndHorizontalSplit();
 
-            cloudWorkspacesTreeView.OnGUI(treeRect);
+            DoTreeArea(cloudWorkspacesTreeView, treeAreaRect);
 
             directoryContentPanel.OnGUI(
                 directoryContentPanelRect,
@@ -314,22 +509,142 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
                 UnityStyles.Colors.BarBorder);
         }
 
-        static void DoToolbar(Rect rect, IRefreshableView view)
+        void DoTreeArea(
+            CloudWorkspacesTreeView cloudWorkspacesTreeView,
+            Rect treeAreaRect)
+        {
+            Rect newDriveButtonRect = new Rect(
+                treeAreaRect.x + NEW_DRIVE_BUTTON_MARGIN,
+                treeAreaRect.y + NEW_DRIVE_BUTTON_MARGIN,
+                treeAreaRect.width - 2 * NEW_DRIVE_BUTTON_MARGIN,
+                EditorStyles.miniButton.fixedHeight + NEW_DRIVE_BUTTON_MARGIN);
+
+            if (GUI.Button(
+                newDriveButtonRect,
+                PlasticLocalization.Name.NewDriveButton.GetString(),
+                EditorStyles.miniButton))
+            {
+                WorkspaceCreationData wkCreationData = CreateWorkspaceDialog.CreateWorkspace(
+                    mSelectedOrganization,
+                    mSelectedProject,
+                    mRestApi,
+                    mPlasticApi,
+                    mParentWindow);
+
+                CreateWorkspaceOperation.CreateWorkspace(
+                    wkCreationData, mPlasticApi, mProgressControls,
+                    (createdWorkspace) =>
+                    {
+                        TrackFeatureUseEvent.For(
+                            PlasticGui.Plastic.API.GetRepositorySpec(createdWorkspace),
+                            TrackFeatureUseEvent.Features.UnityPackage.CloudDriveCreateWorkspaceFromNewDriveButton);
+
+                        OnOrganizationSelected(wkCreationData.CloudServer);
+
+                        mProposedProject = CloudProjectRepository.GetProjectName(
+                            wkCreationData.WorkspaceName);
+
+                        mCloudWorkspacesTreeView.WorkspaceToSelect = createdWorkspace;
+                        mCloudWorkspacesTreeView.Reload();
+                    });
+            }
+
+            Rect treeRect = new Rect(
+                treeAreaRect.x,
+                treeAreaRect.y + EditorStyles.miniButton.fixedHeight + 2 * NEW_DRIVE_BUTTON_MARGIN,
+                treeAreaRect.width,
+                treeAreaRect.height - EditorStyles.miniButton.fixedHeight - 2 * NEW_DRIVE_BUTTON_MARGIN);
+
+            cloudWorkspacesTreeView.OnGUI(treeRect);
+        }
+
+        void DoToolbar(
+            Rect rect,
+            float combosAreaWidth,
+            List<string> organizations,
+            List<string> projects,
+            IRefreshableView view)
         {
             GUILayout.BeginArea(rect);
 
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
+            DoCombosArea(combosAreaWidth, organizations, projects);
+
             GUILayout.FlexibleSpace();
 
-            DoToolbarButton(view);
+            DoRefreshButton(view);
 
             EditorGUILayout.EndHorizontal();
 
             GUILayout.EndArea();
         }
 
-        static void DoToolbarButton(IRefreshableView view)
+        void DoCombosArea(
+            float combosAreaWidth,
+            List<string> organizations,
+            List<string> projects)
+        {
+            EditorGUILayout.BeginHorizontal(GUILayout.Width(combosAreaWidth));
+
+            DoOrganizationsCombo(organizations);
+
+            DoProjectsCombo(projects);
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        void DoOrganizationsCombo(List<string> organizations)
+        {
+            GUIContent content = new GUIContent(
+                PlasticLocalization.Name.OrganizationsComboBoxLabel.GetString(
+                    mSelectedOrganization));
+
+            Rect rect = GUILayoutUtility.GetRect(content, EditorStyles.toolbarPopup);
+
+            if (GUI.Button(rect, content, EditorStyles.toolbarPopup))
+            {
+                GenericMenu menu = new GenericMenu();
+                foreach (string option in organizations)
+                {
+                    menu.AddItem(
+                        new GUIContent(UnityMenuItem.EscapedText(option)),
+                        false,
+                        OnOrganizationSelected,
+                        option);
+                }
+
+                menu.DropDown(rect);
+            }
+        }
+
+        void DoProjectsCombo(List<string> projects)
+        {
+            if (projects.Count == 0)
+                return;
+
+            GUIContent content = new GUIContent(
+                PlasticLocalization.Name.ProjectsComboBoxLabel.GetString(mSelectedProject));
+
+            Rect rect = GUILayoutUtility.GetRect(content, EditorStyles.toolbarPopup);
+
+            if (GUI.Button(rect, content, EditorStyles.toolbarPopup))
+            {
+                GenericMenu menu = new GenericMenu();
+                foreach (string option in projects)
+                {
+                    menu.AddItem(
+                        new GUIContent(UnityMenuItem.EscapedText(option)),
+                        false,
+                        OnProjectSelected,
+                        option);
+                }
+
+                menu.DropDown(rect);
+            }
+        }
+
+        static void DoRefreshButton(IRefreshableView view)
         {
             if (DrawToolbarButton(
                     Images.GetRefreshIcon(),
@@ -385,14 +700,59 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
             return result;
         }
 
-        void BuildComponents(EditorWindow parentWindow)
+        static string GetDefaultValue(string proposedValue, List<string> values)
+        {
+            if (values.Count == 0)
+                return null;
+
+            if (!string.IsNullOrEmpty(proposedValue) && values.Contains(proposedValue))
+                return proposedValue;
+
+            return values[0];
+        }
+
+        void BuildComponents(WorkspaceInfo workspaceToSelect, EditorWindow parentWindow)
         {
             mCloudWorkspacesTreeView = new CloudWorkspacesTreeView(
-                OnTreeViewSelectionChanged);
+                OnTreeViewSelectionChanged, mProgressControls, parentWindow);
+            mCloudWorkspacesTreeView.WorkspaceToSelect = workspaceToSelect;
             mCloudWorkspacesTreeView.Reload();
 
             mDirectoryContentPanel = new DirectoryContentPanel(
-                mCloudWorkspacesTreeView, this, parentWindow);
+                mCloudWorkspacesTreeView, this, this, parentWindow);
+        }
+
+        void InitializeProposedOrganizationProject(
+            string proposedCloudServer, string proposedProject)
+        {
+            if (!string.IsNullOrEmpty(proposedCloudServer) &&
+                !string.IsNullOrEmpty(proposedProject))
+            {
+                mProposedOrganization = proposedCloudServer;
+                mProposedProject = proposedProject;
+                return;
+            }
+
+            string lastUsedServer = PlasticGuiConfig.Get().Configuration.LastUsedCloudDriveServer;
+            string lastUsedProject = PlasticGuiConfig.Get().Configuration.LastUsedCloudDriveProject;
+
+            if (!string.IsNullOrEmpty(lastUsedServer) && !string.IsNullOrEmpty(lastUsedProject))
+            {
+                mProposedOrganization = lastUsedServer;
+                mProposedProject = lastUsedProject;
+                return;
+            }
+
+            GetProposedOrganizationProject.Values proposedOrganizationProject =
+                GetProposedOrganizationProject.FromCloudProjectSettings();
+
+            mProposedOrganization = proposedOrganizationProject != null ?
+                proposedOrganizationProject.Organization :
+                GetDefaultServer.FromConfig(mRestApi);
+
+            mProposedProject = proposedOrganizationProject != null ?
+                proposedOrganizationProject.Project :
+                Application.productName;
         }
 
         int mCopyPathsForProjectBrowserDropCount = 0;
@@ -402,11 +762,21 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
         CloudWorkspacesTreeView mCloudWorkspacesTreeView;
         DirectoryContentPanel mDirectoryContentPanel;
 
-        readonly FillCloudWorkspacesView mFillCloudWorkspacesView;
+        List<string> mOrganizations = new List<string>();
+        List<string> mProjects = new List<string>();
+        string mProposedOrganization;
+        string mProposedProject;
+        string mSelectedOrganization;
+        string mSelectedProject;
+
+        readonly FillCloudWorkspaces mFillCloudWorkspacesView;
+        readonly IPlasticWebRestApi mRestApi;
+        readonly IPlasticAPI mPlasticApi;
         readonly IProgressControls mProgressControls;
         readonly EditorWindow mParentWindow;
 
         const float SPLITTER_WIDTH = 1;
+        const float NEW_DRIVE_BUTTON_MARGIN = 5;
         const int TREE_VIEW_MIN_SIZE = 139;
         const int DIRECTORY_CONTENT_MIN_SIZE =
             2 * (int)DrawItemsGridView.GRID_AREA_MARGIN +
