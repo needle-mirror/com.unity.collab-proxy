@@ -354,6 +354,11 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         internal List<ChangeInfo> GetSelectedChanges(bool includeMetaFiles)
         {
+            return GetSelectedChanges(includeMetaFiles, false);
+        }
+
+        internal List<ChangeInfo> GetSelectedChanges(bool includeMetaFiles, bool excludePrivates)
+        {
             List<ChangeInfo> result = new List<ChangeInfo>();
 
             IList<int> selectedIds = GetSelection();
@@ -365,6 +370,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 in mTreeViewItemIds.GetInfoItems())
             {
                 if (!selectedIds.Contains(item.Value))
+                    continue;
+
+                if (excludePrivates && ChangeInfoType.IsPrivate(item.Key.ChangeInfo))
                     continue;
 
                 result.Add(item.Key.ChangeInfo);

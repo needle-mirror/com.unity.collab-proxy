@@ -63,6 +63,9 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
             if (mRows.Count == 0 && !mEmptyStatePanel.IsEmpty())
                 mEmptyStatePanel.OnGUI(rect);
 
+            if (!HasKeyboardFocus())
+                return;
+
             Event e = Event.current;
 
             if (e.type != EventType.KeyDown)

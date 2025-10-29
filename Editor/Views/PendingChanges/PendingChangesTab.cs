@@ -81,6 +81,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         internal void SetDrawOperationSuccessForTesting(IDrawOperationSuccess drawOperationSuccess)
         {
             mDrawOperationSuccess = drawOperationSuccess;
+            mIsOperationSuccessPendingToDraw = true;
         }
 
         internal PendingChangesTab(
@@ -187,7 +188,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         internal void Refresh(PendingChangesStatus pendingChangesStatus = null)
         {
-            if (mProgressControls.IsOperationRunning())
+            if (IsOperationRunning())
                 return;
 
             if (!mAreIgnoreRulesInitialized)
@@ -284,6 +285,18 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
                 mIsEmptyShelveCommentWarningNeeded = !mHasPendingShelveFromPreviousUpdate;
             }
+
+            if (mHasPendingCheckinFromPreviousUpdate)
+            {
+                mHasPendingCheckinFromPreviousUpdate = false;
+                CheckinForMode(mIsGluonMode, mKeepItemsLocked);
+            }
+
+            if (mHasPendingShelveFromPreviousUpdate)
+            {
+                mHasPendingShelveFromPreviousUpdate = false;
+                ShelveForMode(mIsGluonMode, mKeepItemsLocked);
+            }
         }
 
         internal void OnGUI(
@@ -309,7 +322,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 DrawProgressForViews.ForNotificationArea(mProgressControls.ProgressData);
 
             ExecuteAfterOnGUIAction();
-            }
+        }
 
         void DoContentArea()
         {
@@ -323,7 +336,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             DoChangesArea(
                 mPendingChangesTreeView,
                 mEmptyStatePanel,
-                mProgressControls.IsOperationRunning(),
+                IsOperationRunning(),
                 mDrawOperationSuccess);
 
             if (HasPendingMergeLinks() && !mHasPendingMergeLinksFromRevert)
@@ -523,7 +536,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         void IPendingChangesMenuOperations.UndoChanges()
         {
             List<ChangeInfo> changesToUndo = PendingChangesSelection
-                .GetSelectedChanges(mPendingChangesTreeView);
+                .GetSelectedChanges(mPendingChangesTreeView,
+                    bExcludePrivates: true);
 
             List<ChangeInfo> dependenciesCandidates =
                 mPendingChangesTreeView.GetDependenciesCandidates(changesToUndo, true);
@@ -802,13 +816,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         void PendingChangesViewPendingChangeMenu.IAdvancedUndoMenuOperations.UndoUnchanged()
         {
             UndoUnchangedChanges(PendingChangesSelection.
-                GetSelectedChanges(mPendingChangesTreeView));
+                GetSelectedChanges(mPendingChangesTreeView, bExcludePrivates: true));
         }
 
         void PendingChangesViewPendingChangeMenu.IAdvancedUndoMenuOperations.UndoCheckoutsKeepingChanges()
         {
             UndoCheckoutChangesKeepingLocalChanges(PendingChangesSelection.
-                GetSelectedChanges(mPendingChangesTreeView));
+                GetSelectedChanges(mPendingChangesTreeView, bExcludePrivates: true));
         }
 
         List<IPlasticTreeNode> PendingChangesViewMenu.IGetSelectedNodes.GetSelectedNodes()
@@ -828,6 +842,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         void ClearOperationSuccess()
         {
+            if (mIsOperationSuccessPendingToDraw)
+                return;
+
             mDrawOperationSuccess = null;
         }
 
@@ -911,15 +928,17 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 },
                 /*afterOperationDelegate*/ delegate
                 {
-                    mPendingMergeLinks = pendingChangesStatus.PendingMergeLinks;
-
                     try
                     {
                         if (waiter.Exception != null)
                         {
-                            ExceptionsHandler.DisplayException(waiter.Exception);
+                            if (!IsControlledException(waiter.Exception))
+                                ExceptionsHandler.DisplayException(waiter.Exception);
+
                             return;
                         }
+
+                        mPendingMergeLinks = pendingChangesStatus.PendingMergeLinks;
 
                         UpdateChangesTree(pendingChangesStatus.WorkspaceStatusResult.Changes);
 
@@ -947,6 +966,14 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                         mIsRefreshing = false;
                     }
                 });
+        }
+
+        bool IsControlledException(Exception ex)
+        {
+            // This condition covers the scenario of a hanging refresh operation
+            // that fails after the workspace has been removed
+            return ex is CmException &&
+                   NOT_EXISTING_WORKSPACE_MESSAGE_ID.Equals(((CmException) ex).KeyMessage);
         }
 
         void DoSeparator()
@@ -981,7 +1008,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 mCommentTextArea,
                 this,
                 width,
-                mProgressControls.IsOperationRunning());
+                IsOperationRunning());
 
             EditorGUILayout.Space(2);
 
@@ -989,10 +1016,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             EditorGUILayout.BeginVertical();
             GUILayout.FlexibleSpace();
             DoOperationsToolbar(
-              mIsGluonMode,
-              mShelveDropdownMenu,
-              mUndoDropdownMenu,
-              mProgressControls.IsOperationRunning());
+                mIsGluonMode,
+                mShelveDropdownMenu,
+                mUndoDropdownMenu,
+                IsOperationRunning());
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndVertical();
 
@@ -1028,18 +1055,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             using (new GuiEnabled(!isOperationRunning))
             {
-                if (mHasPendingCheckinFromPreviousUpdate)
-                {
-                    mHasPendingCheckinFromPreviousUpdate = false;
-                    CheckinForMode(isGluonMode, mKeepItemsLocked);
-                }
-
-                if (mHasPendingShelveFromPreviousUpdate)
-                {
-                    mHasPendingShelveFromPreviousUpdate = false;
-                    ShelveForMode(isGluonMode, mKeepItemsLocked);
-                }
-
                 if (DrawActionButton.ForCommentSection(
                         checkinButtonText, mOperationButtonWidth))
                 {
@@ -1196,13 +1211,14 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 {
                     drawOperationSuccess.InStatusBar(mWindowStatusBar);
                     mDrawOperationSuccess = null;
+                    mIsOperationSuccessPendingToDraw = false;
                 }
             }
         }
 
         void ExecuteAfterOnGUIAction()
         {
-            if (mProgressControls.IsOperationRunning())
+            if (IsOperationRunning())
                 return;
 
             if (mAfterOnGUIAction == null)
@@ -1212,7 +1228,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mAfterOnGUIAction = null;
         }
 
-        static void DrawEmptyState(
+        void DrawEmptyState(
             Rect rect,
             EmptyStatePanel emptyStatePanel,
             IDrawOperationSuccess drawOperationSuccess)
@@ -1225,6 +1241,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             }
 
             drawOperationSuccess.InEmptyState(rect);
+            mIsOperationSuccessPendingToDraw = false;
         }
 
         bool HasPendingMergeLinks()
@@ -1233,6 +1250,11 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return false;
 
             return mPendingMergeLinks.Count > 0;
+        }
+
+        bool IsOperationRunning()
+        {
+            return mProgressControls.IsOperationRunning() || mPendingChangesUpdater.IsRunning();
         }
 
         static void DoMergeLinksArea(
@@ -1386,6 +1408,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         Action mAfterOnGUIAction;
         IDictionary<MountPoint, IList<PendingMergeLink>> mPendingMergeLinks;
         IDrawOperationSuccess mDrawOperationSuccess;
+        bool mIsOperationSuccessPendingToDraw = false;
 
         SearchField mSearchField;
         PendingChangesTreeView mPendingChangesTreeView;
@@ -1421,6 +1444,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         readonly ViewHost mViewHost;
         readonly RepositorySpec mRepSpec;
         readonly WorkspaceInfo mWkInfo;
+
+        const string NOT_EXISTING_WORKSPACE_MESSAGE_ID = "WK_DOESNT_EXIST";
 
         static readonly ILog mLog = PlasticApp.GetLogger("PendingChangesTab");
     }

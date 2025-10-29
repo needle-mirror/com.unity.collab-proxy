@@ -24,8 +24,7 @@ namespace Unity.PlasticSCM.Editor.UI
                 mConsoleWindowType,
                 mProjectBrowserType);
 
-            window.titleContent.image = Images.ResizeTextureForWindowTitleContent(
-                UVCSPlugin.Instance.GetPluginStatusIcon());
+            window.titleContent.image = UVCSPlugin.Instance.GetPluginStatusIcon();
 
             return window;
         }
@@ -38,8 +37,7 @@ namespace Unity.PlasticSCM.Editor.UI
                 mConsoleWindowType,
                 mProjectBrowserType);
 
-            window.titleContent.image = Images.ResizeTextureForWindowTitleContent(
-                Images.GetCloudDriveViewIcon());
+            window.titleContent.image = Images.GetCloudDriveViewIcon();
 
             return window;
         }

@@ -90,6 +90,9 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
         {
             base.OnGUI(rect);
 
+            if (!HasKeyboardFocus())
+                return;
+
             Event e = Event.current;
 
             if (e.type != EventType.KeyDown)

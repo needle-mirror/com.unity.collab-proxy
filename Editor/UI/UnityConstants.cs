@@ -24,6 +24,10 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const int OVERLAY_STATUS_ICON_SIZE = 16;
         internal const int INSPECTOR_STATUS_ICON_SIZE = 19;
 
+        // Foldouts introduce an extra horizontal space margin of 10 units in front of the labels.
+        // Instead of adding an equivalent extra margin on the main area (which QA didn't like)
+        // increase its width by the same amount to keep the alignments of the checkboxes.
+        internal const int SETTINGS_GUI_WIDTH_MAIN_SECTION = 435;
         internal const int SETTINGS_GUI_WIDTH = 425;
 
         internal const int STATUS_BAR_HEIGHT = 24;

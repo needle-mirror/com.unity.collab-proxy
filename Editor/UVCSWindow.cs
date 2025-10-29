@@ -93,7 +93,7 @@ namespace Unity.PlasticSCM.Editor
             if (titleContent.image == windowIcon)
                 return;
 
-            titleContent.image = Images.ResizeTextureForWindowTitleContent(windowIcon);
+            titleContent.image = windowIcon;
             Repaint();
         }
 
@@ -104,6 +104,9 @@ namespace Unity.PlasticSCM.Editor
             string tooltipText,
             bool hasUpdateAction)
         {
+            if (mIncomingChangesNotification == null)
+                return;
+
             if (status == UVCSNotificationStatus.IncomingChangesStatus.None)
             {
                 mIncomingChangesNotification.Hide();
@@ -126,11 +129,17 @@ namespace Unity.PlasticSCM.Editor
 
         internal void RefreshPendingChangesView(PendingChangesStatus pendingChangesStatus)
         {
+            if (mViewSwitcher == null)
+                return;
+
             mViewSwitcher.RefreshPendingChangesView(pendingChangesStatus);
         }
 
         internal void AutoRefreshIncomingChangesView()
         {
+            if (mViewSwitcher == null)
+                return;
+
             mViewSwitcher.AutoRefreshIncomingChangesView();
         }
 

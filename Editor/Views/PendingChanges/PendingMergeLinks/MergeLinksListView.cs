@@ -32,6 +32,26 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.PendingMergeLinks
             return mRows;
         }
 
+        protected override void RowGUI(RowGUIArgs args)
+        {
+            if (args.item is MergeLinkListViewItem)
+            {
+                DrawTreeViewItem.ForIndentedItemWithIcon(
+                    args.rowRect,
+                    rowHeight,
+                    args.item.depth,
+                    args.item.displayName,
+                    string.Empty,
+                    args.item.icon,
+                    args.selected,
+                    args.focused);
+
+                return;
+            }
+
+            base.RowGUI(args);
+        }
+
         internal void BuildModel(
             IDictionary<MountPoint, IList<PendingMergeLink>> pendingMergeLinks)
         {

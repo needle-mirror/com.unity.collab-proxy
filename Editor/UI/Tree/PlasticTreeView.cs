@@ -38,6 +38,14 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             return GetRowRect(rowIndex);
         }
 
+        internal bool HasKeyboardFocus()
+        {
+            if (PlasticApp.IsUnitTesting)
+                return true;
+
+            return treeViewControlID == GUIUtility.keyboardControl && GUI.enabled;
+        }
+
         protected override TreeViewItem BuildRoot()
         {
             return new TreeViewItem(0, -1, string.Empty);

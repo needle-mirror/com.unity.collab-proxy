@@ -16,7 +16,7 @@ namespace Assets.Plugins.PlasticSCM.Editor.Toolbar
             UVCSToolbar.Controller.OnToolbarButtonInvalidated += RebuildToolbarButton;
         }
 
-        [MainToolbarElement(ToolbarController.ToolbarButtonPath, defaultDockPosition = MainToolbarDockPosition.Left, defaultDockIndex = 11)]
+        [MainToolbarElement(ToolbarController.ToolbarButtonPath, defaultDockPosition = MainToolbarDockPosition.Left, defaultDockIndex = 13)]
         [UnityOnlyMainToolbarPreset]
         static MainToolbarDropdown CreateControl()
         {

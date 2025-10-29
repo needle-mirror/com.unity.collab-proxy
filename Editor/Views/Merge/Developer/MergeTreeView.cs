@@ -89,6 +89,9 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         {
             base.OnGUI(rect);
 
+            if (!HasKeyboardFocus())
+                return;
+
             Event e = Event.current;
 
             if (e.type != EventType.KeyDown)

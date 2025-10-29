@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 
 using Codice.Client.BaseCommands;
+using Codice.Client.Commands;
 using Codice.Client.Commands.CheckIn;
 using Codice.Client.Common;
 using Codice.Client.Common.Threading;
@@ -36,6 +37,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             waiter.Execute(
                 /*threadOperationDelegate*/ delegate
                 {
+                    ApplyLocalChanges(wkInfo, paths);
+
                     CheckinParams ciParams = new CheckinParams();
                     ciParams.paths = paths.ToArray();
                     ciParams.comment = comment;
@@ -102,6 +105,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             waiter.Execute(
                 /*threadOperationDelegate*/ delegate
                 {
+                    ApplyLocalChanges(wkInfo, paths);
+
                     baseCommands.PartialCheckin(wkInfo, paths, comment);
                 },
                 /*afterOperationDelegate*/ delegate
@@ -147,6 +152,22 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 null);
 
             return result == GuiMessage.GuiMessageResponseButton.Positive;
+        }
+
+        static void ApplyLocalChanges(WorkspaceInfo wkInfo, List<string> paths)
+        {
+            ApplyLocalChangesOptions options = new ApplyLocalChangesOptions();
+            options.bIncludeDependencies = true;
+            options.MatchingOptions = new MovedMatchingOptions();
+            options.TypesToApply =
+                ChangeTypes.Changed |
+                ChangeTypes.Private |
+                ChangeTypes.LocallyDeleted |
+                ChangeTypes.LocallyMoved;
+            options.Operation = DependenciesOperation.Checkin;
+            options.bProcessSymlinks = true;
+
+            ApplyChanges.Apply(wkInfo, paths, options, null, out _, out _);
         }
     }
 }

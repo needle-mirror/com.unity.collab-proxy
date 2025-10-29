@@ -100,10 +100,16 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 GetInvolvedChangelists(treeView.GetSelectedPendingChangeInfos()));
         }
 
-        internal static List<ChangeInfo> GetSelectedChanges(
-            PendingChangesTreeView treeView)
+        internal static List<ChangeInfo> GetSelectedChanges(PendingChangesTreeView treeView)
         {
-            return treeView.GetSelectedChanges(true);
+            return GetSelectedChanges(treeView, false);
+        }
+
+        internal static List<ChangeInfo> GetSelectedChanges(
+            PendingChangesTreeView treeView,
+            bool bExcludePrivates)
+        {
+            return treeView.GetSelectedChanges(true, bExcludePrivates);
         }
 
         internal static List<ChangeListInfo> GetSelectedChangeListInfos(

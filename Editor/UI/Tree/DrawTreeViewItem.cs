@@ -43,17 +43,23 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 
         internal static void ForIndentedItemWithIcon(
             Rect rowRect,
+            float rowHeight,
             int depth,
             string label,
             string infoLabel,
-            Texture icon)
+            Texture icon,
+            bool isSelected,
+            bool isFocused)
         {
             float indent = GetIndent(depth);
 
             rowRect.x += indent;
             rowRect.width -= indent;
 
-            EditorGUI.LabelField(rowRect, new GUIContent(label, icon), UnityStyles.Tree.IconStyle);
+            rowRect = DrawIconLeft(
+                rowRect, rowHeight, icon, null);
+
+            TreeView.DefaultGUI.Label(rowRect, label, isSelected, isFocused);
 
             if (!string.IsNullOrEmpty(infoLabel))
                 DrawInfolabel(rowRect, label, infoLabel);
@@ -284,6 +290,8 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             if (Event.current.type != EventType.Repaint)
                 return;
 
+            label = TruncateLabelIfNeeded(label);
+
             if (isBoldText)
             {
                 GUIStyle boldLabel = UnityStyles.Tree.BoldLabel;
@@ -296,5 +304,18 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             normalLabel.Draw(
                 rect, label, false, true, isSelected, isFocused);
         }
+
+        static string TruncateLabelIfNeeded(string label)
+        {
+            if (string.IsNullOrEmpty(label))
+                return label;
+
+            if (label.Length <= MAX_LABEL_LENGTH)
+                return label;
+
+            return label.Substring(0, MAX_LABEL_LENGTH) + "...";
+        }
+
+        const int MAX_LABEL_LENGTH = 1024;
     }
 }

@@ -28,6 +28,7 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
     internal partial class ShelvesTab :
         IRefreshableView,
         IShelveMenuOperations,
+        ShelvesViewMenu.IMenuOperations,
         IGetQueryText,
         IGetFilter,
         FillShelvesView.IShowContentView
@@ -269,6 +270,11 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
                 mShelvedChangesUpdater);
         }
 
+        ChangesetInfo ShelvesViewMenu.IMenuOperations.GetSelectedShelve()
+        {
+            return ShelvesSelection.GetSelectedShelve(mShelvesListView);
+        }
+
         string IGetQueryText.Get()
         {
             return QueryConstants.BuildShelvesQuery(mOwnerFilter == OwnerFilter.MyShelves);
@@ -390,7 +396,7 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             mShelvesListView = new ShelvesListView(
                 headerState,
                 ShelvesListHeaderState.GetColumnNames(),
-                new ShelvesViewMenu(this),
+                new ShelvesViewMenu(this, this),
                 fillShelvesView,
                 selectionChangedAction: OnSelectionChanged,
                 doubleClickAction: ((IShelveMenuOperations)this).OpenSelectedShelveInNewWindow,

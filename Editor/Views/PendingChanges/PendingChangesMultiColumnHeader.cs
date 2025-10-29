@@ -25,25 +25,31 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         {
             if (columnIndex == 0)
             {
-                bool checkAllWasMixed = IsMixedCheckedState();
-                bool checkAllWasTrue = IsAllCheckedState();
-
                 var checkRect = new Rect(
                     headerRect.x + UnityConstants.TREEVIEW_BASE_INDENT,
                     headerRect.y + 3 + UnityConstants.TREEVIEW_HEADER_CHECKBOX_Y_OFFSET,  // Custom offset because header labels are not centered
                     UnityConstants.TREEVIEW_CHECKBOX_SIZE,
                     headerRect.height);
-                
-                EditorGUI.showMixedValue = checkAllWasMixed;
-                bool checkAllIsTrue = EditorGUI.Toggle(
-                    checkRect,
-                    checkAllWasTrue);
-                EditorGUI.showMixedValue = false;
 
-                if (checkAllWasTrue != checkAllIsTrue)
+                bool hasPendingChanges = mPendingChangesTreeView.GetTotalItemCount() > 0;
+
+                using (new EditorGUI.DisabledScope(!hasPendingChanges))
                 {
-                    UpdateCheckedState(checkAllIsTrue);
-                    ((PendingChangesTreeHeaderState)state).UpdateItemColumnHeader(mPendingChangesTreeView);
+                    bool checkAllWasMixed = IsMixedCheckedState();
+                    bool checkAllWasTrue = IsAllCheckedState();
+                    
+                    EditorGUI.showMixedValue = checkAllWasMixed;
+                    bool checkAllIsTrue = EditorGUI.Toggle(
+                        checkRect,
+                        checkAllWasTrue);
+                    EditorGUI.showMixedValue = false;
+
+                    if (checkAllWasTrue != checkAllIsTrue)
+                    {
+                        UpdateCheckedState(checkAllIsTrue);
+                        ((PendingChangesTreeHeaderState)state).
+                            UpdateItemColumnHeader(mPendingChangesTreeView);
+                    }
                 }
 
                 headerRect.x = checkRect.xMax;

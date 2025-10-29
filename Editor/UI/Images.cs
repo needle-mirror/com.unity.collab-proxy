@@ -20,8 +20,8 @@ namespace Unity.PlasticSCM.Editor.UI
             IconPressedCloseButton,
             IconAddedLocal,
             IconAddedOverlay,
+            IconPrivateOverlay,
             IconCheckedOutLocalOverlay,
-            IconControlledOverlay,
             IconDeleted,
             IconDeletedLocalOverlay,
             IconDeletedRemote,
@@ -77,29 +77,6 @@ namespace Unity.PlasticSCM.Editor.UI
             IconCloudDriveView,
         }
 
-        internal static Texture2D ResizeTextureForWindowTitleContent(Texture2D source)
-        {
-            return ResizeTexture(source, 16, 16);
-        }
-
-        internal static Texture2D ResizeTexture(Texture2D source, int width, int height)
-        {
-            RenderTexture previous = RenderTexture.active;
-            RenderTexture rt = RenderTexture.GetTemporary(width, height);
-
-            Graphics.Blit(source, rt);
-
-            RenderTexture.active = rt;
-            Texture2D result = new Texture2D(width, height);
-            result.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-            result.Apply();
-
-            RenderTexture.active = previous;
-            RenderTexture.ReleaseTemporary(rt);
-
-            return result;
-        }
-
         internal static Texture2D GetImage(Name image)
         {
             return LoadImage(image, false);
@@ -139,6 +116,14 @@ namespace Unity.PlasticSCM.Editor.UI
             return GetShelveIcon();
         }
 
+        internal static Texture GetPrivateOverlayIcon()
+        {
+            if (mPrivateOverlayIcon == null)
+                mPrivateOverlayIcon = GetOverlay(Name.IconPrivateOverlay);
+
+            return mPrivateOverlayIcon;
+        }
+
         internal static Texture GetAddedOverlayIcon()
         {
             if (mAddedOverlayIcon == null)
@@ -169,14 +154,6 @@ namespace Unity.PlasticSCM.Editor.UI
                 mCheckedOutOverlayIcon = GetOverlay(Name.IconCheckedOutLocalOverlay);
 
             return mCheckedOutOverlayIcon;
-        }
-
-        internal static Texture GetControlledOverlayIcon()
-        {
-            if (mControlledOverlayIcon == null)
-                mControlledOverlayIcon = GetOverlay(Name.IconControlledOverlay);
-
-            return mControlledOverlayIcon;
         }
 
         internal static Texture GetOutOfSyncOverlayIcon()
@@ -849,11 +826,11 @@ namespace Unity.PlasticSCM.Editor.UI
 
         static Texture mFileIcon;
 
+        static Texture mPrivateOverlayIcon;
         static Texture mAddedOverlayIcon;
         static Texture mDeletedLocalOverlayIcon;
         static Texture mDeletedRemoteOverlayIcon;
         static Texture mCheckedOutOverlayIcon;
-        static Texture mControlledOverlayIcon;
         static Texture mOutOfSyncOverlayIcon;
         static Texture mConflictedOverlayIcon;
         static Texture mConflictResolvedOverlayIcon;

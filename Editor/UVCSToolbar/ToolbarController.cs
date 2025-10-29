@@ -16,7 +16,6 @@ using PlasticGui.WorkspaceWindow.Topbar.WorkingObjectInfo.BranchesList;
 using Unity.PlasticSCM.Editor.Toolbar.PopupWindow;
 using Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations;
 using Unity.PlasticSCM.Editor.Toolbar.PopupWindow.BranchesList;
-using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor.Toolbar
 {
@@ -31,7 +30,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar
         IRefreshableView,
         IUpdateToolbarButtonVisibility
     {
-        public const string ToolbarButtonPath = "Services/Version Control"; // used by Unity 6.3+
+        public const string ToolbarButtonPath = "Services/Unity Version Control"; // used by Unity 6.3+
 
         public event Action OnToolbarButtonInvalidated = delegate { };
         public event Action OnToolbarInvalidated = delegate { };
@@ -68,8 +67,18 @@ namespace Unity.PlasticSCM.Editor.Toolbar
             mModel = null;
             mWorkingBranch = null;
 
-            RefreshWorkspaceWorkingInfo();
-            LoadBranches();
+            if (mWkInfo != null)
+            {
+                // Workspace is controlled - refresh workspace info and load branches
+                RefreshWorkspaceWorkingInfo();
+                LoadBranches();
+            }
+            else
+            {
+                // Workspace is uncontrolled - reset to defaults and refresh the button
+                ResetToolbarButtonData();
+                FireOnToolbarButtonInvalidated();
+            }
         }
 
         internal void LoadBranches()
@@ -85,7 +94,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar
             if (mWkInfo == null)
                 return;
 
-            UpdateWorkspaceInfoBar.UpdateWorspaceInfo(
+            UpdateWorkspaceInfoBar.UpdateWorkspaceInfo(
                 mWkInfo,
                 null,
                 this);
@@ -120,6 +129,18 @@ namespace Unity.PlasticSCM.Editor.Toolbar
             return mDropDownButtonData;
         }
 
+        internal void Enable()
+        {
+            mDropDownButtonData.IsVisible = UVCSToolbarButtonIsShownPreference.IsEnabled();
+            FireOnToolbarButtonInvalidated();
+        }
+
+        internal void Disable()
+        {
+            mDropDownButtonData.IsVisible = false;
+            FireOnToolbarButtonInvalidated();
+        }
+
         void IUpdateToolbarButtonVisibility.Show()
         {
             UVCSToolbarButtonIsShownPreference.Enable();
@@ -152,6 +173,9 @@ namespace Unity.PlasticSCM.Editor.Toolbar
             string repositoryName,
             string serverName)
         {
+            if (mWkInfo == null)
+                return;
+
             mDropDownButtonData.Text = GetShorten.ObjectName(
                 objectName,
                 objectType);
@@ -178,6 +202,9 @@ namespace Unity.PlasticSCM.Editor.Toolbar
             string comment,
             bool bFailed)
         {
+            if (mWkInfo == null)
+                return;
+
             string commentText = string.IsNullOrEmpty(comment) ?
                 PlasticLocalization.Name.NoCommentSet.GetString() :
                 comment;
@@ -188,6 +215,9 @@ namespace Unity.PlasticSCM.Editor.Toolbar
 
         void UpdateButtonTooltip(ButtonTooltipData buttonTooltipData)
         {
+            if (mWkInfo == null)
+                return;
+
             StringBuilder sb = new StringBuilder();
 
             sb.Append(string.Format(
@@ -362,6 +392,12 @@ namespace Unity.PlasticSCM.Editor.Toolbar
                 });
         }
 
+        void ResetToolbarButtonData()
+        {
+            mButtonTooltipData = new ButtonTooltipData();
+            mDropDownButtonData = UVCSToolbarButtonData.BuildDefault();
+        }
+
         static BranchesListModel CalculateBranchesListModel(WorkspaceInfo wkInfo)
         {
             try
@@ -402,8 +438,8 @@ namespace Unity.PlasticSCM.Editor.Toolbar
         bool mIsGluonMode;
         BranchesListModel mModel = BranchesListModel.BuildEmpty();
         ButtonTooltipData mButtonTooltipData = new ButtonTooltipData();
+        UVCSToolbarButtonData mDropDownButtonData = UVCSToolbarButtonData.BuildDefault();
 
-        readonly UVCSToolbarButtonData mDropDownButtonData = UVCSToolbarButtonData.BuildDefault();
         readonly object mModelLock = new object();
         readonly UVCSPlugin mUVCSPlugin;
 

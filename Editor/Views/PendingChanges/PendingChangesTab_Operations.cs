@@ -386,12 +386,17 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                     openChangesetAction,
                     copyDiffsLinkAction,
                     mParentWindow.Repaint);
+                mIsOperationSuccessPendingToDraw = true;
             };
         }
 
         Action GetSuccessOperationDelegateForUndo()
         {
-            return () => { mDrawOperationSuccess = new NotifySuccessForUndo(mParentWindow.Repaint); };
+            return () =>
+            {
+                mDrawOperationSuccess = new NotifySuccessForUndo(mParentWindow.Repaint);
+                mIsOperationSuccessPendingToDraw = true;
+            };
         }
 
         static void OpenChangesetId(

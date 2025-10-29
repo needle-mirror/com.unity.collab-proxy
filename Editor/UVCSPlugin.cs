@@ -27,6 +27,7 @@ using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.Configuration;
 using Unity.PlasticSCM.Editor.Inspector;
 using Unity.PlasticSCM.Editor.SceneView;
+using Unity.PlasticSCM.Editor.Settings;
 using Unity.PlasticSCM.Editor.Toolbar;
 using Unity.PlasticSCM.Editor.UI;
 
@@ -91,6 +92,12 @@ namespace Unity.PlasticSCM.Editor
             get { return mGluonIncomingChangesUpdater; }
         }
 
+        public UVCSProjectSettingsProvider ActiveUVCSSettingsProvider
+        {
+            get { return mActiveUVCSSettingsProvider; }
+            set { mActiveUVCSSettingsProvider = value; }
+        }
+
         internal static void InitializeIfNeeded()
         {
             if (!FindWorkspace.HasWorkspace(ApplicationDataPath.Get()))
@@ -144,6 +151,8 @@ namespace Unity.PlasticSCM.Editor
 
         internal void Enable()
         {
+            UVCSToolbar.Controller.Enable();
+
             if (mIsEnabled)
                 return;
 
@@ -236,6 +245,8 @@ namespace Unity.PlasticSCM.Editor
 
         internal void Disable()
         {
+            UVCSToolbar.Controller.Disable();
+
             if (!mIsEnabled)
                 return;
 
@@ -380,7 +391,7 @@ namespace Unity.PlasticSCM.Editor
         {
             if (mWkInfo == null || !mWkInfo.Equals(wkInfo))
                 return;
- 
+
             UpdateNotificationStatusForPendingChanges(
                 mNotificationStatus,
                 GetWindowIfOpened.UVCS(),
@@ -517,6 +528,15 @@ namespace Unity.PlasticSCM.Editor
 
             mWkInfo = null;
             mIsGluonMode = false;
+
+            UVCSToolbar.Controller.SetWorkspace(mWkInfo, mIsGluonMode);
+
+            UVCSWindow window = GetWindowIfOpened.UVCS();
+
+            if (window == null)
+                return;
+
+            window.UpdateWindowIcon(GetPluginStatusIcon());
         }
 
         void ExecuteFullReload(WorkspaceInfo wkInfo)
@@ -785,6 +805,7 @@ namespace Unity.PlasticSCM.Editor
 
         static UVCSPlugin mInstance;
 
+        UVCSProjectSettingsProvider mActiveUVCSSettingsProvider;
         WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
         IAssetStatusCache mAssetStatusCache;
         GluonIncomingChangesUpdater mGluonIncomingChangesUpdater;

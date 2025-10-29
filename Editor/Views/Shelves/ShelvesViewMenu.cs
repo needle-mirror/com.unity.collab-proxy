@@ -1,6 +1,8 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
+using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.QueryViews.Shelves;
 using Unity.PlasticSCM.Editor.UI;
@@ -11,9 +13,17 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
     {
         internal GenericMenu Menu { get { return mMenu; } }
 
-        internal ShelvesViewMenu(IShelveMenuOperations shelveMenuOperations)
+        public interface IMenuOperations
+        {
+            ChangesetInfo GetSelectedShelve();
+        }
+
+        internal ShelvesViewMenu(
+            IShelveMenuOperations shelveMenuOperations,
+            IMenuOperations menuOperations)
         {
             mShelveMenuOperations = shelveMenuOperations;
+            mMenuOperations = menuOperations;
 
             BuildComponents();
         }
@@ -61,6 +71,8 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
 
         void UpdateMenuItems(GenericMenu menu)
         {
+            ChangesetInfo singleSelectedShelve = mMenuOperations.GetSelectedShelve();
+
             ShelveMenuOperations operations = ShelveMenuUpdater.GetAvailableMenuOperations(
                 mShelveMenuOperations.GetSelectedShelvesCount());
 
@@ -80,11 +92,11 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
 
             menu.AddSeparator(string.Empty);
 
-            AddShelveMenuItem(
+            AddDiffShelveMenuItem(
                 mOpenShelveInNewWindowMenuItemContent,
                 menu,
+                singleSelectedShelve,
                 operations,
-                ShelveMenuOperations.ViewShelve,
                 OpenShelveInNewWindow_Click);
         }
 
@@ -130,8 +142,42 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             menu.AddDisabledItem(menuItemContent);
         }
 
+        static void AddDiffShelveMenuItem(
+            GUIContent menuItemContent,
+            GenericMenu menu,
+            ChangesetInfo shelve,
+            ShelveMenuOperations operations,
+            GenericMenu.MenuFunction menuFunction)
+        {
+            string shelveName =
+                shelve != null ?
+                Math.Abs(shelve.ChangesetId).ToString() :
+                string.Empty;
+
+            menuItemContent.text = string.Format("{0} {1}",
+                    PlasticLocalization.GetString(
+                        PlasticLocalization.Name.DiffShelveMenuItem,
+                        shelveName),
+                    GetPlasticShortcut.ForDiff());
+
+            if (operations.HasFlag(ShelveMenuOperations.ViewShelve))
+            {
+                menu.AddItem(
+                    menuItemContent,
+                    false,
+                    menuFunction);
+                return;
+            }
+
+            menu.AddDisabledItem(
+                menuItemContent);
+        }
+
         static ShelveMenuOperations GetMenuOperations( Event e)
         {
+            if (Keyboard.IsControlOrCommandKeyPressed(e) && Keyboard.IsKeyPressed(e, KeyCode.D))
+                return ShelveMenuOperations.ViewShelve;
+
             if (Keyboard.IsKeyPressed(e, KeyCode.Delete))
                 return ShelveMenuOperations.Delete;
 
@@ -147,8 +193,7 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
                 PlasticLocalization.Name.ShelveMenuItemDeleteShelve.GetString(),
                 GetPlasticShortcut.ForDelete()));
 
-            mOpenShelveInNewWindowMenuItemContent = new GUIContent(
-                PlasticLocalization.Name.ShelveMenuItemOpenShelveInNewWindow.GetString());
+            mOpenShelveInNewWindowMenuItemContent = new GUIContent();
         }
 
         GenericMenu mMenu;
@@ -158,5 +203,6 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
         GUIContent mOpenShelveInNewWindowMenuItemContent;
 
         readonly IShelveMenuOperations mShelveMenuOperations;
+        readonly IMenuOperations mMenuOperations;
     }
 }

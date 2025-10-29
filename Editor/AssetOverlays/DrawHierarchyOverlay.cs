@@ -37,7 +37,11 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
 
             mIsEnabled = true;
 
+#if UNITY_6000_4_OR_NEWER
+            EditorApplication.hierarchyWindowItemByEntityIdOnGUI += OnHierarchyGUIByEntityId;
+#else
             EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
+#endif
 
             RepaintEditor.HierarchyWindow();
         }
@@ -48,13 +52,24 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
 
             mIsEnabled = false;
 
+#if UNITY_6000_4_OR_NEWER
+            EditorApplication.hierarchyWindowItemByEntityIdOnGUI -= OnHierarchyGUIByEntityId;
+#else
             EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyGUI;
+#endif
 
             RepaintEditor.HierarchyWindow();
 
             mWkPath = null;
             mAssetStatusCache = null;
         }
+
+#if UNITY_6000_4_OR_NEWER
+        static void OnHierarchyGUIByEntityId(EntityId entityId, Rect selectionRect)
+        {
+            OnHierarchyGUI(entityId, selectionRect);
+        }
+#endif
 
         static void OnHierarchyGUI(int instanceID, Rect selectionRect)
         {
@@ -122,7 +137,11 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             {
                 Scene scene = SceneManager.GetSceneAt(i);
 
+#if UNITY_6000_4_OR_NEWER
+                if (scene.handle == SceneHandle.FromRawData((ulong)sceneHandle) && scene.path != null)
+#else
                 if (scene.handle == sceneHandle && scene.path != null)
+#endif
                 {
                     return scene.path;
                 }

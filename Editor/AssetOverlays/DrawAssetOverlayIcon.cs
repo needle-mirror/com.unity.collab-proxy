@@ -27,6 +27,9 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
 
         internal static Texture GetOverlayIcon(AssetStatus assetStatus)
         {
+            if (ClassifyAssetStatus.IsPrivate(assetStatus))
+                return Images.GetPrivateOverlayIcon();
+
             if (ClassifyAssetStatus.IsIgnored(assetStatus))
                 return Images.GetIgnoredOverlayIcon();
 
@@ -55,9 +58,6 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
                 ClassifyAssetStatus.IsChanged(assetStatus) ||
                 ClassifyAssetStatus.ContainsChanges(assetStatus))
                 return Images.GetCheckedOutOverlayIcon();
-
-            if (ClassifyAssetStatus.IsControlled(assetStatus))
-                return Images.GetControlledOverlayIcon();
 
             return null;
         }

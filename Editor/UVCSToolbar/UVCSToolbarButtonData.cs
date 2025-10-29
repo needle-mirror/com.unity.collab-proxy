@@ -19,7 +19,8 @@ namespace Unity.PlasticSCM.Editor.Toolbar
                 Text = PlasticLocalization.Name.UnityVersionControl.GetString(),
                 Tooltip = PlasticLocalization.Name.UseUnityVersionControlToManageYourProject.GetString(),
                 Icon = Images.GetPlasticViewIcon(),
-                IsVisible = UVCSToolbarButtonIsShownPreference.IsEnabled(),
+                IsVisible = UVCSToolbarButtonIsShownPreference.IsEnabled() &&
+                            UVCSPluginIsEnabledPreference.IsEnabled(),
             };
         }
     }

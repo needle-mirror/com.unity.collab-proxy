@@ -4341,6 +4341,9 @@ Diff branch {0}
 == DiffChangesetMenuItem ==
 Diff changeset {0}
 
+== DiffShelveMenuItem ==
+Diff shelve {0}
+
 == AnnotateParentRevisionMenuItem ==
 Annotate parent revision
 

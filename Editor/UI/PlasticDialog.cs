@@ -136,11 +136,16 @@ namespace Unity.PlasticSCM.Editor.UI
                     Rect newPos = position;
                     newPos.height = desiredHeight;
 
+                    maxSize = newPos.size;
+                    minSize = maxSize;
+
                     position = newPos;
                 }
-
-                maxSize = position.size;
-                minSize = maxSize;
+                else
+                {
+                    maxSize = position.size;
+                    minSize = maxSize;
+                }
             }
         }
 

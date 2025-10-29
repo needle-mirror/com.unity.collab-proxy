@@ -116,8 +116,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive
             // reasons until CloudDrivePlugin.Enable() is called
             mLog.Debug("OnEnable");
 
-            titleContent.image = Images.ResizeTextureForWindowTitleContent(
-                Images.GetCloudDriveViewIcon());
+            titleContent.image = Images.GetCloudDriveViewIcon();
 
             mCloudDrivePlugin = CloudDrivePlugin.Instance;
 

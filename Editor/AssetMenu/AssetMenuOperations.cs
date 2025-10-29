@@ -33,6 +33,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         internal bool IsControlledSelection;
         internal bool IsCheckedInSelection;
         internal bool IsCheckedOutSelection;
+        internal bool IsChangedSelection;
         internal bool IsPrivateSelection;
         internal bool IsAddedSelection;
         internal bool IsFileSelection;
@@ -49,6 +50,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             bool isCheckedInSelection = true;
             bool isControlledSelection = true;
             bool isCheckedOutSelection = true;
+            bool isChangedSelection = true;
             bool isPrivateSelection = true;
             bool isAddedSelection = true;
             bool isFileSelection = true;
@@ -78,6 +80,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 if (!singleFileGroupInfo.IsCheckedOutSelection)
                     isCheckedOutSelection = false;
 
+                if (!singleFileGroupInfo.IsChangedSelection)
+                    isChangedSelection = false;
+
                 if (!singleFileGroupInfo.IsPrivateSelection)
                     isPrivateSelection = false;
 
@@ -103,6 +108,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             {
                 IsCheckedInSelection = isCheckedInSelection,
                 IsCheckedOutSelection = isCheckedOutSelection,
+                IsChangedSelection = isChangedSelection,
                 IsControlledSelection = isControlledSelection,
                 IsPrivateSelection = isPrivateSelection,
                 IsAddedSelection = isAddedSelection,
@@ -124,6 +130,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             bool isCheckedInSelection = true;
             bool isControlledSelection = true;
             bool isCheckedOutSelection = true;
+            bool isChangedSelection = false;
             bool isPrivateSelection = true;
             bool isAddedSelection = true;
             bool isFileSelection = true;
@@ -166,10 +173,14 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             if (ClassifyAssetStatus.IsLockedRemote(assetStatus))
                 hasAnyRemoteLockedInSelection = true;
 
+            if (ClassifyAssetStatus.IsChanged(assetStatus))
+                isChangedSelection = true;
+
             return new SelectedAssetGroupInfo()
             {
                 IsCheckedInSelection = isCheckedInSelection,
                 IsCheckedOutSelection = isCheckedOutSelection,
+                IsChangedSelection = isChangedSelection,
                 IsControlledSelection = isControlledSelection,
                 IsPrivateSelection = isPrivateSelection,
                 IsAddedSelection = isAddedSelection,
@@ -227,8 +238,10 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             }
 
             if (info.IsFileSelection &&
-                info.IsControlledSelection &&
-                info.IsCheckedOutSelection)
+                (info.IsPrivateSelection ||
+                 (info.IsControlledSelection &&
+                  (info.IsCheckedOutSelection ||
+                   info.IsChangedSelection))))
             {
                 result |= AssetMenuOperations.Checkin;
             }
@@ -237,7 +250,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                  info.IsMovedSelection) ||
                 (info.IsFileSelection &&
                 info.IsControlledSelection &&
-                info.IsCheckedOutSelection))
+                (info.IsCheckedOutSelection ||
+                info.IsChangedSelection)))
             {
                 result |= AssetMenuOperations.Undo;
             }

@@ -22,7 +22,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
             get
             {
                 var baseRect = base.DefaultRect;
-                return new Rect(baseRect.x, baseRect.y, 710, 290);
+                return new Rect(baseRect.x, baseRect.y, 710, baseRect.height);
             }
         }
 

@@ -46,16 +46,13 @@ namespace Unity.PlasticSCM.Editor.Settings
             string searchContext,
             VisualElement rootElement)
         {
-            mIsUVCSPluginEnabled = UVCSPluginIsEnabledPreference.IsEnabled();
+            mUVCSPlugin.ActiveUVCSSettingsProvider = this;
 
-            mShowToolbarButton = UVCSToolbarButtonIsShownPreference.IsEnabled();
-
-            mWkInfo = FindWorkspace.InfoForApplicationPath(
-                ApplicationDataPath.Get(), PlasticGui.Plastic.API);
+            ReloadSettings();
 
             if (mWkInfo == null)
                 return;
-            
+
             mIsProjectSettingsActivated = true;
 
             mPendingChangesOptionsFoldout.OnActivate(mWkInfo, mUVCSPlugin.PendingChangesUpdater);
@@ -66,6 +63,8 @@ namespace Unity.PlasticSCM.Editor.Settings
 
         public override void OnDeactivate()
         {
+            mUVCSPlugin.ActiveUVCSSettingsProvider = null;
+
             if (!mIsProjectSettingsActivated)
                 return;
 
@@ -81,11 +80,14 @@ namespace Unity.PlasticSCM.Editor.Settings
         {
             DrawSettingsSection(DoIsEnabledSetting);
 
+            if (!mIsUVCSPluginEnabled)
+                return;
+
 #if !UNITY_6000_3_OR_NEWER
             DrawSettingsSection(DoShowToolbarButtonSetting);
 #endif
 
-            if (!mIsUVCSPluginEnabled || mWkInfo == null)
+            if (mWkInfo == null)
                 return;
 
             mIsPendingChangesFoldoutOpen = DrawFoldout(
@@ -107,6 +109,16 @@ namespace Unity.PlasticSCM.Editor.Settings
                 mIsOtherFoldoutOpen,
                 PlasticLocalization.Name.OtherOptionsSectionTitle.GetString(),
                 mOtherOptionsFoldout.OnGUI);
+        }
+
+        internal void ReloadSettings()
+        {
+            mIsUVCSPluginEnabled = UVCSPluginIsEnabledPreference.IsEnabled();
+
+            mShowToolbarButton = UVCSToolbarButtonIsShownPreference.IsEnabled();
+
+            mWkInfo = FindWorkspace.InfoForApplicationPath(
+                ApplicationDataPath.Get(), PlasticGui.Plastic.API);
         }
 
         internal void OpenAllFoldouts()
@@ -239,11 +251,11 @@ namespace Unity.PlasticSCM.Editor.Settings
 
             try
             {
-                EditorGUIUtility.labelWidth = UnityConstants.SETTINGS_GUI_WIDTH;
+                EditorGUIUtility.labelWidth = UnityConstants.SETTINGS_GUI_WIDTH_MAIN_SECTION;
 
                 using (new EditorGUILayout.HorizontalScope())
                 {
-                    GUILayout.Space(20);
+                    GUILayout.Space(10);
 
                     using (new EditorGUILayout.VerticalScope())
                     {

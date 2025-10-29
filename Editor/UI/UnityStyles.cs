@@ -632,6 +632,9 @@ namespace Unity.PlasticSCM.Editor.UI
             {
                 var style = new GUIStyle(PendingConflictsLabel);
                 style.normal = new GUIStyleState() { textColor = Colors.Red };
+                style.active = new GUIStyleState() { textColor = Colors.Red };
+                style.focused = new GUIStyleState() { textColor = Colors.Red };
+                style.hover = new GUIStyleState() { textColor = Colors.Red };
                 return style;
             });
 
@@ -639,6 +642,9 @@ namespace Unity.PlasticSCM.Editor.UI
             {
                 var style = new GUIStyle(PendingConflictsLabel);
                 style.normal = new GUIStyleState() { textColor = Colors.GreenText };
+                style.active = new GUIStyleState() { textColor = Colors.GreenText };
+                style.focused = new GUIStyleState() { textColor = Colors.GreenText };
+                style.hover = new GUIStyleState() { textColor = Colors.GreenText };
                 return style;
             });
 
@@ -1052,8 +1058,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal static readonly LazyStyle ActionToolbar = new LazyStyle(() =>
         {
-            var style = new GUIStyle(EditorStyles.toolbar);
-            style.fixedHeight = 40f;
+            var style = new GUIStyle();
             style.padding = new RectOffset(5, 5, 5, 5);
             return style;
         });

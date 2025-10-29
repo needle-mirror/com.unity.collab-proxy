@@ -136,7 +136,9 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
                     item,
                     GetProgressControlsDataForNode(
                         item.ExpandedTreeNode,
-                        mProgressControlsByWorkspace));
+                        mProgressControlsByWorkspace),
+                    args.selected,
+                    args.focused);
                 return;
             }
 
@@ -478,14 +480,19 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
             Rect rowRect,
             CloudWorkspacesTreeView tree,
             CloudWorkspacesTreeViewItem item,
-            ProgressControlsForViews.Data progressControlsData)
+            ProgressControlsForViews.Data progressControlsData,
+            bool isSelected,
+            bool isFocused)
         {
             DrawTreeViewItem.ForIndentedItemWithIcon(
                 rowRect,
+                tree.rowHeight,
                 item.depth,
                 Path.GetFileName(item.ExpandedTreeNode.GetFullPath()),
                 string.Empty,
-                GetItemIcon(tree, item));
+                GetItemIcon(tree, item),
+                isSelected,
+                isFocused);
 
             if (progressControlsData == null || !progressControlsData.IsOperationRunning)
                 return;

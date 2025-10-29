@@ -32,18 +32,6 @@ namespace Unity.PlasticSCM.Editor.Views.BrowseRepository
             customFoldoutYOffset = UnityConstants.TREEVIEW_FOLDOUT_Y_OFFSET;
         }
 
-        public override void OnGUI(Rect rect)
-        {
-            base.OnGUI(rect);
-
-            Event e = Event.current;
-
-            if (e.type != EventType.KeyDown)
-                return;
-
-            // TODO: process menu
-        }
-
         protected override bool CanChangeExpandedState(TreeViewItem item)
         {
             if (item is BrowseRepositoryViewItem)

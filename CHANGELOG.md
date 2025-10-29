@@ -2,6 +2,34 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.10.1] - 2025-10-29
+
+### Fixed
+
+- Fixed the Controlled and Private overlay icons back to earlier versions, based on user feedback.
+- Fixed Inspector and Project's Asset Menu to allow to Check in "Changed" items.
+- Fixed Inspector and Project's Asset Menu to allow to Undo "Changed" items
+- Fixed the Undo changes operation so that it can now apply to the selection even if it contains some Private files.
+- Fixed the diff panel keyboard shortcuts that didn't take into account the focus to open the diff on the correct item.
+- Fixed the Shelve view that was missing a keyboard shortcut to open the diff in the Desktop Application.
+- Fixed the console error that occured when using CTRL-H keyboard shortcut to Hide a branch.
+- Fixed a NullReferenceException that was raised on double-clicking an asset that is "Copied (new)" (new file added from a shelve).
+- Fixed a NullReferenceException that was raised when the workspace is removed with Pending Changes.
+- Fixed the new "Create Branch based on" dialog variant that was truncated, hiding the buttons, in 2.10.0.
+- Fixed the GUILayout error that occured when applying a shelve with pending merge link.
+- Fixed the merge link text that was not centered vertically with its icon.
+- Fixed the merge error message that didn't fit in available space and was truncated.
+- Fixed the pending changes success message appearing in the status bar instead of the main area when this one is empty.
+- Fixed the Changesets view that could crash the Editor when displaying a very long changeset comment, with "PPtr<Shader>::operator Shader*() const".
+- Fixed the Item checkbox that was unresponsive when the Pending Changes list is empty. It is now disabled.
+- Fixed the Toolbar button to correctly hide when disabling the Unity Version Control package.
+- Fixed the Toolbar button showing an "unknown" status after removal of the workspace.
+- Fixed the Toolbar button that should be visible by default in 6.3+.
+- Fixed the "unknown" status displayed after restoring a workspace that was previously removed.
+- Fixed the Project Settings window to automatically refresh when the plugin is enabled.
+- Fixed the alignment of Unity Version Control's settings with the title of the window.
+- Fixed the icon that was blurry and pixelated when displayed in our Unity Version Control window's tab.
+
 ## [2.10.0] - 2025-10-08
 
 ### Added

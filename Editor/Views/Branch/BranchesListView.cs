@@ -91,6 +91,9 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         {
             base.OnGUI(rect);
 
+            if (!HasKeyboardFocus())
+                return;
+
             Event e = Event.current;
 
             if (e.type != EventType.KeyDown)
@@ -99,7 +102,10 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             bool isProcessed = mMenu.ProcessKeyActionIfNeeded(e);
 
             if (isProcessed)
+            {
                 e.Use();
+                GUIUtility.ExitGUI();
+            }
         }
 
         protected override void RowGUI(RowGUIArgs args)

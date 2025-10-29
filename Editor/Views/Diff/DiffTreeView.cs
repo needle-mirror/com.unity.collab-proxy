@@ -40,6 +40,9 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         {
             base.OnGUI(rect);
 
+            if (!HasKeyboardFocus())
+                return;
+
             Event e = Event.current;
 
             if (e.type != EventType.KeyDown)
