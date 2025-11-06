@@ -1,3 +1,4 @@
+#if !UNITY_6000_3_OR_NEWER
 using System;
 
 using UnityEditor;
@@ -145,7 +146,7 @@ namespace Unity.Cloud.Collaborate
 
             if (rect.width == 0)
                 return;
-            
+
             Rect buttonRect = DrawButton(rect);
 
             DrawIcon(buttonRect);
@@ -269,3 +270,4 @@ namespace Unity.Cloud.Collaborate
         }
     }
 }
+#endif

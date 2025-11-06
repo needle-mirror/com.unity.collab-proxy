@@ -2,13 +2,21 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.10.2] - 2025-11-06
+
+### Fixed
+
+- Fixed the Toolbar button icon that was not visible for uncontrolled projects for Editor older than Unity 6.3.
+- Fixed the Pending changes view that was refreshed on window activation for no reason.
+- Fixed Library folder that was sometimes wrongly added to source control on a new project created from the Hub.
+
 ## [2.10.1] - 2025-10-29
 
 ### Fixed
 
-- Fixed the Controlled and Private overlay icons back to earlier versions, based on user feedback.
+- Fixed the Controlled and Private overlay icons reverted back to earlier versions, based on user feedback.
 - Fixed Inspector and Project's Asset Menu to allow to Check in "Changed" items.
-- Fixed Inspector and Project's Asset Menu to allow to Undo "Changed" items
+- Fixed Inspector and Project's Asset Menu to allow to Undo "Changed" items.
 - Fixed the Undo changes operation so that it can now apply to the selection even if it contains some Private files.
 - Fixed the diff panel keyboard shortcuts that didn't take into account the focus to open the diff on the correct item.
 - Fixed the Shelve view that was missing a keyboard shortcut to open the diff in the Desktop Application.
@@ -49,7 +57,7 @@ All notable changes to this package will be documented in this file.
 - Fixed incorrect tab name showing as "Unity.PlasticSCM.Editor.x" with no icon when upgrading a project to Unity 6.x.
 - Fixed debug log "Package com.unity.collab-proxy version: 0.0.0" to output the actual package version.
 
-## [2.9.3] - 2025-08-29
+## [2.9.3] - 2025-09-01
 
 ### Fixed
 

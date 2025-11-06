@@ -20,6 +20,17 @@ namespace Unity.Cloud.Collaborate
             UVCSToolbar.Controller.OnToolbarInvalidated += ToolbarInvalidated;
             UVCSToolbar.Controller.OnToolbarButtonInvalidated += ButtonInvalidated;
 
+            // Wait for editor to be ready to invalidate the button
+            EditorApplication.update += InvalidateButtonWhenEditorIsReady;
+        }
+
+        static void InvalidateButtonWhenEditorIsReady()
+        {
+            if (EditorApplication.isUpdating ||
+                EditorApplication.isCompiling)
+                return;
+
+            EditorApplication.update -= InvalidateButtonWhenEditorIsReady;
             ButtonInvalidated();
         }
 

@@ -24,7 +24,6 @@ using Unity.PlasticSCM.Editor.AssetsOverlays;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
-using Unity.PlasticSCM.Editor.Configuration;
 using Unity.PlasticSCM.Editor.Inspector;
 using Unity.PlasticSCM.Editor.SceneView;
 using Unity.PlasticSCM.Editor.Settings;
@@ -184,11 +183,13 @@ namespace Unity.PlasticSCM.Editor
                 return;
 
             mIsEnabledForWorkspace = true;
-
             mWkInfo = wkInfo;
-            mIsGluonMode = PlasticGui.Plastic.API.IsGluonWorkspace(mWkInfo);
 
             mLog.Debug("EnableForWorkspace " + mWkInfo.ClientPath);
+
+            InitIgnoredRules.ForUnityWorkspace(mWkInfo);
+
+            mIsGluonMode = PlasticGui.Plastic.API.IsGluonWorkspace(mWkInfo);
 
             PlasticGui.Plastic.API.UpgradeWorkspaceMetadataAfterOrgUnificationNeeded(mWkInfo);
 
@@ -207,6 +208,24 @@ namespace Unity.PlasticSCM.Editor
 
             InitializePendingChangesUpdater(mWkInfo);
             InitializeIncomingChangesUpdater(mWkInfo, mIsGluonMode);
+
+            // delay the auto-refresh call in order to give the fswatcher
+            // enough time to process the events after regaining the application focus
+            // see also UVCSWindow.mDelayedAutoRefreshChangesAction
+            mDelayedAutoRefreshChangesAction = new DelayedActionBySecondsRunner(
+                () =>
+                {
+                    if (mPendingChangesUpdater != null)
+                    {
+                        mPendingChangesUpdater.Start();
+                        mPendingChangesUpdater.AutoUpdate();
+                    }
+
+                    IncomingChanges.LaunchUpdater(
+                        mDeveloperIncomingChangesUpdater,
+                        mGluonIncomingChangesUpdater);
+                },
+                UnityConstants.AUTO_REFRESH_CHANGES_DELAYED_INTERVAL);
 
             mAssetStatusCache = new AssetStatusCache(mWkInfo, mIsGluonMode);
 
@@ -287,15 +306,8 @@ namespace Unity.PlasticSCM.Editor
             if (mWkInfo == null)
                 return;
 
-            if (mPendingChangesUpdater != null)
-            {
-                mPendingChangesUpdater.Start();
-                mPendingChangesUpdater.AutoUpdate();
-            }
-
-            IncomingChanges.LaunchUpdater(
-                mDeveloperIncomingChangesUpdater,
-                mGluonIncomingChangesUpdater);
+            if (mDelayedAutoRefreshChangesAction != null && !HasRunningOperation())
+                mDelayedAutoRefreshChangesAction.Run();
 
             RefreshAsset.VersionControlCache(mAssetStatusCache);
 
@@ -805,6 +817,7 @@ namespace Unity.PlasticSCM.Editor
 
         static UVCSPlugin mInstance;
 
+        DelayedActionBySecondsRunner mDelayedAutoRefreshChangesAction;
         UVCSProjectSettingsProvider mActiveUVCSSettingsProvider;
         WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
         IAssetStatusCache mAssetStatusCache;

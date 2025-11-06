@@ -389,9 +389,6 @@ namespace Unity.PlasticSCM.Editor
             mShelvedChangesUpdater.Start();
             mShelvedChangesUpdater.AutoUpdate();
 
-            if (!mUVCSPlugin.HasRunningOperation())
-                mDelayedAutoRefreshChangesAction.Run();
-
             ((IWorkspaceWindow)mWorkspaceWindow).UpdateTitle();
         }
 

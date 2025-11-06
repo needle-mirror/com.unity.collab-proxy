@@ -169,7 +169,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 UnityConstants.PENDING_CHANGES_CI_COMMENTS_KEY_NAME,
                 string.Empty);
 
-            InitIgnoreRulesAndRefreshView(wkInfo, this);
+            Refresh();
         }
 
         internal void AutoRefresh()
@@ -189,9 +189,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         internal void Refresh(PendingChangesStatus pendingChangesStatus = null)
         {
             if (IsOperationRunning())
-                return;
-
-            if (!mAreIgnoreRulesInitialized)
                 return;
 
             if (mDeveloperIncomingChangesUpdater != null)
@@ -848,47 +845,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mDrawOperationSuccess = null;
         }
 
-        void InitIgnoreRulesAndRefreshView(
-            WorkspaceInfo wkInfo, IRefreshableView view)
-        {
-            IThreadWaiter waiter = ThreadWaiter.GetWaiter(10);
-            waiter.Execute(
-                /*threadOperationDelegate*/ delegate
-                {
-                    if (IsIgnoreConfigDefined.InWorkspace(wkInfo.ClientPath))
-                    {
-                        AddIgnoreRules.WriteRules(
-                            wkInfo.ClientPath,
-                            UnityConditions.GetMissingIgnoredRuleForUnityDirMonSyncFile(wkInfo));
-                        return;
-                    }
-
-                    if (IsIgnoreConfigDefined.InGlobalConfig(wkInfo))
-                        return;
-
-                    AddIgnoreRules.WriteRules(
-                        wkInfo.ClientPath,
-                        UnityConditions.GetMissingIgnoredRules(wkInfo));
-                },
-                /*afterOperationDelegate*/ delegate
-                {
-                    mAreIgnoreRulesInitialized = true;
-
-                    view.Refresh();
-
-                    if (waiter.Exception == null)
-                        return;
-
-                    mLog.ErrorFormat(
-                        "Error adding ignore rules for Unity: {0}",
-                        waiter.Exception);
-
-                    mLog.DebugFormat(
-                        "Stack trace: {0}",
-                        waiter.Exception.StackTrace);
-                });
-        }
-
         void FillPendingChanges(
             INewChangesInWk newChangesInWk, PendingChangesStatus pendingChangesStatus)
         {
@@ -1388,8 +1344,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                     PlasticLocalization.Name.ChangesCannotBeApplied.GetString(),
                     UnityConstants.PENDING_CHANGES_ERRORS_TABLE_SETTINGS_NAME);
         }
-
-        volatile bool mAreIgnoreRulesInitialized = false;
         bool mIsRefreshing;
         bool mIsAutoRefreshDisabled;
         bool mIsEmptyCheckinCommentWarningNeeded = false;
