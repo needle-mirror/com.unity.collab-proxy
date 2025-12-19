@@ -9,6 +9,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 {
     internal class DiffTreeViewMenu
     {
+        internal GenericMenu Menu { get { return mMenu; } }
+
         internal interface IMetaMenuOperations
         {
             bool SelectionHasMeta();
@@ -27,11 +29,11 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         internal void Popup()
         {
-            GenericMenu menu = new GenericMenu();
+            mMenu = new GenericMenu();
 
-            UpdateMenuItems(menu);
+            UpdateMenuItems(mMenu);
 
-            menu.ShowAsContext();
+            mMenu.ShowAsContext();
         }
 
         internal bool ProcessKeyActionIfNeeded(Event e)
@@ -300,6 +302,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             mCopyRelativeFilePathMenuItemContent =
                 new GUIContent(PlasticLocalization.Name.CopyRelativeFilePathMenuItem.GetString());
         }
+
+        GenericMenu mMenu;
 
         GUIContent mNoActionMenuItemContent;
 

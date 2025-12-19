@@ -2235,7 +2235,6 @@ https://www.plasticscm.com/download/help/securityguide
         {0} | {^wkname}          工作区名称。
         {1} | {^wkpath}          工作区路径。
         {2} | {^machine}         客户端机器名称。
-        {3} | {^owner}           工作区所有者。
         {4} | {^guid}            工作区 GUID。
 
         {^tab}                   插入一个制表符空格位。
@@ -4199,7 +4198,7 @@ Jira 参数（全部为必需参数）：
     都无法同时进行签出。
     可使用 'cm ^lock ^list' 获取服务器中的所有锁。
     请查看《管理员指南》以了解锁定的工作原理：
-    https://www.plasticscm.com/download/help/locking
+    https://docs.unity.com/unity-version-control/smart-locks
 
 示例：
 

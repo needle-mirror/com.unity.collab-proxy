@@ -22,6 +22,10 @@ using Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree;
 using Unity.PlasticSCM.Editor.UI.Errors;
 using Unity.PlasticSCM.Editor.UI.Progress;
 
+#if !UNITY_6000_0_OR_NEWER
+using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
+#endif
+
 namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
 {
     internal interface IDragAndDrop
@@ -99,7 +103,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
 
             CopyPaths(
                 assetPaths,
-                Path.GetFullPath(string.Concat(wkInfo.ClientPath, dstRelativePath)),
+                AssetsPath.GetFullPath.ForPath(string.Concat(wkInfo.ClientPath, dstRelativePath)),
                 mCloudWorkspacesTreeView,
                 wkInfo,
                 mParentWindow,
@@ -285,7 +289,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
 
             CopyPaths(
                 paths,
-                Path.GetFullPath(string.Join(ProjectPath.Get(), projectPath)),
+                AssetsPath.GetFullPath.ForPath(string.Join(ProjectPath.Get(), projectPath)),
                 mCloudWorkspacesTreeView,
                 wkInfo,
                 mParentWindow,
@@ -348,7 +352,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
 
             CopyPaths(
                 UnityEditor.DragAndDrop.paths,
-                Path.GetFullPath(dropUponPath),
+                AssetsPath.GetFullPath.ForPath(dropUponPath),
                 mCloudWorkspacesTreeView,
                 wkInfo,
                 mParentWindow,
@@ -488,7 +492,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
         void DoContentArea(
             CloudWorkspacesTreeView cloudWorkspacesTreeView,
             DirectoryContentPanel directoryContentPanel,
-            object splitterState,
+            SplitterState splitterState,
             float width,
             float height,
             bool hasFocus)
@@ -758,7 +762,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
         int mCopyPathsForProjectBrowserDropCount = 0;
         string mDragTargetPath;
 
-        object mSplitterState;
+        SplitterState mSplitterState;
         CloudWorkspacesTreeView mCloudWorkspacesTreeView;
         DirectoryContentPanel mDirectoryContentPanel;
 

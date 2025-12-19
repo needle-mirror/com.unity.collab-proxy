@@ -75,6 +75,8 @@ namespace Unity.PlasticSCM.Editor.Views.BrowseRepository
         {
             EditorGUILayout.BeginVertical();
 
+            Rect viewRect = OverlayProgress.CaptureViewRectangle();
+
             DoActionsToolbar(
                 mBrowseRepositoryTreeView,
                 mProgressControls);
@@ -91,6 +93,14 @@ namespace Unity.PlasticSCM.Editor.Views.BrowseRepository
             }
 
             EditorGUILayout.EndVertical();
+
+            if (mProgressControls.IsOperationRunning())
+            {
+                OverlayProgress.DoOverlayProgress(
+                    viewRect,
+                    mProgressControls.ProgressData.ProgressPercent,
+                    mProgressControls.ProgressData.ProgressMessage);
+            }
         }
 
         void FillBrowseRepositoryView.IUpdateView.UpdateTree(
@@ -130,19 +140,13 @@ namespace Unity.PlasticSCM.Editor.Views.BrowseRepository
             BrowseRepositoryTreeView browseRepositoryTreeView,
             ProgressControlsForViews progressControls)
         {
-            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+            //EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
-            if (progressControls.IsOperationRunning())
-            {
-                DrawProgressForViews.ForIndeterminateProgressBar(
-                    progressControls.ProgressData);
-            }
-
-            GUILayout.FlexibleSpace();
+            //GUILayout.FlexibleSpace();
 
             // TODO: search bar
 
-            EditorGUILayout.EndHorizontal();
+            //EditorGUILayout.EndHorizontal();
         }
 
         static void DoBrowseRepositoryViewArea(

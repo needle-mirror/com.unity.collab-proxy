@@ -21,6 +21,7 @@ namespace Unity.PlasticSCM.Editor
         }
 
         internal static void UpdateCloudOrganizationSlugsAsync(
+            string webApiToken,
             IPlasticWebRestApi restApi,
             IPlasticAPI plasticApi)
         {
@@ -28,7 +29,8 @@ namespace Unity.PlasticSCM.Editor
             {
                 try
                 {
-                    OrganizationsResponse organizationResponse = restApi.GetCloudServers();
+                    OrganizationsResponse organizationResponse = restApi.GetCloudServers(
+                        webApiToken);
 
                     if (organizationResponse == null)
                         return;

@@ -10,9 +10,9 @@ using Codice.Client.Common.WebApi;
 using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.CloudDrive.Workspaces;
+using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.CloudDrive;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.Progress;
 
 namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
 {
@@ -66,85 +66,15 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             return PlasticLocalization.Name.AddToUnityCloudDriveTitle.GetString();
         }
 
-        protected override void OnModalGUI()
+        protected override string GetExplanation()
+        {
+            return PlasticLocalization.Name.AddToCloudDriveDescription.GetString();
+        }
+
+        protected override void DoComponentsArea()
         {
             bool isOperationRunning = mProgressControls.ProgressData.IsWaitingAsyncResult;
 
-            Title(PlasticLocalization.Name.AddToUnityCloudDriveTitle.GetString());
-
-            GUILayout.Space(10);
-
-            Paragraph(PlasticLocalization.Name.AddToCloudDriveDescription.GetString());
-
-            GUILayout.Space(10);
-
-            DoEntriesArea(isOperationRunning);
-
-            GUILayout.Space(10);
-
-            DrawProgressForDialogs.For(mProgressControls.ProgressData);
-
-            GUILayout.FlexibleSpace();
-
-            DoButtonsArea(isOperationRunning);
-        }
-
-        void FillOrganizationsAndProjects.INotify.OrganizationsRetrieved(List<string> organizations)
-        {
-            mOrganizations = organizations;
-
-            mSelectedOrganization = GetDefaultValue(mProposedOrganization, mOrganizations);
-
-            if (mSelectedOrganization == null)
-                return;
-
-            OnOrganizationSelected(mSelectedOrganization);
-
-            Repaint();
-        }
-
-        void FillOrganizationsAndProjects.INotify.ProjectsRetrieved(List<string> projects)
-        {
-            mProjects = projects;
-
-            mSelectedProject = GetDefaultValue(mProposedProject, mProjects);
-
-            if (mSelectedProject == null)
-                return;
-
-            OnProjectSelected(mSelectedProject);
-
-            Repaint();
-        }
-
-        void FillCloudWorkspaces.IAddToCloudDriveDialog.CloudDrivesRetrieved(
-            List<CloudDriveWorkspace> workspaces)
-        {
-            mCloudDrives = workspaces;
-
-            if (mCloudDrives.Count > 0)
-                mSelectedCloudDrive = mCloudDrives[0];
-
-            Repaint();
-        }
-
-        static AddToCloudDriveDialog Create(string[] assetPaths, IPlasticAPI plasticApi)
-        {
-            var instance = CreateInstance<AddToCloudDriveDialog>();
-            instance.IsResizable = false;
-            instance.mProgressControls = new ProgressControlsForDialogs();
-            instance.mPlasticApi = plasticApi;
-
-            instance.mCloudDriveRelativePath = GetProposedCloudDriveRelativePath(assetPaths);
-
-            instance.mEnterKeyAction = instance.OkButtonAction;
-            instance.mEscapeKeyAction = instance.CancelButtonAction;
-
-            return instance;
-        }
-
-        void DoEntriesArea(bool isOperationRunning)
-        {
             GUI.enabled = !isOperationRunning;
 
             EntryBuilder.CreateComboBoxEntry(
@@ -206,6 +136,59 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             GUI.enabled = true;
         }
 
+        void FillOrganizationsAndProjects.INotify.OrganizationsRetrieved(List<string> organizations)
+        {
+            mOrganizations = organizations;
+
+            mSelectedOrganization = GetDefaultValue(mProposedOrganization, mOrganizations);
+
+            if (mSelectedOrganization == null)
+                return;
+
+            OnOrganizationSelected(mSelectedOrganization);
+
+            Repaint();
+        }
+
+        void FillOrganizationsAndProjects.INotify.ProjectsRetrieved(List<string> projects)
+        {
+            mProjects = projects;
+
+            mSelectedProject = GetDefaultValue(mProposedProject, mProjects);
+
+            if (mSelectedProject == null)
+                return;
+
+            OnProjectSelected(mSelectedProject);
+
+            Repaint();
+        }
+
+        void FillCloudWorkspaces.IAddToCloudDriveDialog.CloudDrivesRetrieved(
+            List<CloudDriveWorkspace> workspaces)
+        {
+            mCloudDrives = workspaces;
+
+            if (mCloudDrives.Count > 0)
+                mSelectedCloudDrive = mCloudDrives[0];
+
+            Repaint();
+        }
+
+        static AddToCloudDriveDialog Create(string[] assetPaths, IPlasticAPI plasticApi)
+        {
+            var instance = CreateInstance<AddToCloudDriveDialog>();
+            instance.IsResizable = false;
+            instance.mPlasticApi = plasticApi;
+
+            instance.mCloudDriveRelativePath = GetProposedCloudDriveRelativePath(assetPaths);
+
+            instance.mEnterKeyAction = instance.OkButtonAction;
+            instance.mEscapeKeyAction = instance.CancelButtonAction;
+
+            return instance;
+        }
+
         void OnOrganizationSelected(object organization)
         {
             mSelectedOrganization = organization != null ? organization.ToString() : null;
@@ -260,7 +243,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 return;
             }
 
-            string workspacePath = Path.GetFullPath(mSelectedCloudDrive.WorkspaceInfo.ClientPath);
+            string workspacePath = AssetsPath.GetFullPath.ForPath(mSelectedCloudDrive.WorkspaceInfo.ClientPath);
 
             string selectedPath = EditorUtility.SaveFolderPanel(
                 PlasticLocalization.Name.SelectDestinationPath.GetString(),
@@ -270,7 +253,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             if (string.IsNullOrEmpty(selectedPath))
                 return;
 
-            string selectedFullPath = Path.GetFullPath(selectedPath);
+            string selectedFullPath = AssetsPath.GetFullPath.ForPath(selectedPath);
 
             if (string.IsNullOrEmpty(selectedFullPath))
                 return;
@@ -293,45 +276,19 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             mCloudDriveRelativePath = selectedFullPath.Substring(workspacePath.Length).Replace('\\', '/');
         }
 
-        void DoButtonsArea(bool isOperationRunning)
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoOkButton(isOperationRunning);
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoOkButton(isOperationRunning);
-            }
-        }
-
-        void DoOkButton(bool isOperationRunning)
+        protected override void DoOkButton()
         {
             bool isValid = mSelectedCloudDrive != null && mCloudDriveRelativePath.StartsWith("/");
 
-            if (!isValid || isOperationRunning)
+            if (!isValid || mProgressControls.ProgressData.IsWaitingAsyncResult)
                 GUI.enabled = false;
 
-            if (AcceptButton(PlasticLocalization.Name.AddToCloudDriveButton.GetString()))
+            if (NormalButton(PlasticLocalization.Name.AddToCloudDriveButton.GetString()))
             {
                 OkButtonAction();
             }
 
             GUI.enabled = true;
-        }
-
-        void DoCancelButton()
-        {
-            if (NormalButton(PlasticLocalization.Name.CancelButton.GetString()))
-            {
-                CancelButtonAction();
-            }
         }
 
         static string GetProposedCloudDriveRelativePath(string[] assetPaths)
@@ -415,7 +372,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
         string mCloudDriveRelativePath;
 
         IPlasticAPI mPlasticApi;
-        ProgressControlsForDialogs mProgressControls;
 
         const float ENTRY_WIDTH = 400;
         const float ENTRY_X = 120f;

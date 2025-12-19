@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -38,6 +40,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
         IHistoryViewMenuOperations
     {
         internal HistoryListView Table { get { return mHistoryListView; } }
+        internal string EmptyStateMessage { get { return mEmptyStatePanel.Text; } }
 
         internal HistoryTab(
             WorkspaceInfo wkInfo,
@@ -70,6 +73,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
             mHistoryViewLogic = new HistoryViewLogic(
                 wkInfo, this, mProgressControls);
+            mEmptyStatePanel = new EmptyStatePanel(parentWindow.Repaint);
         }
 
         internal void RefreshForItem(
@@ -112,23 +116,30 @@ namespace Unity.PlasticSCM.Editor.Views.History
             mProgressControls.UpdateProgress(mParentWindow);
         }
 
-        internal void OnGUI()
+        internal void OnGUI(Action closeViewAction)
         {
             DoActionsToolbar(
                 mProgressControls,
-                GetViewTitle(mPath));
+                mSearchField,
+                mHistoryListView,
+                GetViewTitle(mPath),
+                this,
+                closeViewAction);
+
+            Rect viewRect = OverlayProgress.CaptureViewRectangle();
 
             DoHistoryArea(
                 mHistoryListView,
+                mEmptyStatePanel,
                 mProgressControls.IsOperationRunning());
-        }
 
-        internal void DrawSearchFieldForTab()
-        {
-            DrawSearchField.For(
-                mSearchField,
-                mHistoryListView,
-                UnityConstants.SEARCH_FIELD_WIDTH);
+            if (mProgressControls.IsOperationRunning())
+            {
+                OverlayProgress.DoOverlayProgress(
+                    viewRect,
+                    mProgressControls.ProgressData.ProgressPercent,
+                    mProgressControls.ProgressData.ProgressMessage);
+            }
         }
 
         internal void SetLaunchToolForTesting(
@@ -345,27 +356,47 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         static void DoActionsToolbar(
             ProgressControlsForViews progressControls,
-            string viewTitle)
+            SearchField searchField,
+            HistoryListView historyListView,
+            string viewTitle,
+            IRefreshableView view,
+            Action closeViewAction)
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+
+            if (GUILayout.Button(
+                    new GUIContent(Images.GetRefreshIcon(),
+                        PlasticLocalization.Name.RefreshButton.GetString()),
+                    UnityStyles.ToolbarButtonLeft,
+                    GUILayout.Width(UnityConstants.TOOLBAR_ICON_BUTTON_WIDTH)))
+            {
+                view.Refresh();
+            }
 
             GUILayout.Label(
                 viewTitle,
                 UnityStyles.HistoryTab.HeaderLabel);
 
-            if (progressControls.IsOperationRunning())
-            {
-                DrawProgressForViews.ForIndeterminateProgressBar(
-                    progressControls.ProgressData);
-            }
+           GUILayout.FlexibleSpace();
 
-            GUILayout.FlexibleSpace();
+            DrawSearchField.For(
+                searchField,
+                historyListView,
+                UnityConstants.SEARCH_FIELD_WIDTH);
+
+            if (GUILayout.Button(
+                Images.GetCloseIcon(),
+                UnityStyles.CloseViewIconButtonStyle))
+            {
+                closeViewAction();
+            }
 
             EditorGUILayout.EndHorizontal();
         }
 
         static void DoHistoryArea(
             HistoryListView historyListView,
+            EmptyStatePanel emptyStatePanel,
             bool isOperationRunning)
         {
             GUI.enabled = !isOperationRunning;
@@ -373,6 +404,9 @@ namespace Unity.PlasticSCM.Editor.Views.History
             Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
 
             historyListView.OnGUI(rect);
+
+            if (!emptyStatePanel.IsEmpty())
+                emptyStatePanel.OnGUI(rect);
 
             GUI.enabled = true;
         }
@@ -388,6 +422,18 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 return;
 
             ((IOpenMenuOperations)this).Open();
+        }
+
+        void OnItemsChangedAction(IEnumerable<RepObjectInfo> items)
+        {
+            if (items.Count() > 0)
+            {
+                mEmptyStatePanel.UpdateContent(string.Empty);
+                return;
+            }
+
+            mEmptyStatePanel.UpdateContent(
+                PlasticLocalization.Name.NoRevisionsMatchingFilters.GetString());
         }
 
         static string GetViewTitle(string path)
@@ -417,7 +463,8 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 headerState,
                 new HistoryListViewMenu(this, this, this),
                 HistoryListHeaderState.GetColumnNames(),
-                OnRowDoubleClickAction);
+                OnRowDoubleClickAction,
+                afterItemsChangedAction: OnItemsChangedAction);
 
             mHistoryListView.Reload();
         }
@@ -433,6 +480,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
         LaunchTool.IProcessExecutor mProcessExecutor;
         LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
 
+        readonly EmptyStatePanel mEmptyStatePanel;
         readonly HistoryViewLogic mHistoryViewLogic;
         readonly ProgressControlsForViews mProgressControls;
         readonly bool mIsGluonMode;

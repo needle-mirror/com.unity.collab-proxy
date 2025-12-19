@@ -34,30 +34,21 @@ namespace Unity.PlasticSCM.Editor.Configuration
             return result;
         }
 
-        protected override void OnModalGUI()
+        protected override void DoComponentsArea()
         {
-            Title(PlasticLocalization.Name.EncryptionConfiguration.GetString());
-
-            GUILayout.Space(20);
-
-            Paragraph(PlasticLocalization.Name.EncryptionConfigurationExplanation.GetString(mOrganizationInfo.DisplayName));
-
             DoPasswordArea();
 
             Paragraph(PlasticLocalization.Name.EncryptionConfigurationRemarks.GetString(mOrganizationInfo.DisplayName));
-
-            GUILayout.Space(10);
-
-            DoNotificationArea();
-
-            GUILayout.Space(10);
-
-            DoButtonsArea();
         }
 
         protected override string GetTitle()
         {
             return PlasticLocalization.Name.EncryptionConfiguration.GetString();
+        }
+
+        protected override string GetExplanation()
+        {
+            return PlasticLocalization.Name.EncryptionConfigurationExplanation.GetString(mOrganizationInfo.DisplayName);
         }
 
         EncryptionConfigurationDialogData BuildEncryptionConfigurationData()
@@ -72,72 +63,47 @@ namespace Unity.PlasticSCM.Editor.Configuration
 
             GUILayout.Space(5);
 
-            mPassword = EntryBuilder.CreatePasswordEntry(
-                PlasticLocalization.Name.Password.GetString(),
-                mPassword, PASSWORD_TEXT_WIDTH, PASSWORD_TEXT_X);
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.Label(
+                    PlasticLocalization.Name.Password.GetString(),
+                    GUILayout.Width(120));
+
+                Rect passwordRect = GUILayoutUtility.GetRect(
+                    new GUIContent(string.Empty),
+                    EditorStyles.textField,
+                    GUILayout.ExpandWidth(true));
+
+                mPassword = EditorGUI.PasswordField(passwordRect, mPassword);
+            }
 
             GUILayout.Space(5);
 
-            mRetypePassword = EntryBuilder.CreatePasswordEntry(
-                PlasticLocalization.Name.RetypePassword.GetString(),
-                mRetypePassword, PASSWORD_TEXT_WIDTH, PASSWORD_TEXT_X);
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.Label(
+                    PlasticLocalization.Name.RetypePassword.GetString(),
+                    GUILayout.Width(120));
+
+                Rect retypePasswordRect = GUILayoutUtility.GetRect(
+                    new GUIContent(string.Empty),
+                    EditorStyles.textField,
+                    GUILayout.ExpandWidth(true));
+
+                mRetypePassword = EditorGUI.PasswordField(retypePasswordRect, mRetypePassword);
+            }
 
             GUILayout.Space(18f);
         }
 
-        void DoNotificationArea()
-        {
-            if (string.IsNullOrEmpty(mErrorMessage))
-                return;
-
-            var rect = GUILayoutUtility.GetRect(
-                GUILayoutUtility.GetLastRect().width, 30);
-
-            EditorGUI.HelpBox(rect, mErrorMessage, MessageType.Error);
-        }
-
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoOkButton();
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoOkButton();
-            }
-        }
-
-        void DoOkButton()
-        {
-            if (!AcceptButton(PlasticLocalization.Name.OkButton.GetString()))
-                return;
-
-            OkButtonWithValidationAction();
-        }
-
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.Name.CancelButton.GetString()))
-                return;
-
-            CancelButtonAction();
-        }
-
-        void OkButtonWithValidationAction()
+        internal override void OkButtonAction()
         {
             if (IsValidPassword(
                     mPassword.Trim(), mRetypePassword.Trim(),
-                    out mErrorMessage))
+                    out mProgressControls.ProgressData.StatusMessage))
             {
-                mErrorMessage = string.Empty;
-                OkButtonAction();
+                mProgressControls.ProgressData.StatusMessage = string.Empty;
+                base.OkButtonAction();
                 return;
             }
 
@@ -170,19 +136,15 @@ namespace Unity.PlasticSCM.Editor.Configuration
         {
             var instance = CreateInstance<EncryptionConfigurationDialog>();
             instance.mOrganizationInfo = OrganizationsInformation.FromServer(server);
-            instance.mEnterKeyAction = instance.OkButtonWithValidationAction;
+            instance.mEnterKeyAction = instance.OkButtonAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
             return instance;
         }
 
         string mPassword = string.Empty;
         string mRetypePassword = string.Empty;
-        string mErrorMessage = string.Empty;
 
         OrganizationInfo mOrganizationInfo;
-
-        const float PASSWORD_TEXT_WIDTH = 250f;
-        const float PASSWORD_TEXT_X = 200f;
     }
 }
 

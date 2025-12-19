@@ -12,6 +12,9 @@ using PlasticGui.WorkspaceWindow.QueryViews.Shelves;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Avatar;
 using Unity.PlasticSCM.Editor.UI.Tree;
+
+using Time = Codice.Client.Common.Time;
+
 #if UNITY_6000_2_OR_NEWER
 using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
 #endif
@@ -363,18 +366,24 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             bool isSelected,
             bool isFocused)
         {
+            RepositorySpec repSpec = queryResult.GetRepositorySpec(item.ObjectInfo);
+            RepObjectInfo objectInfo = queryResult.GetRepObjectInfo(item.ObjectInfo);
+
             string columnText = RepObjectInfoView.GetColumnText(
-                queryResult.GetRepositorySpec(item.ObjectInfo),
-                queryResult.GetRepObjectInfo(item.ObjectInfo),
+                repSpec,
+                objectInfo,
                 ShelvesListHeaderState.GetColumnName(column));
 
-            if (column == ShelvesListColumn.CreatedBy)
+            string userName = PlasticGui.Plastic.API.GetUserName(repSpec.Server, objectInfo.Owner);
+
+            if (column == ShelvesListColumn.Comment)
             {
                 DrawTreeViewItem.ForItemCell(
                     rect,
                     rowHeight,
                     -1,
-                    GetAvatar.ForEmail(columnText, avatarLoadedAction),
+                    GetAvatar.ForEmail(userName, avatarLoadedAction),
+                    userName,
                     null,
                     columnText,
                     isSelected,
@@ -384,10 +393,15 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
                 return;
             }
 
-            if (column == ShelvesListColumn.Repository)
+            if (column == ShelvesListColumn.CreationDate)
             {
-                DrawTreeViewItem.ForSecondaryLabel(
-                    rect, columnText, isSelected, isFocused, false);
+                DrawTreeViewItem.ForLabel(
+                    rect,
+                    new GUIContent(
+                        Time.GetLongTimeAgoString(objectInfo.LocalTimeStamp), columnText),
+                    isSelected,
+                    isFocused,
+                    false);
                 return;
             }
 

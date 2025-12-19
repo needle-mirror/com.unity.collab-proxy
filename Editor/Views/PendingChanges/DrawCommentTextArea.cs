@@ -1,62 +1,63 @@
-using System.Reflection;
+using System;
 
 using UnityEditor;
 using UnityEngine;
 
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.UndoRedo;
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
     internal static class DrawCommentTextArea
     {
-        internal static void For(
-            UndoRedoTextArea textArea,
-            PendingChangesTab pendingChangesTab,
-            float width,
+        internal static void ForComment(
+            CommentTextArea textArea,
+            Action onTextAreaChanged,
+            bool isOperationRunning)
+        {
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.Space(3, false);
+
+                using (new EditorGUILayout.VerticalScope())
+                {
+                    using (new GuiEnabled(!isOperationRunning))
+                    {
+                        EditorGUI.BeginChangeCheck();
+
+                        EditorGUILayout.Space(4);
+
+                        Rect availableRect = GUILayoutUtility.GetRect(0, 0, GUILayout.ExpandHeight(true));
+
+                        textArea.OnGUI(
+                            availableRect,
+                            UnityStyles.PendingChangesTab.CommentTextArea,
+                            UnityStyles.PendingChangesTab.CommentPlaceHolder);
+
+                        if (EditorGUI.EndChangeCheck())
+                            onTextAreaChanged();
+                    }
+                }
+
+                EditorGUILayout.Space(3, false);
+            }
+        }
+
+        internal static void ForSummary(
+            SummaryTextArea textArea,
+            Action onTextAreaChanged,
             bool isOperationRunning)
         {
             using (new GuiEnabled(!isOperationRunning))
             {
-                EditorGUILayout.BeginHorizontal();
-
-                Rect textAreaRect = BuildTextAreaRect(
-                    textArea.Text,
-                    width);
-
                 EditorGUI.BeginChangeCheck();
 
                 textArea.OnGUI(
-                    textAreaRect,
-                    UnityStyles.PendingChangesTab.CommentTextArea,
-                    UnityStyles.PendingChangesTab.CommentPlaceHolder);
+                    UnityStyles.PendingChangesTab.SummaryTextArea,
+                    UnityStyles.PendingChangesTab.SummaryPlaceHolder);
 
                 if (EditorGUI.EndChangeCheck())
-                    OnTextAreaChanged(pendingChangesTab);
-
-                EditorGUILayout.EndHorizontal();
+                    onTextAreaChanged();
             }
-        }
-
-        static void OnTextAreaChanged(PendingChangesTab pendingChangesTab)
-        {
-            pendingChangesTab.ClearIsCommentWarningNeeded();
-        }
-
-        static Rect BuildTextAreaRect(string text, float width)
-        {
-            GUIStyle commentTextAreaStyle = UnityStyles.PendingChangesTab.CommentTextArea;
-            commentTextAreaStyle.stretchWidth = false;
-
-            Rect result = GUILayoutUtility.GetRect(
-                width,
-                UnityConstants.PENDING_CHANGES_COMMENT_HEIGHT);
-
-            result.width = width;
-            result.height = UnityConstants.PENDING_CHANGES_COMMENT_HEIGHT;
-            result.xMin = 50f;
-
-            return result;
         }
     }
 }

@@ -1,8 +1,14 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 
+using UnityEditorWindow = UnityEditor.EditorWindow;
+
+#if !UNITY_6000_0_OR_NEWER
+using Unity.PlasticSCM.Editor.UnityInternals.UnityEditor;
+using EditorWindow = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.EditorWindow;
+#else
 using UnityEditor;
-using UnityEngine;
+using EditorWindow = UnityEditor.EditorWindow;
+#endif
 
 namespace Unity.PlasticSCM.Editor.UI
 {
@@ -13,21 +19,11 @@ namespace Unity.PlasticSCM.Editor.UI
             InitializeInfo();
         }
 
-        internal static bool IsAvailable()
-        {
-            return mShowWithModeMethod != null
-                && mCreateSavedGUIState != null
-                && mApplyAndForgetMethod != null
-                && mParentField != null
-                && mParentWindowProp != null
-                && mMakeModalMethod != null;
-        }
-
-        internal static void Dialog(EditorWindow window)
+        internal static void Dialog(UnityEditorWindow window)
         {
             ShowAsUtility(window);
 
-            object savedGUIState = CreateSavedGUIState();
+            SavedGUIState savedGUIState = CreateSavedGUIState();
             PushDispatcherContext(window);
 
             MakeModal(window);
@@ -36,36 +32,43 @@ namespace Unity.PlasticSCM.Editor.UI
             ApplySavedGUIState(savedGUIState);
         }
 
-        static void MakeModal(EditorWindow window)
+        static void MakeModal(UnityEditorWindow window)
         {
             // MakeModal(m_Parent.window);
-            var hostView = mParentField.GetValue(window);
-            var parentWindow = mParentWindowProp.GetValue(hostView, null);
+#if !UNITY_6000_0_OR_NEWER
+            HostView hostView = window.m_Parent();
+#else
+            HostView hostView = window.m_Parent;
+#endif
+            ContainerWindow parentWindow = hostView.window;
 
-            mMakeModalMethod.Invoke(
-                mMakeModalMethod.IsStatic ? null : window,
-                new object[] { parentWindow });
+            EditorWindow.Internal_MakeModal(parentWindow);
         }
 
-        static void ShowAsUtility(EditorWindow window)
+        static void ShowAsUtility(UnityEditorWindow window)
         {
             // ShowWithMode(ShowMode.Utility);
-            mShowWithModeMethod.Invoke(window, new object[] { 2 });
+
+#if !UNITY_6000_0_OR_NEWER
+            window.ShowWithMode(2);
+#else
+            window.ShowWithMode((ShowMode)2);
+#endif
         }
 
-        static object CreateSavedGUIState()
+        static SavedGUIState CreateSavedGUIState()
         {
             // SavedGUIState guiState = SavedGUIState.Create();
-            return mCreateSavedGUIState.Invoke(null, null);
+            return SavedGUIState.Create();
         }
 
-        static void ApplySavedGUIState(object savedGUIState)
+        static void ApplySavedGUIState(SavedGUIState savedGUIState)
         {
             // guiState.ApplyAndForget();
-            mApplyAndForgetMethod.Invoke(savedGUIState, null);
+            savedGUIState.ApplyAndForget();
         }
 
-        static void PopDispatcherContext(EditorWindow window)
+        static void PopDispatcherContext(UnityEditorWindow window)
         {
             //UnityEngine.UIElements.EventDispatcher.editorDispatcher.PopDispatcherContext();
 
@@ -73,7 +76,7 @@ namespace Unity.PlasticSCM.Editor.UI
             mPopContextMethod2020.Invoke(editorDispatcher, null);
         }
 
-        static void PushDispatcherContext(EditorWindow window)
+        static void PushDispatcherContext(UnityEditorWindow window)
         {
             //UnityEngine.UIElements.EventDispatcher.editorDispatcher.PushDispatcherContext();
 
@@ -81,106 +84,14 @@ namespace Unity.PlasticSCM.Editor.UI
             mPushContextMethod2020.Invoke(editorDispatcher, null);
         }
 
-        static object GetDispatcher(EditorWindow window)
-        {
-            object dispatcher = null;
-            if (MayHaveDispatcher())
-            {
-                var parent = mParentField.GetValue(window);
-                if (parent != null)
-                {
-                    var visualTree = mVisualTreeProp.GetValue(parent, null);
-                    if (visualTree != null)
-                    {
-                        var panel = mPanelProp.GetValue(visualTree, null);
-                        if (panel != null)
-                        {
-                            dispatcher = mDispatcherProp.GetValue(panel, null);
-                        }
-                    }
-                }
-            }
-
-            return dispatcher;
-        }
-
-        static bool MayHaveDispatcher()
-        {
-            return mDispatcherType != null
-                && mPushContextMethod != null
-                && mPopContextMethod != null;
-        }
-
         static void InitializeInfo()
         {
             var flags = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static;
-            mMakeModalMethod = BuildMakeModalMethodInfo(flags);
-            mShowWithModeMethod = typeof(EditorWindow).GetMethod("ShowWithMode", flags);
-            mParentField = typeof(EditorWindow).GetField("m_Parent", flags);
-            var hostViewType = mParentField.FieldType;
-            mParentWindowProp = hostViewType.GetProperty("window", flags);
-
-            var savedGUIStateType = typeof(EditorWindow).Assembly.GetType("UnityEditor.SavedGUIState");
-            mCreateSavedGUIState = savedGUIStateType.GetMethod("Create", flags);
-            mApplyAndForgetMethod = savedGUIStateType.GetMethod("ApplyAndForget", flags);
 
             mEditorDispatcherProp2020 = typeof(UnityEngine.UIElements.EventDispatcher).GetProperty("editorDispatcher", flags);
             mPushContextMethod2020 = mEditorDispatcherProp2020.PropertyType.GetMethod("PushDispatcherContext", flags);
             mPopContextMethod2020 = mEditorDispatcherProp2020.PropertyType.GetMethod("PopDispatcherContext", flags);
-
-            flags = BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.Public;
-
-            mParentField = typeof(EditorWindow).GetField("m_Parent", flags);
-            if (mParentField != null)
-                hostViewType = mParentField.FieldType;
-            if (hostViewType != null)
-                mVisualTreeProp = hostViewType.GetProperty("visualTree");
-            if (mVisualTreeProp != null)
-            {
-                var visualTreeType = mVisualTreeProp.PropertyType;
-                if (visualTreeType != null)
-                {
-                    mPanelProp = visualTreeType.GetProperty("panel");
-                    if (mPanelProp != null)
-                    {
-                        var panelType = mPanelProp.PropertyType;
-                        if (panelType != null)
-                        {
-                            mDispatcherProp = panelType.GetProperty("dispatcher");
-                            if (mDispatcherProp != null)
-                            {
-                                mDispatcherType = mDispatcherProp.PropertyType;
-                                if (mDispatcherType != null)
-                                {
-                                    mPushContextMethod = mDispatcherType.GetMethod("PushDispatcherContext", flags);
-                                    mPopContextMethod = mDispatcherType.GetMethod("PopDispatcherContext", flags);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
-
-        static MethodInfo BuildMakeModalMethodInfo(BindingFlags flags)
-        {
-            return typeof(EditorWindow).GetMethod("Internal_MakeModal", flags);
-        }
-
-        static FieldInfo mParentField;
-        static PropertyInfo mParentWindowProp;
-        static MethodInfo mMakeModalMethod;
-        static MethodInfo mShowWithModeMethod;
-        static MethodInfo mCreateSavedGUIState;
-        static MethodInfo mApplyAndForgetMethod;
-        static PropertyInfo mVisualTreeProp;
-        static Type mDispatcherType;
-        static MethodInfo mPushContextMethod;
-        static MethodInfo mPopContextMethod;
-        static PropertyInfo mPanelProp;
-        static PropertyInfo mDispatcherProp;
 
         static PropertyInfo mEditorDispatcherProp2020;
         static MethodInfo mPushContextMethod2020;

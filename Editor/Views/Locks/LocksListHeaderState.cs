@@ -13,9 +13,9 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
     internal enum LocksListColumn
     {
         ItemPath,
+        Owner,
         LockType,
         ModificationDate,
-        Owner,
         Branch,
         DestinationBranch
     }
@@ -27,15 +27,15 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
         {
             return new LocksListHeaderState(BuildColumns());
         }
-        
+
         internal static List<string> GetColumnNames()
         {
             return new List<string>
             {
                 PlasticLocalization.Name.ItemColumn.GetString(),
+                PlasticLocalization.Name.OwnerColumn.GetString(),
                 PlasticLocalization.Name.StatusColumn.GetString(),
                 PlasticLocalization.Name.DateModifiedColumn.GetString(),
-                PlasticLocalization.Name.OwnerColumn.GetString(),
                 PlasticLocalization.Name.BranchColumn.GetString(),
                 PlasticLocalization.Name.DestinationBranchColumn.GetString()
             };
@@ -47,12 +47,12 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
             {
                 case LocksListColumn.ItemPath:
                     return PlasticLocalization.Name.ItemColumn.GetString();
+                case LocksListColumn.Owner:
+                    return PlasticLocalization.Name.OwnerColumn.GetString();
                 case LocksListColumn.LockType:
                     return PlasticLocalization.Name.StatusColumn.GetString();
                 case LocksListColumn.ModificationDate:
                     return PlasticLocalization.Name.DateModifiedColumn.GetString();
-                case LocksListColumn.Owner:
-                    return PlasticLocalization.Name.OwnerColumn.GetString();
                 case LocksListColumn.Branch:
                     return PlasticLocalization.Name.BranchColumn.GetString();
                 case LocksListColumn.DestinationBranch:
@@ -93,6 +93,13 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
                 },
                 new Column
                 {
+                    width = UnityConstants.LocksColumns.OWNER_WIDTH,
+                    minWidth = UnityConstants.LocksColumns.OWNER_MIN_WIDTH,
+                    headerContent = new GUIContent(GetColumnName(LocksListColumn.Owner)),
+                    sortingArrowAlignment = TextAlignment.Right
+                },
+                new Column
+                {
                     width = UnityConstants.LocksColumns.LOCK_TYPE_WIDTH,
                     minWidth = UnityConstants.LocksColumns.LOCK_TYPE_MIN_WIDTH,
                     headerContent = new GUIContent(GetColumnName(LocksListColumn.LockType)),
@@ -103,13 +110,6 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
                     width = UnityConstants.LocksColumns.MODIFICATION_DATE_WIDTH,
                     minWidth = UnityConstants.LocksColumns.MODIFICATION_DATE_MIN_WIDTH,
                     headerContent = new GUIContent(GetColumnName(LocksListColumn.ModificationDate)),
-                    sortingArrowAlignment = TextAlignment.Right
-                },
-                new Column
-                {
-                    width = UnityConstants.LocksColumns.OWNER_WIDTH,
-                    minWidth = UnityConstants.LocksColumns.OWNER_MIN_WIDTH,
-                    headerContent = new GUIContent(GetColumnName(LocksListColumn.Owner)),
                     sortingArrowAlignment = TextAlignment.Right
                 },
                 new Column

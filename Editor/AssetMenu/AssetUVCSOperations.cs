@@ -266,7 +266,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 mWkInfo.ClientPath,
                 mAssetSelection.GetSelectedAssets());
 
-            string selectedPath = Path.GetFullPath(selectedAsset.path);
+            string selectedPath = AssetsPath.GetFullPath.ForPath(selectedAsset.path);
 
             WorkspaceTreeNode node = PlasticGui.Plastic.API.
                 GetWorkspaceTreeNode(mWkInfo, selectedPath);

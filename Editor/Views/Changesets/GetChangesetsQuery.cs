@@ -1,3 +1,4 @@
+using Codice.CM.Common;
 using PlasticGui.WorkspaceWindow.QueryViews;
 
 namespace Unity.PlasticSCM.Editor.Views.Changesets
@@ -15,6 +16,16 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             return string.Format("{0} {1}",
                 QueryConstants.ChangesetsBeginningQuery,
                 whereClause);
+        }
+
+        internal static string For(BranchInfo branchInfo)
+        {
+            if (branchInfo == null)
+                return QueryConstants.ChangesetsBeginningQuery;
+
+            return string.Format(
+                QueryConstants.ChangesetsOnBranchWithRevisionsQuery,
+                branchInfo.BranchName);
         }
     }
 }

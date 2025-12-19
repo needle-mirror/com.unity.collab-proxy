@@ -5,8 +5,8 @@
         <VisualElement name="progressControlsContainer" />
         <VisualElement name="footer">
             <VisualElement class="grow-max" />
-            <Button name="download" />
-            <Button name="cancel" />
+            <Button name="downloadButton" />
+            <Button name="cancelButton" />
         </VisualElement>
     </VisualElement>
 </UXML>

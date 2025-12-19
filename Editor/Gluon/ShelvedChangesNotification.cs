@@ -10,7 +10,7 @@ using PlasticGui.WorkspaceWindow.Topbar;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Tool;
-using Unity.PlasticSCM.Editor.StatusBar;
+using Unity.PlasticSCM.Editor.Topbar;
 using Unity.PlasticSCM.Editor.UI;
 
 using GluonShelveOperations = GluonGui.WorkspaceWindow.Views.Shelves.ShelveOperations;
@@ -18,7 +18,7 @@ using GluonShelveOperations = GluonGui.WorkspaceWindow.Views.Shelves.ShelveOpera
 namespace Unity.PlasticSCM.Editor.Gluon
 {
     internal class ShelvedChangesNotification :
-        WindowStatusBar.IShelvedChangesNotification,
+        NotificationsArea.IShelvedChangesNotification,
         CheckShelvedChanges.IUpdateShelvedChangesNotification
     {
         internal ShelvedChangesNotification(
@@ -37,33 +37,40 @@ namespace Unity.PlasticSCM.Editor.Gluon
             mUVCSWindow = uvcsWindow;
         }
 
-        bool WindowStatusBar.IShelvedChangesNotification.HasNotification
+        bool NotificationsArea.IShelvedChangesNotification.HasNotification
         {
             get { return mHasNotification; }
         }
 
-        void WindowStatusBar.IShelvedChangesNotification.SetWorkspaceWindow(
+        void NotificationsArea.IShelvedChangesNotification.SetWorkspaceWindow(
             WorkspaceWindow workspaceWindow)
         {
             mWorkspaceWindow = workspaceWindow;
         }
 
-        void WindowStatusBar.IShelvedChangesNotification.SetShelvedChangesUpdater(
+        void NotificationsArea.IShelvedChangesNotification.SetShelvedChangesUpdater(
             IShelvedChangesUpdater shelvedChangesUpdater)
         {
             mShelvedChangesUpdater = shelvedChangesUpdater;
         }
 
-        void WindowStatusBar.IShelvedChangesNotification.OnGUI()
+        void NotificationsArea.IShelvedChangesNotification.OnGUI()
         {
             Texture2D icon = Images.GetInfoBellNotificationIcon();
 
-            WindowStatusBar.DrawIcon(icon, UnityConstants.STATUS_BAR_ICON_SIZE - 2);
+            NotificationsArea.DrawIcon(
+                icon,
+                UnityConstants.SHELVED_CHANGES_NOTIFICATION_ICON_SIZE,
+                1);
 
-            WindowStatusBar.DrawNotification(new GUIContentNotification(
+            GUILayout.Space(1);
+
+            NotificationsArea.DrawNotification(new GUIContentNotification(
                 new GUIContent(
                     PlasticLocalization.Name.ShelvedChanges.GetString(),
                     PlasticLocalization.Name.ShelvedChangesExplanation.GetString())));
+
+            GUILayout.Space(3);
 
             GenericMenu discardShelveDropdownMenu = new GenericMenu();
 
@@ -77,7 +84,7 @@ namespace Unity.PlasticSCM.Editor.Gluon
                 false,
                 DiscardShelvedChanges);
 
-            DrawActionButtonWithMenu.For(
+            DrawActionButtonWithMenu.ForTopbar(
                 PlasticLocalization.Name.ViewButton.GetString(),
                 PlasticLocalization.Name.ViewShelvedChangesButtonExplanation.GetString(),
                 ShowShelvesView,

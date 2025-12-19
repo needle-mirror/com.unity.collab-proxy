@@ -1,15 +1,18 @@
-using PlasticGui;
 using System;
-using System.Reflection;
+
 using UnityEditor;
-using UnityEngine;
+
+#if !UNITY_6000_0_OR_NEWER
+using EditorUtility = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.EditorUtility;
+using Menu = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.Menu;
+#endif
 
 namespace Unity.PlasticSCM.Editor.UI
 {
     internal static class HandleMenuItem
     {
         internal static void AddMenuItem(
-            string name, 
+            string name,
             int priority,
             Action execute,
             Func<bool> validate)
@@ -24,67 +27,22 @@ namespace Unity.PlasticSCM.Editor.UI
             Action execute,
             Func<bool> validate)
         {
-            MethodInfo InternalAddMenuItem = MenuType.GetMethod(
-                "AddMenuItem",
-                BindingFlags.Static | BindingFlags.NonPublic);
-
-            if (InternalAddMenuItem == null)
-            {
-                Debug.LogWarningFormat(
-                    PlasticLocalization.GetString(
-                        PlasticLocalization.Name.ErrorAddPlasticSCMMenuItem),
-                    name);
-                return;
-            }
-
-            InternalAddMenuItem.Invoke(
-                null, new object[] {
-                    name, shortcut, false,
-                    priority, execute, validate });
+            Menu.AddMenuItem(name, shortcut, false, priority, execute, validate);
         }
 
         internal static void RemoveMenuItem(string name)
         {
-            MethodInfo InternalRemoveMenuItem = MenuType.GetMethod(
-                "RemoveMenuItem",
-                BindingFlags.Static | BindingFlags.NonPublic);
-
-            if (InternalRemoveMenuItem == null)
-            {
-                Debug.LogWarningFormat(
-                    PlasticLocalization.GetString(
-                        PlasticLocalization.Name.ErrorRemovePlasticSCMMenuItem),
-                    name);
-                return;
-            }
-
-            InternalRemoveMenuItem.Invoke(
-                null, new object[] { name });
+            Menu.RemoveMenuItem(name);
         }
 
         internal static void UpdateAllMenus()
         {
-            MethodInfo InternalUpdateAllMenus = EditorUtilityType.GetMethod(
-                "Internal_UpdateAllMenus",
-                BindingFlags.Static | BindingFlags.NonPublic);
-
-            if (InternalUpdateAllMenus == null)
-            {
-                Debug.LogWarning(
-                    PlasticLocalization.GetString(
-                        PlasticLocalization.Name.ErrorUpdatePlasticSCMMenus));
-                return;
-            }
-
-            InternalUpdateAllMenus.Invoke(null, null);
+            EditorUtility.Internal_UpdateAllMenus();
         }
 
         internal static bool GetEnabled(string menuPath)
         {
             return Menu.GetEnabled(menuPath);
         }
-
-        static readonly Type MenuType = typeof(UnityEditor.Menu);
-        static readonly Type EditorUtilityType = typeof(UnityEditor.EditorUtility);
     }
 }

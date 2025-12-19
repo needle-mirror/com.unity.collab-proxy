@@ -225,7 +225,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
                 if (string.IsNullOrEmpty(scene.path))
                     continue;
 
-                string fullPath = Path.GetFullPath(scene.path);
+                string fullPath = AssetsPath.GetFullPath.ForPath(scene.path);
 
                 if (!PathHelper.IsContainedOn(fullPath, wkPath))
                     continue;
@@ -244,7 +244,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
             {
                 if (PathHelper.IsSamePath(
                         path,
-                        Path.GetFullPath(scene.path)))
+                        AssetsPath.GetFullPath.ForPath(scene.path)))
                     return true;
             }
 

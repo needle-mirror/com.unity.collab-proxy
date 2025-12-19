@@ -15,10 +15,10 @@ You can walk through a straightforward onboarding wizard when creating a reposit
 3. In the version control onboarding window, complete the steps to continue:
    ![Onboarding](images/Onboarding.png)
 
-Unity connects your project to your version control Cloud repository; version control automatically creates an ignore file in the workspace for Unity projects so it doesn't track files that shouldn't be part of the repository. It also creates a standard automatic checkin during the initial setup. So now you're all set to start using version control!
+Unity version control connects your project to your version control Cloud repository; it automatically creates an ignore file in the workspace for Unity projects so it doesn't track files that shouldn't be part of the repository. It also creates a standard automatic checkin during the initial setup. So now you're all set to start using version control!
 
 ![Automatic setup](images/AutomaticSetup.png)
 
-**Note**: Basic version control actions, such as viewing pending changes, checking in changes, and viewing changesets, don’t require a version control Client install. However, if you want to use more advanced features, such as branching and diffing changeset, you will be prompted to download the version control client (if you have not already done so):
+**Note**: Most version control actions, such as viewing pending changes, checking in changes, branching & merging, shelving, viewing changesets and labels, don’t require a version control Client install. However, if you want to use more advanced features, such as diffing changes or the branch explorer, you will be prompted to download the version control client (if you have not already done so):
 
 ![Advanced features](images/AdvancedFeatures.png)

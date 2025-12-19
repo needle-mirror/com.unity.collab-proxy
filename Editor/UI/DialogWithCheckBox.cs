@@ -1,211 +1,127 @@
+﻿#if UNITY_6000_3_OR_NEWER
+using System;
+
 using UnityEditor;
-using UnityEngine;
 
 using Codice.Client.Common;
 
 namespace Unity.PlasticSCM.Editor.UI
 {
-    internal class DialogWithCheckBox : PlasticDialog
+    internal class DialogWithCheckBox
     {
-        protected override Rect DefaultRect
-        {
-            get
-            {
-                var baseRect = base.DefaultRect;
-                return new Rect(baseRect.x, baseRect.y, 535, baseRect.height);
-            }
-        }
-
         internal static GuiMessage.GuiMessageResponseButton Show(
             string title,
             string message,
             string positiveButtonText,
             string neutralButtonText,
             string negativeButtonText,
+            GuiMessage.GuiMessageType messageType,
             MultiLinkLabelData dontShowAgainContent,
             EditorWindow parentWindow,
             out bool checkBoxValue)
         {
-            checkBoxValue = false;
+            string optOutKey = Guid.NewGuid().ToString();
+            string prefixedOptOutKey = OPT_OUT_PREFIX + optOutKey;
 
-            DialogWithCheckBox dialog = Create(
+            GuiMessage.GuiMessageResponseButton result;
+            if (string.IsNullOrEmpty(negativeButtonText))
+            {
+                result = ShowTwoOptionsDialog(
+                    title,
+                    message,
+                    positiveButtonText,
+                    neutralButtonText,
+                    optOutKey,
+                    messageType);
+            }
+            else
+            {
+                result = ShowThreeOptionsDialog(
+                    title,
+                    message,
+                    positiveButtonText,
+                    neutralButtonText,
+                    negativeButtonText,
+                    optOutKey,
+                    messageType);
+            }
+
+            checkBoxValue = EditorPrefs.HasKey(prefixedOptOutKey);
+
+            EditorPrefs.DeleteKey(prefixedOptOutKey);
+            SessionState.EraseInt(prefixedOptOutKey);
+
+            return result;
+        }
+
+        static GuiMessage.GuiMessageResponseButton ShowTwoOptionsDialog(
+            string title,
+            string message,
+            string positiveButtonText,
+            string neutralButtonText,
+            string optOutKey,
+            GuiMessage.GuiMessageType messageType)
+        {
+            bool dialogResult = EditorDialog.DisplayDecisionDialogWithOptOut(
                 title,
                 message,
                 positiveButtonText,
                 neutralButtonText,
-                negativeButtonText,
-                dontShowAgainContent);
+                DialogOptOutDecisionType.ForThisMachine,
+                optOutKey,
+                GetDialogIconType(messageType));
 
-            ResponseType result = dialog.RunModal(parentWindow);
-
-            if (result == ResponseType.None)
-                return GuiMessage.GuiMessageResponseButton.None;
-
-            checkBoxValue = dialog.mCheckBox;
-
-            if (result == ResponseType.Cancel)
-                return GuiMessage.GuiMessageResponseButton.Neutral;
-
-            if (result == ResponseType.Ok)
-                return GuiMessage.GuiMessageResponseButton.Positive;
-
-            return GuiMessage.GuiMessageResponseButton.Negative;
+            return dialogResult ?
+                GuiMessage.GuiMessageResponseButton.Positive :
+                GuiMessage.GuiMessageResponseButton.Neutral;
         }
 
-        protected override string GetTitle()
-        {
-            return mTitle;
-        }
-
-        protected override void OnModalGUI()
-        {
-            DoMainContentSection();
-
-            DoButtonsArea();
-
-            if (mDontShowAgainContent == null)
-                return;
-
-            DoCheckboxSection();
-        }
-
-        void DoMainContentSection()
-        {
-            using (new EditorGUILayout.VerticalScope())
-            {
-                GUILayout.Label(
-                    mTitle,
-                    UnityStyles.Dialog.MessageTitle);
-
-                GUILayout.Space(3f);
-
-                GUILayout.Label(
-                    mMessage,
-                    UnityStyles.Dialog.MessageText);
-            }
-        }
-
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.VerticalScope())
-            {
-                GUILayout.Space(25f);
-
-                using (new EditorGUILayout.HorizontalScope())
-                {
-                    GUILayout.FlexibleSpace();
-
-                    if (Application.platform == RuntimePlatform.WindowsEditor)
-                    {
-                        DoPositiveButton();
-                        DoNegativeButton();
-                        DoNeutralButton();
-                        return;
-                    }
-
-                    DoNegativeButton();
-                    DoNeutralButton();
-                    DoPositiveButton();
-                }
-            }
-        }
-
-        void DoPositiveButton()
-        {
-            GUILayout.Space(6f);
-
-            if (!AcceptButton(mPositiveButtonText,
-                30))
-                return;
-
-            OkButtonAction();
-        }
-
-        void DoNegativeButton()
-        {
-            if (string.IsNullOrEmpty(mNegativeButtonText))
-                return;
-
-            GUILayout.Space(6f);
-
-            if (!NormalButton(mNegativeButtonText))
-                return;
-
-            ApplyButtonAction();
-        }
-
-        void DoNeutralButton()
-        {
-            if (string.IsNullOrEmpty(mNeutralButtonText))
-                return;
-
-            GUILayout.Space(6f);
-
-            if (!NormalButton(mNeutralButtonText))
-                return;
-
-            CancelButtonAction();
-        }
-
-        void DoCheckboxSection()
-        {
-            GUILayout.Space(22f);
-
-            Rect backgroundRect = new Rect(0, GUILayoutUtility.GetLastRect().yMax, position.width, 50);
-
-            EditorGUI.DrawRect(backgroundRect, UnityStyles.Colors.DarkGray);
-
-            GUILayout.Space(4f);
-
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                mCheckBox = EditorGUILayout.ToggleLeft(
-                    string.Empty,
-                    mCheckBox,
-                    EditorStyles.boldLabel);
-                GUILayout.FlexibleSpace();
-            }
-
-            GUILayout.Space(-22);
-
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.Space(22);
-                DrawTextBlockWithLink.ForMultiLinkLabelInDialog(mDontShowAgainContent);
-            }
-
-            GUILayout.Space(-19);
-        }
-
-        static DialogWithCheckBox Create(
+        static GuiMessage.GuiMessageResponseButton ShowThreeOptionsDialog(
             string title,
             string message,
             string positiveButtonText,
             string neutralButtonText,
             string negativeButtonText,
-            MultiLinkLabelData dontShowAgainContent)
+            string optOutKey,
+            GuiMessage.GuiMessageType messageType)
         {
-            DialogWithCheckBox instance = CreateInstance<DialogWithCheckBox>();
-            instance.mEnterKeyAction = instance.OkButtonAction;
-            instance.mEscapeKeyAction = instance.CancelButtonAction;
+            DialogResult dialogResult = EditorDialog.DisplayComplexDecisionDialogWithOptOut(
+                title,
+                message,
+                positiveButtonText,
+                negativeButtonText,
+                neutralButtonText,
+                DialogOptOutDecisionType.ForThisMachine,
+                optOutKey,
+                GetDialogIconType(messageType));
 
-            instance.mTitle = title;
-            instance.mMessage = message;
-            instance.mPositiveButtonText = positiveButtonText;
-            instance.mNeutralButtonText = neutralButtonText;
-            instance.mNegativeButtonText = negativeButtonText;
-            instance.mDontShowAgainContent = dontShowAgainContent;
+            if (dialogResult == DialogResult.Cancel)
+                return GuiMessage.GuiMessageResponseButton.Neutral;
 
-            return instance;
+            if (dialogResult == DialogResult.DefaultAction)
+                return GuiMessage.GuiMessageResponseButton.Positive;
+
+            return GuiMessage.GuiMessageResponseButton.Negative;
         }
 
-        string mTitle;
-        string mMessage;
-        string mPositiveButtonText;
-        string mNeutralButtonText;
-        string mNegativeButtonText;
-        MultiLinkLabelData mDontShowAgainContent;
+        static DialogIconType GetDialogIconType(GuiMessage.GuiMessageType messageType)
+        {
+            switch (messageType)
+            {
+                case GuiMessage.GuiMessageType.Warning:
+                    return DialogIconType.Warning;
 
-        bool mCheckBox;
+                case GuiMessage.GuiMessageType.Critical:
+                    return DialogIconType.Error;
+
+                case GuiMessage.GuiMessageType.Informational:
+                case GuiMessage.GuiMessageType.Question:
+                default:
+                    return DialogIconType.Info;
+            }
+        }
+
+        const string OPT_OUT_PREFIX = "DialogOptOut."; // UnityEditor.EditorDialog.k_OptOutPrefix
     }
 }
+#endif

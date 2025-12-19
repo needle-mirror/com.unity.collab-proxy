@@ -23,9 +23,6 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
         {
             if (IsOperationRunning() || mRequestedRepaint)
             {
-                if (IsOperationRunning())
-                    UpdateIndeterminateProgress();
-
                 parentWindow.Repaint();
 
                 mRequestedRepaint = false;
@@ -44,6 +41,7 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
         {
             mData.IsOperationRunning = true;
             mData.ProgressMessage = message;
+            mData.ProgressPercent = -1;
 
             mRequestedRepaint = true;
         }
@@ -71,14 +69,6 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
         bool IsOperationRunning()
         {
             return mData.IsOperationRunning;
-        }
-
-        void UpdateIndeterminateProgress()
-        {
-            mData.ProgressPercent += .01f;
-
-            if (mData.ProgressPercent > 1f)
-                mData.ProgressPercent = 0f;
         }
 
         Data mData = new Data();

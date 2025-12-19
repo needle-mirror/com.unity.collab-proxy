@@ -211,11 +211,15 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow
 
             GUI.SetNextControlName("SearchField");
 
-            string previousSearchTerm = mSearchTerm;
-            string newSearchTerm = GUILayout.TextField(
-                mSearchTerm,
+            Rect searchRect = GUILayoutUtility.GetRect(
+                new GUIContent(string.Empty),
                 UnityStyles.EditorToolbar.Popup.SearchField,
                 GUILayout.ExpandWidth(true));
+
+            string previousSearchTerm = mSearchTerm;
+            string newSearchTerm = GUI.TextField(
+                searchRect,
+                mSearchTerm);
 
             EditorGUIUtility.AddCursorRect(GUILayoutUtility.GetLastRect(), MouseCursor.Text);
             if (GUILayout.Button(

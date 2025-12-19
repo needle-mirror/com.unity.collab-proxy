@@ -9,9 +9,20 @@ namespace Unity.PlasticSCM.Editor.Configuration
     internal class MissingEncryptionPasswordPromptHandler :
         ClientEncryptionServiceProvider.IEncryptioPasswordProvider
     {
+        internal MissingEncryptionPasswordPromptHandler()
+        {
+            Execute.WhenEditorIsReady(() =>
+            {
+                mIsEditorReady = true;
+            });
+        }
+
         string ClientEncryptionServiceProvider.IEncryptioPasswordProvider
             .GetEncryptionEncryptedPassword(string server)
         {
+            if (!mIsEditorReady)
+                return null;
+
             string result = null;
 
             GUIActionRunner.RunGUIAction(delegate
@@ -32,5 +43,7 @@ namespace Unity.PlasticSCM.Editor.Configuration
 
             return dialogData.EncryptedPassword;
         }
+
+        volatile bool mIsEditorReady = false;
     }
 }

@@ -77,7 +77,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays.Cache
                     ? AssetStatus.ContainsChanges
                     : AssetStatus.None;
 
-            return ChangedFileChecker.IsChanged(node.LocalInfo, fullPath, false)
+            return ChangedFileChecker.IsChanged(node.LocalInfo, fullPath, wkInfo.IsDynamic, false)
                 ? AssetStatus.Changed
                 : AssetStatus.None;
         }

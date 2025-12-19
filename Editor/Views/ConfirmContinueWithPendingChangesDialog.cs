@@ -69,7 +69,7 @@ namespace Unity.PlasticSCM.Editor.Views
         IViewSwitcher mViewSwitcher;
         EditorWindow mParentWindow;
     }
-    
+
     internal class ConfirmContinueWithPendingChangesDialog : PlasticDialog
     {
         protected override Rect DefaultRect
@@ -110,6 +110,7 @@ namespace Unity.PlasticSCM.Editor.Views
             instance.mTitle = title;
             instance.mExplanation = explanation;
             instance.mViewSwitcher = viewSwitcher;
+            instance.mOkButtonText = PlasticLocalization.Name.SwitchToConfirmationContinueButton.GetString();
             return instance;
         }
 
@@ -125,20 +126,12 @@ namespace Unity.PlasticSCM.Editor.Views
             return mTitle;
         }
 
-        protected override void OnModalGUI()
+        protected override string GetExplanation()
         {
-            Title(mTitle);
-
-            Paragraph(mExplanation);
-
-            DoSwitchToConfirmationCheckButton();
-
-            GUILayout.Space(10);
-
-            DoButtonsArea();
+            return mExplanation;
         }
 
-        void DoSwitchToConfirmationCheckButton()
+        protected override void DoComponentsArea()
         {
             using (new EditorGUILayout.HorizontalScope())
             {
@@ -151,48 +144,20 @@ namespace Unity.PlasticSCM.Editor.Views
             }
         }
 
-        void DoButtonsArea()
+        protected override void DoButtonsArea()
         {
             using (new EditorGUILayout.HorizontalScope())
             {
                 GUILayout.FlexibleSpace();
 
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoContinueButton();
-                    DoCancelAndViewPendingChangesButton();
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoCancelAndViewPendingChangesButton();
-                DoContinueButton();
+                DoButtonsWithPlatformOrdering(
+                    DoOkButton, DoCancelAndViewPendingChangesButton, DoCancelButton);
             }
-        }
-
-        void DoContinueButton()
-        {
-            if (!NormalButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.SwitchToConfirmationContinueButton)))
-                return;
-
-            OkButtonAction();
-        }
-
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.CancelButton)))
-                return;
-
-            CancelButtonAction();
         }
 
         void DoCancelAndViewPendingChangesButton()
         {
-            if (!NormalButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.SwitchToConfirmationCancelViewChangesButton)))
+            if (!NormalButton(PlasticLocalization.Name.SwitchToConfirmationCancelViewChangesButton.GetString()))
                 return;
 
             mViewSwitcher.ShowPendingChanges();

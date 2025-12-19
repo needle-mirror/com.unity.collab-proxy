@@ -2235,7 +2235,6 @@ SQL과 같은 쿼리를 실행하여 Unity VCS 객체를 찾습니다.
         {0} | {^wkname}          워크스페이스 이름.
         {1} | {^wkpath}          워크스페이스 경로.
         {2} | {^machine}         클라이언트 기기 이름.
-        {3} | {^owner}           워크스페이스 소유자.
         {4} | {^guid}            워크스페이스 GUID.
 
         {^tab}                   탭 공백을 삽입합니다.
@@ -4199,7 +4198,7 @@ Jira 매개 변수(모두 필수):
     배타적 체크아웃(잠김) 상태가 됩니다.
     'cm ^lock ^list'를 사용해 서버의 모든 잠금을 확인할 수 있습니다.
     잠금 작동 방식에 대해 알아보려면 관리자 가이드를 확인하십시오.
-    https://www.plasticscm.com/download/help/locking
+    https://docs.unity.com/unity-version-control/smart-locks
 
 예:
 

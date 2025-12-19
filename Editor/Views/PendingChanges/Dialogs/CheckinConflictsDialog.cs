@@ -5,7 +5,6 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-using Codice.Client.GameUI.Checkin;
 using Codice.CM.Common.Checkin.Partial;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
@@ -38,29 +37,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             return dialog.RunModal(parentWindow);
         }
 
-        protected override void OnModalGUI()
+        protected override void DoComponentsArea()
         {
-            Title(mDialogTitle);
-
-            Paragraph(mDialogExplanation);
-
             Title(PlasticLocalization.GetString(PlasticLocalization.Name.ItemColumn));
 
-            ConflictsArea();
-
-            GUILayout.Space(20);
-
-            DoButtonsArea();
-        }
-
-        protected override string GetTitle()
-        {
-            return PlasticLocalization.GetString(
-                PlasticLocalization.Name.CheckinConflictsTitle);
-        }
-
-        void ConflictsArea()
-        {
             mScrollPosition = EditorGUILayout.BeginScrollView(
                    mScrollPosition, EditorStyles.helpBox, GUILayout.Height(205));
 
@@ -73,39 +53,14 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             EditorGUILayout.EndScrollView();
         }
 
-        void DoButtonsArea()
+        protected override string GetTitle()
         {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoOkButton();
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoOkButton();
-            }
+            return mDialogTitle;
         }
 
-        void DoOkButton()
+        protected override string GetExplanation()
         {
-            if (!AcceptButton(mOkButtonCaption))
-                return;
-
-            OkButtonAction();
-        }
-
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.CancelButton)))
-                return;
-
-            CancelButtonAction();
+            return mDialogExplanation;
         }
 
         static string GetConflictsText(IList<CheckinConflict> conflicts)
@@ -128,13 +83,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             string dialogTitle,
             string dialogExplanation,
             string conflictsText,
-            string okButtonCaption)
+            string okButtonText)
         {
             var instance = CreateInstance<CheckinConflictsDialog>();
             instance.mDialogTitle = dialogTitle;
             instance.mDialogExplanation = dialogExplanation;
             instance.mConflictsText = conflictsText;
-            instance.mOkButtonCaption = okButtonCaption;
+            instance.mOkButtonText = okButtonText;
             instance.mEnterKeyAction = instance.OkButtonAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
             return instance;
@@ -145,6 +100,5 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
         string mDialogTitle;
         string mDialogExplanation;
         string mConflictsText;
-        string mOkButtonCaption;
     }
 }

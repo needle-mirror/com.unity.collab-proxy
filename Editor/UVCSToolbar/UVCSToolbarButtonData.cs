@@ -16,7 +16,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar
         {
             return new UVCSToolbarButtonData
             {
-                Text = PlasticLocalization.Name.UnityVersionControl.GetString(),
+                Text = PlasticLocalization.Name.UnityVCS.GetString(),
                 Tooltip = PlasticLocalization.Name.UseUnityVersionControlToManageYourProject.GetString(),
                 Icon = Images.GetPlasticViewIcon(),
                 IsVisible = UVCSToolbarButtonIsShownPreference.IsEnabled() &&

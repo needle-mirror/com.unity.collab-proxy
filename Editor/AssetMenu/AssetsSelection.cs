@@ -40,7 +40,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             if (result == null)
                 return null;
 
-            return Path.GetFullPath(result.path);
+            return AssetsPath.GetFullPath.ForPath(result.path);
         }
 
         internal static List<string> GetSelectedPaths(

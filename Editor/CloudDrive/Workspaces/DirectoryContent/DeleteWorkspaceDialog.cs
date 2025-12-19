@@ -3,7 +3,6 @@ using UnityEngine;
 
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.Progress;
 
 namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
 {
@@ -22,26 +21,21 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             string workspaceName,
             EditorWindow parentWindow)
         {
-            DeleteWorkspaceDialog dialog = Create(
-                workspaceName,
-                new ProgressControlsForDialogs());
+            DeleteWorkspaceDialog dialog = Create(workspaceName);
 
             ResponseType dialogResult = dialog.RunModal(parentWindow);
 
             return dialogResult == ResponseType.Ok;
         }
 
-        static DeleteWorkspaceDialog Create(
-            string workspaceName,
-            ProgressControlsForDialogs progressControls)
+        static DeleteWorkspaceDialog Create(string workspaceName)
         {
             var instance = CreateInstance<DeleteWorkspaceDialog>();
 
             instance.mWorkspaceName = workspaceName;
             instance.mConfirmationText = string.Empty;
-            instance.mProgressControls = progressControls;
 
-            instance.mEnterKeyAction = instance.OkButtonWithValidationAction;
+            instance.mEnterKeyAction = instance.OkButtonAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
 
             return instance;
@@ -52,25 +46,13 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             return PlasticLocalization.Name.DeleteCloudDriveTitle.GetString();
         }
 
-        protected override void OnModalGUI()
+        protected override void DoComponentsArea()
         {
-            Title(GetTitle());
-
-            GUILayout.Space(10f);
-
             DoWarningArea();
 
             GUILayout.Space(10f);
 
             DoConfirmationArea();
-
-            GUILayout.Space(10f);
-
-            DrawProgressForDialogs.For(mProgressControls.ProgressData);
-
-            GUILayout.Space(10f);
-
-            DoButtonsArea();
         }
 
         void DoWarningArea()
@@ -106,58 +88,29 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             }
         }
 
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoOkButton();
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoOkButton();
-            }
-        }
-
-        void DoOkButton()
+        protected override void DoOkButton()
         {
             using (new GuiEnabled(mWorkspaceName == mConfirmationText))
             {
-                if (!AcceptButton(PlasticLocalization.Name.DeleteButton.GetString()))
+                if (!NormalButton(PlasticLocalization.Name.DeleteButton.GetString()))
                     return;
 
-                OkButtonWithValidationAction();
+                OkButtonAction();
             }
         }
 
-        void OkButtonWithValidationAction()
+        internal override void OkButtonAction()
         {
             if (mWorkspaceName != mConfirmationText)
                 return;
 
-            OkButtonAction();
-        }
-
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.CancelButton)))
-                return;
-
-            CancelButtonAction();
+            base.OkButtonAction();
         }
 
         bool mTextAreaFocused;
 
         string mWorkspaceName;
         string mConfirmationText;
-
-        ProgressControlsForDialogs mProgressControls;
 
         const string CONFIRMATION_TEXTAREA_NAME = "confirmation_textarea";
     }

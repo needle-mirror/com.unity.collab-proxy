@@ -14,6 +14,22 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
     {
         internal static class GetFullPath
         {
+            internal static string ForPath(string path)
+            {
+#if UNITY_6000_5_OR_NEWER
+                string absolutePath = UnityEditor.FileUtil.PathToAbsolutePath(path);
+
+                // While the Editor is moving away from MonoPathRemapper usage, our package is still not ready
+                // to support unified path separators. In order to avoid errors, we need to rectify the path
+                // returned by FileUtil.PathToAbsolutePath on Windows.
+                return PlatformIdentifier.IsWindows()
+                    ? absolutePath.Replace("/", "\\")
+                    : absolutePath;
+#else
+                return Path.GetFullPath(path);
+#endif
+            }
+
             internal static string ForObject(Object obj)
             {
                 string relativePath = AssetDatabase.GetAssetPath(obj);
@@ -21,7 +37,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
                 if (string.IsNullOrEmpty(relativePath))
                     return null;
 
-                return Path.GetFullPath(relativePath);
+                return ForPath(relativePath);
             }
 
             internal static string ForGuid(string guid)
@@ -31,7 +47,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
                 if (string.IsNullOrEmpty(relativePath))
                     return null;
 
-                return Path.GetFullPath(relativePath);
+                return ForPath(relativePath);
             }
         }
 
@@ -44,7 +60,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
                 if (string.IsNullOrEmpty(assetPath))
                     return null;
 
-                string fullPath = Path.GetFullPath(assetPath);
+                string fullPath = GetFullPath.ForPath(assetPath);
 
                 if (!PathHelper.IsContainedOn(fullPath, wkPath))
                     return null;
@@ -120,7 +136,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
 
         static AssetsPath()
         {
-            mLibEditorFolderFullPath = Path.GetFullPath(
+            mLibEditorFolderFullPath = GetFullPath.ForPath(
                 AssemblyLocation.GetAssemblyDirectory(
                     Assembly.GetAssembly(typeof(PlasticLocalization))));
 

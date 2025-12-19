@@ -32,6 +32,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         UndeleteClientDiffsOperation.IGetRestorePathDialog
     {
         internal DiffTreeView Table { get { return mDiffTreeView; } }
+        internal string EmptyStateMessage { get { return mEmptyStatePanel.Text; } }
+
         internal DiffPanel(
             WorkspaceInfo wkInfo,
             IWorkspaceWindow workspaceWindow,
@@ -114,6 +116,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                 mSearchField,
                 mDiffTreeView);
 
+            Rect viewRect = OverlayProgress.CaptureViewRectangle();
+
             DoDiffTreeViewArea(
                 mDiffTreeView,
                 mEmptyStatePanel,
@@ -126,6 +130,14 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             }
 
             EditorGUILayout.EndVertical();
+
+            if (mProgressControls.IsOperationRunning())
+            {
+                OverlayProgress.DoOverlayProgress(
+                    viewRect,
+                    mProgressControls.ProgressData.ProgressPercent,
+                    mProgressControls.ProgressData.ProgressMessage);
+            }
         }
 
         void IDiffTreeViewMenuOperations.SaveRevisionAs()
@@ -368,6 +380,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                     if (mDiffs == null || mDiffs.Count == 0)
                     {
                         ClearDiffs();
+                        UpdateEmptyState();
                         return;
                     }
 
@@ -384,6 +397,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                         mDiffsBranchResolver,
                         skipMergeTracking,
                         mDiffTreeView);
+
+                    UpdateEmptyState();
                 });
         }
 
@@ -429,12 +444,6 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             DiffTreeView diffTreeView)
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
-
-            if (progressControls.IsOperationRunning())
-            {
-                DrawProgressForViews.ForIndeterminateProgressBar(
-                    progressControls.ProgressData);
-            }
 
             GUILayout.FlexibleSpace();
 
@@ -514,6 +523,11 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             mDiffTreeView.SetExpanded(selectedNode, expanded: true);
         }
 
+        void UpdateEmptyState()
+        {
+            mEmptyStatePanel.UpdateContent(GetEmptyStateMessage(mDiffTreeView));
+        }
+
         static void DoDiffTreeViewArea(
             DiffTreeView diffTreeView,
             EmptyStatePanel emptyStatePanel,
@@ -524,8 +538,6 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
 
             diffTreeView.OnGUI(rect);
-
-            emptyStatePanel.UpdateContent(GetEmptyStateMessage(diffTreeView));
 
             if (!emptyStatePanel.IsEmpty())
                 emptyStatePanel.OnGUI(rect);
@@ -540,7 +552,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             return string.IsNullOrEmpty(diffTreeView.searchString) ?
                 PlasticLocalization.Name.NoContentToCompareExplanation.GetString() :
-                PlasticLocalization.Name.DiffsEmptyState.GetString();
+                PlasticLocalization.Name.NoDiffsMatchingFilters.GetString();
         }
 
         void BuildComponents()
@@ -549,7 +561,10 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             mSearchField.downOrUpArrowKeyPressed += SearchField_OnDownOrUpArrowKeyPressed;
 
             DiffTreeViewMenu diffTreeViewMenu = new DiffTreeViewMenu(this, this);
-            mDiffTreeView = new DiffTreeView(diffTreeViewMenu, OnRowDoubleClickAction);
+            mDiffTreeView = new DiffTreeView(
+                diffTreeViewMenu,
+                OnRowDoubleClickAction,
+                UpdateEmptyState);
 
             mDiffTreeView.Reload();
         }
@@ -568,8 +583,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         readonly IPendingChangesUpdater mPendingChangesUpdater;
         readonly IIncomingChangesUpdater mDeveloperIncomingChangesUpdater;
-        readonly IIncomingChangesUpdater mGluonIncomingChangesUpdater;
         readonly ProgressControlsForViews mProgressControls;
+        readonly IIncomingChangesUpdater mGluonIncomingChangesUpdater;
         readonly EmptyStatePanel mEmptyStatePanel;
         readonly GuiMessage.IGuiMessage mGuiMessage;
         readonly bool mIsGluonMode;

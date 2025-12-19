@@ -196,6 +196,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                     0,
                     Images.GetRepositoryIcon(),
                     null,
+                    null,
                     item.Repository.Name,
                     isSelected,
                     isFocused,

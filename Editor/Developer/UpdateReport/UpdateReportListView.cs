@@ -220,6 +220,7 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
                 0,
                 null,
                 null,
+                null,
                 label,
                 isSelected,
                 isFocused,

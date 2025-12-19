@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
@@ -21,19 +22,21 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 {
     internal class DiffTreeView : PlasticTreeView
     {
+        internal GenericMenu Menu { get { return mMenu.Menu; } }
+
         internal DiffTreeView(
             DiffTreeViewMenu menu,
-            Action doubleClickAction)
+            Action doubleClickAction,
+            Action afterItemsChangedAction)
         {
             mMenu = menu;
             mDoubleClickAction = doubleClickAction;
+            mAfterItemsChangedAction = afterItemsChangedAction;
 
             customFoldoutYOffset = UnityConstants.TREEVIEW_FOLDOUT_Y_OFFSET;
 
             mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
-
-            EnableHorizontalScrollbar();
         }
 
         public override void OnGUI(Rect rect)
@@ -98,23 +101,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         protected override void RowGUI(RowGUIArgs args)
         {
-            float itemWidth;
             TreeViewItemGUI(
-                args.item, args.rowRect, rowHeight, mDiffTree, args.selected, args.focused, out itemWidth);
-
-            float rowWidth = baseIndent + args.item.depth * depthIndentWidth +
-                itemWidth + UnityConstants.TREEVIEW_ROW_WIDTH_OFFSET;
-
-            if (rowWidth > mLargestRowWidth)
-                mLargestRowWidth = rowWidth;
-        }
-
-        protected override void AfterRowsGUI()
-        {
-            if (mHorizontalColumn != null)
-                mHorizontalColumn.width = mLargestRowWidth;
-
-            base.AfterRowsGUI();
+                args.item, args.rowRect, rowHeight, mDiffTree, args.selected, args.focused);
         }
 
         protected override void DoubleClickedItem(int id)
@@ -208,19 +196,9 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             Reload();
 
+            mAfterItemsChangedAction();
+
             TableViewOperations.ScrollToSelection(this);
-        }
-
-        void EnableHorizontalScrollbar()
-        {
-            mHorizontalColumn = new MultiColumnHeaderState.Column();
-            mHorizontalColumn.autoResize = false;
-
-            MultiColumnHeaderState.Column[] cols = { mHorizontalColumn };
-            MultiColumnHeaderState headerState = new MultiColumnHeaderState(cols);
-
-            multiColumnHeader = new MultiColumnHeader(headerState);
-            multiColumnHeader.height = 0f;
         }
 
         static void RegenerateRows(
@@ -383,8 +361,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             float rowHeight,
             UnityDiffTree diffTree,
             bool isSelected,
-            bool isFocused,
-            out float itemWidth)
+            bool isFocused)
         {
             if (item is MergeCategoryTreeViewItem)
             {
@@ -392,8 +369,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                     rowRect,
                     (MergeCategoryTreeViewItem)item,
                     isSelected,
-                    isFocused,
-                    out itemWidth);
+                    isFocused);
                 return;
             }
 
@@ -403,8 +379,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                     rowRect,
                     (ChangeCategoryTreeViewItem)item,
                     isSelected,
-                    isFocused,
-                    out itemWidth);
+                    isFocused);
                 return;
             }
 
@@ -416,26 +391,19 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                     diffTree,
                     (ClientDiffTreeViewItem)item,
                     isSelected,
-                    isFocused,
-                    out itemWidth);
-                return;
+                    isFocused);
             }
-
-            itemWidth = 0;
         }
 
         static void MergeCategoryTreeViewItemGUI(
             Rect rowRect,
             MergeCategoryTreeViewItem item,
             bool isSelected,
-            bool isFocused,
-            out float itemWidth)
+            bool isFocused)
         {
             string label = item.Category.CategoryName;
             string infoLabel = PlasticLocalization.Name.ItemsCount.GetString(
                 item.Category.GetChildrenCount());
-
-            itemWidth = CalculateLabelWidth(label);
 
             DrawTreeViewItem.ForIndentedItem(
                 rowRect,
@@ -450,14 +418,11 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             Rect rowRect,
             ChangeCategoryTreeViewItem item,
             bool isSelected,
-            bool isFocused,
-            out float itemWidth)
+            bool isFocused)
         {
             string label = item.Category.CategoryName;
             string infoLabel = PlasticLocalization.Name.ItemsCount.GetString(
                 item.Category.GetChildrenCount());
-
-            itemWidth = CalculateLabelWidth(label);
 
             DrawTreeViewItem.ForIndentedItem(
                 rowRect,
@@ -474,8 +439,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             UnityDiffTree diffTree,
             ClientDiffTreeViewItem item,
             bool isSelected,
-            bool isFocused,
-            out float itemWidth)
+            bool isFocused)
         {
             string label = ClientDiffView.GetColumnText(
                 item.Difference.DiffWithMount.Mount.RepSpec,
@@ -489,38 +453,19 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                 item.Difference.DiffWithMount.Difference.IsDirectory,
                 label);
 
-            itemWidth = CalculateItemWidth(label, icon, rowHeight);
-
             DrawTreeViewItem.ForItemCell(
                 rowRect,
                 rowHeight,
                 item.depth,
                 icon,
                 null,
+                null,
                 label,
                 isSelected,
                 isFocused,
                 false,
-                false);
-        }
-
-        static float CalculateItemWidth(
-            string label,
-            Texture icon,
-            float rowHeight)
-        {
-            float labelWidth = CalculateLabelWidth(label);
-            float iconWidth = rowHeight * ((float)icon.width / icon.height);
-
-            return labelWidth + iconWidth;
-        }
-
-        static float CalculateLabelWidth(string label)
-        {
-            GUIContent content = new GUIContent(label);
-            Vector2 contentSize = DefaultStyles.label.CalcSize(content);
-
-            return contentSize.x;
+                false,
+                DrawTreeViewItem.TextTrimming.Path);
         }
 
         static Texture GetClientDiffIcon(bool isDirectory, string path)
@@ -538,14 +483,12 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         UnityDiffTree mDiffTree = new UnityDiffTree();
 
-        MultiColumnHeaderState.Column mHorizontalColumn;
-        float mLargestRowWidth;
-
         readonly DelayedActionBySecondsRunner mDelayedFilterAction;
 
         static readonly List<string> ColumnsNames = new List<string> {
             PlasticLocalization.GetString(PlasticLocalization.Name.PathColumn)};
         readonly DiffTreeViewMenu mMenu;
+        readonly Action mAfterItemsChangedAction;
         readonly Action mDoubleClickAction;
     }
 }

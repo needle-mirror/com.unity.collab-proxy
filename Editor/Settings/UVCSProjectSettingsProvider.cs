@@ -9,7 +9,6 @@ using Codice.CM.Common;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.Toolbar;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.Configuration;
 
 namespace Unity.PlasticSCM.Editor.Settings
 {
@@ -196,17 +195,7 @@ namespace Unity.PlasticSCM.Editor.Settings
                 return;
             }
 
-            if (!mIsUVCSPluginEnabled)
-            {
-                mIsUVCSPluginEnabled = true;
-
-                TrackFeatureEvent(
-                    mWkInfo,
-                    TrackFeatureUseEvent.Features.UnityPackage.EnableManually);
-
-                SwitchUVCSPlugin.On(mUVCSPlugin);
-                return;
-            }
+            EditorWindow currentWindow = EditorWindow.focusedWindow;
 
             if (mIsUVCSPluginEnabled)
             {
@@ -217,8 +206,19 @@ namespace Unity.PlasticSCM.Editor.Settings
                     TrackFeatureUseEvent.Features.UnityPackage.DisableManually);
 
                 SwitchUVCSPlugin.Off(mUVCSPlugin);
-                return;
             }
+            else
+            {
+                mIsUVCSPluginEnabled = true;
+
+                TrackFeatureEvent(
+                    mWkInfo,
+                    TrackFeatureUseEvent.Features.UnityPackage.EnableManually);
+
+                SwitchUVCSPlugin.On(mUVCSPlugin);
+            }
+
+            currentWindow.Focus();
         }
 
         void DoShowToolbarButtonSetting()

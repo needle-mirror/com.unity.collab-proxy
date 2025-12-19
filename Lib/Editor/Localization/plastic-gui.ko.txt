@@ -2168,9 +2168,6 @@ Unix 유사 파일 시스템에만 적용
             @sourcesymbolic: 소스 파일의 기호 이름입니다.
             @destinationsymbolic: 대상 파일의 기호 이름입니다.
 
-            @sourcehash: 소스 파일 콘텐츠에서 계산된 MD5 문자열입니다.
-            @destinationhash: 대상 파일 콘텐츠에서 계산된 MD5 문자열입니다.
-
             @filetype: 구문 강조표시에 사용되는 MIME 유형입니다.
             @comparationmethod: 사용되는 비교 방법입니다.
             @fileencoding: 인코딩이 감지되지 않을 때 사용할 기본 파일 인코딩입니다.
@@ -2192,10 +2189,6 @@ Unix 유사 파일 시스템에만 적용
             @sourcesymbolic: 소스 파일의 기호 이름입니다.
             @destinationsymbolic: 대상 파일의 기호 이름입니다.
             @basesymbolic: 베이스 파일의 기호 이름입니다.
-
-            @sourcehash: 소스 파일 콘텐츠에서 계산된 MD5 문자열입니다.
-            @destinationhash: 대상 파일 콘텐츠에서 계산된 MD5 문자열입니다.
-            @basehash: 베이스 파일 콘텐츠에서 계산된 MD5 문자열입니다.
 
             @filetype: 구문 강조표시에 사용되는 MIME 유형입니다.
             @fileencoding: 인코딩이 감지되지 않을 때 사용할 기본 파일 인코딩입니다.
@@ -4106,9 +4099,6 @@ EOL 및 공백 무시
 @sourcesymbolic: 제어판에 표시할 "왼쪽 파일" 문자열
 @destinationsymbolic: 제어판에 표시할 "오른쪽 파일" 문자열
 
-@sourcehash:  @leftrev 파일 콘텐츠에서 계산된 MD5 문자열
-@destinationhash:  @rightrev 파일 콘텐츠에서 계산된 MD5 문자열
-
 @filetype: 구문 강조표시에 사용되는 MIME 유형
 @comparationmethod: 사용되는 비교 방법
 @fileencoding: 인코딩이 감지되지 않을 때 사용할 기본 파일 인코딩
@@ -4183,9 +4173,6 @@ EOL 및 공백 무시
 @sourcesymbolic: 소스 기여자의 기호 이름
 @destinationsymbolic: 대상 기여자의 기호 이름
 @basesymbolic: 공통 조상 기여자의 기호 이름
-@sourcehash: 소스 파일 콘텐츠에서 계산된 MD5 문자열
-@destinationhash: 대상 파일 콘텐츠에서 계산된 MD5 문자열
-@basehash: 공통 조상 파일 콘텐츠에서 계산된 MD5 문자열
 @filetype: 구문 강조표시에 사용되는 MIME 유형
 @comparationmethod: 사용되는 비교 방법
 @fileencoding: 인코딩이 감지되지 않을 때 사용할 기본 파일 인코딩
@@ -4514,7 +4501,7 @@ configlocks 권한이 없습니다. '{0}' 리포지토리에 대한 'configlocks
 잠금 규칙을 구성하는 방법을 알아보려면 여기를 클릭하십시오
 
 == AddLockRuleLearnMoreUrl ==
-https://www.plasticscm.com/download/help/locking
+https://docs.unity.com/unity-version-control/smart-locks
 
 == AddLockRuleEmptyRuleMessage ==
 잠금 규칙은 비워둘 수 없습니다.

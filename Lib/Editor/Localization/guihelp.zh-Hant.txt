@@ -769,7 +769,7 @@ Gluon 可讓您只下載您需要處理的內容。
 
 如果已針對此檔案類型設定鎖定，伺服器將在簽出期間鎖定檔案。
 
-[link:https://plasticscm.com/download/help/locking]在這裡閱讀更多有關鎖定的資訊[/link]。
+[link:https://docs.unity.com/unity-version-control/smart-locks]在這裡閱讀更多有關鎖定的資訊[/link]。
 
 == GluonWkExplTipUseHistory ==
 [title]您知道可隨時取得所選檔案的歷史記錄嗎?[/title]

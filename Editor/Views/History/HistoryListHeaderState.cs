@@ -11,10 +11,11 @@ namespace Unity.PlasticSCM.Editor.Views.History
 {
     internal enum HistoryListColumn
     {
-        Changeset,
-        CreationDate,
-        CreatedBy,
         Comment,
+        CreationDate,
+        Type,
+        CreatedBy,
+        Changeset,
         Branch,
     }
 
@@ -29,10 +30,11 @@ namespace Unity.PlasticSCM.Editor.Views.History
         internal static List<string> GetColumnNames()
         {
             List<string> result = new List<string>();
-            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetColumn));
-            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CreationDateColumn));
-            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CreatedByColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn));
+            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CreationDateColumn));
+            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.TypeColumn));
+            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CreatedByColumn));
+            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.BranchColumn));
             return result;
         }
@@ -41,14 +43,16 @@ namespace Unity.PlasticSCM.Editor.Views.History
         {
             switch (column)
             {
-                case HistoryListColumn.Changeset:
-                    return PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetColumn);
-                case HistoryListColumn.CreationDate:
-                    return PlasticLocalization.GetString(PlasticLocalization.Name.CreationDateColumn);
-                case HistoryListColumn.CreatedBy:
-                    return PlasticLocalization.GetString(PlasticLocalization.Name.CreatedByColumn);
                 case HistoryListColumn.Comment:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn);
+                case HistoryListColumn.CreationDate:
+                    return PlasticLocalization.GetString(PlasticLocalization.Name.CreationDateColumn);
+                case HistoryListColumn.Type:
+                    return PlasticLocalization.GetString(PlasticLocalization.Name.TypeColumn);
+                case HistoryListColumn.CreatedBy:
+                    return PlasticLocalization.GetString(PlasticLocalization.Name.CreatedByColumn);
+                case HistoryListColumn.Changeset:
+                    return PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetColumn);
                 case HistoryListColumn.Branch:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.BranchColumn);
                 default:
@@ -75,10 +79,10 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 {
                     new Column()
                     {
-                        width = 100,
+                        width = 400,
                         headerContent = new GUIContent(
-                            GetColumnName(HistoryListColumn.Changeset)),
-                        minWidth = 50,
+                            GetColumnName(HistoryListColumn.Comment)),
+                        minWidth = 100,
                         sortingArrowAlignment = TextAlignment.Right
                     },
                     new Column()
@@ -91,6 +95,13 @@ namespace Unity.PlasticSCM.Editor.Views.History
                     },
                     new Column()
                     {
+                        width = 120,
+                        headerContent = new GUIContent(
+                            GetColumnName(HistoryListColumn.Type)),
+                        minWidth = 50,
+                    },
+                    new Column()
+                    {
                         width = 250,
                         headerContent = new GUIContent(
                             GetColumnName(HistoryListColumn.CreatedBy)),
@@ -99,10 +110,10 @@ namespace Unity.PlasticSCM.Editor.Views.History
                     },
                     new Column()
                     {
-                        width = 400,
+                        width = 100,
                         headerContent = new GUIContent(
-                            GetColumnName(HistoryListColumn.Comment)),
-                        minWidth = 100,
+                            GetColumnName(HistoryListColumn.Changeset)),
+                        minWidth = 50,
                         sortingArrowAlignment = TextAlignment.Right
                     },
                     new Column()

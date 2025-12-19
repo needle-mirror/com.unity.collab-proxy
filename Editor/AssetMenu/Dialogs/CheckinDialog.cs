@@ -16,8 +16,11 @@ using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
+
+#if !UNITY_6000_0_OR_NEWER
+using EditorGUI = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.EditorGUI;
+#endif
 
 namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
 {
@@ -61,7 +64,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 assetStatusCache,
                 metaCache,
                 isGluonMode,
-                new ProgressControlsForDialogs(),
                 workspaceWindow,
                 viewHost,
                 workspaceOperationsMonitor,
@@ -74,20 +76,27 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             return dialog.RunModal(focusedWindow) == ResponseType.Ok;
         }
 
-        protected override void OnModalGUI()
+        protected override void DoComponentsArea()
         {
             Title(PlasticLocalization.GetString(PlasticLocalization.Name.CheckinOnlyComment));
 
+            Rect commentRect = GUILayoutUtility.GetRect(
+                new GUIContent(string.Empty),
+                EditorStyles.textArea,
+                GUILayout.MinHeight(120),
+                GUILayout.ExpandWidth(true));
+
             GUI.SetNextControlName(CHECKIN_TEXTAREA_NAME);
 
-            mComment = GUILayout.TextArea(
+            mComment = EditorGUI.ScrollableTextAreaInternal(
+                commentRect,
                 mComment,
-                EditorStyles.textArea,
-                GUILayout.MinHeight(120));
+                ref mScrollPosition,
+                EditorStyles.textArea);
 
             if (!mTextAreaFocused)
             {
-                EditorGUI.FocusTextInControl(CHECKIN_TEXTAREA_NAME);
+                UnityEditor.EditorGUI.FocusTextInControl(CHECKIN_TEXTAREA_NAME);
                 mTextAreaFocused = true;
             }
 
@@ -98,13 +107,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 mPaths,
                 mAssetStatusCache,
                 mMetaCache);
-
-            DrawProgressForDialogs.For(
-                mProgressControls.ProgressData);
-
-            DoButtonsArea();
-
-            mProgressControls.ForcedUpdateProgress(this);
         }
 
         void DoFileList(
@@ -160,75 +162,13 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 itemRect,
                 itemRect.height - 2 * iconPadding,
                 fileIcon,
+                null,
                 overlayIcon);
 
             GUI.Label(itemRect, label);
         }
 
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoCheckinButton();
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoCheckinButton();
-            }
-        }
-
-        void DoCheckinButton()
-        {
-            GUI.enabled = IsCheckinButtonEnabled();
-
-            try
-            {
-                if (!AcceptButton(PlasticLocalization.GetString(
-                        PlasticLocalization.Name.CheckinButton)))
-                    return;
-            }
-            finally
-            {
-                if (!mSentCheckinTrackEvent)
-                {
-                    TrackFeatureUseEvent.For(
-                        PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
-                        TrackFeatureUseEvent.Features.UnityPackage.ContextMenuCheckinDialogCheckin);
-
-                    mSentCheckinTrackEvent = true;
-                }
-
-                GUI.enabled = true;
-            }
-
-            OkButtonWithCheckinAction();
-        }
-
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.CancelButton)))
-                return;
-
-            if (!mSentCancelTrackEvent)
-            {
-                TrackFeatureUseEvent.For(
-                    PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
-                    TrackFeatureUseEvent.Features.UnityPackage.ContextMenuCheckinDialogCancel);
-
-                mSentCancelTrackEvent = true;
-            }
-
-            CancelButtonAction();
-        }
-
-        void OkButtonWithCheckinAction()
+        internal override void OkButtonAction()
         {
             if (!IsCheckinButtonEnabled())
                 return;
@@ -272,6 +212,47 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 mPendingChangesUpdater);
         }
 
+        protected override void DoOkButton()
+        {
+            GUI.enabled = IsCheckinButtonEnabled();
+
+            try
+            {
+                if (!NormalButton(PlasticLocalization.GetString(
+                        PlasticLocalization.Name.CheckinButton)))
+                    return;
+            }
+            finally
+            {
+                if (!mSentCheckinTrackEvent)
+                {
+                    TrackFeatureUseEvent.For(
+                        PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                        TrackFeatureUseEvent.Features.UnityPackage.ContextMenuCheckinDialogCheckin);
+
+                    mSentCheckinTrackEvent = true;
+                }
+
+                GUI.enabled = true;
+            }
+
+            OkButtonAction();
+        }
+
+        internal override void CancelButtonAction()
+        {
+            if (!mSentCancelTrackEvent)
+            {
+                TrackFeatureUseEvent.For(
+                    PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
+                    TrackFeatureUseEvent.Features.UnityPackage.ContextMenuCheckinDialogCancel);
+
+                mSentCancelTrackEvent = true;
+            }
+
+            base.CancelButtonAction();
+        }
+
         bool IsCheckinButtonEnabled()
         {
             return !string.IsNullOrEmpty(mComment) && !mIsRunningCheckin;
@@ -283,7 +264,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             IAssetStatusCache assetStatusCache,
             MetaCache metaCache,
             bool isGluonMode,
-            ProgressControlsForDialogs progressControls,
             IWorkspaceWindow workspaceWindow,
             ViewHost viewHost,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
@@ -301,7 +281,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             instance.mAssetStatusCache = assetStatusCache;
             instance.mMetaCache = metaCache;
             instance.mIsGluonMode = isGluonMode;
-            instance.mProgressControls = progressControls;
             instance.mWorkspaceWindow = workspaceWindow;
             instance.mViewHost = viewHost;
             instance.mWorkspaceOperationsMonitor = workspaceOperationsMonitor;
@@ -310,7 +289,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             instance.mGuiMessage = guiMessage;
             instance.mMergeViewLauncher = mergeViewLauncher;
             instance.mGluonViewSwitcher = gluonViewSwitcher;
-            instance.mEnterKeyAction = instance.OkButtonWithCheckinAction;
+            instance.mEnterKeyAction = instance.OkButtonAction;
             instance.AddControlConsumingEnterKey(CHECKIN_TEXTAREA_NAME);
             instance.mEscapeKeyAction = instance.CancelButtonAction;
             return instance;
@@ -331,8 +310,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
         bool mSentCheckinTrackEvent = false;
         bool mSentCancelTrackEvent = false;
 
-        ProgressControlsForDialogs mProgressControls;
-
         IWorkspaceWindow mWorkspaceWindow;
         WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
         IPendingChangesUpdater mPendingChangesUpdater;
@@ -343,6 +320,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
         GuiMessage.IGuiMessage mGuiMessage;
 
         const string CHECKIN_TEXTAREA_NAME = "checkin_textarea";
+
+        Vector2 mScrollPosition;
 
         class MetaCache
         {

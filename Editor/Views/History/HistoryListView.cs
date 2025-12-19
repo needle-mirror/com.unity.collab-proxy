@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
@@ -11,6 +12,9 @@ using PlasticGui.WorkspaceWindow.History;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Avatar;
 using Unity.PlasticSCM.Editor.UI.Tree;
+
+using Time = Codice.Client.Common.Time;
+
 #if UNITY_6000_2_OR_NEWER
 using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
 #endif
@@ -19,17 +23,21 @@ namespace Unity.PlasticSCM.Editor.Views.History
 {
     internal class HistoryListView : PlasticTreeView
     {
+        internal GenericMenu Menu { get { return mMenu.Menu; } }
+
         internal HistoryListView(
             string wkPath,
             HistoryListHeaderState headerState,
             HistoryListViewMenu menu,
             List<string> columnNames,
-            Action doubleClickAction)
+            Action doubleClickAction,
+            Action<IEnumerable<RepObjectInfo>> afterItemsChangedAction)
         {
             mWkPath = wkPath;
             mMenu = menu;
             mColumnNames = columnNames;
             mDoubleClickAction = doubleClickAction;
+            mAfterItemsChangedAction = afterItemsChangedAction;
 
             multiColumnHeader = new MultiColumnHeader(headerState);
             multiColumnHeader.canSort = true;
@@ -131,6 +139,8 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
             Filter filter = new Filter(searchString);
             mRevisionsList.Filter(filter, mColumnNames, null, null);
+
+            mAfterItemsChangedAction(mRevisionsList.GetRevisions());
         }
 
         internal void Sort()
@@ -161,7 +171,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 return result;
 
             foreach (KeyValuePair<RepObjectInfo, int> item
-                in mListViewItemIds.GetInfoItems())
+                     in mListViewItemIds.GetInfoItems())
             {
                 if (!selectedIds.Contains(item.Value))
                     continue;
@@ -177,7 +187,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
             List<RepObjectInfo> result = new List<RepObjectInfo>();
 
             foreach (KeyValuePair<RepObjectInfo, int> item
-                in mListViewItemIds.GetInfoItems())
+                     in mListViewItemIds.GetInfoItems())
             {
                 result.Add(item.Key);
             }
@@ -309,6 +319,12 @@ namespace Unity.PlasticSCM.Editor.Views.History
             {
                 Rect cellRect = args.GetCellRect(visibleColumnIdx);
 
+                if (visibleColumnIdx == 0)
+                {
+                    cellRect.x += UnityConstants.FIRST_COLUMN_WITHOUT_ICON_INDENT;
+                    cellRect.width -= UnityConstants.FIRST_COLUMN_WITHOUT_ICON_INDENT;
+                }
+
                 HistoryListColumn column =
                     (HistoryListColumn)args.GetColumn(visibleColumnIdx);
 
@@ -341,37 +357,52 @@ namespace Unity.PlasticSCM.Editor.Views.History
             string columnText = HistoryInfoView.GetColumnText(
                 wkPath, repSpec, item.Revision,
                 HistoryListHeaderState.GetColumnName(column));
+            string userName = PlasticGui.Plastic.API.GetUserName(repSpec.Server, item.Revision.Owner);
 
-            if (column == HistoryListColumn.Changeset)
-            {
-                DrawTreeViewItem.ForItemCell(
-                    rect,
-                    rowHeight,
-                    0,
-                    GetRevisionIcon(item.Revision),
-                    null,
-                    columnText,
-                    isSelected,
-                    isFocused,
-                    isBoldText,
-                    false);
-
-                return;
-            }
-
-            if (column == HistoryListColumn.CreatedBy)
+            if (column == HistoryListColumn.Comment)
             {
                 DrawTreeViewItem.ForItemCell(
                     rect,
                     rowHeight,
                     -1,
-                    GetAvatar.ForEmail(columnText, avatarLoadedAction),
+                    GetAvatar.ForEmail(userName, avatarLoadedAction),
+                    userName,
                     null,
                     columnText,
                     isSelected,
                     isFocused,
                     isBoldText,
                     false);
+                return;
+            }
+
+            if (column == HistoryListColumn.Type)
+            {
+                DrawTreeViewItem.ForItemCell(
+                    rect,
+                    rowHeight,
+                    -1,
+                    null,
+                    null,
+                    null,
+                    GetRevisionText(item.Revision),
+                    isSelected,
+                    isFocused,
+                    isBoldText,
+                    false);
+                return;
+            }
+
+            if (column == HistoryListColumn.CreationDate)
+            {
+                DrawTreeViewItem.ForLabel(
+                    rect,
+                    new GUIContent(
+                        Time.GetLongTimeAgoString(item.Revision.LocalTimeStamp),
+                        columnText),
+                    isSelected,
+                    isFocused,
+                    isBoldText);
                 return;
             }
 
@@ -386,15 +417,18 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 rect, columnText, isSelected, isFocused, isBoldText);
         }
 
-        static Texture GetRevisionIcon(RepObjectInfo revision)
+        static string GetRevisionText(RepObjectInfo revision)
         {
             if (revision is MoveRealizationInfo)
-                return Images.GetMovedIcon();
+                return PlasticLocalization.Name.MovedDiffCategory.GetString();
 
             if (revision is RemovedRealizationInfo)
-                return Images.GetDeletedIcon();
+                return PlasticLocalization.Name.DeletedDiffCategory.GetString();
 
-            return Images.GetFileIcon();
+            if (((HistoryRevision)revision).ParentRevisionId == -1)
+                return PlasticLocalization.Name.AddedDiffCategory.GetString();
+
+            return PlasticLocalization.Name.ChangedDiffCategory.GetString();
         }
 
         ListViewItemIds<RepObjectInfo> mListViewItemIds = new ListViewItemIds<RepObjectInfo>();
@@ -407,6 +441,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
         readonly HistoryListViewMenu mMenu;
         readonly List<string> mColumnNames;
         readonly Action mDoubleClickAction;
+        readonly Action<IEnumerable<RepObjectInfo>> mAfterItemsChangedAction;
         readonly string mWkPath;
     }
 }

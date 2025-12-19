@@ -6,7 +6,6 @@ using UnityEngine;
 using Codice.Client.Common;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.Progress;
 
 namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
 {
@@ -51,8 +50,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
                 parentPath,
                 currentName,
                 bIsDirectory,
-                bIsCreation,
-                new ProgressControlsForDialogs());
+                bIsCreation);
 
             ResponseType dialogResult = dialog.RunModal(parentWindow);
 
@@ -66,8 +64,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             string parentPath,
             string currentName,
             bool bIsDirectory,
-            bool bIsCreation,
-            ProgressControlsForDialogs progressControls)
+            bool bIsCreation)
         {
             var instance = CreateInstance<NewNameDialog>();
 
@@ -76,10 +73,12 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             instance.mNewName = currentName;
             instance.mIsCreation = bIsCreation;
             instance.mIsDirectory = bIsDirectory;
-            instance.mProgressControls = progressControls;
 
-            instance.mEnterKeyAction = instance.OkButtonWithValidationAction;
+            instance.mEnterKeyAction = instance.OkButtonAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
+            instance.mOkButtonText = bIsCreation ?
+                PlasticLocalization.Name.CreateButton.GetString() :
+                PlasticLocalization.Name.RenameButton.GetString();
 
             return instance;
         }
@@ -96,24 +95,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
                 PlasticLocalization.Name.RenameFileTitle.GetString();
         }
 
-        protected override void OnModalGUI()
-        {
-            Title(GetTitle());
-
-            GUILayout.Space(10f);
-
-            DoInputArea();
-
-            GUILayout.Space(10f);
-
-            DrawProgressForDialogs.For(mProgressControls.ProgressData);
-
-            GUILayout.Space(10f);
-
-            DoButtonsArea();
-        }
-
-        void DoInputArea()
+        protected override void DoComponentsArea()
         {
             using (new EditorGUILayout.HorizontalScope())
             {
@@ -139,51 +121,12 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             }
         }
 
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoOkButton();
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoOkButton();
-            }
-        }
-
-        void DoOkButton()
-        {
-            string buttonText = mIsCreation ?
-                PlasticLocalization.Name.CreateButton.GetString() :
-                PlasticLocalization.Name.RenameButton.GetString();
-
-            if (!AcceptButton(buttonText))
-                return;
-
-            OkButtonWithValidationAction();
-        }
-
-        void OkButtonWithValidationAction()
+        internal override void OkButtonAction()
         {
             if (!IsValidInput(mParentPath, mCurrentName, mNewName, mProgressControls))
                 return;
 
-            OkButtonAction();
-        }
-
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.CancelButton)))
-                return;
-
-            CancelButtonAction();
+            base.OkButtonAction();
         }
 
         static bool IsValidInput(
@@ -229,8 +172,6 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
         string mNewName;
         bool mIsCreation;
         bool mIsDirectory;
-
-        ProgressControlsForDialogs mProgressControls;
 
         const string NEW_NAME_TEXTAREA_NAME = "new_name_textarea";
     }

@@ -8,7 +8,6 @@ using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.CloudDrive.Workspaces;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.Progress;
 
 namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace
 {
@@ -36,8 +35,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace
                 restApi,
                 plasticApi,
                 parentWindow,
-                null,
-                new ProgressControlsForDialogs());
+                null);
 
             ResponseType dialogResult = dialog.RunModal(parentWindow);
 
@@ -58,8 +56,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace
                 restApi,
                 plasticApi,
                 parentWindow,
-                successOperationDelegate,
-                new ProgressControlsForDialogs());
+                successOperationDelegate);
 
             dialog.RunModal(parentWindow);
         }
@@ -92,8 +89,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace
             IPlasticWebRestApi restApi,
             IPlasticAPI plasticApi,
             EditorWindow parentWindow,
-            Action<WorkspaceInfo> successOperationDelegate,
-            ProgressControlsForDialogs progressControls)
+            Action<WorkspaceInfo> successOperationDelegate)
         {
             var instance = CreateInstance<CreateWorkspaceDialog>();
             instance.IsResizable = false;
@@ -104,12 +100,11 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace
                 restApi,
                 plasticApi,
                 parentWindow,
-                progressControls);
+                instance.mProgressControls);
 
-            instance.mEnterKeyAction = instance.OkButtonWithValidationAction;
+            instance.mEnterKeyAction = instance.OkButtonAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
             instance.mTitle = PlasticLocalization.Name.CreateCloudWorkspaceTitle.GetString();
-            instance.mProgressControls = progressControls;
             instance.mSuccessOperationDelegate = successOperationDelegate;
             return instance;
         }
@@ -119,67 +114,33 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace
             return mTitle;
         }
 
-        protected override void OnModalGUI()
+        protected override void DoComponentsArea()
         {
             bool isOperationRunning = mProgressControls.ProgressData.IsWaitingAsyncResult;
 
             mCreateWorkspacePanel.OnGUI(isOperationRunning);
-
-            DrawProgressForDialogs.For(mProgressControls.ProgressData);
-
-            GUILayout.Space(10f);
-
-            DoButtonsArea(isOperationRunning);
         }
 
-        void DoButtonsArea(bool isOperationRunning)
+        protected override void DoOkButton()
         {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoOkButton(isOperationRunning);
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoOkButton(isOperationRunning);
-            }
-        }
-
-        void DoOkButton(bool isOperationRunning)
-        {
-            if (isOperationRunning)
+            if (mProgressControls.ProgressData.IsWaitingAsyncResult)
                 GUI.enabled = false;
 
-            if (AcceptButton(PlasticLocalization.Name.CreateButton.GetString()))
+            if (NormalButton(PlasticLocalization.Name.CreateButton.GetString()))
             {
-                OkButtonWithValidationAction();
+                OkButtonAction();
             }
 
             GUI.enabled = true;
         }
 
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.CancelButton)))
-                return;
-
-            CancelButtonAction();
-        }
-
-        void OkButtonWithValidationAction()
+        internal override void OkButtonAction()
         {
             WorkspaceCreationValidation.AsyncValidation(
                 mCreateWorkspacePanel.BuildCreationData(), this, mProgressControls);
         }
 
         string mTitle;
-        ProgressControlsForDialogs mProgressControls;
         Action<WorkspaceInfo> mSuccessOperationDelegate;
 
         static CreateWorkspacePanel mCreateWorkspacePanel;

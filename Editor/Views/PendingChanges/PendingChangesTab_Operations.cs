@@ -19,6 +19,35 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 {
     internal partial class PendingChangesTab
     {
+        void CommentArea.IPendingChangesTabOperations.CheckinAction(bool isGluonMode)
+        {
+            UpdateIsCheckinCommentWarningNeeded(mCommentArea.GetComment());
+
+            if (mIsEmptyCheckinCommentWarningNeeded)
+                return;
+
+            CheckinForMode(isGluonMode, mCommentArea.KeepItemsLocked);
+        }
+
+        void CommentArea.IPendingChangesTabOperations.ShelveAction(bool isGluonMode)
+        {
+            UpdateIsShelveCommentWarningNeeded(mCommentArea.GetComment());
+
+            if (mIsEmptyShelveCommentWarningNeeded)
+                return;
+
+            ShelveForMode(isGluonMode, mCommentArea.KeepItemsLocked);
+        }
+
+        void CommentArea.IPendingChangesTabOperations.UndoChangesAction(bool isGluonMode)
+        {
+            TrackFeatureUseEvent.For(
+                mRepSpec,
+                TrackFeatureUseEvent.Features.UndoTextButton);
+
+            UndoForMode(isGluonMode, false);
+        }
+
         void UndoForMode(bool isGluonMode, bool keepLocalChanges)
         {
             List<ChangeInfo> changesToUndo;
@@ -48,7 +77,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             UndoChanges(changesToUndo, dependenciesCandidates, keepLocalChanges);
         }
 
-        void UndoUnchanged()
+        void CommentArea.IPendingChangesTabOperations.UndoUnchanged()
         {
             List<ChangeInfo> changesToUndo;
             List<ChangeInfo> dependenciesCandidates;
@@ -162,7 +191,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             checkinOperation.Checkin(
                 changesToCheckin,
                 dependenciesCandidates,
-                mCommentTextArea.Text,
+                mCommentArea.GetComment(),
                 keepItemsLocked,
                 isShelve,
                 isShelve ?
@@ -202,7 +231,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mPendingChangesOperations.Checkin(
                 changesToCheckin,
                 dependenciesCandidates,
-                mCommentTextArea.Text,
+                mCommentArea.GetComment(),
                 null,
                 () => RefreshAsset.UnityAssetDatabase(mAssetStatusCache),
                 GetSuccessOperationDelegateForCreatedChangeset(CreatedChangesetData.Type.Checkin));
@@ -238,7 +267,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mPendingChangesOperations.Shelve(
                 changesToShelve,
                 dependenciesCandidates,
-                mCommentTextArea.Text,
+                mCommentArea.GetComment(),
                 OpenUVCSProjectSettings.InShelveAndSwitchFoldout,
                 GetUndoEndOperationDelegate(changesToShelve, false),
                 null,
@@ -319,7 +348,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 GetSuccessOperationDelegateForUndo());
         }
 
-        void UndoCheckoutsKeepingLocalChanges()
+        void CommentArea.IPendingChangesTabOperations.UndoCheckoutsKeepingLocalChanges()
         {
             UndoForMode(isGluonMode: false, keepLocalChanges: true);
         }
@@ -351,13 +380,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             };
         }
 
-        void ShowShelvesView(IViewSwitcher viewSwitcher)
+        void CommentArea.IPendingChangesTabOperations.ShowShelvesView()
         {
             TrackFeatureUseEvent.For(
                 mRepSpec,
                 TrackFeatureUseEvent.Features.UnityPackage.ShowShelvesViewFromDropdownMenu);
 
-            viewSwitcher.ShowShelvesView();
+            mViewSwitcher.ShowShelvesView();
         }
 
         SuccessOperationDelegateForCreatedChangeset GetSuccessOperationDelegateForCreatedChangeset(

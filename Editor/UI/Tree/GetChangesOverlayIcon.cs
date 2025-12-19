@@ -80,6 +80,12 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             if (type.HasFlag(ItemIconImageType.Deleted))
                 return ForDeleted();
 
+            if (ChangeTypesOperator.ContainsAny(
+                    changeInfo.ChangeTypes,
+                    ChangeTypes.Moved |
+                    ChangeTypes.LocallyMoved))
+                return ForMoved();
+
             if (type.HasFlag(ItemIconImageType.CheckedOut) ||
                 type.HasFlag(ItemIconImageType.Changed))
                 return ForCheckedOut();
@@ -121,6 +127,11 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
         static Texture ForDeleted()
         {
             return Images.GetDeletedLocalOverlayIcon();
+        }
+
+        static Texture ForMoved()
+        {
+            return Images.GetMovedOverlayIcon();
         }
 
         static Texture ForCheckedOut()

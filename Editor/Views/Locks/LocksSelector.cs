@@ -64,6 +64,13 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
         void SelectLockItems(List<LockInfo> locksToSelect)
         {
             var idsToSelect = new List<int>();
+            var rows = mTreeView.GetRows();
+            var existingIds = new HashSet<int>();
+
+            foreach (var row in rows)
+            {
+                existingIds.Add(row.id);
+            }
 
             foreach (var lockInfo in locksToSelect)
             {
@@ -74,8 +81,16 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
                     continue;
                 }
 
+                if (!existingIds.Contains(lockInfoId))
+                {
+                    continue;
+                }
+
                 idsToSelect.Add(lockInfoId);
             }
+
+            if (idsToSelect.Count == 0)
+                return;
 
             TableViewOperations.SetSelectionAndScroll(mTreeView, idsToSelect);
         }

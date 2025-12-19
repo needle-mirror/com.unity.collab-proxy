@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 
 using PlasticGui;
+using Unity.PlasticSCM.Editor.UI.Progress;
 
 namespace Unity.PlasticSCM.Editor.UI
 {
@@ -22,7 +23,7 @@ namespace Unity.PlasticSCM.Editor.UI
             {
                 int pixelWidth = Screen.currentResolution.width;
                 float x = (pixelWidth - DEFAULT_WIDTH) / 2;
-                return new Rect(x, 200, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+                return new Rect(x, 200, DEFAULT_WIDTH, 1);
             }
         }
 
@@ -33,12 +34,12 @@ namespace Unity.PlasticSCM.Editor.UI
             mSizeToContent = sizeToContent;
         }
 
-        internal void OkButtonAction()
+        internal virtual void OkButtonAction()
         {
             CompleteModal(ResponseType.Ok);
         }
 
-        internal void CancelButtonAction()
+        internal virtual void CancelButtonAction()
         {
             CompleteModal(ResponseType.Cancel);
         }
@@ -75,21 +76,33 @@ namespace Unity.PlasticSCM.Editor.UI
             if (!IsResizable)
                 MakeNonResizable();
 
-            if (UI.RunModal.IsAvailable())
-            {
-                UI.RunModal.Dialog(this);
-                return mAnswer;
-            }
-
-            EditorUtility.DisplayDialog(
-                PlasticLocalization.GetString(PlasticLocalization.Name.UnityVersionControl),
-                PlasticLocalization.GetString(PlasticLocalization.Name.PluginModalInformation),
-                PlasticLocalization.GetString(PlasticLocalization.Name.CloseButton));
-            return ResponseType.None;
+            UI.RunModal.Dialog(this);
+            return mAnswer;
         }
 
-        protected void OnGUI()
+        internal static void DoButtonsWithPlatformOrdering(
+            Action doPrimaryButton,
+            Action doCloseButton,
+            Action doCancelButton)
         {
+            if (Application.platform == RuntimePlatform.WindowsEditor)
+            {
+                doPrimaryButton();
+                doCloseButton();
+                doCancelButton();
+                return;
+            }
+
+            doCancelButton();
+            doCloseButton();
+            doPrimaryButton();
+        }
+
+        protected virtual void OnGUI()
+        {
+            if (Event.current == null)
+                return;
+
             // If the Dialog has been saved into the Unity editor layout and persisted between restarts, the methods
             // to configure the dialogs will be skipped. Simple fix here is to close it when this state is detected.
             // Fixes a NPE loop when the state mentioned above is occurring.
@@ -98,6 +111,15 @@ namespace Unity.PlasticSCM.Editor.UI
                 Close();
                 EditorGUIUtility.ExitGUI();
                 return;
+            }
+
+            // When a modal dialog is displayed, Unity's SynchronizationContext.Post() callbacks are not processed
+            // because the modal dialog runs its own event loop.
+            // We need to explicitly pump the EditorDispatcher queue to ensure that callbacks from background threads
+            // (like ThreadWaiter's afterOperationDelegate) are executed.
+            if (Event.current.type == EventType.Layout)
+            {
+                EditorDispatcher.Update();
             }
 
             if (!mFocusedOnce)
@@ -113,40 +135,46 @@ namespace Unity.PlasticSCM.Editor.UI
             GUI.Box(new Rect(0, 0, position.width, position.height), GUIContent.none, EditorStyles.label);
 
             float margin = 25;
-            float marginTop = 25;
-            using (new EditorGUILayout.HorizontalScope(GUILayout.Height(position.height)))
+            using (new EditorGUILayout.HorizontalScope())
             {
                 GUILayout.Space(margin);
-                using (new EditorGUILayout.VerticalScope(GUILayout.Height(position.height)))
+                using (new EditorGUILayout.VerticalScope())
                 {
-                    GUILayout.Space(marginTop);
-                    OnModalGUI();
+                    GUILayout.Space(margin);
+
+                    if (!string.IsNullOrEmpty(GetExplanation()))
+                        Paragraph(GetExplanation());
+
+                    DoComponentsArea();
+
+                    GUILayout.Space(15);
+
+                    DoButtonsArea();
+
+                    DoCheckBoxArea_Legacy();
+
+                    mProgressControls.UpdateProgress(this);
+
                     GUILayout.Space(margin);
                 }
                 GUILayout.Space(margin);
             }
 
-            if (!IsResizable && mSizeToContent == SizeToContent.Automatic)
+            if (!IsResizable && mSizeToContent == SizeToContent.Automatic && Event.current.type == EventType.Repaint)
             {
                 var lastRect = GUILayoutUtility.GetLastRect();
                 float desiredHeight = lastRect.yMax;
 
-                if (position.height < desiredHeight)
-                {
-                    Rect newPos = position;
-                    newPos.height = desiredHeight;
+                Rect newPos = position;
+                newPos.height = desiredHeight;
+                position = newPos;
 
-                    maxSize = newPos.size;
-                    minSize = maxSize;
-
-                    position = newPos;
-                }
-                else
-                {
-                    maxSize = position.size;
-                    minSize = maxSize;
-                }
+                maxSize = newPos.size;
+                minSize = maxSize;
             }
+
+            if (Event.current.type != EventType.Layout)
+                mFocusedControlName = GUI.GetNameOfFocusedControl();
         }
 
         void OnDestroy()
@@ -164,7 +192,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
         protected virtual void SaveSettings() { }
 
-        protected abstract void OnModalGUI();
+        protected virtual void DoComponentsArea() { }
 
         protected abstract string GetTitle();
 
@@ -173,6 +201,7 @@ namespace Unity.PlasticSCM.Editor.UI
             GUILayout.Label(text, UnityStyles.Paragraph);
             GUILayout.Space(DEFAULT_PARAGRAPH_SPACING);
         }
+        protected virtual string GetExplanation() { return string.Empty; }
 
         protected void TextBlockWithEndLink(
             string url, string formattedExplanation, GUIStyle textblockStyle)
@@ -204,46 +233,74 @@ namespace Unity.PlasticSCM.Editor.UI
 
         protected static bool NormalButton(string text)
         {
-            return GUILayout.Button(
-                text, UnityStyles.Dialog.NormalButton,
-                GUILayout.MinWidth(80),
-                GUILayout.Height(25));
-        }
-
-        protected static bool AcceptButton(string text, int extraWidth = 10)
-        {
-            GUI.color = new Color(0.098f, 0.502f, 0.965f, .8f);
-
-            int textWidth = (int)((GUIStyle)UnityStyles.Dialog.AcceptButtonText)
+            int textWidth = (int)((GUIStyle)UnityStyles.Dialog.NormalButton)
                 .CalcSize(new GUIContent(text)).x;
 
-            bool pressed = GUILayout.Button(
-                string.Empty, GetEditorSkin().button,
-                GUILayout.MinWidth(Math.Max(80, textWidth + extraWidth)),
-                GUILayout.Height(25));
+            return GUILayout.Button(
+                text,
+                UnityStyles.Dialog.NormalButton,
+                GUILayout.Width(Math.Max(80, textWidth)));
+        }
 
-            GUI.color = Color.white;
+        protected virtual void DoCheckBoxArea_Legacy() { }
 
-            Rect buttonRect = GUILayoutUtility.GetLastRect();
-            GUI.Label(buttonRect, text, UnityStyles.Dialog.AcceptButtonText);
+        protected virtual void DoButtonsArea()
+        {
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                DrawProgressForDialogs.For(mProgressControls.ProgressData);
 
-            return pressed;
+                GUILayout.Space(10);
+
+                DoButtonsWithPlatformOrdering(DoOkButton, DoCloseButton, DoCancelButton);
+            }
+        }
+
+        protected virtual void DoOkButton()
+        {
+            if (string.IsNullOrEmpty(mOkButtonText))
+                return;
+
+            if (!NormalButton(mOkButtonText))
+                return;
+
+            OkButtonAction();
+        }
+
+        protected void DoCancelButton()
+        {
+            if (string.IsNullOrEmpty(mCancelButtonText))
+                return;
+
+            if (!NormalButton(mCancelButtonText))
+                return;
+
+            CancelButtonAction();
+        }
+
+        protected virtual void DoCloseButton()
+        {
+            if (string.IsNullOrEmpty(mCloseButtonText))
+                return;
+
+            if (!NormalButton(mCloseButtonText))
+                return;
+
+            CloseButtonAction();
         }
 
         void IPlasticDialogCloser.CloseDialog()
         {
-            OkButtonAction();
+            CompleteModal(ResponseType.Ok);
         }
 
         void ProcessKeyActions()
         {
             Event e = Event.current;
 
-            string focusedControlName = GUI.GetNameOfFocusedControl();
-
             if (mEnterKeyAction != null &&
                 Keyboard.IsReturnOrEnterKeyPressed(e) &&
-                !ControlConsumesKey(mControlsConsumingEnterKey, focusedControlName))
+                !ControlConsumesKey(mControlsConsumingEnterKey, mFocusedControlName))
             {
                 mEnterKeyAction();
                 e.Use();
@@ -312,6 +369,8 @@ namespace Unity.PlasticSCM.Editor.UI
                 EditorGUIUtility.GetBuiltinSkin(EditorSkin.Inspector);
         }
 
+        string mFocusedControlName;
+
         bool mFocusedOnce;
         bool mIsConfigured;
         ResponseType mAnswer;
@@ -319,13 +378,18 @@ namespace Unity.PlasticSCM.Editor.UI
         protected Action mEnterKeyAction = null;
         protected Action mEscapeKeyAction = null;
 
+        protected string mOkButtonText = PlasticLocalization.Name.OkButton.GetString();
+        protected string mCancelButtonText = PlasticLocalization.Name.CancelButton.GetString();
+        protected string mCloseButtonText;
+
         EditorWindow mParentWindow;
         SizeToContent mSizeToContent = SizeToContent.Automatic;
+
+        protected ProgressControlsForDialogs mProgressControls = new ProgressControlsForDialogs();
 
         List<string> mControlsConsumingEnterKey = new List<string>();
 
         const float DEFAULT_WIDTH = 500f;
-        const float DEFAULT_HEIGHT = 180f;
         const float DEFAULT_PARAGRAPH_SPACING = 10f;
     }
 }

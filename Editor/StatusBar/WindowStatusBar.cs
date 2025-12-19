@@ -4,70 +4,12 @@ using UnityEditor;
 using UnityEngine;
 
 using PlasticGui;
-using PlasticGui.WorkspaceWindow;
-using Unity.PlasticSCM.Editor.Developer;
 using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor.StatusBar
 {
     internal class WindowStatusBar
     {
-        internal interface IIncomingChangesNotification
-        {
-            bool HasNotification { get; }
-            void OnGUI();
-            void Show(
-                string infoText,
-                string actionText,
-                string tooltipText,
-                bool hasUpdateAction,
-                UVCSNotificationStatus.IncomingChangesStatus status);
-            void Hide();
-        }
-
-        internal class IncomingChangesNotificationData
-        {
-            internal string InfoText { get; private set; }
-            internal string ActionText { get; private set; }
-            internal string TooltipText { get; private set; }
-            internal bool HasUpdateAction { get; private set; }
-            internal UVCSNotificationStatus.IncomingChangesStatus Status { get; private set; }
-
-            internal void UpdateData(
-                string infoText,
-                string actionText,
-                string tooltipText,
-                bool hasUpdateAction,
-                UVCSNotificationStatus.IncomingChangesStatus status)
-            {
-                InfoText = infoText;
-                ActionText = actionText;
-                TooltipText = tooltipText;
-                HasUpdateAction = hasUpdateAction;
-                Status = status;
-            }
-
-            internal void Clear()
-            {
-                InfoText = string.Empty;
-                ActionText = string.Empty;
-                TooltipText = string.Empty;
-                HasUpdateAction = false;
-                Status = UVCSNotificationStatus.IncomingChangesStatus.None;
-            }
-        }
-
-        internal interface IShelvedChangesNotification :
-            CheckShelvedChanges.IUpdateShelvedChangesNotification
-        {
-            bool HasNotification { get; }
-            void SetWorkspaceWindow(
-                WorkspaceWindow workspaceWindow);
-            void SetShelvedChangesUpdater(
-                IShelvedChangesUpdater shelvedChangesUpdater);
-            void OnGUI();
-        }
-
         internal void Notify(INotificationContent content, MessageType type, Texture2D image)
         {
             mNotification = new Notification(
@@ -86,21 +28,6 @@ namespace Unity.PlasticSCM.Editor.StatusBar
                 UnityConstants.NOTIFICATION_CLEAR_INTERVAL);
 
             NotificationBar = new NotificationBar();
-        }
-
-        internal void Initialize(
-            WorkspaceWindow workspaceWindow,
-            IIncomingChangesNotification incomingChangesNotification,
-            IShelvedChangesNotification shelvedChangesNotification)
-        {
-            mWorkspaceWindow = workspaceWindow;
-            mIncomingChangesNotification = incomingChangesNotification;
-            mShelvedChangesNotification = shelvedChangesNotification;
-
-            if (incomingChangesNotification is IncomingChangesNotification)
-                ((IncomingChangesNotification)incomingChangesNotification).SetWorkspaceWindow(workspaceWindow);
-
-            shelvedChangesNotification.SetWorkspaceWindow(workspaceWindow);
         }
 
         void DelayedClearNotification()
@@ -157,28 +84,13 @@ namespace Unity.PlasticSCM.Editor.StatusBar
                 DrawNotificationAvailablePanel(NotificationBar);
             }
 
-            if (mIncomingChangesNotification.HasNotification)
-            {
-                mIncomingChangesNotification.OnGUI();
-            }
-
-            if (mShelvedChangesNotification.HasNotification)
-            {
-                if (mIncomingChangesNotification.HasNotification)
-                    EditorGUILayout.Space(15);
-
-                mShelvedChangesNotification.OnGUI();
-            }
-
             if (mNotification != null)
                 DrawNotification(mNotification);
 
             GUILayout.FlexibleSpace();
-
-            DrawWorkspaceStatus(mWorkspaceWindow);
         }
 
-        internal static void DrawNotification(INotificationContent notification)
+        static void DrawNotification(INotificationContent notification)
         {
             GUILayout.BeginVertical();
             GUILayout.FlexibleSpace();
@@ -187,21 +99,6 @@ namespace Unity.PlasticSCM.Editor.StatusBar
 
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
-        }
-
-        internal static bool DrawButton(GUIContent content)
-        {
-            GUIStyle buttonStyle = new GUIStyle(EditorStyles.miniButton);
-
-            Rect rt = GUILayoutUtility.GetRect(
-                content,
-                buttonStyle,
-                GUILayout.Width(60));
-
-            return GUI.Button(
-                rt,
-                content,
-                buttonStyle);
         }
 
         static void DrawNotificationAvailablePanel(
@@ -228,21 +125,7 @@ namespace Unity.PlasticSCM.Editor.StatusBar
             DrawNotification(notification.Content);
         }
 
-        static void DrawWorkspaceStatus(WorkspaceWindow workspaceWindow)
-        {
-            DrawIcon(Images.GetBranchIcon());
-
-            if (workspaceWindow.WorkspaceStatus == null)
-                return;
-
-            DrawWorkspaceStatusLabel(string.Format(
-                "{0}@{1}@{2}",
-                workspaceWindow.WorkspaceStatus.ObjectSpec,
-                workspaceWindow.WorkspaceStatus.RepositoryName,
-                workspaceWindow.ServerDisplayName));
-        }
-
-        internal static void DrawIcon(Texture2D icon, int size = UnityConstants.STATUS_BAR_ICON_SIZE)
+        static void DrawIcon(Texture2D icon, int size = UnityConstants.STATUS_BAR_ICON_SIZE)
         {
             GUILayout.BeginVertical();
             GUILayout.FlexibleSpace();
@@ -252,17 +135,6 @@ namespace Unity.PlasticSCM.Editor.StatusBar
                 UnityStyles.StatusBar.Icon,
                 GUILayout.Height(size),
                 GUILayout.Width(size));
-
-            GUILayout.FlexibleSpace();
-            GUILayout.EndVertical();
-        }
-
-        static void DrawWorkspaceStatusLabel(string label)
-        {
-            GUILayout.BeginVertical();
-            GUILayout.FlexibleSpace();
-
-            DrawCopyableLabel.For(label, UnityStyles.StatusBar.Label);
 
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
@@ -299,9 +171,6 @@ namespace Unity.PlasticSCM.Editor.StatusBar
         }
 
         Notification mNotification;
-        WorkspaceWindow mWorkspaceWindow;
-        IIncomingChangesNotification mIncomingChangesNotification;
-        IShelvedChangesNotification mShelvedChangesNotification;
         bool mIsMouseOver = false;
 
         readonly DelayedActionBySecondsRunner mDelayedNotificationClearAction;

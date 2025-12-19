@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 using UnityEditor;
 using UnityEngine;
 
@@ -50,6 +48,8 @@ namespace Unity.PlasticSCM.Editor.Views
         {
             EnableSwitchAndShelveFeatureDialog dialog = CreateInstance<EnableSwitchAndShelveFeatureDialog>();
             dialog.mRepSpec = repSpec;
+            dialog.mOkButtonText = PlasticLocalization.Name.EnableSwitchAndShelveYesEnableItLowerCase.GetString();
+            dialog.mCancelButtonText = PlasticLocalization.Name.EnableSwitchAndShelveNotNow.GetString();
             ResponseType dialogResult = dialog.RunModal(window);
             return dialogResult == ResponseType.Ok;
         }
@@ -59,12 +59,13 @@ namespace Unity.PlasticSCM.Editor.Views
             return PlasticLocalization.Name.EnableSwitchAndShelveTitle.GetString();
         }
 
-        protected override void OnModalGUI()
+        protected override string GetExplanation()
         {
-            Title(PlasticLocalization.Name.EnableSwitchAndShelveTitle.GetString());
+            return PlasticLocalization.Name.EnableSwitchAndShelveMessage.GetString();
+        }
 
-            Paragraph(PlasticLocalization.Name.EnableSwitchAndShelveMessage.GetString());
-
+        protected override void DoComponentsArea()
+        {
             using (new EditorGUILayout.HorizontalScope())
             {
                 EditorGUILayout.Space(20);
@@ -85,52 +86,24 @@ namespace Unity.PlasticSCM.Editor.Views
             Paragraph(string.Concat(
                 PlasticLocalization.Name.EnableSwitchAndShelveQuestionStart.GetString(), "\n",
                 PlasticLocalization.Name.EnableSwitchAndShelveQuestionEnd.GetString()));
-
-            GUILayout.Space(20);
-
-            DoButtonsArea();
         }
 
-        void DoButtonsArea()
+        internal override void OkButtonAction()
         {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoYesButton();
-                    DoNoButton();
-                    return;
-                }
-
-                DoNoButton();
-                DoYesButton();
-            }
-        }
-
-        void DoYesButton()
-        {
-            if (!NormalButton(PlasticLocalization.Name.EnableSwitchAndShelveYesEnableItLowerCase.GetString()))
-                return;
-
             TrackFeatureUseEvent.For(
                 mRepSpec,
                 TrackFeatureUseEvent.Features.SwitchAndShelve.EnableFeatureYes);
 
-            OkButtonAction();
+            base.OkButtonAction();
         }
 
-        void DoNoButton()
+        internal override void CancelButtonAction()
         {
-            if (!NormalButton(PlasticLocalization.Name.EnableSwitchAndShelveNotNow.GetString()))
-                return;
-
             TrackFeatureUseEvent.For(
                 mRepSpec,
                 TrackFeatureUseEvent.Features.SwitchAndShelve.EnableFeatureNo);
 
-            CancelButtonAction();
+            base.CancelButtonAction();
         }
 
         RepositorySpec mRepSpec;

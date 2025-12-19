@@ -6,7 +6,10 @@ using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.PendingChanges.Changelists;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.Progress;
+
+#if !UNITY_6000_0_OR_NEWER
+using EditorGUI = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.EditorGUI;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
 {
@@ -23,16 +26,29 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
 
         protected override string GetTitle()
         {
-            return PlasticLocalization.GetString(PlasticLocalization.Name.CreateChangelistTitle);
+            return (mIsCreateMode ?
+                PlasticLocalization.Name.CreateChangelistTitle :
+                PlasticLocalization.Name.EditChangelistTitle).GetString();
         }
 
-        protected override void OnModalGUI()
+        protected override string GetExplanation()
         {
-            DoTitleArea();
+            return (mIsCreateMode ?
+                PlasticLocalization.Name.CreateChangelistExplanation :
+                PlasticLocalization.Name.EditChangelistExplanation).GetString();
+        }
 
-            DoFieldsArea();
+        protected override void DoComponentsArea()
+        {
+            DoNameFieldArea();
 
-            DoButtonsArea();
+            GUILayout.Space(5);
+
+            DoDescriptionFieldArea();
+
+            GUILayout.Space(5);
+
+            DoPersistentFieldArea();
         }
 
         internal static ChangelistCreationData CreateChangelist(
@@ -60,42 +76,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             return result;
         }
 
-        void DoTitleArea()
-        {
-            GUILayout.BeginVertical();
-
-            Title(PlasticLocalization.GetString(mIsCreateMode ?
-                PlasticLocalization.Name.CreateChangelistTitle :
-                PlasticLocalization.Name.EditChangelistTitle));
-
-            GUILayout.Space(5);
-
-            Paragraph(PlasticLocalization.GetString(mIsCreateMode ?
-                PlasticLocalization.Name.CreateChangelistExplanation :
-                PlasticLocalization.Name.EditChangelistExplanation));
-
-            GUILayout.EndVertical();
-        }
-
-        void DoFieldsArea()
-        {
-            GUILayout.BeginVertical();
-
-            DoNameFieldArea();
-
-            GUILayout.Space(5);
-
-            DoDescriptionFieldArea();
-
-            GUILayout.Space(5);
-
-            DoPersistentFieldArea();
-
-            GUILayout.Space(5);
-
-            GUILayout.EndVertical();
-        }
-
         void DoNameFieldArea()
         {
             using (new EditorGUILayout.HorizontalScope())
@@ -104,12 +84,17 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
                     PlasticLocalization.GetString(PlasticLocalization.Name.ChangelistNameEntry),
                     GUILayout.Width(100));
 
+                Rect nameRect = GUILayoutUtility.GetRect(
+                    new GUIContent(string.Empty),
+                    EditorStyles.textField,
+                    GUILayout.ExpandWidth(true));
+
                 GUI.SetNextControlName(NAME_FIELD_CONTROL_NAME);
-                mChangelistName = GUILayout.TextField(mChangelistName);
+                mChangelistName = UnityEditor.EditorGUI.TextField(nameRect, mChangelistName);
 
                 if (!mWasNameFieldFocused)
                 {
-                    EditorGUI.FocusTextInControl(NAME_FIELD_CONTROL_NAME);
+                    UnityEditor.EditorGUI.FocusTextInControl(NAME_FIELD_CONTROL_NAME);
                     mWasNameFieldFocused = true;
                 }
 
@@ -129,8 +114,18 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
                         GUILayout.Width(100));
                 }
 
+                Rect descriptionRect = GUILayoutUtility.GetRect(
+                    new GUIContent(string.Empty),
+                    EditorStyles.textArea,
+                    GUILayout.Height(100),
+                    GUILayout.ExpandWidth(true));
+
                 GUI.SetNextControlName(DESCRIPTION_TEXTAREA_CONTROL_NAME);
-                mChangelistDescription = GUILayout.TextArea(mChangelistDescription, GUILayout.Height(100));
+                mChangelistDescription = EditorGUI.ScrollableTextAreaInternal(
+                    descriptionRect,
+                    mChangelistDescription,
+                    ref mScrollPosition,
+                    EditorStyles.textArea);
 
                 GUILayout.Space(5);
             }
@@ -139,49 +134,11 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
         void DoPersistentFieldArea()
         {
             mIsPersistent = GUILayout.Toggle(
-                mIsPersistent, 
+                mIsPersistent,
                 PlasticLocalization.GetString(PlasticLocalization.Name.ChangelistPersistentCheckBoxEntry));
         }
 
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                using (new EditorGUILayout.HorizontalScope(GUILayout.MinWidth(500)))
-                {
-                    GUILayout.Space(2);
-                    DrawProgressForDialogs.For(
-                        mProgressControls.ProgressData);
-                    GUILayout.Space(2);
-                }
-
-                GUILayout.FlexibleSpace();
-
-                DoCreateOrEditButton();
-                DoCancelButton();
-            }
-        }
-
-        void DoCancelButton()
-        {
-            if (NormalButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.CancelButton)))
-            {
-                CancelButtonAction();
-            }
-        }
-
-        void DoCreateOrEditButton()
-        {
-            if (!NormalButton(PlasticLocalization.GetString(mIsCreateMode ?
-                    PlasticLocalization.Name.CreateButton :
-                    PlasticLocalization.Name.EditButton)))
-                return;
-
-            CreateOrEditButtonAction();
-        }
-
-        void CreateOrEditButtonAction()
+        internal override void OkButtonAction()
         {
             ChangelistCreationValidation.Validation(
                 mWkInfo,
@@ -195,37 +152,39 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
         {
             var instance = CreateInstance<CreateChangelistDialog>();
             instance.IsResizable = false;
-            instance.mEnterKeyAction = instance.CreateOrEditButtonAction;
+            instance.mEnterKeyAction = instance.OkButtonAction;
             instance.AddControlConsumingEnterKey(DESCRIPTION_TEXTAREA_CONTROL_NAME);
             instance.mEscapeKeyAction = instance.CloseButtonAction;
+            instance.mOkButtonText = PlasticLocalization.Name.CreateButton.GetString();
             instance.mWkInfo = wkInfo;
             instance.mChangelistToEdit = null;
             instance.mChangelistName = string.Empty;
             instance.mChangelistDescription = string.Empty;
             instance.mIsPersistent = false;
-            instance.mProgressControls = new ProgressControlsForDialogs();
             instance.mIsCreateMode = true;
             return instance;
         }
 
         static CreateChangelistDialog Edit(
-            WorkspaceInfo wkInfo, 
+            WorkspaceInfo wkInfo,
             ChangeListInfo changelistToEdit)
         {
             var instance = CreateInstance<CreateChangelistDialog>();
             instance.IsResizable = false;
-            instance.mEnterKeyAction = instance.CreateOrEditButtonAction;
+            instance.mEnterKeyAction = instance.OkButtonAction;
             instance.AddControlConsumingEnterKey(DESCRIPTION_TEXTAREA_CONTROL_NAME);
             instance.mEscapeKeyAction = instance.CloseButtonAction;
+            instance.mOkButtonText = PlasticLocalization.Name.EditButton.GetString();
             instance.mWkInfo = wkInfo;
             instance.mChangelistToEdit = changelistToEdit;
             instance.mChangelistName = changelistToEdit.Name;
             instance.mChangelistDescription = changelistToEdit.Description;
             instance.mIsPersistent = changelistToEdit.IsPersistent;
-            instance.mProgressControls = new ProgressControlsForDialogs();
             instance.mIsCreateMode = false;
             return instance;
         }
+
+        Vector2 mScrollPosition;
 
         ChangelistCreationData BuildCreationData()
         {
@@ -237,8 +196,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
 
             return new ChangelistCreationData(changelistInfo);
         }
-
-        ProgressControlsForDialogs mProgressControls;
 
         WorkspaceInfo mWkInfo;
         ChangeListInfo mChangelistToEdit;

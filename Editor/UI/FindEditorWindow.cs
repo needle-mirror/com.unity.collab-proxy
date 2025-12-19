@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
-using UnityEditor;
 using UnityEngine;
+
+using Unity.PlasticSCM.Editor.UnityInternals.UnityEditor;
+
+using EditorWindow = UnityEditor.EditorWindow;
+using HostView = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.HostView;
 
 namespace Unity.PlasticSCM.Editor.UI
 {
@@ -50,28 +53,14 @@ namespace Unity.PlasticSCM.Editor.UI
         {
             List<EditorWindow> result = new List<EditorWindow>();
 
-            var hostViewField = typeof(EditorWindow).GetField(
-                "m_Parent", BindingFlags.Instance | BindingFlags.NonPublic);
-
-            if (hostViewField == null)
-                return null;
-
-            var hostViewType = hostViewField.FieldType;
-            var actualViewField = hostViewType.GetField(
-                "m_ActualView", BindingFlags.Instance | BindingFlags.NonPublic);
-
-            if (actualViewField == null)
-                return null;
-
-            foreach (var window in Resources.FindObjectsOfTypeAll<EditorWindow>())
+            foreach (EditorWindow window in Resources.FindObjectsOfTypeAll<EditorWindow>())
             {
-                var hostView = hostViewField.GetValue(window);
+                HostView hostView = window.m_Parent();
 
                 if (hostView == null)
                     continue;
 
-                EditorWindow actualDrawnWindow = actualViewField
-                    .GetValue(hostView) as EditorWindow;
+                EditorWindow actualDrawnWindow = hostView.m_ActualView;
 
                 if (actualDrawnWindow == null)
                     continue;

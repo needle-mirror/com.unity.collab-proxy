@@ -349,7 +349,7 @@ namespace Unity.PlasticSCM.Editor.Inspector
             if (selectedCount > 1)
                 return;
 
-            string selectedFullPath = Path.GetFullPath(selectedPath);
+            string selectedFullPath = AssetsPath.GetFullPath.ForPath(selectedPath);
 
             assetStatus = statusCache.GetStatus(selectedFullPath);
             lockStatusData = statusCache.GetLockStatusData(selectedFullPath);

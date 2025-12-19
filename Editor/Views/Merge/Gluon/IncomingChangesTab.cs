@@ -27,6 +27,9 @@ using UnityEditor.IMGUI.Controls;
 
 using CheckIncomingChanges = PlasticGui.Gluon.WorkspaceWindow.CheckIncomingChanges;
 using IncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
+#if !UNITY_6000_0_OR_NEWER
+using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 {
@@ -124,6 +127,13 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         void IIncomingChangesTab.OnGUI()
         {
+            DoActionsToolbar(
+                mSearchField,
+                mIncomingChangesTreeView,
+                this);
+
+            Rect viewRect = OverlayProgress.CaptureViewRectangle();
+
             if (mErrorsPanel.IsVisible)
                 PlasticSplitterGUILayout.BeginVerticalSplit(mErrorsSplitterState);
 
@@ -140,43 +150,35 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 PlasticSplitterGUILayout.EndVerticalSplit();
             }
 
-            DrawActionToolbar.Begin(mParentWindow);
+            DrawActionToolbar.Begin();
 
-            if (!mProgressControls.IsOperationRunning())
+            DoActionToolbarMessage(
+                mIsMessageLabelVisible,
+                mMessageLabelText,
+                mIsErrorMessageLabelVisible,
+                mErrorMessageLabelText,
+                mFileConflictCount,
+                mChangesSummary);
+
+            if (mIsProcessMergesButtonVisible)
             {
-                DoActionToolbarMessage(
-                    mIsMessageLabelVisible,
-                    mMessageLabelText,
-                    mIsErrorMessageLabelVisible,
-                    mErrorMessageLabelText,
-                    mFileConflictCount,
-                    mChangesSummary);
-
-                if (mIsProcessMergesButtonVisible)
-                {
-                    DoProcessMergesButton(
-                        mIsProcessMergesButtonEnabled,
-                        mProcessMergesButtonText,
-                        mShowDownloadPlasticExeWindow,
-                        mIncomingChangesViewLogic,
-                        mIncomingChangesTreeView,
-                        mWkInfo,
-                        RefreshAsset.BeforeLongAssetOperation,
-                        AfterProcessMerges,
-                        MergeSuccessfullyFinished);
-                }
-
-                if (mIsCancelMergesButtonVisible)
-                {
-                    mIsCancelMergesButtonEnabled = DoCancelMergesButton(
-                        mIsCancelMergesButtonEnabled,
-                        mIncomingChangesViewLogic);
-                }
+                DoProcessMergesButton(
+                    mIsProcessMergesButtonEnabled,
+                    mProcessMergesButtonText,
+                    mShowDownloadPlasticExeWindow,
+                    mIncomingChangesViewLogic,
+                    mIncomingChangesTreeView,
+                    mWkInfo,
+                    RefreshAsset.BeforeLongAssetOperation,
+                    AfterProcessMerges,
+                    MergeSuccessfullyFinished);
             }
-            else
+
+            if (mIsCancelMergesButtonVisible)
             {
-                DrawProgressForViews.ForIndeterminateProgressBar(
-                    mProgressControls.ProgressData);
+                mIsCancelMergesButtonEnabled = DoCancelMergesButton(
+                    mIsCancelMergesButtonEnabled,
+                    mIncomingChangesViewLogic);
             }
 
             DrawActionToolbar.End();
@@ -187,24 +189,15 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                     mProgressControls.ProgressData);
             }
 
+            if (mProgressControls.IsOperationRunning())
+            {
+                OverlayProgress.DoOverlayProgress(
+                    viewRect,
+                    mProgressControls.ProgressData.ProgressPercent,
+                    mProgressControls.ProgressData.ProgressMessage);
+            }
+
             ExecuteAfterOnGUIAction();
-        }
-
-        void IIncomingChangesTab.DrawSearchFieldForTab()
-        {
-            // We don't have the filtering implemented at the plasticgui level: IncomingChangesTree.Filter
-            // When it's implemented, just uncomment this method to show the filter textbox for partial workspaces
-            // VCS-1006158 [Desktop] gluon: add filter in incoming changes view
-
-            /*
-            DrawSearchField.For(
-                mSearchField,
-                mIncomingChangesTreeView,
-                UnityConstants.SEARCH_FIELD_WIDTH);
-            */
-
-            // TODO remove once the proper filtering is implemented
-            DrawStaticElement.Empty();
         }
 
         void IIncomingChangesTab.AutoRefresh()
@@ -501,6 +494,38 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             EditorGUILayout.EndHorizontal();
         }
 
+        static void DoActionsToolbar(
+            SearchField searchField,
+            IncomingChangesTreeView incomingChangesTreeView,
+            IRefreshableView view)
+        {
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+
+            if (GUILayout.Button(
+                    new GUIContent(Images.GetRefreshIcon(),
+                        PlasticLocalization.Name.RefreshButton.GetString()),
+                    UnityStyles.ToolbarButtonLeft,
+                    GUILayout.Width(UnityConstants.TOOLBAR_ICON_BUTTON_WIDTH)))
+            {
+                view.Refresh();
+            }
+
+            GUILayout.FlexibleSpace();
+
+            // We don't have the filtering implemented at the plasticgui level: IncomingChangesTree.Filter
+            // When it's implemented, just uncomment this method to show the filter textbox for partial workspaces
+            // VCS-1006158 [Desktop] gluon: add filter in incoming changes view
+
+            /*
+            DrawSearchField.For(
+                searchField,
+                incomingChangesTreeView,
+                UnityConstants.SEARCH_FIELD_WIDTH);
+            */
+
+            EditorGUILayout.EndHorizontal();
+        }
+
         void DoIncomingChangesArea(
             IncomingChangesTreeView incomingChangesTreeView,
             EmptyStatePanel emptyStatePanel,
@@ -533,6 +558,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         {
             GUI.enabled = isEnabled;
 
+            GUILayout.Space(3);
+
             if (DrawActionButton.For(processMergesButtonText))
             {
                 List<IncomingChangeInfo> incomingChanges =
@@ -561,6 +588,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             bool shouldCancelMergesButtonEnabled = true;
 
             GUI.enabled = isEnabled;
+
+            GUILayout.Space(3);
 
             if (DrawActionButton.For(PlasticLocalization.GetString(
                     PlasticLocalization.Name.CancelButton)))
@@ -626,19 +655,20 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             if (isUpdateSuccessful && !delayedClearOperationSuccessAction.IsRunning)
                 delayedClearOperationSuccessAction.Run();
 
-            emptyStatePanel.UpdateContent(
-                GetEmptyStateMessage(isUpdateSuccessful),
-                bDrawOkIcon: isUpdateSuccessful);
             emptyStatePanel.OnGUI(rect);
         }
 
         static string GetEmptyStateMessage(
-            bool isUpdateSuccessful)
+            bool isUpdateSuccessful,
+            string searchString)
         {
             if (isUpdateSuccessful)
                 return PlasticLocalization.Name.WorkspaceUpdateCompleted.GetString();
 
-            return PlasticLocalization.Name.NoIncomingChanges.GetString();
+            if (!string.IsNullOrEmpty(searchString))
+                return PlasticLocalization.Name.NoIncomingChangesMatchingFilters.GetString();
+
+            return PlasticLocalization.Name.NoIncomingChangesFound.GetString();
         }
 
         void AfterProcessMerges(UpdateProgress progress)
@@ -676,6 +706,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         void MergeSuccessfullyFinished()
         {
             mIsUpdateSuccessful = true;
+            UpdateEmptyStateMessage();
         }
 
         void UpdateOverview(
@@ -691,6 +722,15 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         void DelayedClearUpdateSuccess()
         {
             mIsUpdateSuccessful = false;
+
+            UpdateEmptyStateMessage();
+        }
+
+        void UpdateEmptyStateMessage()
+        {
+            string searchString = mIncomingChangesTreeView.searchString;
+            string message = GetEmptyStateMessage(mIsUpdateSuccessful, searchString);
+            mEmptyStatePanel.UpdateContent(message, bDrawOkIcon: mIsUpdateSuccessful);
         }
 
         void BuildComponents()
@@ -709,8 +749,11 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 mWkInfo, incomingChangesHeaderState,
                 IncomingChangesTreeHeaderState.GetColumnNames(),
                 new IncomingChangesViewMenu(this, this),
-                UpdateProcessMergesButtonText);
+                UpdateProcessMergesButtonText,
+                UpdateEmptyStateMessage);
             mIncomingChangesTreeView.Reload();
+
+            UpdateEmptyStateMessage();
 
             mErrorsPanel = new ErrorsPanel(
                 PlasticLocalization.Name.IncomingChangesCannotBeApplied.GetString(),
@@ -728,7 +771,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         string mProcessMergesButtonText;
         string mMessageLabelText;
         string mErrorMessageLabelText;
-        object mErrorsSplitterState;
+        SplitterState mErrorsSplitterState;
         Action mAfterOnGUIAction;
 
         int mFileConflictCount;

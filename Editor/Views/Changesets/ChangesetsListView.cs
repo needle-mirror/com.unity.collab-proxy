@@ -12,6 +12,9 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Avatar;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.Labels.Dialogs;
+
+using Time = Codice.Client.Common.Time;
+
 #if UNITY_6000_2_OR_NEWER
 using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
 #endif
@@ -42,9 +45,12 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mDoubleClickAction = doubleClickAction;
             mAfterItemsChangedAction = afterItemsChangedAction;
 
-            multiColumnHeader = new MultiColumnHeader(headerState);
-            multiColumnHeader.canSort = true;
-            multiColumnHeader.sortingChanged += SortingChanged;
+            if (headerState != null)
+            {
+                multiColumnHeader = new MultiColumnHeader(headerState);
+                multiColumnHeader.canSort = true;
+                multiColumnHeader.sortingChanged += SortingChanged;
+            }
 
             mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
@@ -132,6 +138,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                     args,
                     RepObjectInfoView.IsHighlighted(
                         changesetListViewItem.ObjectInfo, mGetWorkingObject.Get()),
+                    multiColumnHeader != null,
                     Repaint);
                 return;
             }
@@ -161,8 +168,10 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             if (mQueryResult == null)
                 return;
 
-            int sortedColumnIdx = multiColumnHeader.state.sortedColumnIndex;
-            bool sortAscending = multiColumnHeader.IsSortedAscending(sortedColumnIdx);
+            int sortedColumnIdx = multiColumnHeader != null ?
+                multiColumnHeader.state.sortedColumnIndex : (int)ChangesetsListColumn.CreationDate;
+            bool sortAscending = multiColumnHeader != null ?
+                multiColumnHeader.IsSortedAscending(sortedColumnIdx) : false;
 
             mQueryResult.Sort(
                 mColumnNames[sortedColumnIdx],
@@ -346,17 +355,27 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             ChangesetListViewItem item,
             RowGUIArgs args,
             bool isBoldText,
+            bool isMultiColumn,
             Action avatarLoadedAction)
         {
+            if (!isMultiColumn)
+            {
+                ChangesetsListViewItemCellGUI(
+                    args.rowRect,
+                    rowHeight,
+                    queryResult,
+                    item,
+                    ChangesetsListColumn.Comment,
+                    avatarLoadedAction,
+                    args.selected,
+                    args.focused,
+                    isBoldText);
+                return;
+            }
+
             for (int visibleColumnIdx = 0; visibleColumnIdx < args.GetNumVisibleColumns(); visibleColumnIdx++)
             {
                 Rect cellRect = args.GetCellRect(visibleColumnIdx);
-
-                if (visibleColumnIdx == 0)
-                {
-                    cellRect.x += UnityConstants.FIRST_COLUMN_WITHOUT_ICON_INDENT;
-                    cellRect.width -= UnityConstants.FIRST_COLUMN_WITHOUT_ICON_INDENT;
-                }
 
                 ChangesetsListColumn column =
                     (ChangesetsListColumn)args.GetColumn(visibleColumnIdx);
@@ -385,18 +404,28 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             bool isFocused,
             bool isBoldText)
         {
-            string columnText = RepObjectInfoView.GetColumnText(
-                queryResult.GetRepositorySpec(item.ObjectInfo),
-                queryResult.GetRepObjectInfo(item.ObjectInfo),
-                ChangesetsListHeaderState.GetColumnName(column));
+            if (column == 0)
+            {
+                rect.x += UnityConstants.FIRST_COLUMN_WITHOUT_ICON_INDENT;
+                rect.width -= UnityConstants.FIRST_COLUMN_WITHOUT_ICON_INDENT;
+            }
 
-            if (column == ChangesetsListColumn.CreatedBy)
+            RepositorySpec repSpec = queryResult.GetRepositorySpec(item.ObjectInfo);
+            RepObjectInfo repObjectInfo = queryResult.GetRepObjectInfo(item.ObjectInfo);
+
+            string columnText = RepObjectInfoView.GetColumnText(
+                repSpec, repObjectInfo, ChangesetsListHeaderState.GetColumnName(column));
+
+            string userName = PlasticGui.Plastic.API.GetUserName(repSpec.Server, repObjectInfo.Owner);
+
+            if (column == ChangesetsListColumn.Comment)
             {
                 DrawTreeViewItem.ForItemCell(
                     rect,
                     rowHeight,
                     -1,
-                    GetAvatar.ForEmail(columnText, avatarLoadedAction),
+                    GetAvatar.ForEmail(userName, avatarLoadedAction),
+                    userName,
                     null,
                     columnText,
                     isSelected,
@@ -408,11 +437,30 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
 
             if (column == ChangesetsListColumn.Branch ||
-                column == ChangesetsListColumn.Repository ||
                 column == ChangesetsListColumn.Guid)
             {
                 DrawTreeViewItem.ForSecondaryLabel(
-                    rect, columnText, isSelected, isFocused, isBoldText);
+                    rect,
+                    columnText,
+                    isSelected,
+                    isFocused,
+                    isBoldText,
+                    column == ChangesetsListColumn.Branch ?
+                        DrawTreeViewItem.TextTrimming.Path :
+                        DrawTreeViewItem.TextTrimming.None);
+                return;
+            }
+
+            if (column == ChangesetsListColumn.CreationDate)
+            {
+                DrawTreeViewItem.ForLabel(
+                    rect,
+                    new GUIContent(
+                        Time.GetLongTimeAgoString(repObjectInfo.LocalTimeStamp),
+                        columnText),
+                    isSelected,
+                    isFocused,
+                    isBoldText);
                 return;
             }
 

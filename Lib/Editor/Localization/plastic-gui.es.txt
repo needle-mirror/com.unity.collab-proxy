@@ -11,7 +11,7 @@ Objeto
 Objetos
 
 == Item ==
-Ítem
+el ítem
 
 == Items ==
 Ítems
@@ -28,6 +28,9 @@ Rama
 == Branches ==
 Ramas
 
+== BranchItemNameSingular ==
+la rama
+
 == Changeset ==
 Changeset
 
@@ -37,8 +40,11 @@ Etiqueta
 == Labels ==
 Etiquetas
 
+== LabelItemNameSingular ==
+la etiqueta
+
 == CodeReview ==
-Revisión de código
+la revisión de código
 
 == CodeReviews ==
 Revisiones de código
@@ -432,6 +438,9 @@ Fecha de creación
 
 == GuidColumn ==
 Guid
+
+== IdColumn ==
+ID
 
 == CommentColumn ==
 Comentario
@@ -1336,7 +1345,7 @@ Mostrar shelves
 == ShowShelvesViewTooltip ==
 Mostrar la vista de shelves
 
-== NoShelvesCreatedExplanation ==
+== NoShelvesCreatedYet ==
 Aún no se han creado shelves
 
 == NoContentToCompareExplanation ==
@@ -1345,7 +1354,7 @@ No hay contenido que comparar
 == NoContentToBrowseExplanation ==
 No hay contenido para explorar
 
-== NoLocksCreatedExplanation ==
+== NoLocksCreatedYet ==
 Aún no se han creado bloqueos en ficheros.
 
 == LoadLocksError ==
@@ -2694,9 +2703,6 @@ You can use the following command-line parameters when invoking the external dif
             @sourcesymbolic: symbolic name for the source file
             @destinationsymbolic: symbolic name for the destination file
 
-            @sourcehash: MD5 string calculated from the source file contents
-            @destinationhash: MD5 string calculated from the destination file contents
-
             @filetype: MIME type, used for syntax highlighting
             @comparationmethod: comparison method used
             @fileencoding: default file encoding to use when no encoding is detected
@@ -2718,10 +2724,6 @@ The following variables are available to use as arguments when invoking the exte
             @sourcesymbolic: symbolic name for the source file
             @destinationsymbolic: symbolic name for the destination file
             @basesymbolic: symbolic name for the base file
-
-            @sourcehash: MD5 string calculated from the source file contents
-            @destinationhash: MD5 string calculated from the destination file contents
-            @basehash: MD5 string calculated from base file contents
 
             @filetype: MIME type used for syntax highlight
             @fileencoding: default file encoding to use when no encoding is detected
@@ -4723,9 +4725,6 @@ Las siguientes variables están disponibles para utilizar como parámetros al in
 @sourcesymbolic: nombre simbólico del fichero origen
 @destinationsymbolic: nombre simbólico del fichero destino
 
-@sourcehash: cadena MD5 calculada a partir del fichero origen
-@destinationhash: cadena MD5 calculada a partir del fichero destino
-
 @filetype: tipo MIME usado para el realzado de sintaxis
 @comparationmethod: método de comparación utilizado
 @fileencoding: codificación de fichero utilizada por defecto si no se detecta la del fichero
@@ -4773,7 +4772,7 @@ No se ha definido una herramienta de diferencias para "{0}".
 == DiffToolsError ==
 Error en las herramientas de differencias
 
-== NoDiscoveredServers ==
+== NoServersFound ==
 No se encontró ningún servidor.
 
 == DownloadPreviewSoftware ==
@@ -4821,10 +4820,6 @@ Las siguientes variables están disponibles para utilizar como parámetros al in
 @sourcesymbolic: nombre simbólico del contribuidor origen
 @destinationsymbolic: nombre simbólico del contribuidor destino
 @basesymbolic: nombre simbólico del contribuidor antecesor común
-
-@sourcehash: cadena MD5 calculada a partir del fichero origen
-@destinationhash: cadena MD5 calculada a partir del fichero destino
-@basehash: cadena MD5 calculada a partir del fichero antecesor común
 
 @filetype: tipo MIME usado para el realzado de sintaxis
 @comparationmethod: método de comparación utilizado
@@ -5207,7 +5202,7 @@ Quiero editar la regla de bloqueo
 Pulse aquí para saber más sobre cómo configurar reglas de bloqueo
 
 == AddLockRuleLearnMoreUrl ==
-https://www.plasticscm.com/download/help/locking
+https://docs.unity.com/unity-version-control/smart-locks
 
 == AddLockRuleEmptyRuleMessage ==
 La regla no puede estar vacía.
@@ -6061,7 +6056,7 @@ Esperando sesión...
 Obteniendo organizaciones...
 
 == RetrievingWorkspacesProgress ==
-Obteniendo workspaces...
+Obteniendo drives...
 
 == CompleteSignInOnBrowser ==
 Completa el registro en tu navegador.
@@ -6132,23 +6127,11 @@ No está mal.
 == TooMuch ==
 Es demasiado.
 
-== ErrorAddPlasticSCMMenuItem ==
-Cannot add Unity VCS menu item: {0} Method Menu.AddSubMenu not found
-
-== ErrorRemovePlasticSCMMenuItem ==
-Cannot remove Unity VCS menu item: {0} Method MenuType.RemoveMenuItem not found
-
-== ErrorUpdatePlasticSCMMenus ==
-Cannot update all menus: Method EditorUtility.Internal_UpdateAllMenus not found
-
 == CheckoutButton ==
 Checkout
 
 == UpdateResultsError ==
 Some items were not correctly updated. You may want to check the errors and retry the operation after solving the problems
-
-== PluginModalInformation ==
-The modal dialog is not available in this version and it is required for the Unity VCS plugin works fine. \n Please contact devops-vcs-support@unity3d.com for further info.
 
 == HideChanges ==
 Hide changes
@@ -6255,6 +6238,9 @@ Open .meta with...
 == OpenMetaInExplorer ==
 Open .meta in explorer
 
+== RevealMetaInFinder ==
+Reveal .meta in Finder
+
 == DownloadingProgress ==
 Downloading
 
@@ -6304,11 +6290,9 @@ Login or sign up
  Login or sign up for a Unity Version Control account
 
 == InstallConfirmationMessage ==
-Parece que su sistema no tiene la aplicación instalada.
-¿Le gustaria descargarsela junto a sus herramientas avanzadas?
+La aplicación de desktop no está instalada en su sistema. ¿Le gustaría descargarla e instalarla?
 
-Una vez la descarga finalice, simplemente instálela en su sistema.
-A continuación, intente volver a utilizar la funcionalidad desde este paquete del editor de Unity.
+Una vez finalizada la instalación, haga click de nuevo en la funcionalidad para usarla
 
 == NeedEnterprise ==
 ¿Necesitas Unity VCS Enterprise?
@@ -6413,7 +6397,7 @@ Enter the server name or IP and the credentials
 _Del
 
 == UnityDeleteShortcutForMacOS ==
-%Del
+_DEL
 
 == UnityMergeShortcutForWindows ==
 %m
@@ -7194,9 +7178,6 @@ Ir a {0}
 == CheckoutChangesetComment ==
 El changeset seleccionado representa los cambios pendientes en su workspace. Aún no se ha hecho check-in en el repositorio.
 
-== NoIncomingChanges ==
-No incoming changes
-
 == NoMergeChanges ==
 No hay cambios en el merge
 
@@ -7415,6 +7396,9 @@ Detalles
 
 == Download ==
 Descargar
+
+== DownloadAndInstall ==
+Descargar e instalar
 
 == DownloadUpdate ==
 Descargar actualización
@@ -7847,10 +7831,10 @@ preferencias de comentarios
 Añadir comentario
 
 == SkipAndShelve ==
-Skip & Shelve
+Crear Shelve
 
 == SkipAndCheckin ==
-Skip & Check in
+Hacer Check in
 
 == AddCheckinComment ==
 Por favor, añade un comentario de check-in
@@ -8230,6 +8214,9 @@ No hay ningún cambio marcado. Por favor, marque al menos un cambio a aplicar.
 == UnityVersionControl ==
 Unity Version Control
 
+== UnityVCS ==
+Unity VCS
+
 == UnityVersionControlSupport ==
 Unity Version Control support
 
@@ -8320,28 +8307,28 @@ Iniciando sesión...
 == ShowEmbeddedShelveDiffTooltip ==
 Siempre abrir los shelves en la ventana actual
 
-== EmptyLabelsMessage ==
+== NoLabelsCreatedYet ==
 Aún no se han creado etiquetas
 
-== EmptyAttributesMessage ==
+== NoChangesetsCreatedYet ==
+Aún no se han creado changesets
+
+== NoAttributesCreatedYet ==
 Aún no se han creado atributos
 
-== EmptyCodeReviewsMessage ==
+== NoCodeReviewsCreatedYet ==
 Aún no se han creado revisiones de código
-
-== EmptyCodeReviewsMatchQueryMessage ==
-No hay revisiones de código que coincidan con tu consulta
 
 == EmptyWkExplorerMessage ==
 El espacio de trabajo esta vacío
 
-== EmptyPendingChangesMessage ==
+== NoPendingChangesFound ==
 No se han encontrado cambios pendientes
 
-== EmptyIncomingChangesMessage ==
+== NoIncomingChangesFound ==
 No se han encontrado cambios entrantes
 
-== EmptySyncViewMessage ==
+== NoCloudSyncsCreatedYet ==
 Aún no se han creado vistas de sincronización
 
 == LockInfoDetailsFormatString ==
@@ -8590,35 +8577,47 @@ Extender la vista para incluir las ramas padre, hijas y conectadas por merge par
 == RelatedBranchesShortText ==
 Relacionadas
 
-== BranchesEmptyState ==
+== NoBranchesMatchingFilters ==
 Ups! Parece que no hay ramas que coincidan con tus filtros
 
-== HiddenBranchesEmptyState ==
+== NoHiddenBranchesMatchingFilters ==
 Ups! Parece que no hay ramas ocultas que coincidan con tus filtros
 
-== HiddenBranchesInRepositoryEmptyState ==
+== NoHiddenBranchesFound ==
 Ups! Parece que no hay ramas ocultas para este repositorio
 
-== HistoryEmptyState ==
+== NoRevisionsMatchingFilters ==
 Ups! Parece que no hay revisiones que coincidan con tus filtros
 
-== ChangesetsEmptyState ==
+== NoChangesetsMatchingFilters ==
 Ups! Parece que no hay changesets que coincidan con tus filtros
 
-== LabelsEmptyState ==
+== NoLabelsMatchingFilters ==
 Ups! Parece que no hay etiquetas que coincidan con tus filtros
 
-== AttributesEmptyState ==
+== NoAttributesMatchingFilters ==
 Ups! Parece que no hay atributos que coincidan con tus filtros
 
-== CodeReviewsEmptyState ==
+== NoCodeReviewsMatchingFilters ==
 Ups! Parece que no hay code reviews que coincidan con tus filtros
 
-== ShelvesEmptyState ==
+== NoShelvesMatchingFilters ==
 Ups! Parece que no hay shelves que coincidan con tus filtros
 
-== DiffsEmptyState ==
+== NoDiffsMatchingFilters ==
 Ups! Parece que no hay differencias que coincidan con tus filtros
+
+== NoLocksMatchingFilters ==
+Ups! Parece que no hay bloqueos de ficheros que coincidan con tus filtros
+
+== NoPendingChangesMatchingFilters ==
+Ups! Parece que no hay cambios pendientes que coincidan con tus filtros
+
+== NoIncomingChangesMatchingFilters ==
+Ups! Parece que no hay cambios entrantes que coincidan con tus filtros
+
+== NoMergeChangesMatchingFilters ==
+Ups! Parece que no hay cambios de fusión que coincidan con tus filtros
 
 == ResetFilters ==
 Restablecer filtros
@@ -8643,9 +8642,6 @@ Crear rama
 
 == CreateNewBranchButton ==
 Crear nueva rama
-
-== NoBranchMatchingFilter ==
-No hay ramas que coincidan con el filtro
 
 == CreateANewBranchInstead ==
 Puedes crear una nueva rama en su lugar
@@ -8690,7 +8686,7 @@ No conectar el drive a un repositorio
 Quiero importar los ficheros desde una unidad local.
 
 == WorkspaceNameEntry ==
-Nombre del drive:
+Nombre del workspace:
 
 == NoRepositoriesToConnect ==
 No hay repositorios a los que conectar el drive
@@ -8764,8 +8760,11 @@ Arrastra aquí para crear un workspace nuevo.
 == DeleteBranchTitle ==
 Confirma la eliminación de rama
 
-== DeleteBranchExplanation ==
-Estás a punto de eliminar {0} y todos sus changesets. ¿Estás seguro que quieres continuar?
+== DeleteBranchExplanationEndSingular ==
+y todos sus changesets. ¿Estás seguro que quieres continuar?
+
+== DeleteBranchExplanationEndPlural ==
+y todos sus changesets. ¿Estás seguro que quieres continuar?
 
 == DeleteBranchesExplanation ==
 Está a punto de eliminar las siguientes ramas y todos sus changesets:
@@ -8860,7 +8859,7 @@ Aplicar a todos los siguientes archivos
 Resultado de la copia de archivos
 
 == CopyFileErrorsMessage ==
-Los siguientes archivos no se pudieron copiar al cloud workspace '{0}'.
+Los siguientes archivos no se pudieron copiar al cloud drive '{0}'.
 Por favor, revisa los detalles de error a continuación.
 
 == CreateCloudWorkspaceTitle ==
@@ -9327,5 +9326,39 @@ Sincronizando...
 == CloudDriveSyncStatusUpToDate ==
 Actualizado
 
+== UpdateCloudDrivePathTitle ==
+Sobreescribir ruta de Cloud Drive
+
+== UpdateCloudDrivePathMessage ==
+La ruta de Cloud Drive ya está configurada y contiene workspaces. Modificarla eliminará todo el contenido de la ruta actual de Cloud Drive.
+¿Quieres continuar?
+
+== OverwriteCloudDriveCredentialsTitle ==
+Cloud Drive ya está configurado
+
+== OverwriteCloudDriveCredentialsMessage ==
+Cloud Drive ya está configurado para un usuario diferente.
+Las nuevas credenciales se guardarán, reemplazando las existentes.
+Las nuevas credenciales reemplazarán las existentes, y tus drives actuales pueden ser eliminados del disco.
+¿Quieres continuar?
+
 == CloudDriveSyncUpdatingCloudDrives ==
 Actualizando tus cloud drives...
+
+== DiffByChangeset ==
+Diferencias por changeset
+
+== InitializingUVCS ==
+Inicializando
+
+== WaitingForScriptsToCompile ==
+Esperando a la compilación de scripts...
+
+== WaitingForAssetsToUpdate ==
+Esperando a la actualización de assets...
+
+== WaitingForEditorToBeReady ==
+Esperando a que el editor esté listo...
+
+== WaitingForPendingOperationsToFinish ==
+Esperando a que finalicen operaciones pendientes...

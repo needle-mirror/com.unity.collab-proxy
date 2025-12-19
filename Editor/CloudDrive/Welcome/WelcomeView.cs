@@ -1,3 +1,5 @@
+using System.Threading;
+
 using UnityEditor;
 using UnityEngine;
 
@@ -57,12 +59,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace.Welcome
                 mCreateWorkspaceView.Update();
 
             if (mIsDownloading)
-            {
-                mConfigureProgress.UpdateDeterminateProgress(mParentWindow);
-                return;
-            }
-
-            mConfigureProgress.ForcedUpdateProgress(mParentWindow);
+                mConfigureProgress.UpdateProgress(mParentWindow);
         }
 
         internal void OnDisable()
@@ -199,7 +196,10 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace.Welcome
                     GUILayout.Width(BUTTON_WIDTH)))
                 {
                     DownloadAndInstallOperation.Run(
-                        Edition.Cloud, configureProgress, this);
+                        Edition.Cloud,
+                        configureProgress,
+                        new CancellationToken(),
+                        this);
                 }
                 return;
             }

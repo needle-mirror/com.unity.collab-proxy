@@ -38,7 +38,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             if (mCreateWorkspaceView != null)
                 mCreateWorkspaceView.Update();
 
-            mConfigureProgress.UpdateDeterminateProgress(mParentWindow);
+            mConfigureProgress.UpdateProgress(mParentWindow);
         }
 
         internal void OnGUI(bool clientNeedsConfiguration)

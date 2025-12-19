@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading;
 
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -6,6 +7,7 @@ using UnityEngine.UIElements;
 using Codice.Client.Common;
 using Codice.Client.Common.EventTracking;
 using Codice.CM.Common;
+using Codice.Utils;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
@@ -69,6 +71,8 @@ namespace Unity.PlasticSCM.Editor.Views
             instance.mProgressData = progressData;
             instance.mIsCloudEdition = EditionToken.IsCloudEdition();
             instance.mTitle = PlasticLocalization.Name.UnityVersionControl.GetString();
+            instance.mOkButtonText = string.Empty;
+            instance.mCancelButtonText = string.Empty;
             return instance;
         }
 
@@ -87,7 +91,7 @@ namespace Unity.PlasticSCM.Editor.Views
             Dispose();
         }
 
-        protected override void OnModalGUI()
+        protected override void DoComponentsArea()
         {
             if (InstallationFinished())
             {
@@ -121,34 +125,51 @@ namespace Unity.PlasticSCM.Editor.Views
             if (!IsExeAvailable.ForMode(mIsGluonMode))
                 TrackFeatureUseEvent.For(mRepSpec, mCancelInstallFrom);
 
+            if (mDownloadCancellationTokenSource != null)
+            {
+                mDownloadCancellationTokenSource.Cancel();
+                mDownloadCancellationTokenSource = null;
+                return;
+            }
+
             Close();
         }
 
         void DownloadButton_Clicked()
         {
+            mDownloadCancellationTokenSource = new CancellationTokenSource();
+
             if (mIsCloudEdition)
             {
                 TrackFeatureUseEvent.For(mRepSpec, mInstallCloudFrom);
 
                 DownloadAndInstallOperation.Run(
-                    Edition.Cloud, mProgressControls, this);
+                    Edition.Cloud,
+                    mProgressControls,
+                    mDownloadCancellationTokenSource.Token,
+                    this);
             }
             else
             {
                 TrackFeatureUseEvent.For(mRepSpec, mInstallEnterpriseFrom);
 
                 DownloadAndInstallOperation.Run(
-                    Edition.Enterprise, mProgressControls, this);
+                    Edition.Enterprise,
+                    mProgressControls,
+                    mDownloadCancellationTokenSource.Token,
+                    this);
             }
         }
 
         void DownloadAndInstallOperation.INotify.InstallationStarted()
         {
+            mCancelButton.SetEnabled(false);
             mIsPlasticInstalling = true;
         }
 
         void DownloadAndInstallOperation.INotify.InstallationFinished()
         {
+            mCancelButton.SetEnabled(true);
             mIsPlasticInstalling = false;
         }
 
@@ -215,30 +236,53 @@ namespace Unity.PlasticSCM.Editor.Views
 
             mMessageLabel = root.Q<Label>("title");
             mConfirmMessageLabel = root.Q<Label>("message");
-            mDownloadButton = root.Q<Button>("download");
-            mCancelButton = root.Q<Button>("cancel");
+            mDownloadButton = root.Q<Button>("downloadButton");
+            mCancelButton = root.Q<Button>("cancelButton");
             mProgressControlsContainer = root.Q<VisualElement>("progressControlsContainer");
 
             mMessageLabel.text = PlasticLocalization.Name.InstallUnityVersionControl.GetString();
             mConfirmMessageLabel.text = PlasticLocalization.Name.InstallConfirmationMessage.GetString();
-            mDownloadButton.text = PlasticLocalization.Name.YesButton.GetString();
+            mDownloadButton.text = PlasticLocalization.Name.DownloadAndInstall.GetString();
             mDownloadButton.clicked += DownloadButton_Clicked;
-            mCancelButton.text = PlasticLocalization.Name.NoButton.GetString();
+            mCancelButton.text = PlasticLocalization.Name.CancelButton.GetString();
             mCancelButton.clicked += CancelButton_Clicked;
 
             mProgressControls = new ProgressControlsForDialogs(
-                new VisualElement[] {
-                    mDownloadButton,
-                    mCancelButton
-                });
+                new VisualElement[] { mDownloadButton });
 
             mProgressControlsContainer.Add(mProgressControls);
+
+            SwapButtonsOrderIfMacOS(
+                root,
+                mDownloadButton,
+                mCancelButton);
         }
 
         void InitializeLayoutAndStyles()
         {
             rootVisualElement.LoadLayout(typeof(DownloadPlasticExeDialog).Name);
             rootVisualElement.LoadStyle(typeof(DownloadPlasticExeDialog).Name);
+        }
+
+        static void SwapButtonsOrderIfMacOS(
+            VisualElement root,
+            Button downloadButton,
+            Button cancelButton)
+        {
+            if (!PlatformIdentifier.IsMac())
+                return;
+
+            var footer = root.Q<VisualElement>("footer");
+
+            var cancelButtonIndex = footer.IndexOf(cancelButton);
+            var downloadButtonIndex = footer.IndexOf(downloadButton);
+
+            // Remove and re-insert in swapped order
+            footer.Remove(downloadButton);
+            footer.Remove(cancelButton);
+
+            footer.Insert(downloadButtonIndex, cancelButton);
+            footer.Insert(cancelButtonIndex, downloadButton);
         }
 
         string mTitle;
@@ -248,7 +292,7 @@ namespace Unity.PlasticSCM.Editor.Views
         Label mProgressLabel;
         Button mDownloadButton;
         Button mCancelButton;
-        ProgressControlsForDialogs mProgressControls;
+        new ProgressControlsForDialogs mProgressControls;
         VisualElement mProgressControlsContainer;
 
         RepositorySpec mRepSpec;
@@ -259,6 +303,7 @@ namespace Unity.PlasticSCM.Editor.Views
         bool mIsGluonMode;
         bool mIsPlasticInstalling;
         ProgressControlsForDialogs.Data mProgressData;
+        CancellationTokenSource mDownloadCancellationTokenSource;
 
         const float DIALOG_WIDTH = 500;
         const float DIALOG_HEIGHT = 250;

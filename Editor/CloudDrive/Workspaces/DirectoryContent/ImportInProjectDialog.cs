@@ -1,12 +1,9 @@
-﻿using System.IO;
-
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 using PlasticGui;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.Progress;
 
 namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
 {
@@ -41,45 +38,12 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             return PlasticLocalization.Name.ImportInProjectDialogTitle.GetString();
         }
 
-        protected override void OnModalGUI()
+        protected override string GetExplanation()
         {
-            Title(PlasticLocalization.Name.ImportInProjectDialogTitle.GetString());
-
-            GUILayout.Space(10);
-
-            Paragraph(PlasticLocalization.Name.ImportInProjectDialogExplanation.GetString());
-
-            GUILayout.Space(10);
-
-            DoEntriesArea();
-
-            GUILayout.Space(10);
-
-            DrawProgressForDialogs.For(mProgressControls.ProgressData);
-
-            GUILayout.Space(10);
-
-            GUILayout.FlexibleSpace();
-
-            DoButtonsArea();
+            return PlasticLocalization.Name.ImportInProjectDialogExplanation.GetString();
         }
 
-        static ImportInProjectDialog Create(string currentCloudDrivePath, string workspacePath)
-        {
-            var instance = CreateInstance<ImportInProjectDialog>();
-            instance.mProgressControls = new ProgressControlsForDialogs();
-            instance.IsResizable = false;
-
-            instance.mRelativeProjectPath = GetProposedProjectPath(
-                currentCloudDrivePath, workspacePath);
-
-            instance.mEnterKeyAction = instance.OkButtonWithValidationAction;
-            instance.mEscapeKeyAction = instance.CancelButtonAction;
-
-            return instance;
-        }
-
-        void DoEntriesArea()
+        protected override void DoComponentsArea()
         {
             using (new EditorGUILayout.HorizontalScope())
             {
@@ -100,11 +64,26 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             }
         }
 
+        static ImportInProjectDialog Create(string currentCloudDrivePath, string workspacePath)
+        {
+            var instance = CreateInstance<ImportInProjectDialog>();
+            instance.IsResizable = false;
+
+            instance.mRelativeProjectPath = GetProposedProjectPath(
+                currentCloudDrivePath, workspacePath);
+
+            instance.mEnterKeyAction = instance.OkButtonAction;
+            instance.mEscapeKeyAction = instance.CancelButtonAction;
+            instance.mOkButtonText = PlasticLocalization.Name.ImportButton.GetString();
+
+            return instance;
+        }
+
         void DoBrowseForPath()
         {
-            string projectPath = Path.GetFullPath(ProjectPath.Get());
+            string projectPath = AssetsPath.GetFullPath.ForPath(ProjectPath.Get());
 
-            string selectedPath = Path.GetFullPath(EditorUtility.SaveFolderPanel(
+            string selectedPath = AssetsPath.GetFullPath.ForPath(EditorUtility.SaveFolderPanel(
                 PlasticLocalization.Name.SelectProjectPathDialogTitle.GetString(),
                 projectPath,
                 ""));
@@ -130,33 +109,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             mRelativeProjectPath = selectedPath.Substring(projectPath.Length).Replace('\\', '/');
         }
 
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoOkButton();
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoOkButton();
-            }
-        }
-
-        void DoOkButton()
-        {
-            if (AcceptButton(PlasticLocalization.Name.ImportButton.GetString()))
-            {
-                OkButtonWithValidationAction();
-            }
-        }
-
-        void OkButtonWithValidationAction()
+        internal override void OkButtonAction()
         {
             if (!mRelativeProjectPath.StartsWith("/"))
             {
@@ -165,15 +118,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
                 return;
             }
 
-            OkButtonAction();
-        }
-
-        void DoCancelButton()
-        {
-            if (NormalButton(PlasticLocalization.Name.CancelButton.GetString()))
-            {
-                CancelButtonAction();
-            }
+            base.OkButtonAction();
         }
 
         static string GetProposedProjectPath(string currentCloudDrivePath, string workspacePath)
@@ -188,8 +133,6 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
         }
 
         string mRelativeProjectPath;
-
-        ProgressControlsForDialogs mProgressControls;
 
         const float ENTRY_WIDTH = 400;
         const float ENTRY_X = 120f;

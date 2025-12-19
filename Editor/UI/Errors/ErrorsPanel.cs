@@ -1,10 +1,18 @@
 ﻿using System.Collections.Generic;
 
-using UnityEditor;
 using UnityEngine;
 
 using Codice.CM.Common;
 using Unity.PlasticSCM.Editor.UI.Tree;
+
+using EditorGUILayout = UnityEditor.EditorGUILayout;
+using EditorStyles = UnityEditor.EditorStyles;
+
+#if !UNITY_6000_0_OR_NEWER
+using Unity.PlasticSCM.Editor.UnityInternals.UnityEditor;
+#else
+using UnityEditor;
+#endif
 
 namespace Unity.PlasticSCM.Editor.UI.Errors
 {
@@ -71,7 +79,7 @@ namespace Unity.PlasticSCM.Editor.UI.Errors
 
         void DoErrorsListSplitViewArea(
             ErrorsListView errorsListView,
-            object splitterState)
+            SplitterState splitterState)
         {
             EditorGUILayout.BeginHorizontal();
 
@@ -113,6 +121,6 @@ namespace Unity.PlasticSCM.Editor.UI.Errors
 
         readonly string mTitle;
         readonly ErrorsListView mErrorsListView;
-        readonly object mErrorDetailsSplitterState;
+        readonly SplitterState mErrorDetailsSplitterState;
     }
 }

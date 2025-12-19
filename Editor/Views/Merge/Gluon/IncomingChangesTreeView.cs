@@ -25,12 +25,14 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             IncomingChangesTreeHeaderState headerState,
             List<string> columnNames,
             IncomingChangesViewMenu menu,
-            Action onCheckedNodeChanged)
+            Action onCheckedNodeChanged,
+            Action updateEmptyStateMessageAction)
         {
             mWkInfo = wkInfo;
             mColumnNames = columnNames;
             mMenu = menu;
             mOnCheckedNodeChanged = onCheckedNodeChanged;
+            mUpdateEmptyStateMessageAction = updateEmptyStateMessageAction;
 
             multiColumnHeader = new MultiColumnHeader(headerState);
             multiColumnHeader.canSort = true;
@@ -84,7 +86,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             if (args.item is ChangeCategoryTreeViewItem)
             {
                 CategoryTreeViewItemGUI(
-                    args.rowRect, rowHeight,
+                    args.rowRect,
                     (ChangeCategoryTreeViewItem)args.item,
                     mOnCheckedNodeChanged,
                     mSolvedConflicts.Count,
@@ -151,6 +153,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             mIncomingChangesTree.Filter(filter, mColumnNames);
 
             mExpandCategories = true;
+
+            mUpdateEmptyStateMessageAction();
         }
 
         internal void Sort()
@@ -418,7 +422,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
         static void CategoryTreeViewItemGUI(
             Rect rowRect,
-            float rowHeight,
             ChangeCategoryTreeViewItem item,
             Action onCheckedNodeChanged,
             int solvedConflictsCount,
@@ -436,7 +439,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
             bool isChecked = DrawTreeViewItem.ForCheckableIndentedItem(
                 rowRect,
-                rowHeight,
                 item.depth,
                 label,
                 infoLabel,
@@ -532,9 +534,10 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
                 bool isChecked = DrawTreeViewItem.ForCheckableItemCell(
                     rect, rowHeight, item.depth,
-                    icon, overlayIcon, label,
+                    icon, null, overlayIcon, label,
                     isSelected, isFocused, isCurrentConflict,
-                    wasChecked);
+                    wasChecked,
+                    DrawTreeViewItem.TextTrimming.Path);
 
                 ((ICheckablePlasticTreeNode)incomingChange).UpdateCheckedState(isChecked);
 
@@ -554,6 +557,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                     rowHeight,
                     -1,
                     GetAvatar.ForEmail(label, avatarLoadedAction),
+                    null,
                     null,
                     label,
                     isSelected,
@@ -651,10 +655,11 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         UnityIncomingChangesTree mIncomingChangesTree;
         DelayedActionBySecondsRunner mDelayedFilterAction;
 
-        readonly Action mOnCheckedNodeChanged;
-        readonly IncomingChangesViewMenu mMenu;
-        readonly List<string> mColumnNames;
         readonly WorkspaceInfo mWkInfo;
+        readonly List<string> mColumnNames;
+        readonly IncomingChangesViewMenu mMenu;
+        readonly Action mOnCheckedNodeChanged;
+        readonly Action mUpdateEmptyStateMessageAction;
 
         const int NODES_TO_EXPAND_CATEGORY = 10;
     }

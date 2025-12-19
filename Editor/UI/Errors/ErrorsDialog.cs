@@ -29,15 +29,9 @@ namespace Unity.PlasticSCM.Editor.UI.Errors
             dialog.RunModal(parentWindow);
         }
 
-        protected override void OnModalGUI()
+        protected override void DoComponentsArea()
         {
-            Title(mTitle);
-
-            Paragraph(mExplanation);
-
-            DoErrorsArea(mErrorsPanel);
-
-            DoButtonsArea();
+            mErrorsPanel.OnGUI();
         }
 
         protected override string GetTitle()
@@ -45,26 +39,9 @@ namespace Unity.PlasticSCM.Editor.UI.Errors
             return mTitle;
         }
 
-        static void DoErrorsArea(ErrorsPanel errorsPanel)
+        protected override string GetExplanation()
         {
-            errorsPanel.OnGUI();
-        }
-
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-                DoCloseButton();
-            }
-        }
-
-        void DoCloseButton()
-        {
-            if (!NormalButton(PlasticLocalization.Name.CloseButton.GetString()))
-                return;
-
-            CancelButtonAction();
+            return mExplanation;
         }
 
         static ErrorsDialog Create(
@@ -74,6 +51,9 @@ namespace Unity.PlasticSCM.Editor.UI.Errors
         {
             var instance = CreateInstance<ErrorsDialog>();
             instance.mEscapeKeyAction = instance.CloseButtonAction;
+            instance.mOkButtonText = string.Empty;
+            instance.mCancelButtonText = string.Empty;
+            instance.mCloseButtonText = PlasticLocalization.Name.CloseButton.GetString();
             instance.mTitle = title;
             instance.mExplanation = explanation;
             instance.BuildComponents();

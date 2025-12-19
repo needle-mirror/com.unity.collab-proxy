@@ -810,6 +810,9 @@ The specified label {0} does not exist.
 == LbNotFound ==
 The specified label can't be found.
 
+== LdapAccountLocked ==
+The account for '{0}' is currently locked. Please try again later.
+
 == LdapDomain ==
 LDAP domain
 
@@ -1534,6 +1537,9 @@ Can't perform an exclusive lock of the same item ({0}) from different paths '{1}
 
 == UnexpectedError ==
 There has been an unexpected error "{0}". For more information check the server log.
+
+== UnexpectedUnknownErrorOnServer ==
+An unexpected error has occurred on server. For more information check the server log.
 
 == UnityOrgPermissionsInheritanceChangesNotAllowed ==
 Changes to permissions inheritance are not allowed in Unity Organizations. To manage access control in your organization, please open https://cloud.unity.com/home/organizations/{0}/projects/default/devops/overview in your browser.

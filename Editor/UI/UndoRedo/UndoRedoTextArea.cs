@@ -1,8 +1,8 @@
 using System;
-using System.Reflection;
 
-using UnityEditor;
 using UnityEngine;
+
+using EditorGUI = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.EditorGUI;
 
 namespace Unity.PlasticSCM.Editor.UI.UndoRedo
 {
@@ -51,6 +51,16 @@ namespace Unity.PlasticSCM.Editor.UI.UndoRedo
             get { return mCaretIndex; }
         }
 
+        internal void SetFocus()
+        {
+            mRequireFocusSet = true;
+        }
+
+        internal void SetCursorToLastChar()
+        {
+            mHasToSetCursorToLastChar = true;
+        }
+
         UndoRedoState UndoRedoHelper.IUndoRedoHost.UndoRedoState
         {
             get { return new UndoRedoState(mText, mCaretIndex); }
@@ -70,23 +80,14 @@ namespace Unity.PlasticSCM.Editor.UI.UndoRedo
             }
         }
 
-        internal void OnGUI(GUIStyle watermarkStyle, params GUILayoutOption[] options)
-        {
-            OnGUIInternal(
-                () => EditorGUILayout.TextArea(mText, options),
-                () => EditorGUI.LabelField(GUILayoutUtility.GetLastRect(), mWatermarkText, watermarkStyle));
-        }
-
-        internal void OnGUI(Rect position, GUIStyle style, GUIStyle watermarkStyle)
-        {
-            OnGUIInternal(
-                () => EditorGUI.TextArea(position, mText, style),
-                () => EditorGUI.LabelField(position, mWatermarkText, watermarkStyle));
-        }
-
-        void OnGUIInternal(Func<string> drawTextArea, Action drawWatermark)
+        protected void OnGUIInternal(Func<string> drawTextArea, Action drawWatermark)
         {
             GUI.SetNextControlName(mControlName);
+
+            if (mIsFocused)
+                ProcessKeyPressed(mUndoRedoHelper, Event.current);
+
+            bool isNewKeyboardFocus = CommandEvent.IsNewKeyboardFocus(Event.current);
 
             // When the text area has focus, it won't reflect changes to the source string.
             // To update the text programmatically, we must:
@@ -95,22 +96,42 @@ namespace Unity.PlasticSCM.Editor.UI.UndoRedo
             // 3. Restore focus
             int keyboardControlBackup = GUIUtility.keyboardControl;
 
-            if (mRequireFocusReset && IsFocused(mControlName))
+            if (mRequireFocusReset && mIsFocused)
                 GUIUtility.keyboardControl = 0;
 
             string oldText = mText;
             string newText = drawTextArea();
             mText = newText;
 
+            TextEditor editor = GetActiveTextEditor();
+
+            if (isNewKeyboardFocus && editor != null)
+            {
+                if (mHasToSetCursorToLastChar)
+                {
+                    editor.cursorIndex = editor.text.Length;
+                    mHasToSetCursorToLastChar = false;
+                }
+
+                editor.SelectNone();
+            }
+
+            if (Event.current.type == EventType.Repaint && mRequireFocusSet)
+            {
+                GUI.FocusControl(mControlName);
+                mRequireFocusSet = false;
+            }
+
+            if (Event.current.type != EventType.Layout)
+                mIsFocused = IsFocused(mControlName);
+
             if (string.IsNullOrEmpty(mText) && !string.IsNullOrEmpty(mWatermarkText))
                 drawWatermark();
 
-            if (mRequireFocusReset && IsFocused(mControlName))
+            if (mRequireFocusReset && mIsFocused)
                 GUIUtility.keyboardControl = keyboardControlBackup;
 
             mRequireFocusReset = false;
-
-            TextEditor editor = GetActiveTextEditor();
 
             if (editor != null)
             {
@@ -125,7 +146,7 @@ namespace Unity.PlasticSCM.Editor.UI.UndoRedo
             if (oldText != newText)
                 OnTextChanged();
 
-            if (!IsFocused(mControlName))
+            if (!mIsFocused)
                 return;
 
             ProcessKeyboardShorcuts(mUndoRedoHelper, Event.current);
@@ -144,6 +165,10 @@ namespace Unity.PlasticSCM.Editor.UI.UndoRedo
         void OnTextChanged()
         {
             mUndoRedoHelper.Snapshot();
+        }
+
+        protected virtual void ProcessKeyPressed(UndoRedoHelper undoRedoHelper, Event e)
+        {
         }
 
         static void ProcessKeyboardShorcuts(UndoRedoHelper undoRedoHelper, Event e)
@@ -190,18 +215,9 @@ namespace Unity.PlasticSCM.Editor.UI.UndoRedo
                    Keyboard.IsKeyPressed(e, KeyCode.Y);
         }
 
-        static TextEditor GetActiveTextEditor()
+        protected static TextEditor GetActiveTextEditor()
         {
-            // Use reflection to access the internal "activeEditor" field of EditorGUI
-            Type editorGUIType = typeof(EditorGUI);
-            FieldInfo field = editorGUIType.GetField(
-                "activeEditor",
-                BindingFlags.Static | BindingFlags.NonPublic);
-
-            if (field != null)
-                return field.GetValue(null) as TextEditor;
-
-            return null;
+            return EditorGUI.activeEditor;
         }
 
         static bool IsFocused(string controlName)
@@ -210,9 +226,13 @@ namespace Unity.PlasticSCM.Editor.UI.UndoRedo
         }
 
         bool mRequireFocusReset;
+        bool mRequireFocusSet;
+        bool mHasToSetCursorToLastChar;
         int mCaretIndex;
-        string mText;
-        string mWatermarkText;
+        bool mIsFocused;
+
+        protected string mText;
+        protected string mWatermarkText;
 
         readonly string mControlName;
         readonly Action mRepaint;

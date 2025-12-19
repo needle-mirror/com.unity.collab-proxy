@@ -3,7 +3,6 @@
 using UnityEditor;
 using UnityEngine;
 
-using Codice.Client.BaseCommands;
 using Codice.Client.Commands;
 using Codice.CM.Common;
 using PlasticGui;
@@ -11,6 +10,10 @@ using PlasticGui.WorkspaceWindow.Update;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
+
+#if !UNITY_6000_0_OR_NEWER
+using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
 {
@@ -23,7 +26,7 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
             get
             {
                 var baseRect = base.DefaultRect;
-                return new Rect(baseRect.x, baseRect.y, 810, 385);
+                return new Rect(baseRect.x, baseRect.y, 810, baseRect.height);
             }
         }
 
@@ -32,10 +35,7 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
             IList reportLines,
             EditorWindow parentWindow)
         {
-            UpdateReportDialog dialog = Create(
-                wkInfo,
-                reportLines,
-                new ProgressControlsForDialogs());
+            UpdateReportDialog dialog = Create(wkInfo, reportLines);
 
             return dialog.RunModal(parentWindow);
         }
@@ -46,12 +46,8 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
                 UnityConstants.DEVELOPER_UPDATE_REPORT_TABLE_SETTINGS_NAME);
         }
 
-        protected override void OnModalGUI()
+        protected override void DoComponentsArea()
         {
-            Title(PlasticLocalization.GetString(PlasticLocalization.Name.UpdateResultsTitle));
-
-            Paragraph(PlasticLocalization.GetString(PlasticLocalization.Name.UpdateResultsError));
-
             DoListArea(
                 mPathsListView,
                 mErrorDetailsSplitterState);
@@ -59,25 +55,17 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
             GUILayout.Space(10);
 
             DoSelectAllArea();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(4);
-            DrawProgressForDialogs.For(
-                mProgressControls.ProgressData);
-            GUILayout.Space(4);
-            GUILayout.EndHorizontal();
-
-            GUILayout.Space(2);
-
-            DoButtonsArea(mIsAnyLineChecked);
-
-            mProgressControls.ForcedUpdateProgress(this);
         }
 
         protected override string GetTitle()
         {
             return PlasticLocalization.GetString(
                 PlasticLocalization.Name.UpdateResultsTitle);
+        }
+
+        protected override string GetExplanation()
+        {
+            return PlasticLocalization.Name.UpdateResultsError.GetString();
         }
 
         void IUpdateReportDialog.Reload()
@@ -95,9 +83,9 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
 
         void DoListArea(
             UpdateReportListView errorsListView,
-            object splitterState)
+            SplitterState splitterState)
         {
-            EditorGUILayout.BeginVertical();
+            EditorGUILayout.BeginVertical(GUILayout.Height(ERRORS_PANEL_HEIGHT));
             PlasticSplitterGUILayout.BeginHorizontalSplit(splitterState);
 
             DoErrorsListViewArea(errorsListView);
@@ -157,14 +145,18 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
             }
         }
 
-        void DoButtonsArea(bool areUpdateButtonsEneabled)
+        protected override void DoButtonsArea()
         {
             using (new EditorGUILayout.HorizontalScope())
             {
-                DoRetryUpdateButton(areUpdateButtonsEneabled);
-                DoUpdateForcedButton(areUpdateButtonsEneabled);
+                DoRetryUpdateButton(mIsAnyLineChecked && !mProgressControls.ProgressData.IsWaitingAsyncResult);
+                DoUpdateForcedButton(mIsAnyLineChecked && !mProgressControls.ProgressData.IsWaitingAsyncResult);
 
-                GUILayout.FlexibleSpace();
+                GUILayout.Space(10);
+
+                DrawProgressForDialogs.For(mProgressControls.ProgressData);
+
+                GUILayout.Space(10);
 
                 DoCloseButton();
             }
@@ -204,25 +196,13 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
                 UpdateFlags.Forced, this, mProgressControls);
         }
 
-        void DoCloseButton()
-        {
-            if (!NormalButton(PlasticLocalization.GetString(
-                PlasticLocalization.Name.CloseButton)))
-                return;
-
-            CancelButtonAction();
-        }
-
-        static UpdateReportDialog Create(
-            WorkspaceInfo wkInfo,
-            IList reportLines,
-            ProgressControlsForDialogs progressControls)
+        static UpdateReportDialog Create(WorkspaceInfo wkInfo, IList reportLines)
         {
             var instance = CreateInstance<UpdateReportDialog>();
             instance.mWkInfo = wkInfo;
             instance.mReportLines = reportLines;
-            instance.mProgressControls = progressControls;
             instance.mEscapeKeyAction = instance.CloseButtonAction;
+            instance.mCloseButtonText = PlasticLocalization.Name.CloseButton.GetString();
             instance.BuildComponents(wkInfo);
             instance.SetReportLines(reportLines);
             return instance;
@@ -263,11 +243,12 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
         bool mAreAllLinesChecked = false;
         UpdateReportListView mPathsListView;
 
-        object mErrorDetailsSplitterState;
+        SplitterState mErrorDetailsSplitterState;
         Vector2 mErrorDetailsScrollPosition;
 
         WorkspaceInfo mWkInfo;
         IList mReportLines;
-        ProgressControlsForDialogs mProgressControls;
+
+        const float ERRORS_PANEL_HEIGHT = 200f;
     }
 }

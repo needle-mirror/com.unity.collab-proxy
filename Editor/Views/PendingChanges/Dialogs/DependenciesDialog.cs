@@ -32,17 +32,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             return dialog.RunModal(parentWindow) == ResponseType.Ok;
         }
 
-        protected override void OnModalGUI()
+        protected override void DoComponentsArea()
         {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                Title(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.DependenciesDialogTitle));
-            }
-
-            Paragraph(PlasticLocalization.GetString(
-                PlasticLocalization.Name.DependenciesExplanation, mOperation));
-
             Title(PlasticLocalization.GetString(PlasticLocalization.Name.ItemColumn));
 
             Rect scrollWidth = GUILayoutUtility.GetRect(0, position.width, 1, 1);
@@ -51,16 +42,18 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
                 Texture2D.whiteTexture);
 
             DoDependenciesArea();
-
-            GUILayout.Space(20);
-
-            DoButtonsArea();
         }
 
         protected override string GetTitle()
         {
             return PlasticLocalization.GetString(
                 PlasticLocalization.Name.DependenciesDialogTitle);
+        }
+
+        protected override string GetExplanation()
+        {
+            return PlasticLocalization.GetString(
+                PlasticLocalization.Name.DependenciesExplanation, mOkButtonText);
         }
 
         void DoDependenciesArea()
@@ -100,41 +93,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             EditorGUILayout.EndScrollView();
         }
 
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoOkButton();
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoOkButton();
-            }
-        }
-
-        void DoOkButton()
-        {
-            if (!AcceptButton(mOperation))
-                return;
-
-            OkButtonAction();
-        }
-
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.CancelButton)))
-                return;
-
-            CancelButtonAction();
-        }
-
         static DependenciesDialog Create(
             WorkspaceInfo wkInfo,
             IList<ChangeDependencies> changesDependencies,
@@ -144,7 +102,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
 
             instance.mWkInfo = wkInfo;
             instance.mChangesDependencies = changesDependencies;
-            instance.mOperation = operation;
+            instance.mOkButtonText = operation;
             instance.mEnterKeyAction = instance.OkButtonAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
 
@@ -158,7 +116,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
         bool[] mExpandedDependencies;
         Vector2 mScrollPosition;
 
-        string mOperation;
         IList<ChangeDependencies> mChangesDependencies;
         WorkspaceInfo mWkInfo;
     }

@@ -1,6 +1,4 @@
-﻿using System;
-
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 using Codice.Client.Common.Authentication;
@@ -31,20 +29,10 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
 
         internal Data ProgressData { get { return mData; } }
 
-        internal void ForcedUpdateProgress(EditorWindow dialog)
+        internal void UpdateProgress(EditorWindow dialog)
         {
-            double updateTime;
-            float progressPercent;
-            GetUpdateProgress(
-                mLastUpdateTime, mData.ProgressPercent,
-                out updateTime, out progressPercent);
-
-            mLastUpdateTime = updateTime;
-
             if (!mData.IsWaitingAsyncResult)
                 return;
-
-            mData.ProgressPercent = progressPercent;
 
             if (Event.current.type == EventType.Repaint)
                 dialog.Repaint();
@@ -81,7 +69,7 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
             CleanStatusMessage(mData);
 
             mData.IsWaitingAsyncResult = true;
-            mData.ProgressPercent = 0f;
+            mData.ProgressPercent = -1;
             mData.ProgressMessage = message;
         }
 
@@ -115,23 +103,6 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
             data.StatusType = MessageType.None;
         }
 
-        static void GetUpdateProgress(
-            double lastUpdateTime, float lastProgressPercent,
-            out double updateTime, out float progressPercent)
-        {
-            updateTime = EditorApplication.timeSinceStartup;
-
-            double deltaTime = Math.Min(0.1, updateTime - lastUpdateTime);
-            double deltaPercent = (deltaTime / 0.1) * PERCENT_PER_SECONDS;
-
-            progressPercent = Mathf.Repeat(
-                lastProgressPercent + (float)deltaPercent, 1f);
-        }
-
-        double mLastUpdateTime = 0.0;
-
         Data mData = new Data();
-
-        const double PERCENT_PER_SECONDS = 0.06;
     }
 }

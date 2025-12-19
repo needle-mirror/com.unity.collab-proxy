@@ -23,11 +23,15 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.Branches.Dialogs;
-
-using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
 using Unity.PlasticSCM.Editor.Views.Diff;
 using Unity.PlasticSCM.Editor.Views.Merge;
+using Unity.PlasticSCM.Editor.Views.Properties;
+
+using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
 using IGluonUpdateReport = PlasticGui.Gluon.IUpdateReport;
+#if !UNITY_6000_0_OR_NEWER
+using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.Branches
 {
@@ -44,8 +48,14 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         internal string EmptyStateMessage { get { return mEmptyStatePanel.Text; } }
         internal bool ShowHiddenBranchesForTesting { set { mShowHiddenBranches = value; } }
         internal DateFilter DateFilterForTesting { set { mDateFilter = value; } }
+        internal bool IsChangesetByChangesetModeForTesting
+        {
+            get { return mIsChangesetByChangesetMode; }
+            set { mIsChangesetByChangesetMode = value; }
+        }
         internal IBranchMenuOperations Operations { get { return this; } }
         internal BranchesListView Table { get { return mBranchesListView; } }
+        internal DiffPanel DiffPanel { get { return mDiffPanel; } }
 
         internal BranchesTab(
             WorkspaceInfo wkInfo,
@@ -144,6 +154,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         internal void OnEnable()
         {
             mDiffPanel.OnEnable();
+            mChangesetByChangesetDiffPanel.OnEnable();
 
             mSearchField.downOrUpArrowKeyPressed +=
                 SearchField_OnDownOrUpArrowKeyPressed;
@@ -152,6 +163,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         internal void OnDisable()
         {
             mDiffPanel.OnDisable();
+            mChangesetByChangesetDiffPanel.OnDisable();
 
             mSearchField.downOrUpArrowKeyPressed -=
                 SearchField_OnDownOrUpArrowKeyPressed;
@@ -164,6 +176,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         internal void Update()
         {
             mDiffPanel.Update();
+            mChangesetByChangesetDiffPanel.Update();
 
             mProgressControls.UpdateProgress(mParentWindow);
         }
@@ -175,87 +188,27 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
         internal void OnGUI()
         {
-            DoActionsToolbar(mProgressControls);
-
             PlasticSplitterGUILayout.BeginHorizontalSplit(mSplitterState);
 
             DoBranchesArea(
                 mBranchesListView,
                 mEmptyStatePanel,
-                mProgressControls.IsOperationRunning());
+                mDateFilter,
+                ref mShowHiddenBranches,
+                mSearchField,
+                mProgressControls,
+                this);
 
             EditorGUILayout.BeginHorizontal();
 
             Rect border = GUILayoutUtility.GetRect(1, 0, 1, 100000);
             EditorGUI.DrawRect(border, UnityStyles.Colors.BarBorder);
 
-            DoChangesArea(mDiffPanel);
+            DoChangesArea();
 
             EditorGUILayout.EndHorizontal();
 
             PlasticSplitterGUILayout.EndHorizontalSplit();
-        }
-
-        internal void DrawSearchFieldForTab()
-        {
-            DrawSearchField.For(
-                mSearchField,
-                mBranchesListView,
-                UnityConstants.SEARCH_FIELD_WIDTH);
-        }
-
-        internal void DrawDateFilter()
-        {
-            GUI.enabled = !mProgressControls.IsOperationRunning();
-
-            EditorGUI.BeginChangeCheck();
-
-            mDateFilter.FilterType = (DateFilter.Type)
-                EditorGUILayout.EnumPopup(
-                    mDateFilter.FilterType,
-                    EditorStyles.toolbarDropDown,
-                    GUILayout.Width(100));
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                EnumPopupSetting<DateFilter.Type>.Save(
-                    mDateFilter.FilterType,
-                    UnityConstants.BRANCHES_DATE_FILTER_SETTING_NAME);
-
-                ((IRefreshableView)this).Refresh();
-            }
-
-            GUI.enabled = true;
-        }
-
-        internal void DrawShowHiddenBranchesButton()
-        {
-            GUI.enabled = !mProgressControls.IsOperationRunning();
-
-            EditorGUI.BeginChangeCheck();
-
-            mShowHiddenBranches = GUILayout.Toggle(
-                mShowHiddenBranches,
-                new GUIContent(
-                    mShowHiddenBranches ?
-                        Images.GetUnhideIcon() :
-                        Images.GetHideIcon(),
-                    mShowHiddenBranches ?
-                        PlasticLocalization.Name.DontShowHiddenBranchesTooltip.GetString() :
-                        PlasticLocalization.Name.ShowHiddenBranchesTooltip.GetString()),
-                EditorStyles.toolbarButton,
-                GUILayout.Width(26));
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                TrackFeatureUseEvent.For(
-                    BranchesSelection.GetSelectedRepository(mBranchesListView),
-                    TrackFeatureUseEvent.Features.Branches.ToggleShowHiddenBranches);
-
-                ((IRefreshableView)this).Refresh();
-            }
-
-            GUI.enabled = true;
         }
 
         internal void SetWorkingObjectInfo(BranchInfo branchInfo)
@@ -293,6 +246,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                     null, (BranchInfo)objectToSelect, null) };
 
             mDiffPanel.ClearInfo();
+            mChangesetByChangesetDiffPanel.ClearInfo();
 
             mFillBranchesView.FillView(
                 mBranchesListView,
@@ -491,35 +445,94 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             if (selectedBranches.Count != 1)
                 return;
 
-            mDiffPanel.UpdateInfo(
-                MountPointWithPath.BuildWorkspaceRootMountPoint(
-                    BranchesSelection.GetSelectedRepository(mBranchesListView)),
-                selectedBranches[0]);
+            RepositorySpec repSpec = BranchesSelection.GetSelectedRepository(mBranchesListView);
+            MountPointWithPath mountPoint = MountPointWithPath.BuildWorkspaceRootMountPoint(repSpec);
+
+            if (mIsChangesetByChangesetMode)
+                mChangesetByChangesetDiffPanel.UpdateInfo(mountPoint, selectedBranches[0]);
+            else
+            {
+                mPropertiesPanel.UpdateInfo(selectedBranches[0], repSpec);
+                mDiffPanel.UpdateInfo(mountPoint, selectedBranches[0]);
+            }
         }
 
-        static void DoActionsToolbar(ProgressControlsForViews progressControls)
+        void DoDiffModeButtons()
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
-            if (progressControls.IsOperationRunning())
-            {
-                DrawProgressForViews.ForIndeterminateProgressBar(
-                    progressControls.ProgressData);
-            }
-
             GUILayout.FlexibleSpace();
 
+            GUI.enabled = !mProgressControls.IsOperationRunning();
+
+            bool wasChangesetByChangesetMode = mIsChangesetByChangesetMode;
+
+            if (GUILayout.Toggle(
+                !mIsChangesetByChangesetMode,
+                PlasticLocalization.GetString(
+                    PlasticLocalization.Name.DiffEntireBranch),
+                EditorStyles.toolbarButton))
+            {
+                mIsChangesetByChangesetMode = false;
+            }
+
+            if (GUILayout.Toggle(
+                mIsChangesetByChangesetMode,
+                PlasticLocalization.GetString(
+                    PlasticLocalization.Name.DiffByChangeset),
+                EditorStyles.toolbarButton))
+            {
+                mIsChangesetByChangesetMode = true;
+            }
+
+            GUI.enabled = true;
+
             EditorGUILayout.EndHorizontal();
+
+            // If mode changed, update the panel with the currently selected branch
+            if (wasChangesetByChangesetMode != mIsChangesetByChangesetMode)
+            {
+                List<RepObjectInfo> selectedBranches = BranchesSelection.
+                    GetSelectedRepObjectInfos(mBranchesListView);
+
+                if (selectedBranches.Count == 1)
+                {
+                    RepositorySpec repSpec = BranchesSelection.GetSelectedRepository(mBranchesListView);
+                    MountPointWithPath mountPoint = MountPointWithPath.BuildWorkspaceRootMountPoint(repSpec);
+
+                    if (mIsChangesetByChangesetMode)
+                        mChangesetByChangesetDiffPanel.UpdateInfo(mountPoint, selectedBranches[0]);
+                    else
+                    {
+                        mPropertiesPanel.UpdateInfo(selectedBranches[0], repSpec);
+                        mDiffPanel.UpdateInfo(mountPoint, selectedBranches[0]);
+                    }
+                }
+            }
         }
 
         static void DoBranchesArea(
             BranchesListView branchesListView,
             EmptyStatePanel emptyStatePanel,
-            bool isOperationRunning)
+            DateFilter dateFilter,
+            ref bool showHiddenBranchesButton,
+            SearchField searchField,
+            ProgressControlsForViews progressControls,
+            IRefreshableView view)
         {
             EditorGUILayout.BeginVertical();
 
-            GUI.enabled = !isOperationRunning;
+            DoActionsToolbar(
+                progressControls,
+                dateFilter,
+                ref showHiddenBranchesButton,
+                searchField,
+                branchesListView,
+                view);
+
+            Rect viewRect = OverlayProgress.CaptureViewRectangle();
+
+            GUI.enabled = !progressControls.IsOperationRunning();
 
             Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
 
@@ -531,13 +544,131 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             GUI.enabled = true;
 
             EditorGUILayout.EndVertical();
+
+            if (progressControls.IsOperationRunning())
+            {
+                OverlayProgress.DoOverlayProgress(
+                    viewRect,
+                    progressControls.ProgressData.ProgressPercent,
+                    progressControls.ProgressData.ProgressMessage);
+            }
         }
 
-        static void DoChangesArea(DiffPanel diffPanel)
+        static void DoActionsToolbar(
+            ProgressControlsForViews progressControls,
+            DateFilter dateFilter,
+            ref bool showHiddenBranchesButton,
+            SearchField searchField,
+            BranchesListView branchesListView,
+            IRefreshableView view)
+        {
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+
+            if (GUILayout.Button(
+                    new GUIContent(Images.GetRefreshIcon(),
+                        PlasticLocalization.Name.RefreshButton.GetString()),
+                    UnityStyles.ToolbarButtonLeft,
+                    GUILayout.Width(UnityConstants.TOOLBAR_ICON_BUTTON_WIDTH)))
+            {
+                view.Refresh();
+            }
+
+            DrawDateFilter(progressControls, dateFilter, view);
+
+            GUILayout.FlexibleSpace();
+
+            DrawShowHiddenBranchesButton(
+                progressControls, ref showHiddenBranchesButton, branchesListView, view);
+
+            GUILayout.Space(2);
+
+            DrawSearchField.For(
+                searchField,
+                branchesListView,
+                UnityConstants.SEARCH_FIELD_WIDTH);
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        static void DrawDateFilter(
+            ProgressControlsForViews progressControls,
+            DateFilter dateFilter,
+            IRefreshableView view)
+        {
+            GUI.enabled = !progressControls.IsOperationRunning();
+
+            EditorGUI.BeginChangeCheck();
+
+            dateFilter.FilterType = (DateFilter.Type)
+                EditorGUILayout.EnumPopup(
+                    dateFilter.FilterType,
+                    EditorStyles.toolbarDropDown,
+                    GUILayout.Width(100));
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                EnumPopupSetting<DateFilter.Type>.Save(
+                    dateFilter.FilterType,
+                    UnityConstants.BRANCHES_DATE_FILTER_SETTING_NAME);
+
+                view.Refresh();
+            }
+
+            GUI.enabled = true;
+        }
+
+        static void DrawShowHiddenBranchesButton(
+            ProgressControlsForViews progressControls,
+            ref bool showHiddenBranches,
+            BranchesListView branchesListView,
+            IRefreshableView view)
+        {
+            GUI.enabled = !progressControls.IsOperationRunning();
+
+            EditorGUI.BeginChangeCheck();
+
+            showHiddenBranches = GUILayout.Toggle(
+                showHiddenBranches,
+                new GUIContent(
+                    showHiddenBranches ?
+                        Images.GetUnhideIcon() :
+                        Images.GetHideIcon(),
+                    showHiddenBranches ?
+                        PlasticLocalization.Name.DontShowHiddenBranchesTooltip.GetString() :
+                        PlasticLocalization.Name.ShowHiddenBranchesTooltip.GetString()),
+                EditorStyles.toolbarButton,
+                GUILayout.Width(UnityConstants.TOOLBAR_ICON_BUTTON_WIDTH));
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                TrackFeatureUseEvent.For(
+                    BranchesSelection.GetSelectedRepository(branchesListView),
+                    TrackFeatureUseEvent.Features.Branches.ToggleShowHiddenBranches);
+
+                view.Refresh();
+            }
+
+            GUI.enabled = true;
+        }
+
+        void DoChangesArea()
         {
             EditorGUILayout.BeginVertical();
 
-            diffPanel.OnGUI();
+            DoDiffModeButtons();
+
+            if (mIsChangesetByChangesetMode)
+                mChangesetByChangesetDiffPanel.OnGUI();
+            else
+            {
+                mPropertiesPanel.OnGUI();
+                Rect separatorRect = GUILayoutUtility.GetRect(
+                    0,
+                    1,
+                    GUILayout.ExpandWidth(true));
+                EditorGUI.DrawRect(separatorRect, UnityStyles.Colors.BarBorder);
+                mDiffPanel.OnGUI();
+            }
 
             EditorGUILayout.EndVertical();
         }
@@ -576,10 +707,13 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 new BranchesViewMenu(this, mGluonIncomingChangesUpdater != null),
                 fillBranchesView,
                 fillBranchesView,
+                () => mShowHiddenBranches,
                 selectionChangedAction: OnSelectionChanged,
                 doubleClickAction: ((IBranchMenuOperations)this).DiffBranch,
                 afterItemsChangedAction: fillBranchesView.ShowContentOrEmptyState);
             mBranchesListView.Reload();
+
+            mPropertiesPanel = new PropertiesPanel(mParentWindow.Repaint);
 
             mDiffPanel = new DiffPanel(
                 wkInfo,
@@ -594,20 +728,35 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 gluonIncomingChangesUpdater,
                 parentWindow,
                 mIsGluonMode);
-        }
 
+            mChangesetByChangesetDiffPanel = new ChangesetByChangesetDiffPanel(
+                wkInfo,
+                workspaceWindow,
+                viewSwitcher,
+                historyViewLauncher,
+                refreshView,
+                mAssetStatusCache,
+                mShowDownloadPlasticExeWindow,
+                pendingChangesUpdater,
+                developerIncomingChangesUpdater,
+                gluonIncomingChangesUpdater,
+                parentWindow,
+                mIsGluonMode);
+        }
         bool mShowHiddenBranches;
 
         DateFilter mDateFilter;
         SearchField mSearchField;
         BranchesListView mBranchesListView;
         DiffPanel mDiffPanel;
+        PropertiesPanel mPropertiesPanel;
+        ChangesetByChangesetDiffPanel mChangesetByChangesetDiffPanel;
+        bool mIsChangesetByChangesetMode = false;
 
         LaunchTool.IProcessExecutor mProcessExecutor;
         LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
 
-        readonly object mSplitterState;
-
+        readonly SplitterState mSplitterState;
         readonly BranchOperations mBranchOperations;
         readonly FillBranchesView mFillBranchesView;
         readonly EmptyStatePanel mEmptyStatePanel;

@@ -2862,7 +2862,6 @@ Remarks:
     {0} | {^wkname}          Workspace name.
     {1} | {^wkpath}          Workspace path.
     {2} | {^machine}         Client machine name.
-    {3} | {^owner}           Workspace owner.
     {4} | {^guid}            Workspace GUID.
     {5} | {^type}            Workspace type: partial (gluon) or regular.
     {6} | {^dynamic}         A workspace can be dynamic (plasticfs) or static.
@@ -5067,7 +5066,7 @@ Remarks:
     simultaneously checkout.
     You can get all the locks in the server by using 'cm ^lock ^list'.
     Check the Administrator Guide to learn how locking works:
-    https://www.plasticscm.com/download/help/locking
+    https://docs.unity.com/unity-version-control/smart-locks
 
 Examples:
 

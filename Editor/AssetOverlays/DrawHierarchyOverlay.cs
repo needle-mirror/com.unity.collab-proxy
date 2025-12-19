@@ -67,7 +67,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
 #if UNITY_6000_4_OR_NEWER
         static void OnHierarchyGUIByEntityId(EntityId entityId, Rect selectionRect)
         {
-            OnHierarchyGUI(entityId, selectionRect);
+            OnHierarchyGUI((int)entityId.GetRawData(), selectionRect);
         }
 #endif
 

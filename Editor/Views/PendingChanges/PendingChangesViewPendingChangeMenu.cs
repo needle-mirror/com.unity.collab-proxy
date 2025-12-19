@@ -6,6 +6,7 @@ using UnityEngine;
 
 using Codice.Client.Commands;
 using Codice.CM.Common;
+using Codice.Utils;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Items;
 using PlasticGui.WorkspaceWindow.Open;
@@ -382,57 +383,82 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         void BuildComponents()
         {
             mOpenSubmenuItemContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.ItemsMenuItemOpen));
+                PlasticLocalization.Name.ItemsMenuItemOpen.GetString());
+
             mOpenMenuItemContent = new GUIContent(
                 UnityMenuItem.GetText(
-                    PlasticLocalization.GetString(PlasticLocalization.Name.ItemsMenuItemOpen),
+                    PlasticLocalization.Name.ItemsMenuItemOpen.GetString(),
                     string.Format("{0} {1}",
-                        PlasticLocalization.GetString(PlasticLocalization.Name.ItemsMenuItemOpen),
+                        PlasticLocalization.Name.ItemsMenuItemOpen.GetString(),
                         GetPlasticShortcut.ForOpen())));
+
             mOpenWithMenuItemContent = new GUIContent(
                 UnityMenuItem.GetText(
-                    PlasticLocalization.GetString(PlasticLocalization.Name.ItemsMenuItemOpen),
-                    PlasticLocalization.GetString(PlasticLocalization.Name.ItemsMenuItemOpenWith)));
+                    PlasticLocalization.Name.ItemsMenuItemOpen.GetString(),
+                    PlasticLocalization.Name.ItemsMenuItemOpenWith.GetString()));
+
             mOpenInExplorerMenuItemContent = new GUIContent(
                 UnityMenuItem.GetText(
-                    PlasticLocalization.GetString(PlasticLocalization.Name.ItemsMenuItemOpen),
-                    PlasticLocalization.GetString(PlasticLocalization.Name.OpenInExplorerMenuItem)));
+                    PlasticLocalization.Name.ItemsMenuItemOpen.GetString(),
+                    PlatformIdentifier.IsMac() ?
+                        PlasticLocalization.Name.ItemsMenuItemRevealInFinder.GetString() :
+                        PlasticLocalization.Name.OpenInExplorerMenuItem.GetString()));
+
             mOpenMetaMenuItemContent = new GUIContent(
                 UnityMenuItem.GetText(
-                    PlasticLocalization.GetString(PlasticLocalization.Name.ItemsMenuItemOpen),
-                    PlasticLocalization.GetString(PlasticLocalization.Name.OpenMeta)));
+                    PlasticLocalization.Name.ItemsMenuItemOpen.GetString(),
+                    PlasticLocalization.Name.OpenMeta.GetString()));
+
             mOpenMetaWithMenuItemContent = new GUIContent(
                 UnityMenuItem.GetText(
-                    PlasticLocalization.GetString(PlasticLocalization.Name.ItemsMenuItemOpen),
-                    PlasticLocalization.GetString(PlasticLocalization.Name.OpenMetaWith)));
+                    PlasticLocalization.Name.ItemsMenuItemOpen.GetString(),
+                    PlasticLocalization.Name.OpenMetaWith.GetString()));
+
             mOpenMetaInExplorerMenuItemContent = new GUIContent(
                 UnityMenuItem.GetText(
-                    PlasticLocalization.GetString(PlasticLocalization.Name.ItemsMenuItemOpen),
-                    PlasticLocalization.GetString(PlasticLocalization.Name.OpenMetaInExplorer)));
-            mDiffMenuItemContent = new GUIContent(string.Format("{0} {1}",
-                PlasticLocalization.GetString(PlasticLocalization.Name.DiffMenuItem),
-                GetPlasticShortcut.ForDiff()));
+                    PlasticLocalization.Name.ItemsMenuItemOpen.GetString(),
+                    PlatformIdentifier.IsMac() ?
+                        PlasticLocalization.Name.RevealMetaInFinder.GetString() :
+                        PlasticLocalization.Name.OpenMetaInExplorer.GetString()));
+
+            mDiffMenuItemContent = new GUIContent(
+                string.Format("{0} {1}",
+                    PlasticLocalization.Name.DiffMenuItem.GetString(),
+                    GetPlasticShortcut.ForDiff()));
+
             mDiffMetaMenuItemContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.DiffMetaMenuItem));
+                PlasticLocalization.Name.DiffMetaMenuItem.GetString());
+
             mUndoChangesMenuItemContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.PendingChangesMenuItemUndoChanges));
+                PlasticLocalization.Name.PendingChangesMenuItemUndoChanges.GetString());
+
             mUndoUnchangedMenuItemContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.UndoUnchangedButton));
+                PlasticLocalization.Name.UndoUnchangedButton.GetString());
+
             mUndoCheckoutsKeepingChangesMenuItemContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.UndoCheckoutsKeepingChanges));
+                PlasticLocalization.Name.UndoCheckoutsKeepingChanges.GetString());
+
             mCheckoutMenuItemContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.PendingChangesMenuItemCheckout));
-            mDeleteMenuItemContent = new GUIContent(string.Format("{0} {1}",
-                PlasticLocalization.GetString(PlasticLocalization.Name.PendingChangesMenuItemDelete),
-                GetPlasticShortcut.ForDelete()));
-            mCopyFilePathMenuItemContent = new GUIContent(PlasticLocalization.Name.CopyFilePathMenuItem.GetString());
-            mCopyRelativeFilePathMenuItemContent =
-                new GUIContent(PlasticLocalization.Name.CopyRelativeFilePathMenuItem.GetString());
-            mViewHistoryMenuItemContent = new GUIContent(string.Format("{0} {1}",
-                PlasticLocalization.GetString(PlasticLocalization.Name.ViewHistoryMenuItem),
-                GetPlasticShortcut.ForHistory()));
+                PlasticLocalization.Name.PendingChangesMenuItemCheckout.GetString());
+
+            mDeleteMenuItemContent = new GUIContent(
+                string.Format("{0} {1}",
+                    PlasticLocalization.Name.PendingChangesMenuItemDelete.GetString(),
+                    GetPlasticShortcut.ForDelete()));
+
+            mCopyFilePathMenuItemContent = new GUIContent(
+                PlasticLocalization.Name.CopyFilePathMenuItem.GetString());
+
+            mCopyRelativeFilePathMenuItemContent = new GUIContent(
+                PlasticLocalization.Name.CopyRelativeFilePathMenuItem.GetString());
+
+            mViewHistoryMenuItemContent = new GUIContent(
+                string.Format("{0} {1}",
+                    PlasticLocalization.Name.ViewHistoryMenuItem.GetString(),
+                    GetPlasticShortcut.ForHistory()));
+
             mViewHistoryMetaMenuItemContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.ViewHistoryMetaMenuItem));
+                PlasticLocalization.Name.ViewHistoryMetaMenuItem.GetString());
 
             mFilterMenuBuilder.BuildIgnoredSubmenuItem();
             mFilterMenuBuilder.BuildHiddenChangesSubmenuItem();

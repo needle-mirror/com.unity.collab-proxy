@@ -18,10 +18,14 @@ using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
+using Unity.PlasticSCM.Editor.Views.Diff;
+using Unity.PlasticSCM.Editor.Views.Properties;
 
 using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
-using Unity.PlasticSCM.Editor.Views.Diff;
 using GluonShelveOperations = GluonGui.WorkspaceWindow.Views.Shelves.ShelveOperations;
+#if !UNITY_6000_0_OR_NEWER
+using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.Shelves
 {
@@ -38,6 +42,7 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
         internal IShelveMenuOperations Operations { get { return this; } }
         internal IProgressControls ProgressControls { get { return mProgressControls; } }
         internal DiffPanel DiffPanel { get { return mDiffPanel; } }
+        internal OwnerFilter OwnerFilterForTesting { set { mOwnerFilter = value; } }
 
         internal ShelvesTab(
             WorkspaceInfo wkInfo,
@@ -138,57 +143,28 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
 
         internal void OnGUI()
         {
-            DoActionsToolbar(mProgressControls);
-
             PlasticSplitterGUILayout.BeginHorizontalSplit(mSplitterState);
 
             DoShelvesArea(
                 mShelvesListView,
                 mEmptyStatePanel,
-                mProgressControls.IsOperationRunning());
+                ref mOwnerFilter,
+                mSearchField,
+                mProgressControls,
+                this);
 
             EditorGUILayout.BeginHorizontal();
 
             Rect border = GUILayoutUtility.GetRect(1, 0, 1, 100000);
             EditorGUI.DrawRect(border, UnityStyles.Colors.BarBorder);
 
-            DoChangesArea(mDiffPanel);
+            DoChangesArea(
+                mPropertiesPanel,
+                mDiffPanel);
 
             EditorGUILayout.EndHorizontal();
 
             PlasticSplitterGUILayout.EndHorizontalSplit();
-        }
-
-        internal void DrawSearchFieldForTab()
-        {
-            DrawSearchField.For(
-                mSearchField,
-                mShelvesListView,
-                UnityConstants.SEARCH_FIELD_WIDTH);
-        }
-
-        internal void DrawOwnerFilter()
-        {
-            GUI.enabled = !mProgressControls.IsOperationRunning();
-
-            EditorGUI.BeginChangeCheck();
-
-            mOwnerFilter = (OwnerFilter)
-                EditorGUILayout.EnumPopup(
-                    mOwnerFilter,
-                    EditorStyles.toolbarDropDown,
-                    GUILayout.Width(100));
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                EnumPopupSetting<OwnerFilter>.Save(
-                    mOwnerFilter,
-                    UnityConstants.SHELVES_OWNER_FILTER_SETTING_NAME);
-
-                ((IRefreshableView)this).Refresh();
-            }
-
-            GUI.enabled = true;
         }
 
         void IRefreshableView.Refresh()
@@ -314,35 +290,36 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             if (selectedShelves.Count != 1)
                 return;
 
+            RepositorySpec repSpec = ShelvesSelection.GetSelectedRepository(
+                mShelvesListView);
+
+            mPropertiesPanel.UpdateInfo(selectedShelves[0], repSpec);
+
             mDiffPanel.UpdateInfo(
-                MountPointWithPath.BuildWorkspaceRootMountPoint(
-                    ShelvesSelection.GetSelectedRepository(mShelvesListView)),
+                MountPointWithPath.BuildWorkspaceRootMountPoint(repSpec),
                 selectedShelves[0]);
-        }
-
-        static void DoActionsToolbar(ProgressControlsForViews progressControls)
-        {
-            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
-
-            if (progressControls.IsOperationRunning())
-            {
-                DrawProgressForViews.ForIndeterminateProgressBar(
-                    progressControls.ProgressData);
-            }
-
-            GUILayout.FlexibleSpace();
-
-            EditorGUILayout.EndHorizontal();
         }
 
         static void DoShelvesArea(
             ShelvesListView shelvesListView,
             EmptyStatePanel emptyStatePanel,
-            bool isOperationRunning)
+            ref OwnerFilter ownerFilter,
+            SearchField searchField,
+            ProgressControlsForViews progressControls,
+            IRefreshableView view)
         {
             EditorGUILayout.BeginVertical();
 
-            GUI.enabled = !isOperationRunning;
+            DoActionsToolbar(
+                progressControls,
+                ref ownerFilter,
+                searchField,
+                shelvesListView,
+                view);
+
+            Rect viewRect = OverlayProgress.CaptureViewRectangle();
+
+            GUI.enabled = !progressControls.IsOperationRunning();
 
             Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
 
@@ -354,12 +331,87 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             GUI.enabled = true;
 
             EditorGUILayout.EndVertical();
+
+            if (progressControls.IsOperationRunning())
+            {
+                OverlayProgress.DoOverlayProgress(
+                    viewRect,
+                    progressControls.ProgressData.ProgressPercent,
+                    progressControls.ProgressData.ProgressMessage);
+            }
         }
 
-        static void DoChangesArea(DiffPanel diffPanel)
+        static void DoActionsToolbar(
+            ProgressControlsForViews progressControls,
+            ref OwnerFilter ownerFilter,
+            SearchField searchField,
+            ShelvesListView shelvesListView,
+            IRefreshableView view)
+        {
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+
+            if (GUILayout.Button(
+                    new GUIContent(Images.GetRefreshIcon(),
+                        PlasticLocalization.Name.RefreshButton.GetString()),
+                    UnityStyles.ToolbarButtonLeft,
+                    GUILayout.Width(UnityConstants.TOOLBAR_ICON_BUTTON_WIDTH)))
+            {
+                view.Refresh();
+            }
+
+            DrawOwnerFilter(progressControls, ref ownerFilter, view);
+
+            GUILayout.FlexibleSpace();
+
+            DrawSearchField.For(
+                searchField,
+                shelvesListView,
+                UnityConstants.SEARCH_FIELD_WIDTH);
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        static void DrawOwnerFilter(
+            ProgressControlsForViews progressControls,
+            ref OwnerFilter ownerFilter,
+            IRefreshableView view)
+        {
+            GUI.enabled = !progressControls.IsOperationRunning();
+
+            EditorGUI.BeginChangeCheck();
+
+            ownerFilter = (OwnerFilter)
+                EditorGUILayout.EnumPopup(
+                    ownerFilter,
+                    EditorStyles.toolbarDropDown,
+                    GUILayout.Width(100));
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                EnumPopupSetting<OwnerFilter>.Save(
+                    ownerFilter,
+                    UnityConstants.SHELVES_OWNER_FILTER_SETTING_NAME);
+
+                view.Refresh();
+            }
+
+            GUI.enabled = true;
+        }
+
+
+        static void DoChangesArea(
+            PropertiesPanel propertiesPanel,
+            DiffPanel diffPanel)
         {
             EditorGUILayout.BeginVertical();
 
+            propertiesPanel.OnGUI();
+            Rect separatorRect = GUILayoutUtility.GetRect(
+                0,
+                1,
+                GUILayout.ExpandWidth(true));
+
+            EditorGUI.DrawRect(separatorRect, UnityStyles.Colors.BarBorder);
             diffPanel.OnGUI();
 
             EditorGUILayout.EndVertical();
@@ -390,8 +442,9 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             TreeHeaderSettings.Load(
                 headerState,
                 UnityConstants.SHELVES_TABLE_SETTINGS_NAME,
-                (int)ShelvesListColumn.Name,
-                false);
+                (int)ShelvesListColumn.CreationDate,
+                false,
+                ShelvesListHeaderState.GetDefaultVisibleColumns());
 
             mShelvesListView = new ShelvesListView(
                 headerState,
@@ -403,6 +456,8 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
                 afterItemsChangedAction: fillShelvesView.ShowContentOrEmptyState);
 
             mShelvesListView.Reload();
+
+            mPropertiesPanel = new PropertiesPanel(mParentWindow.Repaint);
 
             mDiffPanel = new DiffPanel(
                 wkInfo,
@@ -425,10 +480,11 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             AllShelves
         }
 
-        object mSplitterState;
+        SplitterState mSplitterState;
         OwnerFilter mOwnerFilter;
         SearchField mSearchField;
         ShelvesListView mShelvesListView;
+        PropertiesPanel mPropertiesPanel;
         DiffPanel mDiffPanel;
         readonly FillShelvesView mFillShelvesView;
         readonly ProgressControlsForViews mProgressControls;

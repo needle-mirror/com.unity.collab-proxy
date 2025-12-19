@@ -57,6 +57,15 @@ namespace Unity.PlasticSCM.Editor.UI
                 && e.keyCode == keyCode;
         }
 
+        internal static bool IsCharacterPressed(Event e, char character)
+        {
+            if (e == null)
+                return false;
+
+            return e.type == EventType.KeyDown
+                && e.character == character;
+        }
+
         internal static bool IsControlOrCommandKeyPressed(Event e)
         {
             if (e == null)
@@ -123,6 +132,18 @@ namespace Unity.PlasticSCM.Editor.UI
 
             return (e.type == EventType.MouseDown || e.type == EventType.MouseUp)
                 && e.button == UnityConstants.RIGHT_MOUSE_BUTTON;
+        }
+    }
+
+    internal class CommandEvent
+    {
+        internal static bool IsNewKeyboardFocus(Event e)
+        {
+            if (e == null)
+                return false;
+
+            return e.type == EventType.ExecuteCommand
+                && e.commandName == "NewKeyboardFocus";
         }
     }
 }

@@ -4,12 +4,15 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-using Codice.Client.BaseCommands;
 using Codice.CM.Common;
 using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Tree;
+
+#if !UNITY_6000_0_OR_NEWER
+using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Gluon.UpdateReport
 {
@@ -45,30 +48,25 @@ namespace Unity.PlasticSCM.Editor.Gluon.UpdateReport
                 UnityConstants.GLUON_UPDATE_REPORT_TABLE_SETTINGS_NAME);
         }
 
-        protected override void OnModalGUI()
+        protected override void DoComponentsArea()
         {
-            Title(PlasticLocalization.GetString(
-                PlasticLocalization.Name.UpdateResultsTitle));
-
-            Paragraph(PlasticLocalization.GetString(
-                PlasticLocalization.Name.UpdateResultsExplanation));
-
             DoUpdateReportArea(
                 mUpdateReportListView, mErrorDetailsSplitterState);
 
             GUILayout.Space(10);
 
             DoSelectAllArea();
-
-            GUILayout.Space(20);
-
-            DoButtonsArea(mIsUpdateForcedButtonEnabled);
         }
 
         protected override string GetTitle()
         {
             return PlasticLocalization.GetString(
                 PlasticLocalization.Name.UpdateResultsTitle);
+        }
+
+        protected override string GetExplanation()
+        {
+            return PlasticLocalization.Name.UpdateResultsExplanation.GetString();
         }
 
         void OnCheckedErrorChanged()
@@ -111,7 +109,7 @@ namespace Unity.PlasticSCM.Editor.Gluon.UpdateReport
 
         void DoUpdateReportArea(
             UpdateReportListView updateReportListView,
-            object splitterState)
+            SplitterState splitterState)
         {
             PlasticSplitterGUILayout.BeginHorizontalSplit(splitterState);
 
@@ -170,31 +168,13 @@ namespace Unity.PlasticSCM.Editor.Gluon.UpdateReport
             }
         }
 
-        void DoButtonsArea(bool isUpdateForcedButtonEnabled)
+        protected override void DoOkButton()
         {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
+            GUI.enabled = mIsUpdateForcedButtonEnabled;
 
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoUpdateForcedButton(isUpdateForcedButtonEnabled);
-                    DoCloseButton();
-                    return;
-                }
+            mEnterKeyAction = GetEnterKeyAction(mIsUpdateForcedButtonEnabled);
 
-                DoCloseButton();
-                DoUpdateForcedButton(isUpdateForcedButtonEnabled);
-            }
-        }
-
-        void DoUpdateForcedButton(bool isEnabled)
-        {
-            GUI.enabled = isEnabled;
-
-            mEnterKeyAction = GetEnterKeyAction(isEnabled);
-
-            bool pressed = AcceptButton(PlasticLocalization.GetString(
+            bool pressed = NormalButton(PlasticLocalization.GetString(
                 PlasticLocalization.Name.UpdateForced));
 
             GUI.enabled = true;
@@ -203,15 +183,6 @@ namespace Unity.PlasticSCM.Editor.Gluon.UpdateReport
                 return;
 
             OkButtonAction();
-        }
-
-        void DoCloseButton()
-        {
-            if (!NormalButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.CloseButton)))
-                return;
-
-            CloseButtonAction();
         }
 
         Action GetEnterKeyAction(bool isEnabled)
@@ -237,13 +208,15 @@ namespace Unity.PlasticSCM.Editor.Gluon.UpdateReport
         }
 
         static UpdateReportDialog Create(
-            WorkspaceInfo wkInfo, 
+            WorkspaceInfo wkInfo,
             List<ErrorMessage> errors)
         {
             var instance = CreateInstance<UpdateReportDialog>();
             instance.mWkInfo = wkInfo;
             instance.mErrors = errors;
             instance.mEscapeKeyAction = instance.CloseButtonAction;
+            instance.mCancelButtonText = string.Empty;
+            instance.mCloseButtonText = PlasticLocalization.Name.CloseButton.GetString();
 
             instance.BuildComponents(instance.mWkInfo);
 
@@ -262,7 +235,7 @@ namespace Unity.PlasticSCM.Editor.Gluon.UpdateReport
 
         bool mIsSelectAllToggleChecked;
         bool mIsUpdateForcedButtonEnabled;
-        object mErrorDetailsSplitterState;
+        SplitterState mErrorDetailsSplitterState;
         Vector2 mErrorDetailsScrollPosition;
 
         UpdateReportListView mUpdateReportListView;

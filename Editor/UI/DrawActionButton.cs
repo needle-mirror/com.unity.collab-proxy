@@ -5,8 +5,6 @@ namespace Unity.PlasticSCM.Editor.UI
 {
     internal static class DrawActionButton
     {
-        internal static GUIStyle ButtonStyle { get { return mButtonStyle; } }
-
         internal static bool For(string buttonText)
         {
             GUIContent buttonContent = new GUIContent(buttonText);
@@ -14,40 +12,32 @@ namespace Unity.PlasticSCM.Editor.UI
             return ForRegularButton(buttonContent);
         }
 
-        internal static bool For(string buttonText, string buttonTooltip)
-        {
-            GUIContent buttonContent = new GUIContent(buttonText, buttonTooltip);
-
-            return ForRegularButton(buttonContent);
-        }
-
-        internal static bool ForCommentSection(string buttonText, float width)
+        internal static bool ForCommentSection(
+            string buttonText,
+            float width,
+            GUIStyle style)
         {
             GUIContent buttonContent = new GUIContent(buttonText);
 
             Rect rt = GUILayoutUtility.GetRect(
                 buttonContent,
-                mButtonStyle,
+                style,
                 GUILayout.MinWidth(width),
                 GUILayout.MaxWidth(width));
 
-            return GUI.Button(rt, buttonContent, mButtonStyle);
+            return GUI.Button(rt, buttonContent, style);
         }
 
         static bool ForRegularButton(GUIContent buttonContent)
         {
+            GUIStyle style = UnityStyles.PendingChangesTab.ActionButton;
+
             Rect rt = GUILayoutUtility.GetRect(
                 buttonContent,
-                mButtonStyle,
+                style,
                 GUILayout.MinWidth(UnityConstants.REGULAR_BUTTON_WIDTH));
 
-            return GUI.Button(rt, buttonContent, mButtonStyle);
+            return GUI.Button(rt, buttonContent, style);
         }
-
-        static readonly GUIStyle mButtonStyle =
-            new GUIStyle(EditorStyles.miniButton)
-            {
-                stretchWidth = false
-            };
     }
 }

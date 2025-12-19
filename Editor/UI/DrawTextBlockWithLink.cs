@@ -82,7 +82,11 @@ namespace Unity.PlasticSCM.Editor.UI
                         GUILayoutUtility.GetLastRect(), MouseCursor.Link);
 
                     if (buttonResult)
+                    {
                         ((Action)data.LinkActions[i])();
+                        GUIUtility.ExitGUI();
+                    }
+
                 }
 
                 if (isEndFlexibleSpaceNeeded)

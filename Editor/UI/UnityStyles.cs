@@ -64,7 +64,7 @@ namespace Unity.PlasticSCM.Editor.UI
                new Color(48f / 255, 48f / 255, 48f / 255) :
                new Color(194f / 255, 194f / 255, 194f / 255);
 
-            internal static Color CommentsBackground = EditorGUIUtility.isProSkin ?
+            internal static Color ToolbarBackground = EditorGUIUtility.isProSkin ?
                new Color(60f / 255, 60f / 255, 60f / 255) :
                new Color(160f / 255, 160f / 255, 160f / 255);
 
@@ -107,6 +107,10 @@ namespace Unity.PlasticSCM.Editor.UI
             internal static Color ToggleHoverText = EditorGUIUtility.isProSkin ?
                 new Color(129f / 255, 180f / 255, 255f / 255) :
                 new Color(7f / 255, 68f / 255, 146f / 255);
+
+            internal static Color OverlayProgressBackgroundColor = EditorGUIUtility.isProSkin ?
+                new Color(0.133f, 0.133f, 0.133f, 0.4f) :
+                new Color(0.8f, 0.8f, 0.8f, 0.4f);
 
             // see EditorGUI.kSplitLineSkinnedColor
             internal static Color SplitLineColor = EditorGUIUtility.isProSkin ?
@@ -201,23 +205,16 @@ namespace Unity.PlasticSCM.Editor.UI
                 var style = new GUIStyle(EditorStyles.textField);
                 style.wordWrap = true;
                 style.fontSize = MODAL_FONT_SIZE;
-                return style;
-            });
-
-            internal static readonly LazyStyle AcceptButtonText = new LazyStyle(() =>
-            {
-                var style = new GUIStyle(GetEditorSkin().GetStyle("WhiteLabel"));
-                style.alignment = TextAnchor.MiddleCenter;
-                style.fontSize = MODAL_FONT_SIZE + 1;
-                style.normal.background = null;
+                style.margin.top += 10;
                 return style;
             });
 
             internal static readonly LazyStyle NormalButton = new LazyStyle(() =>
             {
-                var style = new GUIStyle(GetEditorSkin().button);
+                var style = new GUIStyle(EditorStyles.miniButton);
                 style.alignment = TextAnchor.MiddleCenter;
-                style.fontSize = MODAL_FONT_SIZE;
+                style.fixedHeight = 20;
+                style.margin.top += 10;
                 return style;
             });
 
@@ -228,6 +225,16 @@ namespace Unity.PlasticSCM.Editor.UI
                 style.fixedWidth = 22;
                 style.fixedHeight = 22;
                 style.margin = new RectOffset(10, 0, 0, 0);
+                style.padding = new RectOffset(0, 0, 0, 0);
+                return style;
+            });
+
+            internal static readonly LazyStyle SmallButton = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.miniButton);
+                style.alignment = TextAnchor.MiddleCenter;
+                style.fixedWidth = 18;
+                style.fixedHeight = 18;
                 style.padding = new RectOffset(0, 0, 0, 0);
                 return style;
             });
@@ -436,22 +443,46 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal static class UVCSWindow
         {
-            internal static readonly LazyStyle TabButton = new LazyStyle(() =>
-            {
-                GUIStyle result = new GUIStyle(EditorStyles.label);
-                result.padding = EditorStyles.toolbarButton.padding;
-                result.margin = EditorStyles.toolbarButton.margin;
-                result.contentOffset = EditorStyles.toolbarButton.contentOffset;
-                result.alignment = EditorStyles.toolbarButton.alignment;
-                result.fixedHeight = EditorStyles.toolbarButton.fixedHeight;
-                return result;
-            });
 
             internal static readonly LazyStyle ActiveTabUnderline = new LazyStyle(() =>
             {
                 return CreateUnderlineStyle(
                     Colors.TabUnderline,
                     UnityConstants.ACTIVE_TAB_UNDERLINE_HEIGHT);
+            });
+
+            internal static readonly LazyStyle MiniSecondaryLabelCentered = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.miniLabel);
+                style.alignment = TextAnchor.MiddleCenter;
+                style.hover.textColor = Colors.SecondaryLabel;
+                style.normal.textColor = Colors.SecondaryLabel;
+                return style;
+            });
+        }
+
+        internal static class BreadcrumbBar
+        {
+            internal static readonly LazyStyle Icon = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.label);
+                style.padding.left = 0;
+                style.padding.right = 0;
+                style.margin.left = 0;
+                style.margin.right = 0;
+                style.fixedHeight = 18;
+                style.fixedWidth = 18;
+                return style;
+            });
+
+            internal static readonly LazyStyle Text = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.label);
+                style.padding.left = 0;
+                style.padding.right = 0;
+                style.margin.left = 3;
+                style.margin.right = 0;
+                return style;
             });
         }
 
@@ -484,7 +515,6 @@ namespace Unity.PlasticSCM.Editor.UI
             internal static readonly LazyStyle NotificationLabel = new LazyStyle(() =>
             {
                 var style = new GUIStyle(EditorStyles.label);
-                style.fontStyle = FontStyle.Bold;
                 return style;
             });
 
@@ -504,13 +534,6 @@ namespace Unity.PlasticSCM.Editor.UI
                 style.margin = new RectOffset(0, 0, 0, 0);
                 style.padding = new RectOffset(0, 0, 0, 0);
                 style.contentOffset = new Vector2(0, 2);
-                return style;
-            });
-
-            internal static readonly LazyStyle Button = new LazyStyle(() =>
-            {
-                var style = new GUIStyle(EditorStyles.miniButtonLeft);
-                style.fixedWidth = 60;
                 return style;
             });
 
@@ -548,6 +571,30 @@ namespace Unity.PlasticSCM.Editor.UI
             });
         }
 
+        internal static class Topbar
+        {
+            internal static readonly LazyStyle Button = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.miniButton);
+                style.margin.top = 1;
+                return style;
+            });
+
+            internal static readonly LazyStyle ButtonLeft = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.miniButtonLeft);
+                style.margin.top = 1;
+                return style;
+            });
+
+            internal static readonly LazyStyle ButtonRight = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.miniButtonRight);
+                style.margin.top = 1;
+                return style;
+            });
+        }
+
         internal static class DiffPanel
         {
             internal static readonly LazyStyle HeaderLabel = new LazyStyle(() =>
@@ -560,14 +607,89 @@ namespace Unity.PlasticSCM.Editor.UI
             });
         }
 
+        internal static class PropertiesPanel
+        {
+            internal static readonly LazyStyle Title = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.boldLabel);
+                style.active.textColor = style.normal.textColor;
+                style.hover.textColor = style.normal.textColor;
+                style.focused.textColor = style.normal.textColor;
+                return style;
+            });
+
+            internal static readonly LazyStyle Description = new LazyStyle(() =>
+            {
+                GUIStyle style = new GUIStyle(EditorStyles.miniLabel);
+                style.normal.textColor = Colors.SecondaryLabel;
+                style.hover.textColor = Colors.SecondaryLabel;
+                return style;
+            });
+
+            internal static readonly LazyStyle Comment = new LazyStyle(() =>
+            {
+                return new GUIStyle(EditorStyles.wordWrappedLabel);
+            });
+
+            internal static readonly LazyStyle EmptyComment = new LazyStyle(() =>
+            {
+                GUIStyle style = new GUIStyle(EditorStyles.wordWrappedLabel);
+                style.normal.textColor = Colors.SecondaryLabel;
+                style.fontStyle = FontStyle.Italic;
+                return style;
+            });
+        }
+
         internal static class PendingChangesTab
         {
+            internal static readonly LazyStyle ActionButton = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.miniButton);
+                style.stretchWidth = false;
+                style.fixedHeight = 20;
+                return style;
+            });
+
+            internal static readonly LazyStyle CheckinButton = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(ActionButton);
+                style.margin.left = 3;
+                return style;
+            });
+
+            internal static readonly LazyStyle ActionButtonLeft = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.miniButtonLeft);
+                style.stretchWidth = false;
+                style.fixedHeight = 20;
+                return style;
+            });
+
+            internal static readonly LazyStyle DropDownButton = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.miniButtonRight);
+                style.fixedHeight = 20;
+                return style;
+            });
+
             internal static readonly LazyStyle CommentPlaceHolder = new LazyStyle(() =>
             {
                 var style = new GUIStyle();
                 style.normal = new GUIStyleState() { textColor = Color.gray };
                 style.padding = new RectOffset(7, 7, 4, 4);
                 style.clipping = TextClipping.Clip;
+                style.wordWrap = true;
+                return style;
+            });
+
+            internal static readonly LazyStyle SummaryPlaceHolder = new LazyStyle(() =>
+            {
+                var style = new GUIStyle();
+                style.normal = new GUIStyleState() { textColor = Color.gray };
+                style.padding = new RectOffset(7, 7, 0, 0);
+                style.clipping = TextClipping.Clip;
+                style.fixedHeight = 28;
+                style.alignment = TextAnchor.MiddleLeft;
                 return style;
             });
 
@@ -580,13 +702,23 @@ namespace Unity.PlasticSCM.Editor.UI
                 return style;
             });
 
+            internal static readonly LazyStyle SummaryTextArea = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.textArea);
+                style.padding.left = 7;
+                style.fixedHeight = 28;
+                style.alignment = TextAnchor.MiddleLeft;
+                style.wordWrap = false;
+
+                return style;
+            });
+
             internal static readonly LazyStyle CommentTextArea = new LazyStyle(() =>
             {
                 var style = new GUIStyle(EditorStyles.textArea);
                 style.padding.left = 7;
                 style.padding.top = 5;
-                style.stretchWidth = false;
-                style.stretchHeight = false;
+                style.stretchHeight = true;
 
                 return style;
             });
@@ -604,13 +736,6 @@ namespace Unity.PlasticSCM.Editor.UI
                 style.fontSize = 10;
                 style.fontStyle = FontStyle.Bold;
                 style.contentOffset = new Vector2(0, 1.5f);
-                return style;
-            });
-
-            internal static readonly LazyStyle Comment = new LazyStyle(() =>
-            {
-                var style = new GUIStyle();
-                style.normal.background = Images.GetCommentBackgroundTexture();
                 return style;
             });
 
@@ -1056,6 +1181,13 @@ namespace Unity.PlasticSCM.Editor.UI
             });
         }
 
+        internal static readonly LazyStyle ToolbarBackground = new LazyStyle(() =>
+        {
+            var style = new GUIStyle();
+            style.normal.background = Images.GetToolbarBackgroundTexture();
+            return style;
+        });
+
         internal static readonly LazyStyle ActionToolbar = new LazyStyle(() =>
         {
             var style = new GUIStyle();
@@ -1175,6 +1307,21 @@ namespace Unity.PlasticSCM.Editor.UI
             style.stretchHeight = false;
             return style;
         });
+
+        internal static readonly LazyStyle CloseViewIconButtonStyle = new LazyStyle(() =>
+        {
+            var style = new GUIStyle(EditorStyles.iconButton);
+            style.fixedWidth = 20;
+            style.fixedHeight = 20;
+            style.padding = new RectOffset(2, 2, 2, 2);
+            return style;
+        });
+
+        internal static readonly LazyStyle ToolbarButtonLeft = new LazyStyle(() =>
+            new GUIStyle("toolbarButtonLeft"));
+
+        internal static readonly LazyStyle ToolbarButtonRight = new LazyStyle(() =>
+            new GUIStyle("toolbarButtonRight"));
 
         static GUISkin GetEditorSkin()
         {

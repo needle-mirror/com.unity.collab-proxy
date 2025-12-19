@@ -45,7 +45,6 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             CreateRepositoryDialog dialog = Create(
                 plasticWebRestApi,
                 plasticApi,
-                new ProgressControlsForDialogs(),
                 proposedRepositoryName,
                 server);
 
@@ -58,35 +57,76 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             return result;
         }
 
-        protected override void OnModalGUI()
+        protected override void DoComponentsArea()
         {
-            Title(PlasticLocalization.Name.NewRepositoryTitle.GetString());
-
-            Paragraph(PlasticLocalization.Name.NewRepositoryExplanation.GetString());
-
-            Paragraph(PlasticLocalization.Name.CreateRepositoryDialogDetailedExplanation.GetString());
-
             if (Event.current.type == EventType.Layout)
-            {
                 mProgressControls.ProgressData.CopyInto(mProgressData);
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.Label(
+                    PlasticLocalization.Name.RepositoryNameShortLabel.GetString(),
+                    GUILayout.Width(140));
+
+                Rect nameRect = GUILayoutUtility.GetRect(
+                    new GUIContent(string.Empty),
+                    EditorStyles.textField,
+                    GUILayout.ExpandWidth(true));
+
+                GUI.SetNextControlName(REPONAME_CONTROL_NAME);
+                mRepositoryName = EditorGUI.TextField(nameRect, mRepositoryName);
+
+                if (!mFocusIsAreadySet)
+                {
+                    mFocusIsAreadySet = true;
+                    GUI.FocusControl(REPONAME_CONTROL_NAME);
+                }
             }
 
             GUILayout.Space(5);
 
-            DoEntriesArea();
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.Label(
+                    PlasticLocalization.Name.RepositoryServerOrOrganizationLabel.GetString(),
+                    GUILayout.Width(140));
 
-            DrawProgressForDialogs.For(mProgressControls.ProgressData);
+                Rect serverRect = GUILayoutUtility.GetRect(
+                    new GUIContent(string.Empty),
+                    EditorStyles.textField,
+                    GUILayout.ExpandWidth(true));
 
-            GUILayout.FlexibleSpace();
+                mSelectedServer = DropDownTextField.DoDropDownTextField(
+                    mSelectedServer,
+                    PlasticLocalization.Name.RepositoryServerOrOrganizationLabel.GetString(),
+                    mKnownServers,
+                    OnServerSelected,
+                    serverRect);
+            }
 
-            DoButtonsArea();
+            if (!OrganizationsInformation.IsUnityOrganization(mSelectedServer) ||
+                !mKnownServers.Contains(mSelectedServer))
+            {
+                mSelectedProject = null;
+                mCurrentServerProjects = null;
+                return;
+            }
 
-            mProgressControls.ForcedUpdateProgress(this);
+            GUILayout.Space(5);
+
+            DoOrganizationProjectsDropdown();
+            DoCreateOrganizationProjectLink();
         }
 
         protected override string GetTitle()
         {
             return PlasticLocalization.Name.NewRepositoryTitle.GetString();
+        }
+
+        protected override string GetExplanation()
+        {
+            return PlasticLocalization.Name.NewRepositoryExplanation.GetString() + "\n\n" +
+                   PlasticLocalization.Name.CreateRepositoryDialogDetailedExplanation.GetString();
         }
 
         void KnownServersListOperations.IKnownServersList.FillValues(List<string> knownServers)
@@ -104,45 +144,6 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             OnServerSelected(mSelectedServer);
         }
 
-        void DoEntriesArea()
-        {
-            mRepositoryName = EntryBuilder.CreateTextEntry(
-                PlasticLocalization.Name.RepositoryNameShortLabel.GetString(),
-                mRepositoryName,
-                REPONAME_CONTROL_NAME,
-                ENTRY_WIDTH,
-                ENTRY_X);
-
-            if (!mFocusIsAreadySet)
-            {
-                mFocusIsAreadySet = true;
-                GUI.FocusControl(REPONAME_CONTROL_NAME);
-            }
-
-            GUILayout.Space(5);
-
-            mSelectedServer = EntryBuilder.CreateComboBoxEntry(
-                PlasticLocalization.Name.RepositoryServerOrOrganizationLabel.GetString(),
-                mSelectedServer,
-                mKnownServers,
-                OnServerSelected,
-                ENTRY_WIDTH,
-                ENTRY_X);
-
-            if (OrganizationsInformation.IsUnityOrganization(mSelectedServer) && mKnownServers.Contains(mSelectedServer))
-            {
-                GUILayout.Space(5);
-
-                DoOrganizationProjectsDropdown();
-                DoCreateOrganizationProjectLink();
-            }
-            else
-            {
-                mSelectedProject = null;
-                mCurrentServerProjects = null;
-            }
-        }
-
         void DoOrganizationProjectsDropdown()
         {
             if (mIsLoadingProjects || mSelectedProject == null)
@@ -150,13 +151,24 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                 GUI.enabled = false;
             }
 
-            EntryBuilder.CreateComboBoxEntry(
-                PlasticLocalization.Name.OrganizationProjectLabel.GetString(),
-                mSelectedProject,
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.Label(
+                    PlasticLocalization.Name.OrganizationProjectLabel.GetString(),
+                    GUILayout.Width(140));
+
+                Rect projectRect = GUILayoutUtility.GetRect(
+                    new GUIContent(string.Empty),
+                    EditorStyles.textField,
+                    GUILayout.ExpandWidth(true));
+
+                mSelectedProject = DropDownTextField.DoDropDownTextField(
+                    mSelectedProject,
+                    PlasticLocalization.Name.RepositoryServerOrOrganizationLabel.GetString(),
                 mCurrentServerProjects,
                 OnProjectSelected,
-                ENTRY_WIDTH,
-                ENTRY_X);
+                    projectRect);
+            }
 
             GUI.enabled = true;
         }
@@ -253,7 +265,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                     if (waiter.Exception != null)
                     {
                         ((IProgressControls) mProgressControls).ShowError(
-                        PlasticLocalization.Name.ErrorRetrievingServerProjects.GetString());
+                            PlasticLocalization.Name.ErrorRetrievingServerProjects.GetString());
                     }
 
                     mCurrentServerProjects = serverProjects;
@@ -284,25 +296,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                 });
         }
 
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoOkButton();
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoOkButton();
-            }
-        }
-
-        void DoOkButton()
+        protected override void DoOkButton()
         {
             if (mIsLoadingProjects ||
                 (OrganizationsInformation.IsUnityOrganization(mSelectedServer) && string.IsNullOrEmpty(mSelectedProject)))
@@ -310,23 +304,15 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                 GUI.enabled = false;
             }
 
-            if (AcceptButton(PlasticLocalization.Name.OkButton.GetString()))
+            if (NormalButton(PlasticLocalization.Name.OkButton.GetString()))
             {
-                OkButtonWithValidationAction();
+                OkButtonAction();
             }
 
             GUI.enabled = true;
         }
 
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.Name.CancelButton.GetString()))
-                return;
-
-            CancelButtonAction();
-        }
-
-        void OkButtonWithValidationAction()
+        internal override void OkButtonAction()
         {
             // If the validation goes OK, this method closes the dialog
             RepositoryCreationValidation.AsyncValidation(
@@ -339,7 +325,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
         {
             if (!OrganizationsInformation.IsUnityOrganization(mSelectedServer))
             {
-                OkButtonWithValidationAction();
+                OkButtonAction();
                 return;
             }
 
@@ -351,7 +337,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                 }
                 else
                 {
-                    OkButtonWithValidationAction();
+                    OkButtonAction();
                 }
             }
         }
@@ -372,7 +358,6 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
         static CreateRepositoryDialog Create(
             IPlasticWebRestApi plasticWebRestApi,
             IPlasticAPI plasticApi,
-            ProgressControlsForDialogs progressControls,
             string proposedRepositoryName,
             string proposedServer)
         {
@@ -381,7 +366,6 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             instance.mEscapeKeyAction = instance.CancelButtonAction;
             instance.mPlasticWebRestApi = plasticWebRestApi;
             instance.mPlasticApi = plasticApi;
-            instance.mProgressControls = progressControls;
             instance.BuildComponents(proposedRepositoryName, proposedServer);
             return instance;
         }
@@ -435,8 +419,6 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
         List<string> mKnownServers = new List<string>();
 
         ProgressControlsForDialogs.Data mProgressData = new ProgressControlsForDialogs.Data();
-
-        ProgressControlsForDialogs mProgressControls;
 
         const float ENTRY_WIDTH = 400;
         const float ENTRY_X = 175f;

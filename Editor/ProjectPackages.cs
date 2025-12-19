@@ -48,7 +48,7 @@ namespace Unity.PlasticSCM.Editor
         {
             // We cannot obtain the updated items from a dynamic workspace, so for the moment,
             // we'll force the Packages reimport for these kind of workspaces.
-            return Codice.CM.WorkspaceServer.IsDynamicWorkspace.Check(wkInfo);
+            return wkInfo.IsDynamic;
         }
 
         static bool ShouldBeResolved(IEnumerable<UpdateProgress.UpdatedItem> items)

@@ -2,6 +2,41 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.11.2] - 2025-12-19
+
+### Added
+
+- Added a cset by cset diff panel in the branches view
+- Added specific empty states for Pending/Incoming Changes with filters
+- Added empty state in the history view
+- Added branch name(s) to the branch deletion dialog
+- Added a properties panel for the selected changeset/shelveset
+
+### Changed
+
+- Renamed toolbar dropdown to comply with a 120px max width limit in 6.5
+- Displayed progress indicator overlaying the view
+- Implemented a "clever" truncation of paths
+- Redesigned the changesets view
+- Redesigned the branches view
+- Redesigned the locks view
+- Redesigned the shelves view
+- Redesigned the history view
+- Redesigned the labels view
+- Redesigned dialogs
+- Redesigned the main panel to include a top breadcrumb
+- Moved incoming and shelves notifications to the top bar
+- Updated deleted and moved overlay icons
+- Showed real indeterminate progress bar
+
+### Fixed
+
+- Fixed Editor freezes/hangs on "Reloading Domain" when entering Play Mode
+- Fixed Version control icon disappearing when opening a scene or switching Play Mode
+- Fixed Project Settings window moving to background when enabling or disabling Unity VCS in the Unity Version Control Settings
+- Fixed the delete shortcut not working on macOS
+- Fixed the menu references to Explorer instead of Finder when running on macOS
+
 ## [2.10.2] - 2025-11-06
 
 ### Fixed

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -28,17 +29,21 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
         internal string EmptyStateMessage { get { return mEmptyStatePanel.Text; } }
 
         internal LocksListView(
+            WorkspaceInfo wkInfo,
             RepositorySpec repSpec,
             LocksListHeaderState headerState,
             List<string> columnNames,
             LocksViewMenu menu,
             Action selectionChangedAction,
+            Action<IEnumerable<LockInfo>> afterItemsChangedAction,
             Action repaintAction)
         {
+            mWkInfo = wkInfo;
             mRepSpec = repSpec;
             mColumnNames = columnNames;
             mMenu = menu;
             mSelectionChangedAction = selectionChangedAction;
+            mAfterItemsChangedAction = afterItemsChangedAction;
             mEmptyStatePanel = new EmptyStatePanel(repaintAction);
             mMultiLinkLabelData =  new MultiLinkLabelData(
                 PlasticLocalization.Name.LocksTutorialLabel.GetString(),
@@ -118,6 +123,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
             {
                 LocksListViewItemGUI(
                     mRepSpec,
+                    mWkInfo.ClientPath,
                     rowHeight,
                     ((LocksListViewItem)args.item).LockInfo,
                     args,
@@ -155,7 +161,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
         {
             mEmptyStatePanel.UpdateContent(
                 explanationText,
-                multiLinkLabelData: mMultiLinkLabelData);
+                multiLinkLabelData: string.IsNullOrEmpty(searchString) ? mMultiLinkLabelData : null);
 
             Reload();
         }
@@ -194,6 +200,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
                 return;
 
             mLocksList.Filter(new Filter(searchString));
+            mAfterItemsChangedAction(mLocksList.GetLocks());
         }
 
         void Sort()
@@ -278,6 +285,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
 
         static void LocksListViewItemGUI(
             RepositorySpec repSpec,
+            string wkPath,
             float rowHeight,
             LockInfo item,
             RowGUIArgs args,
@@ -297,6 +305,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
 
                 DrawLocksListViewItem.ForCell(
                     repSpec,
+                    wkPath,
                     cellRect,
                     rowHeight,
                     item,
@@ -317,9 +326,11 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
         readonly DelayedActionBySecondsRunner mDelayedSelectionAction;
         readonly LocksSelector mLocksSelector;
         readonly Action mSelectionChangedAction;
+        readonly Action<IEnumerable<LockInfo>> mAfterItemsChangedAction;
         readonly LocksViewMenu mMenu;
         readonly List<string> mColumnNames;
         readonly RepositorySpec mRepSpec;
+        readonly WorkspaceInfo mWkInfo;
 
         const string LOCKS_TUTORIAL_LINK = "https://learn.unity.com/tutorial/6650a6abedbc2a2ccccb05a4";
     }

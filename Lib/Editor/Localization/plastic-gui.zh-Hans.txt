@@ -2168,9 +2168,6 @@ Unity VCS 内置差异比较和合并工具 (Xmerge) 的首选项：
             @sourcesymbolic:源文件的符号名称。
             @destinationsymbolic:目标文件的符号名称。
 
-            @sourcehash:根据源文件内容计算得出的 MD5 字符串。
-            @destinationhash:根据目标文件内容计算得出的 MD5 字符串。
-
             @filetype:MIME 类型，用于强调语法。
             @comparationmethod:使用的比较方法。
             @fileencoding:未检测到编码时使用的默认文件编码。
@@ -2192,10 +2189,6 @@ Unity VCS 内置差异比较和合并工具 (Xmerge) 的首选项：
             @sourcesymbolic:源文件的符号名称。
             @destinationsymbolic:目标文件的符号名称。
             @basesymbolic:基项文件的符号名称。
-
-            @sourcehash:根据源文件内容计算得出的 MD5 字符串。
-            @destinationhash:根据目标文件内容计算得出的 MD5 字符串。
-            @basehash:根据基项文件内容计算得出的 MD5 字符串。
 
             @filetype:用于强调语法的 MIME 类型。
             @fileencoding:未检测到编码时使用的默认文件编码。
@@ -4106,9 +4099,6 @@ File Move and Rename Detection
 @sourcesymbolic:要显示在控制面板中的“左侧文件”字符串
 @destinationsymbolic:要显示在控制面板中的“右侧文件”字符串
 
-@sourcehash:根据 @leftrev 文件内容计算得出的 MD5 字符串
-@destinationhash:根据 @rightrev 文件内容计算得出的 MD5 字符串
-
 @filetype:MIME 类型，用于强调语法
 @comparationmethod:使用的比较方法
 @fileencoding:未检测到编码时使用的默认文件编码
@@ -4183,9 +4173,6 @@ File Move and Rename Detection
 @sourcesymbolic:源参与者的符号名称
 @destinationsymbolic:目标参与者的符号名称
 @basesymbolic:共同上级参与者的符号名称
-@sourcehash:根据源文件内容计算得出的 MD5 字符串
-@destinationhash:根据目标文件内容计算得出的 MD5 字符串
-@basehash:根据共同上级文件内容计算得出的 MD5 字符串
 @filetype:用于强调语法的 MIME 类型
 @comparationmethod:使用的比较方法
 @fileencoding:未检测到编码时使用的默认文件编码
@@ -4514,7 +4501,7 @@ Gluon - 适用于美术师的 Unity VCS
 单击此处了解如何配置锁定规则
 
 == AddLockRuleLearnMoreUrl ==
-https://www.plasticscm.com/download/help/locking
+https://docs.unity.com/unity-version-control/smart-locks
 
 == AddLockRuleEmptyRuleMessage ==
 锁定规则不能为空。

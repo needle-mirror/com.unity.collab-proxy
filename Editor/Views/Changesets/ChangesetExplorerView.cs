@@ -20,6 +20,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         IGetFilterText,
         FillChangesetsView.IShowContentView
     {
+        internal ChangesetsListView Table => mChangesetsListView;
         internal ChangesetExplorerView(
             CreateLabelDialog parentWindow,
             WorkspaceInfo workspaceInfo,
@@ -45,8 +46,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         internal void OnGUI()
         {
-            DoTitleArea();
-
             bool isEnabled = !mProgressControls.ProgressData.IsWaitingAsyncResult;
 
             DoToolbarArea(
@@ -60,10 +59,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 mEmptyStatePanel,
                 isEnabled,
                 mParentWindow.Repaint);
-
-            DoButtonsArea();
-
-            mProgressControls.ForcedUpdateProgress(mParentWindow);
         }
 
         string IGetQueryText.Get()
@@ -106,21 +101,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 null,
                 null,
                 null);
-        }
-
-        void DoTitleArea()
-        {
-            GUILayout.BeginVertical();
-
-            GUILayout.Label(PlasticLocalization.GetString(
-                PlasticLocalization.Name.AvailableChangesets), UnityStyles.Dialog.Title);
-
-            GUILayout.Label(PlasticLocalization.GetString(
-                PlasticLocalization.Name.SelectChangesetBelow), UnityStyles.Paragraph);
-
-            GUILayout.Space(10);
-
-            GUILayout.EndVertical();
         }
 
         void DoToolbarArea(
@@ -195,65 +175,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             GUILayout.EndVertical();
         }
 
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                using (new EditorGUILayout.HorizontalScope(GUILayout.MinWidth(450)))
-                {
-                    GUILayout.Space(2);
-                    DrawProgressForDialogs.For(
-                        mProgressControls.ProgressData);
-                    GUILayout.Space(2);
-                }
-
-                GUILayout.FlexibleSpace();
-
-                DoOkButton();
-                DoBackButton();
-            }
-        }
-
-        void DoOkButton()
-        {
-            if (!GUILayout.Button(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.OkButton), UnityStyles.Dialog.NormalButton,
-                GUILayout.MinWidth(80),
-                GUILayout.Height(25)))
-                return;
-
-            OkButtonAction();
-        }
-
-        void DoBackButton()
-        {
-            if (!GUILayout.Button(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.BackButton), UnityStyles.Dialog.NormalButton,
-                GUILayout.MinWidth(80),
-                GUILayout.Height(25)))
-                return;
-
-            BackButtonAction();
-        }
-
-        void OkButtonAction()
-        {
-            ChangesetInfo changesetInfo =
-                ChangesetsSelection.GetSelectedChangeset(mChangesetsListView);
-
-            if (changesetInfo == null)
-                return;
-
-            mParentWindow.SetChangesetId(changesetInfo.ChangesetId);
-
-            mParentWindow.ToggleChangesetExplorer(false);
-        }
-
-        void BackButtonAction()
-        {
-            mParentWindow.ToggleChangesetExplorer(false);
-        }
-
         void BuildComponents(FillChangesetsView fillChangesetsView)
         {
             mSearchField = new SearchField();
@@ -269,7 +190,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 ChangesetsListHeaderState.GetDefault();
             TreeHeaderSettings.Load(headerState,
                 UnityConstants.CHANGESETS_TABLE_SETTINGS_NAME,
-                (int)ChangesetsListColumn.Name);
+                (int)ChangesetsListColumn.CreationDate);
 
             mChangesetsListView = new ChangesetsListView(
                 headerState,
@@ -278,7 +199,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 fillChangesetsView,
                 fillChangesetsView,
                 selectionChangedAction: () => {},
-                doubleClickAction: OkButtonAction,
+                doubleClickAction: mParentWindow.OkButtonAction,
                 afterItemsChangedAction: fillChangesetsView.ShowContentOrEmptyState);
 
             mChangesetsListView.Reload();

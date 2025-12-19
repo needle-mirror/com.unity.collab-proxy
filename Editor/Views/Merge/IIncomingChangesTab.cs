@@ -11,7 +11,6 @@
         void OnDisable();
         void Update();
         void OnGUI();
-        void DrawSearchFieldForTab();
         void AutoRefresh();
     }
 }

@@ -64,7 +64,7 @@ namespace Unity.PlasticSCM.Editor.Views
             get
             {
                 var baseRect = base.DefaultRect;
-                return new Rect(baseRect.x, baseRect.y, 600, 300);
+                return new Rect(baseRect.x, baseRect.y, 600, baseRect.height);
             }
         }
 
@@ -99,8 +99,9 @@ namespace Unity.PlasticSCM.Editor.Views
             bool warnOverwriteExistingShelves)
         {
             var instance = CreateInstance<ShelvePendingChangesDialog>();
-            instance.mEnterKeyAction = instance.DoSwitchAction;
+            instance.mEnterKeyAction = instance.OkButtonAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
+            instance.mOkButtonText = PlasticLocalization.Name.SwitchButton.GetString();
             instance.mSrcObject = srcObject;
             instance.mDstObject = dstObject;
             instance.mCanBringPendingChanges = canBringPendingChanges;
@@ -113,6 +114,11 @@ namespace Unity.PlasticSCM.Editor.Views
             return PlasticLocalization.Name.ShelveAndSwitchDialogTitle.GetString();
         }
 
+        protected override string GetExplanation()
+        {
+            return PlasticLocalization.Name.ShelveAndSwitchExplanation.GetString();
+        }
+
         bool AskForOverwriteConfirmation()
         {
             return GuiMessage.ShowQuestion(
@@ -123,20 +129,7 @@ namespace Unity.PlasticSCM.Editor.Views
                 null) == GuiMessage.GuiMessageResponseButton.Positive;
         }
 
-        protected override void OnModalGUI()
-        {
-            Title(PlasticLocalization.Name.ShelveAndSwitchDialogTitle.GetString());
-
-            Paragraph(PlasticLocalization.Name.ShelveAndSwitchExplanation.GetString());
-
-            DoRadioButtonsArea();
-
-            GUILayout.Space(20);
-
-            DoButtonsArea();
-        }
-
-        void DoRadioButtonsArea()
+        protected override void DoComponentsArea()
         {
             if (GUILayout.Toggle(
                     mLeaveRadioToggle,
@@ -190,41 +183,7 @@ namespace Unity.PlasticSCM.Editor.Views
                 UnityStyles.Dialog.MessageText);
         }
 
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoSwitchButton();
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoSwitchButton();
-            }
-        }
-
-        void DoSwitchButton()
-        {
-            if (!NormalButton(PlasticLocalization.Name.SwitchButton.GetString()))
-                return;
-
-            DoSwitchAction();
-        }
-
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.Name.CancelButton.GetString()))
-                return;
-
-            CancelButtonAction();
-        }
-
-        void DoSwitchAction()
+        internal override void OkButtonAction()
         {
             if (mWarnOverwriteExistingShelves &&
                 mLeaveRadioToggle &&
@@ -237,7 +196,7 @@ namespace Unity.PlasticSCM.Editor.Views
                 return;
             }
 
-            OkButtonAction();
+            base.OkButtonAction();
         }
 
         static void DrawTabbedContent(Action drawContent)

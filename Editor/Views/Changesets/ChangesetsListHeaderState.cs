@@ -12,12 +12,11 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 {
     internal enum ChangesetsListColumn
     {
-        Name,
+        Comment,
         CreationDate,
         CreatedBy,
-        Comment,
         Branch,
-        Repository,
+        Id,
         Guid
     }
 
@@ -32,12 +31,11 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         internal static List<string> GetColumnNames()
         {
             List<string> result = new List<string>();
-            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.NameColumn));
+            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CreationDateColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CreatedByColumn));
-            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.BranchColumn));
-            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.RepositoryColumn));
+            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.NameColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.GuidColumn));
             return result;
         }
@@ -46,23 +44,32 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         {
             switch (column)
             {
-                case ChangesetsListColumn.Name:
-                    return PlasticLocalization.GetString(PlasticLocalization.Name.NameColumn);
+                case ChangesetsListColumn.Comment:
+                    return PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn);
                 case ChangesetsListColumn.CreationDate:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.CreationDateColumn);
                 case ChangesetsListColumn.CreatedBy:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.CreatedByColumn);
-                case ChangesetsListColumn.Comment:
-                    return PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn);
                 case ChangesetsListColumn.Branch:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.BranchColumn);
-                case ChangesetsListColumn.Repository:
-                    return PlasticLocalization.GetString(PlasticLocalization.Name.RepositoryColumn);
+                case ChangesetsListColumn.Id:
+                    return PlasticLocalization.GetString(PlasticLocalization.Name.NameColumn);
                 case ChangesetsListColumn.Guid:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.GuidColumn);
                 default:
                     return null;
             }
+        }
+
+        internal static int[] GetDefaultVisibleColumns()
+        {
+            return new int[]
+            {
+                (int)ChangesetsListColumn.Comment,
+                (int)ChangesetsListColumn.CreationDate,
+                (int)ChangesetsListColumn.CreatedBy,
+                (int)ChangesetsListColumn.Branch,
+            };
         }
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()
@@ -84,10 +91,10 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             {
                 new Column()
                 {
-                    width = UnityConstants.ChangesetsColumns.CHANGESET_NUMBER_WIDTH,
-                    minWidth = UnityConstants.ChangesetsColumns.CHANGESET_NUMBER_MIN_WIDTH,
+                    width = UnityConstants.ChangesetsColumns.COMMENT_WIDTH,
+                    minWidth = UnityConstants.ChangesetsColumns.COMMENT_MIN_WIDTH,
                     headerContent = new GUIContent(
-                        GetColumnName(ChangesetsListColumn.Name)),
+                        GetColumnName(ChangesetsListColumn.Comment)),
                     allowToggleVisibility = false,
                     sortingArrowAlignment = TextAlignment.Right
                 },
@@ -109,14 +116,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 },
                 new Column()
                 {
-                    width = UnityConstants.ChangesetsColumns.COMMENT_WIDTH,
-                    minWidth = UnityConstants.ChangesetsColumns.COMMENT_MIN_WIDTH,
-                    headerContent = new GUIContent(
-                        GetColumnName(ChangesetsListColumn.Comment)),
-                    sortingArrowAlignment = TextAlignment.Right
-                },
-                new Column()
-                {
                     width = UnityConstants.ChangesetsColumns.BRANCH_WIDTH,
                     minWidth = UnityConstants.ChangesetsColumns.BRANCH_MIN_WIDTH,
                     headerContent = new GUIContent(
@@ -125,10 +124,10 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 },
                 new Column()
                 {
-                    width = UnityConstants.ChangesetsColumns.REPOSITORY_WIDTH,
-                    minWidth = UnityConstants.ChangesetsColumns.REPOSITORY_MIN_WIDTH,
+                    width = UnityConstants.ChangesetsColumns.CHANGESET_NUMBER_WIDTH,
+                    minWidth = UnityConstants.ChangesetsColumns.CHANGESET_NUMBER_MIN_WIDTH,
                     headerContent = new GUIContent(
-                        GetColumnName(ChangesetsListColumn.Repository)),
+                        PlasticLocalization.Name.IdColumn.GetString()),
                     sortingArrowAlignment = TextAlignment.Right
                 },
                 new Column()

@@ -380,8 +380,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive
 
             InitializeCloudDriveOnForceToReOpen(newWindow);
 
-            if (DockEditorWindow.IsAvailable())
-                DockEditorWindow.To(dockWindow, newWindow);
+            DockEditorWindow.To(dockWindow, newWindow);
 
             newWindow.Show();
             newWindow.Focus();

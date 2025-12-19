@@ -7,7 +7,10 @@ using PlasticGui;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.QueryViews.Branches;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.Progress;
+
+#if !UNITY_6000_0_OR_NEWER
+using EditorGUI = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.EditorGUI;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
 {
@@ -28,16 +31,16 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
 
         protected override string GetTitle()
         {
-            return PlasticLocalization.Name.CreateChildBranchTitle.GetString();
+            return mAllowToChangeBaseBranch ?
+                PlasticLocalization.Name.CreateChildBranchBasedOnTitle.GetString() :
+                PlasticLocalization.Name.CreateChildBranchTitle.GetString();
         }
 
-        protected override void OnModalGUI()
+        protected override void DoComponentsArea()
         {
-            DoTitleArea();
+            DoTopArea();
 
             DoFieldsArea();
-
-            DoButtonsArea();
         }
 
         internal static BranchCreationData CreateBranchFromMainOrCurrentBranch(
@@ -177,23 +180,6 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
             return result;
         }
 
-        void DoTitleArea()
-        {
-            GUILayout.BeginVertical();
-
-            string title = mAllowToChangeBaseBranch ?
-                PlasticLocalization.Name.CreateChildBranchBasedOnTitle.GetString() :
-                PlasticLocalization.Name.CreateChildBranchTitle.GetString();
-
-            Title(title);
-
-            GUILayout.Space(5);
-
-            DoTopArea();
-
-            GUILayout.EndVertical();
-        }
-
         void DoTopArea()
         {
             if (mAllowToChangeBaseBranch)
@@ -261,16 +247,19 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
                     PlasticLocalization.Name.BranchNameEntry.GetString(),
                     GUILayout.Width(100));
 
+                Rect nameRect = GUILayoutUtility.GetRect(
+                    new GUIContent(string.Empty),
+                    EditorStyles.textField,
+                    GUILayout.ExpandWidth(true));
+
                 GUI.SetNextControlName(NAME_FIELD_CONTROL_NAME);
-                mNewBranchName = GUILayout.TextField(mNewBranchName);
+                mNewBranchName = UnityEditor.EditorGUI.TextField(nameRect, mNewBranchName);
 
                 if (!mWasNameFieldFocused)
                 {
-                    EditorGUI.FocusTextInControl(NAME_FIELD_CONTROL_NAME);
+                    UnityEditor.EditorGUI.FocusTextInControl(NAME_FIELD_CONTROL_NAME);
                     mWasNameFieldFocused = true;
                 }
-
-                GUILayout.Space(5);
             }
 
             GUILayout.Space(5);
@@ -284,56 +273,35 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
                         PlasticLocalization.Name.CommentsEntry.GetString(),
                         GUILayout.Width(100));
                 }
+
+                Rect commentRect = GUILayoutUtility.GetRect(
+                    new GUIContent(string.Empty),
+                    EditorStyles.textArea,
+                    GUILayout.Height(100),
+                    GUILayout.ExpandWidth(true));
+
                 GUI.SetNextControlName(COMMENT_TEXTAREA_CONTROL_NAME);
-                mComment = GUILayout.TextArea(mComment, GUILayout.Height(100));
-                GUILayout.Space(5);
+                mComment = EditorGUI.ScrollableTextAreaInternal(
+                    commentRect,
+                    mComment,
+                    ref mScrollPosition,
+                    EditorStyles.textArea);
             }
 
-            GUILayout.Space(5);
+            GUILayout.Space(15);
 
-            mSwitchToBranch = GUILayout.Toggle(mSwitchToBranch, PlasticLocalization.Name.SwitchToBranchCheckButton.GetString());
+            mSwitchToBranch = GUILayout.Toggle(
+                mSwitchToBranch,
+                PlasticLocalization.Name.SwitchToBranchCheckButton.GetString());
 
             GUILayout.Space(5);
 
             GUILayout.EndVertical();
         }
 
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                using (new EditorGUILayout.HorizontalScope(GUILayout.MinWidth(500)))
-                {
-                    GUILayout.Space(2);
-                    DrawProgressForDialogs.For(
-                        mProgressControls.ProgressData);
-                    GUILayout.Space(2);
-                }
+        Vector2 mScrollPosition;
 
-                GUILayout.FlexibleSpace();
-
-                DoCreateButton();
-                DoCancelButton();
-            }
-        }
-
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.Name.CancelButton.GetString()))
-                return;
-
-            CancelButtonAction();
-        }
-
-        void DoCreateButton()
-        {
-            if (!NormalButton(PlasticLocalization.Name.CreateButton.GetString()))
-                return;
-
-            CreateButtonAction();
-        }
-
-        void CreateButtonAction()
+        internal override void OkButtonAction()
         {
             BranchCreationValidation.AsyncValidation(
                 BuildCreationData(), this, mProgressControls);
@@ -359,9 +327,10 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
 
             var instance = CreateInstance<CreateBranchDialog>();
             instance.IsResizable = false;
-            instance.mEnterKeyAction = instance.CreateButtonAction;
+            instance.mEnterKeyAction = instance.OkButtonAction;
             instance.AddControlConsumingEnterKey(COMMENT_TEXTAREA_CONTROL_NAME);
             instance.mEscapeKeyAction = instance.CloseButtonAction;
+            instance.mOkButtonText = PlasticLocalization.Name.CreateButton.GetString();
             instance.mRepositorySpec = repSpec;
             instance.mSelectedBaseBranch = baseBranch;
             instance.mMainBranch = mainBranch;
@@ -371,7 +340,6 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
                 string.Empty : proposedBranchName;
             instance.mComment = "";
             instance.mSwitchToBranch = true;
-            instance.mProgressControls = new ProgressControlsForDialogs();
             instance.mExplanation = explanation;
             instance.mChangesetId = changesetId;
             return instance;
@@ -388,8 +356,6 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
                 null,
                 mSwitchToBranch);
         }
-
-        ProgressControlsForDialogs mProgressControls;
 
         RepositorySpec mRepositorySpec;
         BranchInfo mSelectedBaseBranch;

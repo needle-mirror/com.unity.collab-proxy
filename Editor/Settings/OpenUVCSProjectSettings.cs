@@ -1,10 +1,13 @@
 using System;
-using System.Reflection;
 
 using UnityEditor;
 
 using Codice.Client.Common.Threading;
 using Unity.PlasticSCM.Editor.UI;
+
+#if !UNITY_6000_0_OR_NEWER
+using SettingsWindow = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SettingsWindow;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Settings
 {
@@ -52,36 +55,22 @@ namespace Unity.PlasticSCM.Editor.Settings
 
         internal static UVCSProjectSettingsProvider OpenInUVCSProjectSettings()
         {
-            EditorWindow settingsWindow = OpenProjectSettingsWithUVCSSelected();
+            SettingsWindow settingsWindow = OpenProjectSettingsWithUVCSSelected();
             return GetUVCSProvider(settingsWindow);
         }
 
-        internal static EditorWindow OpenProjectSettingsWithUVCSSelected()
+        internal static SettingsWindow OpenProjectSettingsWithUVCSSelected()
         {
-            return SettingsService.OpenProjectSettings(
-                UnityConstants.PROJECT_SETTINGS_TAB_PATH);
+            return SettingsWindow.Show(SettingsScope.Project, UnityConstants.PROJECT_SETTINGS_TAB_PATH);
         }
 
         internal static UVCSProjectSettingsProvider GetUVCSProvider(
-            EditorWindow settingsWindow)
+            SettingsWindow settingsWindow)
         {
             try
             {
-                /* The following code must be compiled only for editor versions that allow our code
-                 to access internal code from the editor, otherwise the ProjectSettingsWindow is not
-                 accessible and the compilation fails.
-                 Unity 6000.3.0a3 */
-#if UNITY_6000_3_OR_NEWER
-                ProjectSettingsWindow projectSettingsWindow = settingsWindow as ProjectSettingsWindow;
-                return projectSettingsWindow.GetCurrentProvider() as UVCSProjectSettingsProvider;
-#else
-                MethodInfo getCurrentProviderMethod = settingsWindow.GetType().GetMethod(
-                    "GetCurrentProvider",
-                    BindingFlags.Instance | BindingFlags.NonPublic);
-
-                return getCurrentProviderMethod.Invoke(
-                    settingsWindow, null) as UVCSProjectSettingsProvider;
-#endif
+                SettingsProvider provider = settingsWindow.GetCurrentProvider();
+                return provider as UVCSProjectSettingsProvider;
             }
             catch (Exception ex)
             {

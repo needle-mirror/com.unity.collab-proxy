@@ -7,7 +7,6 @@ using UnityEngine;
 
 using Codice.Client.BaseCommands;
 using Codice.Client.Common;
-using Codice.Client.Common.EventTracking;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.LogWrapper;
@@ -21,7 +20,6 @@ using PlasticGui.WorkspaceWindow.NotificationBar;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetMenu;
 using Unity.PlasticSCM.Editor.AssetUtils;
-using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.Configuration;
 using Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome;
 using Unity.PlasticSCM.Editor.Developer;
@@ -30,6 +28,7 @@ using Unity.PlasticSCM.Editor.Settings;
 using Unity.PlasticSCM.Editor.StatusBar;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.Toolbar;
+using Unity.PlasticSCM.Editor.Topbar;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Avatar;
 using Unity.PlasticSCM.Editor.UI.Progress;
@@ -46,7 +45,6 @@ namespace Unity.PlasticSCM.Editor
         CheckShelvedChanges.IAutoRefreshApplyShelveView,
         CreateWorkspaceView.ICreateWorkspaceListener
     {
-
         internal WelcomeView WelcomeViewForTesting { get { return mWelcomeView; } }
 
         internal WorkspaceWindow WorkspaceWindowForTesting { get { return mWorkspaceWindow; } }
@@ -67,7 +65,7 @@ namespace Unity.PlasticSCM.Editor
 
         internal IShelvedChangesUpdater ShelvedChangesUpdater { get { return mShelvedChangesUpdater; } }
 
-        internal WindowStatusBar.IIncomingChangesNotification IncomingChangesNotification { get { return mIncomingChangesNotification; } }
+        internal NotificationsArea.IIncomingChangesNotification IncomingChangesNotification { get { return mIncomingChangesNotification; } }
 
         internal WelcomeView GetWelcomeView()
         {
@@ -261,7 +259,7 @@ namespace Unity.PlasticSCM.Editor
 
                 mViewSwitcher.SetWorkspaceWindow(mWorkspaceWindow);
 
-                mWindowStatusBar.Initialize(
+                mTopbar.Initialize(
                     mWorkspaceWindow,
                     mIncomingChangesNotification,
                     mShelvedChangesNotification);
@@ -332,11 +330,6 @@ namespace Unity.PlasticSCM.Editor
                     mIsGluonMode);
 
                 mLastUpdateTime = EditorApplication.timeSinceStartup;
-
-                mViewSwitcher.ShowBranchesViewIfNeeded();
-                mViewSwitcher.ShowShelvesViewIfNeeded();
-                mViewSwitcher.ShowLabelsViewIfNeeded();
-                mViewSwitcher.ShowLocksViewIfNeeded();
 
                 MergeInProgress.ShowIfNeeded(mWkInfo, mViewSwitcher);
 
@@ -565,12 +558,14 @@ namespace Unity.PlasticSCM.Editor
                 //DrawGuiModeSwitcher.ForMode(
                 //    isGluonMode, plasticClient, changesTreeView, editorWindow);
 
-                DoTabToolbar(
+                mTopbar.OnGUI(
                     mWkInfo,
                     mRepSpec,
-                    mViewSwitcher,
                     mShowDownloadPlasticExeWindow,
                     mProcessExecutor,
+                    mWorkspaceWindow.WorkingObjectName,
+                    mWorkspaceWindow.WorkingObjectFullSpec,
+                    mWorkspaceWindow.WorkingObjectComment,
                     mIsGluonMode,
                     mIsCloudOrganization,
                     mIsUnityOrganization,
@@ -578,7 +573,7 @@ namespace Unity.PlasticSCM.Editor
                     PackageInfo.NAME,
                     PackageInfo.Data);
 
-                mViewSwitcher.TabViewGUI(GetCurrentUser());
+                DoContent();
 
                 if (mWorkspaceWindow.IsOperationInProgress())
                     DrawProgressForOperations.For(
@@ -717,10 +712,8 @@ namespace Unity.PlasticSCM.Editor
             bool bIsGluonMode)
         {
             mIncomingChangesNotification = bIsGluonMode ?
-                (WindowStatusBar.IIncomingChangesNotification)new Gluon.IncomingChangesNotification(
-                    wkInfo, viewSwitcher) :
-                (WindowStatusBar.IIncomingChangesNotification)new IncomingChangesNotification(
-                    wkInfo, viewSwitcher);
+                new Gluon.IncomingChangesNotification(wkInfo, viewSwitcher) :
+                new IncomingChangesNotification(wkInfo, viewSwitcher);
         }
 
         void InitializeShelvedChanges(
@@ -743,7 +736,7 @@ namespace Unity.PlasticSCM.Editor
                     wkInfo,
                     repSpec,
                     viewSwitcher,
-                    this) as WindowStatusBar.IShelvedChangesNotification;
+                    this);
 
             mShelvedChangesUpdater = new ShelvedChangesUpdater(
                 wkInfo,
@@ -812,458 +805,19 @@ namespace Unity.PlasticSCM.Editor
             GUI.enabled = true;
         }
 
-        static void DoTabToolbar(
-            WorkspaceInfo workspaceInfo,
-            RepositorySpec repSpec,
-            ViewSwitcher viewSwitcher,
-            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
-            LaunchTool.IProcessExecutor processExecutor,
-            bool isGluonMode,
-            bool isCloudOrganization,
-            bool isUnityOrganization,
-            bool isUGOSubscription,
-            string packageName,
-            PackageInfo.VersionData versionData)
+        void DoContent()
         {
-            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+            GUILayout.BeginHorizontal();
 
-            viewSwitcher.TabButtonsGUI();
+            GUILayout.BeginVertical();
+            mViewSwitcher.SidebarButtonsGUI();
+            GUILayout.EndVertical();
 
-            GUILayout.FlexibleSpace();
+            GUILayout.BeginVertical();
+            mViewSwitcher.SelectedViewGUI(GetCurrentUser());
+            GUILayout.EndVertical();
 
-            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
-
-            GUILayout.Space(2);
-
-            DoSearchField(viewSwitcher);
-
-            GUILayout.Space(2);
-
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
-
-            DoToolbarButtons(
-                workspaceInfo,
-                repSpec,
-                viewSwitcher,
-                showDownloadPlasticExeWindow,
-                processExecutor,
-                isGluonMode,
-                isCloudOrganization,
-                isUnityOrganization,
-                isUGOSubscription,
-                packageName,
-                versionData);
-
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.EndHorizontal();
-        }
-
-        static void DoSearchField(ViewSwitcher viewSwitcher)
-        {
-            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.PendingChanges))
-            {
-                viewSwitcher.PendingChangesTab.DrawSearchFieldForTab();
-                return;
-            }
-
-            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.IncomingChanges))
-            {
-                viewSwitcher.IncomingChangesTab.DrawSearchFieldForTab();
-                return;
-            }
-
-            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Changesets))
-            {
-                viewSwitcher.ChangesetsTab.DrawSearchFieldForTab();
-                return;
-            }
-
-            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Branches))
-            {
-                viewSwitcher.BranchesTab.DrawSearchFieldForTab();
-                return;
-            }
-
-            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Shelves))
-            {
-                viewSwitcher.ShelvesTab.DrawSearchFieldForTab();
-                return;
-            }
-
-            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Locks))
-            {
-                viewSwitcher.LocksTab.DrawSearchFieldForTab();
-                return;
-            }
-
-            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Merge))
-            {
-                viewSwitcher.MergeTab.DrawSearchFieldForTab();
-                return;
-            }
-
-            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.History))
-            {
-                viewSwitcher.HistoryTab.DrawSearchFieldForTab();
-                return;
-            }
-
-            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Labels))
-            {
-                viewSwitcher.LabelsTab.DrawSearchFieldForTab();
-                return;
-            }
-        }
-
-        static void DoToolbarButtons(
-            WorkspaceInfo wkInfo,
-            RepositorySpec repSpec,
-            ViewSwitcher viewSwitcher,
-            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
-            LaunchTool.IProcessExecutor processExecutor,
-            bool isGluonMode,
-            bool isCloudOrganization,
-            bool isUnityOrganization,
-            bool isUGOSubscription,
-            string packageName,
-            PackageInfo.VersionData versionData)
-        {
-            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Changesets))
-            {
-                viewSwitcher.ChangesetsTab.DrawDateFilter();
-            }
-            else if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Branches))
-            {
-                viewSwitcher.BranchesTab.DrawShowHiddenBranchesButton();
-                viewSwitcher.BranchesTab.DrawDateFilter();
-            }
-            else if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Labels))
-            {
-                viewSwitcher.LabelsTab.DrawDateFilter();
-            }
-            else
-            {
-                DrawStaticElement.Empty();
-            }
-
-            if (viewSwitcher.IsViewSelected(ViewSwitcher.SelectedTab.Shelves))
-            {
-                viewSwitcher.ShelvesTab.DrawOwnerFilter();
-            }
-
-            if (DrawToolbarButton(
-                    Images.GetRefreshIcon(),
-                    PlasticLocalization.Name.RefreshButton.GetString()))
-            {
-                viewSwitcher.RefreshSelectedView();
-            }
-
-            if (isGluonMode)
-            {
-                if (DrawActionButton.For(PlasticLocalization.Name.Configure.GetString()))
-                {
-                    LaunchTool.OpenWorkspaceConfiguration(
-                        showDownloadPlasticExeWindow, processExecutor, wkInfo, isGluonMode);
-                }
-            }
-            else
-            {
-                DrawStaticElement.Empty();
-            }
-
-            if (DrawToolbarButton(
-                    Images.GetShelveIcon(),
-                    PlasticLocalization.Name.ShowShelvesButton.GetString()))
-            {
-                TrackFeatureUseEvent.For(
-                    repSpec,
-                    TrackFeatureUseEvent.Features.UnityPackage.ShowShelvesViewFromToolbarButton);
-
-                viewSwitcher.ShowShelvesView();
-            }
-
-            if (DrawToolbarButton(
-                    Images.GetBranchesIcon(),
-                    PlasticLocalization.Name.Branches.GetString()))
-            {
-                viewSwitcher.ShowBranchesView();
-            }
-
-            if (!isGluonMode)
-            {
-                if (DrawToolbarButton(
-                        Images.GetBranchExplorerIcon(),
-                        PlasticLocalization.Name.BranchExplorerMenu.GetString()))
-                {
-                    LaunchTool.OpenBranchExplorer(
-                        showDownloadPlasticExeWindow, processExecutor, wkInfo, isGluonMode);
-                }
-            }
-            else
-            {
-                DrawStaticElement.Empty();
-            }
-
-            if (!isGluonMode)
-            {
-                if (DrawToolbarButton(
-                        Images.GetLabelIcon(),
-                        PlasticLocalization.Name.ShowLabelsButton.GetString()))
-                {
-                    viewSwitcher.ShowLabelsView();
-                }
-            }
-            else
-            {
-                DrawStaticElement.Empty();
-            }
-
-            if (DrawToolbarButton(
-                    Images.GetLockIcon(),
-                    PlasticLocalization.Name.ShowLocks.GetString()))
-            {
-                viewSwitcher.ShowLocksView();
-            }
-
-            if (isCloudOrganization)
-            {
-                if (DrawToolbarButton(
-                    Images.GetInviteUsersIcon(),
-                    isUnityOrganization
-                        ? PlasticLocalization.Name.InviteMembersToProject.GetString()
-                        : PlasticLocalization.Name.InviteMembersToOrganization.GetString()))
-                {
-                    InviteMembers(repSpec);
-                }
-            }
-            else
-            {
-                DrawStaticElement.Empty();
-            }
-
-            if (isCloudOrganization && isUGOSubscription)
-            {
-                if (DrawToolbarTextButton(PlasticLocalization.Name.UpgradePlan.GetString()))
-                {
-                    OpenDevOpsUpgradePlanUrl();
-                }
-            }
-            else
-            {
-                DrawStaticElement.Empty();
-            }
-
-            if (DrawToolbarButton(
-                    GetSettingsMenuIcon(PackageInfo.Data),
-                    GetSettingsMenuTooltip(PackageInfo.Data)))
-            {
-                ShowSettingsContextMenu(
-                    showDownloadPlasticExeWindow,
-                    processExecutor,
-                    wkInfo,
-                    repSpec,
-                    isGluonMode,
-                    isCloudOrganization,
-                    packageName,
-                    versionData);
-            }
-        }
-
-        static bool DrawToolbarButton(Texture icon, string tooltip)
-        {
-            return GUILayout.Button(
-                new GUIContent(icon, tooltip),
-                EditorStyles.toolbarButton,
-                GUILayout.Width(26));
-        }
-
-        static bool DrawToolbarTextButton(string text)
-        {
-            return GUILayout.Button(
-                new GUIContent(text, string.Empty),
-                EditorStyles.toolbarButton);
-        }
-
-        static void InviteMembers(RepositorySpec repSpec)
-        {
-            string organizationName = ServerOrganizationParser.GetOrganizationFromServer(repSpec.Server);
-
-            CurrentUserAdminCheckResponse response = null;
-
-            IThreadWaiter waiter = ThreadWaiter.GetWaiter(50);
-            waiter.Execute(
-                /*threadOperationDelegate*/
-                delegate
-                {
-                    string authToken = AuthToken.GetForServer(repSpec.Server);
-
-                    if (string.IsNullOrEmpty(authToken))
-                    {
-                        return;
-                    }
-
-                    response = WebRestApiClient.PlasticScm.IsUserAdmin(organizationName, authToken);
-                },
-                /*afterOperationDelegate*/
-                delegate
-                {
-                    if (waiter.Exception != null)
-                    {
-                        ExceptionsHandler.LogException("IsUserAdmin", waiter.Exception);
-
-                        OpenUnityDashboardInviteUsersUrl(repSpec);
-                        return;
-                    }
-
-                    if (response == null)
-                    {
-                        mLog.DebugFormat(
-                            "Error checking if the user is the organization admin for {0}",
-                            organizationName);
-
-                        OpenUnityDashboardInviteUsersUrl(repSpec);
-                        return;
-                    }
-
-                    if (response.Error != null)
-                    {
-                        mLog.DebugFormat(
-                          "Error checking if the user is the organization admin: {0}",
-                          string.Format("Unable to get IsUserAdminResponse: {0} [code {1}]",
-                              response.Error.Message,
-                              response.Error.ErrorCode));
-
-                        OpenUnityDashboardInviteUsersUrl(repSpec);
-                        return;
-                    }
-
-                    if (!response.IsCurrentUserAdmin)
-                    {
-                        GuiMessage.ShowInformation(
-                            PlasticLocalization.GetString(PlasticLocalization.Name.InviteMembersTitle),
-                            PlasticLocalization.GetString(PlasticLocalization.Name.InviteMembersToOrganizationNotAdminError));
-
-                        return;
-                    }
-
-                    OpenUnityDashboardInviteUsersUrl(repSpec);
-                });
-        }
-
-        static void OpenUnityDashboardInviteUsersUrl(RepositorySpec repSpec)
-        {
-            OpenInviteUsersPage.Run(repSpec, UnityUrl.UnityDashboard.UnityCloudRequestSource.Editor);
-        }
-
-        static Texture GetSettingsMenuIcon(PackageInfo.VersionData versionData)
-        {
-            if (!versionData.IsLatestVersion())
-            {
-                return Images.GetPackageUpdateAvailableIcon();
-            }
-
-            return Images.GetSettingsIcon();
-        }
-
-        static string GetSettingsMenuTooltip(PackageInfo.VersionData versionData)
-        {
-            if (!versionData.IsLatestVersion())
-            {
-                return PlasticLocalization.Name.UnityUpdateVersionControlPackageTooltip
-                    .GetString(versionData.Version, versionData.LatestVersion);
-            }
-
-            return PlasticLocalization.Name.UnityVersionControlPackageIsUpToDateTooltip
-                .GetString(versionData.Version);
-        }
-
-        static void ShowSettingsContextMenu(
-            LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
-            LaunchTool.IProcessExecutor processExecutor,
-            WorkspaceInfo wkInfo,
-            RepositorySpec repSpec,
-            bool isGluonMode,
-            bool isCloudOrganization,
-            string packageName,
-            PackageInfo.VersionData versionData)
-        {
-            GenericMenu menu = new GenericMenu();
-
-            string openToolText = isGluonMode ?
-                PlasticLocalization.Name.OpenInGluon.GetString() :
-                PlasticLocalization.Name.OpenInDesktopApp.GetString();
-
-            menu.AddItem(
-                new GUIContent(openToolText),
-                false,
-                () => LaunchTool.OpenGUIForMode(
-                    showDownloadPlasticExeWindow,
-                    processExecutor,
-                    wkInfo,
-                    isGluonMode));
-
-            if (isCloudOrganization)
-            {
-                menu.AddItem(
-                    new GUIContent(PlasticLocalization.Name.OpenInUnityCloud.GetString()),
-                    false,
-                    () => OpenUnityCloudRepository.Run(wkInfo));
-            }
-
-            menu.AddSeparator(string.Empty);
-
-            menu.AddItem(
-                new GUIContent(PlasticLocalization.Name.Settings.GetString()),
-                false,
-                OpenUVCSProjectSettings.ByDefault);
-
-            menu.AddItem(
-                new GUIContent(UVCSAssetModificationProcessor.IsManualCheckoutEnabled ?
-                    PlasticLocalization.Name.DisableManualCheckout.GetString() :
-                    PlasticLocalization.Name.EnableManualCheckout.GetString()),
-                false,
-                () => UVCSAssetModificationProcessor.ToggleManualCheckoutPreference(repSpec));
-
-            AddUnityVersionControlPackageMenuItems(packageName, versionData, menu);
-
-            menu.ShowAsContext();
-        }
-
-        static void AddUnityVersionControlPackageMenuItems(
-            string packageName,
-            PackageInfo.VersionData versionData,
-            GenericMenu menu)
-        {
-            menu.AddSeparator(string.Empty);
-
-            if (!versionData.IsLatestVersion())
-            {
-                menu.AddItem(
-                    new GUIContent(
-                        PlasticLocalization.Name.UnityUpdateVersionControlPackage.GetString()),
-                        false,
-                    () => LaunchPackageManager.AddByName(packageName, versionData.LatestVersion));
-            }
-            else
-            {
-                menu.AddDisabledItem(
-                    new GUIContent(
-                        PlasticLocalization.Name.UnityVersionControlPackageIsUpToDate.GetString()));
-            }
-
-            menu.AddItem(
-                new GUIContent(
-                    PlasticLocalization.Name.MainSidebarAboutItem.GetString()),
-                false,
-                () => LaunchPackageManager.Open(packageName));
-        }
-
-        static void OpenDevOpsUpgradePlanUrl()
-        {
-            Application.OpenURL(UnityUrl.DevOps.GetSignUp());
+            GUILayout.EndHorizontal();
         }
 
         static void DisableVCSBuiltInPluginIfEnabled(string projectPath)
@@ -1338,8 +892,6 @@ namespace Unity.PlasticSCM.Editor
             DisposeShelvedChanges(window);
 
             DisposeNotificationBarUpdater(window);
-
-            AvatarImages.Dispose();
         }
 
         static void ReOpenWindow(UVCSWindow closedWindow)
@@ -1350,8 +902,7 @@ namespace Unity.PlasticSCM.Editor
 
             InitializePlasticOnForceToReOpen(newWindow);
 
-            if (DockEditorWindow.IsAvailable())
-                DockEditorWindow.To(dockWindow, newWindow);
+            DockEditorWindow.To(dockWindow, newWindow);
 
             newWindow.Show();
             newWindow.Focus();
@@ -1414,9 +965,10 @@ namespace Unity.PlasticSCM.Editor
         Exception mException;
         NotificationBarUpdater mNotificationBarUpdater;
         ShelvedChangesUpdater mShelvedChangesUpdater;
-        WindowStatusBar.IShelvedChangesNotification mShelvedChangesNotification;
-        WindowStatusBar.IIncomingChangesNotification mIncomingChangesNotification;
+        NotificationsArea.IShelvedChangesNotification mShelvedChangesNotification;
+        NotificationsArea.IIncomingChangesNotification mIncomingChangesNotification;
         WindowStatusBar mWindowStatusBar;
+        Topbar.Topbar mTopbar = new Topbar.Topbar();
         ViewSwitcher mViewSwitcher;
         WorkspaceWindow mWorkspaceWindow;
         DelayedActionBySecondsRunner mDelayedAutoRefreshChangesAction;

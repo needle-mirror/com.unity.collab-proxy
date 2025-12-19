@@ -1,7 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+
+using Unity.PlasticSCM.Editor.AssetUtils;
 
 namespace Unity.PlasticSCM.Editor.Tool
 {
@@ -50,7 +52,7 @@ namespace Unity.PlasticSCM.Editor.Tool
                 filePath = Path.Combine(filePath, toolName);
 
                 if (File.Exists(filePath))
-                    return Path.GetFullPath(filePath);
+                    return AssetsPath.GetFullPath.ForPath(filePath);
             }
 
             return null;

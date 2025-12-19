@@ -15,7 +15,8 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             MultiColumnHeaderState headerState,
             string treeSettingsName,
             int defaultSortColumnIdx,
-            bool defaultSortedAscending = true)
+            bool defaultSortedAscending = true,
+            int[] defaultColumnVisibilities = null)
         {
             int[] visibleColumns;
             float[] columnWidths;
@@ -25,6 +26,8 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 
             if (visibleColumns.Length > 0)
                 headerState.visibleColumns = visibleColumns;
+            else if (defaultColumnVisibilities != null)
+                headerState.visibleColumns = defaultColumnVisibilities;
 
             if (headerState.columns.Length == columnWidths.Length)
                 TreeHeaderColumns.SetWidths(headerState.columns, columnWidths);

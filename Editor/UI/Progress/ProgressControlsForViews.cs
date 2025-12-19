@@ -37,45 +37,14 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
             return !string.IsNullOrEmpty(mData.NotificationMessage);
         }
 
-        internal void UpdateDeterminateProgress(EditorWindow parentWindow)
-        {
-            if (IsOperationRunning() || mRequestedRepaint)
-            {
-                parentWindow.Repaint();
-
-                mRequestedRepaint = false;
-            }
-        }
-
         internal void UpdateProgress(EditorWindow parentWindow)
         {
             if (IsOperationRunning() || mRequestedRepaint)
             {
-                if (IsOperationRunning())
-                    UpdateIndeterminateProgress();
-
                 parentWindow.Repaint();
 
                 mRequestedRepaint = false;
             }
-        }
-
-        internal void ForcedUpdateProgress(EditorWindow parentWindow)
-        {
-            double updateTime;
-            float progressPercent;
-            GetUpdateProgress(
-                mLastUpdateTime, mData.ProgressPercent,
-                out updateTime, out progressPercent);
-
-            mLastUpdateTime = updateTime;
-
-            if (!IsOperationRunning())
-                return;
-
-            mData.ProgressPercent = progressPercent;
-
-            parentWindow.Repaint();
         }
 
         void IProgressControls.HideProgress()
@@ -94,6 +63,7 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
 
             mData.IsOperationRunning = true;
             mData.ProgressMessage = message;
+            mData.ProgressPercent = -1;
 
             mRequestedRepaint = true;
         }
@@ -138,36 +108,8 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
             mRequestedRepaint = true;
         }
 
-        void UpdateIndeterminateProgress()
-        {
-            // NOTE(rafa): there is no support for indeterminate progress bar
-            // i use this neverending progress bar as workaround
-
-            mData.ProgressPercent += .003f;
-
-            if (mData.ProgressPercent > 1f)
-                mData.ProgressPercent = .1f;
-        }
-
-        static void GetUpdateProgress(
-            double lastUpdateTime, float lastProgressPercent,
-            out double updateTime, out float progressPercent)
-        {
-            updateTime = EditorApplication.timeSinceStartup;
-
-            double deltaTime = System.Math.Min(0.1, updateTime - lastUpdateTime);
-            double deltaPercent = (deltaTime / 0.1) * PERCENT_PER_SECONDS;
-
-            progressPercent = UnityEngine.Mathf.Repeat(
-                lastProgressPercent + (float)deltaPercent, 1f);
-        }
-
-        double mLastUpdateTime = 0.0;
-
         Data mData = new Data();
 
         bool mRequestedRepaint;
-
-        const double PERCENT_PER_SECONDS = 0.06;
     }
 }

@@ -40,6 +40,7 @@ namespace Unity.PlasticSCM.Editor.Views
                     PlasticLocalization.Name.OpenInDesktopApp.GetString(),
                     PlasticLocalization.Name.CancelButton.GetString(),
                     PlasticLocalization.Name.OpenInUnityCloud.GetString(),
+                    GuiMessage.GuiMessageType.Informational,
                     dontAksMeAgainContent,
                     out dontAskMeAgain
                 );

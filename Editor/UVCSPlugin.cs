@@ -29,7 +29,7 @@ using Unity.PlasticSCM.Editor.SceneView;
 using Unity.PlasticSCM.Editor.Settings;
 using Unity.PlasticSCM.Editor.Toolbar;
 using Unity.PlasticSCM.Editor.UI;
-
+using Unity.PlasticSCM.Editor.UI.Avatar;
 using GluonCheckIncomingChanges = PlasticGui.Gluon.WorkspaceWindow.CheckIncomingChanges;
 using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
 
@@ -351,7 +351,26 @@ namespace Unity.PlasticSCM.Editor
 
             if (state == PlayModeStateChange.ExitingPlayMode ||
                 state == PlayModeStateChange.EnteredEditMode)
-                UVCSToolbar.Controller.UpdateIcon(GetPluginStatusIcon());
+            {
+                AvatarImages.Dispose();
+
+                Texture2D statusIcon = GetPluginStatusIcon();
+
+                UVCSToolbar.Controller.UpdateIcon(statusIcon);
+
+                UpdateUVCSWindowIcon(GetWindowIfOpened.UVCS(), statusIcon);
+            }
+        }
+
+        internal void OnSceneOpened()
+        {
+            mLog.Debug("OnSceneOpened");
+
+            Texture2D statusIcon = GetPluginStatusIcon();
+
+            UVCSToolbar.Controller.UpdateIcon(statusIcon);
+
+            UpdateUVCSWindowIcon(GetWindowIfOpened.UVCS(), statusIcon);
         }
 
         internal bool OnEditorWantsToQuit()
@@ -525,6 +544,7 @@ namespace Unity.PlasticSCM.Editor
             mWorkspaceOperationsMonitor.Stop();
             mAssetStatusCache.Cancel();
 
+            AvatarImages.Dispose();
             AssetsProcessors.Disable();
             ProjectViewUVCSAssetMenu.Disable();
             DrawProjectOverlay.Disable();
@@ -543,12 +563,7 @@ namespace Unity.PlasticSCM.Editor
 
             UVCSToolbar.Controller.SetWorkspace(mWkInfo, mIsGluonMode);
 
-            UVCSWindow window = GetWindowIfOpened.UVCS();
-
-            if (window == null)
-                return;
-
-            window.UpdateWindowIcon(GetPluginStatusIcon());
+            UpdateUVCSWindowIcon(GetWindowIfOpened.UVCS(), GetPluginStatusIcon());
         }
 
         void ExecuteFullReload(WorkspaceInfo wkInfo)
@@ -753,6 +768,14 @@ namespace Unity.PlasticSCM.Editor
                 return false;
 
             return window.IWorkspaceWindow.IsOperationInProgress();
+        }
+
+        void UpdateUVCSWindowIcon(UVCSWindow window, Texture2D icon)
+        {
+            if (window == null)
+                return;
+
+            window.UpdateWindowIcon(icon);
         }
 
         static class Reload

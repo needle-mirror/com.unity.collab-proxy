@@ -1,6 +1,7 @@
 using System;
 
 using UnityEditor;
+using UnityEngine;
 
 using Codice.Client.BaseCommands;
 
@@ -42,8 +43,8 @@ namespace Unity.PlasticSCM.Editor
     [Serializable]
     internal class SerializableViewSwitcherState
     {
-        internal ViewSwitcher.SelectedTab SelectedTab;
-        internal ViewSwitcher.SelectedTab PreviousSelectedTab;
+        internal ViewSwitcher.TabType SelectedTab;
+        internal ViewSwitcher.TabType PreviousSelectedTab;
 
         internal SerializableMergeTabState MergeTabState;
         internal SerializableBranchesTabState BranchesTabState;
@@ -69,7 +70,7 @@ namespace Unity.PlasticSCM.Editor
         IHistoryViewLauncher,
         MergeInProgress.IShowMergeView
     {
-        internal enum SelectedTab
+        internal enum TabType
         {
             None = 0,
             PendingChanges = 1,
@@ -131,18 +132,10 @@ namespace Unity.PlasticSCM.Editor
             mGluonIncomingChangesUpdater = gluonIncomingChangesUpdater;
             mUpdatePendingChanges = updatePendingChanges;
 
-            mPendingChangesTabButton = new TabButton();
-            mIncomingChangesTabButton = new TabButton();
-            mChangesetsTabButton = new TabButton();
-            mShelvesTabButton = new TabButton();
-            mBranchesTabButton = new TabButton();
-            mLabelsTabButton = new TabButton();
-            mLocksTabButton = new TabButton();
-            mMergeTabButton = new TabButton();
-            mHistoryTabButton = new TabButton();
+            mSideBarTreeView = new SideBarTreeView(repSpec, isGluonMode, ShowView);
         }
 
-        internal bool IsViewSelected(SelectedTab tab)
+        internal bool IsViewSelected(TabType tab)
         {
             return mState.SelectedTab == tab;
         }
@@ -229,16 +222,6 @@ namespace Unity.PlasticSCM.Editor
 
             if (viewType == ViewType.BranchesListPopup)
                 UVCSToolbar.Controller.LoadBranches();
-        }
-
-        internal void RefreshSelectedView()
-        {
-            IRefreshableView view = GetRefreshableViewBasedOnSelectedTab(mState.SelectedTab);
-
-            if (view == null)
-                return;
-
-            view.Refresh();
         }
 
         internal void RefreshWorkingObjectViews(WorkingObjectInfo workingObjectInfo)
@@ -333,139 +316,137 @@ namespace Unity.PlasticSCM.Editor
 
         internal void Update()
         {
-            if (IsViewSelected(SelectedTab.PendingChanges))
+            if (IsViewSelected(TabType.PendingChanges))
             {
                 PendingChangesTab.Update();
                 return;
             }
 
-            if (IsViewSelected(SelectedTab.IncomingChanges))
+            if (IsViewSelected(TabType.IncomingChanges))
             {
                 IncomingChangesTab.Update();
                 return;
             }
 
-            if (IsViewSelected(SelectedTab.Changesets))
+            if (IsViewSelected(TabType.Changesets))
             {
                 ChangesetsTab.Update();
                 return;
             }
 
-            if (IsViewSelected(SelectedTab.Shelves))
+            if (IsViewSelected(TabType.Shelves))
             {
                 ShelvesTab.Update();
                 return;
             }
 
-            if (IsViewSelected(SelectedTab.Branches))
+            if (IsViewSelected(TabType.Branches))
             {
                 BranchesTab.Update();
                 return;
             }
 
-            if (IsViewSelected(SelectedTab.Labels))
+            if (IsViewSelected(TabType.Labels))
             {
                 LabelsTab.Update();
                 return;
             }
 
-            if (IsViewSelected(SelectedTab.Locks))
+            if (IsViewSelected(TabType.Locks))
             {
                 LocksTab.Update();
                 return;
             }
 
-            if (IsViewSelected(SelectedTab.Merge))
+            if (IsViewSelected(TabType.Merge))
             {
                 MergeTab.Update();
                 return;
             }
 
-            if (IsViewSelected(SelectedTab.History))
+            if (IsViewSelected(TabType.History))
             {
                 HistoryTab.Update();
                 return;
             }
         }
 
-        internal void TabButtonsGUI()
+        internal void SidebarButtonsGUI()
         {
-            InitializeTabButtonWidth();
+            GUILayout.BeginHorizontal();
 
-            PendingChangesTabButtonGUI();
+            Rect rect = GUILayoutUtility.GetRect(
+                mSideBarTreeView.GetTotalWidth(),
+                0,
+                GUILayout.ExpandWidth(true),
+                GUILayout.ExpandHeight(true));
 
-            IncomingChangesTabButtonGUI();
+            mSideBarTreeView.SetHistoryVisible(HistoryTab != null);
+            mSideBarTreeView.SetMergeVisible(MergeTab != null);
+            mSideBarTreeView.OnGUI(rect);
 
-            ChangesetsTabButtonGUI();
+            Rect result = GUILayoutUtility.GetRect(
+                1,
+                rect.height,
+                GUILayout.ExpandHeight(true));
+            EditorGUI.DrawRect(result, UnityStyles.Colors.BarBorder);
 
-            ShelvesTabButtonGUI();
-
-            BranchesTabButtonGUI();
-
-            LabelsTabButtonGUI();
-
-            LocksTabButtonGUI();
-
-            MergeTabButtonGUI();
-
-            HistoryTabButtonGUI();
+            GUILayout.EndHorizontal();
         }
 
-        internal void TabViewGUI(ResolvedUser currentUser)
+        internal void SelectedViewGUI(ResolvedUser currentUser)
         {
-            if (IsViewSelected(SelectedTab.PendingChanges))
+            if (IsViewSelected(TabType.PendingChanges))
             {
-                PendingChangesTab.OnGUI(
-                    currentUser,
-                    mParentWindow.Repaint);
+                PendingChangesTab.OnGUI(currentUser);
                 return;
             }
 
-            if (IsViewSelected(SelectedTab.IncomingChanges))
+            if (IsViewSelected(TabType.IncomingChanges))
             {
                 IncomingChangesTab.OnGUI();
                 return;
             }
 
-            if (IsViewSelected(SelectedTab.Changesets))
+            if (IsViewSelected(TabType.Changesets))
             {
                 ChangesetsTab.OnGUI();
                 return;
             }
 
-            if (IsViewSelected(SelectedTab.Shelves))
+            if (IsViewSelected(TabType.Shelves))
             {
                 ShelvesTab.OnGUI();
                 return;
             }
 
-            if (IsViewSelected(SelectedTab.Branches))
+            if (IsViewSelected(TabType.Branches))
             {
                 BranchesTab.OnGUI();
                 return;
             }
 
-            if (IsViewSelected(SelectedTab.Labels))
+            if (IsViewSelected(TabType.Labels))
             {
                 LabelsTab.OnGUI();
                 return;
             }
 
-            if (IsViewSelected(SelectedTab.Locks))
+            if (IsViewSelected(TabType.Locks))
             {
                 LocksTab.OnGUI();
                 return;
             }
 
-            if (IsViewSelected(SelectedTab.Merge))
+            if (IsViewSelected(TabType.Merge))
             {
-                MergeTab.OnGUI();
+                MergeTab.OnGUI(CloseMergeTab);
                 return;
             }
 
-            if (IsViewSelected(SelectedTab.History))
+            if (IsViewSelected(TabType.History))
             {
-                HistoryTab.OnGUI();
+                HistoryTab.OnGUI(CloseHistoryTab);
                 return;
             }
         }
@@ -474,24 +455,29 @@ namespace Unity.PlasticSCM.Editor
         {
             OpenPendingChangesTab();
 
-            bool wasPendingChangesSelected =
-                IsViewSelected(SelectedTab.PendingChanges);
+            PendingChangesTab.AutoRefresh();
 
-            if (!wasPendingChangesSelected)
+            SetSelectedView(TabType.PendingChanges);
+        }
+
+        internal void ShowIncomingChangesView()
+        {
+            if (IncomingChangesTab == null)
             {
-                PendingChangesTab.AutoRefresh();
+                IncomingChangesTab = BuildIncomingChangesTab(mIsGluonMode);
+
+                mViewHost.AddRefreshableView(
+                    ViewType.IncomingChangesView,
+                    (IRefreshableView)IncomingChangesTab);
             }
 
-            SetSelectedView(SelectedTab.PendingChanges);
+            IncomingChangesTab.AutoRefresh();
+
+            SetSelectedView(TabType.IncomingChanges);
         }
 
         internal void ShowChangesetsView(ChangesetInfo changesetToSelect = null)
         {
-            bool shouldRefreshView = ShouldRefreshView(
-                ChangesetsTab != null,
-                changesetToSelect != null,
-                IsViewSelected(SelectedTab.Changesets));
-
             if (ChangesetsTab == null)
             {
                 OpenPendingChangesTab();
@@ -519,104 +505,126 @@ namespace Unity.PlasticSCM.Editor
                     mParentWindow,
                     mIsGluonMode);
 
-                mViewHost.AddRefreshableView(
-                    ViewType.ChangesetsView,
-                    ChangesetsTab);
+                mViewHost.AddRefreshableView(ViewType.ChangesetsView, ChangesetsTab);
+            }
+            else
+            {
+                if (changesetToSelect != null)
+                    ChangesetsTab.RefreshAndSelect(changesetToSelect);
             }
 
-            if (shouldRefreshView)
-                ChangesetsTab.RefreshAndSelect(changesetToSelect);
-
-            SetSelectedView(SelectedTab.Changesets);
-        }
-
-        internal void ShowShelvesViewIfNeeded()
-        {
-            if (!BoolSetting.Load(UnityConstants.SHOW_SHELVES_VIEW_KEY_NAME, false))
-                return;
-
-            OpenShelvesTab();
+            SetSelectedView(TabType.Changesets);
         }
 
         internal void ShowShelvesView(ChangesetInfo shelveToSelect = null)
         {
-            bool shouldRefreshView = ShouldRefreshView(
-                ShelvesTab != null,
-                shelveToSelect != null,
-                IsViewSelected(SelectedTab.Shelves));
+            if (ShelvesTab == null)
+            {
+                OpenPendingChangesTab();
 
-            OpenShelvesTab(shelveToSelect);
+                ShelvesTab = new ShelvesTab(
+                    mWkInfo,
+                    mRepSpec,
+                    shelveToSelect,
+                    mWorkspaceWindow,
+                    this,
+                    this,
+                    this,
+                    PendingChangesTab,
+                    mIsGluonMode ?
+                        mWorkspaceWindow.GluonProgressOperationHandler :
+                        mWorkspaceWindow.DeveloperProgressOperationHandler,
+                    mWorkspaceWindow.GluonProgressOperationHandler,
+                    mShelvedChangesUpdater,
+                    mAssetStatusCache,
+                    mSaveAssets,
+                    mShowDownloadPlasticExeWindow,
+                    mProcessExecutor,
+                    mWorkspaceOperationsMonitor,
+                    mPendingChangesUpdater,
+                    mDeveloperIncomingChangesUpdater,
+                    mGluonIncomingChangesUpdater,
+                    mParentWindow,
+                    mIsGluonMode);
 
-            if (shouldRefreshView)
-                ShelvesTab.RefreshAndSelect(shelveToSelect);
+                mViewHost.AddRefreshableView(ViewType.ShelvesView, ShelvesTab);
 
-            SetSelectedView(SelectedTab.Shelves);
-        }
+                TrackFeatureUseEvent.For(
+                    mRepSpec, TrackFeatureUseEvent.Features.OpenShelvesView);
+            }
+            else
+            {
+                if (shelveToSelect != null)
+                    ShelvesTab.RefreshAndSelect(shelveToSelect);
+            }
 
-        internal void ShowLocksViewIfNeeded()
-        {
-            if (!BoolSetting.Load(UnityConstants.SHOW_LOCKS_VIEW_KEY_NAME, false))
-                return;
-
-            OpenLocksTab();
-        }
-
-        internal void ShowLocksView()
-        {
-            OpenLocksTab();
-
-            bool wasLocksViewSelected =
-                IsViewSelected(SelectedTab.Locks);
-
-            if (!wasLocksViewSelected)
-                ((IRefreshableView)LocksTab).Refresh();
-
-            SetSelectedView(SelectedTab.Locks);
-        }
-
-        internal void ShowBranchesViewIfNeeded()
-        {
-            if (!BoolSetting.Load(UnityConstants.SHOW_BRANCHES_VIEW_KEY_NAME, true))
-                return;
-
-            string query = QueryConstants.BranchesBeginningQuery;
-
-            ViewQueryResult queryResult = null;
-
-            IThreadWaiter waiter = ThreadWaiter.GetWaiter();
-            waiter.Execute(
-                /*threadOperationDelegate*/ delegate
-                {
-                    queryResult = new ViewQueryResult(
-                        PlasticGui.Plastic.API.FindQuery(mWkInfo, query));
-                },
-                /*afterOperationDelegate*/ delegate
-                {
-                    if (waiter.Exception != null)
-                    {
-                        ExceptionsHandler.DisplayException(waiter.Exception);
-                        return;
-                    }
-
-                    if (queryResult == null)
-                        return;
-
-                    if (queryResult.Count()>0)
-                        OpenBranchesTab();
-                });
+            SetSelectedView(TabType.Shelves);
         }
 
         internal void ShowBranchesView()
         {
-            OpenBranchesTab();
+            if (BranchesTab == null)
+            {
+                BranchesTab = BuildBranchesTab(false);
 
-            bool wasBranchesSelected =
-                IsViewSelected(SelectedTab.Branches);
+                mViewHost.AddRefreshableView(ViewType.BranchesView, BranchesTab);
 
-            if (!wasBranchesSelected)
-                ((IRefreshableView)BranchesTab).Refresh();
+                TrackFeatureUseEvent.For(
+                    mRepSpec, TrackFeatureUseEvent.Features.UnityPackage.OpenBranchesView);
+            }
 
-            SetSelectedView(SelectedTab.Branches);
+            SetSelectedView(TabType.Branches);
+        }
+
+        internal void ShowLabelsView()
+        {
+            if (LabelsTab == null)
+            {
+                LabelsTab = new LabelsTab(
+                    mWkInfo,
+                    mWorkspaceWindow,
+                    this,
+                    this,
+                    mViewHost,
+                    mWorkspaceWindow,
+                    mWorkspaceWindow,
+                    mPendingChangesUpdater,
+                    mDeveloperIncomingChangesUpdater,
+                    mGluonIncomingChangesUpdater,
+                    mShelvedChangesUpdater,
+                    mAssetStatusCache,
+                    mShowDownloadPlasticExeWindow,
+                    mProcessExecutor,
+                    mParentWindow,
+                    mIsGluonMode);
+
+                mViewHost.AddRefreshableView(ViewType.LabelsView, LabelsTab);
+
+                TrackFeatureUseEvent.For(
+                    mRepSpec, TrackFeatureUseEvent.Features.UnityPackage.OpenLabelsView);
+            }
+
+            SetSelectedView(TabType.Labels);
+        }
+
+        internal void ShowLocksView()
+        {
+            if (LocksTab == null)
+            {
+                LocksTab = new LocksTab(
+                    mWkInfo,
+                    mRepSpec,
+                    mWorkspaceWindow,
+                    mAssetStatusCache,
+                    mParentWindow);
+
+                mViewHost.AddRefreshableView(ViewType.LocksView, LocksTab);
+
+                TrackFeatureUseEvent.For(
+                    mRepSpec, TrackFeatureUseEvent.Features.OpenLocksView);
+            }
+
+            SetSelectedView(TabType.Locks);
         }
 
         internal void ShowHistoryView(
@@ -638,50 +646,7 @@ namespace Unity.PlasticSCM.Editor
                 HistoryTab.RefreshForItem(repSpec, itemId, path, isDirectory);
             }
 
-            SetSelectedView(SelectedTab.History);
-        }
-
-        internal void ShowLabelsViewIfNeeded()
-        {
-            if (!BoolSetting.Load(UnityConstants.SHOW_LABELS_VIEW_KEY_NAME, false))
-                return;
-
-            OpenLabelsTab();
-        }
-
-        internal void ShowLabelsView()
-        {
-            bool shouldRefreshView = ShouldRefreshView(
-                LabelsTab != null,
-                false,
-                IsViewSelected(SelectedTab.Labels));
-
-            OpenLabelsTab();
-
-            if (shouldRefreshView)
-                LabelsTab.RefreshAndSelect(null);
-
-            SetSelectedView(SelectedTab.Labels);
-        }
-
-        internal void ShowIncomingChangesView()
-        {
-            if (IncomingChangesTab == null)
-            {
-                IncomingChangesTab = BuildIncomingChangesTab(mIsGluonMode);
-
-                mViewHost.AddRefreshableView(
-                    ViewType.IncomingChangesView,
-                    (IRefreshableView)IncomingChangesTab);
-            }
-
-            bool wasIncomingChangesSelected =
-                IsViewSelected(SelectedTab.IncomingChanges);
-
-            if (!wasIncomingChangesSelected)
-                IncomingChangesTab.AutoRefresh();
-
-            SetSelectedView(SelectedTab.IncomingChanges);
+            SetSelectedView(TabType.History);
         }
 
         internal void ShowBranchesViewForTesting(BranchesTab branchesTab)
@@ -743,7 +708,7 @@ namespace Unity.PlasticSCM.Editor
 
         bool IViewSwitcher.IsIncomingChangesView()
         {
-            return IsViewSelected(SelectedTab.IncomingChanges);
+            return IsViewSelected(TabType.IncomingChanges);
         }
 
         void IViewSwitcher.CloseMergeView()
@@ -849,13 +814,13 @@ namespace Unity.PlasticSCM.Editor
             ShowMergeView();
         }
 
-        void ShowInitialView(SelectedTab viewToShow)
+        void ShowInitialView(TabType viewToShow)
         {
-            mState.SelectedTab = SelectedTab.None;
+            mState.SelectedTab = TabType.None;
 
             ShowView(viewToShow);
 
-            if (mState.SelectedTab != SelectedTab.None)
+            if (mState.SelectedTab != TabType.None)
                 return;
 
             ShowPendingChangesView();
@@ -924,9 +889,7 @@ namespace Unity.PlasticSCM.Editor
                 mParentWindow,
                 mIsGluonMode);
 
-            mViewHost.AddRefreshableView(
-                ViewType.CheckinView,
-                PendingChangesTab);
+            mViewHost.AddRefreshableView(ViewType.CheckinView, PendingChangesTab);
         }
 
         IMergeView MergeFromInterval(
@@ -950,119 +913,9 @@ namespace Unity.PlasticSCM.Editor
             return MergeTab;
         }
 
-        void OpenShelvesTab(ChangesetInfo shelveToSelect = null)
-        {
-            if (ShelvesTab == null)
-            {
-                OpenPendingChangesTab();
-
-                ShelvesTab = new ShelvesTab(
-                     mWkInfo,
-                     mRepSpec,
-                     shelveToSelect,
-                     mWorkspaceWindow,
-                     this,
-                     this,
-                     this,
-                     PendingChangesTab,
-                     mIsGluonMode ?
-                         mWorkspaceWindow.GluonProgressOperationHandler :
-                         mWorkspaceWindow.DeveloperProgressOperationHandler,
-                     mWorkspaceWindow.GluonProgressOperationHandler,
-                     mShelvedChangesUpdater,
-                     mAssetStatusCache,
-                     mSaveAssets,
-                     mShowDownloadPlasticExeWindow,
-                     mProcessExecutor,
-                     mWorkspaceOperationsMonitor,
-                     mPendingChangesUpdater,
-                     mDeveloperIncomingChangesUpdater,
-                     mGluonIncomingChangesUpdater,
-                     mParentWindow,
-                     mIsGluonMode);
-
-                mViewHost.AddRefreshableView(ViewType.ShelvesView, ShelvesTab);
-
-                TrackFeatureUseEvent.For(
-                    mRepSpec, TrackFeatureUseEvent.Features.OpenShelvesView);
-            }
-
-            BoolSetting.Save(true, UnityConstants.SHOW_SHELVES_VIEW_KEY_NAME);
-        }
-
-        void OpenLabelsTab()
-        {
-            if (LabelsTab == null)
-            {
-                LabelsTab = new LabelsTab(
-                    mWkInfo,
-                    mWorkspaceWindow,
-                    this,
-                    this,
-                    mViewHost,
-                    mWorkspaceWindow,
-                    mWorkspaceWindow,
-                    mPendingChangesUpdater,
-                    mDeveloperIncomingChangesUpdater,
-                    mGluonIncomingChangesUpdater,
-                    mShelvedChangesUpdater,
-                    mAssetStatusCache,
-                    mShowDownloadPlasticExeWindow,
-                    mProcessExecutor,
-                    mParentWindow,
-                    mIsGluonMode);
-
-                mViewHost.AddRefreshableView(ViewType.LabelsView, LabelsTab);
-
-                TrackFeatureUseEvent.For(
-                    mRepSpec, TrackFeatureUseEvent.Features.UnityPackage.OpenLabelsView);
-            }
-
-            BoolSetting.Save(true, UnityConstants.SHOW_LABELS_VIEW_KEY_NAME);
-        }
-
-        void OpenBranchesTab()
-        {
-            if (BranchesTab == null)
-            {
-                BranchesTab = BuildBranchesTab(false);
-
-                mViewHost.AddRefreshableView(ViewType.BranchesView, BranchesTab);
-
-                TrackFeatureUseEvent.For(
-                   mRepSpec, TrackFeatureUseEvent.Features.UnityPackage.OpenBranchesView);
-            }
-
-            BoolSetting.Save(true, UnityConstants.SHOW_BRANCHES_VIEW_KEY_NAME);
-        }
-
-        void OpenLocksTab()
-        {
-            if (LocksTab == null)
-            {
-                LocksTab = new LocksTab(
-                    mRepSpec,
-                    mWorkspaceWindow,
-                    mAssetStatusCache,
-                    mParentWindow);
-
-                mViewHost.AddRefreshableView(ViewType.LocksView, LocksTab);
-
-                TrackFeatureUseEvent.For(
-                    mRepSpec, TrackFeatureUseEvent.Features.OpenLocksView);
-            }
-
-            BoolSetting.Save(true, UnityConstants.SHOW_LOCKS_VIEW_KEY_NAME);
-        }
-
         void ShowHistoryView()
         {
-            if (HistoryTab == null)
-                return;
-
-            ((IRefreshableView)HistoryTab).Refresh();
-
-            SetSelectedView(SelectedTab.History);
+            SetSelectedView(TabType.History);
         }
 
         void ShowMergeViewFromInterval(
@@ -1135,13 +988,9 @@ namespace Unity.PlasticSCM.Editor
             if (MergeTab == null)
                 return;
 
-            bool wasMergeTabSelected =
-                IsViewSelected(SelectedTab.Merge);
+            MergeTab.AutoRefresh();
 
-            if (!wasMergeTabSelected)
-                MergeTab.AutoRefresh();
-
-            SetSelectedView(SelectedTab.Merge);
+            SetSelectedView(TabType.Merge);
         }
 
         void DisableMergeTab()
@@ -1158,78 +1007,11 @@ namespace Unity.PlasticSCM.Editor
             mState.MergeTabState = null;
         }
 
-        void CloseShelvesTab()
-        {
-            BoolSetting.Save(false, UnityConstants.SHOW_SHELVES_VIEW_KEY_NAME);
-
-            TrackFeatureUseEvent.For(
-                mRepSpec, TrackFeatureUseEvent.Features.CloseShelvesView);
-
-            mViewHost.RemoveRefreshableView(
-                ViewType.ShelvesView, ShelvesTab);
-
-            ShelvesTab.OnDisable();
-            ShelvesTab = null;
-
-            ShowPreviousViewFrom(SelectedTab.Shelves);
-
-            mParentWindow.Repaint();
-        }
-
-        void CloseBranchesTab()
-        {
-            BoolSetting.Save(false, UnityConstants.SHOW_BRANCHES_VIEW_KEY_NAME);
-
-            mViewHost.RemoveRefreshableView(
-                ViewType.BranchesView, BranchesTab);
-
-            BranchesTab.OnDisable();
-            BranchesTab = null;
-
-            mState.BranchesTabState = null;
-
-            ShowPreviousViewFrom(SelectedTab.Branches);
-
-            mParentWindow.Repaint();
-        }
-
-        void CloseLabelsTab()
-        {
-            BoolSetting.Save(false, UnityConstants.SHOW_LABELS_VIEW_KEY_NAME);
-
-            mViewHost.RemoveRefreshableView(
-                ViewType.LabelsView, LabelsTab);
-
-            LabelsTab.OnDisable();
-            LabelsTab = null;
-
-            ShowPreviousViewFrom(SelectedTab.Labels);
-
-            mParentWindow.Repaint();
-        }
-
-        void CloseLocksTab()
-        {
-            BoolSetting.Save(false, UnityConstants.SHOW_LOCKS_VIEW_KEY_NAME);
-
-            TrackFeatureUseEvent.For(
-                mRepSpec, TrackFeatureUseEvent.Features.CloseLocksView);
-
-            mViewHost.RemoveRefreshableView(ViewType.LocksView, LocksTab);
-
-            LocksTab.OnDisable();
-            LocksTab = null;
-
-            ShowPreviousViewFrom(SelectedTab.Locks);
-
-            mParentWindow.Repaint();
-        }
-
         void CloseMergeTab()
         {
             DisableMergeTab();
 
-            ShowPreviousViewFrom(SelectedTab.Merge);
+            ShowPreviousViewFrom(TabType.Merge);
 
             mParentWindow.Repaint();
         }
@@ -1244,25 +1026,9 @@ namespace Unity.PlasticSCM.Editor
 
             mState.HistoryTabState = null;
 
-            ShowPreviousViewFrom(SelectedTab.History);
+            ShowPreviousViewFrom(TabType.History);
 
             mParentWindow.Repaint();
-        }
-
-        void InitializeTabButtonWidth()
-        {
-            if (mTabButtonWidth != -1)
-                return;
-
-            mTabButtonWidth = MeasureMaxWidth.ForTexts(
-                UnityStyles.UVCSWindow.TabButton,
-                PlasticLocalization.GetString(PlasticLocalization.Name.PendingChangesViewTitle),
-                PlasticLocalization.GetString(PlasticLocalization.Name.IncomingChangesViewTitle),
-                PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetsViewTitle),
-                PlasticLocalization.GetString(PlasticLocalization.Name.BranchesViewTitle),
-                PlasticLocalization.GetString(PlasticLocalization.Name.ShelvesViewTitle),
-                PlasticLocalization.GetString(PlasticLocalization.Name.LocksViewTitle),
-                PlasticLocalization.GetString(PlasticLocalization.Name.History));
         }
 
         IIncomingChangesTab BuildIncomingChangesTab(bool isGluonMode)
@@ -1469,88 +1235,88 @@ namespace Unity.PlasticSCM.Editor
                 showDiscardChangesButton);
         }
 
-        void ShowView(SelectedTab viewToShow)
+        void ShowView(TabType viewToShow)
         {
             switch (viewToShow)
             {
-                case SelectedTab.PendingChanges:
+                case TabType.PendingChanges:
                     ShowPendingChangesView();
                     break;
 
-                case SelectedTab.IncomingChanges:
+                case TabType.IncomingChanges:
                     ShowIncomingChangesView();
                     break;
 
-                case SelectedTab.Changesets:
+                case TabType.Changesets:
                     ShowChangesetsView();
                     break;
 
-                case SelectedTab.Branches:
+                case TabType.Branches:
                     ShowBranchesView();
                     break;
 
-                case SelectedTab.Shelves:
+                case TabType.Shelves:
                     ShowShelvesView();
                     break;
 
-                case SelectedTab.Locks:
+                case TabType.Locks:
                     ShowLocksView();
                     break;
 
-                case SelectedTab.Merge:
+                case TabType.Merge:
                     ShowMergeView();
                     break;
 
-                case SelectedTab.History:
+                case TabType.History:
                     ShowHistoryView();
                     break;
 
-                case SelectedTab.Labels:
+                case TabType.Labels:
                     ShowLabelsView();
                     break;
             }
         }
 
-        void ShowPreviousViewFrom(SelectedTab tabToClose)
+        void ShowPreviousViewFrom(TabType tabToClose)
         {
             if (!IsViewSelected(tabToClose))
                 return;
 
             if (GetRefreshableViewBasedOnSelectedTab(mState.PreviousSelectedTab) == null)
-                mState.PreviousSelectedTab = SelectedTab.PendingChanges;
+                mState.PreviousSelectedTab = TabType.PendingChanges;
 
             ShowView(mState.PreviousSelectedTab);
         }
 
-        IRefreshableView GetRefreshableViewBasedOnSelectedTab(SelectedTab selectedTab)
+        IRefreshableView GetRefreshableViewBasedOnSelectedTab(TabType selectedTab)
         {
             switch (selectedTab)
             {
-                case SelectedTab.PendingChanges:
+                case TabType.PendingChanges:
                     return PendingChangesTab;
 
-                case SelectedTab.IncomingChanges:
+                case TabType.IncomingChanges:
                     return (IRefreshableView)IncomingChangesTab;
 
-                case SelectedTab.Changesets:
+                case TabType.Changesets:
                     return ChangesetsTab;
 
-                case SelectedTab.Shelves:
+                case TabType.Shelves:
                     return ShelvesTab;
 
-                case SelectedTab.Branches:
+                case TabType.Branches:
                     return BranchesTab;
 
-                case SelectedTab.Labels:
+                case TabType.Labels:
                     return LabelsTab;
 
-                case SelectedTab.Locks:
+                case TabType.Locks:
                     return LocksTab;
 
-                case SelectedTab.Merge:
+                case TabType.Merge:
                     return MergeTab;
 
-                case SelectedTab.History:
+                case TabType.History:
                     return HistoryTab;
 
                 default:
@@ -1594,293 +1360,23 @@ namespace Unity.PlasticSCM.Editor
             }
         }
 
-        void SetSelectedView(SelectedTab tab)
+        void SetSelectedView(TabType tab)
         {
-            if (mState.SelectedTab != tab && mState.SelectedTab != SelectedTab.None)
+            mSideBarTreeView.SetSelectedItem(tab);
+
+            if (mState.SelectedTab != tab && mState.SelectedTab != TabType.None)
                 mState.PreviousSelectedTab = mState.SelectedTab;
 
             mState.SelectedTab = tab;
 
             if (PendingChangesTab != null)
-                PendingChangesTab.IsVisible = tab == SelectedTab.PendingChanges;
+                PendingChangesTab.IsVisible = tab == TabType.PendingChanges;
 
             if (IncomingChangesTab != null)
-                IncomingChangesTab.IsVisible = tab == SelectedTab.IncomingChanges;
+                IncomingChangesTab.IsVisible = tab == TabType.IncomingChanges;
         }
-
-        void PendingChangesTabButtonGUI()
-        {
-            bool wasPendingChangesSelected =
-                IsViewSelected(SelectedTab.PendingChanges);
-
-            bool isPendingChangesSelected = mPendingChangesTabButton.
-                DrawTabButton(
-                    PlasticLocalization.GetString(PlasticLocalization.Name.PendingChangesViewTitle),
-                    wasPendingChangesSelected,
-                    mTabButtonWidth);
-
-            if (isPendingChangesSelected)
-                ShowPendingChangesView();
-        }
-
-        void IncomingChangesTabButtonGUI()
-        {
-            bool wasIncomingChangesSelected =
-                IsViewSelected(SelectedTab.IncomingChanges);
-
-            bool isIncomingChangesSelected = mIncomingChangesTabButton.
-                DrawTabButton(
-                    PlasticLocalization.GetString(PlasticLocalization.Name.IncomingChangesViewTitle),
-                    wasIncomingChangesSelected,
-                    mTabButtonWidth);
-
-            if (isIncomingChangesSelected)
-                ShowIncomingChangesView();
-        }
-
-        void ChangesetsTabButtonGUI()
-        {
-            bool wasChangesetsSelected =
-                IsViewSelected(SelectedTab.Changesets);
-
-            bool isChangesetsSelected = mChangesetsTabButton.
-                DrawTabButton(
-                    PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetsViewTitle),
-                    wasChangesetsSelected,
-                    mTabButtonWidth);
-
-            if (isChangesetsSelected)
-                ShowChangesetsView();
-        }
-
-        void ShelvesTabButtonGUI()
-        {
-            if (ShelvesTab == null)
-            {
-                DrawStaticElement.Empty();
-                return;
-            }
-
-            bool wasShelvesSelected =
-                 IsViewSelected(SelectedTab.Shelves);
-
-            bool isCloseButtonClicked;
-
-            bool isShelvesSelected = mShelvesTabButton.
-                DrawClosableTabButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.ShelvesViewTitle),
-                    wasShelvesSelected,
-                    true,
-                    mTabButtonWidth,
-                    mParentWindow.Repaint,
-                    out isCloseButtonClicked);
-
-            if (isCloseButtonClicked)
-            {
-                CloseShelvesTab();
-                return;
-            }
-
-            if (isShelvesSelected)
-                SetSelectedView(SelectedTab.Shelves);
-        }
-
-        void BranchesTabButtonGUI()
-        {
-            if (BranchesTab == null)
-            {
-                DrawStaticElement.Empty();
-                return;
-            }
-
-            bool wasBranchesSelected =
-                 IsViewSelected(SelectedTab.Branches);
-
-            bool isCloseButtonClicked;
-
-            bool isBranchesSelected = mBranchesTabButton.
-                DrawClosableTabButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.BranchesViewTitle),
-                    wasBranchesSelected,
-                    true,
-                    mTabButtonWidth,
-                    mParentWindow.Repaint,
-                    out isCloseButtonClicked);
-
-            if (isCloseButtonClicked)
-            {
-                CloseBranchesTab();
-                return;
-            }
-
-            if (isBranchesSelected)
-                SetSelectedView(SelectedTab.Branches);
-        }
-
-        void LabelsTabButtonGUI()
-        {
-            if (LabelsTab == null)
-            {
-                DrawStaticElement.Empty();
-                return;
-            }
-
-            bool wasLabelsSelected =
-                IsViewSelected(SelectedTab.Labels);
-
-            bool isCloseButtonClicked;
-
-            bool isLabelsSelected = mLabelsTabButton.
-                DrawClosableTabButton(
-                    PlasticLocalization.GetString(PlasticLocalization.Name.Labels),
-                    wasLabelsSelected,
-                    true,
-                    mTabButtonWidth,
-                    mParentWindow.Repaint,
-                    out isCloseButtonClicked);
-
-            if (isCloseButtonClicked)
-            {
-                CloseLabelsTab();
-                return;
-            }
-
-            if (isLabelsSelected)
-                SetSelectedView(SelectedTab.Labels);
-        }
-
-        void LocksTabButtonGUI()
-        {
-            if (LocksTab == null)
-            {
-                DrawStaticElement.Empty();
-                return;
-            }
-
-            var wasLocksTabSelected = IsViewSelected(SelectedTab.Locks);
-
-            bool isCloseButtonClicked;
-
-            var isLocksTabSelected = mLocksTabButton.DrawClosableTabButton(
-                PlasticLocalization.Name.LocksViewTitle.GetString(),
-                wasLocksTabSelected,
-                true,
-                mTabButtonWidth,
-                mParentWindow.Repaint,
-                out isCloseButtonClicked);
-
-            if (isCloseButtonClicked)
-            {
-                CloseLocksTab();
-                return;
-            }
-
-            if (isLocksTabSelected)
-            {
-                SetSelectedView(SelectedTab.Locks);
-            }
-        }
-
-        void MergeTabButtonGUI()
-        {
-            if (MergeTab == null)
-            {
-                DrawStaticElement.Empty();
-                return;
-            }
-
-            bool wasMergeSelected =
-                IsViewSelected(SelectedTab.Merge);
-
-            bool isCloseButtonClicked;
-
-            bool isMergeSelected = mMergeTabButton.
-                DrawClosableTabButton(
-                    PlasticLocalization.Name.MainSidebarMergeItem.GetString(),
-                    wasMergeSelected,
-                    true,
-                    mTabButtonWidth,
-                    mParentWindow.Repaint,
-                    out isCloseButtonClicked);
-
-            if (isCloseButtonClicked)
-            {
-                CloseMergeTab();
-                ShowPendingChangesView();
-                return;
-            }
-
-            if (isMergeSelected)
-                ShowMergeView();
-        }
-
-        void HistoryTabButtonGUI()
-        {
-            if (HistoryTab == null)
-            {
-                DrawStaticElement.Empty();
-                return;
-            }
-
-            bool wasHistorySelected =
-                IsViewSelected(SelectedTab.History);
-
-            bool isCloseButtonClicked;
-
-            bool isHistorySelected = mHistoryTabButton.
-                DrawClosableTabButton(
-                    PlasticLocalization.GetString(PlasticLocalization.Name.History),
-                    wasHistorySelected,
-                    true,
-                    mTabButtonWidth,
-                    mParentWindow.Repaint,
-                    out isCloseButtonClicked);
-
-            if (isCloseButtonClicked)
-            {
-                CloseHistoryTab();
-                return;
-            }
-
-            if (isHistorySelected)
-                SetSelectedView(SelectedTab.History);
-        }
-
-        static bool ShouldRefreshView(
-            bool isViewInitialized,
-            bool hasObjectToSelect,
-            bool isViewSelected)
-        {
-            // If the view is not initialized, it will be refreshed
-            // during the initialization. So we don't need to refresh.
-            if (!isViewInitialized)
-                return false;
-
-            // If there is an object to select, we should refresh the view.
-            if (hasObjectToSelect)
-                return true;
-
-            // If the view is selected, no need to refresh.
-            if (isViewSelected)
-                return false;
-
-            // Otherwise, refresh the view.
-            return true;
-        }
-
-        float mTabButtonWidth = -1;
 
         SerializableViewSwitcherState mState;
-
-        TabButton mPendingChangesTabButton;
-        TabButton mIncomingChangesTabButton;
-        TabButton mChangesetsTabButton;
-        TabButton mShelvesTabButton;
-        TabButton mBranchesTabButton;
-        TabButton mLocksTabButton;
-        TabButton mMergeTabButton;
-        TabButton mLabelsTabButton;
-        TabButton mHistoryTabButton;
 
         CheckShelvedChanges.IUpdateShelvedChangesNotification mUpdateShelvedChanges;
         ShelvedChangesUpdater mShelvedChangesUpdater;
@@ -1897,6 +1393,7 @@ namespace Unity.PlasticSCM.Editor
         readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
         readonly ISaveAssets mSaveAssets;
         readonly IAssetStatusCache mAssetStatusCache;
+        readonly SideBarTreeView mSideBarTreeView;
         readonly GluonCheckIncomingChanges.IUpdateIncomingChanges mGluonUpdateIncomingChanges;
         readonly bool mIsGluonMode;
         readonly ViewHost mViewHost;

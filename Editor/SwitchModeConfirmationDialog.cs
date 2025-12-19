@@ -25,31 +25,13 @@ namespace Unity.PlasticSCM.Editor
             return dialog.RunModal(parentWindow) == ResponseType.Ok;
         }
 
-        protected override void OnModalGUI()
+        protected override void DoComponentsArea()
         {
-            Title(PlasticLocalization.GetString(
-                PlasticLocalization.Name.SwitchModeConfirmationDialogTitle));
-
-            DoExplanationArea(mIsGluonMode);
-
-            GUILayout.Space(20);
-
-            DoButtonsArea();
-        }
-
-        protected override string GetTitle()
-        {
-            return PlasticLocalization.GetString(
-                PlasticLocalization.Name.SwitchModeConfirmationDialogTitle);
-        }
-
-        void DoExplanationArea(bool isGluonMode)
-        {
-            PlasticLocalization.Name currentMode = isGluonMode ?
+            PlasticLocalization.Name currentMode = mIsGluonMode ?
                 PlasticLocalization.Name.GluonMode :
                 PlasticLocalization.Name.DeveloperMode;
 
-            PlasticLocalization.Name selectedMode = isGluonMode ?
+            PlasticLocalization.Name selectedMode = mIsGluonMode ?
                 PlasticLocalization.Name.DeveloperMode :
                 PlasticLocalization.Name.GluonMode;
 
@@ -61,40 +43,10 @@ namespace Unity.PlasticSCM.Editor
             TextBlockWithEndLink(UnityUrl.UnityWebsite.Gluon(), formattedExplanation, UnityStyles.Paragraph);
         }
 
-        void DoButtonsArea()
+        protected override string GetTitle()
         {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoSwitchButton();
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoSwitchButton();
-            }
-        }
-
-        void DoSwitchButton()
-        {
-            if (!AcceptButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.SwitchButton)))
-                return;
-
-            OkButtonAction();
-        }
-
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.CancelButton)))
-                return;
-
-            CancelButtonAction();
+            return PlasticLocalization.GetString(
+                PlasticLocalization.Name.SwitchModeConfirmationDialogTitle);
         }
 
         static SwitchModeConfirmationDialog Create(
@@ -104,6 +56,7 @@ namespace Unity.PlasticSCM.Editor
             instance.mIsGluonMode = isGluonMode;
             instance.mEnterKeyAction = instance.OkButtonAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
+            instance.mOkButtonText = PlasticLocalization.Name.SwitchButton.GetString();
             return instance;
         }
 

@@ -15,8 +15,8 @@ using GluonGui;
 using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
-using PlasticGui.WorkspaceWindow.Topbar;
 using PlasticGui.WorkspaceWindow.Replication;
+using PlasticGui.WorkspaceWindow.Topbar;
 using PlasticGui.WorkspaceWindow.Update;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
@@ -39,10 +39,12 @@ namespace Unity.PlasticSCM.Editor
         IRefreshView,
         IUpdateReport,
         IGluonUpdateReport,
-        IGluonWorkspaceStatusChangeListener
+        IGluonWorkspaceStatusChangeListener,
+        UpdateWorkspaceInfoBar.IWorkingObjectInfoPanel
     {
-        internal WorkspaceStatusString.Data WorkspaceStatus { get; private set; }
-        internal string ServerDisplayName { get; private set; }
+        internal string WorkingObjectName { get; private set; }
+        internal string WorkingObjectFullSpec { get; private set; }
+        internal string WorkingObjectComment { get; private set; }
 
         internal OperationProgressData Progress { get { return mOperationProgressData; } }
 
@@ -181,7 +183,9 @@ namespace Unity.PlasticSCM.Editor
 
         void IWorkspaceWindow.UpdateTitle()
         {
-            RefreshWorkspaceStatus();
+            UpdateWorkspaceInfoBar.Update(
+                mWkInfo, null, this, null);
+
             UVCSToolbar.Controller.RefreshWorkspaceWorkingInfo();
         }
 
@@ -311,18 +315,49 @@ namespace Unity.PlasticSCM.Editor
         {
         }
 
-        void IGluonWorkspaceStatusChangeListener.OnWorkspaceStatusChanged()
-        {
-            RefreshWorkspaceStatus();
-            UVCSToolbar.Controller.RefreshWorkspaceWorkingInfo();
-            RefreshWorkingObject();
-        }
-
         UpdateReportResult IGluonUpdateReport.ShowUpdateReport(
             WorkspaceInfo wkInfo, List<ErrorMessage> errors)
         {
             return GluonUpdateReportDialog.ShowUpdateReport(
                 wkInfo, errors, mParentWindow);
+        }
+
+        void IGluonWorkspaceStatusChangeListener.OnWorkspaceStatusChanged()
+        {
+            UpdateWorkspaceInfoBar.Update(
+                mWkInfo, null, this, null);
+
+            UVCSToolbar.Controller.RefreshWorkspaceWorkingInfo();
+
+            RefreshWorkingObject();
+        }
+
+        void UpdateWorkspaceInfoBar.IWorkingObjectInfoPanel.UpdateInfo(
+            string objectType, string objectName, string repositoryName, string serverName)
+        {
+            string serverForDisplay = ResolveServer.ToDisplayString(serverName);
+
+            WorkingObjectName = string.Format("{0}@{1}@{2}",
+                GetShorten.ObjectName(objectName, objectType),
+                repositoryName,
+                GetShorten.ServerName(serverForDisplay));
+
+            WorkingObjectFullSpec = string.Format("{0}@{1}@{2}",
+                objectName,
+                repositoryName,
+                serverForDisplay);
+
+            RequestRepaint();
+        }
+
+        void UpdateWorkspaceInfoBar.IWorkingObjectInfoPanel.UpdateComment(
+            string comment, bool bFailed)
+        {
+            WorkingObjectComment = string.IsNullOrEmpty(comment) ?
+                PlasticLocalization.Name.NoCommentSet.GetString() :
+                comment;
+
+            RequestRepaint();
         }
 
         void ShowWorkspaceUpdateSuccess()
@@ -334,34 +369,11 @@ namespace Unity.PlasticSCM.Editor
                 Images.GetStepOkIcon());
         }
 
-        void RefreshWorkspaceStatus()
-        {
-            WorkspaceStatusString.Data status = null;
-
-            IThreadWaiter waiter = ThreadWaiter.GetWaiter();
-            waiter.Execute(
-                /*threadOperationDelegate*/ delegate
-                {
-                    status = WorkspaceStatusString.GetSelectorData(mWkInfo);
-                },
-                /*afterOperationDelegate*/ delegate
-                {
-                    if (waiter.Exception != null)
-                        return;
-
-                    WorkspaceStatus = status;
-
-                    ServerDisplayName = ResolveServer.ToDisplayString(status.Server);
-
-                    RequestRepaint();
-                });
-        }
-
         void RefreshWorkingObject()
         {
             // For partial workspaces the calculation of the working object is just
             // supported for branches, not for changesets
-            if (mSwitcher.State.SelectedTab != ViewSwitcher.SelectedTab.Branches)
+            if (mSwitcher.State.SelectedTab != ViewSwitcher.TabType.Branches)
                 return;
 
             WorkingObjectInfo workingObjectInfo = null;

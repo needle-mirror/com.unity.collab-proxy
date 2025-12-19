@@ -66,7 +66,7 @@ namespace Unity.PlasticSCM.Editor.UI
                 popupButtonRect.height);
 
             GUI.SetNextControlName(controlName);
-            string result = GUI.TextField(textFieldRect, text);
+            string result = EditorGUI.TextField(textFieldRect, text);
 
             GUI.Label(popupIconRect, popupIcon);
 

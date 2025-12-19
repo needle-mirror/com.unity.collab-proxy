@@ -5,20 +5,16 @@ using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.QueryViews.Labels;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.Progress;
+
+#if !UNITY_6000_0_OR_NEWER
+using EditorGUI = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.EditorGUI;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.Labels.Dialogs
 {
     internal class CreateLabelView : IPlasticDialogCloser
     {
-        internal ProgressControlsForDialogs ProgressControls
-        {
-            get { return mProgressControls; }
-        }
-
-        internal CreateLabelView(
-            CreateLabelDialog parentWindow,
-            RepositorySpec repSpec)
+        internal CreateLabelView(CreateLabelDialog parentWindow, RepositorySpec repSpec)
         {
             mParentWindow = parentWindow;
             mRepositorySpec = repSpec;
@@ -26,53 +22,27 @@ namespace Unity.PlasticSCM.Editor.Views.Labels.Dialogs
             mComment = "";
             mLabelAllXlinkedRepositories = false;
             mSwitchToLabel = false;
-            mProgressControls = new ProgressControlsForDialogs();
         }
 
         internal void OnGUI()
         {
-            DoTitleArea();
-
-            DoFieldsArea();
-
-            DoButtonsArea();
-
-            mProgressControls.ForcedUpdateProgress(mParentWindow);
-        }
-
-        void DoTitleArea()
-        {
-            GUILayout.BeginVertical();
-
-            GUILayout.Label(PlasticLocalization.Name.CreateLabelTitle.GetString(),
-                UnityStyles.Dialog.Title);
-
-            GUILayout.Space(5);
-
-            GUILayout.Label(PlasticLocalization.Name.CreateLabelExplanation.GetString(),
-                UnityStyles.Paragraph);
-
-            GUILayout.Space(10);
-
-            GUILayout.EndVertical();
-        }
-
-        void DoFieldsArea()
-        {
-            GUILayout.BeginVertical();
-
             using (new EditorGUILayout.HorizontalScope())
             {
                 GUILayout.Label(
                     PlasticLocalization.Name.LabelNameEntry.GetString(),
                     GUILayout.Width(120));
 
+                Rect nameRect = GUILayoutUtility.GetRect(
+                    new GUIContent(string.Empty),
+                    EditorStyles.textField,
+                    GUILayout.ExpandWidth(true));
+
                 GUI.SetNextControlName(NAME_FIELD_CONTROL_NAME);
-                mNewLabelName = GUILayout.TextField(mNewLabelName);
+                mNewLabelName = GUI.TextField(nameRect, mNewLabelName);
 
                 if (!mWasNameFieldFocused)
                 {
-                    EditorGUI.FocusTextInControl(NAME_FIELD_CONTROL_NAME);
+                    UnityEditor.EditorGUI.FocusTextInControl(NAME_FIELD_CONTROL_NAME);
                     mWasNameFieldFocused = true;
                 }
             }
@@ -89,11 +59,21 @@ namespace Unity.PlasticSCM.Editor.Views.Labels.Dialogs
                         GUILayout.Width(120));
                 }
 
+                Rect commentRect = GUILayoutUtility.GetRect(
+                    new GUIContent(string.Empty),
+                    EditorStyles.textArea,
+                    GUILayout.Height(100),
+                    GUILayout.ExpandWidth(true));
+
                 GUI.SetNextControlName(COMMENT_TEXTAREA_CONTROL_NAME);
-                mComment = GUILayout.TextArea(mComment, GUILayout.Height(100));
+                mComment = EditorGUI.ScrollableTextAreaInternal(
+                    commentRect,
+                    mComment,
+                    ref mScrollPosition,
+                    EditorStyles.textArea);
             }
 
-            GUILayout.Space(10);
+            GUILayout.Space(15);
 
             using (new EditorGUILayout.HorizontalScope())
             {
@@ -110,7 +90,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels.Dialogs
                 }
             }
 
-            GUILayout.Space(10);
+            GUILayout.Space(15);
 
             mLabelAllXlinkedRepositories = GUILayout.Toggle(mLabelAllXlinkedRepositories,
                 PlasticLocalization.Name.LabelAllXlinksCheckButton.GetString());
@@ -119,61 +99,11 @@ namespace Unity.PlasticSCM.Editor.Views.Labels.Dialogs
 
             mSwitchToLabel = GUILayout.Toggle(mSwitchToLabel,
                 PlasticLocalization.Name.SwitchToLabelCheckButton.GetString());
-
-            GUILayout.Space(5);
-
-            GUILayout.EndVertical();
-        }
-
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                using (new EditorGUILayout.HorizontalScope(GUILayout.MinWidth(450)))
-                {
-                    GUILayout.Space(2);
-                    DrawProgressForDialogs.For(
-                        mProgressControls.ProgressData);
-                    GUILayout.Space(2);
-                }
-
-                GUILayout.FlexibleSpace();
-
-                DoCreateButton();
-                DoCancelButton();
-            }
         }
 
         void DoChooseButton()
         {
             mParentWindow.ToggleChangesetExplorer(true);
-        }
-
-        void DoCancelButton()
-        {
-            if (!GUILayout.Button(
-                    PlasticLocalization.Name.CancelButton.GetString(), UnityStyles.Dialog.NormalButton,
-                GUILayout.MinWidth(80),
-                GUILayout.Height(25)))
-                return;
-
-            CancelButtonAction();
-        }
-
-        void DoCreateButton()
-        {
-            if (!GUILayout.Button(
-                    PlasticLocalization.Name.CreateButton.GetString(), UnityStyles.Dialog.NormalButton,
-                GUILayout.MinWidth(80),
-                GUILayout.Height(25)))
-                return;
-
-            mParentWindow.CreateButtonAction();
-        }
-
-        void CancelButtonAction()
-        {
-            mParentWindow.CancelButtonAction();
         }
 
         internal LabelCreationData BuildCreationData()
@@ -210,7 +140,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels.Dialogs
         bool mSwitchToLabel;
         bool mWasNameFieldFocused;
 
-        readonly ProgressControlsForDialogs mProgressControls;
+        Vector2 mScrollPosition;
         readonly CreateLabelDialog mParentWindow;
         readonly RepositorySpec mRepositorySpec;
 

@@ -13,7 +13,7 @@ namespace Unity.PlasticSCM.Editor.Tool
                 CmConnection.Get().
                     BuildWebApiTokenForCloudEditionForUser(
                         serverProfile.Server, 
-                        serverProfile.GetSEIDWorkingMode(), 
+                        serverProfile.WorkingMode, 
                         serverProfile.SecurityConfig):
                 CmConnection.Get().
                     BuildWebApiTokenForCloudEditionForUser(

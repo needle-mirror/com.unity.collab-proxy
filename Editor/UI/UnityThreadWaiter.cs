@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 
 using Codice.Client.Common.Threading;
+using Codice.LogWrapper;
 
 namespace Unity.PlasticSCM.Editor.UI
 {
@@ -53,6 +55,11 @@ namespace Unity.PlasticSCM.Editor.UI
             mPlasticTimer = timerBuilder.Get(bModalMode, timerIntervalMilliseconds, OnTimerTick);
         }
 
+        internal static void Shutdown()
+        {
+            mbIsShutdown = true;
+        }
+
         void IThreadWaiter.Execute(
             PlasticThread.Operation threadOperationDelegate,
             PlasticThread.Operation afterOperationDelegate)
@@ -69,6 +76,16 @@ namespace Unity.PlasticSCM.Editor.UI
             mAfterOperationDelegate = afterOperationDelegate;
             mTimerTickDelegate = timerTickDelegate;
 
+            if (mbIsShutdown)
+            {
+                mLog.WarnFormat(
+                    "Shutdown in progress, skipping execution. Callstack:\n{0}",
+                    new StackTrace().ToString());
+                return;
+            }
+
+            ThreadWaiterRegistry.Register(this);
+
             mPlasticTimer.Start();
 
             mThreadOperation.Execute();
@@ -83,13 +100,15 @@ namespace Unity.PlasticSCM.Editor.UI
         {
             if (mThreadOperation.IsRunning)
             {
-                if (mTimerTickDelegate != null)
+                if (mTimerTickDelegate != null && !mbCancelled)
                     EditorDispatcher.Dispatch(() => mTimerTickDelegate());
 
                 return;
             }
 
             mPlasticTimer.Stop();
+
+            ThreadWaiterRegistry.Unregister(this);
 
             if (mbCancelled)
                 return;
@@ -103,5 +122,8 @@ namespace Unity.PlasticSCM.Editor.UI
         PlasticThread mThreadOperation;
         PlasticThread.Operation mTimerTickDelegate;
         PlasticThread.Operation mAfterOperationDelegate;
+
+        static volatile bool mbIsShutdown = false;
+        static readonly ILog mLog = LogManager.GetLogger("ThreadWaiter");
     }
 }

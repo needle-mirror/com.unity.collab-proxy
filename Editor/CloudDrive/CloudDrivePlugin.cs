@@ -25,9 +25,10 @@ namespace Unity.PlasticSCM.Editor.CloudDrive
             if (!ToolConfig.EnableCloudDriveTokenExists())
                 return;
 
-            CloudDriveMenuItem.AddMenuItem();
-
-            ProjectViewCloudDriveAssetMenu.AddMenuItem();
+            new DelayedActionBySecondsRunner(
+                    Instance.Enable,
+                    UnityConstants.PLUGIN_DELAYED_INITIALIZE_INTERVAL)
+                .Run();
         }
 
         internal bool IsEnabled()
@@ -60,6 +61,10 @@ namespace Unity.PlasticSCM.Editor.CloudDrive
             mLog.Debug("Enable");
 
             PlasticApp.Enable();
+
+            CloudDriveMenuItem.AddMenuItem();
+
+            ProjectViewCloudDriveAssetMenu.AddMenuItem();
         }
 
         internal void Disable()
@@ -72,6 +77,10 @@ namespace Unity.PlasticSCM.Editor.CloudDrive
             mIsEnabled = false;
 
             PlasticApp.DisposeIfNeeded();
+
+            CloudDriveMenuItem.RemoveMenuItem();
+
+            ProjectViewCloudDriveAssetMenu.RemoveMenuItem();
         }
 
         internal void Shutdown()
@@ -79,8 +88,6 @@ namespace Unity.PlasticSCM.Editor.CloudDrive
             mLog.Debug("Shutdown");
 
             Disable();
-
-            CloudDriveMenuItem.RemoveMenuItem();
         }
 
         internal void OnApplicationActivated()

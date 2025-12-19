@@ -3,7 +3,9 @@ using System.IO;
 using System.Linq;
 
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 using Codice.Client.BaseCommands;
 using Codice.Client.Common;
@@ -70,9 +72,12 @@ namespace Unity.PlasticSCM.Editor
             RegisterExceptionHandlers();
             RegisterApplicationFocusHandlers();
             RegisterPlayModeHandler();
+            RegisterSceneOpenedHandler();
             RegisterBeforeAssemblyReloadHandler();
             RegisterEditorWantsToQuit();
             RegisterEditorQuitting();
+
+            WaitForPendingOperations.ClearProgressBarAndEnterPlayModeIfNeeded();
 
             InitLocalization();
 
@@ -111,10 +116,8 @@ namespace Unity.PlasticSCM.Editor
             if (string.IsNullOrEmpty(webApiToken))
                 return;
 
-            PlasticGui.Plastic.WebRestAPI.SetToken(webApiToken);
-
             OrganizationsInformation.UpdateCloudOrganizationSlugsAsync(
-                PlasticGui.Plastic.WebRestAPI, PlasticGui.Plastic.API);
+                webApiToken, PlasticGui.Plastic.WebRestAPI, PlasticGui.Plastic.API);
         }
 
         internal static void DisposeIfNeeded()
@@ -130,10 +133,14 @@ namespace Unity.PlasticSCM.Editor
 
             mIsInitialized = false;
 
+            PlasticMethodExceptionHandling.UninstallAskCredentialsUi();
+            ClientEncryptionServiceProvider.UninstallEncryptionPasswordProvider();
+
             UnRegisterDomainUnloadHandler();
             UnRegisterExceptionHandlers();
             UnRegisterApplicationFocusHandlers();
             UnRegisterPlayModeHandler();
+            UnRegisterSceneOpenedHandler();
             UnRegisterBeforeAssemblyReloadHandler();
             UnRegisterEditorWantsToQuit();
             UnRegisterEditorQuitting();
@@ -146,13 +153,16 @@ namespace Unity.PlasticSCM.Editor
                 mEventSenderScheduler.EndAndSendEventsAsync();
             }
 
+            ClientConnectionPool.CloseAllConnections();
             ClientConnectionPool.Shutdown();
         }
 
         static void Shutdown()
         {
-            UVCSPlugin.Instance.Shutdown();
+            UnityThreadWaiter.Shutdown();
+            EditorDispatcher.Shutdown();
 
+            UVCSPlugin.Instance.Shutdown();
             CloudDrivePlugin.Instance.Shutdown();
 
             DisposeIfNeeded();
@@ -160,12 +170,16 @@ namespace Unity.PlasticSCM.Editor
 
         static void RegisterDomainUnloadHandler()
         {
+#pragma warning disable UAC0006
             AppDomain.CurrentDomain.DomainUnload += AppDomainUnload;
+#pragma warning restore UAC0006
         }
 
         static void RegisterExceptionHandlers()
         {
+#pragma warning disable UAC0006
             AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
+#pragma warning restore UAC0006
 
             Application.logMessageReceivedThreaded += HandleLog;
         }
@@ -180,6 +194,11 @@ namespace Unity.PlasticSCM.Editor
         static void RegisterPlayModeHandler()
         {
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+        }
+
+        static void RegisterSceneOpenedHandler()
+        {
+            EditorSceneManager.sceneOpened += OnSceneOpened;
         }
 
         static void RegisterBeforeAssemblyReloadHandler()
@@ -199,12 +218,16 @@ namespace Unity.PlasticSCM.Editor
 
         static void UnRegisterDomainUnloadHandler()
         {
+#pragma warning disable UAC0006
             AppDomain.CurrentDomain.DomainUnload -= AppDomainUnload;
+#pragma warning restore UAC0006
         }
 
         static void UnRegisterExceptionHandlers()
         {
+#pragma warning disable UAC0006
             AppDomain.CurrentDomain.UnhandledException -= HandleUnhandledException;
+#pragma warning restore UAC0006
 
             Application.logMessageReceivedThreaded -= HandleLog;
         }
@@ -219,6 +242,11 @@ namespace Unity.PlasticSCM.Editor
         static void UnRegisterPlayModeHandler()
         {
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+        }
+
+        static void UnRegisterSceneOpenedHandler()
+        {
+            EditorSceneManager.sceneOpened -= OnSceneOpened;
         }
 
         static void UnRegisterBeforeAssemblyReloadHandler()
@@ -299,8 +327,18 @@ namespace Unity.PlasticSCM.Editor
         {
             mLog.Debug("OnPlayModeStateChanged: " + change);
 
+            WaitForPendingOperations.OnPlayModeStateChanged(change);
+
             if (UVCSPlugin.Instance.IsEnabled())
                 UVCSPlugin.Instance.OnPlayModeStateChanged(change);
+        }
+
+        static void OnSceneOpened(Scene scene, OpenSceneMode mode)
+        {
+            mLog.Debug("OnSceneOpened: " + scene.path);
+
+            if (UVCSPlugin.Instance.IsEnabled())
+                UVCSPlugin.Instance.OnSceneOpened();
         }
 
         static void BeforeAssemblyReload()
@@ -308,6 +346,8 @@ namespace Unity.PlasticSCM.Editor
             mLog.Debug("BeforeAssemblyReload");
 
             UnRegisterBeforeAssemblyReloadHandler();
+
+            WaitForPendingOperations.BeforeAssemblyReload();
 
             Shutdown();
         }

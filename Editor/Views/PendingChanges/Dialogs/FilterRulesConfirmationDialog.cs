@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 
 using UnityEditor;
 using UnityEngine;
@@ -7,6 +6,10 @@ using UnityEngine;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Items;
 using Unity.PlasticSCM.Editor.UI;
+
+#if !UNITY_6000_0_OR_NEWER
+using EditorGUI = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.EditorGUI;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
 {
@@ -43,36 +46,22 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             return result;
         }
 
-        protected override void OnModalGUI()
+        protected override void DoComponentsArea()
         {
-            Title(PlasticLocalization.GetString(
-                PlasticLocalization.Name.FilterRulesConfirmationTitle));
+            Rect rulesRect = GUILayoutUtility.GetRect(
+                new GUIContent(string.Empty),
+                new GUIStyle(EditorStyles.textArea) { wordWrap = false, },
+                GUILayout.ExpandHeight(true),
+                GUILayout.ExpandWidth(true));
 
-            Paragraph(mDialogExplanation);
-
-            RulesArea();
-
-            GUILayout.Space(20);
-
-            DoButtonsArea();
-        }
-
-        protected override string GetTitle()
-        {
-            return PlasticLocalization.GetString(
-                PlasticLocalization.Name.FilterRulesConfirmationTitle);
-        }
-
-        void RulesArea()
-        {
-            mScrollPosition = EditorGUILayout.BeginScrollView(mScrollPosition);
-
-            mRulesText = EditorGUILayout.TextArea(
-                mRulesText, GUILayout.ExpandHeight(true));
+            GUI.SetNextControlName(RULES_TEXTAREA_CONTROL_NAME);
+            mRulesText = EditorGUI.ScrollableTextAreaInternal(
+                rulesRect,
+                mRulesText,
+                ref mScrollPosition,
+                new GUIStyle(EditorStyles.textArea) { wordWrap = false, });
 
             mIsTextAreaFocused = FixTextAreaSelectionIfNeeded(mIsTextAreaFocused);
-
-            EditorGUILayout.EndScrollView();
 
             if (!mIsApplicableToAllWorkspaces)
                 return;
@@ -82,40 +71,15 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
                 mApplyRulesToAllWorkspace, GUILayout.ExpandWidth(true));
         }
 
-        void DoButtonsArea()
+        protected override string GetTitle()
         {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoOkButton();
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoOkButton();
-            }
+            return PlasticLocalization.GetString(
+                PlasticLocalization.Name.FilterRulesConfirmationTitle);
         }
 
-        void DoOkButton()
+        protected override string GetExplanation()
         {
-            if (!AcceptButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.OkButton)))
-                return;
-
-            OkButtonAction();
-        }
-
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.CancelButton)))
-                return;
-
-            CancelButtonAction();
+            return mDialogExplanation;
         }
 
         string[] GetRules()
@@ -128,9 +92,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
 
         static bool FixTextAreaSelectionIfNeeded(bool isTextAreaFocused)
         {
-            TextEditor textEditor = typeof(EditorGUI)
-              .GetField("activeEditor", BindingFlags.Static | BindingFlags.NonPublic)
-              .GetValue(null) as TextEditor;
+            TextEditor textEditor = UnityInternals.UnityEditor.EditorGUI.activeEditor;
 
             // text editor is null when it is not focused
             if (textEditor == null)
@@ -168,6 +130,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             instance.mRulesText = rulesText;
             instance.mIsApplicableToAllWorkspaces = isApplicableToAllWorkspaces;
             instance.mEnterKeyAction = instance.OkButtonAction;
+            instance.AddControlConsumingEnterKey(RULES_TEXTAREA_CONTROL_NAME);
             instance.mEscapeKeyAction = instance.CancelButtonAction;
             return instance;
         }
@@ -180,5 +143,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
         bool mIsApplicableToAllWorkspaces;
         string mRulesText;
         string mDialogExplanation;
+
+        const string RULES_TEXTAREA_CONTROL_NAME = "RulesTextArea";
     }
 }

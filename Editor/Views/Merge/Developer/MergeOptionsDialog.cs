@@ -10,7 +10,6 @@ using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Merge;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.Progress;
 
 namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
 {
@@ -34,9 +33,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             EditorWindow parentWindow,
             MergeDialogParameters mergeDialogParameters)
         {
-            MergeOptionsDialog dialog = Create(
-                mergeDialogParameters,
-                new ProgressControlsForDialogs());
+            MergeOptionsDialog dialog = Create(mergeDialogParameters);
 
             dialog.SetMergeOptions();
 
@@ -45,9 +42,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
 
         internal static MergeOptionsDialog MergeOptionsForTesting(MergeDialogParameters mergeDialogParameters)
         {
-            MergeOptionsDialog dialog = Create(
-                mergeDialogParameters,
-                new ProgressControlsForDialogs());
+            MergeOptionsDialog dialog = Create(mergeDialogParameters);
 
             dialog.SetMergeOptions();
             return dialog;
@@ -68,16 +63,13 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 PlasticLocalization.Name.MergeOptionsTitle);
         }
 
-        protected override void OnModalGUI()
+        protected override string GetExplanation()
         {
-            GUILayout.Label(
-                PlasticLocalization.Name.MergeOptionsTitle.GetString(),
-                UnityStyles.Dialog.MessageTitle);
+            return PlasticLocalization.Name.MergeOptionsExplanation.GetString();
+        }
 
-            GUILayout.Label(
-                PlasticLocalization.Name.MergeOptionsExplanation.GetString(),
-                UnityStyles.Paragraph);
-
+        protected override void DoComponentsArea()
+        {
             DrawSection(
                 PlasticLocalization.Name.MergeOptionsContributorsTitle.GetString(),
                 DoMergeContributorsArea);
@@ -93,13 +85,6 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             DrawSection(
                 PlasticLocalization.Name.MergeOptionAdvancedTitle.GetString(),
                 DoAdvancedArea);
-
-            DrawProgressForDialogs.For(
-                mProgressControls.ProgressData);
-
-            DoButtonsArea();
-
-            mProgressControls.ForcedUpdateProgress(this);
         }
 
         void DoMergeContributorsArea()
@@ -268,40 +253,6 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             mManualAncestorRadioToggle = true;
         }
 
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoSaveButton();
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoSaveButton();
-            }
-        }
-
-        void DoSaveButton()
-        {
-            if (!AcceptButton(PlasticLocalization.Name.SaveButton.GetString()))
-                return;
-
-            OkButtonWithValidationAction();
-        }
-
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.Name.CancelButton.GetString()))
-                return;
-
-            CancelButtonAction();
-        }
-
         void SetMergeOptions()
         {
             if (mParameters.Options == null)
@@ -372,7 +323,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             }
         }
 
-        internal void OkButtonWithValidationAction()
+        internal override void OkButtonAction()
         {
             mParameters.SaveParameters(
                 mMergeBothRadioToggle,
@@ -384,7 +335,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
 
             if (mParameters.Strategy != MergeStrategy.Manual)
             {
-                OkButtonAction();
+                base.OkButtonAction();
                 return;
             }
 
@@ -415,15 +366,13 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             }
         }
 
-        static MergeOptionsDialog Create(
-            MergeDialogParameters parameters,
-            ProgressControlsForDialogs progressControls)
+        static MergeOptionsDialog Create(MergeDialogParameters parameters)
         {
             var instance = CreateInstance<MergeOptionsDialog>();
             instance.mParameters = parameters;
-            instance.mProgressControls = progressControls;
-            instance.mEnterKeyAction = instance.OkButtonWithValidationAction;
+            instance.mEnterKeyAction = instance.OkButtonAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
+            instance.mOkButtonText = PlasticLocalization.Name.SaveButton.GetString();
             return instance;
         }
 
@@ -454,7 +403,6 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         bool mManualAncestorRadioToggle;
         string mAncestorTextField;
 
-        ProgressControlsForDialogs mProgressControls;
         MergeDialogParameters mParameters;
     }
 }

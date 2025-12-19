@@ -3,13 +3,12 @@ using UnityEngine;
 using Codice.CM.Common;
 using PlasticGui.Gluon;
 using PlasticGui.Gluon.WorkspaceWindow;
+using Unity.PlasticSCM.Editor.Topbar;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.StatusBar;
 
 namespace Unity.PlasticSCM.Editor.Gluon
 {
-    internal class IncomingChangesNotification :
-        WindowStatusBar.IIncomingChangesNotification
+    internal class IncomingChangesNotification : NotificationsArea.IIncomingChangesNotification
     {
         internal IncomingChangesNotification(
             WorkspaceInfo wkInfo,
@@ -19,29 +18,33 @@ namespace Unity.PlasticSCM.Editor.Gluon
             mGluonViewSwitcher = gluonViewSwitcher;
         }
 
-        bool WindowStatusBar.IIncomingChangesNotification.HasNotification
+        bool NotificationsArea.IIncomingChangesNotification.HasNotification
         {
             get { return mHasNotification; }
         }
 
-        void WindowStatusBar.IIncomingChangesNotification.OnGUI()
+        void NotificationsArea.IIncomingChangesNotification.OnGUI()
         {
             Texture2D icon = mData.Status == UVCSNotificationStatus.IncomingChangesStatus.Conflicts ?
                 Images.GetConflictedIcon() :
                 Images.GetOutOfSyncIcon();
 
-            WindowStatusBar.DrawIcon(icon);
+            NotificationsArea.DrawIcon(
+                icon,
+                UnityConstants.INCOMING_CHANGES_NOTIFICATION_ICON_SIZE);
 
-            WindowStatusBar.DrawNotification(new GUIContentNotification(
+            NotificationsArea.DrawNotification(new GUIContentNotification(
                 new GUIContent(mData.InfoText)));
 
-            if (WindowStatusBar.DrawButton(new GUIContent(mData.ActionText, mData.TooltipText)))
+            GUILayout.Space(3);
+
+            if (NotificationsArea.DrawButton(new GUIContent(mData.ActionText, mData.TooltipText)))
             {
                 ShowIncomingChanges.FromNotificationBar(mWkInfo, mGluonViewSwitcher);
             }
         }
 
-        void WindowStatusBar.IIncomingChangesNotification.Show(
+        void NotificationsArea.IIncomingChangesNotification.Show(
             string infoText,
             string actionText,
             string tooltipText,
@@ -58,7 +61,7 @@ namespace Unity.PlasticSCM.Editor.Gluon
             mHasNotification = true;
         }
 
-        void WindowStatusBar.IIncomingChangesNotification.Hide()
+        void NotificationsArea.IIncomingChangesNotification.Hide()
         {
             mData.Clear();
 
@@ -66,8 +69,7 @@ namespace Unity.PlasticSCM.Editor.Gluon
         }
 
         bool mHasNotification;
-        WindowStatusBar.IncomingChangesNotificationData mData =
-            new WindowStatusBar.IncomingChangesNotificationData();
+        NotificationsArea.IncomingChangesNotificationData mData = new NotificationsArea.IncomingChangesNotificationData();
 
         readonly IGluonViewSwitcher mGluonViewSwitcher;
         readonly WorkspaceInfo mWkInfo;

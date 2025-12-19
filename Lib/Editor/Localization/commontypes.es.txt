@@ -810,6 +810,9 @@ La etiqueta {0} especificada no existe.
 == LbNotFound ==
 No se ha encontrado la etiqueta especificada.
 
+== LdapAccountLocked ==
+La cuenta para '{0}' está bloqueada. Por favor, pruebe de nuevo más tarde.
+
 == LdapDomain ==
 Dominio LDAP
 
@@ -1534,6 +1537,9 @@ El trigger especificado no existe.
 
 == UnexpectedError ==
 Se ha producido un error no esperado "{0}". Para más información consulta el log del servidor.
+
+== UnexpectedUnknownErrorOnServer ==
+Se ha producido un error no esperado en el servidor. Por favor, para más información compruebe el log del servidor.
 
 == UnityOrgPermissionsInheritanceChangesNotAllowed ==
 No se permiten cambios en la herencia de permisos en Organizaciones Unity. Para gestionar el control de acceso en su organización, abra https://cloud.unity.com/home/organizations/{0}/projects/default/devops/overview en su navegador.

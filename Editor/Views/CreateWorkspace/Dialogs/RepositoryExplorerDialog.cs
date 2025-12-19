@@ -40,7 +40,6 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
         {
             RepositoryExplorerDialog dialog = Create(
                 plasticWebRestApi,
-                new ProgressControlsForDialogs(),
                 defaultServer,
                 new UnityPlasticGuiMessage());
 
@@ -65,13 +64,8 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
                 UnityConstants.REPOSITORIES_TABLE_SETTINGS_NAME);
         }
 
-        protected override void OnModalGUI()
+        protected override void DoComponentsArea()
         {
-            Title(PlasticLocalization.GetString(PlasticLocalization.Name.ChooseRepositoryTitle));
-
-            Paragraph(PlasticLocalization.GetString(
-                PlasticLocalization.Name.SelectRepositoryBelow));
-
             if (Event.current.type == EventType.Layout)
             {
                 mProgressControls.ProgressData.CopyInto(
@@ -93,18 +87,16 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             DoListArea(
                 mRepositoriesListView,
                 isEnabled);
-
-            DrawProgressForDialogs.For(
-                mProgressControls.ProgressData);
-
-            DoButtonsArea();
-
-            mProgressControls.ForcedUpdateProgress(this);
         }
 
         protected override string GetTitle()
         {
-            return PlasticLocalization.GetString(PlasticLocalization.Name.ExploreRepositories);
+            return PlasticLocalization.GetString(PlasticLocalization.Name.ChooseRepositoryTitle);
+        }
+
+        protected override string GetExplanation()
+        {
+            return PlasticLocalization.Name.SelectRepositoryBelow.GetString();
         }
 
         void SearchField_OnDownOrUpArrowKeyPressed()
@@ -239,45 +231,8 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             return result;
         }
 
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoOkButton();
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoOkButton();
-            }
-        }
-
-        void DoOkButton()
-        {
-            if (!AcceptButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.OkButton)))
-                return;
-
-            OkButtonAction();
-        }
-
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.CancelButton)))
-                return;
-
-            CancelButtonAction();
-        }
-
         static RepositoryExplorerDialog Create(
             IPlasticWebRestApi plasticWebRestApi,
-            ProgressControlsForDialogs progressControls,
             string defaultServer,
             GuiMessage.IGuiMessage guiMessage)
         {
@@ -285,7 +240,6 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
             instance.mGuiMessage = guiMessage;
             instance.mEnterKeyAction = instance.OkButtonAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
-            instance.mProgressControls = progressControls;
             instance.BuildComponents(defaultServer, plasticWebRestApi);
             return instance;
         }
@@ -329,7 +283,6 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace.Dialogs
 
         SearchField mSearchField;
         RepositoriesListView mRepositoriesListView;
-        ProgressControlsForDialogs mProgressControls;
         FillRepositoriesTable mFillRepositoriesTable;
         State mState;
         GuiMessage.IGuiMessage mGuiMessage;

@@ -1,5 +1,7 @@
 using UnityEditor;
 using UnityEditor.PackageManager;
+
+using Codice.LogWrapper;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.UI;
@@ -41,6 +43,8 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
         internal static void UnityAssetDatabaseAndPackageManagerAsync(
             IAssetStatusCache assetStatusCache)
         {
+            mLog.Debug("Triggering async Package Manager Resolve for domain reload");
+
             // Client.Resolve() will resolve any pending packages added or removed from the project
             // VCS-1004718 - This is important so the domain gets reloaded first if needed
             Client.Resolve();
@@ -68,11 +72,15 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
 
         static void RefreshUnityAssetDatabase(IAssetStatusCache assetStatusCache)
         {
+            mLog.Debug("Refreshing Unity AssetDatabase");
+
             AssetDatabase.Refresh(ImportAssetOptions.Default);
 
             ClearVersionControlCaches(assetStatusCache);
 
             UVCSAssetPostprocessor.SetIsRepaintNeededAfterAssetDatabaseRefresh();
         }
+
+        static readonly ILog mLog = PlasticApp.GetLogger("RefreshAsset");
     }
 }

@@ -12,11 +12,10 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
 {
     internal enum ShelvesListColumn
     {
-        Name,
-        CreationDate,
         Comment,
+        CreationDate,
         CreatedBy,
-        Repository
+        Name
     }
 
     [Serializable]
@@ -30,11 +29,10 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
         internal static List<string> GetColumnNames()
         {
             List<string> result = new List<string>();
-            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.NameColumn));
-            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CreationDateColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn));
+            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CreationDateColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CreatedByColumn));
-            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.RepositoryColumn));
+            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.NameColumn));
             return result;
         }
 
@@ -42,19 +40,27 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
         {
             switch (column)
             {
-                case ShelvesListColumn.Name:
-                    return PlasticLocalization.GetString(PlasticLocalization.Name.NameColumn);
-                case ShelvesListColumn.CreationDate:
-                    return PlasticLocalization.GetString(PlasticLocalization.Name.CreationDateColumn);
                 case ShelvesListColumn.Comment:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn);
+                case ShelvesListColumn.CreationDate:
+                    return PlasticLocalization.GetString(PlasticLocalization.Name.CreationDateColumn);
                 case ShelvesListColumn.CreatedBy:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.CreatedByColumn);
-                case ShelvesListColumn.Repository:
-                    return PlasticLocalization.GetString(PlasticLocalization.Name.RepositoryColumn);
+                case ShelvesListColumn.Name:
+                    return PlasticLocalization.GetString(PlasticLocalization.Name.NameColumn);
                 default:
                     return null;
             }
+        }
+
+        internal static int[] GetDefaultVisibleColumns()
+        {
+            return new int[]
+            {
+                (int)ShelvesListColumn.Comment,
+                (int)ShelvesListColumn.CreationDate,
+                (int)ShelvesListColumn.CreatedBy,
+            };
         }
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()
@@ -76,10 +82,10 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             {
                 new Column()
                 {
-                    width = UnityConstants.ShelvesColumns.SHELVES_NAME_WIDTH,
-                    minWidth = UnityConstants.ShelvesColumns.SHELVES_NAME_MIN_WIDTH,
+                    width = UnityConstants.ShelvesColumns.COMMENT_WIDTH,
+                    minWidth = UnityConstants.ShelvesColumns.COMMENT_MIN_WIDTH,
                     headerContent = new GUIContent(
-                        GetColumnName(ShelvesListColumn.Name)),
+                        GetColumnName(ShelvesListColumn.Comment)),
                     allowToggleVisibility = false,
                     sortingArrowAlignment = TextAlignment.Right
                 },
@@ -93,28 +99,20 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
                 },
                 new Column()
                 {
-                    width = UnityConstants.ShelvesColumns.COMMENT_WIDTH,
-                    minWidth = UnityConstants.ShelvesColumns.COMMENT_MIN_WIDTH,
-                    headerContent = new GUIContent(
-                        GetColumnName(ShelvesListColumn.Comment)),
-                    sortingArrowAlignment = TextAlignment.Right
-                },
-                new Column()
-                {
                     width = UnityConstants.ShelvesColumns.CREATEDBY_WIDTH,
                     minWidth = UnityConstants.ShelvesColumns.CREATEDBY_MIN_WIDTH,
                     headerContent = new GUIContent(
                         GetColumnName(ShelvesListColumn.CreatedBy)),
                     sortingArrowAlignment = TextAlignment.Right
                 },
-                 new Column()
+                new Column()
                 {
-                    width = UnityConstants.ShelvesColumns.REPOSITORY_WIDTH,
-                    minWidth = UnityConstants.ShelvesColumns.REPOSITORY_MIN_WIDTH,
+                    width = UnityConstants.ShelvesColumns.SHELVES_NAME_WIDTH,
+                    minWidth = UnityConstants.ShelvesColumns.SHELVES_NAME_MIN_WIDTH,
                     headerContent = new GUIContent(
-                        GetColumnName(ShelvesListColumn.Repository)),
+                        PlasticLocalization.Name.IdColumn.GetString()),
                     sortingArrowAlignment = TextAlignment.Right
-                }
+                },
             };
         }
 

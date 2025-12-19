@@ -1,7 +1,6 @@
-using System.IO;
-
 using Codice.Client.Common.WebApi;
 using Codice.CM.Common;
+using Unity.PlasticSCM.Editor.AssetUtils;
 
 namespace Unity.PlasticSCM.Editor.Hub.Operations
 {
@@ -18,8 +17,8 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
             string unityAccessToken)
         {
             string workspaceFullPath = command.HasWorkspacePath() ?
-                Path.GetFullPath(command.WorkspacePath) :
-                Path.GetFullPath(command.ProjectPath);
+                AssetsPath.GetFullPath.ForPath(command.WorkspacePath) :
+                AssetsPath.GetFullPath.ForPath(command.ProjectPath);
 
             return new OperationParams(
                 workspaceFullPath,

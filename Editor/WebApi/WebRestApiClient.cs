@@ -42,36 +42,6 @@ namespace Unity.PlasticSCM.Editor.WebApi
                 }
             }
 
-            internal static NewVersionResponse GetLastVersion(Edition plasticEdition)
-            {
-                Uri endpoint = mWebApiUris.GetFullUri(
-                        WebApiEndpoints.LastVersion.NewVersion,
-                        "9.0.0.0",
-                        WebApiEndpoints.LastVersion.GetEditionString(plasticEdition),
-                        WebApiEndpoints.LastVersion.GetPlatformString());
-
-                try
-                {
-                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(endpoint);
-                    request.Method = "GET";
-                    request.ContentType = "application/json";
-
-                    return GetResponse<NewVersionResponse>(request);
-                }
-                catch (Exception ex)
-                {
-                    mLog.ErrorFormat(
-                        "Unable to retrieve new versions from '{0}': {1}",
-                        endpoint.ToString(), ex.Message);
-
-                    mLog.DebugFormat(
-                        "StackTrace:{0}{1}",
-                        Environment.NewLine, ex.StackTrace);
-
-                    return null;
-                }
-            }
-
             internal static CurrentUserAdminCheckResponse IsUserAdmin(
                 string organizationName,
                 string authToken)

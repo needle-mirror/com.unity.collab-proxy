@@ -769,7 +769,7 @@ Gluon 允许您直接下载需要处理的内容。
 
 如果为此文件类型配置了锁定，则服务器将在签出期间锁定文件。
 
-[link:https://plasticscm.com/download/help/locking]在此处阅读有关锁定的更多信息[/link]。
+[link:https://docs.unity.com/unity-version-control/smart-locks]在此处阅读有关锁定的更多信息[/link]。
 
 == GluonWkExplTipUseHistory ==
 [title]您知道所选文件的历史记录始终可用吗？[/title]

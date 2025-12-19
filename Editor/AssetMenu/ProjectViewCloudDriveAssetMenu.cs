@@ -23,6 +23,12 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             HandleMenuItem.UpdateAllMenus();
         }
 
+        internal static void RemoveMenuItem()
+        {
+            HandleMenuItem.RemoveMenuItem(
+                PlasticLocalization.Name.AddToUnityCloudDriveMenu.GetString());
+        }
+
         static void AddToCloudDrive()
         {
             if (PlasticGuiConfig.Get().Configuration.ShowCloudDriveWelcomeView ||

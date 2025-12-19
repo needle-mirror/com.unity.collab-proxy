@@ -7,7 +7,6 @@ using UnityEngine;
 using Codice.CM.Common;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.Progress;
 
 namespace Unity.PlasticSCM.Editor.CloudDrive.ShareWorkspace
 {
@@ -28,10 +27,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.ShareWorkspace
             out List<SecurityMember> collaboratorsToAdd,
             out List<SecurityMember> collaboratorsToRemove)
         {
-            ShareWorkspaceDialog dialog = Create(
-                workspaceInfo,
-                parentWindow.Repaint,
-                new ProgressControlsForDialogs());
+            ShareWorkspaceDialog dialog = Create(workspaceInfo, parentWindow.Repaint);
 
             ResponseType dialogResult = dialog.RunModal(parentWindow);
 
@@ -40,16 +36,13 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.ShareWorkspace
             return dialogResult == ResponseType.Ok;
         }
 
-        static ShareWorkspaceDialog Create(
-            WorkspaceInfo workspaceInfo,
-            Action repaintAction,
-            ProgressControlsForDialogs progressControls)
+        static ShareWorkspaceDialog Create(WorkspaceInfo workspaceInfo, Action repaintAction)
         {
             var instance = CreateInstance<ShareWorkspaceDialog>();
             instance.IsResizable = false;
 
             mShareWorkspacePanel = new ShareWorkspacePanel(
-                workspaceInfo, progressControls, repaintAction);
+                workspaceInfo, instance.mProgressControls, repaintAction);
 
             RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(workspaceInfo);
 
@@ -57,9 +50,9 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.ShareWorkspace
                repSpec.Server,
                CloudProjectRepository.GetProjectName(repSpec.Name));
 
-            instance.mEnterKeyAction = instance.OkButtonWithValidationAction;
+            instance.mEnterKeyAction = instance.OkButtonAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
-            instance.mProgressControls = progressControls;
+            instance.mOkButtonText = PlasticLocalization.Name.ShareButton.GetString();
             return instance;
         }
 
@@ -68,54 +61,12 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.ShareWorkspace
             return PlasticLocalization.Name.ShareWorkspaceDialogTitle.GetString();
         }
 
-        protected override void OnModalGUI()
+        protected override void DoComponentsArea()
         {
             mShareWorkspacePanel.OnGUI(mProgressControls.ProgressData.IsWaitingAsyncResult);
-
-            GUILayout.Space(10f);
-
-            DrawProgressForDialogs.For(mProgressControls.ProgressData);
-
-            GUILayout.Space(10f);
-
-            DoButtonsArea();
         }
 
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoOkButton();
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoOkButton();
-            }
-        }
-
-        void DoOkButton()
-        {
-            if (!AcceptButton(PlasticLocalization.Name.ShareButton.GetString()))
-                return;
-
-            OkButtonWithValidationAction();
-        }
-
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.Name.CancelButton.GetString()))
-                return;
-
-            CancelButtonAction();
-        }
-
-        void OkButtonWithValidationAction()
+        internal override void OkButtonAction()
         {
             if (mShareWorkspacePanel.GetCollaboratorsToAdd().Count == 0 &&
                 mShareWorkspacePanel.GetCollaboratorsToRemove().Count == 0)
@@ -125,11 +76,9 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.ShareWorkspace
                 return;
             }
 
-            OkButtonAction();
+            base.OkButtonAction();
         }
 
         static ShareWorkspacePanel mShareWorkspacePanel;
-
-        ProgressControlsForDialogs mProgressControls;
     }
 }

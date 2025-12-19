@@ -28,6 +28,9 @@ Branch
 == Branches ==
 Branches
 
+== BranchItemNameSingular ==
+branch
+
 == Changeset ==
 Changeset
 
@@ -36,6 +39,9 @@ Label
 
 == Labels ==
 Labels
+
+== LabelItemNameSingular ==
+label
 
 == CodeReview ==
 Code review
@@ -432,6 +438,9 @@ Last activity
 
 == GuidColumn ==
 Guid
+
+== IdColumn ==
+ID
 
 == CommentColumn ==
 Comment
@@ -1339,7 +1348,7 @@ Hide shelves
 == ShowShelvesViewTooltip ==
 Show the shelves view
 
-== NoShelvesCreatedExplanation ==
+== NoShelvesCreatedYet ==
 There are no shelves created yet
 
 == NoContentToCompareExplanation ==
@@ -1348,7 +1357,7 @@ There is no content to compare
 == NoContentToBrowseExplanation ==
 There is no content to browse
 
-== NoLocksCreatedExplanation ==
+== NoLocksCreatedYet ==
 There are no file locks created yet.
 
 == LoadLocksError ==
@@ -2694,9 +2703,6 @@ You can use the following command-line parameters when invoking the external dif
             @sourcesymbolic: Symbolic name for the source file.
             @destinationsymbolic: Symbolic name for the destination file.
 
-            @sourcehash: MD5 string calculated from the source file contents.
-            @destinationhash: MD5 string calculated from the destination file contents.
-
             @filetype: MIME type, used for syntax highlighting.
             @comparationmethod: Comparison method used.
             @fileencoding: Default file encoding to use when no encoding is detected.
@@ -2718,10 +2724,6 @@ The following variables are available to use as arguments when invoking the exte
             @sourcesymbolic: Symbolic name for the source file.
             @destinationsymbolic: Symbolic name for the destination file.
             @basesymbolic: Symbolic name for the base file.
-
-            @sourcehash: MD5 string calculated from the source file contents.
-            @destinationhash: MD5 string calculated from the destination file contents.
-            @basehash: MD5 string calculated from base file contents.
 
             @filetype: MIME type used for syntax highlight.
             @fileencoding: Default file encoding to use when no encoding is detected.
@@ -4730,9 +4732,6 @@ It's up to you to ensure that the specified files have the contents of the revis
 @sourcesymbolic: "left file" string to be displayed in control panel
 @destinationsymbolic: "right file" string to be displayed in control panel
 
-@sourcehash: MD5 string calculated from @leftrev file contents
-@destinationhash: MD5 string calculated from @rightrev file contents
-
 @filetype: MIME type, used for syntax highlighting
 @comparationmethod: comparison method used
 @fileencoding: default file encoding to use when no encoding is detected
@@ -4780,7 +4779,7 @@ No diff tool specified for the {0}.
 == DiffToolsError ==
 Diff tools error
 
-== NoDiscoveredServers ==
+== NoServersFound ==
 No servers were found.
 
 == DownloadPreviewSoftware ==
@@ -4828,10 +4827,6 @@ The following variables are available to use as arguments when invoking the exte
 @sourcesymbolic: symbolic name of the source contributor
 @destinationsymbolic: symbolic name of the destination contributor
 @basesymbolic: symbolic name of the common ancestor contributor
-
-@sourcehash: MD5 string calculated from the source file content
-@destinationhash: MD5 string calculated from the destination file content
-@basehash: MD5 string calculated from the common ancestor file content
 
 @filetype: MIME type used for the syntax highlight
 @comparationmethod: comparison method used
@@ -5213,7 +5208,7 @@ Let me edit the lock rule
 Click here to learn how to configure lock rules
 
 == AddLockRuleLearnMoreUrl ==
-https://www.plasticscm.com/download/help/locking
+https://docs.unity.com/unity-version-control/smart-locks
 
 == AddLockRuleEmptyRuleMessage ==
 The lock rule can not be empty.
@@ -6067,7 +6062,7 @@ Waiting for a session...
 Retrieving organizations...
 
 == RetrievingWorkspacesProgress ==
-Retrieving cloud workspaces...
+Retrieving cloud drives...
 
 == CompleteSignInOnBrowser ==
 Complete your sign in using your Browser.
@@ -6138,23 +6133,11 @@ This is not bad.
 == TooMuch ==
 This is too much.
 
-== ErrorAddPlasticSCMMenuItem ==
-Cannot add Unity VCS menu item: {0} Method Menu.AddSubMenu not found
-
-== ErrorRemovePlasticSCMMenuItem ==
-Cannot remove Unity VCS menu item: {0} Method MenuType.RemoveMenuItem not found
-
-== ErrorUpdatePlasticSCMMenus ==
-Cannot update all menus: Method EditorUtility.Internal_UpdateAllMenus not found
-
 == CheckoutButton ==
 Checkout
 
 == UpdateResultsError ==
 Some items were not correctly updated. You may want to check the errors and retry the operation after solving the problems
-
-== PluginModalInformation ==
-The modal dialog is not available in this version and it is required for the Unity VCS plugin works fine. \n Please contact devops-vcs-support@unity3d.com for further info.
 
 == HideChanges ==
 Hide changes
@@ -6261,6 +6244,9 @@ Open .meta with...
 == OpenMetaInExplorer ==
 Open .meta in explorer
 
+== RevealMetaInFinder ==
+Reveal .meta in Finder
+
 == DownloadingProgress ==
 Downloading
 
@@ -6292,7 +6278,7 @@ Installing...
 Skipping download. File {0} already exists
 
 == InstallUnityVersionControl ==
-This feature is available on the desktop application of Unity Version Control.
+This feature is available in the Unity Version Control desktop application.
 
 == UnityVersionControlInstalled ==
 Unity Version Control installed. You can now use the feature.
@@ -6310,11 +6296,9 @@ Login or sign up
  Login or sign up for a Unity Version Control account
 
 == InstallConfirmationMessage ==
-You computer does not seem to have the application installed yet.
-Would you like to download the application and its advanced tools?
+The desktop application is not installed on your computer. Would you like to download and install it now?
 
-Once the download is finished, simply install it on your computer.
-Then, click the feature button again in the Unity Editor package.
+After installation, click this feature again to use it.
 
 == NeedEnterprise ==
 Need Unity VCS Enterprise?
@@ -6413,7 +6397,7 @@ Enter the server name or IP and the credentials
 _Del
 
 == UnityDeleteShortcutForMacOS ==
-%Del
+_DEL
 
 == UnityMergeShortcutForWindows ==
 %m
@@ -7188,9 +7172,6 @@ Go to {0}
 == CheckoutChangesetComment ==
 The selected changeset represents the pending changes in your workspace. It's not checked in into the repository yet.
 
-== NoIncomingChanges ==
-No incoming changes
-
 == NoMergeChanges ==
 No merge changes
 
@@ -7409,6 +7390,9 @@ Details
 
 == Download ==
 Download
+
+== DownloadAndInstall ==
+Download & install
 
 == DownloadUpdate ==
 Download update
@@ -7826,7 +7810,7 @@ The comment field is empty. You'll create a changeset that has no check-in comme
 Shelve comment is empty!
 
 == NoShelveCommentMessage ==
-Please add a comment to easily identify your shelves later
+The comment field is empty. You'll create a shelveset that has no comment. Do you want to continue?
 
 == DontAskMeAgainWithAction ==
 Don't ask me again. You can change this setting later in {0}
@@ -7841,10 +7825,10 @@ comment options
 Add comment
 
 == SkipAndShelve ==
-Skip & Shelve
+Skip and Shelve
 
 == SkipAndCheckin ==
-Skip & Check in
+Skip and Check in
 
 == AddCheckinComment ==
 Please add a comment for your check-in
@@ -8224,6 +8208,9 @@ No changes are checked. Please check at least one change to apply.
 == UnityVersionControl ==
 Unity Version Control
 
+== UnityVCS ==
+Unity VCS
+
 == UnityVersionControlSupport ==
 Unity Version Control support
 
@@ -8314,28 +8301,28 @@ Signing in...
 == ShowEmbeddedShelveDiffTooltip ==
 Always open shelves in current window
 
-== EmptyLabelsMessage ==
+== NoLabelsCreatedYet ==
 There are no labels created yet
 
-== EmptyAttributesMessage ==
+== NoChangesetsCreatedYet ==
+There are no changesets created yet
+
+== NoAttributesCreatedYet ==
 There are no attributes created yet
 
-== EmptyCodeReviewsMessage ==
+== NoCodeReviewsCreatedYet ==
 There are no code reviews created yet
-
-== EmptyCodeReviewsMatchQueryMessage ==
-There are no code reviews that match your query
 
 == EmptyWkExplorerMessage ==
 The workspace is empty
 
-== EmptyPendingChangesMessage ==
+== NoPendingChangesFound ==
 There are no pending changes found
 
-== EmptyIncomingChangesMessage ==
+== NoIncomingChangesFound ==
 There are no incoming changes found
 
-== EmptySyncViewMessage ==
+== NoCloudSyncsCreatedYet ==
 There are no cloud syncs created yet
 
 == LockInfoDetailsFormatString ==
@@ -8584,35 +8571,47 @@ Extend view to include parent, children, and merge-connected branches for compre
 == RelatedBranchesShortText ==
 Related
 
-== BranchesEmptyState ==
+== NoBranchesMatchingFilters ==
 Oops! It looks like there are no branches matching your filters
 
-== HiddenBranchesEmptyState ==
+== NoHiddenBranchesMatchingFilters ==
 Oops! It looks like there are no hidden branches matching your filters
 
-== HiddenBranchesInRepositoryEmptyState ==
+== NoHiddenBranchesFound ==
 Oops! It looks like there are no hidden branches for this repository
 
-== HistoryEmptyState ==
+== NoRevisionsMatchingFilters ==
 Oops! It looks like there are no revisions matching your filters
 
-== ChangesetsEmptyState ==
+== NoChangesetsMatchingFilters ==
 Oops! It looks like there are no changesets matching your filters
 
-== LabelsEmptyState ==
+== NoLabelsMatchingFilters ==
 Oops! It looks like there are no labels matching your filters
 
-== AttributesEmptyState ==
+== NoAttributesMatchingFilters ==
 Oops! It looks like there are no attributes matching your filters
 
-== CodeReviewsEmptyState ==
+== NoCodeReviewsMatchingFilters ==
 Oops! It looks like there are no code reviews matching your filters
 
-== ShelvesEmptyState ==
+== NoShelvesMatchingFilters ==
 Oops! It looks like there are no shelves matching your filters
 
-== DiffsEmptyState ==
+== NoDiffsMatchingFilters ==
 Oops! It looks like there are no diffs matching your filters
+
+== NoLocksMatchingFilters ==
+Oops! It looks like there are no file locks matching your filters
+
+== NoPendingChangesMatchingFilters ==
+Oops! It looks like there are no pending changes matching your filters
+
+== NoIncomingChangesMatchingFilters ==
+Oops! It looks like there are no incoming changes matching your filters
+
+== NoMergeChangesMatchingFilters ==
+Oops! It looks like there are no merge changes matching your filters
 
 == ResetFilters ==
 Reset filters
@@ -8637,9 +8636,6 @@ New branch
 
 == CreateNewBranchButton ==
 Create new branch
-
-== NoBranchMatchingFilter ==
-There are no branches that are matching the filter
 
 == CreateANewBranchInstead ==
 You can create a new branch instead
@@ -8684,7 +8680,7 @@ Don't connect drive to a repository
 I want to import files from a local drive.
 
 == WorkspaceNameEntry ==
-Drive name:
+Workspace name:
 
 == NoRepositoriesToConnect ==
 There are no repositories to connect the drive to
@@ -8758,8 +8754,11 @@ Drop here to create a new workspace.
 == DeleteBranchTitle ==
 Confirm branch deletion
 
-== DeleteBranchExplanation ==
-You are about to delete {0} and all of its changesets. Are you sure you want to continue?
+== DeleteBranchExplanationEndSingular ==
+and all of its changesets. Are you sure you want to continue?
+
+== DeleteBranchExplanationEndPlural ==
+and all of their changesets. Are you sure you want to continue?
 
 == DeleteBranchesExplanation ==
 You are about to delete the following branches and all their changesets:
@@ -8854,7 +8853,7 @@ Apply to all following files
 Copy files result
 
 == CopyFileErrorsMessage ==
-The following files couldn't be copied to the cloud workspace '{0}'.
+The following files couldn't be copied to the cloud drive '{0}'.
 Please check the error details below.
 
 == CreateCloudWorkspaceTitle ==
@@ -9293,21 +9292,6 @@ Learn more about Unity Version Control
 == CheckinPendingChanges ==
 Check-in Pending Changes...
 
-== UseUnityVersionControl ==
-Use Unity Version Control...
-
-== HideVersionControlToolbar ==
-Hide Version Control Toolbar
-
-== LearnMoreAboutUnityVersionControl ==
-Learn more about Unity Version Control
-
-== CheckinPendingChanges ==
-Check-in Pending Changes...
-
-== ViewIncomingChanges ==
-View incoming changes
-
 == ViewIncomingChanges ==
 View incoming changes
 
@@ -9335,5 +9319,38 @@ Syncing...
 == CloudDriveSyncStatusUpToDate ==
 Up to date
 
+== UpdateCloudDrivePathTitle ==
+Override Cloud Drive path
+
+== UpdateCloudDrivePathMessage ==
+There is already a Cloud Drive path configured and it contains workspaces. Modifying it will remove all the contents of the current Cloud Drive path.
+Do you want to proceed?
+
+== OverwriteCloudDriveCredentialsTitle ==
+Cloud Drive already configured
+
+== OverwriteCloudDriveCredentialsMessage ==
+Cloud Drive is already configured for a different user.
+The new credentials will replace the existing ones, and your current drives may be removed from the disk.
+Do you want to continue?
+
 == CloudDriveSyncUpdatingCloudDrives ==
-Updating your cloud drives...
+Updating your cloud drives..
+
+== DiffByChangeset ==
+Diff by changeset
+
+== InitializingUVCS ==
+Initializing
+
+== WaitingForScriptsToCompile ==
+Waiting for scripts to compile...
+
+== WaitingForAssetsToUpdate ==
+Waiting for assets to update...
+
+== WaitingForEditorToBeReady ==
+Waiting for editor to be ready...
+
+== WaitingForPendingOperationsToFinish ==
+Waiting for pending operations to finish...

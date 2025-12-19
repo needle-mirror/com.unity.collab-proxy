@@ -32,27 +32,6 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
 
         internal Data ProgressData { get { return mData; } }
 
-        internal void ForcedUpdateProgress()
-        {
-            if (mData.IsWaitingAsyncResult)
-            {
-                mUndefinedProgress.Show();
-                mPercentageLabel.Show();
-                mLoadingSpinner.Start();
-                EditorApplication.update += UpdatePercent;
-            }
-            else
-            {
-                mUndefinedProgress.Collapse();
-                mPercentageLabel.Collapse();
-                mLoadingSpinner.Stop();
-                EditorApplication.update -= UpdatePercent;
-            }
-
-            mStatusLabel.text = mData.StatusMessage;
-            mProgressLabel.text = mData.ProgressMessage;
-        }
-
         internal void UpdatePercent()
         {
             if (mData.ProgressPercent >= 0)
@@ -87,6 +66,27 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
         void IAuthenticationProgressControls.HideProgress()
         {
             InternalHideProgress();
+        }
+
+        void ForcedUpdateProgress()
+        {
+            if (mData.IsWaitingAsyncResult)
+            {
+                mUndefinedProgress.Show();
+                mPercentageLabel.Show();
+                mLoadingSpinner.Start();
+                EditorApplication.update += UpdatePercent;
+            }
+            else
+            {
+                mUndefinedProgress.Collapse();
+                mPercentageLabel.Collapse();
+                mLoadingSpinner.Stop();
+                EditorApplication.update -= UpdatePercent;
+            }
+
+            mStatusLabel.text = mData.StatusMessage;
+            mProgressLabel.text = mData.ProgressMessage;
         }
 
         void InternalHideProgress()

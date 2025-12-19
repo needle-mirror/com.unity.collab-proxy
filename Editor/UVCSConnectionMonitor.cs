@@ -25,7 +25,6 @@ namespace Unity.PlasticSCM.Editor
 
         internal void CheckConnection()
         {
-            mIsTryingReconnection = true;
             mResetEvent.Set();
         }
 
@@ -100,12 +99,16 @@ namespace Unity.PlasticSCM.Editor
                 {
                     mResetEvent.Reset();
 
+                    mIsTryingReconnection = true;
+
                     if (HasConnectionToServer(server))
                     {
                         mIsConnected = true;
                         HandleConnectionRestored(mRepSpecForEventTracking, mUVCSPlugin);
                         break;
                     }
+
+                    mIsTryingReconnection = false;
 
                     RepaintUVCSWindowIfOpened();
 

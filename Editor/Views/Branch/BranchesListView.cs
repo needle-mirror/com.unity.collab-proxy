@@ -12,6 +12,8 @@ using PlasticGui.WorkspaceWindow.QueryViews.Branches;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Avatar;
 using Unity.PlasticSCM.Editor.UI.Tree;
+
+using Time = Codice.Client.Common.Time;
 #if UNITY_6000_2_OR_NEWER
 using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
 #endif
@@ -30,6 +32,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             BranchesViewMenu menu,
             IGetRepositorySpec getRepositorySpec,
             IGetWorkingObject getWorkingObject,
+            Func<bool> getIsHiddenBranchesMode,
             Action selectionChangedAction,
             Action doubleClickAction,
             Action<IEnumerable<object>> afterItemsChangedAction)
@@ -38,6 +41,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             mMenu = menu;
             mGetRepositorySpec = getRepositorySpec;
             mGetWorkingObject = getWorkingObject;
+            mGetIsHiddenBranchesMode = getIsHiddenBranchesMode;
             mSelectionChangedAction = selectionChangedAction;
             mDoubleClickAction = doubleClickAction;
             mAfterItemsChangedAction = afterItemsChangedAction;
@@ -121,6 +125,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                     args,
                     RepObjectInfoView.IsHighlighted(
                         branchListViewItem.ObjectInfo, mGetWorkingObject.Get()),
+                    mGetIsHiddenBranchesMode(),
                     Repaint);
                 return;
             }
@@ -335,6 +340,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             BranchListViewItem item,
             RowGUIArgs args,
             bool isBoldText,
+            bool isHiddenBranchesMode,
             Action avatarLoadedAction)
         {
             for (int visibleColumnIdx = 0; visibleColumnIdx < args.GetNumVisibleColumns(); visibleColumnIdx++)
@@ -357,6 +363,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                     item,
                     column,
                     avatarLoadedAction,
+                    isHiddenBranchesMode,
                     args.selected,
                     args.focused,
                     isBoldText);
@@ -370,14 +377,37 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             BranchListViewItem item,
             BranchesListColumn column,
             Action avatarLoadedAction,
+            bool isHiddenBranchesMode,
             bool isSelected,
             bool isFocused,
             bool isBoldText)
         {
+            RepObjectInfo repObjectInfo = queryResult.GetRepObjectInfo(item.ObjectInfo);
+
             string columnText = RepObjectInfoView.GetColumnText(
                 queryResult.GetRepositorySpec(item.ObjectInfo),
-                queryResult.GetRepObjectInfo(item.ObjectInfo),
+                repObjectInfo,
                 BranchesListHeaderState.GetColumnName(column));
+
+            if (column == BranchesListColumn.Name)
+            {
+                DrawTreeViewItem.ForItemCell(
+                    rect,
+                    rowHeight,
+                    -1,
+                    isHiddenBranchesMode ?
+                        Images.GetHideIcon() :
+                        Images.GetBranchIcon(),
+                    null,
+                    null,
+                    columnText,
+                    isSelected,
+                    isFocused,
+                    isBoldText,
+                    false,
+                    DrawTreeViewItem.TextTrimming.Path);
+                return;
+            }
 
             if (column == BranchesListColumn.CreatedBy)
             {
@@ -387,6 +417,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                     -1,
                     GetAvatar.ForEmail(columnText, avatarLoadedAction),
                     null,
+                    null,
                     columnText,
                     isSelected,
                     isFocused,
@@ -395,15 +426,25 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 return;
             }
 
-            if (column == BranchesListColumn.Repository)
+            if (column == BranchesListColumn.CreationDate)
             {
-                DrawTreeViewItem.ForSecondaryLabel(
-                    rect, columnText, isSelected, isFocused, isBoldText);
+                DrawTreeViewItem.ForLabel(
+                    rect,
+                    new GUIContent(
+                        Time.GetLongTimeAgoString(repObjectInfo.LocalTimeStamp),
+                        columnText),
+                    isSelected,
+                    isFocused,
+                    isBoldText);
                 return;
             }
 
             DrawTreeViewItem.ForLabel(
-                rect, columnText, isSelected, isFocused, isBoldText);
+                rect,
+                columnText,
+                isSelected,
+                isFocused,
+                isBoldText);
         }
 
         static ViewQueryResult BuildViewQueryResult(
@@ -425,6 +466,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         readonly DelayedActionBySecondsRunner mDelayedFilterAction;
         readonly DelayedActionBySecondsRunner mDelayedSelectionAction;
         readonly Action<IEnumerable<object>> mAfterItemsChangedAction;
+        readonly Func<bool> mGetIsHiddenBranchesMode;
         readonly Action mSelectionChangedAction;
         readonly IGetWorkingObject mGetWorkingObject;
         readonly IGetRepositorySpec mGetRepositorySpec;

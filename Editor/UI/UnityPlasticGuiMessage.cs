@@ -8,6 +8,14 @@ namespace Unity.PlasticSCM.Editor.UI
 {
     internal class UnityPlasticGuiMessage : GuiMessage.IGuiMessage
     {
+        internal UnityPlasticGuiMessage()
+        {
+            Execute.WhenEditorIsReady(() =>
+            {
+                mIsEditorReady = true;
+            });
+        }
+
         void GuiMessage.IGuiMessage.ShowMessage(
             string title,
             string message,
@@ -15,6 +23,12 @@ namespace Unity.PlasticSCM.Editor.UI
         {
             if (!UVCSPlugin.Instance.ConnectionMonitor.IsConnected)
                 return;
+
+            if (!mIsEditorReady)
+            {
+                LogMessage(title, message, messageType);
+                return;
+            }
 
             EditorUtility.DisplayDialog(
                 GetDialogTitleForMessageType(title, messageType),
@@ -26,6 +40,12 @@ namespace Unity.PlasticSCM.Editor.UI
         {
             if (!UVCSPlugin.Instance.ConnectionMonitor.IsConnected)
                 return;
+
+            if (!mIsEditorReady)
+            {
+                LogMessage(GetDialogTitle(string.Empty), message, GuiMessage.GuiMessageType.Critical);
+                return;
+            }
 
             EditorUtility.DisplayDialog(
                 GetDialogTitleForMessageType(null, GuiMessage.GuiMessageType.Critical),
@@ -43,7 +63,7 @@ namespace Unity.PlasticSCM.Editor.UI
             if (string.IsNullOrEmpty(negativeActionButton))
             {
                 bool result = EditorUtility.DisplayDialog(
-                    GetDialogTitle(title),
+                    title,
                     message,
                     positiveActionButton,
                     neutralActionButton);
@@ -54,7 +74,7 @@ namespace Unity.PlasticSCM.Editor.UI
             }
 
             int intResult = EditorUtility.DisplayDialogComplex(
-                GetDialogTitle(title),
+                title,
                 message,
                 positiveActionButton,
                 neutralActionButton,
@@ -69,7 +89,7 @@ namespace Unity.PlasticSCM.Editor.UI
             string yesButton)
         {
             return EditorUtility.DisplayDialog(
-                GetDialogTitle(title),
+                title,
                 message,
                 yesButton,
                 PlasticLocalization.GetString(PlasticLocalization.Name.NoButton));
@@ -83,7 +103,7 @@ namespace Unity.PlasticSCM.Editor.UI
             MultiLinkLabelData learnMoreContent)
         {
             return EditorUtility.DisplayDialog(
-                GetDialogTitle(title),
+                title,
                 message,
                 yesButton,
                 noButton);
@@ -92,7 +112,7 @@ namespace Unity.PlasticSCM.Editor.UI
         bool GuiMessage.IGuiMessage.ShowYesNoQuestion(string title, string message)
         {
             return EditorUtility.DisplayDialog(
-                GetDialogTitle(title),
+                title,
                 message,
                 PlasticLocalization.GetString(PlasticLocalization.Name.YesButton),
                 PlasticLocalization.GetString(PlasticLocalization.Name.NoButton));
@@ -102,7 +122,7 @@ namespace Unity.PlasticSCM.Editor.UI
             string title, string message)
         {
             int intResult = EditorUtility.DisplayDialogComplex(
-                GetDialogTitle(title),
+                title,
                 message,
                 PlasticLocalization.GetString(PlasticLocalization.Name.YesButton),
                 PlasticLocalization.GetString(PlasticLocalization.Name.CancelButton),
@@ -127,6 +147,7 @@ namespace Unity.PlasticSCM.Editor.UI
             string positiveButtonText,
             string neutralButtonText,
             string negativeButtonText,
+            GuiMessage.GuiMessageType messageType,
             MultiLinkLabelData dontShowAgainContent,
             out bool checkBoxValue)
         {
@@ -136,6 +157,7 @@ namespace Unity.PlasticSCM.Editor.UI
                 positiveButtonText,
                 neutralButtonText,
                 negativeButtonText,
+                messageType,
                 dontShowAgainContent,
                 ParentWindow.Get(),
                 out checkBoxValue);
@@ -202,5 +224,31 @@ namespace Unity.PlasticSCM.Editor.UI
                     return GuiMessage.GuiMessageResponseButton.Neutral;
             }
         }
+
+        static void LogMessage(
+            string title,
+            string message,
+            GuiMessage.GuiMessageType messageType)
+        {
+            string fullMessage = string.Format(
+                "{0}: {1}",
+                GetDialogTitle(title),
+                message);
+
+            switch (messageType)
+            {
+                case GuiMessage.GuiMessageType.Critical:
+                    UnityEngine.Debug.LogError(fullMessage);
+                    break;
+                case GuiMessage.GuiMessageType.Informational:
+                    UnityEngine.Debug.Log(fullMessage);
+                    break;
+                case GuiMessage.GuiMessageType.Warning:
+                    UnityEngine.Debug.LogWarning(fullMessage);
+                    break;
+            }
+        }
+
+        volatile bool mIsEditorReady = false;
     }
 }

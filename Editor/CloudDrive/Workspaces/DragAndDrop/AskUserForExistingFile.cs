@@ -1,9 +1,9 @@
-using System.IO;
 using UnityEditor;
 
 using Codice.Client.Common;
 using PlasticGui;
 using PlasticGui.CloudDrive;
+using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DragAndDrop
@@ -23,10 +23,11 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DragAndDrop
             GuiMessage.GuiMessageResponseButton response = DialogWithCheckBox.Show(
                 PlasticLocalization.Name.AskUserForExistingFileTitle.GetString(),
                 PlasticLocalization.Name.AskUserForExistingFileMessage.GetString(
-                    Path.GetFullPath(filePath)),
+                    AssetsPath.GetFullPath.ForPath(filePath)),
                 PlasticLocalization.Name.ReplaceButton.GetString(),
                 PlasticLocalization.Name.KeepBothButton.GetString(),
                 PlasticLocalization.Name.SkipButton.GetString(),
+                GuiMessage.GuiMessageType.Warning,
                 showApplyToAllCheckbox ?
                     new MultiLinkLabelData(PlasticLocalization.Name.ApplyToAllFollowingFiles.GetString()) :
                     null,

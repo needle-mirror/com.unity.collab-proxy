@@ -13,6 +13,14 @@ namespace Unity.PlasticSCM.Editor.Configuration
 {
     internal class CredentialsUiImpl : AskCredentialsToUser.IGui
     {
+        internal CredentialsUiImpl()
+        {
+            Execute.WhenEditorIsReady(() =>
+            {
+                mIsEditorReady = true;
+            });
+        }
+
         AskCredentialsToUser.DialogData AskCredentialsToUser.IGui.AskUserForCredentials(
             string servername, SEIDWorkingMode seidWorkingMode)
         {
@@ -32,9 +40,9 @@ namespace Unity.PlasticSCM.Editor.Configuration
             {
                 result = seidWorkingMode == SEIDWorkingMode.SSOWorkingMode ?
                     RunSSOCredentialsRequest(
-                        servername, CloudProjectSettings.accessToken) :
-                    CredentialsDialog.RequestCredentials(
-                        servername, seidWorkingMode, ParentWindow.Get());
+                        servername, CloudProjectSettings.accessToken, mIsEditorReady) :
+                    RequestCredentials(
+                        servername, seidWorkingMode, ParentWindow.Get(), mIsEditorReady);
             });
 
             return result;
@@ -42,7 +50,8 @@ namespace Unity.PlasticSCM.Editor.Configuration
 
         static AskCredentialsToUser.DialogData RunSSOCredentialsRequest(
             string cloudServer,
-            string unityAccessToken)
+            string unityAccessToken,
+            bool isEditorReady)
         {
             if (string.IsNullOrEmpty(unityAccessToken))
             {
@@ -71,6 +80,12 @@ namespace Unity.PlasticSCM.Editor.Configuration
                         SEIDWorkingMode.SSOWorkingMode));
             }
 
+            if (!isEditorReady)
+            {
+                return AskCredentialsToUser.DialogData.Failure(
+                    SEIDWorkingMode.SSOWorkingMode);
+            }
+
             return SSOCredentialsDialog.RequestCredentials(
                 cloudServer, ParentWindow.Get());
         }
@@ -97,5 +112,24 @@ namespace Unity.PlasticSCM.Editor.Configuration
 
             return result;
         }
+
+        static AskCredentialsToUser.DialogData RequestCredentials(
+            string servername,
+            SEIDWorkingMode seidWorkingMode,
+            EditorWindow parentWindow,
+            bool isEditorReady)
+        {
+            if (!isEditorReady)
+            {
+                return AskCredentialsToUser.DialogData.Failure(seidWorkingMode);
+            }
+
+            return CredentialsDialog.RequestCredentials(
+                servername,
+                seidWorkingMode,
+                parentWindow);
+        }
+
+        volatile bool mIsEditorReady;
     }
 }

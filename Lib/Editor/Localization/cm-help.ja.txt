@@ -2235,7 +2235,6 @@ stdin から入力を読み取る:
         {0} | {^wkname}          ワークスペース名。
         {1} | {^wkpath}          ワークスペースパス。
         {2} | {^machine}         クライアントマシン名。
-        {3} | {^owner}           ワークスペースの所有者。
         {4} | {^guid}            ワークスペースの GUID。
 
         {^tab}                   タブスペースを挿入します。
@@ -4199,7 +4198,7 @@ stdin から入力を読み取る:
     チェックアウトできるものはありません。
     「cm ^lock ^list」を使用してサーバー内のすべてのロックを取得できます。
     ロックの仕組みについては、管理者ガイドを参照してください。
-    https://www.plasticscm.com/download/help/locking
+    https://docs.unity.com/unity-version-control/smart-locks
 
 例:
 

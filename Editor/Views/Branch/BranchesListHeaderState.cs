@@ -13,10 +13,9 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
     internal enum BranchesListColumn
     {
         Name,
-        Repository,
+        Comment,
         CreatedBy,
         CreationDate,
-        Comment
     }
 
     [Serializable]
@@ -31,10 +30,9 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         {
             List<string> result = new List<string>();
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.NameColumn));
-            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.RepositoryColumn));
+            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CreatedByColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CreationDateColumn));
-            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn));
             return result;
         }
 
@@ -44,14 +42,12 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             {
                 case BranchesListColumn.Name:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.NameColumn);
-                case BranchesListColumn.Repository:
-                    return PlasticLocalization.GetString(PlasticLocalization.Name.RepositoryColumn);
+                case BranchesListColumn.Comment:
+                    return PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn);
                 case BranchesListColumn.CreatedBy:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.CreatedByColumn);
                 case BranchesListColumn.CreationDate:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.CreationDateColumn);
-                case BranchesListColumn.Comment:
-                    return PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn);
                 default:
                     return null;
             }
@@ -83,12 +79,12 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                     allowToggleVisibility = false,
                     sortingArrowAlignment = TextAlignment.Right
                 },
-                 new Column()
+                new Column()
                 {
-                    width = UnityConstants.BranchesColumns.REPOSITORY_WIDTH,
-                    minWidth = UnityConstants.BranchesColumns.REPOSITORY_MIN_WIDTH,
+                    width = UnityConstants.BranchesColumns.COMMENT_WIDTH,
+                    minWidth = UnityConstants.BranchesColumns.COMMENT_MIN_WIDTH,
                     headerContent = new GUIContent(
-                        GetColumnName(BranchesListColumn.Repository)),
+                        GetColumnName(BranchesListColumn.Comment)),
                     sortingArrowAlignment = TextAlignment.Right
                 },
                 new Column()
@@ -107,14 +103,6 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                         GetColumnName(BranchesListColumn.CreationDate)),
                     sortingArrowAlignment = TextAlignment.Right
                 },
-                new Column()
-                {
-                    width = UnityConstants.BranchesColumns.COMMENT_WIDTH,
-                    minWidth = UnityConstants.BranchesColumns.COMMENT_MIN_WIDTH,
-                    headerContent = new GUIContent(
-                        GetColumnName(BranchesListColumn.Comment)),
-                    sortingArrowAlignment = TextAlignment.Right
-                }
             };
         }
 

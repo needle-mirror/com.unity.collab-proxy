@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using UnityEditor;
 using UnityEngine;
@@ -14,18 +11,6 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
 {
     internal class DeleteBranchDialog : PlasticDialog
     {
-        protected override Rect DefaultRect
-        {
-            get
-            {
-                var baseRect = base.DefaultRect;
-                var increaseFactor = mNumberOfBranches <= MAX_ITEMS_TO_SHOW ?
-                    TEXT_LINE_HEIGHT * mNumberOfBranches :
-                    TEXT_LINE_HEIGHT * (MAX_ITEMS_TO_SHOW + 1);
-                return new Rect(baseRect.x, baseRect.y, baseRect.width, baseRect.height + increaseFactor);
-            }
-        }
-
         internal static bool ConfirmDelete(
             EditorWindow parentWindow,
             IList<BranchInfo> branches)
@@ -35,21 +20,27 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
             return dialog.RunModal(parentWindow) == ResponseType.Ok;
         }
 
+        protected override string GetExplanation()
+        {
+            return mMessage;
+        }
+
         protected override string GetTitle()
         {
             return mTitle;
         }
 
-        protected override void OnModalGUI()
+        protected override void DoOkButton()
         {
-            Paragraph(mMessage);
+            GUI.enabled = IsDeleteButtonEnabled();
 
-            GUILayout.Space(5);
+            if (NormalButton(PlasticLocalization.Name.DeleteButton.GetString()))
+                OkButtonAction();
 
-            DoButtonsArea();
+            GUI.enabled = true;
         }
 
-        void DoButtonsArea()
+        protected override void DoButtonsArea()
         {
             using (new EditorGUILayout.HorizontalScope())
             {
@@ -61,42 +52,16 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
 
                 GUILayout.Space(10);
 
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoDeleteButton();
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoDeleteButton();
+                DoButtonsWithPlatformOrdering(DoOkButton, DoCloseButton, DoCancelButton);
             }
         }
 
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.Name.NoButton.GetString()))
-                return;
-
-            CancelButtonAction();
-        }
-
-        void DoDeleteButton()
-        {
-            GUI.enabled = IsDeleteButtonEnabled();
-
-            if (NormalButton(PlasticLocalization.Name.DeleteButton.GetString()))
-                DeleteButtonAction();
-
-            GUI.enabled = true;
-        }
-
-        void DeleteButtonAction()
+        internal override void OkButtonAction()
         {
             if (!IsDeleteButtonEnabled())
                 return;
 
-            OkButtonAction();
+            base.OkButtonAction();
         }
 
         bool IsDeleteButtonEnabled()
@@ -107,39 +72,15 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
         static DeleteBranchDialog Create(IList<BranchInfo> branches)
         {
             var instance = CreateInstance<DeleteBranchDialog>();
-            instance.mMessage = BuildDeleteBranchesConfirmationMessage(branches);
-            instance.mEnterKeyAction = instance.DeleteButtonAction;
+            instance.mMessage = DeleteObjectsAlert.BuildDeleteBranchConfirmationMessage(branches);
+            instance.mEnterKeyAction = instance.OkButtonAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
+            instance.mCancelButtonText = PlasticLocalization.Name.NoButton.GetString();
             instance.mNumberOfBranches = branches.Count;
             instance.mTitle = PlasticLocalization.Name.ConfirmDeleteTitle.GetString();
             return instance;
         }
 
-        static string BuildDeleteBranchesConfirmationMessage(IList<BranchInfo> branchToDelete)
-        {
-            string[] itemNames = branchToDelete.Select(x => x.Name).ToArray();
-
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine(PlasticLocalization.Name.DeleteBranchesExplanation.GetString());
-            stringBuilder.AppendLine();
-            int num = Math.Min(itemNames.Length, MAX_ITEMS_TO_SHOW);
-            for (int i = 0; i < num; i++)
-            {
-                stringBuilder.AppendLine(" " + (i + 1) + ". " + itemNames[i]);
-            }
-
-            if (itemNames.Length > MAX_ITEMS_TO_SHOW)
-            {
-                stringBuilder.AppendLine(PlasticLocalization.Name.DeleteOthersMessage.GetString(itemNames.Length - MAX_ITEMS_TO_SHOW));
-            }
-
-            stringBuilder.AppendLine();
-            stringBuilder.AppendLine(PlasticLocalization.Name.DeleteBranchesConfirmation.GetString());
-
-            return stringBuilder.ToString();
-        }
-
-        const int TEXT_LINE_HEIGHT = 15;
         const int MAX_ITEMS_TO_SHOW = 10;
 
         string mMessage;

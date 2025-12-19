@@ -9,6 +9,7 @@ using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.Help.Actions;
 using PlasticGui.WorkspaceWindow.Locks;
+using PlasticGui.WorkspaceWindow.QueryViews;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
@@ -18,13 +19,15 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
 {
     internal sealed class LocksTab :
         IRefreshableView,
-        ILockMenuOperations
+        ILockMenuOperations,
+        IGetFilter
     {
         internal LocksListView Table { get { return mLocksListView; } }
 
         internal ILockMenuOperations Operations { get { return this; } }
 
         internal LocksTab(
+            WorkspaceInfo wkInfo,
             RepositorySpec repSpec,
             IRefreshView refreshView,
             IAssetStatusCache assetStatusCache,
@@ -35,9 +38,10 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
             mAssetStatusCache = assetStatusCache;
             mParentWindow = parentWindow;
             mProgressControls = new ProgressControlsForViews();
-            mFillLocksTable = new FillLocksTable();
 
-            BuildComponents(mRepSpec);
+            BuildComponents(wkInfo, mRepSpec);
+
+            mFillLocksTable = new FillLocksTable(this, mLocksListView);
 
             ((IRefreshableView) this).Refresh();
         }
@@ -59,36 +63,44 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
         internal void Update()
         {
             mProgressControls.UpdateProgress(mParentWindow);
+
+            if (mConfigureLockRulesButtonClicked)
+            {
+                OpenConfigureLockRulesPage.Run(mRepSpec.Server);
+                mConfigureLockRulesButtonClicked = false;
+            }
         }
 
         internal void OnGUI()
         {
             DoActionsToolbar(
-                mRepSpec.Server,
                 mProgressControls,
+                mSearchField,
+                mLocksListView,
                 this,
                 mIsReleaseLocksButtonEnabled,
-                mIsRemoveLocksButtonEnabled);
+                mIsRemoveLocksButtonEnabled,
+                this);
+
+            Rect viewRect = OverlayProgress.CaptureViewRectangle();
 
             DoLocksArea(
                 mLocksListView,
                 mProgressControls.IsOperationRunning());
-        }
 
-        internal void DrawSearchFieldForTab()
-        {
-            DrawSearchField.For(
-                mSearchField,
-                mLocksListView,
-                UnityConstants.SEARCH_FIELD_WIDTH);
+            if (mProgressControls.IsOperationRunning())
+            {
+                OverlayProgress.DoOverlayProgress(
+                    viewRect,
+                    mProgressControls.ProgressData.ProgressPercent,
+                    mProgressControls.ProgressData.ProgressMessage);
+            }
         }
 
         void IRefreshableView.Refresh()
         {
             mFillLocksTable.FillTable(
                 mRepSpec,
-                null,
-                mLocksListView,
                 mLocksListView,
                 mProgressControls);
 
@@ -124,6 +136,16 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
                 () => RefreshAsset.VersionControlCache(mAssetStatusCache));
         }
 
+        Filter IGetFilter.Get()
+        {
+            return new Filter(mLocksListView.searchString);
+        }
+
+        void IGetFilter.Clear()
+        {
+            // Not used by the Plugin, needed for the Reset filters button
+        }
+
         void SearchField_OnDownOrUpArrowKeyPressed()
         {
             mLocksListView.SetFocusAndEnsureSelectedItem();
@@ -140,14 +162,30 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
                 LockMenuOperations.Remove);
         }
 
-        static void DoActionsToolbar(
-            string server,
+        void OnItemsChanged(IEnumerable<LockInfo> items)
+        {
+            mFillLocksTable.ShowContentOrEmptyStatePanel(items);
+        }
+
+        void DoActionsToolbar(
             ProgressControlsForViews progressControls,
+            SearchField searchField,
+            LocksListView locksListView,
             ILockMenuOperations lockMenuOperations,
             bool isReleaseLocksButtonEnabled,
-            bool isRemoveLocksButtonEnabled)
+            bool isRemoveLocksButtonEnabled,
+            IRefreshableView view)
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+
+            if (GUILayout.Button(
+                    new GUIContent(Images.GetRefreshIcon(),
+                        PlasticLocalization.Name.RefreshButton.GetString()),
+                    UnityStyles.ToolbarButtonLeft,
+                    GUILayout.Width(UnityConstants.TOOLBAR_ICON_BUTTON_WIDTH)))
+            {
+                view.Refresh();
+            }
 
             DoReleaseLocksButton(
                 lockMenuOperations,
@@ -157,15 +195,16 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
                 lockMenuOperations,
                 isRemoveLocksButtonEnabled);
 
-            if (progressControls.IsOperationRunning())
-            {
-                DrawProgressForViews.ForIndeterminateProgressBar(
-                    progressControls.ProgressData);
-            }
-
             GUILayout.FlexibleSpace();
 
-            DoConfigureLockRulesButton(server);
+            mConfigureLockRulesButtonClicked = DoConfigureLockRulesButton();
+
+            GUILayout.Space(2);
+
+            DrawSearchField.For(
+                searchField,
+                locksListView,
+                UnityConstants.SEARCH_FIELD_WIDTH);
 
             EditorGUILayout.EndHorizontal();
         }
@@ -189,9 +228,10 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
         {
             GUI.enabled = isEnabled;
 
-            if (DrawActionButton.For(
+            if (GUILayout.Button(new GUIContent(
                     PlasticLocalization.Name.ReleaseLocksButton.GetString(),
-                    PlasticLocalization.Name.ReleaseLocksButtonTooltip.GetString()))
+                    PlasticLocalization.Name.ReleaseLocksButtonTooltip.GetString()),
+                    EditorStyles.toolbarButton))
             {
                 lockMenuOperations.ReleaseLocks();
             }
@@ -205,9 +245,10 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
         {
             GUI.enabled = isEnabled;
 
-            if (DrawActionButton.For(
+            if (GUILayout.Button(new GUIContent(
                     PlasticLocalization.Name.RemoveLocksButton.GetString(),
-                    PlasticLocalization.Name.RemoveLocksButtonTooltip.GetString()))
+                    PlasticLocalization.Name.RemoveLocksButtonTooltip.GetString()),
+                    EditorStyles.toolbarButton))
             {
                 lockMenuOperations.RemoveLocks();
             }
@@ -215,27 +256,29 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
             GUI.enabled = true;
         }
 
-        static void DoConfigureLockRulesButton(string server)
+        bool DoConfigureLockRulesButton()
         {
-            if (DrawActionButton.For(PlasticLocalization.Name.
-                    ConfigureLockRules.GetString()))
-            {
-                OpenConfigureLockRulesPage.Run(server);
-            }
+            return GUILayout.Button(PlasticLocalization.Name.
+                    ConfigureLockRules.GetString(),
+                    EditorStyles.toolbarButton);
         }
 
-        void BuildComponents(RepositorySpec repSpec)
+        void BuildComponents(
+            WorkspaceInfo wkInfo,
+            RepositorySpec repSpec)
         {
             mSearchField = new SearchField();
             mSearchField.downOrUpArrowKeyPressed +=
                 SearchField_OnDownOrUpArrowKeyPressed;
 
             mLocksListView = new LocksListView(
+                wkInfo,
                 repSpec,
                 LocksListHeaderState.GetDefault(),
                 LocksListHeaderState.GetColumnNames(),
                 new LocksViewMenu(this),
                 OnSelectionChanged,
+                OnItemsChanged,
                 mParentWindow.Repaint);
 
             mLocksListView.Reload();
@@ -243,6 +286,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
 
         bool mIsReleaseLocksButtonEnabled;
         bool mIsRemoveLocksButtonEnabled;
+        bool mConfigureLockRulesButtonClicked;
 
         SearchField mSearchField;
         LocksListView mLocksListView;

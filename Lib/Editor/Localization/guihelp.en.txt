@@ -660,7 +660,7 @@ Note: If no existing lock rules matching that file extension, add lock rule in t
 Note: The status 'Retained' is kept until the file is merged back to the destination branch.
 Alternatively, an administrator can Remove a lock to allow teammates to Lock and Checkout any file revision in the [action:OpenLocksView]Lock list[/action].
 
-[link:https://docs.unity.com/devops/en/manual/smart-locks]Learn more about Smart Locks[/link]
+[link:https://docs.unity.com/unity-version-control/smart-locks]Learn more about Smart Locks[/link]
 
 == CodeReviewWindowGeneralHelp ==
 [title]Review like a pro![/title]

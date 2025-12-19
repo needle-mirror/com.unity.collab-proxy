@@ -17,12 +17,6 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
             EditorGUILayout.EndHorizontal();
         }
 
-        internal static void ForIndeterminateProgressBar(
-            ProgressControlsForViews.Data data)
-        {
-            ForProgressBar(data, false);
-        }
-
         internal static void ForDeterminateProgressBar(
             ProgressControlsForViews.Data data)
         {

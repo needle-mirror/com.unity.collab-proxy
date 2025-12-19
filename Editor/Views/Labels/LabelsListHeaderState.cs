@@ -13,12 +13,11 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
     internal enum LabelsListColumn
     {
         Name,
-        CreationDate,
-        Changeset,
         Comment,
+        CreationDate,
         CreatedBy,
+        Changeset,
         Branch,
-        Repository
     }
 
     [Serializable]
@@ -33,12 +32,11 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
         {
             List<string> result = new List<string>();
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.NameColumn));
-            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CreationDateColumn));
-            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn));
+            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CreationDateColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.CreatedByColumn));
+            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetColumn));
             result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.BranchColumn));
-            result.Add(PlasticLocalization.GetString(PlasticLocalization.Name.RepositoryColumn));
             return result;
         }
 
@@ -48,18 +46,16 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             {
                 case LabelsListColumn.Name:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.NameColumn);
-                case LabelsListColumn.CreationDate:
-                    return PlasticLocalization.GetString(PlasticLocalization.Name.CreationDateColumn);
-                case LabelsListColumn.Changeset:
-                    return PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetColumn);
                 case LabelsListColumn.Comment:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.CommentColumn);
+                case LabelsListColumn.CreationDate:
+                    return PlasticLocalization.GetString(PlasticLocalization.Name.CreationDateColumn);
                 case LabelsListColumn.CreatedBy:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.CreatedByColumn);
+                case LabelsListColumn.Changeset:
+                    return PlasticLocalization.GetString(PlasticLocalization.Name.ChangesetColumn);
                 case LabelsListColumn.Branch:
                     return PlasticLocalization.GetString(PlasticLocalization.Name.BranchColumn);
-                case LabelsListColumn.Repository:
-                    return PlasticLocalization.GetString(PlasticLocalization.Name.RepositoryColumn);
                 default:
                     return null;
             }
@@ -93,26 +89,18 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
                 },
                 new Column()
                 {
-                    width = UnityConstants.LabelsColumns.CREATION_DATE_WIDTH,
-                    minWidth = UnityConstants.LabelsColumns.CREATION_DATE_MIN_WIDTH,
-                    headerContent = new GUIContent(
-                        GetColumnName(LabelsListColumn.CreationDate)),
-                    sortingArrowAlignment = TextAlignment.Right
-                },
-                new Column()
-                {
-                    width = UnityConstants.LabelsColumns.CHANGESET_NUMBER_WIDTH,
-                    minWidth = UnityConstants.LabelsColumns.CHANGESET_NUMBER_MIN_WIDTH,
-                    headerContent = new GUIContent(
-                        GetColumnName(LabelsListColumn.Changeset)),
-                    sortingArrowAlignment = TextAlignment.Right
-                },
-                new Column()
-                {
                     width = UnityConstants.LabelsColumns.COMMENT_WIDTH,
                     minWidth = UnityConstants.LabelsColumns.COMMENT_MIN_WIDTH,
                     headerContent = new GUIContent(
                         GetColumnName(LabelsListColumn.Comment)),
+                    sortingArrowAlignment = TextAlignment.Right
+                },
+                new Column()
+                {
+                    width = UnityConstants.LabelsColumns.CREATION_DATE_WIDTH,
+                    minWidth = UnityConstants.LabelsColumns.CREATION_DATE_MIN_WIDTH,
+                    headerContent = new GUIContent(
+                        GetColumnName(LabelsListColumn.CreationDate)),
                     sortingArrowAlignment = TextAlignment.Right
                 },
                 new Column()
@@ -125,20 +113,20 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
                 },
                 new Column()
                 {
+                    width = UnityConstants.LabelsColumns.CHANGESET_NUMBER_WIDTH,
+                    minWidth = UnityConstants.LabelsColumns.CHANGESET_NUMBER_MIN_WIDTH,
+                    headerContent = new GUIContent(
+                        GetColumnName(LabelsListColumn.Changeset)),
+                    sortingArrowAlignment = TextAlignment.Right
+                },
+                new Column()
+                {
                     width = UnityConstants.LabelsColumns.BRANCH_WIDTH,
                     minWidth = UnityConstants.LabelsColumns.BRANCH_MIN_WIDTH,
                     headerContent = new GUIContent(
                         GetColumnName(LabelsListColumn.Branch)),
                     sortingArrowAlignment = TextAlignment.Right
                 },
-                new Column()
-                {
-                    width = UnityConstants.LabelsColumns.REPOSITORY_WIDTH,
-                    minWidth = UnityConstants.LabelsColumns.REPOSITORY_MIN_WIDTH,
-                    headerContent = new GUIContent(
-                        GetColumnName(LabelsListColumn.Repository)),
-                    sortingArrowAlignment = TextAlignment.Right
-                }
             };
         }
 

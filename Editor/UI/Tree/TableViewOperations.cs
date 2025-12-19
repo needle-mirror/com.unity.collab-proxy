@@ -24,13 +24,13 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
         internal static void SelectFirstRow(
             TreeView treeView)
         {
-            int rowCount = treeView.GetRows().Count;
+            IList<TreeViewItem> rows = treeView.GetRows();
 
-            if (rowCount == 0)
+            if (rows.Count == 0)
                 return;
 
             SetSelectionAndScroll(
-                treeView, new List<int> { 1 });
+                treeView, new List<int> { rows[0].id });
         }
 
         internal static void SelectDefaultRow(

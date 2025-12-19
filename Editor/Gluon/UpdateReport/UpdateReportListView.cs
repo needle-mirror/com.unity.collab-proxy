@@ -221,7 +221,7 @@ namespace Unity.PlasticSCM.Editor.Gluon.UpdateReport
             bool wasChecked = checkedErrors.Contains(errorMessage);
 
             bool isChecked = DrawTreeViewItem.ForCheckableItemCell(
-                rect, rowHeight, 0, null, null, label,
+                rect, rowHeight, 0, null, null, null, label,
                 isSelected, isFocused, false, wasChecked);
 
             if (wasChecked != isChecked)

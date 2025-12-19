@@ -13,7 +13,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const float REGULAR_BUTTON_WIDTH = 60f;
         internal const float EXTRA_LARGE_BUTTON_WIDTH = 130f;
 
-        internal const float SEARCH_FIELD_WIDTH = 550f;
+        internal const float SEARCH_FIELD_WIDTH = 350f;
         internal const float DIFF_PANEL_MIN_WIDTH = SEARCH_FIELD_WIDTH / 2f + 8f;
 
         internal const string TREEVIEW_META_LABEL = " +meta";
@@ -33,9 +33,13 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const int STATUS_BAR_HEIGHT = 24;
         internal const int STATUS_BAR_ICON_SIZE = 16;
 
+        internal const int INCOMING_CHANGES_NOTIFICATION_ICON_SIZE = 14;
+        internal const int SHELVED_CHANGES_NOTIFICATION_ICON_SIZE = 12;
+
         internal const float DROPDOWN_ICON_Y_OFFSET = 2f;
         internal const float TREEVIEW_FOLDOUT_Y_OFFSET = 0f;
         internal const float TREEVIEW_ROW_HEIGHT = 24f;
+        internal const float TREEVIEW_ICON_SIZE = 20f;
         internal const float TREEVIEW_HEADER_CHECKBOX_Y_OFFSET = 0f;
         internal const float TREEVIEW_CHECKBOX_Y_OFFSET = 0f;
         internal static float DIR_CONFLICT_VALIDATION_WARNING_LABEL_HEIGHT = 21f;
@@ -85,38 +89,38 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const string DEVELOPER_MERGE_TABLE_SETTINGS_NAME = "{0}_DeveloperMergeTreeV3_{1}";
         internal const string DEVELOPER_UPDATE_REPORT_TABLE_SETTINGS_NAME = "{0}_DeveloperUpdateReportListV2_{1}";
         internal const string REPOSITORIES_TABLE_SETTINGS_NAME = "{0}_RepositoriesListV2_{1}";
-        internal const string CHANGESETS_TABLE_SETTINGS_NAME = "{0}_ChangesetsListV3_{1}";
+        internal const string CHANGESETS_TABLE_SETTINGS_NAME = "{0}_ChangesetsListV4_{1}";
         internal const string CHANGESETS_DATE_FILTER_SETTING_NAME = "{0}_ChangesetsDateFilter_{1}";
         internal const string CHANGESETS_SHOW_CHANGES_SETTING_NAME = "{0}_ShowChanges_{1}";
-        internal const string HISTORY_TABLE_SETTINGS_NAME = "{0}_HistoryListV2_{1}";
-        internal const string BRANCHES_TABLE_SETTINGS_NAME = "{0}_BranchesListV2_{1}";
+        internal const string HISTORY_TABLE_SETTINGS_NAME = "{0}_HistoryListV3_{1}";
+        internal const string BRANCHES_TABLE_SETTINGS_NAME = "{0}_BranchesListV3_{1}";
         internal const string BRANCHES_DATE_FILTER_SETTING_NAME = "{0}_BranchesDateFilter_{1}";
-        internal const string LOCKS_TABLE_SETTINGS_NAME = "{0}_LocksListV2_{1}";
-        internal const string SHELVES_TABLE_SETTINGS_NAME = "{0}_ShelvesList_{1}";
+        internal const string LOCKS_TABLE_SETTINGS_NAME = "{0}_LocksListV3_{1}";
+        internal const string SHELVES_TABLE_SETTINGS_NAME = "{0}_ShelvesListV2_{1}";
         internal const string SHELVES_OWNER_FILTER_SETTING_NAME = "{0}_ShelvesOwnerFilter_{1}";
-        internal const string LABELS_TABLE_SETTINGS_NAME = "{0}_LabelsList_{1}";
+        internal const string LABELS_TABLE_SETTINGS_NAME = "{0}_LabelsListV2_{1}";
         internal const string LABELS_DATE_FILTER_SETTING_NAME = "{0}_LabelsDateFilter_{1}";
         internal const string BROWSE_REPOSITORY_TABLE_SETTINGS_NAME = "{0}_BrowseRepositoryList_{1}";
 
         internal const string UVCS_PLUGIN_IS_ENABLED_KEY_NAME = "{0}_UVCSPluginIsEnabled";
         internal const string UVCS_PLUGIN_IS_ENABLED_OLD_KEY_NAME = "{0}_PlasticPluginIsEnabled";
         internal const string SHOW_UVCS_TOOLBAR_BUTTON_KEY_NAME = "{0}_ShowUVCSToolbarButton";
-        internal const string SHOW_BRANCHES_VIEW_KEY_NAME = "{0}_ShowBranchesView";
-        internal const string SHOW_LOCKS_VIEW_KEY_NAME = "{0}_ShowLocksView";
-        internal const string SHOW_SHELVES_VIEW_KEY_NAME = "{0}_ShowShelvesView";
-
         internal const string FIRST_CHECKIN_SUBMITTED = "{0}_FirstCheckinSubmitted";
-
         internal const string SHOW_NOTIFICATION_KEY_NAME = "ShowNotification";
-        internal const string SHOW_LABELS_VIEW_KEY_NAME = "{0}_ShowLabelsView";
         internal const string IS_MANUAL_CHECKOUT_ENABLED_KEY_NAME = "{0}_IsManualCheckoutEnabled";
         internal const string IS_MANUAL_CHECKOUT_ALREADY_RECOMMENDED_KEY_NAME = "{0}_IsManualCheckoutAlreadyRecommended";
         internal const string PROJECT_LOADED_COUNTER_KEY_NAME = "{0}_ProjectLoadedCounter";
         internal const string AUTOMATIC_ADD_KEY_NAME = "{0}_AutomaticAdd";
+        internal const string PENDING_CHANGES_CI_SUMMARY_KEY_NAME = "CheckInSummary";
         internal const string PENDING_CHANGES_CI_COMMENTS_KEY_NAME = "CheckInComments";
         internal const string PENDING_CHANGES_UNCHECKED_ITEMS_KEY_NAME = "PendingChangesUnchecked";
 
+        internal const string PENDING_CHANGES_COMMENT_SPLITTER_LEFT_KEY_NAME = "PendingChangesCommentSplitterLeft";
+        internal const string PENDING_CHANGES_COMMENT_SPLITTER_RIGHT_KEY_NAME = "PendingChangesCommentSplitterRight";
+
         internal const float BROWSE_REPOSITORY_PANEL_MIN_WIDTH = SEARCH_FIELD_WIDTH / 2f + 8f;
+
+        internal const float TOOLBAR_ICON_BUTTON_WIDTH = 26f;
 
         internal static class ChangesetsColumns
         {

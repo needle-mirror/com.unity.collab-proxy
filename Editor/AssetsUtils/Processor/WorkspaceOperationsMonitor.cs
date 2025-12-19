@@ -804,7 +804,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     if (node != null &&
                         !CheckWorkspaceTreeNodeStatus.IsCheckedOut(node) &&
                         !hiddenChangesFilter.IsHiddenChanged(path) &&
-                        ChangedFileChecker.IsChanged(node.LocalInfo, path, true))
+                        ChangedFileChecker.IsChanged(node.LocalInfo, path, wkInfo.IsDynamic, true))
                     {
                         result.Add(path);
                     }
@@ -812,7 +812,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     if (nodeMeta != null &&
                         !CheckWorkspaceTreeNodeStatus.IsCheckedOut(nodeMeta) &&
                         !hiddenChangesFilter.IsHiddenChanged(metaPath) &&
-                        ChangedFileChecker.IsChanged(nodeMeta.LocalInfo, metaPath, true))
+                        ChangedFileChecker.IsChanged(nodeMeta.LocalInfo, metaPath, wkInfo.IsDynamic, true))
                     {
                         result.Add(metaPath);
                     }

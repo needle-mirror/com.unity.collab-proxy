@@ -21,9 +21,13 @@ using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.BrowseRepository;
 using Unity.PlasticSCM.Editor.Views.Labels.Dialogs;
 using Unity.PlasticSCM.Editor.Views.Merge;
+using Unity.PlasticSCM.Editor.Views.Properties;
 
 using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
 using IGluonUpdateReport = PlasticGui.Gluon.IUpdateReport;
+#if !UNITY_6000_0_OR_NEWER
+using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
+#endif
 
 namespace Unity.PlasticSCM.Editor.Views.Labels
 {
@@ -161,45 +165,17 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             DoLabelsArea(
                 mLabelsListView,
                 mEmptyStatePanel,
-                mProgressControls);
+                mDateFilter,
+                mSearchField,
+                mProgressControls,
+                this);
 
             DoContentBrowserArea(
+                mPropertiesPanel,
                 mBrowseRepositoryPanel,
                 mProgressControls.IsOperationRunning());
 
             PlasticSplitterGUILayout.EndHorizontalSplit();
-        }
-
-        internal void DrawSearchFieldForTab()
-        {
-            DrawSearchField.For(
-                mSearchField,
-                mLabelsListView,
-                UnityConstants.SEARCH_FIELD_WIDTH);
-        }
-
-        internal void DrawDateFilter()
-        {
-            GUI.enabled = !mProgressControls.IsOperationRunning();
-
-            EditorGUI.BeginChangeCheck();
-
-            mDateFilter.FilterType = (DateFilter.Type)
-                EditorGUILayout.EnumPopup(
-                    mDateFilter.FilterType,
-                    EditorStyles.toolbarDropDown,
-                    GUILayout.Width(100));
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                EnumPopupSetting<DateFilter.Type>.Save(
-                    mDateFilter.FilterType,
-                    UnityConstants.LABELS_DATE_FILTER_SETTING_NAME);
-
-                ((IRefreshableView)this).Refresh();
-            }
-
-            GUI.enabled = true;
         }
 
         internal void RefreshAndSelect(RepObjectInfo repObj)
@@ -401,33 +377,32 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             if (selectedLabels.Count != 1)
                 return;
 
+            mPropertiesPanel.UpdateInfo(
+                selectedLabels[0],
+                LabelsSelection.GetSelectedRepository(mLabelsListView));
+
             mBrowseRepositoryPanel.UpdateInfo(
                 (MarkerExtendedInfo)selectedLabels[0]);
-        }
-
-        static void DoActionsToolbar(ProgressControlsForViews progressControls)
-        {
-            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
-
-            if (progressControls.IsOperationRunning())
-            {
-                DrawProgressForViews.ForIndeterminateProgressBar(
-                    progressControls.ProgressData);
-            }
-
-            GUILayout.FlexibleSpace();
-
-            EditorGUILayout.EndHorizontal();
         }
 
         static void DoLabelsArea(
             LabelsListView labelsListView,
             EmptyStatePanel emptyStatePanel,
-            ProgressControlsForViews progressControls)
+            DateFilter dateFilter,
+            SearchField searchField,
+            ProgressControlsForViews progressControls,
+            IRefreshableView view)
         {
             EditorGUILayout.BeginVertical();
 
-            DoActionsToolbar(progressControls);
+            DoActionsToolbar(
+                progressControls,
+                dateFilter,
+                searchField,
+                labelsListView,
+                view);
+
+            Rect viewRect = OverlayProgress.CaptureViewRectangle();
 
             GUI.enabled = !progressControls.IsOperationRunning();
 
@@ -441,22 +416,97 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             GUI.enabled = true;
 
             EditorGUILayout.EndVertical();
+
+            if (progressControls.IsOperationRunning())
+            {
+                OverlayProgress.DoOverlayProgress(
+                    viewRect,
+                    progressControls.ProgressData.ProgressPercent,
+                    progressControls.ProgressData.ProgressMessage);
+            }
+        }
+
+        static void DoActionsToolbar(
+            ProgressControlsForViews progressControls,
+            DateFilter dateFilter,
+            SearchField searchField,
+            LabelsListView labelsListView,
+            IRefreshableView view)
+        {
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+
+            if (GUILayout.Button(
+                    new GUIContent(Images.GetRefreshIcon(),
+                        PlasticLocalization.Name.RefreshButton.GetString()),
+                    UnityStyles.ToolbarButtonLeft,
+                    GUILayout.Width(UnityConstants.TOOLBAR_ICON_BUTTON_WIDTH)))
+            {
+                view.Refresh();
+            }
+
+            DrawDateFilter(progressControls, dateFilter, view);
+
+            GUILayout.FlexibleSpace();
+
+            DrawSearchField.For(
+                searchField,
+                labelsListView,
+                UnityConstants.SEARCH_FIELD_WIDTH);
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        static void DrawDateFilter(
+            ProgressControlsForViews progressControls,
+            DateFilter dateFilter,
+            IRefreshableView view)
+        {
+            GUI.enabled = !progressControls.IsOperationRunning();
+
+            EditorGUI.BeginChangeCheck();
+
+            dateFilter.FilterType = (DateFilter.Type)
+                EditorGUILayout.EnumPopup(
+                    dateFilter.FilterType,
+                    EditorStyles.toolbarDropDown,
+                    GUILayout.Width(100));
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                EnumPopupSetting<DateFilter.Type>.Save(
+                    dateFilter.FilterType,
+                    UnityConstants.LABELS_DATE_FILTER_SETTING_NAME);
+
+                view.Refresh();
+            }
+
+            GUI.enabled = true;
         }
 
         static void DoContentBrowserArea(
+            PropertiesPanel propertiesPanel,
             BrowseRepositoryPanel browseRepositoryPanel,
             bool isOperationRunning)
         {
             EditorGUILayout.BeginHorizontal();
 
-            GUI.enabled = !isOperationRunning;
-
             Rect border = GUILayoutUtility.GetRect(1, 0, 1, 100000);
             EditorGUI.DrawRect(border, UnityStyles.Colors.BarBorder);
 
-            browseRepositoryPanel.OnGUI();
+            EditorGUILayout.BeginVertical();
+            propertiesPanel.OnGUI();
 
+            Rect separatorRect = GUILayoutUtility.GetRect(
+                0,
+                1,
+                GUILayout.ExpandWidth(true));
+            EditorGUI.DrawRect(separatorRect, UnityStyles.Colors.BarBorder);
+
+            GUI.enabled = !isOperationRunning;
+            browseRepositoryPanel.OnGUI();
             GUI.enabled = true;
+
+            EditorGUILayout.EndVertical();
 
             EditorGUILayout.EndHorizontal();
         }
@@ -489,7 +539,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             TreeHeaderSettings.Load(
                 headerState,
                 UnityConstants.LABELS_TABLE_SETTINGS_NAME,
-                (int)LabelsListColumn.Name,
+                (int)LabelsListColumn.CreationDate,
                 false);
 
             mLabelsListView = new LabelsListView(
@@ -503,6 +553,8 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
 
             mLabelsListView.Reload();
 
+            mPropertiesPanel = new PropertiesPanel(mParentWindow.Repaint);
+
             mBrowseRepositoryPanel = new BrowseRepositoryPanel(
                 wkInfo,
                 fillLabelsView,
@@ -515,9 +567,10 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
 
         readonly LabelOperations mLabelOperations;
         readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
+        PropertiesPanel mPropertiesPanel;
         BrowseRepositoryPanel mBrowseRepositoryPanel;
 
-        readonly object mSplitterState;
+        readonly SplitterState mSplitterState;
         readonly LaunchTool.IProcessExecutor mProcessExecutor;
 
         readonly EmptyStatePanel mEmptyStatePanel;

@@ -14,7 +14,7 @@ namespace Unity.PlasticSCM.Editor.UI
             ResolvedUser currentUser,
             Action avatarLoadedAction)
         {
-            Rect rect = BuildUserIconAreaRect(35f);
+            Rect rect = GUILayoutUtility.GetRect(28f, 28f, GUILayout.ExpandWidth(false));
 
             if (currentUser == null)
             {
@@ -25,16 +25,6 @@ namespace Unity.PlasticSCM.Editor.UI
             GUI.Label(rect, new GUIContent(
                 GetAvatar.ForEmail(currentUser.Name, avatarLoadedAction),
                 currentUser.Name));
-        }
-
-        static Rect BuildUserIconAreaRect(float sizeOfImage)
-        {
-            GUIStyle commentTextAreaStyle = UnityStyles.PendingChangesTab.UserIcon;
-
-            Rect result = GUILayoutUtility.GetRect(sizeOfImage, sizeOfImage); // Needs to be a square
-            result.x = commentTextAreaStyle.margin.left;
-
-            return result;
         }
     }
 }

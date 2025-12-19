@@ -4,8 +4,6 @@ using UnityEditor;
 
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.Progress;
-using Codice.Client.Common.Authentication;
 using Codice.Client.Common.Connection;
 using Codice.CM.Common;
 using PlasticGui.WorkspaceWindow.Home;
@@ -28,37 +26,59 @@ namespace Unity.PlasticSCM.Editor.Configuration
             SEIDWorkingMode seidWorkingMode,
             EditorWindow parentWindow)
         {
-            CredentialsDialog dialog = Create(
-                server, seidWorkingMode, new ProgressControlsForDialogs());
+            CredentialsDialog dialog = Create(server, seidWorkingMode);
 
             ResponseType dialogResult = dialog.RunModal(parentWindow);
 
             return dialog.BuildCredentialsDialogData(dialogResult);
         }
 
-        protected override void OnModalGUI()
+        protected override void DoComponentsArea()
         {
-            Title(PlasticLocalization.Name.CredentialsDialogTitle.GetString());
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.Label(
+                    PlasticLocalization.Name.UserName.GetString(),
+                    GUILayout.Width(80));
 
-            Paragraph(PlasticLocalization.Name.CredentialsDialogExplanation.GetString(mOrganizationInfo.DisplayName));
+                Rect userRect = GUILayoutUtility.GetRect(
+                    new GUIContent(string.Empty),
+                    EditorStyles.textField,
+                    GUILayout.ExpandWidth(true));
+
+                mUser = EditorGUI.TextField(userRect, mUser);
+            }
 
             GUILayout.Space(5);
 
-            DoEntriesArea();
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.Label(
+                    PlasticLocalization.Name.Password.GetString(),
+                    GUILayout.Width(80));
+
+                Rect passwordRect = GUILayoutUtility.GetRect(
+                    new GUIContent(string.Empty),
+                    EditorStyles.textField,
+                    GUILayout.ExpandWidth(true));
+
+                mPassword = EditorGUI.PasswordField(passwordRect, mPassword);
+            }
 
             GUILayout.Space(10);
 
-            DrawProgressForDialogs.For(
-                mProgressControls.ProgressData);
-
-            GUILayout.Space(10);
-
-            DoButtonsArea();
+            mSaveProfile = GUILayout.Toggle(
+                mSaveProfile, PlasticLocalization.Name.RememberCredentialsAsProfile.GetString());
         }
 
         protected override string GetTitle()
         {
             return PlasticLocalization.Name.CredentialsDialogTitle.GetString();
+        }
+
+        protected override string GetExplanation()
+        {
+            return PlasticLocalization.Name.CredentialsDialogExplanation.GetString(mOrganizationInfo.DisplayName);
         }
 
         AskCredentialsToUser.DialogData BuildCredentialsDialogData(
@@ -72,74 +92,17 @@ namespace Unity.PlasticSCM.Editor.Configuration
                 : AskCredentialsToUser.DialogData.Failure(mSeidWorkingMode);
         }
 
-        void DoEntriesArea()
-        {
-            mUser = EntryBuilder.CreateTextEntry(
-                PlasticLocalization.Name.UserName.GetString(),
-                mUser, ENTRY_WIDTH, ENTRY_X);
-
-            GUILayout.Space(5);
-
-            mPassword = EntryBuilder.CreatePasswordEntry(
-                PlasticLocalization.Name.Password.GetString(),
-                mPassword, ENTRY_WIDTH, ENTRY_X);
-
-            GUILayout.Space(5);
-
-            mSaveProfile = EntryBuilder.CreateToggleEntry(
-                PlasticLocalization.Name.RememberCredentialsAsProfile.GetString(),
-                mSaveProfile, ENTRY_WIDTH, ENTRY_X);
-        }
-
-        void DoButtonsArea()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoOkButton();
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoOkButton();
-            }
-        }
-
-        void DoOkButton()
-        {
-            if (!AcceptButton(PlasticLocalization.Name.OkButton.GetString()))
-                return;
-
-            OkButtonWithValidationAction();
-        }
-
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.Name.CancelButton.GetString()))
-                return;
-
-            CancelButtonAction();
-        }
-
-        void OkButtonWithValidationAction()
+        internal override void OkButtonAction()
         {
             CredentialsDialogValidation.Validate(mUser, mPassword, this, mProgressControls);
         }
 
-        static CredentialsDialog Create(
-            string server,
-            SEIDWorkingMode seidWorkingMode,
-            ProgressControlsForDialogs progressControls)
+        static CredentialsDialog Create(string server, SEIDWorkingMode seidWorkingMode)
         {
             var instance = CreateInstance<CredentialsDialog>();
             instance.mOrganizationInfo = OrganizationsInformation.FromServer(server);
             instance.mSeidWorkingMode = seidWorkingMode;
-            instance.mProgressControls = progressControls;
-            instance.mEnterKeyAction = instance.OkButtonWithValidationAction;
+            instance.mEnterKeyAction = instance.OkButtonAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
             return instance;
         }
@@ -147,13 +110,9 @@ namespace Unity.PlasticSCM.Editor.Configuration
         string mUser;
         string mPassword = string.Empty;
 
-        ProgressControlsForDialogs mProgressControls;
         bool mSaveProfile;
 
         OrganizationInfo mOrganizationInfo;
         SEIDWorkingMode mSeidWorkingMode;
-
-        const float ENTRY_WIDTH = 345f;
-        const float ENTRY_X = 150f;
     }
 }

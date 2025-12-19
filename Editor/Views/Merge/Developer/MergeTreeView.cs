@@ -28,11 +28,13 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             WorkspaceInfo wkInfo,
             MergeTreeHeaderState headerState,
             List<string> columnNames,
-            MergeViewMenu menu)
+            MergeViewMenu menu,
+            Action updateEmptyStateMessageAction)
         {
             mWkInfo = wkInfo;
             mColumnNames = columnNames;
             mMenu = menu;
+            mUpdateEmptyStateMessageAction = updateEmptyStateMessageAction;
 
             multiColumnHeader = new MultiColumnHeader(headerState);
             multiColumnHeader.canSort = true;
@@ -190,6 +192,8 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             mMergeTree.Filter(filter, mColumnNames);
 
             mExpandCategories = true;
+
+            mUpdateEmptyStateMessageAction();
         }
 
         internal void Sort()
@@ -495,12 +499,14 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                     rowHeight,
                     item.depth,
                     icon,
+                    null,
                     overlayIcon,
                     label,
                     isSelected,
                     isFocused,
                     isCurrentConflict,
-                    false);
+                    false,
+                    DrawTreeViewItem.TextTrimming.Path);
 
                 return;
             }
@@ -512,6 +518,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                     rowHeight,
                     -1,
                     GetAvatar.ForEmail(label, avatarLoadedAction),
+                    null,
                     null,
                     label,
                     isSelected,
@@ -634,9 +641,10 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         UnityMergeTree mMergeTree;
         DelayedActionBySecondsRunner mDelayedFilterAction;
 
-        readonly MergeViewMenu mMenu;
-        readonly List<string> mColumnNames;
         readonly WorkspaceInfo mWkInfo;
+        readonly List<string> mColumnNames;
+        readonly MergeViewMenu mMenu;
+        readonly Action mUpdateEmptyStateMessageAction;
 
         const int NODES_TO_EXPAND_CATEGORY = 10;
     }

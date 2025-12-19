@@ -12,6 +12,8 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Avatar;
 using Unity.PlasticSCM.Editor.UI.Tree;
 
+using Time = Codice.Client.Common.Time;
+
 #if UNITY_6000_2_OR_NEWER
 using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
 #endif
@@ -162,7 +164,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
                 return result;
 
             foreach (KeyValuePair<object, int> item
-                in mListViewItemIds.GetInfoItems())
+                     in mListViewItemIds.GetInfoItems())
             {
                 if (!selectedIds.Contains(item.Value))
                     continue;
@@ -185,7 +187,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
                 return result;
 
             foreach (KeyValuePair<object, int> item
-                in mListViewItemIds.GetInfoItems())
+                     in mListViewItemIds.GetInfoItems())
             {
                 if (!selectedIds.Contains(item.Value))
                     continue;
@@ -365,18 +367,21 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             bool isSelected,
             bool isFocused)
         {
+            RepObjectInfo objectInfo = queryResult.GetRepObjectInfo(item.ObjectInfo);
+
             string columnText = RepObjectInfoView.GetColumnText(
                 queryResult.GetRepositorySpec(item.ObjectInfo),
-                queryResult.GetRepObjectInfo(item.ObjectInfo),
+                objectInfo,
                 LabelsListHeaderState.GetColumnName(column));
 
-            if (column == LabelsListColumn.CreatedBy)
+            if (column == LabelsListColumn.Name)
             {
                 DrawTreeViewItem.ForItemCell(
                     rect,
                     rowHeight,
                     -1,
-                    GetAvatar.ForEmail(columnText, avatarLoadedAction),
+                    Images.GetLabelIcon(),
+                    null,
                     null,
                     columnText,
                     isSelected,
@@ -386,11 +391,43 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
                 return;
             }
 
-            if (column == LabelsListColumn.Branch ||
-                column == LabelsListColumn.Repository)
+            if (column == LabelsListColumn.CreatedBy)
+            {
+                DrawTreeViewItem.ForItemCell(
+                    rect,
+                    rowHeight,
+                    -1,
+                    GetAvatar.ForEmail(columnText, avatarLoadedAction),
+                    null,
+                    null,
+                    columnText,
+                    isSelected,
+                    isFocused,
+                    false,
+                    false);
+                return;
+            }
+
+            if (column == LabelsListColumn.CreationDate)
+            {
+                DrawTreeViewItem.ForLabel(
+                    rect,
+                    new GUIContent(Time.GetLongTimeAgoString(objectInfo.LocalTimeStamp), columnText),
+                    isSelected,
+                    isFocused,
+                    false);
+                return;
+            }
+
+            if (column == LabelsListColumn.Branch)
             {
                 DrawTreeViewItem.ForSecondaryLabel(
-                    rect, columnText, isSelected, isFocused, false);
+                    rect,
+                    columnText,
+                    isSelected,
+                    isFocused,
+                    false,
+                    DrawTreeViewItem.TextTrimming.Path);
                 return;
             }
 

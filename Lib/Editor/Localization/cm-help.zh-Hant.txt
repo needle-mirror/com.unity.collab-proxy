@@ -2235,7 +2235,6 @@ https://www.plasticscm.com/download/help/securityguide
         {0} | {^wkname}          工作區名稱。
         {1} | {^wkpath}          工作區路徑。
         {2} | {^machine}         用戶端機器名稱。
-        {3} | {^owner}           工作區擁有者。
         {4} | {^guid}            工作區 GUID。
 
         {^tab}                   插入定位字元空格。
@@ -4199,7 +4198,7 @@ Jira 參數 (皆為強制):
     可以同時簽出。
     您可以使用 'cm ^lock ^list' 以取得伺服器中的所有鎖定。
     查看《管理指南》以瞭解鎖定的運作方式：
-    https://www.plasticscm.com/download/help/locking
+    https://docs.unity.com/unity-version-control/smart-locks
 
 範例：
 

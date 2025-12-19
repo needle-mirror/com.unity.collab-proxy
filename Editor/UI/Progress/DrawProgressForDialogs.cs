@@ -7,8 +7,7 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
     {
         internal static void For(ProgressControlsForDialogs.Data data)
         {
-            Rect rect = GUILayoutUtility.GetRect(
-                GUILayoutUtility.GetLastRect().width, 30);
+            Rect rect = GUILayoutUtility.GetRect(0, 30, GUILayout.ExpandWidth(true));
 
             if (!string.IsNullOrEmpty(data.StatusMessage))
             {

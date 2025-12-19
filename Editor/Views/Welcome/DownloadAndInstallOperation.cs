@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Threading;
 
 using Codice.Client.Common.Threading;
 using Codice.Client.Common.WebApi.Responses;
@@ -28,6 +29,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
         internal static void Run(
             Edition plasticEdition,
             IProgressControls progressControls,
+            CancellationToken downloadCancellationToken,
             INotify notify)
         {
             progressControls.ShowProgress(
@@ -43,19 +45,18 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             waiter.Execute(
                 /*threadOperationDelegate*/ delegate
                 {
-                    plasticVersion = WebRestApiClient.PlasticScm.
-                        GetLastVersion(plasticEdition);
+                    plasticVersion = PlasticGui.Plastic.WebRestAPI.GetNewVersion("9.0.0.0", plasticEdition);
 
                     if (plasticVersion == null)
                         return;
 
-                    string installerUrl = GetInstallerUrl(
-                        plasticVersion.Version,
-                        plasticEdition == Edition.Cloud);
-
                     installerDestinationPath = DownloadInstaller(
-                        installerUrl,
-                        progressControls);
+                        plasticVersion.GetInstallerUrl(),
+                        progressControls,
+                        downloadCancellationToken);
+
+                    if (downloadCancellationToken.IsCancellationRequested)
+                        return;
 
                     if (!PlatformIdentifier.IsMac())
                         return;
@@ -67,6 +68,9 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
                 {
                     notify.DownloadFinished();
                     progressControls.HideProgress();
+
+                    if (downloadCancellationToken.IsCancellationRequested)
+                        return;
 
                     if (waiter.Exception != null)
                     {
@@ -141,12 +145,9 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
 
         static string DownloadInstaller(
             string url,
-            IProgressControls progressControls)
+            IProgressControls progressControls,
+            CancellationToken downloadCancellationToken)
         {
-            int bytesProcessed = 0;
-
-            Stream remoteStream = null;
-            Stream localStream = null;
             WebResponse response = null;
             string destinationPath;
 
@@ -171,42 +172,62 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
                     return destinationPath;
                 }
 
-                remoteStream = response.GetResponseStream();
+                if (downloadCancellationToken.IsCancellationRequested)
+                    return null;
 
-                localStream = File.Create(destinationPath);
-
-                byte[] buffer = new byte[100 * 1024];
-                int bytesRead;
-
-                do
+                using (Stream remoteStream = response.GetResponseStream())
+                using (Stream localStream = File.Create(destinationPath))
                 {
-                    bytesRead = remoteStream.Read(buffer, 0, buffer.Length);
-                    localStream.Write(buffer, 0, bytesRead);
-                    bytesProcessed += bytesRead;
-
-                    float progressPercent = GetProgressBarPercent.ForTransfer(
-                        bytesProcessed,
-                        totalBytes) / 100f;
-
-                    if (progressControls is ProgressControlsForDialogs)
-                        ((ProgressControlsForDialogs)progressControls).ProgressData.ProgressPercent = progressPercent;
-                    else if (progressControls is ProgressControlsForViews)
-                        ((ProgressControlsForViews)progressControls).ProgressData.ProgressPercent = progressPercent;
-                } while (bytesRead > 0);
+                    if (!CopyStreamTo(
+                            remoteStream,
+                            localStream,
+                            totalBytes,
+                            progressControls,
+                            downloadCancellationToken))
+                    {
+                        File.Delete(destinationPath);
+                    }
+                }
             }
             finally
             {
                 if (response != null)
                     response.Close();
-
-                if (remoteStream != null)
-                    remoteStream.Close();
-
-                if (localStream != null)
-                    localStream.Close();
             }
 
             return destinationPath;
+        }
+
+        static bool CopyStreamTo(
+            Stream source,
+            Stream destination,
+            long totalBytes,
+            IProgressControls progressControls,
+            CancellationToken downloadCancellationToken)
+        {
+            byte[] buffer = new byte[100 * 1024];
+            int bytesRead;
+            int bytesProcessed = 0;
+
+            while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                if (downloadCancellationToken.IsCancellationRequested)
+                    return false;
+
+                destination.Write(buffer, 0, bytesRead);
+                bytesProcessed += bytesRead;
+
+                float progressPercent = GetProgressBarPercent.ForTransfer(
+                    bytesProcessed,
+                    totalBytes) / 100f;
+
+                if (progressControls is ProgressControlsForDialogs)
+                    ((ProgressControlsForDialogs)progressControls).ProgressData.ProgressPercent = progressPercent;
+                else if (progressControls is ProgressControlsForViews)
+                    ((ProgressControlsForViews)progressControls).ProgressData.ProgressPercent = progressPercent;
+            }
+
+            return true;
         }
 
         static string UnZipMacOsPackage(
@@ -239,23 +260,6 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             {
                 File.Delete(zipInstallerPath);
             }
-        }
-
-        static string GetInstallerUrl(
-            string version,
-            bool isCloudEdition)
-        {
-            string edition = isCloudEdition ?
-                "cloudedition" : "full";
-
-            string platform = PlatformIdentifier.IsMac() ?
-                "macosx" : "windows";
-
-            return string.Format(
-                @"https://www.plasticscm.com/download/downloadinstaller/{0}/plasticscm/{1}/{2}",
-                version,
-                platform,
-                edition);
         }
     }
 }

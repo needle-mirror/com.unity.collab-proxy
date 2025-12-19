@@ -1,65 +1,43 @@
-using System;
-using System.Reflection;
+using UnityEditor;
 
-using UnityEngine;
+#if !UNITY_6000_0_OR_NEWER
+using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
+using SplitterGUILayout = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterGUILayout;
+#endif
 
 namespace Unity.PlasticSCM.Editor.UI
 {
     internal static class PlasticSplitterGUILayout
     {
-        internal static void BeginHorizontalSplit(object splitterState)
+        internal static void BeginHorizontalSplit(SplitterState splitterState)
         {
-            InternalBeginHorizontalSplit.Invoke(
-                null, new object[] {splitterState, new GUILayoutOption[] { }});
+            SplitterGUILayout.BeginHorizontalSplit(splitterState);
         }
 
         internal static void EndHorizontalSplit()
         {
-            InternalEndHorizontalSplit.Invoke(
-                null, new object[] { });
+            SplitterGUILayout.EndHorizontalSplit();
         }
 
-        internal static void BeginVerticalSplit(object splitterState)
+        internal static void BeginVerticalSplit(SplitterState splitterState)
         {
-            InternalBeginVerticalSplit.Invoke(
-                null, new object[] {splitterState, new GUILayoutOption[] { }});
+            SplitterGUILayout.BeginVerticalSplit(splitterState);
         }
 
         internal static void EndVerticalSplit()
         {
-            InternalEndVerticalSplit.Invoke(
-                null, new object[] { });
+            SplitterGUILayout.EndVerticalSplit();
         }
 
-        internal static object InitSplitterState(
+        internal static SplitterState InitSplitterState(
             float[] relativeSizes, int[] minSizes, int[] maxSizes)
         {
-            ConstructorInfo ctorInfo = SplitterState.GetConstructor(
-                new Type[] {typeof(float[]), typeof(int[]), typeof(int[])});
-
-            return ctorInfo.Invoke(
-                new object[] {relativeSizes, minSizes, maxSizes});
+            return new SplitterState(relativeSizes, minSizes, maxSizes);
         }
 
-        static readonly Type SplitterState =
-            typeof(UnityEditor.Editor).Assembly.
-                GetType("UnityEditor.SplitterState");
-        static readonly Type InternalSplitterGUILayout =
-            typeof(UnityEditor.Editor).Assembly.
-                GetType("UnityEditor.SplitterGUILayout");
-
-        static readonly MethodInfo InternalBeginHorizontalSplit =
-            InternalSplitterGUILayout.GetMethod(
-                "BeginHorizontalSplit",
-                new Type[] { SplitterState, typeof(GUILayoutOption[]) });
-        static readonly MethodInfo InternalEndHorizontalSplit =
-            InternalSplitterGUILayout.GetMethod("EndHorizontalSplit");
-
-        static readonly MethodInfo InternalBeginVerticalSplit =
-            InternalSplitterGUILayout.GetMethod(
-                "BeginVerticalSplit",
-                new Type[] { SplitterState, typeof(GUILayoutOption[]) });
-        static readonly MethodInfo InternalEndVerticalSplit =
-            InternalSplitterGUILayout.GetMethod("EndVerticalSplit");
+        internal static float[] GetRelativeSizes(SplitterState splitterState)
+        {
+            return splitterState.relativeSizes;
+        }
     }
 }

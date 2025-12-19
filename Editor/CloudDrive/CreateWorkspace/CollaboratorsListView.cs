@@ -322,6 +322,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace
                 0,
                 GetAvatar.ForEmail(item.User.Name, avatarLoadedAction),
                 null,
+                null,
                 item.User.Name,
                 isSelected,
                 isFocused,

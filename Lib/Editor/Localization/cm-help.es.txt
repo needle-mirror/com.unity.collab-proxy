@@ -2951,7 +2951,6 @@ Notas:
         {0} | {wkname}          Nombre del espacio de trabajo.
         {1} | {wkpath}          Ruta del espacio de trabajo.
         {2} | {machine}         Nombre de la máquina del cliente.
-        {3} | {owner}           Propietario del espacio de trabajo.
         {4} | {guid}            GUID del espacio de trabajo.
         {5} | {type}            Tipo de espacio de trabajo: partial (gluon) o regular.
         {6} | {dynamic}         Un espacio de trabajo puede ser dynamic (plasticfs)

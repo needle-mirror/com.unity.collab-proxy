@@ -662,7 +662,7 @@ Nota: Si no existen reglas de bloqueo que coincidan con esa extensión de archiv
 Nota: El estado ‘Retained’ se mantiene hasta que el archivo es mergeado contra la rama de destino.
 Alternativamente, un administrador puede eliminar el bloqueo para permitir a los compañeros de equipo Bloquear y hacer Checkout de cualquier revisión de archivo en la [action:OpenLocksView]Lista de Bloqueos[/action].
 
-[link:https://docs.unity.com/devops/en/manual/smart-locks]Saber más sobre los Bloqueos Inteligentes[/link]
+[link:https://docs.unity.com/unity-version-control/smart-locks]Saber más sobre los Bloqueos Inteligentes[/link]
 
 == CodeReviewWindowGeneralHelp ==
 [title]¡Revisa como un profesional![/title]

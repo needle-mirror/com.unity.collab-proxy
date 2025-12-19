@@ -6,7 +6,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
     {
         internal static string Get()
         {
-            return Path.GetDirectoryName(Path.GetFullPath(
+            return Path.GetDirectoryName(AssetsPath.GetFullPath.ForPath(
                 ApplicationDataPath.Get()));
         }
     }

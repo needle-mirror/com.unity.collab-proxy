@@ -15,21 +15,19 @@ namespace Unity.PlasticSCM.Editor.UI
         internal enum Name
         {
             None,
-            IconPlastic,
             IconCloseButton,
             IconPressedCloseButton,
             IconAddedLocal,
             IconAddedOverlay,
             IconPrivateOverlay,
+            IconMovedOverlay,
             IconCheckedOutLocalOverlay,
-            IconDeleted,
             IconDeletedLocalOverlay,
             IconDeletedRemote,
             IconDeletedRemoteOverlay,
             IconOutOfSync,
             IconInfoBellNotification,
             IconOutOfSyncOverlay,
-            IconMoved,
             IconMergeLink,
             Ignored,
             IconIgnoredOverlay,
@@ -59,6 +57,10 @@ namespace Unity.PlasticSCM.Editor.UI
             ButtonSsoSignInUnity,
             ButtonSsoSignInEmail,
             ButtonSsoSignInGoogle,
+            IconPendingChangesView,
+            IconIncomingChangesView,
+            IconMergeView,
+            IconChangesets,
             IconBranch,
             IconBranches,
             IconBrEx,
@@ -67,9 +69,11 @@ namespace Unity.PlasticSCM.Editor.UI
             Refresh,
             IconInviteUsers,
             IconLock,
+            IconLockRetained,
             IconShelve,
             IconClipboard,
             IconLabel,
+            IconHistory,
             HideVersionControl,
             GetIncomingChangesIcon,
 
@@ -146,6 +150,14 @@ namespace Unity.PlasticSCM.Editor.UI
                 mDeletedRemoteOverlayIcon = GetOverlay(Name.IconDeletedRemoteOverlay);
 
             return mDeletedRemoteOverlayIcon;
+        }
+
+        internal static Texture GetMovedOverlayIcon()
+        {
+            if (mMovedOverlayIcon == null)
+                mMovedOverlayIcon = GetOverlay(Name.IconMovedOverlay);
+
+            return mMovedOverlayIcon;
         }
 
         internal static Texture GetCheckedOutOverlayIcon()
@@ -305,20 +317,44 @@ namespace Unity.PlasticSCM.Editor.UI
             return mUndoIcon;
         }
 
-        internal static Texture2D GetPlasticIcon()
-        {
-            if (mPlasticIcon == null)
-                mPlasticIcon = GetImage(Name.IconPlastic);
-
-            return mPlasticIcon;
-        }
-
         internal static Texture2D GetClipboardIcon()
         {
             if (mClipboardIcon == null)
                 mClipboardIcon = GetImage(Name.IconClipboard);
 
             return mClipboardIcon;
+        }
+
+        internal static Texture GetPendingChangesViewIcon()
+        {
+            if (mPendingChangesViewIcon == null)
+                mPendingChangesViewIcon = GetImage(Name.IconPendingChangesView);
+
+            return mPendingChangesViewIcon;
+        }
+
+        internal static Texture GetIncomingChangesViewIcon()
+        {
+            if (mIncomingChangesViewIcon == null)
+                mIncomingChangesViewIcon = GetImage(Name.IconIncomingChangesView);
+
+            return mIncomingChangesViewIcon;
+        }
+
+        internal static Texture GetMergeViewIcon()
+        {
+            if (mMergeViewIcon == null)
+                mMergeViewIcon = GetImage(Name.IconMergeView);
+
+            return mMergeViewIcon;
+        }
+
+        internal static Texture2D GetChangesetsIcon()
+        {
+            if (mChangesetsIcon == null)
+                mChangesetsIcon = GetImage(Name.IconChangesets);
+
+            return mChangesetsIcon;
         }
 
         internal static Texture2D GetBranchIcon()
@@ -505,22 +541,6 @@ namespace Unity.PlasticSCM.Editor.UI
             return mDeletedRemoteIcon;
         }
 
-        internal static Texture2D GetDeletedIcon()
-        {
-            if (mDeletedIcon == null)
-                mDeletedIcon = Images.GetImage(Images.Name.IconDeleted);
-
-            return mDeletedIcon;
-        }
-
-        internal static Texture2D GetMovedIcon()
-        {
-            if (mMovedIcon == null)
-                mMovedIcon = Images.GetImage(Images.Name.IconMoved);
-
-            return mMovedIcon;
-        }
-
         internal static Texture2D GetRepositoryIcon()
         {
             if (mRepositoryIcon == null)
@@ -579,12 +599,28 @@ namespace Unity.PlasticSCM.Editor.UI
             return mLabelIcon;
         }
 
+        internal static Texture2D GetHistoryIcon()
+        {
+            if (mHistoryIcon == null)
+                mHistoryIcon = GetImage(Name.IconHistory);
+
+            return mHistoryIcon;
+        }
+
         internal static Texture2D GetLockIcon()
         {
             if (mLockIcon == null)
                 mLockIcon = GetImage(Name.IconLock);
 
             return mLockIcon;
+        }
+
+        internal static Texture2D GetLockRetainedIcon()
+        {
+            if (mLockRetainedIcon == null)
+                mLockRetainedIcon = GetImage(Name.IconLockRetained);
+
+            return mLockRetainedIcon;
         }
 
         internal static Texture2D GetTreeviewBackgroundTexture()
@@ -595,12 +631,12 @@ namespace Unity.PlasticSCM.Editor.UI
             return mTreeviewBackgroundTexture;
         }
 
-        internal static Texture2D GetCommentBackgroundTexture()
+        internal static Texture2D GetToolbarBackgroundTexture()
         {
-            if (mCommentBackground == null)
-                mCommentBackground = GetTextureFromColor(UnityStyles.Colors.CommentsBackground);
+            if (mToolbarBackground == null)
+                mToolbarBackground = GetTextureFromColor(UnityStyles.Colors.ToolbarBackground);
 
-            return mCommentBackground;
+            return mToolbarBackground;
         }
 
         internal static Texture2D GetColumnsBackgroundTexture()
@@ -780,8 +816,8 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D TryLoadImage(
             string imageFileRelativePath, string image2xFilePath, bool preferFulResImage)
         {
-            bool isImageAvailable = File.Exists(Path.GetFullPath(imageFileRelativePath));
-            bool isImage2XAvailable = File.Exists(Path.GetFullPath(image2xFilePath));
+            bool isImageAvailable = File.Exists(AssetsPath.GetFullPath.ForPath(imageFileRelativePath));
+            bool isImage2XAvailable = File.Exists(AssetsPath.GetFullPath.ForPath(image2xFilePath));
 
             if ((EditorGUIUtility.pixelsPerPoint > 1f || !isImageAvailable || preferFulResImage) &&
                 isImage2XAvailable)
@@ -830,6 +866,7 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture mAddedOverlayIcon;
         static Texture mDeletedLocalOverlayIcon;
         static Texture mDeletedRemoteOverlayIcon;
+        static Texture mMovedOverlayIcon;
         static Texture mCheckedOutOverlayIcon;
         static Texture mOutOfSyncOverlayIcon;
         static Texture mConflictedOverlayIcon;
@@ -852,11 +889,14 @@ namespace Unity.PlasticSCM.Editor.UI
 
         static Texture2D mTreeviewBackgroundTexture;
         static Texture2D mColumnsBackgroundTexture;
-        static Texture2D mCommentBackground;
+        static Texture2D mToolbarBackground;
 
         static Texture2D mUndoIcon;
-        static Texture2D mPlasticIcon;
         static Texture2D mClipboardIcon;
+        static Texture2D mPendingChangesViewIcon;
+        static Texture2D mIncomingChangesViewIcon;
+        static Texture2D mMergeViewIcon;
+        static Texture2D mChangesetsIcon;
         static Texture2D mBranchIcon;
         static Texture2D mBranchesIcon;
         static Texture2D mBranchExplorerIcon;
@@ -868,7 +908,9 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mInviteUsersIcon;
         static Texture2D mShelveIcon;
         static Texture2D mLockIcon;
+        static Texture2D mLockRetainedIcon;
         static Texture2D mLabelIcon;
+        static Texture2D mHistoryIcon;
 
         static Texture2D mPlasticViewIcon;
         static Texture2D mPlasticNotifyIncomingIcon;
@@ -888,8 +930,6 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mMergeLinkIcon;
         static Texture2D mAddedLocalIcon;
         static Texture2D mDeletedRemoteIcon;
-        static Texture2D mDeletedIcon;
-        static Texture2D mMovedIcon;
         static Texture2D mRepositoryIcon;
 
         static readonly HashSet<string> mAudioExtensions = new HashSet<string> {

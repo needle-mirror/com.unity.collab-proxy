@@ -33,14 +33,14 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
             if (string.IsNullOrEmpty(path))
                 return false;
 
-            var fullPath = Path.GetFullPath(path).Replace('\\', '/');
+            var fullPath = AssetsPath.GetFullPath.ForPath(path).Replace('\\', '/');
 
             return fullPath.StartsWith(
                 mProjectRelativePath,
                 StringComparison.OrdinalIgnoreCase);
         }
 
-        static string mProjectRelativePath = 
+        static string mProjectRelativePath =
             Directory.GetCurrentDirectory().Replace('\\', '/') + '/';
     }
 }

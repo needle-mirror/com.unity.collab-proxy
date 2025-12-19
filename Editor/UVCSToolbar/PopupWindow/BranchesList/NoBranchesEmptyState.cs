@@ -22,7 +22,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.BranchesList
                 () =>
                 {
                     GUILayout.Label(
-                        PlasticLocalization.Name.NoBranchMatchingFilter.GetString(),
+                        PlasticLocalization.Name.NoBranchesMatchingFilters.GetString(),
                         EditorStyles.boldLabel);
                 },
                 () =>

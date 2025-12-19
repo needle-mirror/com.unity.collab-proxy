@@ -34,7 +34,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             List<string> columnNames,
             PendingChangesViewMenu menu,
             IAssetStatusCache assetStatusCache,
-            Action doubleClickAction)
+            Action doubleClickAction,
+            Action updateEmptyStateMessageAction)
         {
             mWkInfo = wkInfo;
             mIsGluonMode = isGluonMode;
@@ -43,6 +44,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mMenu = menu;
             mAssetStatusCache = assetStatusCache;
             mDoubleClickAction = doubleClickAction;
+            mUpdateEmptyStateMessageAction = updateEmptyStateMessageAction;
 
             mPendingChangesTree = new UnityPendingChangesTree();
 
@@ -166,7 +168,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             {
                 ChangelistTreeViewItemGUI(
                     this,
-                    args.rowRect, rowHeight,
+                    args.rowRect,
                     (ChangelistTreeViewItem)args.item,
                     args.selected, args.focused);
                 return;
@@ -176,7 +178,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             {
                 CategoryTreeViewItemGUI(
                     this,
-                    args.rowRect, rowHeight,
+                    args.rowRect,
                     (ChangeCategoryTreeViewItem)args.item,
                     args.selected, args.focused);
                 return;
@@ -625,6 +627,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         void DelayedSearchChanged()
         {
+            mUpdateEmptyStateMessageAction();
+
             Refilter();
 
             Sort();
@@ -644,7 +648,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         static void ChangelistTreeViewItemGUI(
             PendingChangesTreeView treeView,
             Rect rowRect,
-            float rowHeight,
             ChangelistTreeViewItem item,
             bool isSelected,
             bool isFocused)
@@ -662,7 +665,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             bool isChecked = DrawTreeViewItem.ForCheckableIndentedItem(
                 rowRect,
-                rowHeight,
                 item.depth,
                 label,
                 secondaryLabel,
@@ -682,7 +684,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         static void CategoryTreeViewItemGUI(
             PendingChangesTreeView treeView,
             Rect rowRect,
-            float rowHeight,
             ChangeCategoryTreeViewItem item,
             bool isSelected,
             bool isFocused)
@@ -696,7 +697,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             bool isChecked = DrawTreeViewItem.ForCheckableIndentedItem(
                 rowRect,
-                rowHeight,
                 item.depth,
                 label,
                 secondaryLabel,
@@ -779,9 +779,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
                 bool isChecked = DrawTreeViewItem.ForCheckableItemCell(
                     rect, rowHeight, item.depth,
-                    icon, overlayIcon, label,
+                    icon, null, overlayIcon, label,
                     isSelected, isFocused, false,
-                    wasChecked);
+                    wasChecked,
+                    DrawTreeViewItem.TextTrimming.Path);
 
                 ((ICheckablePlasticTreeNode)changeInfo).UpdateCheckedState(isChecked);
 
@@ -994,6 +995,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         DelayedActionBySecondsRunner mDelayedFilterAction;
 
         readonly Action mDoubleClickAction;
+        readonly Action mUpdateEmptyStateMessageAction;
         readonly IAssetStatusCache mAssetStatusCache;
         readonly PendingChangesViewMenu mMenu;
         readonly PendingChangesTreeHeaderState mHeaderState;

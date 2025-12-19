@@ -6,22 +6,13 @@ using UnityEngine;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.Diff;
+using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.UI;
-using Unity.PlasticSCM.Editor.UI.Progress;
 
 namespace Unity.PlasticSCM.Editor.Views.Diff.Dialogs
 {
     internal class GetRestorePathDialog : PlasticDialog
     {
-        protected override Rect DefaultRect
-        {
-            get
-            {
-                var baseRect = base.DefaultRect;
-                return new Rect(baseRect.x, baseRect.y, 600, 205);
-            }
-        }
-
         internal static GetRestorePathData GetRestorePath(
             string wkPath,
             string restorePath,
@@ -31,7 +22,6 @@ namespace Unity.PlasticSCM.Editor.Views.Diff.Dialogs
             EditorWindow parentWindow)
         {
             GetRestorePathDialog dialog = Create(
-                new ProgressControlsForDialogs(),
                 wkPath,
                 GetProposedRestorePath.For(restorePath),
                 explanation,
@@ -46,26 +36,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff.Dialogs
             return result;
         }
 
-        protected override void OnModalGUI()
-        {
-            Title(PlasticLocalization.GetString(
-                PlasticLocalization.Name.EnterRestorePathFormTitle));
-
-            Paragraph(mExplanation);
-
-            DoEntryArea();
-
-            GUILayout.Space(10);
-
-            DrawProgressForDialogs.For(
-                mProgressControls.ProgressData);
-
-            DoButtonsArea();
-
-            mProgressControls.ForcedUpdateProgress(this);
-        }
-
-        void DoEntryArea()
+        protected override void DoComponentsArea()
         {
             GUILayout.Label(PlasticLocalization.GetString(
                 PlasticLocalization.Name.EnterRestorePathFormTextBoxExplanation),
@@ -73,10 +44,14 @@ namespace Unity.PlasticSCM.Editor.Views.Diff.Dialogs
 
             GUILayout.BeginHorizontal();
 
-            mRestorePath = GUILayout.TextField(
-                mRestorePath, GUILayout.Width(TEXTBOX_WIDTH));
+            Rect pathRect = GUILayoutUtility.GetRect(
+                new GUIContent(string.Empty),
+                EditorStyles.textField,
+                GUILayout.ExpandWidth(true));
 
-            if (GUILayout.Button("...", EditorStyles.miniButton))
+            mRestorePath = EditorGUI.TextField(pathRect, mRestorePath);
+
+            if (GUILayout.Button("...", UnityStyles.Dialog.SmallButton))
             {
                 mRestorePath = (mIsDirectory) ?
                     DoOpenFolderPanel(mRestorePath) :
@@ -90,6 +65,11 @@ namespace Unity.PlasticSCM.Editor.Views.Diff.Dialogs
         {
             return PlasticLocalization.GetString(
                 PlasticLocalization.Name.EnterRestorePathFormTitle);
+        }
+
+        protected override string GetExplanation()
+        {
+            return mExplanation;
         }
 
         static string DoOpenFolderPanel(string actualPath)
@@ -111,7 +91,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff.Dialogs
             if (string.IsNullOrEmpty(result))
                 return actualPath;
 
-            return Path.GetFullPath(result);
+            return AssetsPath.GetFullPath.ForPath(result);
         }
 
         static string DoOpenFilePanel(string actualPath)
@@ -136,59 +116,21 @@ namespace Unity.PlasticSCM.Editor.Views.Diff.Dialogs
             if (string.IsNullOrEmpty(result))
                 return actualPath;
 
-            return Path.GetFullPath(result);
+            return AssetsPath.GetFullPath.ForPath(result);
         }
 
-        void DoButtonsArea()
+        protected override void DoCloseButton()
         {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-
-                if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    DoOkButton();
-                    DoSkipButton(mShowSkipButton);
-                    DoCancelButton();
-                    return;
-                }
-
-                DoCancelButton();
-                DoSkipButton(mShowSkipButton);
-                DoOkButton();
-            }
-        }
-
-        void DoOkButton()
-        {
-            if (!AcceptButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.OkButton)))
+            if (!mShowSkipButton)
                 return;
 
-            OkButtonWithValidationAction();
-        }
-
-        void DoSkipButton(bool showSkipButton)
-        {
-            if (!showSkipButton)
-                return;
-
-            if (!NormalButton(PlasticLocalization.GetString(PlasticLocalization.Name.SkipRestoreButton)))
+            if (!NormalButton(PlasticLocalization.Name.SkipRestoreButton.GetString()))
                 return;
 
             CloseButtonAction();
         }
 
-        void DoCancelButton()
-        {
-            if (!NormalButton(PlasticLocalization.GetString(
-                    PlasticLocalization.Name.CancelButton)))
-                return;
-
-            CancelButtonAction();
-        }
-
-        void OkButtonWithValidationAction()
+        internal override void OkButtonAction()
         {
             GetRestorePathValidation.Validation(
                 mWkPath, BuildGetRestorePathResult(),
@@ -217,7 +159,6 @@ namespace Unity.PlasticSCM.Editor.Views.Diff.Dialogs
         }
 
         static GetRestorePathDialog Create(
-            ProgressControlsForDialogs progressControls,
             string wkPath,
             string restorePath,
             string explanation,
@@ -230,9 +171,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff.Dialogs
             instance.mExplanation = explanation;
             instance.mIsDirectory = isDirectory;
             instance.mShowSkipButton = showSkipButton;
-            instance.mEnterKeyAction = instance.OkButtonWithValidationAction;
+            instance.mEnterKeyAction = instance.OkButtonAction;
             instance.mEscapeKeyAction = instance.CancelButtonAction;
-            instance.mProgressControls = progressControls;
             return instance;
         }
 
@@ -241,9 +181,5 @@ namespace Unity.PlasticSCM.Editor.Views.Diff.Dialogs
         string mExplanation = string.Empty;
         string mRestorePath = string.Empty;
         string mWkPath = string.Empty;
-
-        ProgressControlsForDialogs mProgressControls;
-
-        const float TEXTBOX_WIDTH = 520;
     }
 }
