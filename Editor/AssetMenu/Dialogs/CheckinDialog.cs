@@ -18,7 +18,7 @@ using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Tree;
 
-#if !UNITY_6000_0_OR_NEWER
+#if !UNITY_6000_3_OR_NEWER
 using EditorGUI = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.EditorGUI;
 #endif
 

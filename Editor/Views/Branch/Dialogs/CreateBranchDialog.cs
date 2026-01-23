@@ -8,7 +8,7 @@ using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.QueryViews.Branches;
 using Unity.PlasticSCM.Editor.UI;
 
-#if !UNITY_6000_0_OR_NEWER
+#if !UNITY_6000_3_OR_NEWER
 using EditorGUI = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.EditorGUI;
 #endif
 

@@ -23,7 +23,7 @@ using Unity.PlasticSCM.Editor.Views.Properties;
 
 using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
 using GluonShelveOperations = GluonGui.WorkspaceWindow.Views.Shelves.ShelveOperations;
-#if !UNITY_6000_0_OR_NEWER
+#if !UNITY_6000_3_OR_NEWER
 using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
 #endif
 

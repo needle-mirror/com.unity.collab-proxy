@@ -2,7 +2,7 @@
 
 using UnityEditorWindow = UnityEditor.EditorWindow;
 
-#if !UNITY_6000_0_OR_NEWER
+#if !UNITY_6000_3_OR_NEWER
 using Unity.PlasticSCM.Editor.UnityInternals.UnityEditor;
 using EditorWindow = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.EditorWindow;
 #else
@@ -35,7 +35,7 @@ namespace Unity.PlasticSCM.Editor.UI
         static void MakeModal(UnityEditorWindow window)
         {
             // MakeModal(m_Parent.window);
-#if !UNITY_6000_0_OR_NEWER
+#if !UNITY_6000_3_OR_NEWER
             HostView hostView = window.m_Parent();
 #else
             HostView hostView = window.m_Parent;
@@ -49,7 +49,7 @@ namespace Unity.PlasticSCM.Editor.UI
         {
             // ShowWithMode(ShowMode.Utility);
 
-#if !UNITY_6000_0_OR_NEWER
+#if !UNITY_6000_3_OR_NEWER
             window.ShowWithMode(2);
 #else
             window.ShowWithMode((ShowMode)2);

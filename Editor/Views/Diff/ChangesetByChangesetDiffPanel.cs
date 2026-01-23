@@ -16,7 +16,7 @@ using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.Changesets;
 using Unity.PlasticSCM.Editor.Views.Properties;
 
-#if !UNITY_6000_0_OR_NEWER
+#if !UNITY_6000_3_OR_NEWER
 using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
 #endif
 

@@ -38,7 +38,7 @@ using Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs;
 using Unity.PlasticSCM.Editor.Views.PendingChanges.PendingMergeLinks;
 using Unity.PlasticSCM.Editor.Views.Changesets;
 
-#if !UNITY_6000_0_OR_NEWER
+#if !UNITY_6000_3_OR_NEWER
 using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
 #endif
 

@@ -2,7 +2,7 @@ using System;
 
 using UnityEditor;
 
-#if !UNITY_6000_0_OR_NEWER
+#if !UNITY_6000_3_OR_NEWER
 using EditorUtility = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.EditorUtility;
 using Menu = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.Menu;
 #endif

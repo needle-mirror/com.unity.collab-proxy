@@ -2,6 +2,13 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.11.3] - 2026-01-23
+
+### Fixed
+
+- Fixed accessing Editor internals directly on versions below Unity 6.3.
+- Fixed a compilation error caused by an invalid duplicated GUID in WaitForPendingOperations.cs.meta in 2.11.2.
+
 ## [2.11.2] - 2025-12-19
 
 ### Added

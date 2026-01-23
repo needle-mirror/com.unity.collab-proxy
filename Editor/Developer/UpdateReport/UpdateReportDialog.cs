@@ -11,7 +11,7 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
 
-#if !UNITY_6000_0_OR_NEWER
+#if !UNITY_6000_3_OR_NEWER
 using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
 #endif
 

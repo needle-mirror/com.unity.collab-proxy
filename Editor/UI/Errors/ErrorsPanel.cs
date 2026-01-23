@@ -8,7 +8,7 @@ using Unity.PlasticSCM.Editor.UI.Tree;
 using EditorGUILayout = UnityEditor.EditorGUILayout;
 using EditorStyles = UnityEditor.EditorStyles;
 
-#if !UNITY_6000_0_OR_NEWER
+#if !UNITY_6000_3_OR_NEWER
 using Unity.PlasticSCM.Editor.UnityInternals.UnityEditor;
 #else
 using UnityEditor;
