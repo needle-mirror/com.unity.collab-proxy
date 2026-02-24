@@ -1,5 +1,4 @@
-﻿#if HAS_ENTITIES_PACKAGE
-using UnityEditor;
+#if HAS_ENTITIES_PACKAGE
 using UnityEngine;
 using Unity.Scenes;
 
@@ -17,12 +16,12 @@ namespace Unity.PlasticSCM.Editor.Entities
         }
 
         bool DrawHierarchyOverlay.IGetAssetPathFromInstance.TryGetAssetPath(
-            int instanceID,
+            UnityObjectInstance instance,
             out string assetPath)
         {
             assetPath = null;
 
-            Object hierarchyObject = FindUnityObject.ForInstanceID(instanceID);
+            Object hierarchyObject = instance.FindObject();
 
             if (hierarchyObject == null || hierarchyObject is not GameObject)
                 return false;

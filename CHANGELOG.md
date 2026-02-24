@@ -2,6 +2,12 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.11.4] - 2026-02-24
+
+### Fixed
+
+- Fixed deprecated instanceID API usages for Unity 6.5.
+
 ## [2.11.3] - 2026-01-23
 
 ### Fixed

@@ -1,7 +1,7 @@
 {
   "name": "com.unity.collab-proxy",
   "displayName": "Unity Version Control",
-  "version": "2.11.3",
+  "version": "2.11.4",
   "unity": "2021.3",
   "unityRelease": "0f1",
   "description": "The package gives you the ability to use Unity Version Control in the Unity editor. To use Unity Version Control, a subscription is required. Learn more about how you can get started for free by visiting https://unity.com/solutions/version-control",
@@ -25,18 +25,18 @@
   ],
   "category": "Editor",
   "relatedPackages": {
-    "com.unity.collab-proxy.tests": "2.11.3"
+    "com.unity.collab-proxy.tests": "2.11.4"
   },
   "_upm": {
-    "changelog": "### Fixed\n\n- Fixed accessing Editor internals directly on versions below Unity 6.3.\n- Fixed a compilation error caused by an invalid duplicated GUID in WaitForPendingOperations.cs.meta in 2.11.2."
+    "changelog": "### Fixed\n\n- Fixed deprecated instanceID API usages for Unity 6.5."
   },
   "upmCi": {
-    "footprint": "bf37015158dbb8ef85404c8d2288494504131e28"
+    "footprint": "458ee15c4e0612fb9d501386af621e1797f20823"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.collab-proxy@2.11/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.cloud.collaborate.git",
     "type": "git",
-    "revision": "23b6a337b59c8ad04d7b78f38448ad0addcb7954"
+    "revision": "164a710206077e1184a134f18801dae560fdf28a"
   }
 }

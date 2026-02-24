@@ -18,7 +18,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
     {
         internal interface IGetAssetPathFromInstance
         {
-            bool TryGetAssetPath(int instanceID, out string assetPath);
+            bool TryGetAssetPath(UnityObjectInstance instance, out string assetPath);
         }
 
         internal static IGetAssetPathFromInstance GetSubSceneAssetPath;
@@ -67,18 +67,23 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
 #if UNITY_6000_4_OR_NEWER
         static void OnHierarchyGUIByEntityId(EntityId entityId, Rect selectionRect)
         {
-            OnHierarchyGUI((int)entityId.GetRawData(), selectionRect);
+            OnHierarchyGUI(UnityObjectInstance.FromEntityId(entityId), selectionRect);
+        }
+#else
+        static void OnHierarchyGUI(int instanceId, Rect selectionRect)
+        {
+            OnHierarchyGUI(UnityObjectInstance.FromInstanceId(instanceId), selectionRect);
         }
 #endif
 
-        static void OnHierarchyGUI(int instanceID, Rect selectionRect)
+        static void OnHierarchyGUI(UnityObjectInstance instance, Rect selectionRect)
         {
             if (Event.current.type != EventType.Repaint)
                 return;
 
             try
             {
-                string assetPath = GetAssetPathFromInstanceID(instanceID);
+                string assetPath = GetAssetPathFromInstance(instance);
 
                 if (assetPath == null)
                     return;
@@ -96,22 +101,22 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             }
         }
 
-        static string GetAssetPathFromInstanceID(int instanceID)
+        static string GetAssetPathFromInstance(UnityObjectInstance instance)
         {
             string sceneAssetPath;
-            if (TryGetAssetPathForScene(instanceID, out sceneAssetPath))
+            if (TryGetAssetPathForScene(instance, out sceneAssetPath))
             {
                 return sceneAssetPath;
             }
 
             string subSceneAssetPath;
-            if (TryGetAssetPathForSubScene(instanceID, out subSceneAssetPath))
+            if (TryGetAssetPathForSubScene(instance, out subSceneAssetPath))
             {
                 return subSceneAssetPath;
             }
 
             string prefabAssetPath;
-            if (TryGetAssetPathForPrefab(instanceID, out prefabAssetPath))
+            if (TryGetAssetPathForPrefab(instance, out prefabAssetPath))
             {
                 return prefabAssetPath;
             }
@@ -119,29 +124,25 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             return null;
         }
 
-        static bool TryGetAssetPathForScene(int instanceID, out string assetPath)
+        static bool TryGetAssetPathForScene(UnityObjectInstance instance, out string assetPath)
         {
             assetPath = null;
 
-            if (FindUnityObject.ForInstanceID(instanceID) != null)
+            if (instance.FindObject() != null)
                 return false;
 
-            assetPath = FindScenePathForHandle(instanceID);
+            assetPath = FindScenePathForHandle(instance);
 
             return assetPath != null;
         }
 
-        static string FindScenePathForHandle(int sceneHandle)
+        static string FindScenePathForHandle(UnityObjectInstance instance)
         {
             for (int i = 0; i < SceneManager.sceneCount; i++)
             {
                 Scene scene = SceneManager.GetSceneAt(i);
 
-#if UNITY_6000_4_OR_NEWER
-                if (scene.handle == SceneHandle.FromRawData((ulong)sceneHandle) && scene.path != null)
-#else
-                if (scene.handle == sceneHandle && scene.path != null)
-#endif
+                if (instance.MatchesScene(scene) && scene.path != null)
                 {
                     return scene.path;
                 }
@@ -150,13 +151,13 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             return null;
         }
 
-        static bool TryGetAssetPathForSubScene(int instanceID, out string assetPath)
+        static bool TryGetAssetPathForSubScene(UnityObjectInstance instance, out string assetPath)
         {
             assetPath = null;
 
             string subSceneAssetPath;
             if (GetSubSceneAssetPath != null &&
-                GetSubSceneAssetPath.TryGetAssetPath(instanceID, out subSceneAssetPath))
+                GetSubSceneAssetPath.TryGetAssetPath(instance, out subSceneAssetPath))
             {
                 assetPath = subSceneAssetPath;
             }
@@ -164,7 +165,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             return assetPath != null;
         }
 
-        static bool TryGetAssetPathForPrefab(int instanceID, out string assetPath)
+        static bool TryGetAssetPathForPrefab(UnityObjectInstance instance, out string assetPath)
         {
             assetPath = null;
 
@@ -173,7 +174,7 @@ namespace Unity.PlasticSCM.Editor.AssetsOverlays
             if (prefabStage == null)
                 return false;
 
-            Object hierarchyObject = FindUnityObject.ForInstanceID(instanceID);
+            Object hierarchyObject = instance.FindObject();
 
             if (hierarchyObject == null)
                 return false;
