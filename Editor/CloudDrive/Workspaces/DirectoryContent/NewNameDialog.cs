@@ -113,11 +113,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
                     mNewName,
                     GUILayout.ExpandWidth(true));
 
-                if (!mTextAreaFocused)
-                {
-                    EditorGUI.FocusTextInControl(NEW_NAME_TEXTAREA_NAME);
-                    mTextAreaFocused = true;
-                }
+                FocusTextAreaIfNeeded(NEW_NAME_TEXTAREA_NAME);
             }
         }
 
@@ -164,8 +160,6 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
         {
             return Directory.Exists(path) || File.Exists(path);
         }
-
-        bool mTextAreaFocused;
 
         string mParentPath;
         string mCurrentName;

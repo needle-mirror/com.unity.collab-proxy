@@ -49,8 +49,12 @@ namespace Unity.PlasticSCM.Editor.Topbar
                         Images.GetBranchExplorerIcon(),
                         PlasticLocalization.Name.BranchExplorerMenu.GetString()))
                 {
+#if UNITY_2022_1_OR_NEWER
+                    ShowWindow.BranchExplorer();
+#else
                     LaunchTool.OpenBranchExplorer(
                         showDownloadPlasticExeWindow, processExecutor, wkInfo, isGluonMode);
+#endif
                 }
             }
             else

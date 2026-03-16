@@ -38,7 +38,10 @@ using Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs;
 using Unity.PlasticSCM.Editor.Views.PendingChanges.PendingMergeLinks;
 using Unity.PlasticSCM.Editor.Views.Changesets;
 
+using DiffWindow = Plugins.PlasticSCM.Editor.Diff.DiffWindow;
+
 #if !UNITY_6000_3_OR_NEWER
+using SplitterGUILayout = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterGUILayout;
 using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
 #endif
 
@@ -140,21 +143,19 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             if (mErrorsPanel != null)
             {
-                mErrorsSplitterState = PlasticSplitterGUILayout.InitSplitterState(
-                    new float[] { 0.75f, 0.25f },
+                mErrorsSplitterState = new SplitterState(
+                    SplitterSettings.Load(
+                        UnityConstants.PENDING_CHANGES_ERRORS_SPLITTER_SETTINGS_NAME,
+                        new float[] { 0.75f, 0.25f }),
                     new int[] { 100, 100 },
                     new int[] { 100000, 100000 }
                 );
             }
 
-            mCommentsSplitterState = PlasticSplitterGUILayout.InitSplitterState(
-                new float[]
-                {
-                    EditorPrefs.GetFloat(
-                        UnityConstants.PENDING_CHANGES_COMMENT_SPLITTER_LEFT_KEY_NAME, 0.78f),
-                    EditorPrefs.GetFloat(
-                        UnityConstants.PENDING_CHANGES_COMMENT_SPLITTER_RIGHT_KEY_NAME, 0.22f),
-                },
+            mCommentsSplitterState = new SplitterState(
+                SplitterSettings.Load(
+                    UnityConstants.PENDING_CHANGES_COMMENTS_SPLITTER_SETTINGS_NAME,
+                    new float[] { 0.78f, 0.22f }),
                 new int[] { 160, 160 },
                 new int[] { 100000, 100000 }
             );
@@ -258,18 +259,21 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 mPendingChangesTreeView.multiColumnHeader.state,
                 UnityConstants.PENDING_CHANGES_TABLE_SETTINGS_NAME);
 
+            SplitterSettings.Save(
+                mCommentsSplitterState,
+                UnityConstants.PENDING_CHANGES_COMMENTS_SPLITTER_SETTINGS_NAME);
+
+            if (mErrorsSplitterState != null)
+            {
+                SplitterSettings.Save(
+                    mErrorsSplitterState,
+                    UnityConstants.PENDING_CHANGES_ERRORS_SPLITTER_SETTINGS_NAME);
+            }
+
             if (mErrorsPanel != null)
                 mErrorsPanel.OnDisable();
 
             mCommentArea.OnDisable();
-
-            float[] relativeSizes = PlasticSplitterGUILayout.GetRelativeSizes(mCommentsSplitterState);
-            EditorPrefs.SetFloat(
-                UnityConstants.PENDING_CHANGES_COMMENT_SPLITTER_LEFT_KEY_NAME,
-                relativeSizes[0]);
-            EditorPrefs.SetFloat(
-                UnityConstants.PENDING_CHANGES_COMMENT_SPLITTER_RIGHT_KEY_NAME,
-                relativeSizes[1]);
         }
 
         internal void Update()
@@ -312,14 +316,14 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         internal void OnGUI(ResolvedUser currentUser)
         {
-            PlasticSplitterGUILayout.BeginHorizontalSplit(mCommentsSplitterState);
+            SplitterGUILayout.BeginHorizontalSplit(mCommentsSplitterState);
 
             using (new EditorGUILayout.HorizontalScope())
             {
                 using (new EditorGUILayout.VerticalScope())
                 {
                     if (mErrorsPanel != null && mErrorsPanel.IsVisible)
-                        PlasticSplitterGUILayout.BeginVerticalSplit(mErrorsSplitterState);
+                        SplitterGUILayout.BeginVerticalSplit(mErrorsSplitterState);
 
                     DoWarningMessage();
                     DoActionsToolbar();
@@ -331,7 +335,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                     if (mErrorsPanel != null && mErrorsPanel.IsVisible)
                     {
                         mErrorsPanel.OnGUI();
-                        PlasticSplitterGUILayout.EndVerticalSplit();
+                        SplitterGUILayout.EndVerticalSplit();
                     }
 
                     if (mProgressControls.HasNotification())
@@ -351,7 +355,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             mCommentArea.OnGUI(currentUser, IsOperationRunning());
 
-            PlasticSplitterGUILayout.EndHorizontalSplit();
+            SplitterGUILayout.EndHorizontalSplit();
 
             ExecuteAfterOnGUIAction();
         }
@@ -506,6 +510,16 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             ChangeInfo changedForMovedMeta = (changedForMoved == null) ?
                 null : mPendingChangesTreeView.GetMetaChange(changedForMoved);
 
+            if (UseBuiltinDiffWindowPreference.IsEnabled())
+            {
+                DiffWindow diffWindow = ShowWindow.Diff();
+
+                diffWindow.ShowDiffFromChange(
+                    selectedChangeMeta,
+                    changedForMovedMeta);
+                return;
+            }
+
             DiffOperation.DiffWorkspaceContent(
                 mWkInfo,
                 selectedChangeMeta,
@@ -568,6 +582,15 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         {
             ChangeInfo selectedChange = PendingChangesSelection
                 .GetSelectedChange(mPendingChangesTreeView);
+
+            if (UseBuiltinDiffWindowPreference.IsEnabled())
+            {
+                DiffWindow diffWindow = ShowWindow.Diff();
+                diffWindow.ShowDiffFromChange(
+                    selectedChange,
+                    mPendingChangesTreeView.GetChangedForMoved(selectedChange));
+                return;
+            }
 
             DiffOperation.DiffWorkspaceContent(
                 mWkInfo,
@@ -1063,7 +1086,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 if (isOperationRunning)
                     return;
 
-                if (changesTreeView.GetTotalItemCount() == 0)
+                if (Event.current.type == EventType.Layout)
+                    mShouldShowEmptyState = changesTreeView.GetTotalItemCount() == 0;
+
+                if (mShouldShowEmptyState)
                 {
                     DrawEmptyState(
                         rect,
@@ -1113,7 +1139,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             if (!string.IsNullOrEmpty(searchString))
                 return PlasticLocalization.Name.NoPendingChangesMatchingFilters.GetString();
 
-            return PlasticLocalization.Name.NoPendingChangesFound.GetString();
+            return PlasticLocalization.Name.NoPendingChangesFoundUnityVCS.GetString();
         }
 
         bool HasPendingMergeLinks()
@@ -1160,6 +1186,30 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mRestoreData = false;
         }
 
+        void OnDelayedSelectionChanged()
+        {
+            if (!IsVisible)
+                return;
+
+            if (!UseBuiltinDiffWindowPreference.IsEnabled())
+                return;
+
+            if (mPendingChangesTreeView.GetSelection().Count != 1)
+                return;
+
+            if (!PendingChangesSelection.IsApplicableDiffWorkspaceContent(mPendingChangesTreeView))
+                return;
+
+            ChangeInfo selectedChange = PendingChangesSelection
+                .GetSelectedChange(mPendingChangesTreeView);
+
+            DiffWindow diffWindow = GetWindowIfOpened.Diff();
+
+            diffWindow?.ShowDiffFromChange(
+                selectedChange,
+                mPendingChangesTreeView.GetChangedForMoved(selectedChange));
+        }
+
         void OnRowDoubleClickAction()
         {
             if (mPendingChangesTreeView.GetSelection().Count != 1)
@@ -1167,6 +1217,18 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             if (PendingChangesSelection.IsApplicableDiffWorkspaceContent(mPendingChangesTreeView))
             {
+                if (UseBuiltinDiffWindowPreference.IsEnabled())
+                {
+                    ChangeInfo selectedChange = PendingChangesSelection
+                        .GetSelectedChange(mPendingChangesTreeView);
+
+                    DiffWindow diffWindow = ShowWindow.Diff();
+                    diffWindow.ShowDiffFromChange(
+                        selectedChange,
+                        mPendingChangesTreeView.GetChangedForMoved(selectedChange));
+                    return;
+                }
+
                 ((IPendingChangesMenuOperations)this).Diff();
                 return;
             }
@@ -1209,6 +1271,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 new PendingChangesViewMenu(
                     mWkInfo, this, this, this, this, this, this, this, isGluonMode),
                 mAssetStatusCache,
+                OnDelayedSelectionChanged,
                 OnRowDoubleClickAction,
                 UpdateEmptyStateMessage);
             mPendingChangesTreeView.Reload();
@@ -1221,9 +1284,11 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             if (isGluonMode)
                 mErrorsPanel = new ErrorsPanel(
                     PlasticLocalization.Name.ChangesCannotBeApplied.GetString(),
-                    UnityConstants.PENDING_CHANGES_ERRORS_TABLE_SETTINGS_NAME);
+                    UnityConstants.PENDING_CHANGES_ERRORS_TABLE_SETTINGS_NAME,
+                    UnityConstants.PENDING_CHANGES_ERRORS_PANEL_SPLITTER_SETTINGS_NAME);
         }
 
+        bool mShouldShowEmptyState;
         bool mIsRefreshing;
         bool mIsAutoRefreshDisabled;
         bool mIsEmptyCheckinCommentWarningNeeded = false;
@@ -1236,8 +1301,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         bool mRestoreData = true;
         bool mIsEnabled = true;
         string mGluonWarningMessage;
-        SplitterState mErrorsSplitterState;
-        SplitterState mCommentsSplitterState;
         Action mAfterOnGUIAction;
         IDictionary<MountPoint, IList<PendingMergeLink>> mPendingMergeLinks;
 
@@ -1248,7 +1311,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         PendingChangesTreeView mPendingChangesTreeView;
         MergeLinksListView mMergeLinksListView;
         ErrorsPanel mErrorsPanel;
+
+        readonly SplitterState mErrorsSplitterState;
         CommentArea mCommentArea;
+        readonly SplitterState mCommentsSplitterState;
 
         readonly PendingChangesOperations mPendingChangesOperations;
         readonly ProgressControlsForViews mProgressControls;

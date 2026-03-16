@@ -1,4 +1,4 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEngine;
 
 using Codice.CM.Common;
@@ -26,6 +26,7 @@ namespace Unity.PlasticSCM.Editor.Topbar
             string workingObjectName,
             string workingObjectFullSpec,
             string workingObjectComment,
+            string workingObjectType,
             bool isGluonMode,
             bool isCloudOrganization,
             bool isUnityOrganization,
@@ -45,7 +46,7 @@ namespace Unity.PlasticSCM.Editor.Topbar
             GUILayout.Space(5);
 
             Breadcrumb.DoBreadcrumb(
-                workingObjectName, workingObjectFullSpec, workingObjectComment);
+                workingObjectName, workingObjectFullSpec, workingObjectComment, workingObjectType);
 
             if (mNotificationsArea != null)
             {

@@ -34,7 +34,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
             LocksListHeaderState headerState,
             List<string> columnNames,
             LocksViewMenu menu,
-            Action selectionChangedAction,
+            Action delayedSelectionChangedAction,
             Action<IEnumerable<LockInfo>> afterItemsChangedAction,
             Action repaintAction)
         {
@@ -42,7 +42,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
             mRepSpec = repSpec;
             mColumnNames = columnNames;
             mMenu = menu;
-            mSelectionChangedAction = selectionChangedAction;
+            mDelayedSelectionChangedAction = delayedSelectionChangedAction;
             mAfterItemsChangedAction = afterItemsChangedAction;
             mEmptyStatePanel = new EmptyStatePanel(repaintAction);
             mMultiLinkLabelData =  new MultiLinkLabelData(
@@ -55,7 +55,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
             mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
 
-            mDelayedSelectionAction = new DelayedActionBySecondsRunner(
+            mDelayedSelectionRunner = new DelayedActionBySecondsRunner(
                 DelayedSelectionChanged, UnityConstants.SELECTION_DELAYED_INPUT_ACTION_INTERVAL);
 
             SetupTreeView(headerState);
@@ -65,7 +65,10 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
         {
             base.OnGUI(rect);
 
-            if (mRows.Count == 0 && !mEmptyStatePanel.IsEmpty())
+            if (Event.current.type == EventType.Layout)
+                mShouldShowEmptyState = mRows.Count == 0 && !mEmptyStatePanel.IsEmpty();
+
+            if (mShouldShowEmptyState)
                 mEmptyStatePanel.OnGUI(rect);
 
             if (!HasKeyboardFocus())
@@ -108,7 +111,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
 
         protected override void SelectionChanged(IList<int> selectedIds)
         {
-            mDelayedSelectionAction.Run();
+            mDelayedSelectionRunner.Run();
         }
 
         protected override void ContextClickedItem(int id)
@@ -225,7 +228,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
 
         void DelayedSelectionChanged()
         {
-            mSelectionChangedAction();
+            mDelayedSelectionChangedAction();
         }
 
         void SortingChanged(MultiColumnHeader header)
@@ -316,6 +319,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
             }
         }
 
+        bool mShouldShowEmptyState;
         ListViewItemIds<LockInfo> mListViewItemIds = new ListViewItemIds<LockInfo>();
 
         LockInfoList mLocksList;
@@ -323,9 +327,9 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
         readonly EmptyStatePanel mEmptyStatePanel;
         readonly MultiLinkLabelData mMultiLinkLabelData;
         readonly DelayedActionBySecondsRunner mDelayedFilterAction;
-        readonly DelayedActionBySecondsRunner mDelayedSelectionAction;
+        readonly DelayedActionBySecondsRunner mDelayedSelectionRunner;
         readonly LocksSelector mLocksSelector;
-        readonly Action mSelectionChangedAction;
+        readonly Action mDelayedSelectionChangedAction;
         readonly Action<IEnumerable<LockInfo>> mAfterItemsChangedAction;
         readonly LocksViewMenu mMenu;
         readonly List<string> mColumnNames;

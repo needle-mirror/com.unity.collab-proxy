@@ -10,7 +10,7 @@ namespace Unity.PlasticSCM.Editor.UnityInternals.UnityEditor
 {
     internal static class TreeViewExtensions
     {
-        internal static void RaiseContextMenu(this TreeView treeView)
+        internal static void RaiseContextClickedItem(this TreeView treeView)
         {
             MethodInfo InternalContextClickedItem = treeView.GetType().GetMethod(
                 "ContextClickedItem",
@@ -19,8 +19,19 @@ namespace Unity.PlasticSCM.Editor.UnityInternals.UnityEditor
             if (InternalContextClickedItem == null)
                 return;
 
-            InternalContextClickedItem.
-                Invoke(treeView, new object[] { -1 });
+            InternalContextClickedItem.Invoke(treeView, new object[] { -1 });
+        }
+
+        internal static void RaiseContextClicked(this TreeView treeView)
+        {
+            MethodInfo InternalContextClicked = treeView.GetType().GetMethod(
+                "ContextClicked",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+
+            if (InternalContextClicked == null)
+                return;
+
+            InternalContextClicked.Invoke(treeView, null);
         }
     }
 }

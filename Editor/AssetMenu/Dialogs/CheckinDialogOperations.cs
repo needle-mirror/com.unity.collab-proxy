@@ -31,7 +31,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
         {
             BaseCommandsImpl baseCommands = new BaseCommandsImpl();
 
-            progressControls.ShowProgress("Checkin in files");
+            progressControls.ShowProgress(
+                PlasticLocalization.Name.CheckinInFilesProgress.GetString());
 
             IThreadWaiter waiter = ThreadWaiter.GetWaiter(50);
             waiter.Execute(
@@ -82,6 +83,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                     workspaceWindow.RefreshView(ViewType.BranchesView);
                     workspaceWindow.RefreshView(ViewType.ChangesetsView);
                     workspaceWindow.RefreshView(ViewType.LocksView);
+                    workspaceWindow.RefreshView(ViewType.BranchExplorerView);
                 });
         }
 
@@ -98,8 +100,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
         {
             BaseCommandsImpl baseCommands = new BaseCommandsImpl();
 
-            progressControls.ShowProgress(PlasticLocalization.GetString(
-                PlasticLocalization.Name.CheckinInFilesProgress));
+            progressControls.ShowProgress(
+                PlasticLocalization.Name.CheckinInFilesProgress.GetString());
 
             IThreadWaiter waiter = ThreadWaiter.GetWaiter(50);
             waiter.Execute(

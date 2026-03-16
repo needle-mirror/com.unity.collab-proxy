@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 
 using PlasticGui;
 
@@ -39,9 +40,14 @@ namespace Unity.PlasticSCM.Editor.UI.Progress
 
         internal void UpdateProgress(EditorWindow parentWindow)
         {
+            UpdateProgress(parentWindow.Repaint);
+        }
+
+        internal void UpdateProgress(Action repaint)
+        {
             if (IsOperationRunning() || mRequestedRepaint)
             {
-                parentWindow.Repaint();
+                repaint();
 
                 mRequestedRepaint = false;
             }

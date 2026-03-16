@@ -184,8 +184,8 @@ namespace Unity.PlasticSCM.Editor.Inspector
             GUILayout.Space(UnityConstants.INSPECTOR_ACTIONS_BACK_RECTANGLE_TOP_MARGIN);
 
             GUIStyle targetStyle = (isEnabled) ?
-                UnityStyles.Inspector.HeaderBackgroundStyle :
-                UnityStyles.Inspector.DisabledHeaderBackgroundStyle;
+                UnityStyles.Inspector.HeaderBackgroundUnderlineStyle :
+                UnityStyles.Inspector.DisabledHeaderBackgroundUnderlineStyle;
 
             Rect rect = GUILayoutUtility.GetRect(
                 GUIContent.none, targetStyle);

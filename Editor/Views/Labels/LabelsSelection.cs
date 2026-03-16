@@ -38,10 +38,10 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             return listView.GetSelectedRepObjectInfos();
         }
 
-        internal static int GetSelectedLabelsCount(
+        internal static int GetSelectedVisibleLabelsCount(
             LabelsListView listView)
         {
-            return listView.GetSelection().Count;
+            return listView.GetSelectedVisibleItems().Count;
         }
 
         internal static MarkerExtendedInfo GetSelectedLabel(

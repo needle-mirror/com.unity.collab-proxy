@@ -23,6 +23,7 @@ using Unity.PlasticSCM.Editor.UI.Errors;
 using Unity.PlasticSCM.Editor.UI.Progress;
 
 #if !UNITY_6000_3_OR_NEWER
+using SplitterGUILayout = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterGUILayout;
 using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
 #endif
 
@@ -70,8 +71,10 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
             InitializeProposedOrganizationProject(proposedCloudServer, proposedProject);
             BuildComponents(workspaceToSelect, parentWindow);
 
-            mSplitterState = PlasticSplitterGUILayout.InitSplitterState(
-                new float[] { 0.25f, 0.75f },
+            mSplitterState = new SplitterState(
+                SplitterSettings.Load(
+                    UnityConstants.CLOUD_WORKSPACES_SPLITTER_SETTINGS_NAME,
+                    new float[] { 0.25f, 0.75f }),
                 new int[] { TREE_VIEW_MIN_SIZE, DIRECTORY_CONTENT_MIN_SIZE },
                 new int[] { 100000, 100000 }
             );
@@ -168,6 +171,10 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
 #else
             UnityEditor.DragAndDrop.RemoveDropHandler(ProjectBrowserDropHandler);
 #endif
+
+            SplitterSettings.Save(
+                mSplitterState,
+                UnityConstants.CLOUD_WORKSPACES_SPLITTER_SETTINGS_NAME);
         }
 
         internal void Update(EditorWindow parentWindow)
@@ -497,10 +504,10 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
             float height,
             bool hasFocus)
         {
-            PlasticSplitterGUILayout.BeginHorizontalSplit(splitterState);
+            SplitterGUILayout.BeginHorizontalSplit(splitterState);
             Rect treeAreaRect = GetTreeRect(width, height);
             Rect directoryContentPanelRect = GetDirectoryContentPanelRect(width, height);
-            PlasticSplitterGUILayout.EndHorizontalSplit();
+            SplitterGUILayout.EndHorizontalSplit();
 
             DoTreeArea(cloudWorkspacesTreeView, treeAreaRect);
 
@@ -761,8 +768,6 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
 
         int mCopyPathsForProjectBrowserDropCount = 0;
         string mDragTargetPath;
-
-        SplitterState mSplitterState;
         CloudWorkspacesTreeView mCloudWorkspacesTreeView;
         DirectoryContentPanel mDirectoryContentPanel;
 
@@ -772,6 +777,8 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces
         string mProposedProject;
         string mSelectedOrganization;
         string mSelectedProject;
+
+        readonly SplitterState mSplitterState;
 
         readonly FillCloudWorkspaces mFillCloudWorkspacesView;
         readonly IPlasticWebRestApi mRestApi;

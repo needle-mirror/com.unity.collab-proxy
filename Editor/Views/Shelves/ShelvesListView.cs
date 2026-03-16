@@ -32,14 +32,14 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             List<string> columnNames,
             ShelvesViewMenu menu,
             IGetRepositorySpec getRepositorySpec,
-            Action selectionChangedAction,
+            Action delayedSelectionChangedAction,
             Action doubleClickAction,
             Action<IEnumerable<object>> afterItemsChangedAction)
         {
             mColumnNames = columnNames;
             mMenu = menu;
             mGetRepositorySpec = getRepositorySpec;
-            mSelectionChangedAction = selectionChangedAction;
+            mDelayedSelectionChangedAction = delayedSelectionChangedAction;
             mDoubleClickAction = doubleClickAction;
             mAfterItemsChangedAction = afterItemsChangedAction;
 
@@ -50,13 +50,13 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
 
-            mDelayedSelectionAction = new DelayedActionBySecondsRunner(
+            mDelayedSelectionRunner = new DelayedActionBySecondsRunner(
                 DelayedSelectionChanged, UnityConstants.SELECTION_DELAYED_INPUT_ACTION_INTERVAL);
         }
 
         protected override void SelectionChanged(IList<int> selectedIds)
         {
-            mDelayedSelectionAction.Run();
+            mDelayedSelectionRunner.Run();
         }
 
         protected override IList<TreeViewItem> BuildRows(
@@ -222,12 +222,12 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             ChangesetInfo shelveToSelect,
             Filter filter)
         {
+            mListViewItemIds.Clear();
+
             List<RepObjectInfo> shelvesToSelect = ShelvesSelection.GetShelvesToSelect(
                 this, shelveToSelect);
 
             int defaultRow = TableViewOperations.GetFirstSelectedRow(this);
-
-            mListViewItemIds.Clear();
 
             mQueryResult = new ViewQueryResult(
                 EnumQueryObjectType.Shelve, shelves, mGetRepositorySpec.Get());
@@ -249,7 +249,7 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             if (!HasSelection())
                 return;
 
-            mSelectionChangedAction();
+            mDelayedSelectionChangedAction();
         }
 
         void SortingChanged(MultiColumnHeader multiColumnHeader)
@@ -414,10 +414,10 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
         ViewQueryResult mQueryResult;
 
         readonly DelayedActionBySecondsRunner mDelayedFilterAction;
-        readonly DelayedActionBySecondsRunner mDelayedSelectionAction;
+        readonly DelayedActionBySecondsRunner mDelayedSelectionRunner;
         readonly Action<IEnumerable<object>> mAfterItemsChangedAction;
         readonly Action mDoubleClickAction;
-        readonly Action mSelectionChangedAction;
+        readonly Action mDelayedSelectionChangedAction;
         readonly IGetRepositorySpec mGetRepositorySpec;
         readonly ShelvesViewMenu mMenu;
         readonly List<string> mColumnNames;

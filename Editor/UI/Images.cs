@@ -14,6 +14,9 @@ namespace Unity.PlasticSCM.Editor.UI
     {
         internal enum Name
         {
+            // Cloud Drive plugin
+            IconCloudDriveView,
+
             None,
             IconCloseButton,
             IconPressedCloseButton,
@@ -76,9 +79,15 @@ namespace Unity.PlasticSCM.Editor.UI
             IconHistory,
             HideVersionControl,
             GetIncomingChangesIcon,
-
-            // Cloud Drive plugin
-            IconCloudDriveView,
+            ButtonHome,
+            IconZoomIn,
+            IconZoomOut,
+            ArrowCaretLeft,
+            ArrowCaretRight,
+            IconAdd,
+            IconEdit,
+            InclusionRule,
+            ExclusionRule,
         }
 
         internal static Texture2D GetImage(Name image)
@@ -525,6 +534,30 @@ namespace Unity.PlasticSCM.Editor.UI
             return mMergeLinkIcon;
         }
 
+        internal static Texture2D GetInclusionRuleIcon()
+        {
+            if (mInclusionRuleIcon == null)
+                mInclusionRuleIcon = Images.GetImage(Images.Name.InclusionRule);
+
+            return mInclusionRuleIcon;
+        }
+
+        internal static Texture2D GetExclusionRuleIcon()
+        {
+            if (mExclusionRuleIcon == null)
+                mExclusionRuleIcon = Images.GetImage(Images.Name.ExclusionRule);
+
+            return mExclusionRuleIcon;
+        }
+
+        internal static Texture2D GetIconCloseButton()
+        {
+            if (mIconCloseButton == null)
+                mIconCloseButton = Images.GetImage(Images.Name.IconCloseButton);
+
+            return mIconCloseButton;
+        }
+
         internal static Texture2D GetAddedLocalIcon()
         {
             if (mAddedLocalIcon == null)
@@ -568,6 +601,7 @@ namespace Unity.PlasticSCM.Editor.UI
             if (mLinkUnderlineImage == null)
             {
                 mLinkUnderlineImage = new Texture2D(1, 1);
+                mLinkUnderlineImage.hideFlags = HideFlags.HideAndDontSave;
                 mLinkUnderlineImage.SetPixel(0, 0, UnityStyles.Colors.Link);
                 mLinkUnderlineImage.Apply();
             }
@@ -623,6 +657,62 @@ namespace Unity.PlasticSCM.Editor.UI
             return mLockRetainedIcon;
         }
 
+        internal static Texture2D GetButtonHomeIcon()
+        {
+            if (mButtonHomeIcon == null)
+                mButtonHomeIcon = GetImage(Name.ButtonHome);
+
+            return mButtonHomeIcon;
+        }
+
+        internal static Texture2D GetZoomInIcon()
+        {
+            if (mZoomInIcon == null)
+                mZoomInIcon = GetImage(Name.IconZoomIn);
+
+            return mZoomInIcon;
+        }
+
+        internal static Texture2D GetZoomOutIcon()
+        {
+            if (mZoomOutIcon == null)
+                mZoomOutIcon = GetImage(Name.IconZoomOut);
+
+            return mZoomOutIcon;
+        }
+
+        internal static Texture2D GetArrowCaretLeftIcon()
+        {
+            if (mArrowCaretLeftIcon == null)
+                mArrowCaretLeftIcon = GetImage(Name.ArrowCaretLeft);
+
+            return mArrowCaretLeftIcon;
+        }
+
+        internal static Texture2D GetAddIcon()
+        {
+            if (mAddIcon == null)
+                mAddIcon = GetImage(Name.IconAdd);
+
+            return mAddIcon;
+        }
+
+        internal static Texture2D GetEditIcon()
+        {
+            if (mEditIcon == null)
+                mEditIcon = GetImage(Name.IconEdit);
+
+            return mEditIcon;
+        }
+
+        internal static Texture2D GetArrowCaretRightIcon()
+        {
+            if (mArrowCaretRightIcon == null)
+                mArrowCaretRightIcon = GetImage(Name.ArrowCaretRight);
+
+            return mArrowCaretRightIcon;
+        }
+
         internal static Texture2D GetTreeviewBackgroundTexture()
         {
             if (mTreeviewBackgroundTexture == null)
@@ -647,6 +737,14 @@ namespace Unity.PlasticSCM.Editor.UI
             return mColumnsBackgroundTexture;
         }
 
+        internal static Texture2D GetInspectorHeaderBackgroundTexture()
+        {
+            if (mInspectorHeaderBackgroundTexture == null)
+                mInspectorHeaderBackgroundTexture = GetTextureFromColor(UnityStyles.Colors.InspectorHeaderBackground);
+
+            return mInspectorHeaderBackgroundTexture;
+        }
+
         internal static Texture2D GetNewTextureFromTexture(Texture2D texture)
         {
             Texture2D result = new Texture2D(texture.width, texture.height, TextureFormat.BGRA32, false);
@@ -654,6 +752,7 @@ namespace Unity.PlasticSCM.Editor.UI
             // To keep images consistent throughout the plugin,
             // manually set the filter mode
             result.filterMode = FilterMode.Bilinear;
+            result.hideFlags = HideFlags.HideAndDontSave;
 
             return result;
         }
@@ -667,6 +766,7 @@ namespace Unity.PlasticSCM.Editor.UI
             // To keep images consistent throughout the plugin,
             // manually set the filter mode
             result.filterMode = FilterMode.Bilinear;
+            result.hideFlags = HideFlags.HideAndDontSave;
 
             return result;
         }
@@ -726,6 +826,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
             texture.SetPixel(0, 0, color);
             texture.Apply();
+            texture.hideFlags = HideFlags.HideAndDontSave;
 
             return texture;
         }
@@ -890,6 +991,7 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mTreeviewBackgroundTexture;
         static Texture2D mColumnsBackgroundTexture;
         static Texture2D mToolbarBackground;
+        static Texture2D mInspectorHeaderBackgroundTexture;
 
         static Texture2D mUndoIcon;
         static Texture2D mClipboardIcon;
@@ -911,6 +1013,13 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mLockRetainedIcon;
         static Texture2D mLabelIcon;
         static Texture2D mHistoryIcon;
+        static Texture2D mButtonHomeIcon;
+        static Texture2D mZoomInIcon;
+        static Texture2D mZoomOutIcon;
+        static Texture2D mAddIcon;
+        static Texture2D mEditIcon;
+        static Texture2D mArrowCaretLeftIcon;
+        static Texture2D mArrowCaretRightIcon;
 
         static Texture2D mPlasticViewIcon;
         static Texture2D mPlasticNotifyIncomingIcon;
@@ -931,6 +1040,10 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mAddedLocalIcon;
         static Texture2D mDeletedRemoteIcon;
         static Texture2D mRepositoryIcon;
+
+        static Texture2D mIconCloseButton;
+        static Texture2D mInclusionRuleIcon;
+        static Texture2D mExclusionRuleIcon;
 
         static readonly HashSet<string> mAudioExtensions = new HashSet<string> {
             ".wav", ".mp3", ".ogg", ".aiff", ".aif" };

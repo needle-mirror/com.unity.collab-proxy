@@ -28,9 +28,6 @@ Branch
 == Branches ==
 Branches
 
-== BranchItemNameSingular ==
-branch
-
 == Changeset ==
 Changeset
 
@@ -39,9 +36,6 @@ Label
 
 == Labels ==
 Labels
-
-== LabelItemNameSingular ==
-label
 
 == CodeReview ==
 Code review
@@ -6175,6 +6169,9 @@ I only need to check in my work (Gluon workspace)
 == CreateWorkspace ==
 Create workspace
 
+== CreateWorkspaceUnityVCS ==
+Create Workspace
+
 == LearnMoreDifferencesUnityVCS ==
 Learn more about the differences between Unity VCS/Gluon workspaces
 
@@ -6445,7 +6442,7 @@ Some files you're trying to check in are in conflict. You can resolve conflicts 
 Show incoming changes view
 
 == UnityInitialCheckinComment ==
-Add packages and project settings to Unity Version Control.
+Add project assets and settings to Unity Version Control.
 
 == UnityInitialCheckinProgress ==
 Checking in the packages and project settings files...
@@ -7392,7 +7389,7 @@ Details
 Download
 
 == DownloadAndInstall ==
-Download & install
+Download & Install
 
 == DownloadUpdate ==
 Download update
@@ -7763,20 +7760,8 @@ Test connection failed. Please review the entered values. {0}
 == IssueTrackerNotLoaded ==
 Unable to load the issue tracker extension library.
 
-== ChangesetColors ==
-Changeset colors
-
 == SelectUsersDialogDescription ==
 Please select one or more users from the list below:
-
-== ClickToSetAlias ==
-Click to set alias
-
-== ByUser ==
-By user
-
-== ByReplicationSource ==
-By replication source
 
 == UnsavedChanges ==
 There are unsaved changes
@@ -8085,20 +8070,11 @@ Select a font
 == RestoreDefaultFont ==
 Restore default font
 
-== BrExTooltipDetailsForCs ==
-by {0} on {1}
-
 == BrExTooltipDetails ==
 Created by {0} on {1}
 
-== LoadingTooltipDetails ==
-Loading tooltip details...
-
 == ErrorLoadingAnnotations ==
 Error calculating annotations: {0}
-
-== ErrorLoadingTooltipDetails ==
-Error loading tooltip details
 
 == PlasticZoomInShortcut ==
 ctrl++
@@ -8318,6 +8294,11 @@ The workspace is empty
 
 == NoPendingChangesFound ==
 There are no pending changes found
+
+== NoPendingChangesFoundUnityVCS ==
+Everything is in sync!
+
+There are no pending changes to upload to the remote repository in your workspace.
 
 == NoIncomingChangesFound ==
 There are no incoming changes found
@@ -8759,9 +8740,6 @@ and all of its changesets. Are you sure you want to continue?
 
 == DeleteBranchExplanationEndPlural ==
 and all of their changesets. Are you sure you want to continue?
-
-== DeleteBranchesExplanation ==
-You are about to delete the following branches and all their changesets:
 
 == DeleteBranchesConfirmation ==
 This action cannot be undone. Are you sure you want to continue?
@@ -9354,3 +9332,30 @@ Waiting for editor to be ready...
 
 == WaitingForPendingOperationsToFinish ==
 Waiting for pending operations to finish...
+
+== RenameMetaFiles ==
+Rename .meta files automatically
+
+== RenameMetaFilesTooltip ==
+Rename .meta files alongside their associated files to maintain Unity asset references
+
+== BranchExplorerCheckoutChangesetTitle ==
+Pending changes
+
+== MainBranchDiffDeferredExplanation ==
+Main branch differences are not calculated by default because it may take a long time.
+
+== CalculateDiffsButton ==
+Calculate differences
+
+== BrexDisplayChangesetComments ==
+Display changeset comments
+
+== BrexDisplayUserAvatar ==
+Display user avatar in changesets
+
+== BrexOptionsWindowTitle ==
+Branch Explorer options
+
+== BranchExplorerNoWorkspaceMessage ==
+No workspace found. Please open a project containing a UVCS workspace, or create a new workspace for this project.

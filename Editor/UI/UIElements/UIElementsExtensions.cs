@@ -1,6 +1,7 @@
 ﻿using System.IO;
 
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 using PlasticGui;
@@ -106,6 +107,19 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
         {
             dynamic control = element.Query<T>(name).First();
             control.label = PlasticLocalization.GetString(fieldName);
+        }
+
+        internal static Event ToIMGUIEvent(this KeyDownEvent keyDownEvent)
+        {
+            var e = new Event
+            {
+                type = EventType.KeyDown,
+                keyCode = keyDownEvent.keyCode,
+                character = keyDownEvent.character,
+                modifiers = keyDownEvent.modifiers
+            };
+
+            return e;
         }
     }
 }

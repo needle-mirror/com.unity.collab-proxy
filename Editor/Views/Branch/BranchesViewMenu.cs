@@ -93,8 +93,6 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
         void UpdateMenuItems(GenericMenu menu)
         {
-            BranchInfo singleSelectedBranch = mBranchMenuOperations.GetSelectedBranch();
-
             BranchMenuOperations operations = BranchMenuUpdater.GetAvailableMenuOperations(
                 mBranchMenuOperations.GetSelectedBranchesCount(), mIsGluonMode, false);
 
@@ -127,8 +125,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             menu.AddSeparator(string.Empty);
 
             mDiffBranchMenuItemContent.text = string.Format("{0} {1}",
-                PlasticLocalization.Name.DiffBranchMenuItem.GetString(
-                    GetShorten.BranchNameFromBranch(singleSelectedBranch)),
+                PlasticLocalization.Name.DiffBranchMenuItem.GetString(GetSelectedBranchName()),
                 GetPlasticShortcut.ForDiff());
 
             AddBranchMenuItem(
@@ -177,6 +174,16 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 CreateCodeReviewMenuItem_Click);
         }
 
+        string GetSelectedBranchName()
+        {
+            if (mBranchMenuOperations.GetSelectedBranchesCount() == 0)
+                return string.Empty;
+
+            BranchInfo branchInfo = mBranchMenuOperations.GetSelectedBranch();
+
+            return GetShorten.BranchNameFromBranch(branchInfo);
+        }
+
         static void AddBranchMenuItem(
             GUIContent menuItemContent,
             GenericMenu menu,
@@ -200,6 +207,12 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             BranchMenuOperations operationToExecute,
             IBranchMenuOperations branchMenuOperations)
         {
+            if (operationToExecute == BranchMenuOperations.Rename)
+            {
+                branchMenuOperations.RenameBranch();
+                return;
+            }
+
             if (operationToExecute == BranchMenuOperations.Delete)
             {
                 branchMenuOperations.DeleteBranch();
@@ -227,6 +240,9 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
         static BranchMenuOperations GetMenuOperations(Event e)
         {
+            if (Keyboard.IsKeyPressed(e, KeyCode.F2))
+                return BranchMenuOperations.Rename;
+
             if (Keyboard.IsKeyPressed(e, KeyCode.Delete))
                 return BranchMenuOperations.Delete;
 
@@ -255,8 +271,9 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 PlasticLocalization.GetString(PlasticLocalization.Name.BranchMenuItemMergeFromBranch),
                 GetPlasticShortcut.ForMerge()));
             mDiffBranchMenuItemContent = new GUIContent();
-            mRenameBranchMenuItemContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.BranchMenuItemRenameBranch));
+            mRenameBranchMenuItemContent = new GUIContent(string.Format("{0} {1}",
+                PlasticLocalization.GetString(PlasticLocalization.Name.BranchMenuItemRenameBranch),
+                GetPlasticShortcut.ForRename()));
             mHideUnhideBranchMenuItemContent = new GUIContent();
             mDeleteBranchMenuItemContent = new GUIContent(string.Format("{0} {1}",
                 PlasticLocalization.GetString(PlasticLocalization.Name.BranchMenuItemDeleteBranch),

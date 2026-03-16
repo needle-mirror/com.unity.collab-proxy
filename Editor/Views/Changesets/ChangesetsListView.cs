@@ -33,7 +33,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             ChangesetsViewMenu menu,
             IGetRepositorySpec getRepositorySpec,
             IGetWorkingObject getWorkingObject,
-            Action selectionChangedAction,
+            Action delayedSelectionChangedAction,
             Action doubleClickAction,
             Action<IEnumerable<object>> afterItemsChangedAction)
         {
@@ -41,7 +41,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mMenu = menu;
             mGetRepositorySpec = getRepositorySpec;
             mGetWorkingObject = getWorkingObject;
-            mSelectionChangedAction = selectionChangedAction;
+            mDelayedSelectionChangedAction = delayedSelectionChangedAction;
             mDoubleClickAction = doubleClickAction;
             mAfterItemsChangedAction = afterItemsChangedAction;
 
@@ -55,13 +55,13 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
 
-            mDelayedSelectionAction = new DelayedActionBySecondsRunner(
+            mDelayedSelectionRunner = new DelayedActionBySecondsRunner(
                 DelayedSelectionChanged, UnityConstants.SELECTION_DELAYED_INPUT_ACTION_INTERVAL);
         }
 
         protected override void SelectionChanged(IList<int> selectedIds)
         {
-            mDelayedSelectionAction.Run();
+            mDelayedSelectionRunner.Run();
         }
 
         protected override IList<TreeViewItem> BuildRows(
@@ -247,12 +247,12 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             List<object> entriesToSelect,
             string currentFilter)
         {
+            mListViewItemIds.Clear();
+
             List<RepObjectInfo> changesetsToSelect = ChangesetsSelection.GetChangesetsToSelect(
                 this, entriesToSelect);
 
             int defaultRow = TableViewOperations.GetFirstSelectedRow(this);
-
-            mListViewItemIds.Clear();
 
             mQueryResult = new ViewQueryResult(
                 EnumQueryObjectType.Changeset, entries, mGetRepositorySpec.Get());
@@ -267,6 +267,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             UpdateResults();
 
             TableViewOperations.ScrollToSelection(this);
+
+            mDelayedSelectionChangedAction();
         }
 
         void DelayedSelectionChanged()
@@ -274,7 +276,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             if (!HasSelection())
                 return;
 
-            mSelectionChangedAction();
+            mDelayedSelectionChangedAction();
         }
 
         void SortingChanged(MultiColumnHeader multiColumnHeader)
@@ -473,10 +475,10 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         ViewQueryResult mQueryResult;
 
         readonly DelayedActionBySecondsRunner mDelayedFilterAction;
-        readonly DelayedActionBySecondsRunner mDelayedSelectionAction;
+        readonly DelayedActionBySecondsRunner mDelayedSelectionRunner;
         readonly Action<IEnumerable<object>> mAfterItemsChangedAction;
         readonly Action mDoubleClickAction;
-        readonly Action mSelectionChangedAction;
+        readonly Action mDelayedSelectionChangedAction;
         readonly IGetWorkingObject mGetWorkingObject;
         readonly IGetRepositorySpec mGetRepositorySpec;
         readonly ChangesetsViewMenu mMenu;

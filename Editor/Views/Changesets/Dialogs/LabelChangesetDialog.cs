@@ -50,11 +50,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets.Dialogs
                 GUI.SetNextControlName(NAME_FIELD_CONTROL_NAME);
                 mLabelName = UnityEditor.EditorGUI.TextField(nameRect, mLabelName);
 
-                if (!mWasNameFieldFocused)
-                {
-                    UnityEditor.EditorGUI.FocusTextInControl(NAME_FIELD_CONTROL_NAME);
-                    mWasNameFieldFocused = true;
-                }
+                FocusTextAreaIfNeeded(NAME_FIELD_CONTROL_NAME);
             }
 
             GUILayout.Space(5);
@@ -92,7 +88,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets.Dialogs
         internal static ChangesetLabelData Label(
             EditorWindow parentWindow,
             RepositorySpec repSpec,
-            ChangesetExtendedInfo changesetInfo)
+            ChangesetInfo changesetInfo)
         {
             BranchInfo parentBranchInfo = BranchInfoCache.GetBranch(
                 repSpec, changesetInfo.BranchId);
@@ -115,7 +111,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets.Dialogs
         }
 
         static LabelChangesetDialog Create(
-            RepositorySpec repSpec, ChangesetExtendedInfo changesetInfo, string explanation)
+            RepositorySpec repSpec, ChangesetInfo changesetInfo, string explanation)
         {
             var instance = CreateInstance<LabelChangesetDialog>();
             instance.IsResizable = false;
@@ -155,7 +151,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets.Dialogs
         bool mLabelAllXlinkedRepositories;
         string mExplanation;
 
-        bool mWasNameFieldFocused;
         const string NAME_FIELD_CONTROL_NAME = "LabelChangesetNameField";
         const string COMMENT_TEXTAREA_CONTROL_NAME = "LabelChangesetCommentTextArea";
     }

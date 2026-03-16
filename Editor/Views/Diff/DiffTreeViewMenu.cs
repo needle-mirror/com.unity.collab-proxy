@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using Codice.Utils;
+using UnityEditor;
 using UnityEngine;
 
 using PlasticGui;
@@ -273,7 +274,11 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             if (Keyboard.IsControlOrCommandKeyPressed(e) && Keyboard.IsKeyPressed(e, KeyCode.D))
                 return DiffTreeViewMenuOperations.Diff;
 
-            if (Keyboard.IsControlOrCommandKeyPressed(e) && Keyboard.IsKeyPressed(e, KeyCode.H))
+            bool isHistoryShortcut = PlatformIdentifier.IsMac()
+                ? Keyboard.IsControlOrCommandAndShiftKeyPressed(e) && Keyboard.IsKeyPressed(e, KeyCode.H)
+                : Keyboard.IsControlOrCommandKeyPressed(e) && Keyboard.IsKeyPressed(e, KeyCode.H);
+
+            if (isHistoryShortcut)
                 return DiffTreeViewMenuOperations.History;
 
             return DiffTreeViewMenuOperations.None;

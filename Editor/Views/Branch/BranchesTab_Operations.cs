@@ -1,4 +1,6 @@
+using Codice.Client.Common.Threading;
 using Codice.CM.Common;
+using Codice.LogWrapper;
 using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer;
 using PlasticGui.WorkspaceWindow.QueryViews.Branches;
 using Unity.PlasticSCM.Editor.AssetUtils;
@@ -66,28 +68,76 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                     ProjectPackages.ShouldBeResolvedFromPaths(mWkInfo, items)));
         }
 
-        void CreateBranchForMode()
+        void CreateBranch()
         {
-            if (mIsGluonMode)
+            if (BranchesSelection.GetSelectedVisibleBranchesCount(mBranchesListView) > 0)
             {
-                CreateBranchForGluon();
+                CreateBranchFromSelectedBranch();
                 return;
             }
 
-            CreateBranchForDeveloper();
+            CreateBranchFromMainOrCurrentBranch();
         }
 
-        void CreateBranchForDeveloper()
+        void CreateBranchFromSelectedBranch()
         {
             RepositorySpec repSpec = BranchesSelection.GetSelectedRepository(mBranchesListView);
             BranchInfo branchInfo = BranchesSelection.GetSelectedBranch(mBranchesListView);
 
             BranchCreationData branchCreationData = CreateBranchDialog.CreateBranchFromLastParentBranchChangeset(
-                mParentWindow,
-                repSpec,
-                branchInfo,
-                null);
+                mParentWindow, repSpec, branchInfo, null);
 
+            CreateBranchForMode(branchCreationData);
+        }
+
+        void CreateBranchFromMainOrCurrentBranch()
+        {
+            RepositorySpec repSpec = null;
+            BranchInfo currentBranchInfo = null;
+            BranchInfo mainBranchInfo = null;
+
+            IThreadWaiter waiter = ThreadWaiter.GetWaiter();
+            waiter.Execute(
+                /*threadOperationDelegate*/ delegate
+                {
+                    repSpec = PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo);
+                    currentBranchInfo = PlasticGui.Plastic.API.GetWorkingBranch(mWkInfo);
+                    mainBranchInfo = PlasticGui.Plastic.API.GetMainBranch(mWkInfo);
+                },
+                /*afterOperationDelegate*/ delegate
+                {
+                    if (waiter.Exception != null)
+                    {
+                        ExceptionsHandler.LogException(typeof(BranchesTab).Name, waiter.Exception);
+                        return;
+                    }
+
+                    if (repSpec == null || currentBranchInfo == null || mainBranchInfo == null)
+                    {
+                        mLog.DebugFormat("Error obtaining the base information for the branch creation");
+                        return;
+                    }
+
+                    BranchCreationData branchCreationData =  CreateBranchDialog.CreateBranchFromMainOrCurrentBranch(
+                        mParentWindow, repSpec, mainBranchInfo, currentBranchInfo, null);
+
+                    CreateBranchForMode(branchCreationData);
+                });
+        }
+
+        void CreateBranchForMode(BranchCreationData branchCreationData)
+        {
+            if (mIsGluonMode)
+            {
+                CreateBranchForGluon(branchCreationData);
+                return;
+            }
+
+            CreateBranchForDeveloper(branchCreationData);
+        }
+
+        void CreateBranchForDeveloper(BranchCreationData branchCreationData)
+        {
             mBranchOperations.CreateBranch(
                 branchCreationData,
                 RefreshAsset.BeforeLongAssetOperation,
@@ -96,17 +146,8 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                     ProjectPackages.ShouldBeResolvedFromUpdateReport(mWkInfo, items)));
         }
 
-        void CreateBranchForGluon()
+        void CreateBranchForGluon(BranchCreationData branchCreationData)
         {
-            RepositorySpec repSpec = BranchesSelection.GetSelectedRepository(mBranchesListView);
-            BranchInfo branchInfo = BranchesSelection.GetSelectedBranch(mBranchesListView);
-
-            BranchCreationData branchCreationData = CreateBranchDialog.CreateBranchFromLastParentBranchChangeset(
-                mParentWindow,
-                repSpec,
-                branchInfo,
-                null);
-
             CreateBranchOperation.CreateBranch(
                 mWkInfo,
                 branchCreationData,
@@ -126,5 +167,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                     mAssetStatusCache,
                     ProjectPackages.ShouldBeResolvedFromPaths(mWkInfo, items)));
         }
+
+        static readonly ILog mLog = PlasticApp.GetLogger("BranchesTab");
     }
 }

@@ -25,13 +25,19 @@ namespace Unity.PlasticSCM.Editor.UI
             mLazyBackgroundStyles.Add(Notification.RedNotification);
             mLazyBackgroundStyles.Add(CancelButton);
             mLazyBackgroundStyles.Add(Inspector.HeaderBackgroundStyle);
-            mLazyBackgroundStyles.Add(Inspector.DisabledHeaderBackgroundStyle);
+            mLazyBackgroundStyles.Add(Inspector.HeaderBackgroundUnderlineStyle);
+            mLazyBackgroundStyles.Add(Inspector.DisabledHeaderBackgroundUnderlineStyle);
+            mLazyBackgroundStyles.Add(StatusBar.Bar);
         }
 
         internal static class Colors
         {
             internal static Color Transparent = new Color(255f / 255, 255f / 255, 255f / 255, 0f / 255);
             internal static Color GreenBackground = new Color(34f / 255, 161f / 255, 63f / 255);
+
+            internal static Color ImageForeground = EditorGUIUtility.isProSkin ?
+                new Color(188f / 255, 188f / 255, 188f / 255) :
+                new Color(75f / 255, 75f / 255, 75f / 255);
 
             internal static Color DefaultText = EditorGUIUtility.isProSkin ?
                 new Color(210f / 255, 210f / 255, 210f / 255) :
@@ -45,7 +51,9 @@ namespace Unity.PlasticSCM.Editor.UI
                 (Color)new Color32(153, 153, 153, 255);
             internal static Color DarkGray = new Color(88f / 255, 88f / 255, 88f / 255);
 
-            internal static Color InspectorHeaderBackground = Transparent;
+            internal static Color InspectorHeaderBackground = EditorGUIUtility.isProSkin ?
+                new Color(60f / 255, 60f / 255, 60f / 255) :
+                new Color(202f / 255, 202f / 255, 202f / 255);
 
             internal static Color InspectorHeaderBackgroundDisabled = EditorGUIUtility.isProSkin ?
                 new Color(58f / 255, 58f / 255, 58f / 255) :
@@ -53,6 +61,9 @@ namespace Unity.PlasticSCM.Editor.UI
 
             internal static Color TabUnderline = new Color(58f / 255, 121f / 255, 187f / 255);
             internal static Color Link = new Color(76f / 255, 126f / 255, 255f / 255);
+
+            internal static LazyColor Label = new LazyColor(() => EditorStyles.label.normal.textColor);
+
             internal static Color SecondaryLabel = EditorGUIUtility.isProSkin ?
                 new Color(165f / 255, 165f / 255, 165f / 255) :
                 new Color(70f / 255, 70f / 255, 70f / 255);
@@ -116,6 +127,97 @@ namespace Unity.PlasticSCM.Editor.UI
             internal static Color SplitLineColor = EditorGUIUtility.isProSkin ?
                 new Color(0.12f, 0.12f, 0.12f, 1.333f) :
                 new Color(0.6f, 0.6f, 0.6f, 1.333f);
+
+            internal static class BranchExplorer
+            {
+                internal static Color ControlBackgroundColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.1882f, 0.1882f, 0.1882f) :
+                    new Color(0.7843f, 0.7843f, 0.7843f);
+
+                internal static Color ColumnBackgroundColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.2f, 0.2f, 0.2f) :
+                    new Color(0.7607f, 0.7607f, 0.7607f);
+
+                internal static Color ColumnHeaderBackgroundColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.2196f, 0.2196f, 0.2196f) :
+                    new Color(0.886275f, 0.886275f, 0.886275f);
+
+                internal static Color BranchDefaultColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.345098f, 0.603922f, 0.725490f) :
+                    new Color(0.188235f, 0.513725f, 0.658824f);
+
+                internal static Color ChangesetDefaultColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.345098f, 0.603922f, 0.725490f) :
+                    new Color(0.188235f, 0.513725f, 0.658824f);
+
+                internal static Color ParentLinkColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.345098f, 0.603922f, 0.725490f) :
+                    new Color(0.188235f, 0.513725f, 0.658824f);
+
+                internal static Color LabelColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.423529f, 0.823529f, 0.752941f) :
+                    new Color(0.290196f, 0.780392f, 0.694118f);
+
+                internal static Color SingleSelectedObjectColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.000000f, 0.690196f, 0.313725f) :
+                    new Color(0.000000f, 0.690196f, 0.313725f);
+
+                internal static Color MultipleSelectedObjectsColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.752941f, 0.290196f, 0.615686f) :
+                    new Color(0.752941f, 0.290196f, 0.615686f);
+
+                internal static Color CurrentSearchResultColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.9f, 0.45f, 0.2f) :
+                    new Color(0.952941f, 0.588235f, 0.027451f);
+
+                internal static Color SearchResultColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.7f, 0.6f, 0.3f) :
+                    new Color(0.952941f, 0.870588f, 0.027451f);
+
+                internal static Color ChangesetBaseContributorColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.611765f, 0.541176f, 0.380392f) :
+                    new Color(1.000000f, 0.929412f, 0.752941f);
+
+                internal static Color ChangesetSrcContributorColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.501961f, 0.529412f, 0.662745f) :
+                    new Color(0.827451f, 0.886275f, 0.941176f);
+
+                internal static Color ChangesetDstContributorColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.000000f, 0.450980f, 0.427451f) :
+                    new Color(0.862745f, 0.988235f, 0.745098f);
+
+                internal static Color MergeLinkColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.35f, 0.6f, 0.5f) :
+                    new Color(0.000000f, 0.690196f, 0.313725f);
+
+                internal static Color MergeLinkSelectedColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.4f, 0.8f, 0.6f) :
+                    new Color(0.000000f, 0.560784f, 0.243137f);
+
+                internal static Color CherryPickLinkColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.5f, 0.45f, 0.55f) :
+                    new Color(0.666667f, 0.529412f, 0.768627f);
+
+                internal static Color CherryPickLinkSelectedColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.7f, 0.55f, 0.8f) :
+                    new Color(0.556863f, 0.400000f, 0.674510f);
+
+                internal static Color SubstractiveLinkColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.6f, 0.35f, 0.35f) :
+                    new Color(0.800000f, 0.309804f, 0.317647f);
+
+                internal static Color SubstractiveLinkSelectedColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.85f, 0.45f, 0.45f) :
+                    new Color(0.690196f, 0.200000f, 0.211765f);
+
+                internal static Color CaptionBackgroundColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.262745f, 0.262745f, 0.262745f, 0.7f) :
+                    new Color(0.921569f, 0.921569f, 0.921569f, 0.7f);
+
+                internal static Color CaptionBorderColor = EditorGUIUtility.isProSkin ?
+                    new Color(0.102f, 0.102f, 0.102f) :
+                    new Color(0.855f, 0.855f, 0.855f);
+            }
         }
 
         internal static class Dialog
@@ -143,6 +245,13 @@ namespace Unity.PlasticSCM.Editor.UI
                 var style = new GUIStyle(EditorStyles.label);
                 style.wordWrap = true;
                 style.fontSize = MODAL_FONT_SIZE;
+                return style;
+            });
+
+            internal static readonly LazyStyle MiniLabelText = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.miniLabel);
+                style.wordWrap = true;
                 return style;
             });
 
@@ -370,9 +479,16 @@ namespace Unity.PlasticSCM.Editor.UI
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static class Inspector
         {
+            internal static readonly LazyStyle HeaderBackgroundStyle = new LazyStyle(() =>
+            {
+                GUIStyle result = new GUIStyle();
+                result.normal.background = Images.GetInspectorHeaderBackgroundTexture();
+                return result;
+            });
+
             // Internal usage. This isn't a public API.
             [EditorBrowsable(EditorBrowsableState.Never)]
-            public static readonly LazyStyle HeaderBackgroundStyle = new LazyStyle(() =>
+            public static readonly LazyStyle HeaderBackgroundUnderlineStyle = new LazyStyle(() =>
             {
                 return CreateUnderlineStyle(
                     Colors.InspectorHeaderBackground,
@@ -381,7 +497,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
             // Internal usage. This isn't a public API.
             [EditorBrowsable(EditorBrowsableState.Never)]
-            public static readonly LazyStyle DisabledHeaderBackgroundStyle = new LazyStyle(() =>
+            public static readonly LazyStyle DisabledHeaderBackgroundUnderlineStyle = new LazyStyle(() =>
             {
                 return CreateUnderlineStyle(
                     Colors.InspectorHeaderBackgroundDisabled,
@@ -611,16 +727,18 @@ namespace Unity.PlasticSCM.Editor.UI
         {
             internal static readonly LazyStyle Title = new LazyStyle(() =>
             {
-                var style = new GUIStyle(EditorStyles.boldLabel);
-                style.active.textColor = style.normal.textColor;
-                style.hover.textColor = style.normal.textColor;
-                style.focused.textColor = style.normal.textColor;
+                var style = new GUIStyle(EditorStyles.largeLabel);
+                style.margin.top = 0;
+                style.margin.bottom = 0;
+                style.padding.top = 0;
+                style.padding.bottom = 0;
                 return style;
             });
 
             internal static readonly LazyStyle Description = new LazyStyle(() =>
             {
-                GUIStyle style = new GUIStyle(EditorStyles.miniLabel);
+                GUIStyle style = new GUIStyle(EditorStyles.label);
+                style.margin.left = 6;
                 style.normal.textColor = Colors.SecondaryLabel;
                 style.hover.textColor = Colors.SecondaryLabel;
                 return style;
@@ -819,6 +937,40 @@ namespace Unity.PlasticSCM.Editor.UI
                 var style = new GUIStyle(EditorStyles.label);
                 style.fontSize = 12;
                 style.fontStyle = FontStyle.Bold;
+                return style;
+            });
+        }
+
+        internal static class AttributesPanel
+        {
+            internal static readonly LazyStyle AttributeLabel = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.label);
+                style.margin = new RectOffset(2, 2, 2, 2);
+                style.padding = new RectOffset(6, 6, 3, 3);
+                style.richText = true;
+                return style;
+            });
+
+            internal static readonly LazyStyle AttributeLabelButton = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.iconButton);
+                style.margin = new RectOffset(0, 0, 0, 0);
+                style.padding = new RectOffset(0, 0, 0, 0);
+                return style;
+            });
+
+            internal static readonly LazyStyle AttributeLabelRightButton = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(AttributeLabelButton);
+                style.margin.right += 3;
+                return style;
+            });
+
+            internal static readonly LazyStyle AddAttributeButton = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(EditorStyles.miniButton);
+                style.padding.right += 6;
                 return style;
             });
         }
@@ -1323,6 +1475,9 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static readonly LazyStyle ToolbarButtonRight = new LazyStyle(() =>
             new GUIStyle("toolbarButtonRight"));
 
+        internal static readonly LazyStyle LargeButton = new LazyStyle(() =>
+            new GUIStyle("largeButton"));
+
         static GUISkin GetEditorSkin()
         {
             if (EditorGUIUtility.isProSkin)
@@ -1383,6 +1538,38 @@ namespace Unity.PlasticSCM.Editor.UI
         }
 
         static List<LazyStyle> mLazyBackgroundStyles = new List<LazyStyle>();
+
+        internal class LazyColor
+        {
+            internal bool IsInitialized { get; private set; }
+
+            internal Color Value { get; private set; }
+
+            internal LazyColor(Func<Color> builder)
+            {
+                mBuilder = builder;
+                IsInitialized = false;
+            }
+
+            public static implicit operator Color(LazyColor lazy)
+            {
+                if (lazy.IsInitialized)
+                {
+                    return lazy.Value;
+                }
+
+                lazy.Value = lazy.mBuilder();
+                lazy.IsInitialized = true;
+                return lazy.Value;
+            }
+
+            public static implicit operator UnityEngine.UIElements.StyleColor(LazyColor lazy)
+            {
+                return new UnityEngine.UIElements.StyleColor(lazy);
+            }
+
+            readonly Func<Color> mBuilder;
+        }
 
         internal class LazyStyle
         {

@@ -18,18 +18,18 @@ using PlasticGui.WorkspaceWindow.Update;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
+using Unity.PlasticSCM.Editor.Inspector.Properties;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.Branches.Dialogs;
-using Unity.PlasticSCM.Editor.Views.Diff;
 using Unity.PlasticSCM.Editor.Views.Merge;
-using Unity.PlasticSCM.Editor.Views.Properties;
 
 using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
 using IGluonUpdateReport = PlasticGui.Gluon.IUpdateReport;
 #if !UNITY_6000_3_OR_NEWER
+using SplitterGUILayout = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterGUILayout;
 using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
 #endif
 
@@ -48,14 +48,9 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         internal string EmptyStateMessage { get { return mEmptyStatePanel.Text; } }
         internal bool ShowHiddenBranchesForTesting { set { mShowHiddenBranches = value; } }
         internal DateFilter DateFilterForTesting { set { mDateFilter = value; } }
-        internal bool IsChangesetByChangesetModeForTesting
-        {
-            get { return mIsChangesetByChangesetMode; }
-            set { mIsChangesetByChangesetMode = value; }
-        }
         internal IBranchMenuOperations Operations { get { return this; } }
         internal BranchesListView Table { get { return mBranchesListView; } }
-        internal DiffPanel DiffPanel { get { return mDiffPanel; } }
+        internal bool IsVisible { get; set; } = true; // we need to initialize it to true for the OnDelayedSelectionChanged event to be executed on tests
 
         internal BranchesTab(
             WorkspaceInfo wkInfo,
@@ -63,7 +58,6 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             WorkspaceWindow workspaceWindow,
             IViewSwitcher viewSwitcher,
             IMergeViewLauncher mergeViewLauncher,
-            IHistoryViewLauncher historyViewLauncher,
             IUpdateReport updateReport,
             IGluonUpdateReport gluonUpdateReport,
             IShelvedChangesUpdater shelvedChangesUpdater,
@@ -113,23 +107,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 this,
                 this);
 
-            BuildComponents(
-                wkInfo,
-                workspaceWindow,
-                workspaceWindow,
-                viewSwitcher,
-                historyViewLauncher,
-                pendingChangesUpdater,
-                developerIncomingChangesUpdater,
-                gluonIncomingChangesUpdater,
-                parentWindow,
-                mFillBranchesView);
-
-            mSplitterState = PlasticSplitterGUILayout.InitSplitterState(
-                new float[] { 0.50f, 0.50f },
-                new int[] { 100, (int)UnityConstants.BROWSE_REPOSITORY_PANEL_MIN_WIDTH },
-                new int[] { 100000, 100000 }
-            );
+            BuildComponents(mFillBranchesView);
 
             mBranchOperations = new BranchOperations(
                 wkInfo,
@@ -153,18 +131,12 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
         internal void OnEnable()
         {
-            mDiffPanel.OnEnable();
-            mChangesetByChangesetDiffPanel.OnEnable();
-
             mSearchField.downOrUpArrowKeyPressed +=
                 SearchField_OnDownOrUpArrowKeyPressed;
         }
 
         internal void OnDisable()
         {
-            mDiffPanel.OnDisable();
-            mChangesetByChangesetDiffPanel.OnDisable();
-
             mSearchField.downOrUpArrowKeyPressed -=
                 SearchField_OnDownOrUpArrowKeyPressed;
 
@@ -175,9 +147,6 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
         internal void Update()
         {
-            mDiffPanel.Update();
-            mChangesetByChangesetDiffPanel.Update();
-
             mProgressControls.UpdateProgress(mParentWindow);
         }
 
@@ -188,27 +157,41 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
         internal void OnGUI()
         {
-            PlasticSplitterGUILayout.BeginHorizontalSplit(mSplitterState);
+            EditorGUILayout.BeginVertical();
 
-            DoBranchesArea(
-                mBranchesListView,
-                mEmptyStatePanel,
+            DoActionsToolbar(
+                mProgressControls,
                 mDateFilter,
                 ref mShowHiddenBranches,
                 mSearchField,
-                mProgressControls,
+                mBranchesListView,
                 this);
 
-            EditorGUILayout.BeginHorizontal();
+            Rect viewRect = OverlayProgress.CaptureViewRectangle();
 
-            Rect border = GUILayoutUtility.GetRect(1, 0, 1, 100000);
-            EditorGUI.DrawRect(border, UnityStyles.Colors.BarBorder);
+            GUI.enabled = !mProgressControls.IsOperationRunning();
 
-            DoChangesArea();
+            Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
 
-            EditorGUILayout.EndHorizontal();
+            mBranchesListView.OnGUI(rect);
 
-            PlasticSplitterGUILayout.EndHorizontalSplit();
+            if (Event.current.type == EventType.Layout)
+                mShouldShowEmptyState = !mEmptyStatePanel.IsEmpty();
+
+            if (mShouldShowEmptyState)
+                mEmptyStatePanel.OnGUI(rect);
+
+            GUI.enabled = true;
+
+            EditorGUILayout.EndVertical();
+
+            if (mProgressControls.IsOperationRunning())
+            {
+                OverlayProgress.DoOverlayProgress(
+                    viewRect,
+                    mProgressControls.ProgressData.ProgressPercent,
+                    mProgressControls.ProgressData.ProgressMessage);
+            }
         }
 
         internal void SetWorkingObjectInfo(BranchInfo branchInfo)
@@ -245,8 +228,8 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 null : new List<IPlasticTreeNode> { new BranchTreeNode(
                     null, (BranchInfo)objectToSelect, null) };
 
-            mDiffPanel.ClearInfo();
-            mChangesetByChangesetDiffPanel.ClearInfo();
+            if (branchesToSelect == null && EditorWindow.focusedWindow == mParentWindow)
+                Selection.activeObject = null;
 
             mFillBranchesView.FillView(
                 mBranchesListView,
@@ -266,7 +249,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
         int IBranchMenuOperations.GetSelectedBranchesCount()
         {
-            return BranchesSelection.GetSelectedBranchesCount(mBranchesListView);
+            return BranchesSelection.GetSelectedVisibleBranchesCount(mBranchesListView);
         }
 
         bool IBranchMenuOperations.AreHiddenBranchesShown()
@@ -276,7 +259,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
         void IBranchMenuOperations.CreateBranch()
         {
-            CreateBranchForMode();
+            CreateBranch();
         }
 
         void IBranchMenuOperations.CreateTopLevelBranch() { }
@@ -437,8 +420,14 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             mBranchesListView.SetFocusAndEnsureSelectedItem();
         }
 
-        void OnSelectionChanged()
+        void OnDelayedSelectionChanged()
         {
+            if (EditorWindow.focusedWindow != mParentWindow)
+                return;
+
+            if (!IsVisible)
+                return;
+
             List<RepObjectInfo> selectedBranches = BranchesSelection.
                 GetSelectedRepObjectInfos(mBranchesListView);
 
@@ -448,110 +437,12 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             RepositorySpec repSpec = BranchesSelection.GetSelectedRepository(mBranchesListView);
             MountPointWithPath mountPoint = MountPointWithPath.BuildWorkspaceRootMountPoint(repSpec);
 
-            if (mIsChangesetByChangesetMode)
-                mChangesetByChangesetDiffPanel.UpdateInfo(mountPoint, selectedBranches[0]);
-            else
-            {
-                mPropertiesPanel.UpdateInfo(selectedBranches[0], repSpec);
-                mDiffPanel.UpdateInfo(mountPoint, selectedBranches[0]);
-            }
-        }
+            SelectedRepObjectInfoData selectedBranchData = SelectedRepObjectInfoData.Create(
+                selectedBranches[0],
+                repSpec,
+                mountPoint);
 
-        void DoDiffModeButtons()
-        {
-            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
-
-            GUILayout.FlexibleSpace();
-
-            GUI.enabled = !mProgressControls.IsOperationRunning();
-
-            bool wasChangesetByChangesetMode = mIsChangesetByChangesetMode;
-
-            if (GUILayout.Toggle(
-                !mIsChangesetByChangesetMode,
-                PlasticLocalization.GetString(
-                    PlasticLocalization.Name.DiffEntireBranch),
-                EditorStyles.toolbarButton))
-            {
-                mIsChangesetByChangesetMode = false;
-            }
-
-            if (GUILayout.Toggle(
-                mIsChangesetByChangesetMode,
-                PlasticLocalization.GetString(
-                    PlasticLocalization.Name.DiffByChangeset),
-                EditorStyles.toolbarButton))
-            {
-                mIsChangesetByChangesetMode = true;
-            }
-
-            GUI.enabled = true;
-
-            EditorGUILayout.EndHorizontal();
-
-            // If mode changed, update the panel with the currently selected branch
-            if (wasChangesetByChangesetMode != mIsChangesetByChangesetMode)
-            {
-                List<RepObjectInfo> selectedBranches = BranchesSelection.
-                    GetSelectedRepObjectInfos(mBranchesListView);
-
-                if (selectedBranches.Count == 1)
-                {
-                    RepositorySpec repSpec = BranchesSelection.GetSelectedRepository(mBranchesListView);
-                    MountPointWithPath mountPoint = MountPointWithPath.BuildWorkspaceRootMountPoint(repSpec);
-
-                    if (mIsChangesetByChangesetMode)
-                        mChangesetByChangesetDiffPanel.UpdateInfo(mountPoint, selectedBranches[0]);
-                    else
-                    {
-                        mPropertiesPanel.UpdateInfo(selectedBranches[0], repSpec);
-                        mDiffPanel.UpdateInfo(mountPoint, selectedBranches[0]);
-                    }
-                }
-            }
-        }
-
-        static void DoBranchesArea(
-            BranchesListView branchesListView,
-            EmptyStatePanel emptyStatePanel,
-            DateFilter dateFilter,
-            ref bool showHiddenBranchesButton,
-            SearchField searchField,
-            ProgressControlsForViews progressControls,
-            IRefreshableView view)
-        {
-            EditorGUILayout.BeginVertical();
-
-            DoActionsToolbar(
-                progressControls,
-                dateFilter,
-                ref showHiddenBranchesButton,
-                searchField,
-                branchesListView,
-                view);
-
-            Rect viewRect = OverlayProgress.CaptureViewRectangle();
-
-            GUI.enabled = !progressControls.IsOperationRunning();
-
-            Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
-
-            branchesListView.OnGUI(rect);
-
-            if (!emptyStatePanel.IsEmpty())
-                emptyStatePanel.OnGUI(rect);
-
-            GUI.enabled = true;
-
-            EditorGUILayout.EndVertical();
-
-            if (progressControls.IsOperationRunning())
-            {
-                OverlayProgress.DoOverlayProgress(
-                    viewRect,
-                    progressControls.ProgressData.ProgressPercent,
-                    progressControls.ProgressData.ProgressMessage);
-            }
+            Selection.activeObject = selectedBranchData;
         }
 
         static void DoActionsToolbar(
@@ -603,7 +494,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 EditorGUILayout.EnumPopup(
                     dateFilter.FilterType,
                     EditorStyles.toolbarDropDown,
-                    GUILayout.Width(100));
+                    GUILayout.Width(UnityConstants.TOOLBAR_DATE_FILTER_COMBO_WIDTH));
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -651,39 +542,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             GUI.enabled = true;
         }
 
-        void DoChangesArea()
-        {
-            EditorGUILayout.BeginVertical();
-
-            DoDiffModeButtons();
-
-            if (mIsChangesetByChangesetMode)
-                mChangesetByChangesetDiffPanel.OnGUI();
-            else
-            {
-                mPropertiesPanel.OnGUI();
-                Rect separatorRect = GUILayoutUtility.GetRect(
-                    0,
-                    1,
-                    GUILayout.ExpandWidth(true));
-                EditorGUI.DrawRect(separatorRect, UnityStyles.Colors.BarBorder);
-                mDiffPanel.OnGUI();
-            }
-
-            EditorGUILayout.EndVertical();
-        }
-
-        void BuildComponents(
-            WorkspaceInfo wkInfo,
-            IWorkspaceWindow workspaceWindow,
-            IRefreshView refreshView,
-            IViewSwitcher viewSwitcher,
-            IHistoryViewLauncher historyViewLauncher,
-            IPendingChangesUpdater pendingChangesUpdater,
-            IncomingChangesUpdater developerIncomingChangesUpdater,
-            GluonIncomingChangesUpdater gluonIncomingChangesUpdater,
-            EditorWindow parentWindow,
-            FillBranchesView fillBranchesView)
+        void BuildComponents(FillBranchesView fillBranchesView)
         {
             mSearchField = new SearchField();
             mSearchField.downOrUpArrowKeyPressed += SearchField_OnDownOrUpArrowKeyPressed;
@@ -708,55 +567,20 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 fillBranchesView,
                 fillBranchesView,
                 () => mShowHiddenBranches,
-                selectionChangedAction: OnSelectionChanged,
+                delayedSelectionChangedAction: OnDelayedSelectionChanged,
                 doubleClickAction: ((IBranchMenuOperations)this).DiffBranch,
                 afterItemsChangedAction: fillBranchesView.ShowContentOrEmptyState);
             mBranchesListView.Reload();
-
-            mPropertiesPanel = new PropertiesPanel(mParentWindow.Repaint);
-
-            mDiffPanel = new DiffPanel(
-                wkInfo,
-                workspaceWindow,
-                viewSwitcher,
-                historyViewLauncher,
-                refreshView,
-                mAssetStatusCache,
-                mShowDownloadPlasticExeWindow,
-                pendingChangesUpdater,
-                developerIncomingChangesUpdater,
-                gluonIncomingChangesUpdater,
-                parentWindow,
-                mIsGluonMode);
-
-            mChangesetByChangesetDiffPanel = new ChangesetByChangesetDiffPanel(
-                wkInfo,
-                workspaceWindow,
-                viewSwitcher,
-                historyViewLauncher,
-                refreshView,
-                mAssetStatusCache,
-                mShowDownloadPlasticExeWindow,
-                pendingChangesUpdater,
-                developerIncomingChangesUpdater,
-                gluonIncomingChangesUpdater,
-                parentWindow,
-                mIsGluonMode);
         }
+        bool mShouldShowEmptyState;
         bool mShowHiddenBranches;
 
         DateFilter mDateFilter;
         SearchField mSearchField;
         BranchesListView mBranchesListView;
-        DiffPanel mDiffPanel;
-        PropertiesPanel mPropertiesPanel;
-        ChangesetByChangesetDiffPanel mChangesetByChangesetDiffPanel;
-        bool mIsChangesetByChangesetMode = false;
 
         LaunchTool.IProcessExecutor mProcessExecutor;
         LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
-
-        readonly SplitterState mSplitterState;
         readonly BranchOperations mBranchOperations;
         readonly FillBranchesView mFillBranchesView;
         readonly EmptyStatePanel mEmptyStatePanel;

@@ -1,7 +1,9 @@
 using System;
+
 using UnityEditor;
 using UnityEngine;
 
+using Codice.Client.Common;
 using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.LogWrapper;
@@ -123,8 +125,49 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
                     new SEID(tokenExchangeResponse.User, false, tokenExchangeResponse.AccessToken),
                     SEIDWorkingMode.SSOWorkingMode);
 
+                if (TryAutoJoinCloudProjectOrganization(credentials))
+                    return;
+
                 ShowOrganizationsPanel(credentials);
             });
+        }
+
+        bool TryAutoJoinCloudProjectOrganization(Credentials credentials)
+        {
+            // CloudProjectSettings.organizationKey is not available in 2021.3
+#if UNITY_2022_1_OR_NEWER
+            if (string.IsNullOrEmpty(CloudProjectSettings.organizationKey) ||
+                string.IsNullOrEmpty(CloudProjectSettings.organizationName))
+                return false;
+
+            // Update the cache with the organization info from the Cloud project settings,
+            // so if not it won't be available when creating the workspace.
+            CmConnection.Get().UnityOrgCache.AddEntry(
+                CloudProjectSettings.organizationKey,
+                CloudProjectSettings.organizationName);
+
+            string serverFromHubOrganization = CloudServer.BuildFullyQualifiedName(
+                CloudProjectSettings.organizationKey, CloudServer.DefaultAlias);
+
+            mLog.DebugFormat(
+                "Auto-joining organization '{0}' from Unity Cloud project settings",
+                serverFromHubOrganization);
+
+            ClientConfiguration.Save(
+                serverFromHubOrganization,
+                credentials.Mode,
+                credentials.User.Data,
+                credentials.User.Password);
+
+            if (mWelcomeView == null)
+                mWelcomeView = GetWelcomeView();
+
+            mWelcomeView.AutoLoginState = AutoLogin.State.ResponseSuccess;
+            mWelcomeView.OnUserClosedConfigurationWindow();
+            return true;
+#else
+            return false;
+#endif
         }
 
         void ShowOrganizationsPanel(Credentials credentials)

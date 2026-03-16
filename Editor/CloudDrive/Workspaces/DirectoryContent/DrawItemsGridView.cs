@@ -13,7 +13,6 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
     internal static class DrawItemsGridView
     {
         internal const float GRID_AREA_MARGIN = 10;
-        internal const float SCROLLBAR_WIDTH = 13;
 
         internal static void Draw(
             Rect rect,
@@ -27,11 +26,15 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             int columnsCount,
             bool shouldScrollbarBeVisible,
             bool hasFocus,
-            int dragTargetIndex)
+            int dragTargetIndex,
+            ref bool shouldShowEmptyState)
         {
             DrawBackground(rect);
 
-            if (!emptyStatePanel.IsEmpty())
+            if (Event.current.type == EventType.Layout)
+                shouldShowEmptyState = !emptyStatePanel.IsEmpty();
+
+            if (shouldShowEmptyState)
             {
                 emptyStatePanel.OnGUI(rect);
                 return;
@@ -53,9 +56,9 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             itemsGridView.UpdateScrollPosition(
                 GUI.VerticalScrollbar(
                     new Rect(
-                        rect.xMax - SCROLLBAR_WIDTH,
+                        rect.xMax - UnityConstants.SCROLLBAR_WIDTH,
                         rect.y,
-                        SCROLLBAR_WIDTH,
+                        UnityConstants.SCROLLBAR_WIDTH,
                         rect.height),
                     scrollPosition,
                     rect.height,

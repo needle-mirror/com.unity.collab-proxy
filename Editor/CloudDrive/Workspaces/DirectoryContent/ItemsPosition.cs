@@ -1,5 +1,7 @@
 using UnityEngine;
 
+using Unity.PlasticSCM.Editor.UI;
+
 namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
 {
     internal static class ItemsPosition
@@ -13,7 +15,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
                 return false;
 
             if (isScrollbarVisible)
-                rect.width -= DrawItemsGridView.SCROLLBAR_WIDTH;
+                rect.width -= UnityConstants.SCROLLBAR_WIDTH;
 
             if (mousePosition.x < 0 || mousePosition.x > rect.width)
                 return false;

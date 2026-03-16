@@ -8988,7 +8988,7 @@ Usage:
               [--^fullpaths | --^fp] [<legacy_options>] [<search_types>[ ...]]
               [--^pretty]
               [--^machinereadable [--^startlineseparator=sep]
-                [--^endlineseparator=sep] [--^fieldseparator=sep]]
+                [--^endlineseparator=sep] [--^fieldseparator=sep] [--^includeRevId]]
 
 Options:
 
@@ -9026,6 +9026,9 @@ Options:
                           specifies how the lines should end.
     --^fieldseparator      Used with the '--^machinereadable' flag,
                           specifies how the fields should be separated.
+    --^includeRevId       Used with the '--^machinereadable' flag,
+                          includes revision ID information for each change
+                          as an additional field.
     --^iscochanged         Shows whether contents of a checked-out file have 
                           changed or not. This flag is only available with 
                           "--^compact", "--^xml" and "--^machinereadable" options.

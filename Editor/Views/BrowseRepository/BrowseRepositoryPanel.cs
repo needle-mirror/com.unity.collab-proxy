@@ -71,7 +71,7 @@ namespace Unity.PlasticSCM.Editor.Views.BrowseRepository
             mProgressControls.UpdateProgress(mParentWindow);
         }
 
-        internal void OnGUI()
+        internal void OnGUI(float maxWidth = 10000, float maxHeight = 10000)
         {
             EditorGUILayout.BeginVertical();
 
@@ -84,7 +84,9 @@ namespace Unity.PlasticSCM.Editor.Views.BrowseRepository
             DoBrowseRepositoryViewArea(
                 mBrowseRepositoryTreeView,
                 mEmptyStatePanel,
-                mProgressControls.IsOperationRunning());
+                mProgressControls.IsOperationRunning(),
+                maxWidth,
+                maxHeight);
 
             if (mProgressControls.HasNotification())
             {
@@ -152,18 +154,25 @@ namespace Unity.PlasticSCM.Editor.Views.BrowseRepository
         static void DoBrowseRepositoryViewArea(
             BrowseRepositoryTreeView browseRepositoryTreeView,
             EmptyStatePanel emptyStatePanel,
-            bool isOperationRunning)
+            bool isOperationRunning,
+            float maxWidth,
+            float maxHeight)
         {
             GUI.enabled = !isOperationRunning;
 
-            Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
+            Rect rect = GUILayoutUtility.GetRect(0, maxWidth, 0, maxHeight);
 
-            browseRepositoryTreeView.OnGUI(rect);
+            if (Event.current.type == EventType.Layout)
+                emptyStatePanel.UpdateContent(GetEmptyStateMessage(browseRepositoryTreeView));
 
-            emptyStatePanel.UpdateContent(GetEmptyStateMessage(browseRepositoryTreeView));
-
-            if (!emptyStatePanel.IsEmpty())
+            if (emptyStatePanel.IsEmpty())
+            {
+                browseRepositoryTreeView.OnGUI(rect);
+            }
+            else
+            {
                 emptyStatePanel.OnGUI(rect);
+            }
 
             GUI.enabled = true;
         }

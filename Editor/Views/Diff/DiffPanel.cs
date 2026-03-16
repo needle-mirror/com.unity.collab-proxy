@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -12,9 +13,12 @@ using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.CM.Common.Mount;
 using PlasticGui;
+using PlasticGui.Diff;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.BrowseRepository;
 using PlasticGui.WorkspaceWindow.Diff;
+using PlasticGui.WorkspaceWindow.Diff.Type;
+using Plugins.PlasticSCM.Editor.Diff;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Tool;
@@ -29,12 +33,14 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
     internal class DiffPanel :
         IDiffTreeViewMenuOperations,
         DiffTreeViewMenu.IMetaMenuOperations,
-        UndeleteClientDiffsOperation.IGetRestorePathDialog
+        UndeleteClientDiffsOperation.IGetRestorePathDialog,
+        IShowDiffs
     {
         internal DiffTreeView Table { get { return mDiffTreeView; } }
         internal string EmptyStateMessage { get { return mEmptyStatePanel.Text; } }
 
         internal DiffPanel(
+            Action repaint,
             WorkspaceInfo wkInfo,
             IWorkspaceWindow workspaceWindow,
             IViewSwitcher viewSwitcher,
@@ -48,6 +54,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             EditorWindow parentWindow,
             bool isGluonMode)
         {
+            mRepaint = repaint;
             mWkInfo = wkInfo;
             mWorkspaceWindow = workspaceWindow;
             mViewSwitcher = viewSwitcher;
@@ -63,7 +70,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             mGuiMessage = new UnityPlasticGuiMessage();
 
-            mEmptyStatePanel = new EmptyStatePanel(parentWindow.Repaint);
+            mEmptyStatePanel = new EmptyStatePanel(repaint);
 
             BuildComponents();
 
@@ -74,16 +81,23 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         {
             ClearData();
 
-            mParentWindow.Repaint();
+            mRepaint();
         }
 
         internal void UpdateInfo(
             MountPointWithPath mountWithPath,
             RepObjectInfo repObjectInfo)
         {
+            if (mSelectedRepObjectInfo != null &&
+                mSelectedRepObjectInfo.Equals(repObjectInfo))
+                return;
+
+            mSelectedMountWithPath = mountWithPath;
+            mSelectedRepObjectInfo = repObjectInfo;
+
             FillData(mountWithPath, repObjectInfo);
 
-            mParentWindow.Repaint();
+            mRepaint();
         }
 
         internal void OnEnable()
@@ -100,7 +114,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         internal void Update()
         {
-            mProgressControls.UpdateProgress(mParentWindow);
+            mProgressControls.UpdateProgress(mRepaint);
         }
 
         internal void OnGUI()
@@ -118,10 +132,17 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             Rect viewRect = OverlayProgress.CaptureViewRectangle();
 
-            DoDiffTreeViewArea(
-                mDiffTreeView,
-                mEmptyStatePanel,
-                mProgressControls.IsOperationRunning());
+            if (mIsDiffDeferred)
+            {
+                DoDeferredDiffsPanel();
+            }
+            else
+            {
+                DoDiffTreeViewArea(
+                    mDiffTreeView,
+                    mEmptyStatePanel,
+                    mProgressControls.IsOperationRunning());
+            }
 
             if (mProgressControls.HasNotification())
             {
@@ -140,11 +161,55 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             }
         }
 
+        void DoDeferredDiffsPanel()
+        {
+            GUILayout.FlexibleSpace();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(20);
+
+            GUILayout.BeginVertical();
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+
+            GUIStyle wrappedLabelStyle = new GUIStyle(
+                UnityStyles.EmptyState.Label);
+            wrappedLabelStyle.wordWrap = true;
+
+            GUILayout.Label(
+                mIsDiffDeferredExplanation,
+                wrappedLabelStyle);
+
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.Space(10);
+
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+
+            if (GUILayout.Button(
+                PlasticLocalization.Name.CalculateDiffsButton.GetString(),
+                GUILayout.Width(150)))
+            {
+                CalculateDiffsDeferred();
+            }
+
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+
+            GUILayout.EndVertical();
+
+            GUILayout.Space(20);
+            GUILayout.EndHorizontal();
+
+            GUILayout.FlexibleSpace();
+        }
+
         void IDiffTreeViewMenuOperations.SaveRevisionAs()
         {
             TrackFeatureUseEvent.For(
                 PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
-                TrackFeatureUseEvent.Features.SaveRevisionFromDiff);
+                TrackFeatureUseEvent.Features.UnityPackage.SaveRevisionFromDiff);
 
             ClientDiffInfo clientDiffInfo =
                 DiffSelection.GetSelectedDiff(mDiffTreeView);
@@ -179,6 +244,15 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         {
             ClientDiffInfo clientDiffInfo =
                 DiffSelection.GetSelectedDiff(mDiffTreeView);
+
+            if (UseBuiltinDiffWindowPreference.IsEnabled())
+            {
+                DiffWindow diffWindow = ShowWindow.Diff();
+                diffWindow.ShowDiffFromDiff(
+                    clientDiffInfo.DiffWithMount.Mount.Mount,
+                    clientDiffInfo.DiffWithMount.Difference);
+                return;
+            }
 
             DiffOperation.DiffClientDiff(
                 mWkInfo,
@@ -272,6 +346,15 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             ClientDiffInfo clientDiffInfoMeta =
                 mDiffTreeView.GetMetaDiff(clientDiffInfo);
 
+            if (UseBuiltinDiffWindowPreference.IsEnabled())
+            {
+                DiffWindow diffWindow = ShowWindow.Diff();
+                diffWindow.ShowDiffFromDiff(
+                    clientDiffInfoMeta.DiffWithMount.Mount.Mount,
+                    clientDiffInfoMeta.DiffWithMount.Difference);
+                return;
+            }
+
             DiffOperation.DiffClientDiff(
                 mWkInfo,
                 clientDiffInfoMeta.DiffWithMount.Mount.Mount,
@@ -323,17 +406,72 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             mSelectedRepObjectInfo = null;
 
             mDiffs = null;
+            mIsDiffDeferred = false;
+
+            mDiffTreeView.searchString = null;
 
             ClearDiffs();
+        }
+
+        void IShowDiffs.ShowWaitingAnimation()
+        {
+            ((IProgressControls)mProgressControls).ShowProgress(
+                PlasticLocalization.Name.Loading.GetString());
+        }
+
+        void IShowDiffs.HideWaitingAnimation()
+        {
+            ((IProgressControls)mProgressControls).HideProgress();
+        }
+
+        void IShowDiffs.For(
+            ShowDiffsData showDiffsData,
+            DiffViewEntryDescriptor selectedItem,
+            bool selectItem,
+            Action afterUpdateDiffs)
+        {
+            mDiffs = showDiffsData.Diffs;
+            mDiffsBranchResolver = showDiffsData.BranchResolver;
+
+            ShowDiffsData();
         }
 
         void FillData(
             MountPointWithPath mountWithPath,
             RepObjectInfo repObjectInfo)
         {
-            mSelectedMountWithPath = mountWithPath;
-            mSelectedRepObjectInfo = repObjectInfo;
+            if (repObjectInfo.Id == -1)
+            {
+                ClearDiffs();
+                UpdateEmptyState();
+                return;
+            }
 
+            if (ShouldDeferDiffCalculation(repObjectInfo, out mIsDiffDeferredExplanation))
+            {
+                mIsDiffDeferred = true;
+                ClearDiffs();
+                UpdateEmptyState();
+                return;
+            }
+
+            mIsDiffDeferred = false;
+            CalculateDiffs(mountWithPath, repObjectInfo);
+        }
+
+        internal void CalculateDiffsDeferred()
+        {
+            if (!mIsDiffDeferred)
+                return;
+
+            mIsDiffDeferred = false;
+            CalculateDiffs(mSelectedMountWithPath, mSelectedRepObjectInfo);
+        }
+
+        void CalculateDiffs(
+            MountPointWithPath mountWithPath,
+            RepObjectInfo repObjectInfo)
+        {
             ((IProgressControls)mProgressControls).ShowProgress(
                 PlasticLocalization.GetString(PlasticLocalization.Name.Loading));
 
@@ -377,29 +515,36 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                         return;
                     }
 
-                    if (mDiffs == null || mDiffs.Count == 0)
-                    {
-                        ClearDiffs();
-                        UpdateEmptyState();
-                        return;
-                    }
-
-                    mIsSkipMergeTrackingButtonVisible =
-                        ClientDiffList.HasMerges(mDiffs);
-
-                    bool skipMergeTracking =
-                        mIsSkipMergeTrackingButtonVisible &&
-                        mIsSkipMergeTrackingButtonChecked;
-
-                    UpdateDiffTreeView(
-                        mWkInfo,
-                        mDiffs,
-                        mDiffsBranchResolver,
-                        skipMergeTracking,
-                        mDiffTreeView);
-
-                    UpdateEmptyState();
+                    ShowDiffsData();
                 });
+        }
+
+        void ShowDiffsData()
+        {
+            mDiffTreeView.searchString = null;
+
+            if (mDiffs == null || mDiffs.Count == 0)
+            {
+                ClearDiffs();
+                UpdateEmptyState();
+                return;
+            }
+
+            mIsSkipMergeTrackingButtonVisible =
+                ClientDiffList.HasMerges(mDiffs);
+
+            bool skipMergeTracking =
+                mIsSkipMergeTrackingButtonVisible &&
+                mIsSkipMergeTrackingButtonChecked;
+
+            UpdateDiffTreeView(
+                mWkInfo,
+                mDiffs,
+                mDiffsBranchResolver,
+                skipMergeTracking,
+                mDiffTreeView);
+
+            UpdateEmptyState();
         }
 
         void ClearDiffs()
@@ -493,12 +638,33 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             {
                 TrackFeatureUseEvent.For(
                     PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo),
-                    TrackFeatureUseEvent.Features.ChangesetViewSkipMergeTrackingButton);
+                    TrackFeatureUseEvent.Features.UnityPackage.ChangesetViewSkipMergeTrackingButton);
             }
 
             UpdateDiffTreeView(mWkInfo, diffs, brResolver, isChecked, diffTreeView);
 
             mIsSkipMergeTrackingButtonChecked = isChecked;
+        }
+
+        void OnDelayedSelectionChanged()
+        {
+            if (!UseBuiltinDiffWindowPreference.IsEnabled())
+                return;
+
+            if (mDiffTreeView.GetSelection().Count != 1)
+                return;
+
+            if (!DiffSelection.IsApplicableDiffClientDiff(mDiffTreeView))
+                return;
+
+            ClientDiffInfo clientDiffInfo =
+                DiffSelection.GetSelectedDiff(mDiffTreeView);
+
+            DiffWindow diffWindow = GetWindowIfOpened.Diff();
+
+            diffWindow?.ShowDiffFromDiff(
+                clientDiffInfo.DiffWithMount.Mount.Mount,
+                clientDiffInfo.DiffWithMount.Difference);
         }
 
         void OnRowDoubleClickAction()
@@ -508,6 +674,18 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             if (DiffSelection.IsApplicableDiffClientDiff(mDiffTreeView))
             {
+                if (UseBuiltinDiffWindowPreference.IsEnabled())
+                {
+                    ClientDiffInfo clientDiffInfo =
+                        DiffSelection.GetSelectedDiff(mDiffTreeView);
+
+                    DiffWindow diffWindow = ShowWindow.Diff();
+                    diffWindow.ShowDiffFromDiff(
+                        clientDiffInfo.DiffWithMount.Mount.Mount,
+                        clientDiffInfo.DiffWithMount.Difference);
+                    return;
+                }
+
                 ((IDiffTreeViewMenuOperations)this).Diff();
                 return;
             }
@@ -528,7 +706,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             mEmptyStatePanel.UpdateContent(GetEmptyStateMessage(mDiffTreeView));
         }
 
-        static void DoDiffTreeViewArea(
+        void DoDiffTreeViewArea(
             DiffTreeView diffTreeView,
             EmptyStatePanel emptyStatePanel,
             bool isOperationRunning)
@@ -537,10 +715,17 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
 
-            diffTreeView.OnGUI(rect);
+            if (Event.current.type == EventType.Layout)
+                UpdateEmptyState();
 
-            if (!emptyStatePanel.IsEmpty())
+            if (emptyStatePanel.IsEmpty())
+            {
+                diffTreeView.OnGUI(rect);
+            }
+            else
+            {
                 emptyStatePanel.OnGUI(rect);
+            }
 
             GUI.enabled = true;
         }
@@ -563,14 +748,29 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             DiffTreeViewMenu diffTreeViewMenu = new DiffTreeViewMenu(this, this);
             mDiffTreeView = new DiffTreeView(
                 diffTreeViewMenu,
+                OnDelayedSelectionChanged,
                 OnRowDoubleClickAction,
                 UpdateEmptyState);
 
             mDiffTreeView.Reload();
         }
 
+        bool ShouldDeferDiffCalculation(RepObjectInfo repObjectInfo, out string message)
+        {
+            if (repObjectInfo is BranchInfo branchInfo && branchInfo.IsMainBranch())
+            {
+                message = PlasticLocalization.Name.MainBranchDiffDeferredExplanation.GetString();
+                return true;
+            }
+
+            message = string.Empty;
+            return false;
+        }
+
         bool mIsSkipMergeTrackingButtonVisible;
         bool mIsSkipMergeTrackingButtonChecked;
+        bool mIsDiffDeferred;
+        string mIsDiffDeferredExplanation;
 
         RepObjectInfo mSelectedRepObjectInfo;
         MountPointWithPath mSelectedMountWithPath;
@@ -581,6 +781,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         SearchField mSearchField;
         DiffTreeView mDiffTreeView;
 
+        readonly Action mRepaint;
         readonly IPendingChangesUpdater mPendingChangesUpdater;
         readonly IIncomingChangesUpdater mDeveloperIncomingChangesUpdater;
         readonly ProgressControlsForViews mProgressControls;

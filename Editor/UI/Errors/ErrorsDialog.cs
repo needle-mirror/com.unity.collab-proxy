@@ -70,7 +70,8 @@ namespace Unity.PlasticSCM.Editor.UI.Errors
         {
             mErrorsPanel = new ErrorsPanel(
                 string.Empty,
-                UnityConstants.CloudDrive.ERRORS_DIALOG_SETTINGS_NAME);
+                UnityConstants.CloudDrive.ERRORS_DIALOG_TREE_SETTINGS_NAME,
+                UnityConstants.CloudDrive.ERRORS_DIALOG_SPLITTER_SETTINGS_NAME);
         }
 
         ErrorsPanel mErrorsPanel;

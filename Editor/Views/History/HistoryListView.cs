@@ -30,12 +30,14 @@ namespace Unity.PlasticSCM.Editor.Views.History
             HistoryListHeaderState headerState,
             HistoryListViewMenu menu,
             List<string> columnNames,
+            Action delayedSelectionChangedAction,
             Action doubleClickAction,
             Action<IEnumerable<RepObjectInfo>> afterItemsChangedAction)
         {
             mWkPath = wkPath;
             mMenu = menu;
             mColumnNames = columnNames;
+            mDelayedSelectionChangedAction = delayedSelectionChangedAction;
             mDoubleClickAction = doubleClickAction;
             mAfterItemsChangedAction = afterItemsChangedAction;
 
@@ -45,6 +47,9 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
             mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
+
+            mDelayedSelectionRunner = new DelayedActionBySecondsRunner(
+                DelayedSelectionChanged, UnityConstants.SELECTION_DELAYED_INPUT_ACTION_INTERVAL);
         }
 
         public override void OnGUI(Rect rect)
@@ -118,6 +123,19 @@ namespace Unity.PlasticSCM.Editor.Views.History
         protected override void DoubleClickedItem(int id)
         {
             mDoubleClickAction();
+        }
+
+        protected override void SelectionChanged(IList<int> selectedIds)
+        {
+            mDelayedSelectionRunner.Run();
+        }
+
+        void DelayedSelectionChanged()
+        {
+            if (!HasSelection())
+                return;
+
+            mDelayedSelectionChangedAction();
         }
 
         internal void BuildModel(
@@ -438,8 +456,10 @@ namespace Unity.PlasticSCM.Editor.Views.History
         RepositorySpec mRepSpec;
 
         readonly DelayedActionBySecondsRunner mDelayedFilterAction;
+        readonly DelayedActionBySecondsRunner mDelayedSelectionRunner;
         readonly HistoryListViewMenu mMenu;
         readonly List<string> mColumnNames;
+        readonly Action mDelayedSelectionChangedAction;
         readonly Action mDoubleClickAction;
         readonly Action<IEnumerable<RepObjectInfo>> mAfterItemsChangedAction;
         readonly string mWkPath;

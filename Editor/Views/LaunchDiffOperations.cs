@@ -126,13 +126,13 @@ namespace Unity.PlasticSCM.Editor.Views
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             LaunchTool.IProcessExecutor processExecutor,
             RepositorySpec repSpec,
-            MarkerExtendedInfo label1,
-            MarkerExtendedInfo label2,
+            MarkerInfo label1,
+            MarkerInfo label2,
             bool isGluonMode)
         {
             if (DiffWindowParametersBuilder.NeedsToRevertLabelDiffOrder(label1, label2))
             {
-                MarkerExtendedInfo tmpLabel = label1;
+                MarkerInfo tmpLabel = label1;
                 label1 = label2;
                 label2 = tmpLabel;
             }

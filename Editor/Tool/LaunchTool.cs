@@ -54,9 +54,9 @@ namespace Unity.PlasticSCM.Editor.Tool
             if (showDownloadPlasticExeWindow.Show(
                     wkInfo,
                     isGluonMode,
-                    TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenGUI,
-                    TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromOpenGUI,
-                    TrackFeatureUseEvent.Features.CancelPlasticInstallationFromOpenGUI))
+                    TrackFeatureUseEvent.Features.UnityPackage.InstallPlasticCloudFromOpenGUI,
+                    TrackFeatureUseEvent.Features.UnityPackage.InstallPlasticEnterpriseFromOpenGUI,
+                    TrackFeatureUseEvent.Features.UnityPackage.CancelPlasticInstallationFromOpenGUI))
                 return;
 
             mLog.DebugFormat(
@@ -66,8 +66,8 @@ namespace Unity.PlasticSCM.Editor.Tool
             TrackFeatureUseEvent.For(
                 PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
                 isGluonMode ?
-                    TrackFeatureUseEvent.Features.LaunchGluonTool :
-                    TrackFeatureUseEvent.Features.LaunchPlasticTool);
+                    TrackFeatureUseEvent.Features.UnityPackage.LaunchGluonTool :
+                    TrackFeatureUseEvent.Features.UnityPackage.LaunchPlasticTool);
 
             if (isGluonMode)
             {
@@ -119,9 +119,9 @@ namespace Unity.PlasticSCM.Editor.Tool
             if (showDownloadPlasticExeWindow.Show(
                     wkInfo,
                     isGluonMode,
-                    TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenBranchExplorer,
-                    TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromOpenBranchExplorer,
-                    TrackFeatureUseEvent.Features.CancelPlasticInstallationFromOpenBranchExplorer))
+                    TrackFeatureUseEvent.Features.UnityPackage.InstallPlasticCloudFromOpenBranchExplorer,
+                    TrackFeatureUseEvent.Features.UnityPackage.InstallPlasticEnterpriseFromOpenBranchExplorer,
+                    TrackFeatureUseEvent.Features.UnityPackage.CancelPlasticInstallationFromOpenBranchExplorer))
                 return;
 
             mLog.DebugFormat(
@@ -130,7 +130,7 @@ namespace Unity.PlasticSCM.Editor.Tool
 
             TrackFeatureUseEvent.For(
                 PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
-                TrackFeatureUseEvent.Features.LaunchBranchExplorer);
+                TrackFeatureUseEvent.Features.UnityPackage.LaunchBranchExplorer);
 
             if (PlatformIdentifier.IsMac())
             {
@@ -170,9 +170,9 @@ namespace Unity.PlasticSCM.Editor.Tool
             if (showDownloadPlasticExeWindow.Show(
                 repSpec,
                 isGluonMode,
-                TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenChangesetDiffs,
-                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromOpenChangesetDiffs,
-                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromOpenChangesetDiffs))
+                TrackFeatureUseEvent.Features.UnityPackage.InstallPlasticCloudFromOpenChangesetDiffs,
+                TrackFeatureUseEvent.Features.UnityPackage.InstallPlasticEnterpriseFromOpenChangesetDiffs,
+                TrackFeatureUseEvent.Features.UnityPackage.CancelPlasticInstallationFromOpenChangesetDiffs))
                 return;
 
             mLog.DebugFormat(
@@ -203,9 +203,9 @@ namespace Unity.PlasticSCM.Editor.Tool
             if (showDownloadPlasticExeWindow.Show(
                 repSpec,
                 isGluonMode,
-                TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenSelectedChangesetsDiffs,
-                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromOpenSelectedChangesetsDiffs,
-                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromOpenSelectedChangesetsDiffs))
+                TrackFeatureUseEvent.Features.UnityPackage.InstallPlasticCloudFromOpenSelectedChangesetsDiffs,
+                TrackFeatureUseEvent.Features.UnityPackage.InstallPlasticEnterpriseFromOpenSelectedChangesetsDiffs,
+                TrackFeatureUseEvent.Features.UnityPackage.CancelPlasticInstallationFromOpenSelectedChangesetsDiffs))
                 return;
 
             mLog.DebugFormat(
@@ -238,9 +238,9 @@ namespace Unity.PlasticSCM.Editor.Tool
             if (showDownloadPlasticExeWindow.Show(
                 repSpec,
                 isGluonMode,
-                TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenBranchDiff,
-                TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromOpenBranchDiff,
-                TrackFeatureUseEvent.Features.CancelPlasticInstallationFromOpenBranchDiff))
+                TrackFeatureUseEvent.Features.UnityPackage.InstallPlasticCloudFromOpenBranchDiff,
+                TrackFeatureUseEvent.Features.UnityPackage.InstallPlasticEnterpriseFromOpenBranchDiff,
+                TrackFeatureUseEvent.Features.UnityPackage.CancelPlasticInstallationFromOpenBranchDiff))
                 return;
 
             mLog.DebugFormat(
@@ -270,9 +270,9 @@ namespace Unity.PlasticSCM.Editor.Tool
             if (showDownloadPlasticExeWindow.Show(
                     repSpec,
                     isGluonMode,
-                    TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenCodeReview,
-                    TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromOpenCodeReview,
-                    TrackFeatureUseEvent.Features.CancelPlasticInstallationFromOpenCodeReview))
+                    TrackFeatureUseEvent.Features.UnityPackage.InstallPlasticCloudFromOpenCodeReview,
+                    TrackFeatureUseEvent.Features.UnityPackage.InstallPlasticEnterpriseFromOpenCodeReview,
+                    TrackFeatureUseEvent.Features.UnityPackage.CancelPlasticInstallationFromOpenCodeReview))
                 return;
 
             mLog.DebugFormat("Open Code Review {0} for '{1}'", reviewId, repSpec);
@@ -298,9 +298,9 @@ namespace Unity.PlasticSCM.Editor.Tool
             if (showDownloadPlasticExeWindow.Show(
                     wkInfo,
                     isGluonMode,
-                    TrackFeatureUseEvent.Features.InstallPlasticCloudFromOpenWorkspaceConfiguration,
-                    TrackFeatureUseEvent.Features.InstallPlasticEnterpriseFromOpenWorkspaceConfiguration,
-                    TrackFeatureUseEvent.Features.CancelPlasticInstallationFromOpenWorkspaceConfiguration))
+                    TrackFeatureUseEvent.Features.UnityPackage.InstallPlasticCloudFromOpenWorkspaceConfiguration,
+                    TrackFeatureUseEvent.Features.UnityPackage.InstallPlasticEnterpriseFromOpenWorkspaceConfiguration,
+                    TrackFeatureUseEvent.Features.UnityPackage.CancelPlasticInstallationFromOpenWorkspaceConfiguration))
                 return;
 
             mLog.DebugFormat(
@@ -309,7 +309,7 @@ namespace Unity.PlasticSCM.Editor.Tool
 
             TrackFeatureUseEvent.For(
                 PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
-                TrackFeatureUseEvent.Features.LaunchPartialConfigure);
+                TrackFeatureUseEvent.Features.UnityPackage.LaunchPartialConfigure);
 
             Process gluonProcess = processExecutor.ExecuteGUI(
                 PlasticInstallPath.GetGluonExePath(),

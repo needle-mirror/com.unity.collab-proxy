@@ -94,11 +94,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
                 ref mScrollPosition,
                 EditorStyles.textArea);
 
-            if (!mTextAreaFocused)
-            {
-                UnityEditor.EditorGUI.FocusTextInControl(CHECKIN_TEXTAREA_NAME);
-                mTextAreaFocused = true;
-            }
+            FocusTextAreaIfNeeded(CHECKIN_TEXTAREA_NAME);
 
             Title(PlasticLocalization.GetString(PlasticLocalization.Name.Files));
 
@@ -300,7 +296,6 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
         IAssetStatusCache mAssetStatusCache;
         MetaCache mMetaCache;
         bool mIsGluonMode;
-        bool mTextAreaFocused;
         string mComment;
 
         bool mIsRunningCheckin;

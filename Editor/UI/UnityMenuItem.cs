@@ -4,6 +4,9 @@
     {
         internal static string GetText(string menuName, string subMenuName)
         {
+            if (string.IsNullOrEmpty(menuName))
+                return subMenuName;
+
             return string.Format("{0}{1}{2}", menuName, SEPARATOR, subMenuName);
         }
 

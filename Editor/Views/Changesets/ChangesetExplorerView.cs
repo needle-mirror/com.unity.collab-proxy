@@ -162,7 +162,10 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
                 listView.OnGUI(treeRect);
 
-                if (!emptyStatePanel.IsEmpty())
+                if (Event.current.type == EventType.Layout)
+                    mShouldShowEmptyState = !emptyStatePanel.IsEmpty();
+
+                if (mShouldShowEmptyState)
                     emptyStatePanel.OnGUI(treeRect);
 
                 GUI.enabled = true;
@@ -198,13 +201,14 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 null,
                 fillChangesetsView,
                 fillChangesetsView,
-                selectionChangedAction: () => {},
+                delayedSelectionChangedAction: () => {},
                 doubleClickAction: mParentWindow.OkButtonAction,
                 afterItemsChangedAction: fillChangesetsView.ShowContentOrEmptyState);
 
             mChangesetsListView.Reload();
         }
 
+        bool mShouldShowEmptyState;
         DateFilter mDateFilter;
         SearchField mSearchField;
         ChangesetsListView mChangesetsListView;

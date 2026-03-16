@@ -607,6 +607,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             if (workspaceWindow == null)
                 return;
 
+            workspaceWindow.RefreshView(ViewType.BranchExplorerView);
             workspaceWindow.RefreshView(ViewType.HistoryView);
             workspaceWindow.RefreshView(ViewType.LocksView);
         }

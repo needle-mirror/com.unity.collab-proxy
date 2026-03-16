@@ -40,10 +40,10 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             return listView.GetSelectedRepObjectInfos();
         }
 
-        internal static int GetSelectedBranchesCount(
+        internal static int GetSelectedVisibleBranchesCount(
             BranchesListView listView)
         {
-            return listView.GetSelection().Count;
+            return listView.GetSelectedVisibleItems().Count;
         }
 
         internal static BranchInfo GetSelectedBranch(

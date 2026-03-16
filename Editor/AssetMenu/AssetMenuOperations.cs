@@ -231,8 +231,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 result |= AssetMenuOperations.Checkout;
             }
 
-            if (info.IsFileSelection &&
-                info.IsPrivateSelection)
+            if (info.IsPrivateSelection)
             {
                 result |= AssetMenuOperations.Add;
             }
@@ -248,10 +247,10 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
             if ((info.IsControlledSelection &&
                  info.IsMovedSelection) ||
-                (info.IsFileSelection &&
-                info.IsControlledSelection &&
+                (info.IsControlledSelection &&
                 (info.IsCheckedOutSelection ||
-                info.IsChangedSelection)))
+                 info.IsChangedSelection ||
+                 info.IsAddedSelection)))
             {
                 result |= AssetMenuOperations.Undo;
             }

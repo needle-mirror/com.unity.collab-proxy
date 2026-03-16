@@ -30,6 +30,8 @@ using GluonRevertOperation = GluonGui.WorkspaceWindow.Views.Details.History.Reve
 using HistoryDescriptor = GluonGui.WorkspaceWindow.Views.Details.History.HistoryDescriptor;
 using OpenRevisionOperation = PlasticGui.WorkspaceWindow.History.OpenRevisionOperation;
 
+using DiffWindow = Plugins.PlasticSCM.Editor.Diff.DiffWindow;
+
 namespace Unity.PlasticSCM.Editor.Views.History
 {
     internal class HistoryTab :
@@ -232,7 +234,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
         {
             TrackFeatureUseEvent.For(
                 mRepSpec,
-                TrackFeatureUseEvent.Features.SaveRevisionFromFileHistory);
+                TrackFeatureUseEvent.Features.UnityPackage.SaveRevisionFromFileHistory);
 
             HistoryRevision revision = HistorySelection.
                 GetSelectedHistoryRevision(mHistoryListView);
@@ -258,6 +260,18 @@ namespace Unity.PlasticSCM.Editor.Views.History
             HistoryRevision revision = HistorySelection.
                 GetSelectedHistoryRevision(mHistoryListView);
 
+            if (UseBuiltinDiffWindowPreference.IsEnabled())
+            {
+                DiffWindow diffWindow = ShowWindow.Diff();
+                diffWindow.ShowDiffFromHistory(
+                    null,
+                    revision,
+                    mRepSpec,
+                    mPath,
+                    mItemId);
+                return;
+            }
+
             DiffOperation.DiffWithPrevious(
                 mWkInfo,
                 mRepSpec,
@@ -278,14 +292,29 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
             bool areReversed = revisions[0].Id > revisions[1].Id;
 
+            HistoryRevision leftRevision = revisions[(areReversed) ? 1 : 0];
+            HistoryRevision rightRevision = revisions[(areReversed) ? 0 : 1];
+
+            if (UseBuiltinDiffWindowPreference.IsEnabled())
+            {
+                DiffWindow diffWindow = ShowWindow.Diff();
+                diffWindow.ShowDiffFromHistory(
+                    leftRevision,
+                    rightRevision,
+                    mRepSpec,
+                    mPath,
+                    mItemId);
+                return;
+            }
+
             DiffOperation.DiffRevisions(
                 mWkInfo,
                 mRepSpec,
                 Path.GetFileName(mPath),
                 string.Empty,
                 mItemId,
-                revisions[(areReversed) ? 1 : 0],
-                revisions[(areReversed) ? 0 : 1],
+                leftRevision,
+                rightRevision,
                 mProgressControls,
                 PlasticExeLauncher.BuildForDiffSelectedRevisions(mRepSpec, mIsGluonMode, mShowDownloadPlasticExeWindow),
                 null);
@@ -394,7 +423,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
             EditorGUILayout.EndHorizontal();
         }
 
-        static void DoHistoryArea(
+        void DoHistoryArea(
             HistoryListView historyListView,
             EmptyStatePanel emptyStatePanel,
             bool isOperationRunning)
@@ -405,10 +434,36 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
             historyListView.OnGUI(rect);
 
-            if (!emptyStatePanel.IsEmpty())
+            if (Event.current.type == EventType.Layout)
+                mShouldShowEmptyState = !emptyStatePanel.IsEmpty();
+
+            if (mShouldShowEmptyState)
                 emptyStatePanel.OnGUI(rect);
 
             GUI.enabled = true;
+        }
+
+        void OnDelayedSelectionChanged()
+        {
+            if (!UseBuiltinDiffWindowPreference.IsEnabled())
+                return;
+
+            if (mHistoryListView.GetSelection().Count != 1)
+                return;
+
+            HistoryRevision selectedRevision = HistorySelection.GetSelectedHistoryRevision(mHistoryListView);
+
+            if (selectedRevision == null)
+                return;
+
+            DiffWindow diffWindow = GetWindowIfOpened.Diff();
+
+            diffWindow?.ShowDiffFromHistory(
+                null,
+                selectedRevision,
+                mRepSpec,
+                mPath,
+                mItemId);
         }
 
         void OnRowDoubleClickAction()
@@ -420,6 +475,18 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
             if (selectedRevision == null)
                 return;
+
+            if (UseBuiltinDiffWindowPreference.IsEnabled())
+            {
+                DiffWindow diffWindow = ShowWindow.Diff();
+                diffWindow.ShowDiffFromHistory(
+                    null,
+                    selectedRevision,
+                    mRepSpec,
+                    mPath,
+                    mItemId);
+                return;
+            }
 
             ((IOpenMenuOperations)this).Open();
         }
@@ -463,12 +530,14 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 headerState,
                 new HistoryListViewMenu(this, this, this),
                 HistoryListHeaderState.GetColumnNames(),
+                OnDelayedSelectionChanged,
                 OnRowDoubleClickAction,
                 afterItemsChangedAction: OnItemsChangedAction);
 
             mHistoryListView.Reload();
         }
 
+        bool mShouldShowEmptyState;
         bool mIsDirectory;
         long mItemId;
         string mPath;

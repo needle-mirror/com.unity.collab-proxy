@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 
 using Codice.Client.BaseCommands;
+using Codice.Client.BaseCommands.CheckIn;
 using Codice.Client.BaseCommands.Merge;
 using Codice.Client.Commands;
 using Codice.Client.Common;
@@ -207,7 +208,6 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             mRefreshView = refreshView;
             mAssetStatusCache = assetStatusCache;
             mShowDownloadPlasticExeWindow = showDownloadPlasticExeWindow;
-            mIncomingChangesUpdater = incomingChangesUpdater;
             mWindowStatusBar = windowStatusBar;
             mParentWindow = parentWindow;
             mIsIncomingMerge = isIncomingMerge;
@@ -219,6 +219,8 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             mEmptyStatePanel = new EmptyStatePanel(parentWindow.Repaint);
 
             mIsMergeTo = MergeTypeClassifier.IsMergeTo(mergeType);
+
+            mEnableFiltering = mMergeController.IsShelvesetMerge();
 
             mTitleText = MergeViewTitle.Get(objectInfo, ancestorChangesetInfo, mergeType);
 
@@ -248,7 +250,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 getWorkingBranch,
                 plasticNotifier,
                 from,
-                null,
+                mEnableFiltering ? new MergeViewCheckedStateManager() : null,
                 pendingChangesUpdater,
                 incomingChangesUpdater,
                 shelvedChangesUpdater,
@@ -358,6 +360,8 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 DoProcessMergesButton(
                     mIsProcessMergesButtonEnabled && !mHasPendingDirectoryConflicts,
                     mProcessMergesButtonText,
+                    mEnableFiltering,
+                    mMergeChangesTree,
                     mSwitcher,
                     mShowDownloadPlasticExeWindow,
                     mWorkspaceWindow,
@@ -419,6 +423,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         {
             ProcessMerges(
                 new List<string>(),
+                GetCheckedPaths(mEnableFiltering, mMergeChangesTree),
                 null,
                 mMergeDialogParameters.Options.Contributor);
         }
@@ -605,6 +610,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         {
             ProcessMerges(
                 MergeSelection.GetPathsFromSelectedFileConflictsIncludingMeta(mMergeTreeView),
+                GetCheckedPaths(mEnableFiltering, mMergeChangesTree),
                 PlasticExeLauncher.BuildForMergeSelectedFiles(mWkInfo, false, mShowDownloadPlasticExeWindow),
                 MergeContributorType.MergeContributors);
         }
@@ -613,6 +619,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         {
             ProcessMerges(
                 MergeSelection.GetPathsFromSelectedFileConflictsIncludingMeta(mMergeTreeView),
+                GetCheckedPaths(mEnableFiltering, mMergeChangesTree),
                 null,
                 MergeContributorType.KeepSource);
         }
@@ -621,6 +628,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         {
             ProcessMerges(
                 MergeSelection.GetPathsFromSelectedFileConflictsIncludingMeta(mMergeTreeView),
+                GetCheckedPaths(mEnableFiltering, mMergeChangesTree),
                 null,
                 MergeContributorType.KeepDestination);
         }
@@ -863,6 +871,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
 
         void ProcessMerges(
             List<string> selectedPaths,
+            List<string> checkedPaths,
             IToolLauncher toolLauncher,
             MergeContributorType contributorType)
         {
@@ -874,6 +883,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 toolLauncher,
                 mGuiMessage,
                 selectedPaths,
+                checkedPaths,
                 AfterProcessMerges,
                 MergeSuccessfullyFinished);
         }
@@ -888,6 +898,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         {
             ProcessMerges(
                 new List<string>(),
+                null,
                 PlasticExeLauncher.BuildForMergeSelectedFiles(mWkInfo, false, mShowDownloadPlasticExeWindow),
                 mMergeDialogParameters.Options.Contributor);
         }
@@ -908,7 +919,10 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 if (isOperationRunning)
                     return;
 
-                if (mergeTreeView.GetTotalItemCount() == 0)
+                if (Event.current.type == EventType.Layout)
+                    mShouldShowEmptyState = mergeTreeView.GetTotalItemCount() == 0;
+
+                if (mShouldShowEmptyState)
                 {
                     DrawEmptyState(
                         rect,
@@ -1100,6 +1114,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             IToolLauncher toolLauncher,
             GuiMessage.IGuiMessage guiMessage,
             List<string> selectedPaths,
+            List<string> checkedPaths,
             EndOperationDelegateForUpdateProgress afterProcessMergesAction,
             Action successOperationDelegate)
         {
@@ -1108,7 +1123,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 switcher,
                 guiMessage,
                 selectedPaths,
-                null,
+                checkedPaths,
                 contributorType,
                 toolLauncher,
                 false,
@@ -1129,6 +1144,14 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 conflict.GetMount().Mount,
                 resolveAction,
                 renameValue));
+        }
+
+        static List<string> GetCheckedPaths(bool enableFiltering, MergeChangesTree mergeChangesTree)
+        {
+            if (!enableFiltering)
+                return null;
+
+            return mergeChangesTree.GetCheckedPaths();
         }
 
         static void DoTitle(
@@ -1296,6 +1319,8 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         static void DoProcessMergesButton(
             bool isEnabled,
             string processMergesButtonText,
+            bool enableFiltering,
+            MergeChangesTree mergeChangesTree,
             IViewSwitcher switcher,
             LaunchTool.IShowDownloadPlasticExeWindow showDownloadPlasticExeWindow,
             IWorkspaceWindow workspaceWindow,
@@ -1318,6 +1343,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                     PlasticExeLauncher.BuildForResolveConflicts(wkInfo, false, showDownloadPlasticExeWindow),
                     guiMessage,
                     new List<string>(),
+                    GetCheckedPaths(enableFiltering, mergeChangesTree),
                     afterProcessMergesAction,
                     successOperationDelegate);
             }
@@ -1476,14 +1502,25 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
 
             mMenu = new MergeViewMenu(this, this, isIncomingMerge, isMergeTo, isShelvesetMerge);
             mMergeTreeView = new MergeTreeView(
-                wkInfo, mergeHeaderState,
+                wkInfo,
+                mergeHeaderState,
                 MergeTreeHeaderState.GetColumnNames(),
                 mMenu,
+                mEnableFiltering,
+                UpdateProcessMergesButtonText,
                 UpdateEmptyStateMessage);
 
             mMergeTreeView.Reload();
 
             UpdateEmptyStateMessage();
+        }
+
+        void UpdateProcessMergesButtonText()
+        {
+            mProcessMergesButtonText = MergeViewTexts.GetProcessMergesButtonText(
+                MergeChangesTreeParser.HasFileConflicts(mMergeChangesTree),
+                mIsIncomingMerge,
+                mIsMergeTo);
         }
 
         void UpdateEmptyStateMessage()
@@ -1524,6 +1561,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             return result;
         }
 
+        bool mShouldShowEmptyState;
         bool mIsProcessMergesButtonVisible;
         bool mIsCancelMergesButtonVisible;
         bool mIsMessageLabelVisible;
@@ -1562,9 +1600,9 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         readonly bool mIsMergeTo;
         readonly bool mShowDiscardChangesButton;
         readonly bool mIsIncomingMerge;
+        readonly bool mEnableFiltering;
         readonly EditorWindow mParentWindow;
         readonly WindowStatusBar mWindowStatusBar;
-        readonly IncomingChangesUpdater mIncomingChangesUpdater;
         readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
         readonly IAssetStatusCache mAssetStatusCache;
         readonly IRefreshView mRefreshView;

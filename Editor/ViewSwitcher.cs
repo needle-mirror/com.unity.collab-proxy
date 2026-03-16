@@ -231,6 +231,11 @@ namespace Unity.PlasticSCM.Editor
 
             if (ChangesetsTab != null)
                 ChangesetsTab.SetWorkingObjectInfo(workingObjectInfo.ChangesetInfo);
+
+            IWorkingObjectRefreshableView refreshable = GetWindowIfOpened.BranchExplorer()?.BranchExplorerView;
+
+            if (refreshable != null)
+                refreshable.Refresh(workingObjectInfo);
         }
 
         internal void OnEnable()
@@ -536,7 +541,6 @@ namespace Unity.PlasticSCM.Editor
                         mWorkspaceWindow.DeveloperProgressOperationHandler,
                     mWorkspaceWindow.GluonProgressOperationHandler,
                     mShelvedChangesUpdater,
-                    mAssetStatusCache,
                     mSaveAssets,
                     mShowDownloadPlasticExeWindow,
                     mProcessExecutor,
@@ -1118,7 +1122,6 @@ namespace Unity.PlasticSCM.Editor
                 mWorkspaceWindow,
                 this,
                 this,
-                this,
                 mWorkspaceWindow,
                 mWorkspaceWindow,
                 mShelvedChangesUpdater,
@@ -1355,6 +1358,9 @@ namespace Unity.PlasticSCM.Editor
                 case ViewType.HistoryView:
                     return HistoryTab;
 
+                case ViewType.BranchExplorerView:
+                    return GetWindowIfOpened.BranchExplorer()?.BranchExplorerView;
+
                 default:
                     return null;
             }
@@ -1374,6 +1380,18 @@ namespace Unity.PlasticSCM.Editor
 
             if (IncomingChangesTab != null)
                 IncomingChangesTab.IsVisible = tab == TabType.IncomingChanges;
+
+            if (ChangesetsTab != null)
+                ChangesetsTab.IsVisible = tab == TabType.Changesets;
+
+            if (ShelvesTab != null)
+                ShelvesTab.IsVisible = tab == TabType.Shelves;
+
+            if (BranchesTab != null)
+                BranchesTab.IsVisible = tab == TabType.Branches;
+
+            if (LabelsTab != null)
+                LabelsTab.IsVisible = tab == TabType.Labels;
         }
 
         SerializableViewSwitcherState mState;

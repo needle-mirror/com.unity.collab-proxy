@@ -55,7 +55,11 @@ namespace Unity.PlasticSCM.Editor
 
         internal IMergeViewLauncher IMergeViewLauncher { get { return mViewSwitcher; } }
 
+        internal IHistoryViewLauncher IHistoryViewLauncher { get { return mViewSwitcher; } }
+
         internal IWorkspaceWindow IWorkspaceWindow { get { return mWorkspaceWindow; } }
+
+        internal IRefreshView IRefreshView { get { return mWorkspaceWindow; } }
 
         internal IGluonWorkspaceStatusChangeListener IWorkspaceStatusChangeListener { get { return mWorkspaceWindow; } }
 
@@ -66,6 +70,8 @@ namespace Unity.PlasticSCM.Editor
         internal IShelvedChangesUpdater ShelvedChangesUpdater { get { return mShelvedChangesUpdater; } }
 
         internal NotificationsArea.IIncomingChangesNotification IncomingChangesNotification { get { return mIncomingChangesNotification; } }
+
+        internal RepositorySpec RepSpec { get { return mRepSpec; } }
 
         internal WelcomeView GetWelcomeView()
         {
@@ -566,6 +572,7 @@ namespace Unity.PlasticSCM.Editor
                     mWorkspaceWindow.WorkingObjectName,
                     mWorkspaceWindow.WorkingObjectFullSpec,
                     mWorkspaceWindow.WorkingObjectComment,
+                    mWorkspaceWindow.WorkingObjectType,
                     mIsGluonMode,
                     mIsCloudOrganization,
                     mIsUnityOrganization,

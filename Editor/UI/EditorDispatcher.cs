@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 using Codice.LogWrapper;
@@ -19,6 +21,18 @@ namespace Unity.PlasticSCM.Editor.UI
         {
             mMainThreadId = mainThreadId;
             mMainUnitySyncContext = mainUnitySyncContext;
+        }
+
+        internal static void VerifyMainThreadAccess()
+        {
+            if (!IsOnMainThread)
+            {
+                [DoesNotReturn]
+                [MethodImpl(MethodImplOptions.NoInlining)]
+                static void ThrowVerifyAccess()
+                    => throw new InvalidOperationException("Call from invalid thread");
+                ThrowVerifyAccess();
+            }
         }
 
         internal static void Shutdown()

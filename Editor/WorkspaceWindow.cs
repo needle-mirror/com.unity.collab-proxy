@@ -45,6 +45,7 @@ namespace Unity.PlasticSCM.Editor
         internal string WorkingObjectName { get; private set; }
         internal string WorkingObjectFullSpec { get; private set; }
         internal string WorkingObjectComment { get; private set; }
+        internal string WorkingObjectType { get; private set; }
 
         internal OperationProgressData Progress { get { return mOperationProgressData; } }
 
@@ -336,6 +337,8 @@ namespace Unity.PlasticSCM.Editor
             string objectType, string objectName, string repositoryName, string serverName)
         {
             string serverForDisplay = ResolveServer.ToDisplayString(serverName);
+
+            WorkingObjectType = objectType;
 
             WorkingObjectName = string.Format("{0}@{1}@{2}",
                 GetShorten.ObjectName(objectName, objectType),

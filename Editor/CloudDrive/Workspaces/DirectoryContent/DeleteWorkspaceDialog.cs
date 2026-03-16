@@ -80,11 +80,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
                     mConfirmationText,
                     GUILayout.ExpandWidth(true));
 
-                if (!mTextAreaFocused)
-                {
-                    EditorGUI.FocusTextInControl(CONFIRMATION_TEXTAREA_NAME);
-                    mTextAreaFocused = true;
-                }
+                FocusTextAreaIfNeeded(CONFIRMATION_TEXTAREA_NAME);
             }
         }
 
@@ -106,8 +102,6 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
 
             base.OkButtonAction();
         }
-
-        bool mTextAreaFocused;
 
         string mWorkspaceName;
         string mConfirmationText;

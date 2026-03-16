@@ -261,9 +261,9 @@ namespace Unity.PlasticSCM.Editor.Toolbar
                 OnToolbarButtonInvalidated();
         }
 
-        void SetWorkingBranch(BranchInfo branchInfo)
+        void SetWorkingBranch(WorkingObjectInfo workingObjectInfo)
         {
-            mWorkingBranch = branchInfo;
+            mWorkingBranch = workingObjectInfo.BranchInfo;
         }
 
         void UpdateWorkingBranch(

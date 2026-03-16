@@ -33,7 +33,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             IGetRepositorySpec getRepositorySpec,
             IGetWorkingObject getWorkingObject,
             Func<bool> getIsHiddenBranchesMode,
-            Action selectionChangedAction,
+            Action delayedSelectionChangedAction,
             Action doubleClickAction,
             Action<IEnumerable<object>> afterItemsChangedAction)
         {
@@ -42,7 +42,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             mGetRepositorySpec = getRepositorySpec;
             mGetWorkingObject = getWorkingObject;
             mGetIsHiddenBranchesMode = getIsHiddenBranchesMode;
-            mSelectionChangedAction = selectionChangedAction;
+            mDelayedSelectionChangedAction = delayedSelectionChangedAction;
             mDoubleClickAction = doubleClickAction;
             mAfterItemsChangedAction = afterItemsChangedAction;
 
@@ -53,13 +53,13 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
 
-            mDelayedSelectionAction = new DelayedActionBySecondsRunner(
+            mDelayedSelectionRunner = new DelayedActionBySecondsRunner(
                 DelayedSelectionChanged, UnityConstants.SELECTION_DELAYED_INPUT_ACTION_INTERVAL);
         }
 
         protected override void SelectionChanged(IList<int> selectedIds)
         {
-            mDelayedSelectionAction.Run();
+            mDelayedSelectionRunner.Run();
         }
 
         protected override IList<TreeViewItem> BuildRows(
@@ -85,7 +85,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             mDelayedFilterAction.Run();
         }
 
-        protected override void ContextClickedItem(int id)
+        protected override void ContextClicked()
         {
             mMenu.Popup();
             Repaint();
@@ -209,6 +209,26 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             return result;
         }
 
+        internal List<object> GetSelectedVisibleItems()
+        {
+            List<object> result = new List<object>();
+
+            IList<int> selectedIds = GetSelection();
+
+            if (selectedIds.Count == 0)
+                return result;
+
+            foreach (TreeViewItem row in mRows)
+            {
+                if (!selectedIds.Contains(row.id))
+                    continue;
+
+                result.Add(((BranchListViewItem)row).ObjectInfo);
+            }
+
+            return result;
+        }
+
         internal void SelectRepObjectInfos(
             List<RepObjectInfo> repObjectsToSelect)
         {
@@ -232,12 +252,12 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             List<IPlasticTreeNode> itemsToSelect,
             Filter currentFilter)
         {
+            mListViewItemIds.Clear();
+
             List<RepObjectInfo> branchesToSelect = BranchesSelection.GetBranchesToSelect(
                 this, itemsToSelect);
 
             int defaultRow = TableViewOperations.GetFirstSelectedRow(this);
-
-            mListViewItemIds.Clear();
 
             mQueryResult = BuildViewQueryResult(
                 EnumQueryObjectType.Branch, treeModel, mGetRepositorySpec.Get());
@@ -270,7 +290,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             if (!HasSelection())
                 return;
 
-            mSelectionChangedAction();
+            mDelayedSelectionChangedAction();
         }
 
         void SortingChanged(MultiColumnHeader multiColumnHeader)
@@ -464,10 +484,10 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
         ViewQueryResult mQueryResult;
 
         readonly DelayedActionBySecondsRunner mDelayedFilterAction;
-        readonly DelayedActionBySecondsRunner mDelayedSelectionAction;
+        readonly DelayedActionBySecondsRunner mDelayedSelectionRunner;
         readonly Action<IEnumerable<object>> mAfterItemsChangedAction;
         readonly Func<bool> mGetIsHiddenBranchesMode;
-        readonly Action mSelectionChangedAction;
+        readonly Action mDelayedSelectionChangedAction;
         readonly IGetWorkingObject mGetWorkingObject;
         readonly IGetRepositorySpec mGetRepositorySpec;
         readonly Action mDoubleClickAction;

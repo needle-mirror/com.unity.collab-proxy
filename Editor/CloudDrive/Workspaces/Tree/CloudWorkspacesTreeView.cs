@@ -36,16 +36,16 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
         internal WorkspaceInfo WorkspaceToSelect { set { mWorkspaceToSelect = value; } }
 
         internal CloudWorkspacesTreeView(
-            Action selectionChangedAction,
+            Action delayedSelectionChangedAction,
             IProgressControls progressControls,
             EditorWindow parentWindow) : base(showCustomBackground: false)
         {
-            mSelectionChangedAction = selectionChangedAction;
+            mDelayedSelectionChangedAction = delayedSelectionChangedAction;
             mProgressControls = progressControls;
             mParentWindow = parentWindow;
 
-            mDelayedSelectionAction = new DelayedActionBySecondsRunner(
-                SelectionChanged, UnityConstants.SELECTION_DELAYED_INPUT_ACTION_INTERVAL);
+            mDelayedSelectionRunner = new DelayedActionBySecondsRunner(
+                DelayedSelectionChanged, UnityConstants.SELECTION_DELAYED_INPUT_ACTION_INTERVAL);
 
             mMenu = new CloudWorkspacesTreeViewMenu(this);
 
@@ -73,7 +73,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
             SelectWorkspaceIfNeeded();
 
             if (GetSelectedNode() != null)
-                SelectionChanged();
+                DelayedSelectionChanged();
 
             return mRows;
         }
@@ -157,7 +157,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
             }
 
             SetSelection(selectedIdsToSet);
-            mDelayedSelectionAction.Run();
+            mDelayedSelectionRunner.Run();
         }
 
         protected override void ExpandedStateChanged()
@@ -435,7 +435,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
             mWorkspaceToSelect = null;
         }
 
-        void SelectionChanged()
+        void DelayedSelectionChanged()
         {
             if (mIsSelectionChangedEventDisabled)
                 return;
@@ -449,7 +449,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
                     mMyDrivesByWorkspace,
                     mDrivesSharedWithMeByWorkspace);
 
-            mSelectionChangedAction();
+            mDelayedSelectionChangedAction();
         }
 
         void SelectNode(string wkPath, string fullPath)
@@ -473,7 +473,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
                 mIsSelectionChangedEventDisabled = false;
             }
 
-            SelectionChanged();
+            DelayedSelectionChanged();
         }
 
         static void WorkspaceContentTreeViewItemGUI(
@@ -797,9 +797,9 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.Tree
         WorkspaceInfo mWorkspaceToSelect;
 
         readonly CloudWorkspacesTreeViewMenu mMenu;
-        readonly DelayedActionBySecondsRunner mDelayedSelectionAction;
+        readonly DelayedActionBySecondsRunner mDelayedSelectionRunner;
 
-        readonly Action mSelectionChangedAction;
+        readonly Action mDelayedSelectionChangedAction;
         readonly IProgressControls mProgressControls;
         readonly EditorWindow mParentWindow;
 

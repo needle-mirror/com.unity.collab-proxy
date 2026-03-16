@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-
+using Unity.PlasticSCM.Editor.UnityInternals.UnityEditor;
+using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 #if UNITY_6000_2_OR_NEWER
@@ -28,6 +29,20 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             return mRows;
         }
 
+        public override void OnGUI(Rect rect)
+        {
+            base.OnGUI(rect);
+
+            bool currentlyHasFocus = HasKeyboardFocus();
+
+            if (currentlyHasFocus && !mPreviouslyHadFocus)
+            {
+                OnFocusGained();
+            }
+
+            mPreviouslyHadFocus = currentlyHasFocus;
+        }
+
         internal Rect GetTreeViewRect()
         {
             return treeViewRect;
@@ -43,7 +58,9 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             if (PlasticApp.IsUnitTesting)
                 return true;
 
-            return treeViewControlID == GUIUtility.keyboardControl && GUI.enabled;
+            bool hasKeyFocus = InternalEditorGUIUtility.HasCurrentWindowKeyFocus();
+
+            return hasKeyFocus && treeViewControlID == GUIUtility.keyboardControl && GUI.enabled;
         }
 
         protected override TreeViewItem BuildRoot()
@@ -53,6 +70,8 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 
         protected override void BeforeRowsGUI()
         {
+            DrawTreeViewItem.InitializeStyles();
+
             if (!mShowCustomBackground)
                 return;
 
@@ -66,9 +85,18 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                 (lastRowVisible * rowHeight) + 1000),
                 Images.GetTreeviewBackgroundTexture());
 
-            DrawTreeViewItem.InitializeStyles();
             base.BeforeRowsGUI();
         }
+
+        protected virtual void OnFocusGained()
+        {
+            if (!HasSelection())
+                return;
+
+            SelectionChanged(GetSelection());
+        }
+
+        bool mPreviouslyHadFocus = false;
 
         readonly bool mShowCustomBackground;
 

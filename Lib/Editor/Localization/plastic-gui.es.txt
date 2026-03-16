@@ -28,9 +28,6 @@ Rama
 == Branches ==
 Ramas
 
-== BranchItemNameSingular ==
-la rama
-
 == Changeset ==
 Changeset
 
@@ -39,9 +36,6 @@ Etiqueta
 
 == Labels ==
 Etiquetas
-
-== LabelItemNameSingular ==
-la etiqueta
 
 == CodeReview ==
 la revisión de código
@@ -6169,6 +6163,9 @@ I only need to check in my work (Gluon workspace)
 == CreateWorkspace ==
 Create workspace
 
+== CreateWorkspaceUnityVCS ==
+Create Workspace
+
 == LearnMoreDifferencesUnityVCS ==
 Learn more about the differences between Unity VCS/Gluon workspaces
 
@@ -6445,7 +6442,7 @@ Some files you're trying to check in are in conflict. You can resolve conflicts 
 Show incoming changes view
 
 == UnityInitialCheckinComment ==
-Add packages and project settings to Unity Version Control.
+Add project assets and settings to Unity Version Control.
 
 == UnityInitialCheckinProgress ==
 Checking in the packages and project settings files...
@@ -7769,20 +7766,8 @@ La prueba de conexión ha fallado. Por favor, revise los valores introducidos. {
 == IssueTrackerNotLoaded ==
 No se pudo cargar la biblioteca de extensión asociada al issue tracker.
 
-== ChangesetColors ==
-Colores de changeset
-
 == SelectUsersDialogDescription ==
 Por favor, seleccione uno o más usuarios de la lista:
-
-== ClickToSetAlias ==
-Click para fijar alias
-
-== ByUser ==
-Por usuario
-
-== ByReplicationSource ==
-Por origen de réplica
 
 == UnsavedChanges ==
 Hay cambios no guardados
@@ -8091,20 +8076,11 @@ Utilice el combo para seleccionar la fuente preferida. Puede visualizarla en el 
 == RestoreDefaultFont ==
 Fuente por defecto
 
-== BrExTooltipDetailsForCs ==
-por {0} el {1}
-
 == BrExTooltipDetails ==
 Creado por {0} el {1}
 
-== LoadingTooltipDetails ==
-Cargando detalles del tooltip...
-
 == ErrorLoadingAnnotations ==
 Error cargando anotaciones: {0}
-
-== ErrorLoadingTooltipDetails ==
-No se ha podido cargar el tooltip
 
 == PlasticZoomInShortcut ==
 ctrl++
@@ -8324,6 +8300,11 @@ El espacio de trabajo esta vacío
 
 == NoPendingChangesFound ==
 No se han encontrado cambios pendientes
+
+== NoPendingChangesFoundUnityVCS ==
+¡Todo sincronizado!
+
+Tu workspace no tiene cambios pendientes para subir al repositorio remoto.
 
 == NoIncomingChangesFound ==
 No se han encontrado cambios entrantes
@@ -8765,9 +8746,6 @@ y todos sus changesets. ¿Estás seguro que quieres continuar?
 
 == DeleteBranchExplanationEndPlural ==
 y todos sus changesets. ¿Estás seguro que quieres continuar?
-
-== DeleteBranchesExplanation ==
-Está a punto de eliminar las siguientes ramas y todos sus changesets:
 
 == DeleteBranchesConfirmation ==
 Esta operación no podrá deshacerse. ¿Estás seguro que quieres continuar?
@@ -9362,3 +9340,30 @@ Esperando a que el editor esté listo...
 
 == WaitingForPendingOperationsToFinish ==
 Esperando a que finalicen operaciones pendientes...
+
+== RenameMetaFiles ==
+Renombrar archivos .meta automáticamente
+
+== RenameMetaFilesTooltip ==
+Renombra automáticamente los archivos .meta al renombrar activos (útil para proyectos de Unity)
+
+== BranchExplorerCheckoutChangesetTitle ==
+Cambios pendientes
+
+== MainBranchDiffDeferredExplanation ==
+Las diferencias para la rama principa no se calculan por defecto porque podría tardar mucho tiempo.
+
+== CalculateDiffsButton ==
+Calcular diferencias
+
+== BrexDisplayChangesetComments ==
+Mostrar comentarios de changeset
+
+== BrexDisplayUserAvatar ==
+Mostrar avatar de usuario en los changesets
+
+== BrexOptionsWindowTitle ==
+Opciones de Branch Explorer
+
+== BranchExplorerNoWorkspaceMessage ==
+No se encontró un espacio de trabajo. Abra un proyecto que contenga un espacio de trabajo de UVCS o cree uno nuevo para este proyecto.

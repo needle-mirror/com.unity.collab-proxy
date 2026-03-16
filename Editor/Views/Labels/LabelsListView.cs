@@ -31,14 +31,14 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             List<string> columnNames,
             LabelsViewMenu menu,
             IGetRepositorySpec getRepositorySpec,
-            Action selectionChangedAction,
+            Action delayedSelectionChangedAction,
             Action doubleClickAction,
             Action<IEnumerable<object>> afterItemsChangedAction)
         {
             mColumnNames = columnNames;
             mMenu = menu;
             mGetRepositorySpec = getRepositorySpec;
-            mSelectionChangedAction = selectionChangedAction;
+            mDelayedSelectionChangedAction = delayedSelectionChangedAction;
             mDoubleClickAction = doubleClickAction;
             mAfterItemsChangedAction = afterItemsChangedAction;
 
@@ -49,13 +49,13 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
 
-            mDelayedSelectionAction = new DelayedActionBySecondsRunner(
+            mDelayedSelectionRunner = new DelayedActionBySecondsRunner(
                 DelayedSelectionChanged, UnityConstants.SELECTION_DELAYED_INPUT_ACTION_INTERVAL);
         }
 
         protected override void SelectionChanged(IList<int> selectedIds)
         {
-            mDelayedSelectionAction.Run();
+            mDelayedSelectionRunner.Run();
         }
 
         protected override IList<TreeViewItem> BuildRows(
@@ -82,7 +82,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             mDelayedFilterAction.Run();
         }
 
-        protected override void ContextClickedItem(int id)
+        protected override void ContextClicked()
         {
             mMenu.Popup();
             Repaint();
@@ -200,6 +200,26 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             return result;
         }
 
+        internal List<object> GetSelectedVisibleItems()
+        {
+            List<object> result = new List<object>();
+
+            IList<int> selectedIds = GetSelection();
+
+            if (selectedIds.Count == 0)
+                return result;
+
+            foreach (TreeViewItem row in mRows)
+            {
+                if (!selectedIds.Contains(row.id))
+                    continue;
+
+                result.Add(((LabelListViewItem)row).ObjectInfo);
+            }
+
+            return result;
+        }
+
         internal void SelectRepObjectInfos(
             List<RepObjectInfo> repObjectsToSelect)
         {
@@ -223,12 +243,12 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             List<object> entriesToSelect,
             string currentFilter)
         {
+            mListViewItemIds.Clear();
+
             List<RepObjectInfo> labelsToSelect = LabelsSelection.GetLabelsToSelect(
                 this, entriesToSelect);
 
             int defaultRow = TableViewOperations.GetFirstSelectedRow(this);
-
-            mListViewItemIds.Clear();
 
             mQueryResult = new ViewQueryResult(
                 EnumQueryObjectType.Marker, entries, mGetRepositorySpec.Get());
@@ -257,7 +277,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             if (!HasSelection())
                 return;
 
-            mSelectionChangedAction();
+            mDelayedSelectionChangedAction();
         }
 
         void UpdateResults()
@@ -441,9 +461,9 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
 
         readonly DelayedActionBySecondsRunner mDelayedFilterAction;
         readonly Action<IEnumerable<object>> mAfterItemsChangedAction;
-        readonly DelayedActionBySecondsRunner mDelayedSelectionAction;
+        readonly DelayedActionBySecondsRunner mDelayedSelectionRunner;
         readonly Action mDoubleClickAction;
-        readonly Action mSelectionChangedAction;
+        readonly Action mDelayedSelectionChangedAction;
         readonly IGetRepositorySpec mGetRepositorySpec;
         readonly LabelsViewMenu mMenu;
         readonly List<string> mColumnNames;

@@ -4,6 +4,7 @@ using System.Threading;
 using UnityEditor;
 
 using Codice.LogWrapper;
+using Codice.Client.Common;
 using PlasticGui;
 using PlasticPipe.Client;
 using Unity.PlasticSCM.Editor.UI;
@@ -205,7 +206,7 @@ namespace Unity.PlasticSCM.Editor
         static bool HasLowLevelRunningOperations()
         {
             return ThreadWaiterRegistry.HasRunningOperations() ||
-                   ClientConnectionPool.HasInUseConnections();
+                   CmConnection.HasInUseConnections();
         }
 
         static bool HasLongRunningOperations()
@@ -236,7 +237,7 @@ namespace Unity.PlasticSCM.Editor
                 elapsedMs,
                 action,
                 ThreadWaiterRegistry.GetRunningOperationsCount(),
-                ClientConnectionPool.GetInUseConnectionsCount());
+                CmConnection.GetInUseConnectionsCount());
         }
 
         static void LogWaitingForOperations(long elapsedMs)
@@ -252,7 +253,7 @@ namespace Unity.PlasticSCM.Editor
                 "Waiting: ThreadWaiters={0}, InUseConnections={1}, " +
                 "UVCSOperations={2}, elapsed={3}ms",
                 ThreadWaiterRegistry.GetRunningOperationsCount(),
-                ClientConnectionPool.GetInUseConnectionsCount(),
+                CmConnection.GetInUseConnectionsCount(),
                 UVCSPlugin.Instance.HasRunningOperation(),
                 elapsedMs);
         }

@@ -219,8 +219,8 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                 IsValidState(state) &&
                 !state.ProgressData.IsOperationRunning;
 
-            string buttonText = PlasticLocalization.GetString(
-                PlasticLocalization.Name.CreateWorkspace);
+            string buttonText =
+                PlasticLocalization.Name.CreateWorkspaceUnityVCS.GetString();
 
             bool isButtonClicked = DoButton(
                 buttonText,
@@ -340,13 +340,10 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
 
         static void DoLabel(string labelText)
         {
-            GUIStyle labelStyle = new GUIStyle(EditorStyles.label);
+            Rect rect = GUILayoutUtility.GetRect(new GUIContent(labelText), EditorStyles.textField);
+            rect.width = LABEL_WIDTH;
 
-            Rect rect = GUILayoutUtility.GetRect(
-                new GUIContent(labelText),
-                labelStyle);
-
-            GUI.Label(rect, labelText, labelStyle);
+            GUI.Label(rect, labelText, EditorStyles.label);
         }
 
         static string DoTextField(
@@ -357,9 +354,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
         {
             GUI.enabled = enabled;
 
-            var rect = GUILayoutUtility.GetRect(
-                new GUIContent(entryValue),
-                UnityStyles.Dialog.EntryLabel);
+            var rect = GUILayoutUtility.GetRect(new GUIContent(entryValue), EditorStyles.textField);
             rect.width = textBoxWidth;
             rect.x = textBoxLeft;
 
@@ -380,7 +375,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
 
             Rect rect = GUILayoutUtility.GetRect(
                 new GUIContent(text),
-                UnityStyles.Dialog.EntryLabel,
+                EditorStyles.textField,
                 GUILayout.MinWidth(buttonWidth),
                 GUILayout.MaxWidth(buttonWidth));
             rect.x = buttonLeft;
@@ -424,10 +419,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             string labelText,
             float labelLeft)
         {
-            Rect rect = GUILayoutUtility.GetRect(
-                new GUIContent(labelText),
-                EditorStyles.label);
-
+            Rect rect = GUILayoutUtility.GetRect(new GUIContent(labelText), EditorStyles.textField);
             rect.x = labelLeft;
 
             GUI.Label(rect,

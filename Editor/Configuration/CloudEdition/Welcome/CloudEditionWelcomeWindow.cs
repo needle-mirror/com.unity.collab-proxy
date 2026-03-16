@@ -85,7 +85,9 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             Credentials credentials, List<string> cloudServers, string errorMessage)
         {
             mLog.DebugFormat("ShowOrganizationsPanel({0}, {1} orgs) {2}",
-                credentials.Mode, cloudServers.Count, errorMessage);
+                credentials.Mode,
+                cloudServers != null ? cloudServers.Count : 0,
+                errorMessage);
 
             mOrganizationPanel = new OrganizationPanel(
                 this,

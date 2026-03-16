@@ -30,6 +30,8 @@ using Unity.PlasticSCM.Editor.Settings;
 using Unity.PlasticSCM.Editor.Toolbar;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Avatar;
+using Unity.PlasticSCM.Editor.Views.BranchExplorer;
+using Unity.PlasticSCM.Editor.Views.BranchExplorer.Options;
 using GluonCheckIncomingChanges = PlasticGui.Gluon.WorkspaceWindow.CheckIncomingChanges;
 using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
 
@@ -343,23 +345,6 @@ namespace Unity.PlasticSCM.Editor
                 return;
 
             window.OnApplicationDeactivated();
-        }
-
-        internal void OnPlayModeStateChanged(PlayModeStateChange state)
-        {
-            mLog.Debug("OnPlayModeStateChanged: " + state);
-
-            if (state == PlayModeStateChange.ExitingPlayMode ||
-                state == PlayModeStateChange.EnteredEditMode)
-            {
-                AvatarImages.Dispose();
-
-                Texture2D statusIcon = GetPluginStatusIcon();
-
-                UVCSToolbar.Controller.UpdateIcon(statusIcon);
-
-                UpdateUVCSWindowIcon(GetWindowIfOpened.UVCS(), statusIcon);
-            }
         }
 
         internal void OnSceneOpened()

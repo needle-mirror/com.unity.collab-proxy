@@ -34,6 +34,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             List<string> columnNames,
             PendingChangesViewMenu menu,
             IAssetStatusCache assetStatusCache,
+            Action delayedSelectionChangedAction,
             Action doubleClickAction,
             Action updateEmptyStateMessageAction)
         {
@@ -43,6 +44,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             mHeaderState = headerState;
             mMenu = menu;
             mAssetStatusCache = assetStatusCache;
+            mDelayedSelectionChangedAction = delayedSelectionChangedAction;
             mDoubleClickAction = doubleClickAction;
             mUpdateEmptyStateMessageAction = updateEmptyStateMessageAction;
 
@@ -59,6 +61,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
+
+            mDelayedSelectionRunner = new DelayedActionBySecondsRunner(
+                DelayedSelectionChanged, UnityConstants.SELECTION_DELAYED_INPUT_ACTION_INTERVAL);
         }
 
         protected override void SingleClickedItem(int id)
@@ -68,6 +73,8 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         protected override void SelectionChanged(IList<int> selectedIds)
         {
+            mDelayedSelectionRunner.Run();
+
             mHeaderState.UpdateItemColumnHeader(this);
 
             if (mIsSelectionChangedEventDisabled)
@@ -550,6 +557,14 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             return GetCheckedItemCount() == GetTotalItemCount();
         }
 
+        void DelayedSelectionChanged()
+        {
+            if (!HasSelection())
+                return;
+
+            mDelayedSelectionChangedAction();
+        }
+
         ChangeInfo GetNextExistingAddedItem(
             PendingChangeCategory addedCategory, int targetAddedItemIndex)
         {
@@ -992,8 +1007,11 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             new TreeViewItemIds<IPlasticTreeNode, PendingChangeInfo>();
 
         UnityPendingChangesTree mPendingChangesTree;
-        DelayedActionBySecondsRunner mDelayedFilterAction;
 
+        readonly DelayedActionBySecondsRunner mDelayedFilterAction;
+        readonly DelayedActionBySecondsRunner mDelayedSelectionRunner;
+
+        readonly Action mDelayedSelectionChangedAction;
         readonly Action mDoubleClickAction;
         readonly Action mUpdateEmptyStateMessageAction;
         readonly IAssetStatusCache mAssetStatusCache;

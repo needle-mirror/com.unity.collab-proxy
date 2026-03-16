@@ -28,6 +28,7 @@ using UnityEditor.IMGUI.Controls;
 using CheckIncomingChanges = PlasticGui.Gluon.WorkspaceWindow.CheckIncomingChanges;
 using IncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
 #if !UNITY_6000_3_OR_NEWER
+using SplitterGUILayout = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterGUILayout;
 using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
 #endif
 
@@ -69,8 +70,10 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 DelayedClearUpdateSuccess,
                 UnityConstants.NOTIFICATION_CLEAR_INTERVAL);
 
-            mErrorsSplitterState = PlasticSplitterGUILayout.InitSplitterState(
-                new float[] { 0.75f, 0.25f },
+            mErrorsSplitterState = new SplitterState(
+                SplitterSettings.Load(
+                    UnityConstants.GLUON_INCOMING_CHANGES_SPLITTER_SETTINGS_NAME,
+                    new float[] { 0.75f, 0.25f }),
                 new int[] { 100, 100 },
                 new int[] { 100000, 100000 }
             );
@@ -117,6 +120,10 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 mIncomingChangesTreeView.multiColumnHeader.state,
                 UnityConstants.GLUON_INCOMING_CHANGES_TABLE_SETTINGS_NAME);
 
+            SplitterSettings.Save(
+                mErrorsSplitterState,
+                UnityConstants.GLUON_INCOMING_CHANGES_SPLITTER_SETTINGS_NAME);
+
             mErrorsPanel.OnDisable();
         }
 
@@ -135,7 +142,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             Rect viewRect = OverlayProgress.CaptureViewRectangle();
 
             if (mErrorsPanel.IsVisible)
-                PlasticSplitterGUILayout.BeginVerticalSplit(mErrorsSplitterState);
+                SplitterGUILayout.BeginVerticalSplit(mErrorsSplitterState);
 
             DoIncomingChangesArea(
                 mIncomingChangesTreeView,
@@ -147,7 +154,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
             if (mErrorsPanel.IsVisible)
             {
                 mErrorsPanel.OnGUI();
-                PlasticSplitterGUILayout.EndVerticalSplit();
+                SplitterGUILayout.EndVerticalSplit();
             }
 
             DrawActionToolbar.Begin();
@@ -631,7 +638,10 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                 if (isOperationRunning)
                     return;
 
-                if (incomingChangesTreeView.GetTotalItemCount() == 0)
+                if (Event.current.type == EventType.Layout)
+                    mShouldShowEmptyState = incomingChangesTreeView.GetTotalItemCount() == 0;
+
+                if (mShouldShowEmptyState)
                 {
                     DrawEmptyState(
                         rect,
@@ -757,9 +767,11 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
 
             mErrorsPanel = new ErrorsPanel(
                 PlasticLocalization.Name.IncomingChangesCannotBeApplied.GetString(),
-                UnityConstants.GLUON_INCOMING_ERRORS_TABLE_SETTINGS_NAME);
+                UnityConstants.GLUON_INCOMING_ERRORS_TABLE_SETTINGS_NAME,
+                UnityConstants.GLUON_INCOMING_ERRORS_PANEL_SPLITTER_SETTINGS_NAME);
         }
 
+        bool mShouldShowEmptyState;
         bool mIsVisible;
         bool mIsProcessMergesButtonVisible;
         bool mIsCancelMergesButtonVisible;
@@ -771,7 +783,6 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         string mProcessMergesButtonText;
         string mMessageLabelText;
         string mErrorMessageLabelText;
-        SplitterState mErrorsSplitterState;
         Action mAfterOnGUIAction;
 
         int mFileConflictCount;
@@ -780,6 +791,8 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
         SearchField mSearchField;
         IncomingChangesTreeView mIncomingChangesTreeView;
         ErrorsPanel mErrorsPanel;
+
+        readonly SplitterState mErrorsSplitterState;
 
         readonly IncomingChangesViewLogic mIncomingChangesViewLogic;
         readonly DelayedActionBySecondsRunner mDelayedClearUpdateSuccessAction;

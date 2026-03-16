@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using UnityEditor;
@@ -26,10 +26,12 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         internal DiffTreeView(
             DiffTreeViewMenu menu,
+            Action delayedSelectionChangedAction,
             Action doubleClickAction,
-            Action afterItemsChangedAction)
+            Action afterItemsChangedAction) : base(showCustomBackground: false)
         {
             mMenu = menu;
+            mDelayedSelectionChangedAction = delayedSelectionChangedAction;
             mDoubleClickAction = doubleClickAction;
             mAfterItemsChangedAction = afterItemsChangedAction;
 
@@ -37,6 +39,19 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
             mDelayedFilterAction = new DelayedActionBySecondsRunner(
                 DelayedSearchChanged, UnityConstants.SEARCH_DELAYED_INPUT_ACTION_INTERVAL);
+
+            mDelayedSelectionRunner = new DelayedActionBySecondsRunner(
+                DelayedSelectionChanged, UnityConstants.SELECTION_DELAYED_INPUT_ACTION_INTERVAL);
+        }
+
+        internal bool ProcessKeyActionForTesting(Event e)
+        {
+            return mMenu.ProcessKeyActionIfNeeded(e);
+        }
+
+        internal void ProcessDoubleClickForTesting()
+        {
+            mDoubleClickAction();
         }
 
         public override void OnGUI(Rect rect)
@@ -101,6 +116,8 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         protected override void RowGUI(RowGUIArgs args)
         {
+            args.rowRect.width = Mathf.Max(0f, args.rowRect.width - ROW_RIGHT_MARGIN);
+
             TreeViewItemGUI(
                 args.item, args.rowRect, rowHeight, mDiffTree, args.selected, args.focused);
         }
@@ -108,6 +125,19 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         protected override void DoubleClickedItem(int id)
         {
             mDoubleClickAction();
+        }
+
+        protected override void SelectionChanged(IList<int> selectedIds)
+        {
+            mDelayedSelectionRunner.Run();
+        }
+
+        void DelayedSelectionChanged()
+        {
+            if (!HasSelection())
+                return;
+
+            mDelayedSelectionChangedAction();
         }
 
         internal void ClearModel()
@@ -484,11 +514,15 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
         UnityDiffTree mDiffTree = new UnityDiffTree();
 
         readonly DelayedActionBySecondsRunner mDelayedFilterAction;
+        readonly DelayedActionBySecondsRunner mDelayedSelectionRunner;
 
         static readonly List<string> ColumnsNames = new List<string> {
             PlasticLocalization.GetString(PlasticLocalization.Name.PathColumn)};
         readonly DiffTreeViewMenu mMenu;
         readonly Action mAfterItemsChangedAction;
+        readonly Action mDelayedSelectionChangedAction;
         readonly Action mDoubleClickAction;
+
+        const float ROW_RIGHT_MARGIN = 8f;
     }
 }

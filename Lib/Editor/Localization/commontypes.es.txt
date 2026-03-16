@@ -1553,6 +1553,9 @@ La gestión de Proyectos en Organizaciones Unity debe hacerse en el Cloud Dashbo
 == UnityOrgSecurityOperationNotAllowed ==
 Esta operación de seguridad no está permitida en Organizaciones Unity para el objeto seleccionado. Para gestionar el control de acceso en su organización, abra https://cloud.unity.com/home/organizations/{0}/projects/default/devops/overview en su navegador.
 
+== UnknownHashAlgorithmType ==
+Algoritmo de hash desconocido '{0}'
+
 == UpCantAddGroupToItself ==
 Un grupo no puede ser miembro de sí mismo.
 

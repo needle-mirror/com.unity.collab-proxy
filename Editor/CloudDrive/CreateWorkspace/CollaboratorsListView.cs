@@ -197,7 +197,10 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace
         {
             base.OnGUI(rect);
 
-            if (mRows.Count == 0 && !mEmptyStatePanel.IsEmpty())
+            if (Event.current.type == EventType.Layout)
+                mShouldShowEmptyState = mRows.Count == 0 && !mEmptyStatePanel.IsEmpty();
+
+            if (mShouldShowEmptyState)
                 mEmptyStatePanel.OnGUI(rect);
         }
 
@@ -347,6 +350,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace
             checkedItems.RemoveWhere(checkedItem => checkedItem.User.Name == item.User.Name);
         }
 
+        bool mShouldShowEmptyState;
         bool mbShouldFilterOnServer = false;
         List<SecurityMember> mUnfilteredUsers = new List<SecurityMember>();
         List<SecurityMember> mUsers = new List<SecurityMember>();

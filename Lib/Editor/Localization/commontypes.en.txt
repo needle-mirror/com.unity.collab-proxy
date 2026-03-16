@@ -1553,6 +1553,9 @@ Unity Organizations require Projects to be managed in the Cloud Dashboard. Pleas
 == UnityOrgSecurityOperationNotAllowed ==
 This security operation is not allowed in Unity Organizations for the target object. To manage access control in your organization, please open https://cloud.unity.com/home/organizations/{0}/projects/default/devops/overview in your browser.
 
+== UnknownHashAlgorithmType ==
+Unknown hash algorithm type '{0}'
+
 == UpCantAddGroupToItself ==
 A group can't be added to itself.
 

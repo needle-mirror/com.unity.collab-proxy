@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using UnityEditor;
 using UnityEngine;
@@ -11,7 +11,10 @@ namespace Unity.PlasticSCM.Editor.Topbar
     internal static class Breadcrumb
     {
         internal static void DoBreadcrumb(
-            string workingObjectName, string workingObjectFullSpec, string workingObjectComment)
+            string workingObjectName,
+            string workingObjectFullSpec,
+            string workingObjectComment,
+            string workingObjectType)
         {
             if (string.IsNullOrEmpty(workingObjectName))
                 return;
@@ -24,6 +27,12 @@ namespace Unity.PlasticSCM.Editor.Topbar
 
             int breadcrumbPadding = 6;
 
+            Rect iconRect = GUILayoutUtility.GetRect(
+                UnityConstants.STATUS_BAR_ICON_SIZE,
+                UnityConstants.STATUS_BAR_ICON_SIZE,
+                GUILayout.ExpandWidth(false));
+            iconRect.y += (EditorStyles.toolbar.fixedHeight - UnityConstants.STATUS_BAR_ICON_SIZE) / 2;
+
             Rect textRect = GUILayoutUtility.GetRect(labelContent, UnityStyles.BreadcrumbBar.Text);
             Rect breadcrumbBackgroundRect = new Rect(
                 0,
@@ -34,6 +43,12 @@ namespace Unity.PlasticSCM.Editor.Topbar
             Color breadcrumbBgColor = UnityStyles.Colors.ToolbarBackground;
 
             EditorGUI.DrawRect(breadcrumbBackgroundRect, breadcrumbBgColor);
+
+            GUI.DrawTexture(
+                iconRect,
+                GetWorkingObjectIcon(workingObjectType),
+                ScaleMode.ScaleToFit);
+
             GUI.Label(textRect, labelContent, UnityStyles.BreadcrumbBar.Text);
 
             // Handle right-click context menu on the label
@@ -60,6 +75,17 @@ namespace Unity.PlasticSCM.Editor.Topbar
                 UnityStyles.Colors.BarBorder);
 
             GUILayout.Space(arrowWidth);
+        }
+
+        static Texture GetWorkingObjectIcon(string workingObjectType)
+        {
+            if (workingObjectType == PlasticLocalization.Name.Changeset.GetString())
+                return Images.GetChangesetsIcon();
+
+            if (workingObjectType == PlasticLocalization.Name.Label.GetString())
+                return Images.GetLabelIcon();
+
+            return Images.GetBranchIcon();
         }
 
         static void DrawArrow(

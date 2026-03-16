@@ -137,7 +137,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
             DrawItemsGridView.Draw(
                 rect, mEmptyStatePanel, this, mItems, mSelectedItemsIndexes, mItemSize,
                 mScrollPosition.y, mRows, mColumns, shouldScrollbarBeVisible, hasFocus,
-                mDragTargetIndex);
+                mDragTargetIndex, ref mShouldShowEmptyState);
 
             Event e = Event.current;
 
@@ -280,6 +280,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.Workspaces.DirectoryContent
                 string.Empty;
         }
 
+        bool mShouldShowEmptyState;
         int mRows;
         int mColumns;
         float mAvailableHeight;

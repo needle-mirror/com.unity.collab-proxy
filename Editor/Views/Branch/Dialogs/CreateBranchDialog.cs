@@ -93,7 +93,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
         internal static BranchCreationData CreateBranchFromChangeset(
             EditorWindow parentWindow,
             RepositorySpec repSpec,
-            ChangesetExtendedInfo changesetInfo,
+            ChangesetInfo changesetInfo,
             string proposedBranchName)
         {
             BranchInfo parentBranchInfo = BranchInfoCache.GetBranch(
@@ -255,11 +255,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
                 GUI.SetNextControlName(NAME_FIELD_CONTROL_NAME);
                 mNewBranchName = UnityEditor.EditorGUI.TextField(nameRect, mNewBranchName);
 
-                if (!mWasNameFieldFocused)
-                {
-                    UnityEditor.EditorGUI.FocusTextInControl(NAME_FIELD_CONTROL_NAME);
-                    mWasNameFieldFocused = true;
-                }
+                FocusTextAreaIfNeeded(NAME_FIELD_CONTROL_NAME);
             }
 
             GUILayout.Space(5);
@@ -369,7 +365,6 @@ namespace Unity.PlasticSCM.Editor.Views.Branches.Dialogs
         bool mSwitchToBranch;
         string mExplanation;
 
-        bool mWasNameFieldFocused;
         bool mIsMainBranchSelected = true;
         bool mIsCurrentBranchSelected;
         const string NAME_FIELD_CONTROL_NAME = "CreateBranchNameField";

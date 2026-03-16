@@ -19,14 +19,27 @@ namespace Unity.PlasticSCM.Editor.UnityInternals.UnityEditor
         // This will be set by Unity.Cloud.Collaborate assembly
         internal static ScrollableTextAreaInternalDelegate ScrollableTextAreaInternal { get; set; }
 
-        internal static TextEditor activeEditor
+        internal delegate void DrawOutlineDelegate(Rect rect, float size, Color color);
+
+        internal static DrawOutlineDelegate DrawOutline { get; set; }
+
+        internal static RecycledTextEditor activeEditor
         {
             get
             {
                 FieldInfo activeEditorField = typeof(UnityEditorGUI).GetField(
                     "activeEditor",
                     BindingFlags.Static | BindingFlags.NonPublic);
-                return activeEditorField?.GetValue(null) as TextEditor;
+
+                if (activeEditorField == null)
+                    return null;
+
+                object activeEditor = activeEditorField.GetValue(null);
+
+                if (activeEditor == null)
+                    return null;
+
+                return new RecycledTextEditor(activeEditor as TextEditor);
             }
         }
 
@@ -34,6 +47,22 @@ namespace Unity.PlasticSCM.Editor.UnityInternals.UnityEditor
             Rect position, string label, [DefaultValue("EditorStyles.label")] GUIStyle style)
         {
             UnityEditorGUI.LabelField(position, label, style);
+        }
+
+        internal class RecycledTextEditor
+        {
+            internal TextEditor InternalObject;
+
+            internal RecycledTextEditor(TextEditor recycledTextEditor)
+            {
+                InternalObject = recycledTextEditor;
+            }
+
+            internal void EndEditing() => InternalEndEditing(this);
+
+            internal delegate void EndEditingDelegate(RecycledTextEditor recycledTextEditor);
+
+            internal static EndEditingDelegate InternalEndEditing { get; set; }
         }
     }
 }

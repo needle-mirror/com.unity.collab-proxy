@@ -16,11 +16,12 @@ using Codice.Client.Common.Threading;
 using Codice.Client.Common.WebApi;
 using Codice.CM.Common;
 using Codice.CM.ConfigureHelper;
+using Codice.CM.WorkspaceServer;
 using Codice.LogWrapper;
 using CodiceApp.EventTracking;
 using PlasticGui;
+using PlasticGui.WorkspaceWindow.Configuration;
 using PlasticPipe.Certificates;
-using PlasticPipe.Client;
 using Unity.PlasticSCM.Editor.CloudDrive;
 using Unity.PlasticSCM.Editor.Configuration;
 using Unity.PlasticSCM.Editor.Tool;
@@ -34,15 +35,6 @@ namespace Unity.PlasticSCM.Editor
 
         internal static ILog GetLogger(string name)
         {
-            if (!mIsDomainUnloadHandlerRegistered)
-            {
-                // Register the Domain Unload Handler before the LogManager is initialized,
-                // so the domain unload handler for the app is processed before the log manager one,
-                // and thus the AppDomainUnload is printed in the log
-                RegisterDomainUnloadHandler();
-                mIsDomainUnloadHandlerRegistered = true;
-            }
-
             return LogManager.GetLogger(name);
         }
 
@@ -92,6 +84,8 @@ namespace Unity.PlasticSCM.Editor
             ClientHandlers.Register();
 
             PlasticGuiConfig.SetConfigFile(PlasticGuiConfig.UNITY_GUI_CONFIG_FILE);
+            WorkspaceUIConfigurationPath.SetConfigFile(
+                WorkspaceFiles.UNITY_WORKSPACE_UI_CONF_FILE);
 
             if (!IsUnitTesting)
             {
@@ -120,14 +114,14 @@ namespace Unity.PlasticSCM.Editor
                 webApiToken, PlasticGui.Plastic.WebRestAPI, PlasticGui.Plastic.API);
         }
 
-        internal static void DisposeIfNeeded()
+        internal static bool DisposeIfNeeded()
         {
             if (!mIsInitialized)
-                return;
+                return false;
 
             if (UVCSPlugin.Instance.IsEnabled() ||
                 CloudDrivePlugin.Instance.IsEnabled())
-                return;
+                return false;
 
             mLog.Debug("Dispose");
 
@@ -136,7 +130,6 @@ namespace Unity.PlasticSCM.Editor
             PlasticMethodExceptionHandling.UninstallAskCredentialsUi();
             ClientEncryptionServiceProvider.UninstallEncryptionPasswordProvider();
 
-            UnRegisterDomainUnloadHandler();
             UnRegisterExceptionHandlers();
             UnRegisterApplicationFocusHandlers();
             UnRegisterPlayModeHandler();
@@ -153,8 +146,7 @@ namespace Unity.PlasticSCM.Editor
                 mEventSenderScheduler.EndAndSendEventsAsync();
             }
 
-            ClientConnectionPool.CloseAllConnections();
-            ClientConnectionPool.Shutdown();
+            return true;
         }
 
         static void Shutdown()
@@ -165,14 +157,10 @@ namespace Unity.PlasticSCM.Editor
             UVCSPlugin.Instance.Shutdown();
             CloudDrivePlugin.Instance.Shutdown();
 
-            DisposeIfNeeded();
-        }
+            bool disposed = DisposeIfNeeded();
 
-        static void RegisterDomainUnloadHandler()
-        {
-#pragma warning disable UAC0006
-            AppDomain.CurrentDomain.DomainUnload += AppDomainUnload;
-#pragma warning restore UAC0006
+            if (disposed)
+                CmConnection.Shutdown();
         }
 
         static void RegisterExceptionHandlers()
@@ -180,7 +168,6 @@ namespace Unity.PlasticSCM.Editor
 #pragma warning disable UAC0006
             AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
 #pragma warning restore UAC0006
-
             Application.logMessageReceivedThreaded += HandleLog;
         }
 
@@ -214,13 +201,6 @@ namespace Unity.PlasticSCM.Editor
         static void RegisterEditorQuitting()
         {
             EditorApplication.quitting += OnEditorQuitting;
-        }
-
-        static void UnRegisterDomainUnloadHandler()
-        {
-#pragma warning disable UAC0006
-            AppDomain.CurrentDomain.DomainUnload -= AppDomainUnload;
-#pragma warning restore UAC0006
         }
 
         static void UnRegisterExceptionHandlers()
@@ -262,13 +242,6 @@ namespace Unity.PlasticSCM.Editor
         static void UnRegisterEditorQuitting()
         {
             EditorApplication.quitting -= OnEditorQuitting;
-        }
-
-        static void AppDomainUnload(object sender, EventArgs e)
-        {
-            mLog.Debug("AppDomainUnload");
-
-            UnRegisterDomainUnloadHandler();
         }
 
         static void HandleUnhandledException(object sender, UnhandledExceptionEventArgs args)
@@ -328,9 +301,6 @@ namespace Unity.PlasticSCM.Editor
             mLog.Debug("OnPlayModeStateChanged: " + change);
 
             WaitForPendingOperations.OnPlayModeStateChanged(change);
-
-            if (UVCSPlugin.Instance.IsEnabled())
-                UVCSPlugin.Instance.OnPlayModeStateChanged(change);
         }
 
         static void OnSceneOpened(Scene scene, OpenSceneMode mode)
@@ -416,7 +386,6 @@ namespace Unity.PlasticSCM.Editor
             return namespaces.Any(stackTrace.Contains);
         }
 
-        static bool mIsDomainUnloadHandlerRegistered;
         static bool mIsInitialized;
         static EventSenderScheduler mEventSenderScheduler;
 

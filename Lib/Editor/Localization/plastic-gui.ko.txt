@@ -5373,7 +5373,7 @@ Install Unity Version Control
 Assets/Unity Version Control
 
 == UnityInitialCheckinComment ==
-Add packages and project settings to Unity Version Control.
+Add project assets and settings to Unity Version Control.
 
 == UnityVersionControl ==
 Unity Version Control

@@ -14,18 +14,18 @@ using PlasticGui.WorkspaceWindow.Views.QueryViews.Labels;
 using PlasticGui.WorkspaceWindow.Update;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
+using Unity.PlasticSCM.Editor.Inspector.Properties;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
-using Unity.PlasticSCM.Editor.Views.BrowseRepository;
 using Unity.PlasticSCM.Editor.Views.Labels.Dialogs;
 using Unity.PlasticSCM.Editor.Views.Merge;
-using Unity.PlasticSCM.Editor.Views.Properties;
 
 using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
 using IGluonUpdateReport = PlasticGui.Gluon.IUpdateReport;
 #if !UNITY_6000_3_OR_NEWER
+using SplitterGUILayout = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterGUILayout;
 using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
 #endif
 
@@ -43,6 +43,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
         internal ILabelMenuOperations Operations { get { return this; } }
         internal string EmptyStateMessage { get { return mEmptyStatePanel.Text; } }
         internal DateFilter DateFilterForTesting { set { mDateFilter = value; } }
+        internal bool IsVisible { get; set; } = true; // we need to initialize it to true for the OnDelayedSelectionChanged event to be executed on tests
 
         internal LabelsTab(
             WorkspaceInfo wkInfo,
@@ -92,24 +93,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
                 this,
                 this);
 
-            BuildComponents(
-                wkInfo,
-                workspaceWindow,
-                viewSwitcher,
-                mergeViewLauncher,
-                updateReport,
-                developerIncomingChangesUpdater,
-                shelvedChangesUpdater,
-                mShelvePendingChangesQuestionerBuilder,
-                mEnableSwitchAndShelveFeatureDialog,
-                parentWindow,
-                mFillLabelsView);
-
-            mSplitterState = PlasticSplitterGUILayout.InitSplitterState(
-                new float[] { 0.50f, 0.50f },
-                new int[] { 100, (int)UnityConstants.BROWSE_REPOSITORY_PANEL_MIN_WIDTH },
-                new int[] { 100000, 100000 }
-            );
+            BuildComponents(mFillLabelsView);
 
             mLabelOperations = new LabelOperations(
                 wkInfo,
@@ -133,16 +117,12 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
 
         internal void OnEnable()
         {
-            mBrowseRepositoryPanel.OnEnable();
-
             mSearchField.downOrUpArrowKeyPressed +=
                 SearchField_OnDownOrUpArrowKeyPressed;
         }
 
         internal void OnDisable()
         {
-            mBrowseRepositoryPanel.OnDisable();
-
             mSearchField.downOrUpArrowKeyPressed -=
                 SearchField_OnDownOrUpArrowKeyPressed;
 
@@ -153,29 +133,45 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
 
         internal void Update()
         {
-            mBrowseRepositoryPanel.Update();
-
             mProgressControls.UpdateProgress(mParentWindow);
         }
 
         internal void OnGUI()
         {
-            PlasticSplitterGUILayout.BeginHorizontalSplit(mSplitterState);
+            EditorGUILayout.BeginVertical();
 
-            DoLabelsArea(
-                mLabelsListView,
-                mEmptyStatePanel,
+            DoActionsToolbar(
+                mProgressControls,
                 mDateFilter,
                 mSearchField,
-                mProgressControls,
+                mLabelsListView,
                 this);
 
-            DoContentBrowserArea(
-                mPropertiesPanel,
-                mBrowseRepositoryPanel,
-                mProgressControls.IsOperationRunning());
+            Rect viewRect = OverlayProgress.CaptureViewRectangle();
 
-            PlasticSplitterGUILayout.EndHorizontalSplit();
+            GUI.enabled = !mProgressControls.IsOperationRunning();
+
+            Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
+
+            mLabelsListView.OnGUI(rect);
+
+            if (Event.current.type == EventType.Layout)
+                mShouldShowEmptyState = !mEmptyStatePanel.IsEmpty();
+
+            if (mShouldShowEmptyState)
+                mEmptyStatePanel.OnGUI(rect);
+
+            GUI.enabled = true;
+
+            EditorGUILayout.EndVertical();
+
+            if (mProgressControls.IsOperationRunning())
+            {
+                OverlayProgress.DoOverlayProgress(
+                    viewRect,
+                    mProgressControls.ProgressData.ProgressPercent,
+                    mProgressControls.ProgressData.ProgressMessage);
+            }
         }
 
         internal void RefreshAndSelect(RepObjectInfo repObj)
@@ -183,7 +179,8 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             List<object> labelsToSelect = repObj == null ?
                 null : new List<object> { repObj };
 
-            mBrowseRepositoryPanel.ClearInfo();
+            if (EditorWindow.focusedWindow == mParentWindow)
+                Selection.activeObject = null;
 
             mFillLabelsView.FillView(
                 mLabelsListView,
@@ -206,21 +203,13 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
 
         int ILabelMenuOperations.GetSelectedLabelsCount()
         {
-            return LabelsSelection.GetSelectedLabelsCount(mLabelsListView);
+            return LabelsSelection.GetSelectedVisibleLabelsCount(mLabelsListView);
         }
 
         void ILabelMenuOperations.CreateLabel()
         {
-            RepositorySpec repSpec =
-                LabelsSelection.GetSelectedRepository(mLabelsListView);
-            MarkerExtendedInfo label =
-                LabelsSelection.GetSelectedLabel(mLabelsListView);
-
             LabelCreationData labelCreationData = CreateLabelDialog.CreateLabel(
-                mParentWindow,
-                mWkInfo,
-                repSpec,
-                label);
+                mParentWindow, mWkInfo);
 
             mLabelOperations.CreateLabel(
                 labelCreationData,
@@ -369,61 +358,27 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
                 whereClause);
         }
 
-        void OnSelectionChanged()
+        void OnDelayedSelectionChanged()
         {
+            if (!IsVisible)
+                return;
+
+            if (EditorWindow.focusedWindow != mParentWindow)
+                return;
+
             List<RepObjectInfo> selectedLabels = LabelsSelection.
                 GetSelectedRepObjectInfos(mLabelsListView);
 
             if (selectedLabels.Count != 1)
                 return;
 
-            mPropertiesPanel.UpdateInfo(
+            RepositorySpec repSpec = LabelsSelection.GetSelectedRepository(mLabelsListView);
+
+            SelectedRepObjectInfoData selectedBranchData = SelectedRepObjectInfoData.Create(
                 selectedLabels[0],
-                LabelsSelection.GetSelectedRepository(mLabelsListView));
+                repSpec);
 
-            mBrowseRepositoryPanel.UpdateInfo(
-                (MarkerExtendedInfo)selectedLabels[0]);
-        }
-
-        static void DoLabelsArea(
-            LabelsListView labelsListView,
-            EmptyStatePanel emptyStatePanel,
-            DateFilter dateFilter,
-            SearchField searchField,
-            ProgressControlsForViews progressControls,
-            IRefreshableView view)
-        {
-            EditorGUILayout.BeginVertical();
-
-            DoActionsToolbar(
-                progressControls,
-                dateFilter,
-                searchField,
-                labelsListView,
-                view);
-
-            Rect viewRect = OverlayProgress.CaptureViewRectangle();
-
-            GUI.enabled = !progressControls.IsOperationRunning();
-
-            Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
-
-            labelsListView.OnGUI(rect);
-
-            if (!emptyStatePanel.IsEmpty())
-                emptyStatePanel.OnGUI(rect);
-
-            GUI.enabled = true;
-
-            EditorGUILayout.EndVertical();
-
-            if (progressControls.IsOperationRunning())
-            {
-                OverlayProgress.DoOverlayProgress(
-                    viewRect,
-                    progressControls.ProgressData.ProgressPercent,
-                    progressControls.ProgressData.ProgressMessage);
-            }
+            Selection.activeObject = selectedBranchData;
         }
 
         static void DoActionsToolbar(
@@ -469,7 +424,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
                 EditorGUILayout.EnumPopup(
                     dateFilter.FilterType,
                     EditorStyles.toolbarDropDown,
-                    GUILayout.Width(100));
+                    GUILayout.Width(UnityConstants.TOOLBAR_DATE_FILTER_COMBO_WIDTH));
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -483,46 +438,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             GUI.enabled = true;
         }
 
-        static void DoContentBrowserArea(
-            PropertiesPanel propertiesPanel,
-            BrowseRepositoryPanel browseRepositoryPanel,
-            bool isOperationRunning)
-        {
-            EditorGUILayout.BeginHorizontal();
-
-            Rect border = GUILayoutUtility.GetRect(1, 0, 1, 100000);
-            EditorGUI.DrawRect(border, UnityStyles.Colors.BarBorder);
-
-            EditorGUILayout.BeginVertical();
-            propertiesPanel.OnGUI();
-
-            Rect separatorRect = GUILayoutUtility.GetRect(
-                0,
-                1,
-                GUILayout.ExpandWidth(true));
-            EditorGUI.DrawRect(separatorRect, UnityStyles.Colors.BarBorder);
-
-            GUI.enabled = !isOperationRunning;
-            browseRepositoryPanel.OnGUI();
-            GUI.enabled = true;
-
-            EditorGUILayout.EndVertical();
-
-            EditorGUILayout.EndHorizontal();
-        }
-
-        void BuildComponents(
-            WorkspaceInfo wkInfo,
-            IWorkspaceWindow workspaceWindow,
-            IViewSwitcher viewSwitcher,
-            IMergeViewLauncher mergeViewLauncher,
-            IUpdateReport updateReport,
-            IncomingChangesUpdater developerIncomingChangesUpdater,
-            IShelvedChangesUpdater shelvedChangesUpdater,
-            IShelvePendingChangesQuestionerBuilder shelvePendingChangesQuestionerBuilder,
-            SwitchAndShelve.IEnableSwitchAndShelveFeatureDialog enableSwitchAndShelveFeatureDialog,
-            EditorWindow parentWindow,
-            FillLabelsView fillLabelsView)
+        void BuildComponents(FillLabelsView fillLabelsView)
         {
             mSearchField = new SearchField();
             mSearchField.downOrUpArrowKeyPressed += SearchField_OnDownOrUpArrowKeyPressed;
@@ -545,32 +461,22 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             mLabelsListView = new LabelsListView(
                 headerState,
                 LabelsListHeaderState.GetColumnNames(),
-                new LabelsViewMenu(this),
+                LabelsViewMenu.BuildForContextMenu(this),
                 fillLabelsView,
-                selectionChangedAction: OnSelectionChanged,
+                delayedSelectionChangedAction: OnDelayedSelectionChanged,
                 doubleClickAction: ((ILabelMenuOperations)this).BrowseRepositoryOnLabel,
                 afterItemsChangedAction: fillLabelsView.ShowContentOrEmptyState);
 
             mLabelsListView.Reload();
-
-            mPropertiesPanel = new PropertiesPanel(mParentWindow.Repaint);
-
-            mBrowseRepositoryPanel = new BrowseRepositoryPanel(
-                wkInfo,
-                fillLabelsView,
-                parentWindow);
         }
 
+        bool mShouldShowEmptyState;
         SearchField mSearchField;
         DateFilter mDateFilter;
         LabelsListView mLabelsListView;
 
         readonly LabelOperations mLabelOperations;
         readonly LaunchTool.IShowDownloadPlasticExeWindow mShowDownloadPlasticExeWindow;
-        PropertiesPanel mPropertiesPanel;
-        BrowseRepositoryPanel mBrowseRepositoryPanel;
-
-        readonly SplitterState mSplitterState;
         readonly LaunchTool.IProcessExecutor mProcessExecutor;
 
         readonly EmptyStatePanel mEmptyStatePanel;

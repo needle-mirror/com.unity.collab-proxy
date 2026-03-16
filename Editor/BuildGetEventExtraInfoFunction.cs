@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 
 using Codice.Client.Common;
+using Codice.CM.Common;
 using PlasticGui;
 using Unity.PlasticSCM.Editor.UI;
 
@@ -18,11 +19,15 @@ namespace Unity.PlasticSCM.Editor
 
                 ClientConfigData clientConfigData = ClientConfig.Get().GetClientConfigData();
 
+                WorkspaceInfo wkInfo = FindWorkspace.InfoForApplicationPath(
+                    ApplicationDataPath.Get(), PlasticGui.Plastic.API);
+
                 return GetScreenResolution() +
-                    GetUnityEditorVersion() +
-                    GetUnityPluginVersion() +
-                    GetPingEventExtraInfo.GetChangelistsEnabled(plasticGuiConfigData) +
-                    GetPingEventExtraInfo.GetSwitchBehaviorWithChangedItems(clientConfigData);
+                       GetUnityEditorVersion() +
+                       GetUnityPluginVersion() +
+                       GetPingEventExtraInfo.GetChangelistsEnabled(plasticGuiConfigData) +
+                       GetPingEventExtraInfo.GetSwitchBehaviorWithChangedItems(clientConfigData) +
+                       GetPingEventExtraInfo.GetBranchExplorerDisplayOptions(wkInfo);
             };
         }
 

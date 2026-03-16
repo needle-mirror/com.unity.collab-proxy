@@ -56,6 +56,12 @@ namespace Unity.PlasticSCM.Editor.UI.UndoRedo
             mRequireFocusSet = true;
         }
 
+        internal void SetFocusAndSelectAll()
+        {
+            mRequireFocusSet = true;
+            mRequireSelectAll = true;
+        }
+
         internal void SetCursorToLastChar()
         {
             mHasToSetCursorToLastChar = true;
@@ -133,8 +139,17 @@ namespace Unity.PlasticSCM.Editor.UI.UndoRedo
 
             mRequireFocusReset = false;
 
+            bool repaintNeeded = false;
+
             if (editor != null)
             {
+                if (Event.current.type == EventType.Repaint && mRequireSelectAll)
+                {
+                    editor.SelectAll();
+                    mRequireSelectAll = false;
+                    repaintNeeded = true;
+                }
+
                 int oldCaretIndex = mCaretIndex;
                 int newCaretIndex = editor.cursorIndex;
                 mCaretIndex = newCaretIndex;
@@ -146,10 +161,11 @@ namespace Unity.PlasticSCM.Editor.UI.UndoRedo
             if (oldText != newText)
                 OnTextChanged();
 
-            if (!mIsFocused)
-                return;
+            if (mIsFocused)
+                ProcessKeyboardShorcuts(mUndoRedoHelper, Event.current);
 
-            ProcessKeyboardShorcuts(mUndoRedoHelper, Event.current);
+            if (repaintNeeded)
+                mRepaint();
         }
 
         void OnCaretIndexChanged()
@@ -217,7 +233,7 @@ namespace Unity.PlasticSCM.Editor.UI.UndoRedo
 
         protected static TextEditor GetActiveTextEditor()
         {
-            return EditorGUI.activeEditor;
+            return EditorGUI.activeEditor?.InternalObject;
         }
 
         static bool IsFocused(string controlName)
@@ -227,6 +243,7 @@ namespace Unity.PlasticSCM.Editor.UI.UndoRedo
 
         bool mRequireFocusReset;
         bool mRequireFocusSet;
+        bool mRequireSelectAll;
         bool mHasToSetCursorToLastChar;
         int mCaretIndex;
         bool mIsFocused;

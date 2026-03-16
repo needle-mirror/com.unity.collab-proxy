@@ -29,11 +29,15 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             MergeTreeHeaderState headerState,
             List<string> columnNames,
             MergeViewMenu menu,
+            bool enableFiltering,
+            Action onCheckedNodeChanged,
             Action updateEmptyStateMessageAction)
         {
             mWkInfo = wkInfo;
             mColumnNames = columnNames;
             mMenu = menu;
+            mEnableFiltering = enableFiltering;
+            mOnCheckedNodeChanged = onCheckedNodeChanged;
             mUpdateEmptyStateMessageAction = updateEmptyStateMessageAction;
 
             multiColumnHeader = new MultiColumnHeader(headerState);
@@ -115,9 +119,11 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 CategoryTreeViewItemGUI(
                     args.rowRect,
                     categoryItem,
+                    mOnCheckedNodeChanged,
                     GetSolvedChildrenCount(categoryItem.Category, mSolvedFileConflicts),
                     args.selected,
-                    args.focused);
+                    args.focused,
+                    mEnableFiltering);
                 return;
             }
 
@@ -144,9 +150,11 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                     mMergeTree,
                     this,
                     changeTreeViewItem,
+                    mOnCheckedNodeChanged,
                     args,
                     isCurrentConflict,
                     isSolvedConflict,
+                    mEnableFiltering,
                     Repaint);
                 return;
             }
@@ -164,6 +172,9 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 foreach (MergeChangeInfo changeInfo in category.GetChanges())
                 {
                     if (changeInfo.DirectoryConflict.IsResolved())
+                        continue;
+
+                    if (mEnableFiltering && !(((ICheckablePlasticTreeNode)changeInfo).IsChecked() ?? false))
                         continue;
 
                     int itemId = -1;
@@ -405,12 +416,42 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             rows.Clear();
         }
 
+        static void UpdateCheckStateForSelection(
+            MergeTreeView treeView,
+            ChangeTreeViewItem senderTreeViewItem)
+        {
+            IList<int> selectedIds = treeView.GetSelection();
+
+            if (selectedIds.Count <= 1)
+                return;
+
+            if (!selectedIds.Contains(senderTreeViewItem.id))
+                return;
+
+            bool isChecked = ((ICheckablePlasticTreeNode)senderTreeViewItem.ChangeInfo).IsChecked() ?? false;
+
+            foreach (TreeViewItem treeViewItem in treeView.FindRows(selectedIds))
+            {
+                if (treeViewItem is ChangeCategoryTreeViewItem)
+                {
+                    ((ICheckablePlasticTreeCategory)((ChangeCategoryTreeViewItem)treeViewItem)
+                        .Category).UpdateCheckedState(isChecked);
+                    continue;
+                }
+
+                ((ICheckablePlasticTreeNode)((ChangeTreeViewItem)treeViewItem)
+                    .ChangeInfo).UpdateCheckedState(isChecked);
+            }
+        }
+
         static void CategoryTreeViewItemGUI(
             Rect rowRect,
             ChangeCategoryTreeViewItem item,
+            Action onCheckedNodeChanged,
             int solvedChildrenCount,
             bool isSelected,
-            bool isFocused)
+            bool isFocused,
+            bool enableFiltering)
         {
             string label = item.Category.GetCategoryName();
             string infoLabel = item.Category.GetChildrenCountText();
@@ -420,15 +461,49 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                 solvedChildrenCount,
                 isSelected);
 
-            DrawTreeViewItem.ForIndentedItem(
+            if (!enableFiltering)
+            {
+                DrawTreeViewItem.ForIndentedItem(
+                    rowRect,
+                    item.depth,
+                    label,
+                    infoLabel,
+                    isSelected,
+                    isFocused);
+
+                DefaultStyles.label = UnityStyles.Tree.Label;
+                return;
+            }
+
+            bool wasChecked = CheckableItems.GetIsCheckedValueForCategory(item.Category) ?? false;
+            bool hadCheckedChildren = ((ICheckablePlasticTreeCategory)item.Category).GetCheckedChangesCount() > 0;
+
+            bool isChecked = DrawTreeViewItem.ForCheckableIndentedItem(
                 rowRect,
                 item.depth,
                 label,
                 infoLabel,
                 isSelected,
-                isFocused);
+                isFocused,
+                wasChecked,
+                hadCheckedChildren,
+                hadPartiallyCheckedChildren: false);
 
             DefaultStyles.label = UnityStyles.Tree.Label;
+
+            if (!wasChecked && isChecked)
+            {
+                ((ICheckablePlasticTreeCategory)item.Category).UpdateCheckedState(true);
+                onCheckedNodeChanged();
+                return;
+            }
+
+            if (wasChecked && !isChecked)
+            {
+                ((ICheckablePlasticTreeCategory)item.Category).UpdateCheckedState(false);
+                onCheckedNodeChanged();
+                return;
+            }
         }
 
         static void MergeTreeViewItemGUI(
@@ -436,9 +511,11 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             UnityMergeTree mergeTree,
             MergeTreeView treeView,
             ChangeTreeViewItem item,
+            Action onCheckedNodeChanged,
             RowGUIArgs args,
             bool isCurrentConflict,
             bool isSolvedConflict,
+            bool enableFiltering,
             Action avatarLoadedAction)
         {
             for (int visibleColumnIdx = 0; visibleColumnIdx < args.GetNumVisibleColumns(); visibleColumnIdx++)
@@ -455,12 +532,14 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                     mergeTree,
                     treeView,
                     item,
+                    onCheckedNodeChanged,
                     column,
                     avatarLoadedAction,
                     args.selected,
                     args.focused,
                     isCurrentConflict,
-                    isSolvedConflict);
+                    isSolvedConflict,
+                    enableFiltering);
             }
         }
 
@@ -471,12 +550,14 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
             UnityMergeTree mergeTree,
             MergeTreeView treeView,
             ChangeTreeViewItem item,
+            Action onCheckedNodeChanged,
             MergeTreeColumn column,
             Action avatarLoadedAction,
             bool isSelected,
             bool isFocused,
             bool isCurrentConflict,
-            bool isSolvedConflict)
+            bool isSolvedConflict,
+            bool enableFiltering)
         {
             MergeChangeInfo mergeChange = item.ChangeInfo;
 
@@ -494,19 +575,41 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                     GetChangesOverlayIcon.ForPlasticMergeChange(
                         mergeChange, isSolvedConflict);
 
-                DrawTreeViewItem.ForItemCell(
-                    rect,
-                    rowHeight,
-                    item.depth,
-                    icon,
-                    null,
-                    overlayIcon,
-                    label,
-                    isSelected,
-                    isFocused,
-                    isCurrentConflict,
-                    false,
+                if (!enableFiltering)
+                {
+                    DrawTreeViewItem.ForItemCell(
+                        rect,
+                        rowHeight,
+                        item.depth,
+                        icon,
+                        null,
+                        overlayIcon,
+                        label,
+                        isSelected,
+                        isFocused,
+                        isCurrentConflict,
+                        false,
+                        DrawTreeViewItem.TextTrimming.Path);
+
+                    return;
+                }
+
+                bool wasChecked = ((ICheckablePlasticTreeNode)mergeChange).IsChecked() ?? false;
+
+                bool isChecked = DrawTreeViewItem.ForCheckableItemCell(
+                    rect, rowHeight, item.depth,
+                    icon, null, overlayIcon, label,
+                    isSelected, isFocused, isCurrentConflict,
+                    wasChecked,
                     DrawTreeViewItem.TextTrimming.Path);
+
+                ((ICheckablePlasticTreeNode)mergeChange).UpdateCheckedState(isChecked);
+
+                if (wasChecked != isChecked)
+                {
+                    UpdateCheckStateForSelection(treeView, item);
+                    onCheckedNodeChanged();
+                }
 
                 return;
             }
@@ -644,6 +747,8 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
         readonly WorkspaceInfo mWkInfo;
         readonly List<string> mColumnNames;
         readonly MergeViewMenu mMenu;
+        readonly bool mEnableFiltering;
+        readonly Action mOnCheckedNodeChanged;
         readonly Action mUpdateEmptyStateMessageAction;
 
         const int NODES_TO_EXPAND_CATEGORY = 10;

@@ -22,9 +22,12 @@ namespace Unity.PlasticSCM.Editor.UI.Errors
 
         internal ErrorsPanel(
             string title,
-            string treeSettingsName)
+            string treeSettingsName,
+            string splitterSettingsName)
         {
             mTitle = title;
+            mTreeSettingsName = treeSettingsName;
+            mSplitterSettingsName = splitterSettingsName;
 
             ErrorsListHeaderState errorsListHeaderState =
                 ErrorsListHeaderState.GetDefault();
@@ -36,8 +39,10 @@ namespace Unity.PlasticSCM.Editor.UI.Errors
             mErrorsListView = new ErrorsListView(errorsListHeaderState);
             mErrorsListView.Reload();
 
-            mErrorDetailsSplitterState = PlasticSplitterGUILayout.InitSplitterState(
-                new float[] { 0.60f, 0.40f },
+            mErrorDetailsSplitterState = new SplitterState(
+                SplitterSettings.Load(
+                    splitterSettingsName,
+                    new float[] { 0.60f, 0.40f }),
                 new int[] { 100, 100 },
                 new int[] { 100000, 100000 }
             );
@@ -55,7 +60,11 @@ namespace Unity.PlasticSCM.Editor.UI.Errors
         {
             TreeHeaderSettings.Save(
                 mErrorsListView.multiColumnHeader.state,
-                UnityConstants.GLUON_INCOMING_ERRORS_TABLE_SETTINGS_NAME);
+                mTreeSettingsName);
+
+            SplitterSettings.Save(
+                mErrorDetailsSplitterState,
+                mSplitterSettingsName);
         }
 
         internal void OnGUI()
@@ -83,13 +92,13 @@ namespace Unity.PlasticSCM.Editor.UI.Errors
         {
             EditorGUILayout.BeginHorizontal();
 
-            PlasticSplitterGUILayout.BeginHorizontalSplit(splitterState);
+            SplitterGUILayout.BeginHorizontalSplit(splitterState);
 
             DoErrorsListViewArea(errorsListView);
 
             DoErrorDetailsTextArea(errorsListView.GetSelectedError());
 
-            PlasticSplitterGUILayout.EndHorizontalSplit();
+            SplitterGUILayout.EndHorizontalSplit();
 
             EditorGUILayout.EndHorizontal();
         }
@@ -120,6 +129,8 @@ namespace Unity.PlasticSCM.Editor.UI.Errors
         Vector2 mErrorDetailsScrollPosition;
 
         readonly string mTitle;
+        readonly string mTreeSettingsName;
+        readonly string mSplitterSettingsName;
         readonly ErrorsListView mErrorsListView;
         readonly SplitterState mErrorDetailsSplitterState;
     }

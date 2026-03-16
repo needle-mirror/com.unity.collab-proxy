@@ -12,6 +12,8 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.Views.CreateWorkspace;
 
+using HubCreateWorkspace = Unity.PlasticSCM.Editor.Hub.Operations.CreateWorkspace;
+
 namespace Unity.PlasticSCM.Editor.Views.Welcome
 {
     internal class WelcomeView : AutoLogin.IWelcomeView
@@ -43,6 +45,12 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
 
         internal void OnGUI(bool clientNeedsConfiguration)
         {
+            if (HubCreateWorkspace.IsOperationInProgress)
+            {
+                DoHubWorkspaceCreationProgress();
+                return;
+            }
+
             GUILayout.BeginHorizontal();
 
             GUILayout.Space(HORIZONTAL_MARGIN);
@@ -54,6 +62,21 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             GUILayout.Space(HORIZONTAL_MARGIN);
 
             GUILayout.EndHorizontal();
+        }
+
+        void DoHubWorkspaceCreationProgress()
+        {
+            Rect viewRect = OverlayProgress.CaptureViewRectangle();
+
+            Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
+
+            OverlayProgress.DoOverlayProgress(
+                viewRect,
+                -1f,
+                PlasticLocalization.GetString(
+                    PlasticLocalization.Name.CreatingWorkspaceProgress));
+
+            mParentWindow.Repaint();
         }
 
         void AutoLogin.IWelcomeView.OnUserClosedConfigurationWindow()
@@ -126,7 +149,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             }
 
             if (GUILayout.Button(
-                PlasticLocalization.GetString(PlasticLocalization.Name.CreateWorkspace),
+                PlasticLocalization.Name.CreateWorkspaceUnityVCS.GetString(),
                 GUILayout.Width(BUTTON_WIDTH)))
                 mIsCreateWorkspaceButtonClicked = true;
         }

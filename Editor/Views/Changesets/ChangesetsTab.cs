@@ -18,6 +18,7 @@ using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
+using Unity.PlasticSCM.Editor.Inspector.Properties;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
@@ -29,6 +30,7 @@ using Unity.PlasticSCM.Editor.Views.Properties;
 using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
 using IGluonUpdateReport = PlasticGui.Gluon.IUpdateReport;
 #if !UNITY_6000_3_OR_NEWER
+using SplitterGUILayout = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterGUILayout;
 using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
 #endif
 
@@ -47,7 +49,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         internal ChangesetsListView Table { get { return mChangesetsListView; } }
         internal IChangesetMenuOperations Operations { get { return this; } }
         internal string EmptyStateMessage { get { return mEmptyStatePanel.Text; } }
-        internal DiffPanel DiffPanel { get { return mDiffPanel; } }
+        internal bool IsVisible { get; set; } = true; // we need to initialize it to true for the OnDelayedSelectionChanged event to be executed on tests
 
         internal interface IRevertToChangesetListener
         {
@@ -121,12 +123,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 parentWindow,
                 mFillChangesetsView);
 
-            mSplitterState = PlasticSplitterGUILayout.InitSplitterState(
-                new float[] { 0.50f, 0.50f },
-                new int[] { 100, (int)UnityConstants.DIFF_PANEL_MIN_WIDTH },
-                new int[] { 100000, 100000 }
-            );
-
             mChangesetOperations = new ChangesetOperations(
                 wkInfo,
                 workspaceWindow,
@@ -150,16 +146,12 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         internal void OnEnable()
         {
-            mDiffPanel.OnEnable();
-
             mSearchField.downOrUpArrowKeyPressed +=
                 SearchField_OnDownOrUpArrowKeyPressed;
         }
 
         internal void OnDisable()
         {
-            mDiffPanel.OnDisable();
-
             mSearchField.downOrUpArrowKeyPressed -=
                 SearchField_OnDownOrUpArrowKeyPressed;
 
@@ -170,36 +162,45 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         internal void Update()
         {
-            mDiffPanel.Update();
-
             mProgressControls.UpdateProgress(mParentWindow);
         }
 
         internal void OnGUI()
         {
-            PlasticSplitterGUILayout.BeginHorizontalSplit(mSplitterState);
+            EditorGUILayout.BeginVertical();
 
-            DoChangesetsArea(
-                mChangesetsListView,
-                mEmptyStatePanel,
+            DoActionsToolbar(
+                mProgressControls,
                 mDateFilter,
                 mSearchField,
-                mProgressControls,
+                mChangesetsListView,
                 this);
 
-            EditorGUILayout.BeginHorizontal();
+            Rect viewRect = OverlayProgress.CaptureViewRectangle();
 
-            Rect border = GUILayoutUtility.GetRect(1, 0, 1, 100000);
-            EditorGUI.DrawRect(border, UnityStyles.Colors.BarBorder);
+            GUI.enabled = !mProgressControls.IsOperationRunning();
 
-            DoChangesArea(
-                mPropertiesPanel,
-                mDiffPanel);
+            Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
 
-            EditorGUILayout.EndHorizontal();
+            mChangesetsListView.OnGUI(rect);
 
-            PlasticSplitterGUILayout.EndHorizontalSplit();
+            if (Event.current.type == EventType.Layout)
+                mShouldShowEmptyState = !mEmptyStatePanel.IsEmpty();
 
+            if (mShouldShowEmptyState)
+                mEmptyStatePanel.OnGUI(rect);
+
+            GUI.enabled = true;
+
+            EditorGUILayout.EndVertical();
+
+            if (mProgressControls.IsOperationRunning())
+            {
+                OverlayProgress.DoOverlayProgress(
+                    viewRect,
+                    mProgressControls.ProgressData.ProgressPercent,
+                    mProgressControls.ProgressData.ProgressMessage);
+            }
         }
 
         internal void SetWorkingObjectInfo(ChangesetInfo changesetInfo)
@@ -230,7 +231,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             List<object> changesetsToSelect = repObj == null ?
                 null : new List<object> { repObj };
 
-            mDiffPanel.ClearInfo();
+            if (EditorWindow.focusedWindow == mParentWindow)
+                Selection.activeObject = null;
 
             mFillChangesetsView.FillView(
                 mChangesetsListView,
@@ -364,7 +366,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             if (((IChangesetMenuOperations)this).GetSelectedChangesetsCount() != 1)
                 return;
 
-            ChangesetExtendedInfo targetChangesetInfo = ((ChangesetsViewMenu.IMenuOperations)this).GetSelectedChangeset();
+            ChangesetInfo targetChangesetInfo = ((ChangesetsViewMenu.IMenuOperations)this).GetSelectedChangeset();
 
             RevertToChangesetOperation.RevertTo(
                 mWkInfo,
@@ -392,7 +394,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 mIsGluonMode);
         }
 
-        ChangesetExtendedInfo ChangesetsViewMenu.IMenuOperations.GetSelectedChangeset()
+        ChangesetInfo ChangesetsViewMenu.IMenuOperations.GetSelectedChangeset()
         {
             return ChangesetsSelection.GetSelectedChangeset(
                 mChangesetsListView);
@@ -429,8 +431,14 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mEmptyStatePanel.UpdateContent(explanationText);
         }
 
-        void OnSelectionChanged()
+        void OnDelayedSelectionChanged()
         {
+            if (!IsVisible)
+                return;
+
+            if (EditorWindow.focusedWindow != mParentWindow)
+                return;
+
             List<RepObjectInfo> selectedChangesets = ChangesetsSelection.
                 GetSelectedRepObjectInfos(mChangesetsListView);
 
@@ -440,12 +448,15 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             RepositorySpec repSpec = ChangesetsSelection.GetSelectedRepository(
                 mChangesetsListView);
 
-            mPropertiesPanel.UpdateInfo(
-                selectedChangesets[0], repSpec);
+            MountPointWithPath mountPoint =
+                MountPointWithPath.BuildWorkspaceRootMountPoint(repSpec);
 
-            mDiffPanel.UpdateInfo(
-                MountPointWithPath.BuildWorkspaceRootMountPoint(repSpec),
-                selectedChangesets[0]);
+            SelectedRepObjectInfoData selectedBranchData = SelectedRepObjectInfoData.Create(
+                selectedChangesets[0],
+                repSpec,
+                mountPoint);
+
+            Selection.activeObject = selectedBranchData;
         }
 
         static void DoActionsToolbar(
@@ -491,7 +502,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 EditorGUILayout.EnumPopup(
                     dateFilter.FilterType,
                     EditorStyles.toolbarDropDown,
-                    GUILayout.Width(100));
+                    GUILayout.Width(UnityConstants.TOOLBAR_DATE_FILTER_COMBO_WIDTH));
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -503,64 +514,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             }
 
             GUI.enabled = true;
-        }
-
-        static void DoChangesetsArea(
-            ChangesetsListView changesetsListView,
-            EmptyStatePanel emptyStatePanel,
-            DateFilter dateFilter,
-            SearchField searchField,
-            ProgressControlsForViews progressControls,
-            IRefreshableView view)
-        {
-            EditorGUILayout.BeginVertical();
-
-            DoActionsToolbar(
-                progressControls,
-                dateFilter,
-                searchField,
-                changesetsListView,
-                view);
-
-            Rect viewRect = OverlayProgress.CaptureViewRectangle();
-
-            GUI.enabled = !progressControls.IsOperationRunning();
-
-            Rect rect = GUILayoutUtility.GetRect(0, 100000, 0, 100000);
-
-            changesetsListView.OnGUI(rect);
-
-            if (!emptyStatePanel.IsEmpty())
-                emptyStatePanel.OnGUI(rect);
-
-            GUI.enabled = true;
-
-            EditorGUILayout.EndVertical();
-
-            if (progressControls.IsOperationRunning())
-            {
-                OverlayProgress.DoOverlayProgress(
-                    viewRect,
-                    progressControls.ProgressData.ProgressPercent,
-                    progressControls.ProgressData.ProgressMessage);
-            }
-        }
-
-        static void DoChangesArea(
-            PropertiesPanel propertiesPanel,
-            DiffPanel diffPanel)
-        {
-            EditorGUILayout.BeginVertical();
-
-            propertiesPanel.OnGUI();
-            Rect separatorRect = GUILayoutUtility.GetRect(
-                0,
-                1,
-                GUILayout.ExpandWidth(true));
-            EditorGUI.DrawRect(separatorRect, UnityStyles.Colors.BarBorder);
-            diffPanel.OnGUI();
-
-            EditorGUILayout.EndVertical();
         }
 
         void BuildComponents(
@@ -603,36 +556,17 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                     mIsGluonMode),
                 fillChangesetsView,
                 fillChangesetsView,
-                selectionChangedAction: OnSelectionChanged,
+                delayedSelectionChangedAction: OnDelayedSelectionChanged,
                 doubleClickAction: ((IChangesetMenuOperations)this).DiffChangeset,
                 afterItemsChangedAction: fillChangesetsView.ShowContentOrEmptyState);
 
             mChangesetsListView.Reload();
-
-            mPropertiesPanel = new PropertiesPanel(mParentWindow.Repaint);
-
-            mDiffPanel = new DiffPanel(
-                wkInfo,
-                workspaceWindow,
-                viewSwitcher,
-                historyViewLauncher,
-                refreshView,
-                mAssetStatusCache,
-                mShowDownloadPlasticExeWindow,
-                pendingChangesUpdater,
-                developerIncomingChangesUpdater,
-                gluonIncomingChangesUpdater,
-                parentWindow,
-                mIsGluonMode);
         }
 
-        SplitterState mSplitterState;
-
+        bool mShouldShowEmptyState;
         DateFilter mDateFilter;
         SearchField mSearchField;
         ChangesetsListView mChangesetsListView;
-        DiffPanel mDiffPanel;
-        PropertiesPanel mPropertiesPanel;
 
         RevertToChangesetOperation.IGetStatusForWorkspace mGetStatusForWorkspace =
             new RevertToChangesetOperation.GetStatusFromWorkspace();

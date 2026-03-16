@@ -92,7 +92,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
 
         static bool FixTextAreaSelectionIfNeeded(bool isTextAreaFocused)
         {
-            TextEditor textEditor = UnityInternals.UnityEditor.EditorGUI.activeEditor;
+            TextEditor textEditor = UnityInternals.UnityEditor.EditorGUI.activeEditor?.InternalObject;
 
             // text editor is null when it is not focused
             if (textEditor == null)

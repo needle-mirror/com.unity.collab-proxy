@@ -50,11 +50,12 @@ namespace Unity.PlasticSCM.Editor.Views.Labels.Dialogs
 
         internal static LabelCreationData CreateLabel(
             EditorWindow parentWindow,
-            WorkspaceInfo wkInfo,
-            RepositorySpec repSpec,
-            MarkerExtendedInfo markerInfo)
+            WorkspaceInfo wkInfo)
         {
-            CreateLabelDialog dialog = Create(wkInfo, repSpec, markerInfo.Changeset);
+            RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(wkInfo);
+            long currentChangesetId = PlasticGui.Plastic.API.GetCurrentChangesetOnWorkspace(wkInfo);
+
+            CreateLabelDialog dialog = Create(wkInfo, repSpec, currentChangesetId);
 
             ResponseType dialogResult = dialog.RunModal(parentWindow);
             LabelCreationData result = mCreateLabelView.BuildCreationData();

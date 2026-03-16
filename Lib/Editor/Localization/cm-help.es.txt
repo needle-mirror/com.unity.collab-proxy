@@ -9013,6 +9013,15 @@ Opciones generales:
     --fullpaths, --fp: Fuerza al comando a imprimir rutas absolutas,
         sobreescribiendo cualquier otra configuración acerca de impresión
         de rutas.
+	--machinereadable: Muestra el resultado en un formato fácil de parsear.
+    --startlineseparator: Usado con '--machinereadable', indica cómo deben
+        empezar las líneas del resultado.
+    --endlineseparator: Usado con '--machinereadable', indica cómo deben
+        terminar las líneas del resultado.
+    --fieldseparator: Usado con '--machinereadable', indica cómo deben
+        separarse los campos de cada línea resultante.
+	--includeRevId: Usado con '--machinereadable', incluye el ID de la
+    	revisión de cada cambio detectado.
     --iscochanged: Incluye información sobre si el contenido de un fichero en
         checkout ha sido o modificado o no. Esta opción sólo está disponible en
         combinación con las opciones "--compact", "--xml" y 

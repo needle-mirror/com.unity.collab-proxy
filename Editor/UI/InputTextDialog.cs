@@ -143,11 +143,7 @@ namespace Unity.PlasticSCM.Editor.UI
 
                 mTextValue = EditorGUI.TextField(nameRect, mTextValue);
 
-                if (!mTextAreaFocused)
-                {
-                    EditorGUI.FocusTextInControl(INPUT_TEXT_CONTROL_NAME);
-                    mTextAreaFocused = true;
-                }
+                FocusTextAreaIfNeeded(INPUT_TEXT_CONTROL_NAME);
             }
         }
 
@@ -161,7 +157,6 @@ namespace Unity.PlasticSCM.Editor.UI
         string mExplanation;
         string mLabelText;
         string mTextValue;
-        bool mTextAreaFocused;
         int mWidth;
 
         OkEventHandler mOnOk;

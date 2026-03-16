@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using UnityEngine;
 
@@ -20,7 +20,8 @@ namespace Unity.PlasticSCM.Editor.UI.Avatar
                 return AvatarImages.GetAvatar(email);
 
             Texture2D defaultImage =
-                Images.GetEmptyGravatar();
+                AvatarGenerator.GenerateFromUserName(email)
+                ?? Images.GetEmptyGravatar();
 
             AvatarImages.AddGravatar(email, defaultImage);
 

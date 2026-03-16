@@ -22,6 +22,24 @@ namespace Unity.Cloud.Collaborate
                     return EditorGUI.ScrollableTextAreaInternal(position, text, ref scrollPosition, style);
                 };
 
+            UnityInternals.UnityEditor.InternalEditorGUIUtility.HasCurrentWindowKeyFocus =
+                () =>
+                {
+                    return EditorGUIUtility.HasCurrentWindowKeyFocus();
+                };
+
+            UnityInternals.UnityEditor.EditorGUI.DrawOutline =
+                (Rect rect, float size, Color color) =>
+                {
+                    EditorGUI.DrawOutline(rect, size, color);
+                };
+
+            UnityInternals.UnityEditor.EditorGUI.RecycledTextEditor.InternalEndEditing =
+                (UnityInternals.UnityEditor.EditorGUI.RecycledTextEditor recycledTextEditor) =>
+                {
+                    ((EditorGUI.RecycledTextEditor)recycledTextEditor.InternalObject).EndEditing();
+                };
+
             UnityInternals.UnityEditor.SettingsWindow.ShowInternal =
                 (SettingsScope scopes, string settingsPath) =>
                 {
@@ -98,6 +116,13 @@ namespace Unity.Cloud.Collaborate
                 (UnityInternals.UnityEditor.ContainerWindow containerWindow) =>
                 {
                     EditorWindow.Internal_MakeModal((ContainerWindow)containerWindow.InternalObject);
+                };
+
+            UnityInternals.UnityEditor.EditorWindow.GetInspectorWindow =
+                () =>
+                {
+                    return EditorWindow.GetWindow<UnityEditor.InspectorWindow>(
+                        title: null, focus: false);
                 };
 
             UnityInternals.UnityEditor.UnityEditorExtensions.ShowWithModeInternal =

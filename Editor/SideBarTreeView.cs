@@ -242,21 +242,27 @@ namespace Unity.PlasticSCM.Editor
 
             mIsSelectionChanging = true;
 
-            try
+            if (item.TabType == ViewSwitcher.TabType.Shelves)
             {
-                if (item.TabType == ViewSwitcher.TabType.Shelves)
-                {
-                    TrackFeatureUseEvent.For(
-                        mRepSpec,
-                        TrackFeatureUseEvent.Features.UnityPackage.ShowShelvesViewFromToolbarButton);
-                }
+                TrackFeatureUseEvent.For(
+                    mRepSpec,
+                    TrackFeatureUseEvent.Features.UnityPackage.OpenShelvesView);
+            }
 
-                mSwitchViewAction(item.TabType);
-            }
-            finally
+            // Defer the view switch to the next editor frame to avoid a GUILayout group mismatch
+            // when the selection changes during a MouseDown event.
+            ViewSwitcher.TabType tabType = item.TabType;
+            EditorApplication.delayCall += () =>
             {
-                mIsSelectionChanging = false;
-            }
+                try
+                {
+                    mSwitchViewAction(tabType);
+                }
+                finally
+                {
+                    mIsSelectionChanging = false;
+                }
+            };
         }
 
         protected override bool CanMultiSelect(TreeViewItem item)

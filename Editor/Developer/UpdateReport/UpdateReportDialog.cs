@@ -12,6 +12,7 @@ using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
 
 #if !UNITY_6000_3_OR_NEWER
+using SplitterGUILayout = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterGUILayout;
 using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
 #endif
 
@@ -42,8 +43,13 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
 
         protected override void SaveSettings()
         {
-            TreeHeaderSettings.Save(mPathsListView.multiColumnHeader.state,
+            TreeHeaderSettings.Save(
+                mPathsListView.multiColumnHeader.state,
                 UnityConstants.DEVELOPER_UPDATE_REPORT_TABLE_SETTINGS_NAME);
+
+            SplitterSettings.Save(
+                mErrorDetailsSplitterState,
+                UnityConstants.DEVELOPER_UPDATE_REPORT_SPLITTER_SETTINGS_NAME);
         }
 
         protected override void DoComponentsArea()
@@ -86,12 +92,12 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
             SplitterState splitterState)
         {
             EditorGUILayout.BeginVertical(GUILayout.Height(ERRORS_PANEL_HEIGHT));
-            PlasticSplitterGUILayout.BeginHorizontalSplit(splitterState);
+            SplitterGUILayout.BeginHorizontalSplit(splitterState);
 
             DoErrorsListViewArea(errorsListView);
             DoErrorDetailsTextArea(errorsListView.GetSelectedError());
 
-            PlasticSplitterGUILayout.EndHorizontalSplit();
+            SplitterGUILayout.EndHorizontalSplit();
             EditorGUILayout.EndVertical();
         }
 
@@ -219,8 +225,10 @@ namespace Unity.PlasticSCM.Editor.Developer.UpdateReport
 
         void BuildComponents(WorkspaceInfo wkInfo)
         {
-            mErrorDetailsSplitterState = PlasticSplitterGUILayout.InitSplitterState(
-                new float[] { 0.50f, 0.50f },
+            mErrorDetailsSplitterState = new SplitterState(
+                SplitterSettings.Load(
+                    UnityConstants.DEVELOPER_UPDATE_REPORT_SPLITTER_SETTINGS_NAME,
+                    new float[] { 0.50f, 0.50f }),
                 new int[] { 100, 100 },
                 new int[] { 100000, 100000 }
             );

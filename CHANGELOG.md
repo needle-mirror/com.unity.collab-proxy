@@ -2,6 +2,43 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.12.4] - 2026-03-16
+
+### Added
+
+- Added a new Branch Explorer to visualize and navigate branches.
+- Added "Add to Source Control" and "Undo Changes" actions for folders from the Project browser and Inspector.
+- Added support in the merge view to partially apply a shelve.
+- Added persistence for all splitter positions across window reloads and sessions.
+- Added the F2 keyboard shortcut to rename branches and labels.
+
+### Changed
+
+- Improved text field focus behavior across dialogs for more consistent keyboard workflows.
+- Improved the empty state in the Pending Changes view.
+- Delayed workspace creation when opening projects from the Unity Hub.
+- Updated new project initialization to perform a full initial checkin.
+- Prevented connecting a project to a different organization by mistake.
+- Added changeset and label icons to the status bar.
+- Updated the macOS hide shortcut to Cmd+Shift+H.
+
+### Fixed
+
+- Fixed the labels context menu not opening when the table is empty.
+- Fixed the branches context menu not opening when the table is empty.
+- Fixed the status bar turning gray after exiting Play Mode.
+- Fixed issues in the changeset-by-changeset diff from the branches view.
+- Fixed blurry icons in the Explore Repositories window.
+- Fixed the New Branch button failing when the current selection is a changeset or label.
+- Fixed validation messages alignment in the Unity Version Control window.
+- Fixed the Checkin dialog not auto-focusing the comment field.
+- Fixed button capitalization in the Unity Version Control window to match Unity standards.
+- Fixed and localized the Checkin dialog progress label.
+- Fixed a NullReferenceException when opening history from a branch diff.
+- Fixed a potential NullReferenceException in the changeset-by-changeset diff panel.
+- Fixed a layout exception when right-clicking Pending Changes in the side bar.
+- Fixed the Unity Version Control window during Create Workspace to refresh without requiring mouse movement.
+
 ## [2.11.4] - 2026-02-24
 
 ### Fixed
@@ -19,36 +56,36 @@ All notable changes to this package will be documented in this file.
 
 ### Added
 
-- Added a cset by cset diff panel in the branches view
-- Added specific empty states for Pending/Incoming Changes with filters
-- Added empty state in the history view
-- Added branch name(s) to the branch deletion dialog
-- Added a properties panel for the selected changeset/shelveset
+- Added a cset by cset diff panel in the branches view.
+- Added specific empty states for Pending/Incoming Changes with filters.
+- Added empty state in the history view.
+- Added branch name(s) to the branch deletion dialog.
+- Added a properties panel for the selected changeset/shelveset.
 
 ### Changed
 
-- Renamed toolbar dropdown to comply with a 120px max width limit in 6.5
-- Displayed progress indicator overlaying the view
-- Implemented a "clever" truncation of paths
-- Redesigned the changesets view
-- Redesigned the branches view
-- Redesigned the locks view
-- Redesigned the shelves view
-- Redesigned the history view
-- Redesigned the labels view
-- Redesigned dialogs
-- Redesigned the main panel to include a top breadcrumb
-- Moved incoming and shelves notifications to the top bar
-- Updated deleted and moved overlay icons
-- Showed real indeterminate progress bar
+- Renamed toolbar dropdown to comply with a 120px max width limit in 6.5.
+- Displayed progress indicator overlaying the view.
+- Implemented a "clever" truncation of paths.
+- Redesigned the changesets view.
+- Redesigned the branches view.
+- Redesigned the locks view.
+- Redesigned the shelves view.
+- Redesigned the history view.
+- Redesigned the labels view.
+- Redesigned dialogs.
+- Redesigned the main panel to include a top breadcrumb.
+- Moved incoming and shelves notifications to the top bar.
+- Updated deleted and moved overlay icons.
+- Showed real indeterminate progress bar.
 
 ### Fixed
 
-- Fixed Editor freezes/hangs on "Reloading Domain" when entering Play Mode
-- Fixed Version control icon disappearing when opening a scene or switching Play Mode
-- Fixed Project Settings window moving to background when enabling or disabling Unity VCS in the Unity Version Control Settings
-- Fixed the delete shortcut not working on macOS
-- Fixed the menu references to Explorer instead of Finder when running on macOS
+- Fixed Editor freezes/hangs on "Reloading Domain" when entering Play Mode.
+- Fixed Version control icon disappearing when opening a scene or switching Play Mode.
+- Fixed Project Settings window moving to background when enabling or disabling Unity VCS in the Unity Version Control Settings.
+- Fixed the delete shortcut not working on macOS.
+- Fixed the menu references to Explorer instead of Finder when running on macOS.
 
 ## [2.10.2] - 2025-11-06
 
@@ -109,45 +146,45 @@ All notable changes to this package will be documented in this file.
 
 ### Fixed
 
-- Fixed the error that was thrown when the "Configure Unity Version Control" button is pressed in the Build Automation settings in Build Profiles
+- Fixed the error that was thrown when the "Configure Unity Version Control" button is pressed in the Build Automation settings in Build Profiles.
 
 ## [2.9.2] - 2025-08-19
 
 ### Fixed
 
-- Fixed obsolete references to TreeViewState
+- Fixed obsolete references to TreeViewState.
 
 ## [2.9.1] - 2025-08-13
 
 ### Added
 
-- Added the diff panel in the branches view
-- Added a new view to manage labels
-- New feature to inform users about available updates in the package
-- Improved checkout speed for thousands of files
-- Enriched scene assets in the hierarchy view with status overlay icon
-- Enriched sub scene assets in the hierarchy view with status overlay icon
-- Added Version Control actions to the scene header menu in the hierarchy view
-- Added Version Control actions to sub scenes menu in the hierarchy view
-- Implemented double-click action for pending changes view
-- Implemented double-click action for the diff panel
-- Implemented double-click action for the history view
+- Added the diff panel in the branches view.
+- Added a new view to manage labels.
+- New feature to inform users about available updates in the package.
+- Improved checkout speed for thousands of files.
+- Enriched scene assets in the hierarchy view with status overlay icon.
+- Enriched sub scene assets in the hierarchy view with status overlay icon.
+- Added Version Control actions to the scene header menu in the hierarchy view.
+- Added Version Control actions to sub scenes menu in the hierarchy view.
+- Implemented double-click action for pending changes view.
+- Implemented double-click action for the diff panel.
+- Implemented double-click action for the history view.
 - Updated all usages of TreeView to the new generic version in Unity 6000.2
-- New feature to recommend users to enable Manual Checkout for Unity Assets when there are Lock Rules configured for the project
-- Added empty states for different scenarios
-- Added tutorial link for Smart Locks in empty state for locks view
-- Added extra icons for known Unity file extensions
+- New feature to recommend users to enable Manual Checkout for Unity Assets when there are Lock Rules configured for the project.
+- Added empty states for different scenarios.
+- Added tutorial link for Smart Locks in empty state for locks view.
+- Added extra icons for known Unity file extensions.
 
 ### Fixed
 
-- Fixed undo shortcut for the PendingChanges view comments TextBox
-- Fixed error message when clicking the 'Incoming changes' tab
-- Fixed the error 'EndLayoutGroup: BeginLayoutGroup must be called first' in different scenarios
-- Updated LoadingSpinner to fix VisualElement.transform becoming obsolete
-- Fixed an issue in the Login process not allowing to retry
-- Fixed some empty states that flickered when resizing the splitter or scrolling the table
-- Fixed an issue provoked by the auto-refresh of the Pending changes view
-- Fixed aesthetic shaking issue when the package view is re-dimensioned
+- Fixed undo shortcut for the PendingChanges view comments TextBox.
+- Fixed error message when clicking the 'Incoming changes' tab.
+- Fixed the error 'EndLayoutGroup: BeginLayoutGroup must be called first' in different scenarios.
+- Updated LoadingSpinner to fix VisualElement.transform becoming obsolete.
+- Fixed an issue in the Login process not allowing to retry.
+- Fixed some empty states that flickered when resizing the splitter or scrolling the table.
+- Fixed an issue provoked by the auto-refresh of the Pending changes view.
+- Fixed aesthetic shaking issue when the package view is re-dimensioned.
 
 
 ## [2.8.2] - 2025-05-06
@@ -222,104 +259,104 @@ All notable changes to this package will be documented in this file.
 
 ### Added
 
-- Added the ability to merge a branch or a changeset, using a new context menu actions
-- Added file conflict & dir conflict context menu actions to the merge view
-- Added diff and merge settings in Project Settings -> Version Control -> Unity Version Control Settings
-- Added merge options dialog to the merge view
-- Added copy path & history context menu actions in all menus where they apply
-- Added an menu entry to 'Open in Unity Cloud' showing the repository in the Unity Dashboard
+- Added the ability to merge a branch or a changeset, using a new context menu actions.
+- Added file conflict & dir conflict context menu actions to the merge view.
+- Added diff and merge settings in Project Settings -> Version Control -> Unity Version Control Settings.
+- Added merge options dialog to the merge view.
+- Added copy path & history context menu actions in all menus where they apply.
+- Added an menu entry to 'Open in Unity Cloud' showing the repository in the Unity Dashboard.
 
 ### Changed
 
-- Updated the minimum supported version to Unity 2021.3.0f1
-- Removed support for migrating old Collaborate workspaces to Unity Version Control
-- Hide from the public documentation all internal APIs that were previously visible by mistake
-- Optimized switching operations to only triggers the Package Manager to reinstall packages when needed
-- Optimized incoming changes to only reload the Package Manager when needed (Gluon/partial workspace only for now)
-- Automatically add UnityDirMonSyncFile rule for existing ignore.conf to avoid triggering unnecessary finding changes operation
-- Improved the “search” edit box so it can resize when there is not enough space in the toolbar
-- Replaced the "D" DevOps icon by the branching icon used in the Hub
-- Replaced the logo of Unity in the Sign in to Unity VCS window
+- Updated the minimum supported version to Unity 2021.3.0f1.
+- Removed support for migrating old Collaborate workspaces to Unity Version Control.
+- Hide from the public documentation all internal APIs that were previously visible by mistake.
+- Optimized switching operations to only triggers the Package Manager to reinstall packages when needed.
+- Optimized incoming changes to only reload the Package Manager when needed (Gluon/partial workspace only for now).
+- Automatically add UnityDirMonSyncFile rule for existing ignore.conf to avoid triggering unnecessary finding changes operation.
+- Improved the “search” edit box so it can resize when there is not enough space in the toolbar.
+- Replaced the "D" DevOps icon by the branching icon used in the Hub.
+- Replaced the logo of Unity in the Sign in to Unity VCS window.
 
 ### Fixed
 
-- Fixed files getting checked out even though they are in hidden_changes.conf
-- Fixed manual login to Cloud that didn't work with an Enterprise installation
-- Fixed resolve conflicts not informing about lack of UVCS installation
-- Fixed the Invite users to cloud organization when using an Enterprise installation
-- Fixed new child branch not created from HEAD after update
-- Fixed the learn more (here) link that showed the hex color value in Unity 6
+- Fixed files getting checked out even though they are in hidden_changes.conf.
+- Fixed manual login to Cloud that didn't work with an Enterprise installation.
+- Fixed resolve conflicts not informing about lack of UVCS installation.
+- Fixed the Invite users to cloud organization when using an Enterprise installation.
+- Fixed new child branch not created from HEAD after update.
+- Fixed the learn more (here) link that showed the hex color value in Unity 6.
 - Fixed link to invite members in Unity Cloud.
-- Fixed a crash in the create workspace window when unable to resolve a @unity organization
-- Fixed incoming changes view that was not kept as selected after resolving some conflicts
-- Fixed workspace name that was not refreshed after repository manual creation or selection
+- Fixed a crash in the create workspace window when unable to resolve a @unity organization.
+- Fixed incoming changes view that was not kept as selected after resolving some conflicts.
+- Fixed workspace name that was not refreshed after repository manual creation or selection.
 - Added a warning message to inform users about mismatching cloud project.
-- Removed from the Create Workspace window the Local server that was present with no installation of UVCS
-- Replaced hardcoded urls pointing to plasticscm.com
+- Removed from the Create Workspace window the Local server that was present with no installation of UVCS.
+- Replaced hardcoded urls pointing to plasticscm.com.
 
 ## [2.5.2] - 2024-09-25
 
 ### Fixed
 
-- Fixed token renewal issue: Can't obtain a new token (Message: Invalid Refresh Token., Code: 132.104)
+- Fixed token renewal issue: Can't obtain a new token (Message: Invalid Refresh Token., Code: 132.104).
 - Reworded labels in the Create Repository window and added a link to Create a new organization project.
 
 ## [2.5.1] - 2024-09-04
 
 ### Added
 
-- Added support for the new @unity organizations
-- Allow deletion of non-empty branches that have not been merged anywhere
-- New setting to control if new files must be automatically added to source control
+- Added support for the new @unity organizations.
+- Allow deletion of non-empty branches that have not been merged anywhere.
+- New setting to control if new files must be automatically added to source control.
 
 ### Changed
 
-- Improve the dialog to install Unity Version Control from the Editor
+- Improve the dialog to install Unity Version Control from the Editor.
 
 ### Fixed
 
-- Fixed 'an existing xxx operation has locked the workspace' error on finding changes operation
-- Fixed a case of a hang happening on Editor quit
-- Fixed the login that could fail for Enterprise installation
-- Fixed undo operation that didn't capture changes in packages
-- Fixed history that was not shown when there was no desktop client installed
-- Fixed unity 6 Editor going into the background after a dialog was closed
-- Fixed wrong font size when changing to changesets view
-- Fixed the "Upgrade plan" button in Unity plugin that used a obsolete redirection link
-- Fixed Logs that were configured too late in the initialization
-- Fixed the minimum supported version (2020.3.48f1 LTS) in the README
+- Fixed 'an existing xxx operation has locked the workspace' error on finding changes operation.
+- Fixed a case of a hang happening on Editor quit.
+- Fixed the login that could fail for Enterprise installation.
+- Fixed undo operation that didn't capture changes in packages.
+- Fixed history that was not shown when there was no desktop client installed.
+- Fixed unity 6 Editor going into the background after a dialog was closed.
+- Fixed wrong font size when changing to changesets view.
+- Fixed the "Upgrade plan" button in Unity plugin that used a obsolete redirection link.
+- Fixed Logs that were configured too late in the initialization.
+- Fixed the minimum supported version (2020.3.48f1 LTS) in the README.
 
 ## [2.4.4] - 2024-07-19
 
 ### Fixed
 
-- Fixed the Unity Editor stuck on "Creating workspace" when "Use Unity Version Control" was selected from the Hub
+- Fixed the Unity Editor stuck on "Creating workspace" when "Use Unity Version Control" was selected from the Hub.
 
 ## [2.4.3] - 2024-06-20
 
 ### Added
 
-- Changed the default ignore.conf to not ignore itself
-- Added "Undo unchanged" and "Undo checkouts keeping changes" options to pending changes view
-- Removed focus redirection after Check-in
+- Changed the default ignore.conf to not ignore itself.
+- Added "Undo unchanged" and "Undo checkouts keeping changes" options to pending changes view.
+- Removed focus redirection after Check-in.
 
 ### Fixed
 
-- Moving folders in the Editor now correctly use the UVCS "Move" operation
-- Fixed hang on domain reload
-- Fixed "item with the same key has already been added" error
-- Fixed failure to delete a .meta file when deleting a private folder from the pending changes
-- Supported workspace name with non-latin characters in Pending Changes
-- Fixed text cut-off in filter rules dialog
-- Fixed unexpected error while switching between branches
-- Fixed error after renaming a parent branch of the working branch
-- Fixed variables's value becoming clear after resolving conflict in inspector
-- Removed misleading indication about shelves
-- Fixed column sorting in pending changes view
-- Fixed missing incoming changes after removing a branch
-- Fixed "Collection was modified" error when doing multiple renames in a row
-- Fixed undo & check-in operations not working when the current scene was never saved
-- Fixed check in error if nothing is selected in the pending changes tree
+- Moving folders in the Editor now correctly use the UVCS "Move" operation.
+- Fixed hang on domain reload.
+- Fixed "item with the same key has already been added" error.
+- Fixed failure to delete a .meta file when deleting a private folder from the pending changes.
+- Supported workspace name with non-latin characters in Pending Changes.
+- Fixed text cut-off in filter rules dialog.
+- Fixed unexpected error while switching between branches.
+- Fixed error after renaming a parent branch of the working branch.
+- Fixed variables's value becoming clear after resolving conflict in inspector.
+- Removed misleading indication about shelves.
+- Fixed column sorting in pending changes view.
+- Fixed missing incoming changes after removing a branch.
+- Fixed "Collection was modified" error when doing multiple renames in a row.
+- Fixed undo & check-in operations not working when the current scene was never saved.
+- Fixed check in error if nothing is selected in the pending changes tree.
 
 ## [2.3.1] - 2024-02-27
 
@@ -436,9 +473,9 @@ Removing a previously added Plastic SCM Asset Store Plug-In:
 - Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
 
 ### Fixed
-- Fixed 'Texture2D' does not contain a definition for 'ignoreMipmapLimit' error when installing Unity Version Control on previous Unity Editor Versions
-- Fixed broken sign in dialog style when waiting for user to complete sign in
-- Fixed NullReferenceException when opening a new project and the user doesn't have a Unity Version Control organization linked to a Unity ID
+- Fixed 'Texture2D' does not contain a definition for 'ignoreMipmapLimit' error when installing Unity Version Control on previous Unity Editor Versions.
+- Fixed broken sign in dialog style when waiting for user to complete sign in.
+- Fixed NullReferenceException when opening a new project and the user doesn't have a Unity Version Control organization linked to a Unity ID.
 
 ## [2.0.3] - 2023-03-29
 
@@ -449,14 +486,14 @@ Removing a previously added Plastic SCM Asset Store Plug-In:
 - Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
 
 ### Changed
-- Changed the icons for Unity Version Control rebranding
-- Changed onboarding workflow
+- Changed the icons for Unity Version Control rebranding.
+- Changed onboarding workflow.
 
 ### Fixed
-- Fixed blurry icons in the Unity Version Control window and toolbar button
-- Fixed Pending Changes tab not always opening its selected item's location in Project window
-- Fixed "Checked-out (changed)" status icon not showing up on Pending Changes tab
-- Fixed issue that prevented new packages from being installed unless user enters play mode
+- Fixed blurry icons in the Unity Version Control window and toolbar button.
+- Fixed Pending Changes tab not always opening its selected item's location in Project window.
+- Fixed "Checked-out (changed)" status icon not showing up on Pending Changes tab.
+- Fixed issue that prevented new packages from being installed unless user enters play mode.
 
 ## [2.0.1] - 2023-02-17
 
@@ -467,8 +504,8 @@ Removing a previously added Plastic SCM Asset Store Plug-In:
 - Close the Unity Editor and open your project again. You will find the Plastic SCM menu item in the Window menu.
 
 ### Changed
-- Updated branding from "Plastic SCM" to "Unity Version Control"
-- Improved offline experience by disabling the plugin when there is no internet connection
+- Updated branding from "Plastic SCM" to "Unity Version Control".
+- Improved offline experience by disabling the plugin when there is no internet connection.
 
 ## [2.0.0] - 2023-01-11
 

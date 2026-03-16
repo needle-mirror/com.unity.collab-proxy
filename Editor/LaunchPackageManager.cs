@@ -1,4 +1,6 @@
-﻿using UnityEditor.PackageManager.UI;
+using System;
+
+using UnityEditor.PackageManager.UI;
 using UnityEngine;
 
 namespace Unity.PlasticSCM.Editor
@@ -7,7 +9,16 @@ namespace Unity.PlasticSCM.Editor
     {
         internal static void Open(string packageName)
         {
-            Window.Open(packageName);
+            try
+            {
+                Window.Open(packageName);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning(
+                    string.Format("Unable to select package '{0}' in Package Manager: {1}",
+                        packageName, ex.Message));
+            }
         }
 
         internal static void AddByName(string packageName, string packageVersion)

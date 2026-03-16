@@ -11,6 +11,7 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Tree;
 
 #if !UNITY_6000_3_OR_NEWER
+using SplitterGUILayout = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterGUILayout;
 using SplitterState = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterState;
 #endif
 
@@ -44,8 +45,13 @@ namespace Unity.PlasticSCM.Editor.Gluon.UpdateReport
 
         protected override void SaveSettings()
         {
-            TreeHeaderSettings.Save(mUpdateReportListView.multiColumnHeader.state,
+            TreeHeaderSettings.Save(
+                mUpdateReportListView.multiColumnHeader.state,
                 UnityConstants.GLUON_UPDATE_REPORT_TABLE_SETTINGS_NAME);
+
+            SplitterSettings.Save(
+                mErrorDetailsSplitterState,
+                UnityConstants.GLUON_UPDATE_REPORT_SPLITTER_SETTINGS_NAME);
         }
 
         protected override void DoComponentsArea()
@@ -111,13 +117,13 @@ namespace Unity.PlasticSCM.Editor.Gluon.UpdateReport
             UpdateReportListView updateReportListView,
             SplitterState splitterState)
         {
-            PlasticSplitterGUILayout.BeginHorizontalSplit(splitterState);
+            SplitterGUILayout.BeginHorizontalSplit(splitterState);
 
             DoUpdateReportViewArea(updateReportListView);
 
             DoErrorDetailsTextArea(updateReportListView.GetSelectedError());
 
-            PlasticSplitterGUILayout.EndHorizontalSplit();
+            SplitterGUILayout.EndHorizontalSplit();
         }
 
         static void DoUpdateReportViewArea(
@@ -220,8 +226,10 @@ namespace Unity.PlasticSCM.Editor.Gluon.UpdateReport
 
             instance.BuildComponents(instance.mWkInfo);
 
-            instance.mErrorDetailsSplitterState = PlasticSplitterGUILayout.InitSplitterState(
-                new float[] { 0.50f, 0.50f },
+            instance.mErrorDetailsSplitterState = new SplitterState(
+                SplitterSettings.Load(
+                    UnityConstants.GLUON_UPDATE_REPORT_SPLITTER_SETTINGS_NAME,
+                    new float[] { 0.50f, 0.50f }),
                 new int[] { 100, 100 },
                 new int[] { 100000, 100000 }
             );

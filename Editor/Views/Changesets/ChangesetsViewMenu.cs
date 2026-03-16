@@ -16,7 +16,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         public interface IMenuOperations
         {
             void DiffBranch();
-            ChangesetExtendedInfo GetSelectedChangeset();
+            ChangesetInfo GetSelectedChangeset();
         }
 
         internal ChangesetsViewMenu(
@@ -113,7 +113,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         void UpdateMenuItems(GenericMenu menu)
         {
-            ChangesetExtendedInfo singleSelectedChangeset = mMenuOperations.GetSelectedChangeset();
+            ChangesetInfo singleSelectedChangeset = mMenuOperations.GetSelectedChangeset();
 
             ChangesetMenuOperations operations = ChangesetMenuUpdater.GetAvailableMenuOperations(
                 mChangesetMenuOperations.GetSelectedChangesetsCount(),
@@ -136,14 +136,15 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 ChangesetMenuOperations.DiffSelectedChangesets,
                 DiffSelectedChangesetsMenuItem_Click);
 
-            if (!IsOnMainBranch(singleSelectedChangeset))
+            if (singleSelectedChangeset is ChangesetExtendedInfo &&
+                !IsOnMainBranch((ChangesetExtendedInfo)singleSelectedChangeset))
             {
                 menu.AddSeparator(string.Empty);
 
                 AddDiffBranchMenuItem(
                     mDiffBranchMenuItemContent,
                     menu,
-                    singleSelectedChangeset,
+                    (ChangesetExtendedInfo)singleSelectedChangeset,
                     operations,
                     DiffBranchMenuItem_Click);
             }
@@ -254,7 +255,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         static void AddDiffChangesetMenuItem(
             GUIContent menuItemContent,
             GenericMenu menu,
-            ChangesetExtendedInfo changeset,
+            ChangesetInfo changeset,
             ChangesetMenuOperations operations,
             GenericMenu.MenuFunction menuFunction)
         {

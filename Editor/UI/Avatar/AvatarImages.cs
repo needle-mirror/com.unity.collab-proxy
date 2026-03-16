@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -12,6 +12,12 @@ namespace Unity.PlasticSCM.Editor.UI.Avatar
                 UnityEngine.Object.DestroyImmediate(image, true);
 
             mAvatars.Clear();
+            mDownloadedGravatars.Clear();
+        }
+
+        internal static bool HasDownloadedGravatar(string email)
+        {
+            return mDownloadedGravatars.Contains(email);
         }
 
         internal static bool HasGravatar(string email)
@@ -32,9 +38,15 @@ namespace Unity.PlasticSCM.Editor.UI.Avatar
             if (!mAvatars.ContainsKey(email))
                 return;
 
+            Texture2D oldImage = mAvatars[email];
+
             Texture2D result = GetTexture(rawImage);
 
             mAvatars[email] = result;
+            mDownloadedGravatars.Add(email);
+
+            if (oldImage != null && oldImage != Images.GetEmptyGravatar())
+                UnityEngine.Object.DestroyImmediate(oldImage, true);
         }
 
         internal static Texture2D GetAvatar(string email)
@@ -66,5 +78,8 @@ namespace Unity.PlasticSCM.Editor.UI.Avatar
 
         static readonly Dictionary<string, Texture2D> mAvatars =
             new Dictionary<string, Texture2D>();
+
+        static readonly HashSet<string> mDownloadedGravatars =
+            new HashSet<string>();
     }
 }

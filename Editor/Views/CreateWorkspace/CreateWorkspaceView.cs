@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+using UnityEditor;
 using UnityEngine;
 
 using Codice.Client.Common;
@@ -13,6 +14,7 @@ using PlasticGui;
 using PlasticGui.WorkspaceWindow.Home.Repositories;
 using PlasticGui.WorkspaceWindow.Home.Workspaces;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
+using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 
 namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
@@ -87,7 +89,9 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             IList allRepositories = null;
             string repositoryProject = null;
 
-            string localProjectFolder = Application.productName;
+            string localProjectFolder = !string.IsNullOrEmpty(CloudProjectSettings.projectName)
+                ? CloudProjectSettings.projectName
+                : Application.productName;
 
             IThreadWaiter waiter = ThreadWaiter.GetWaiter(10);
             waiter.Execute(
@@ -125,29 +129,39 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                         return;
                     }
 
-                    string serverSpecPart = string.Format("@{0}", ResolveServer.ToDisplayString(mDefaultServer));
+                    UpdateProposedRepositoryAndWorkspace(allRepositories, repositoryProject, allWorkspaces);
 
-                    mCreateWorkspaceState.Repository = ValidRepositoryName.Get(
-                        string.Format("{0}{1}", mCreateWorkspaceState.Repository, serverSpecPart),
-                        allRepositories);
-
-                    if (repositoryProject != null)
-                    {
-                        mCreateWorkspaceState.Repository = CloudProjectRepository.BuildFullyQualifiedName(
-                            repositoryProject, mCreateWorkspaceState.Repository);
-                    }
-
-                    string proposedWorkspaceName = mCreateWorkspaceState.Repository.Replace(serverSpecPart, string.Empty);
-
-                    mCreateWorkspaceState.WorkspaceName = CreateWorkspaceDialogUserAssistant.GetNonExistingWkNameForName(
-                        proposedWorkspaceName, allWorkspaces);
-
-                    mDialogUserAssistant = CreateWorkspaceDialogUserAssistant.ForWkPathAndName(
-                        mWorkspacePath,
-                        allWorkspaces);
-
-                    SynchronizeRepositoryAndWorkspace();
+                    mParentWindow.Repaint();
                 });
+        }
+
+        void UpdateProposedRepositoryAndWorkspace(
+            IList repositories,
+            string repositoryProject,
+            WorkspaceInfo[] workspaces)
+        {
+            string serverSpecPart = string.Format("@{0}", ResolveServer.ToDisplayString(mDefaultServer));
+
+            mCreateWorkspaceState.Repository = ValidRepositoryName.Get(
+                string.Format("{0}{1}", mCreateWorkspaceState.Repository, serverSpecPart),
+                repositories);
+
+            if (repositoryProject != null)
+            {
+                mCreateWorkspaceState.Repository = CloudProjectRepository.BuildFullyQualifiedName(
+                    repositoryProject, mCreateWorkspaceState.Repository);
+            }
+
+            string proposedWorkspaceName = mCreateWorkspaceState.Repository.Replace(serverSpecPart, string.Empty);
+
+            mCreateWorkspaceState.WorkspaceName = CreateWorkspaceDialogUserAssistant.GetNonExistingWkNameForName(
+                proposedWorkspaceName, workspaces);
+
+            mDialogUserAssistant = CreateWorkspaceDialogUserAssistant.ForWkPathAndName(
+                mWorkspacePath,
+                workspaces);
+
+            SynchronizeRepositoryAndWorkspace();
         }
 
         void SynchronizeRepositoryAndWorkspace()
@@ -206,6 +220,8 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                     mCreateWorkspaceState.Repository = createdRepository.GetRepSpec().ToDisplayString();
 
                     SynchronizeRepositoryAndWorkspace();
+
+                    mParentWindow.Repaint();
                 });
         }
 
@@ -266,7 +282,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
 
         void IWorkspacesRefreshableView.RefreshAndSelect(WorkspaceInfo wkInfo)
         {
-            UnityCloudProjectLinkMonitor.CheckCloudProjectAlignmentAsync(wkInfo);
+            GetWindowIfOpened.BranchExplorer()?.OnWorkspaceCreated(wkInfo);
 
             PerformInitialCheckin.IfRepositoryIsEmpty(
                 wkInfo,
@@ -276,6 +292,8 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                 mProgressControls,
                 mCreateWorkspaceListener,
                 mParentWindow);
+
+            UnityCloudProjectLinkMonitor.CheckCloudProjectAlignmentAsync(wkInfo);
         }
 
         static WorkspaceCreationData BuildCreationDataFromState(

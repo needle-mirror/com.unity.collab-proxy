@@ -17,15 +17,5 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 QueryConstants.ChangesetsBeginningQuery,
                 whereClause);
         }
-
-        internal static string For(BranchInfo branchInfo)
-        {
-            if (branchInfo == null)
-                return QueryConstants.ChangesetsBeginningQuery;
-
-            return string.Format(
-                QueryConstants.ChangesetsOnBranchWithRevisionsQuery,
-                branchInfo.BranchName);
-        }
     }
 }

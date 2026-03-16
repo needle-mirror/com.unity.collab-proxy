@@ -1,5 +1,7 @@
+using Unity.PlasticSCM.Editor.Inspector.Properties;
 using Unity.PlasticSCM.Editor.Settings;
 using Unity.PlasticSCM.Editor.UI;
+using UnityEditor;
 
 namespace Unity.PlasticSCM.Editor
 {
@@ -33,6 +35,9 @@ namespace Unity.PlasticSCM.Editor
             UVCSPluginIsEnabledPreference.Disable();
 
             CloseWindowIfOpened.UVCS();
+            CloseWindowIfOpened.BranchExplorer();
+
+            CleanSelectionIfNeeded();
 
             uvcsPlugin.Shutdown();
         }
@@ -47,6 +52,14 @@ namespace Unity.PlasticSCM.Editor
 
             activeSettingsProvider.ReloadSettings();
             activeSettingsProvider.Repaint();
+        }
+
+        static void CleanSelectionIfNeeded()
+        {
+            if (!(Selection.activeObject is SelectedRepObjectInfoData))
+                return;
+
+            Selection.activeObject = null;
         }
     }
 }

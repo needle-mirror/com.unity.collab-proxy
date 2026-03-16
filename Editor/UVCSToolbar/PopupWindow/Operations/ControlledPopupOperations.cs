@@ -1,18 +1,17 @@
 using System;
 
 using UnityEditor;
-
 using UnityEditor.ShortcutManagement;
 
+using Codice.Client.Common.EventTracking;
+using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.QueryViews.Branches;
-using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
-using Unity.PlasticSCM.Editor.AssetUtils.Processor;
-using Unity.PlasticSCM.Editor.Toolbar.Headless;
+using Unity.PlasticSCM.Editor.Headless;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.Views;
 using Unity.PlasticSCM.Editor.Views.Branches.Dialogs;
@@ -28,7 +27,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
             bool isGluonMode,
             Action refreshWorkspaceWorkingInfo,
             IRefreshableView branchesListPopupPanel,
-            Action<BranchInfo> setWorkingBranch,
+            Action<WorkingObjectInfo> setWorkingBranch,
             Func<RepositorySpec> fetchRepSpec,
             Func<BranchInfo> fetchMainBranch,
             Func<BranchInfo> fetchWorkingBranch)
@@ -52,10 +51,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
 
             mBranchOperations = new BranchOperations(
                 wkInfo,
-                new HeadlessWorkspaceWindow(
-                    branchesListPopupPanel,
-                    refreshWorkspaceWorkingInfo,
-                    setWorkingBranch),
+                new HeadlessWorkspaceWindow(refreshWorkspaceWorkingInfo, setWorkingBranch),
                 new HeadlessMergeViewLauncher(uvcsPlugin),
                 this,
                 ViewType.BranchesListPopup,
@@ -85,6 +81,10 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
             BranchInfo branchInfo,
             RepositorySpec repSpec)
         {
+            TrackFeatureUseEvent.For(
+                repSpec,
+                TrackFeatureUseEvent.Features.Toolbar.SwitchToBranch);
+
             bool isCancelled;
             mSaveAssets.UnderWorkspaceWithConfirmation(
                 mWkInfo.ClientPath,
@@ -109,37 +109,57 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
             BranchInfo mainBranch = mFetchMainBranch();
             BranchInfo workingBranch = mFetchWorkingBranch();
 
-            if (repSpec == null || workingBranch == null)
+            if (repSpec == null)
                 return;
 
-            if (mIsGluonMode)
+            TrackFeatureUseEvent.For(
+                repSpec,
+                TrackFeatureUseEvent.Features.Toolbar.CreateBranch);
+
+            if (workingBranch != null)
             {
-                CreateBranchForGluonMode(
-                    proposedBranchName,
-                    repSpec,
-                    mainBranch,
-                    workingBranch);
+                CreateBranch(repSpec, mainBranch, workingBranch, proposedBranchName);
                 return;
             }
 
-            CreateBranchForDeveloperMode(
-                proposedBranchName,
-                repSpec,
-                mainBranch,
-                workingBranch);
+            CalculateBranchBaseAndCreateBranch(repSpec, mainBranch, proposedBranchName);
         }
 
-        void IQueryRefreshableView.RefreshAndSelect(RepObjectInfo repObj)
-        {
-            //TODO: The repObj is not used
-            mBranchesListPopupPanel.Refresh();
-        }
-
-        void CreateBranchForGluonMode(
-            string proposedBranchName,
+        void CalculateBranchBaseAndCreateBranch(
             RepositorySpec repSpec,
             BranchInfo mainBranch,
-            BranchInfo workingBranch)
+            string proposedBranchName)
+        {
+            BranchInfo baseBranchInfo = null;
+
+            IThreadWaiter waiter = ThreadWaiter.GetWaiter();
+            waiter.Execute(
+                /*threadOperationDelegate*/ delegate
+                {
+                    baseBranchInfo = PlasticGui.Plastic.API.GetWorkingBranch(mWkInfo);
+                },
+                /*afterOperationDelegate*/ delegate
+                {
+                    if (waiter.Exception != null)
+                    {
+                        ExceptionsHandler.LogException(typeof(ControlledPopupOperations).Name, waiter.Exception);
+                        return;
+                    }
+
+                    if (baseBranchInfo == null)
+                    {
+                        return;
+                    }
+
+                    CreateBranch(repSpec, mainBranch, baseBranchInfo, proposedBranchName);
+                });
+        }
+
+        void CreateBranch(
+            RepositorySpec repSpec,
+            BranchInfo mainBranch,
+            BranchInfo workingBranch,
+            string proposedBranchName)
         {
             BranchCreationData branchCreationData = CreateBranchDialog.CreateBranchFromMainOrCurrentBranch(
                 mWindow,
@@ -148,6 +168,22 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
                 workingBranch,
                 proposedBranchName);
 
+            CreateBranchForMode(branchCreationData);
+        }
+
+        void CreateBranchForMode(BranchCreationData branchCreationData)
+        {
+            if (mIsGluonMode)
+            {
+                CreateBranchForGluonMode(branchCreationData);
+                return;
+            }
+
+            CreateBranchForDeveloperMode(branchCreationData);
+        }
+
+        void CreateBranchForGluonMode(BranchCreationData branchCreationData)
+        {
             CreateBranchOperation.CreateBranch(
                 mWkInfo,
                 branchCreationData,
@@ -168,25 +204,20 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
                     ProjectPackages.ShouldBeResolvedFromPaths(mWkInfo, items)));
         }
 
-        void CreateBranchForDeveloperMode(
-            string proposedBranchName,
-            RepositorySpec repSpec,
-            BranchInfo mainBranch,
-            BranchInfo workingBranch)
+        void CreateBranchForDeveloperMode(BranchCreationData branchCreationData)
         {
-            BranchCreationData branchCreationData = CreateBranchDialog.CreateBranchFromMainOrCurrentBranch(
-                mWindow,
-                repSpec,
-                mainBranch,
-                workingBranch,
-                proposedBranchName);
-
             mBranchOperations.CreateBranch(
                 branchCreationData,
                 RefreshAsset.BeforeLongAssetOperation,
                 items => RefreshAsset.AfterLongAssetOperation(
                     mUVCSPlugin.AssetStatusCache,
                     ProjectPackages.ShouldBeResolvedFromUpdateReport(mWkInfo, items)));
+        }
+
+        void IQueryRefreshableView.RefreshAndSelect(RepObjectInfo repObj)
+        {
+            //TODO: The repObj is not used
+            mBranchesListPopupPanel.Refresh();
         }
 
         void SwitchToBranchForGluonMode(
@@ -258,12 +289,20 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
         {
             UVCSWindow window = SwitchUVCSPlugin.OnIfNeeded(uvcsPlugin);
 
+            TrackFeatureUseEvent.For(
+                window.RepSpec,
+                TrackFeatureUseEvent.Features.Toolbar.ShowPendingChangesView);
+
             window.ShowPendingChangesView();
         }
 
         static void DoShowIncomingChangesView(UVCSPlugin uvcsPlugin)
         {
             UVCSWindow window = SwitchUVCSPlugin.OnIfNeeded(uvcsPlugin);
+
+            TrackFeatureUseEvent.For(
+                window.RepSpec,
+                TrackFeatureUseEvent.Features.Toolbar.ShowIncomingChangesView);
 
             window.ShowIncomingChangesView();
         }
@@ -287,8 +326,8 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
         readonly ShelvePendingChangesQuestionerBuilder mShelvePendingChangesQuestionerBuilder;
         readonly EnableSwitchAndShelveFeature mEnableSwitchAndShelveFeatureDialog;
         readonly IProgressControls mProgressControls;
-        readonly BranchOperations mBranchOperations;
         readonly Func<RepositorySpec> mFetchRepSpec;
+        readonly BranchOperations mBranchOperations;
         readonly Func<BranchInfo> mFetchMainBranch;
         readonly Func<BranchInfo> mFetchWorkingBranch;
         readonly HeadlessGluonViewHost mViewHost;

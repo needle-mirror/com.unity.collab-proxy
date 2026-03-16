@@ -19,11 +19,21 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
 {
     internal class CreateWorkspace
     {
+        internal static bool IsOperationInProgress { get { return mIsOperationInProgress; } }
+
         internal static void LaunchOperation(OperationParams parameters)
         {
-            CreateWorkspace createWorkspaceOperation = new CreateWorkspace();
+            mIsOperationInProgress = true;
 
-            createWorkspaceOperation.CreateWorkspaceOperation(parameters);
+            mLog.Debug("Waiting for editor to be idle");
+
+            Execute.AfterEditorIsIdleForSeconds(IDLE_DELAY_SECONDS, () =>
+            {
+                mLog.Debug("Editor is idle, proceeding with workspace creation");
+
+                CreateWorkspace createWorkspaceOperation = new CreateWorkspace();
+                createWorkspaceOperation.CreateWorkspaceOperation(parameters);
+            });
         }
 
         internal static WorkspaceInfo CreateWorkspaceForRepSpec(
@@ -75,6 +85,8 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
             }
             finally
             {
+                mIsOperationInProgress = false;
+
                 EditorUtility.ClearProgressBar();
 
                 RefreshAsset.AfterLongAssetOperation(null);
@@ -82,7 +94,13 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
                 if (!mOperationFailed)
                 {
                     UVCSPlugin.Instance.Enable();
-                    ShowWindow.UVCS();
+
+                    UVCSWindow window = ShowWindow.UVCS();
+                    window.ExecuteFullReload();
+
+                    if (mCreatedWkInfo != null)
+                        GetWindowIfOpened.BranchExplorer()?.OnWorkspaceCreated(
+                            mCreatedWkInfo);
                 }
             }
         }
@@ -116,7 +134,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
                     parameters.RepositorySpec, TrackFeatureUseEvent.
                         Features.UnityPackage.CreateWorkspaceFromHub);
 
-                WorkspaceInfo wkInfo = CreateWorkspaceForRepSpec(
+                mCreatedWkInfo = CreateWorkspaceForRepSpec(
                     parameters.RepositorySpec,
                     parameters.WorkspaceFullPath,
                     mLog);
@@ -124,7 +142,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
                 mStatus = Status.PerformingInitialCheckin;
 
                 PerformInitialCheckinIfRepositoryIsEmpty(
-                    wkInfo, parameters.RepositorySpec,
+                    mCreatedWkInfo, parameters.RepositorySpec,
                     PlasticGui.Plastic.API, mLog);
             }
             catch (Exception ex)
@@ -154,8 +172,7 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
                 if (!isEmptyRepository)
                     return;
 
-                PerformInitialCheckin.PerformCheckinPackagesAndProjectSettingsFolders(
-                    wkInfo, false, plasticApi);
+                PerformInitialCheckin.ForWorkspace(wkInfo, false, plasticApi);
 
                 log.DebugFormat("Created initial checkin on repository '{0}'",
                     repositorySpec.ToString());
@@ -245,6 +262,11 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
         volatile Status mStatus = Status.Starting;
         volatile bool mOperationFailed = false;
         volatile bool mDisplayProgress;
+        volatile WorkspaceInfo mCreatedWkInfo;
+
+        const double IDLE_DELAY_SECONDS = 1.0;
+
+        static bool mIsOperationInProgress;
 
         static readonly ILog mLog = PlasticApp.GetLogger("CreateWorkspace");
     }

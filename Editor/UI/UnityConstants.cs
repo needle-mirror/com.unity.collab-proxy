@@ -58,6 +58,8 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const int UNSORT_COLUMN_ID = -1;
 
         internal const string UVCS_WINDOW_TITLE = "Unity Version Control";
+        internal const string BREX_WINDOW_TITLE = "Branch Explorer";
+        internal const string DIFF_WINDOW_TITLE = "Differences";
         internal const string PROJECT_SETTINGS_TAB_PATH = "Project/Version Control/Unity Version Control";
         internal const string PROJECT_SETTINGS_TAB_TITLE = "Unity Version Control Settings";
 
@@ -102,6 +104,18 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const string LABELS_DATE_FILTER_SETTING_NAME = "{0}_LabelsDateFilter_{1}";
         internal const string BROWSE_REPOSITORY_TABLE_SETTINGS_NAME = "{0}_BrowseRepositoryList_{1}";
 
+        internal const string PENDING_CHANGES_COMMENTS_SPLITTER_SETTINGS_NAME = "{0}_PendingChangesCommentsSplitter_{1}";
+        internal const string CLOUD_WORKSPACES_SPLITTER_SETTINGS_NAME = "{0}_CloudWorkspacesSplitter_{1}";
+        internal const string DEVELOPER_UPDATE_REPORT_SPLITTER_SETTINGS_NAME = "{0}_DeveloperUpdateReportSplitter_{1}";
+        internal const string GLUON_UPDATE_REPORT_SPLITTER_SETTINGS_NAME = "{0}_GluonUpdateReportSplitter_{1}";
+        internal const string PENDING_CHANGES_ERRORS_PANEL_SPLITTER_SETTINGS_NAME = "{0}_PendingChangesErrorsPanelSplitter_{1}";
+        internal const string GLUON_INCOMING_ERRORS_PANEL_SPLITTER_SETTINGS_NAME = "{0}_GluonIncomnigErrorsPanelSplitter_{1}";
+        internal const string DIFF_SPLITTER_SETTINGS_NAME = "{0}_DiffSplitter_v2{1}";
+        internal const string PROPERTIES_SPLITTER_SETTINGS_NAME = "{0}_PropertiesSplitter_{1}";
+        internal const string LABELS_SPLITTER_SETTINGS_NAME = "{0}_LabelsSplitter_{1}";
+        internal const string GLUON_INCOMING_CHANGES_SPLITTER_SETTINGS_NAME = "{0}_GluonIncomingChangesSplitter_{1}";
+        internal const string PENDING_CHANGES_ERRORS_SPLITTER_SETTINGS_NAME = "{0}_PendingChangesErrorsSplitter_{1}";
+
         internal const string UVCS_PLUGIN_IS_ENABLED_KEY_NAME = "{0}_UVCSPluginIsEnabled";
         internal const string UVCS_PLUGIN_IS_ENABLED_OLD_KEY_NAME = "{0}_PlasticPluginIsEnabled";
         internal const string SHOW_UVCS_TOOLBAR_BUTTON_KEY_NAME = "{0}_ShowUVCSToolbarButton";
@@ -115,12 +129,12 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const string PENDING_CHANGES_CI_COMMENTS_KEY_NAME = "CheckInComments";
         internal const string PENDING_CHANGES_UNCHECKED_ITEMS_KEY_NAME = "PendingChangesUnchecked";
 
-        internal const string PENDING_CHANGES_COMMENT_SPLITTER_LEFT_KEY_NAME = "PendingChangesCommentSplitterLeft";
-        internal const string PENDING_CHANGES_COMMENT_SPLITTER_RIGHT_KEY_NAME = "PendingChangesCommentSplitterRight";
-
         internal const float BROWSE_REPOSITORY_PANEL_MIN_WIDTH = SEARCH_FIELD_WIDTH / 2f + 8f;
 
         internal const float TOOLBAR_ICON_BUTTON_WIDTH = 26f;
+        internal const float TOOLBAR_DATE_FILTER_COMBO_WIDTH = 105f;
+
+        internal const float SCROLLBAR_WIDTH = 13f;
 
         internal static class ChangesetsColumns
         {
@@ -187,7 +201,8 @@ namespace Unity.PlasticSCM.Editor.UI
         internal static class CloudDrive
         {
             internal const string WINDOW_TITLE = "Unity Cloud Drive";
-            internal const string ERRORS_DIALOG_SETTINGS_NAME = "{0}_CloudDriveErrorsDialog{1}";
+            internal const string ERRORS_DIALOG_TREE_SETTINGS_NAME = "{0}_CloudDriveErrorsDialog{1}";
+            internal const string ERRORS_DIALOG_SPLITTER_SETTINGS_NAME = "{0}_CloudDriveErrorsDialogSplitter_{1}";
             internal const string COLLABORATORS_TABLE_SETTINGS_NAME = "{0}_CollaboratorsList_{1}";
         }
 

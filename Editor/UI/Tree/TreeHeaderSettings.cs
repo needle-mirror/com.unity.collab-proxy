@@ -11,6 +11,16 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 {
     internal static class TreeHeaderSettings
     {
+        internal static void InitForTesting()
+        {
+            mSettingsKeyGuid = Guid.NewGuid();
+        }
+
+        internal static void Reset()
+        {
+            mSettingsKeyGuid = PlayerSettings.productGUID;
+        }
+
         internal static void Load(
             MultiColumnHeaderState headerState,
             string treeSettingsName,
@@ -129,7 +139,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 
         static string GetSettingKey(string treeSettingsName, string key)
         {
-            return string.Format(treeSettingsName, PlayerSettings.productGUID, key);
+            return string.Format(treeSettingsName, mSettingsKeyGuid, key);
         }
 
         static string VISIBLE_COLUMNS_KEY = "VisibleColumns";
@@ -137,6 +147,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
         static string SORT_COLUMN_INDEX_KEY = "SortColumnIdx";
         static string SORT_ASCENDING_KEY = "SortAscending";
 
+        static Guid mSettingsKeyGuid = PlayerSettings.productGUID;
         static readonly ILog mLog = PlasticApp.GetLogger("TreeHeaderSettings");
     }
 }

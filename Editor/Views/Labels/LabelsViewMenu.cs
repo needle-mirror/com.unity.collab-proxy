@@ -11,11 +11,24 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
     {
         internal GenericMenu Menu { get { return mMenu; } }
 
-        internal LabelsViewMenu(ILabelMenuOperations labelMenuOperations)
+        internal static LabelsViewMenu BuildForSubMenu(
+            ILabelMenuOperations labelMenuOperations,
+            string menuName)
+        {
+            return new LabelsViewMenu(labelMenuOperations, menuName);
+        }
+
+        internal static LabelsViewMenu BuildForContextMenu(ILabelMenuOperations labelMenuOperations)
+        {
+            return new LabelsViewMenu(labelMenuOperations, string.Empty);
+        }
+
+        LabelsViewMenu(ILabelMenuOperations labelMenuOperations, string menuName)
         {
             mLabelMenuOperations = labelMenuOperations;
+            mMenuName = menuName;
 
-            BuildComponents();
+            BuildComponents(menuName);
         }
 
         internal void Popup()
@@ -85,7 +98,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             mLabelMenuOperations.DeleteLabel();
         }
 
-        void UpdateMenuItems(GenericMenu menu)
+        internal void UpdateMenuItems(GenericMenu menu)
         {
             LabelMenuOperations operations = LabelMenuUpdater.GetAvailableMenuOperations(
                 mLabelMenuOperations.GetSelectedLabelsCount(),
@@ -98,7 +111,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
                 LabelMenuOperations.CreateLabel,
                 CreateLabelMenuItem_Click);
 
-            menu.AddSeparator(string.Empty);
+            menu.AddSeparator(UnityMenuItem.GetText(mMenuName, string.Empty));
 
             AddLabelMenuItem(
                 mApplyLabelToWorkspaceMenuItemContent,
@@ -114,7 +127,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
                 LabelMenuOperations.SwitchToLabel,
                 SwitchWorkspaceToLabelMenuItem_Click);
 
-            menu.AddSeparator(string.Empty);
+            menu.AddSeparator(UnityMenuItem.GetText(mMenuName, string.Empty));
 
             AddLabelMenuItem(
                 mDiffSelectedLabelsMenuItemContent,
@@ -123,7 +136,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
                 LabelMenuOperations.DiffSelectedLabels,
                 DiffSelectedLabelsMenuItem_Click);
 
-            menu.AddSeparator(string.Empty);
+            menu.AddSeparator(UnityMenuItem.GetText(mMenuName, string.Empty));
 
             AddLabelMenuItem(
                 mMergeFromLabelMenuItemContent,
@@ -139,7 +152,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
                 LabelMenuOperations.CreateBranch,
                 CreateBranchFromLabelMenu_Click);
 
-            menu.AddSeparator(string.Empty);
+            menu.AddSeparator(UnityMenuItem.GetText(mMenuName, string.Empty));
 
             AddLabelMenuItem(
                 mRenameLabelMenuItemContent,
@@ -204,6 +217,12 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
                 return;
             }
 
+            if (operationToExecute == LabelMenuOperations.Rename)
+            {
+                labelMenuOperations.RenameLabel();
+                return;
+            }
+
             if (operationToExecute == LabelMenuOperations.Delete)
             {
                 labelMenuOperations.DeleteLabel();
@@ -232,32 +251,65 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
             if (Keyboard.IsKeyPressed(e, KeyCode.Delete))
                 return LabelMenuOperations.Delete;
 
+            if (Keyboard.IsKeyPressed(e, KeyCode.F2))
+                return LabelMenuOperations.Rename;
+
             return LabelMenuOperations.None;
         }
 
-        void BuildComponents()
+        void BuildComponents(string menuName)
         {
             mCreateLabelMenuItemContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.LabelMenuItemCreateLabel));
-            mApplyLabelToWorkspaceMenuItemContent = new GUIContent(string.Format("{0} {1}",
-                PlasticLocalization.GetString(PlasticLocalization.Name.LabelMenuItemApplyLabelToWorkspace),
-                GetPlasticShortcut.ForLabel()));
-            mSwitchWorkspaceToLabelMenuItemContent = new GUIContent(string.Format("{0} {1}",
-                PlasticLocalization.GetString(PlasticLocalization.Name.LabelMenuItemSwitchToLabel),
-                GetPlasticShortcut.ForSwitch()));
-            mDiffSelectedLabelsMenuItemContent = new GUIContent(string.Format("{0} {1}",
-                PlasticLocalization.GetString(PlasticLocalization.Name.LabelMenuItemDiffSelected),
-                GetPlasticShortcut.ForDiff()));
-            mMergeFromLabelMenuItemContent = new GUIContent(string.Format("{0} {1}",
-                PlasticLocalization.GetString(PlasticLocalization.Name.LabelMenuItemMergeFromLabel),
-                GetPlasticShortcut.ForMerge()));
+                UnityMenuItem.GetText(
+                    menuName,
+                    PlasticLocalization.Name.LabelMenuItemCreateLabel.GetString()));
+
+            mApplyLabelToWorkspaceMenuItemContent = new GUIContent(
+                UnityMenuItem.GetText(
+                    menuName,
+                    string.Format("{0} {1}",
+                        PlasticLocalization.Name.LabelMenuItemApplyLabelToWorkspace.GetString(),
+                        GetPlasticShortcut.ForLabel())));
+
+            mSwitchWorkspaceToLabelMenuItemContent = new GUIContent(
+                UnityMenuItem.GetText(
+                    menuName,
+                    string.Format("{0} {1}",
+                        PlasticLocalization.Name.LabelMenuItemSwitchToLabel.GetString(),
+                        GetPlasticShortcut.ForSwitch())));
+
+            mDiffSelectedLabelsMenuItemContent = new GUIContent(
+                UnityMenuItem.GetText(
+                    menuName,
+                    string.Format("{0} {1}",
+                        PlasticLocalization.Name.LabelMenuItemDiffSelected.GetString(),
+                        GetPlasticShortcut.ForDiff())));
+
+            mMergeFromLabelMenuItemContent = new GUIContent(
+                UnityMenuItem.GetText(
+                    menuName,
+                    string.Format("{0} {1}",
+                        PlasticLocalization.Name.LabelMenuItemMergeFromLabel.GetString(),
+                        GetPlasticShortcut.ForMerge())));
+
             mCreateBranchFromLabelMenuItemContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.LabelMenuItemCreateBranchFromLabel));
+                UnityMenuItem.GetText(
+                    menuName,
+                    PlasticLocalization.Name.LabelMenuItemCreateBranchFromLabel.GetString()));
+
             mRenameLabelMenuItemContent = new GUIContent(
-                PlasticLocalization.GetString(PlasticLocalization.Name.LabelMenuItemRenameLabel));
-            mDeleteLabelMenuItemContent = new GUIContent(string.Format("{0} {1}",
-                PlasticLocalization.GetString(PlasticLocalization.Name.LabelMenuItemDeleteLabel),
-                GetPlasticShortcut.ForDelete()));
+                UnityMenuItem.GetText(
+                    menuName,
+                    string.Format("{0} {1}",
+                        PlasticLocalization.Name.LabelMenuItemRenameLabel.GetString(),
+                        GetPlasticShortcut.ForRename())));
+
+            mDeleteLabelMenuItemContent = new GUIContent(
+                UnityMenuItem.GetText(
+                    menuName,
+                    string.Format("{0} {1}",
+                        PlasticLocalization.Name.LabelMenuItemDeleteLabel.GetString(),
+                        GetPlasticShortcut.ForDelete())));
         }
 
         GenericMenu mMenu;
@@ -271,6 +323,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
         GUIContent mRenameLabelMenuItemContent;
         GUIContent mDeleteLabelMenuItemContent;
 
+        readonly string mMenuName;
         readonly ILabelMenuOperations mLabelMenuOperations;
     }
 }

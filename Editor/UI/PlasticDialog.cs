@@ -122,12 +122,12 @@ namespace Unity.PlasticSCM.Editor.UI
                 EditorDispatcher.Update();
             }
 
-            if (!mFocusedOnce)
+            if (!mWasDialogFocusedOnce)
             {
                 // Somehow the prevents the dialog from jumping when dragged
                 // NOTE(rafa): We cannot do every frame because the modal kidnaps focus for all processes (in mac at least)
                 Focus();
-                mFocusedOnce = true;
+                mWasDialogFocusedOnce = true;
             }
 
             ProcessKeyActions();
@@ -289,6 +289,18 @@ namespace Unity.PlasticSCM.Editor.UI
             CloseButtonAction();
         }
 
+        protected void FocusTextAreaIfNeeded(string controlName)
+        {
+            if (mWasTextAreaFocusedOnce)
+                return;
+
+            if (Event.current.type == EventType.Layout)
+                return;
+
+            UnityEditor.EditorGUI.FocusTextInControl(controlName);
+            mWasTextAreaFocusedOnce = true;
+        }
+
         void IPlasticDialogCloser.CloseDialog()
         {
             CompleteModal(ResponseType.Ok);
@@ -334,7 +346,8 @@ namespace Unity.PlasticSCM.Editor.UI
 
             titleContent = new GUIContent(GetTitle());
 
-            mFocusedOnce = false;
+            mWasDialogFocusedOnce = false;
+            mWasTextAreaFocusedOnce = false;
 
             position = DefaultRect;
             mParentWindow = parentWindow;
@@ -371,7 +384,8 @@ namespace Unity.PlasticSCM.Editor.UI
 
         string mFocusedControlName;
 
-        bool mFocusedOnce;
+        bool mWasDialogFocusedOnce;
+        bool mWasTextAreaFocusedOnce;
         bool mIsConfigured;
         ResponseType mAnswer;
 

@@ -92,11 +92,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
                 GUI.SetNextControlName(NAME_FIELD_CONTROL_NAME);
                 mChangelistName = UnityEditor.EditorGUI.TextField(nameRect, mChangelistName);
 
-                if (!mWasNameFieldFocused)
-                {
-                    UnityEditor.EditorGUI.FocusTextInControl(NAME_FIELD_CONTROL_NAME);
-                    mWasNameFieldFocused = true;
-                }
+                FocusTextAreaIfNeeded(NAME_FIELD_CONTROL_NAME);
 
                 GUILayout.Space(5);
             }
@@ -206,7 +202,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
 
         bool mIsCreateMode;
 
-        bool mWasNameFieldFocused;
         const string NAME_FIELD_CONTROL_NAME = "CreateChangelistNameField";
         const string DESCRIPTION_TEXTAREA_CONTROL_NAME = "CreateChangelistDescriptionTextArea";
     }

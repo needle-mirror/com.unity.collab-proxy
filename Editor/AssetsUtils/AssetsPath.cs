@@ -93,6 +93,11 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
             return string.Concat(mAssetsFolderRelativePath, "/Images");
         }
 
+        internal static string GetFontsFolderRelativePath()
+        {
+            return string.Concat(mAssetsFolderRelativePath, "/Fonts");
+        }
+
         internal static string GetLibEditorFolderFullPath()
         {
             return mLibEditorFolderFullPath;

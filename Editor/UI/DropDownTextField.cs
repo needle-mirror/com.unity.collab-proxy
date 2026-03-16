@@ -46,6 +46,8 @@ namespace Unity.PlasticSCM.Editor.UI
 
             if (GUI.Button(popupButtonRect, string.Empty, EditorStyles.label))
             {
+                UnityInternals.UnityEditor.EditorGUI.activeEditor?.EndEditing();
+
                 GenericMenu menu = new GenericMenu();
                 foreach (string option in dropDownOptions)
                 {

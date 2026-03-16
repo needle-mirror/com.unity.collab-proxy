@@ -43,7 +43,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         {
             TrackFeatureUseEvent.For(
                 mRepSpec,
-                TrackFeatureUseEvent.Features.UndoTextButton);
+                TrackFeatureUseEvent.Features.UnityPackage.UndoTextButton);
 
             UndoForMode(isGluonMode, false);
         }
