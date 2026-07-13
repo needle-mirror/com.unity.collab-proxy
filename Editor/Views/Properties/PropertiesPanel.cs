@@ -8,6 +8,7 @@ using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.Utils;
 using PlasticGui;
+using PlasticGui.WorkspaceWindow.BranchExplorer;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Avatar;
 using Unity.PlasticSCM.Editor.Views.Attributes;
@@ -46,6 +47,8 @@ namespace Unity.PlasticSCM.Editor.Views.Properties
 
             mSelectedObject = null;
             mRepSpec = null;
+            mRepositoryName = null;
+            mReplicationSource = null;
 
             mRepaintAction();
         }
@@ -67,6 +70,11 @@ namespace Unity.PlasticSCM.Editor.Views.Properties
 
             mAttributesPanel.UpdateRepositorySpec(mRepSpec);
             mAttributesPanel.UpdateInfo(mSelectedObject.Id);
+
+            mRepositoryName = RepObjectPropertiesView.GetRepositoryName(mRepSpec);
+
+            mReplicationSource = null;
+            FetchReplicationSource();
 
             mRepaintAction();
         }
@@ -106,7 +114,9 @@ namespace Unity.PlasticSCM.Editor.Views.Properties
             DrawPropertiesArea(
                 image,
                 title,
-                description);
+                description,
+                mRepositoryName,
+                mReplicationSource);
 
             DrawCommentsFoldoutHeader();
 
@@ -253,6 +263,9 @@ namespace Unity.PlasticSCM.Editor.Views.Properties
 
         void DrawAttributesFoldoutHeader()
         {
+            if (!mAttributesPanel.IsAvailable())
+                return;
+
             Rect foldoutRect = GUILayoutUtility.GetRect(
                 GUIContent.none,
                 EditorStyles.foldout,
@@ -358,7 +371,9 @@ namespace Unity.PlasticSCM.Editor.Views.Properties
         static void DrawPropertiesArea(
             Texture image,
             string title,
-            string description)
+            string description,
+            string repositoryName,
+            string replicationSource)
         {
             GUILayout.BeginHorizontal();
 
@@ -376,10 +391,8 @@ namespace Unity.PlasticSCM.Editor.Views.Properties
                 0,
                 GUILayout.ExpandWidth(true));
 
-            DrawSelectableLabel(
-                title,
-                UnityStyles.PropertiesPanel.Title,
-                availableWidthRect.width);
+            DrawTitleWithRepositoryName(
+                title, repositoryName, availableWidthRect.width);
 
             GUILayout.Space(3);
 
@@ -387,6 +400,20 @@ namespace Unity.PlasticSCM.Editor.Views.Properties
                 description,
                 UnityStyles.PropertiesPanel.Description,
                 availableWidthRect.width);
+
+            if (!string.IsNullOrEmpty(replicationSource))
+            {
+                GUILayout.Space(2);
+
+                string replicationLine = string.Format("{0}: {1}",
+                    PlasticLocalization.Name.ReplicationSource.GetString(),
+                    replicationSource);
+
+                DrawSelectableLabel(
+                    replicationLine,
+                    UnityStyles.PropertiesPanel.Description,
+                    availableWidthRect.width);
+            }
 
             GUILayout.Space(5);
             GUILayout.EndVertical();
@@ -399,6 +426,47 @@ namespace Unity.PlasticSCM.Editor.Views.Properties
             return string.Format(
                 COMMENT_DRAFT_KEY_FORMAT,
                 repObject.GUID.ToString());
+        }
+
+        static void DrawTitleWithRepositoryName(
+            string title,
+            string repositoryName,
+            float availableWidth)
+        {
+            GUIStyle titleStyle = UnityStyles.PropertiesPanel.Title;
+            GUIStyle repoStyle = UnityStyles.PropertiesPanel.Description;
+
+            Vector2 titleSize = titleStyle.CalcSize(new GUIContent(title));
+            float titleWidth = Mathf.Min(titleSize.x, availableWidth);
+
+            if (string.IsNullOrEmpty(repositoryName))
+            {
+                DrawSelectableLabel(title, titleStyle, availableWidth);
+                return;
+            }
+
+            Vector2 repoSize = repoStyle.CalcSize(
+                new GUIContent(repositoryName));
+
+            float lineHeight = Mathf.Max(titleSize.y, repoSize.y);
+
+            Rect lineRect = GUILayoutUtility.GetRect(
+                availableWidth, lineHeight, titleStyle);
+
+            Rect titleArea = new Rect(
+                lineRect.x, lineRect.y,
+                titleWidth, lineHeight);
+
+            float verticalOffset = lineHeight - repoSize.y;
+
+            Rect repoArea = new Rect(
+                lineRect.x + titleWidth + 4,
+                lineRect.y + verticalOffset,
+                repoSize.x,
+                repoSize.y);
+
+            EditorGUI.SelectableLabel(titleArea, title, titleStyle);
+            EditorGUI.SelectableLabel(repoArea, repositoryName, repoStyle);
         }
 
         static void DrawImage(Texture image)
@@ -511,6 +579,17 @@ namespace Unity.PlasticSCM.Editor.Views.Properties
             return result;
         }
 
+        internal static string FilterReplicationSource(
+            string replicationSource)
+        {
+            if (string.IsNullOrEmpty(replicationSource) ||
+                replicationSource == PlasticLocalization.GetString(
+                    PlasticLocalization.Name.NoReplicationSources))
+                return null;
+
+            return replicationSource;
+        }
+
         static string GetComment(RepObjectInfo selectedObject)
         {
             if (selectedObject == null)
@@ -519,10 +598,40 @@ namespace Unity.PlasticSCM.Editor.Views.Properties
             return selectedObject.Comment;
         }
 
+        void FetchReplicationSource()
+        {
+            RepositorySpec repSpec = mRepSpec;
+            RepObjectInfo selectedObject = mSelectedObject;
+
+            IThreadWaiter waiter = ThreadWaiter.GetWaiter();
+            waiter.Execute(
+                threadOperationDelegate: delegate
+                {
+                    string replicationSource =
+                        RepObjectPropertiesView.GetReplicationSource(
+                            repSpec, selectedObject);
+
+                    mReplicationSource = FilterReplicationSource(
+                        replicationSource);
+                },
+                afterOperationDelegate: delegate
+                {
+                    if (waiter.Exception != null)
+                    {
+                        mReplicationSource = null;
+                        mRepaintAction();
+                        return;
+                    }
+
+                    mRepaintAction();
+                });
+        }
+
         void RefreshCommentAndAttributes()
         {
             mCommentsPanel.SetComment(GetComment(mSelectedObject));
             mAttributesPanel.Refresh();
+            FetchReplicationSource();
             mRepaintAction();
         }
 
@@ -532,6 +641,8 @@ namespace Unity.PlasticSCM.Editor.Views.Properties
 
         RepObjectInfo mSelectedObject;
         RepositorySpec mRepSpec;
+        string mRepositoryName;
+        string mReplicationSource;
 
         long mLastRefreshVersion = PropertiesRefreshNotifier.Version;
         bool mCommentsFoldout;

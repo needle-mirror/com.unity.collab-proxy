@@ -172,6 +172,7 @@ namespace Unity.PlasticSCM.Editor.AssetMenu.Dialogs
             bool isCancelled;
             mSaveAssets.ForPathsWithConfirmation(
                 mWkInfo.ClientPath, mPaths, mWorkspaceOperationsMonitor,
+                canContinueWithDirtyScenes: true,
                 out isCancelled);
 
             if (isCancelled)

@@ -1,14 +1,14 @@
 // Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -41,6 +41,11 @@ namespace Unity.CodeEditor.Rendering
 
 		private readonly Regex _linkRegex;
 
+		// cached regex match to avoid re-running the regex on every sweep iteration
+		private Match _cachedMatch;
+		private int _cachedMatchOffset; // document offset of the cached match, or -1 if no match
+		private bool _hasCachedMatch;
+
 		/// <summary>
 		/// Gets/Sets whether the user needs to press Control to click the link.
 		/// The default value is true.
@@ -69,12 +74,44 @@ namespace Unity.CodeEditor.Rendering
 			RequireControlModifierForClick = options.RequireControlModifierForHyperlinkClick;
 		}
 
+		internal override void StartGeneration(ITextRunConstructionContext context)
+		{
+			base.StartGeneration(context);
+			_cachedMatch = null;
+			_cachedMatchOffset = -1;
+			_hasCachedMatch = false;
+		}
+
 		private Match GetMatch(int startOffset, out int matchOffset)
 		{
+			if (_hasCachedMatch)
+			{
+				if (_cachedMatchOffset == -1)
+				{
+					// no match exists on this line at all — skip the regex entirely
+					matchOffset = -1;
+					return _cachedMatch;
+				}
+
+				if (startOffset <= _cachedMatchOffset)
+				{
+					// the cached match is still the first match at or after startOffset
+					matchOffset = _cachedMatchOffset;
+					return _cachedMatch;
+				}
+				// startOffset moved past the cached match — need to re-run
+			}
+
 			var endOffset = CurrentContext.VisualLine.LastDocumentLine.EndOffset;
 			var relevantText = CurrentContext.GetText(startOffset, endOffset - startOffset);
 			var m = _linkRegex.Match(relevantText.Text, relevantText.Offset, relevantText.Count);
 			matchOffset = m.Success ? m.Index - relevantText.Offset + startOffset : -1;
+
+			// Cache for subsequent calls
+			_hasCachedMatch = true;
+			_cachedMatch = m;
+			_cachedMatchOffset = matchOffset;
+
 			return m;
 		}
 

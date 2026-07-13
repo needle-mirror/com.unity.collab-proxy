@@ -60,8 +60,7 @@ namespace Unity.PlasticSCM.Editor.UI
         internal const string UVCS_WINDOW_TITLE = "Unity Version Control";
         internal const string BREX_WINDOW_TITLE = "Branch Explorer";
         internal const string DIFF_WINDOW_TITLE = "Differences";
-        internal const string PROJECT_SETTINGS_TAB_PATH = "Project/Version Control/Unity Version Control";
-        internal const string PROJECT_SETTINGS_TAB_TITLE = "Unity Version Control Settings";
+        internal const string PROJECT_SETTINGS_TAB_PATH = "Project/Version Control";
 
         internal const float UVCS_WINDOW_MIN_SIZE_WIDTH = 600f;
         internal const float UVCS_WINDOW_MIN_SIZE_HEIGHT = 350f;

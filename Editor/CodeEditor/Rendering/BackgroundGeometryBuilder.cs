@@ -149,6 +149,8 @@ namespace Unity.CodeEditor.Rendering
 			}
 
 			foreach (VisualLine vl in textView.VisualLines) {
+				if (vl.FirstDocumentLine.IsDeleted || vl.LastDocumentLine.IsDeleted)
+					continue;
 				int vlStartOffset = vl.FirstDocumentLine.Offset;
 				if (vlStartOffset > segmentEnd)
 					break;

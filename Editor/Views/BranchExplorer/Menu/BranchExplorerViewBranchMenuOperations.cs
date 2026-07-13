@@ -13,7 +13,7 @@ using PlasticGui;
 using PlasticGui.Help;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.BranchExplorer;
-using PlasticGui.WorkspaceWindow.CodeReview;
+using PlasticGui.WorkspaceWindow.MergeRequest;
 using PlasticGui.WorkspaceWindow.QueryViews.Branches;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
@@ -506,7 +506,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Menu
                     switch (choice)
                     {
                         case NewCodeReviewBehavior.CreateAndOpenInDesktop:
-                            mBranchOperations.CreateCodeReview(mRepSpec, branch, this);
+                            mBranchOperations.CreateReview(mRepSpec, branch, this);
                             break;
                         case NewCodeReviewBehavior.RequestFromUnityCloud:
                             OpenRequestReviewPage.ForBranch(mRepSpec, branch.BranchId);
@@ -517,6 +517,8 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Menu
                     }
                 });
         }
+
+        public void CreateMergeRequest() { }
 
         public void ViewPermissions()
         {

@@ -238,6 +238,8 @@ namespace Unity.PlasticSCM.Editor.Inspector
             {
                 DoUndoButton();
             }
+
+            DoDiffAndHistoryButtons(assetOperations);
         }
 
         static void DrawStatusLabel(
@@ -333,6 +335,66 @@ namespace Unity.PlasticSCM.Editor.Inspector
 
                 mOperations.Undo();
                 EditorGUIUtility.ExitGUI();
+            }
+        }
+
+        static void DoDiffAndHistoryButtons(AssetMenuOperations assetOperations)
+        {
+            if (!assetOperations.HasFlag(AssetMenuOperations.Diff) &&
+                !assetOperations.HasFlag(AssetMenuOperations.History))
+                return;
+
+            var content = new GUIContent(
+                Images.GetOptionsIcon(),
+                PlasticLocalization.Name.More.GetString());
+
+            if (GUILayout.Button(content, UnityStyles.Inspector.PaneOptions))
+            {
+                GenericMenu menu = new GenericMenu();
+
+                menu.AddItem(
+                    new GUIContent(PlasticLocalization.Name.DiffPlasticMenu.GetString()),
+                    false,
+                    () =>
+                    {
+                        if (mOperations == null)
+                            ShowWindow.UVCS();
+
+                        mOperations.ShowDiff();
+                    });
+
+                menu.AddItem(
+                    new GUIContent(PlasticLocalization.Name.DiffMetaPlasticMenu.GetString()),
+                    false,
+                    () =>
+                    {
+                        if (mOperations == null)
+                            ShowWindow.UVCS();
+
+                        mOperations.ShowMetaDiff();
+                    });
+
+                menu.AddSeparator(string.Empty);
+
+                menu.AddItem(
+                    new GUIContent(PlasticLocalization.Name.HistoryPlasticMenu.GetString()),
+                    false,
+                    () =>
+                    {
+                        ShowWindow.UVCS();
+                        mOperations.ShowHistory();
+                    });
+
+                menu.AddItem(
+                    new GUIContent(PlasticLocalization.Name.HistoryMetaPlasticMenu.GetString()),
+                    false,
+                    () =>
+                    {
+                        ShowWindow.UVCS();
+                        mOperations.ShowMetaHistory();
+                    });
+
+                menu.ShowAsContext();
             }
         }
 

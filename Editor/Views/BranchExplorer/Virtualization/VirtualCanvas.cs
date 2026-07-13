@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Codice.Client.BaseCommands.BranchExplorer;
 using Codice.Client.BaseCommands.BranchExplorer.Layout;
 using PlasticGui.WorkspaceWindow.BranchExplorer;
 using Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes;
@@ -117,6 +118,50 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Virtualization
             }
 
             return result;
+        }
+
+        // A virtualized node that is off-screen has no VisualElement, so a
+        // Q<>() against its name returns null. Bring it into the visible
+        // rect and realize its visual so tests can resolve and drive it.
+        internal void ScrollChangesetIntoView(long changesetId)
+        {
+            IVirtualChild target = FindChangesetChild(changesetId);
+
+            if (target == null)
+                return;
+
+            Rect bounds = target.Bounds;
+            float zoom = ZoomLevel;
+
+            mScrollView.ScrollOffset = new Vector2(bounds.x * zoom, bounds.y * zoom);
+
+            OnScrollChanged();
+            LazyUpdateVisuals();
+        }
+
+        IVirtualChild FindChangesetChild(long changesetId)
+        {
+            foreach (IVirtualChild child in mChildren)
+            {
+                VirtualShape virtualShape = child as VirtualShape;
+
+                if (virtualShape == null ||
+                    virtualShape.ShapeType != ShapeType.Changeset)
+                    continue;
+
+                ChangesetDrawInfo changesetDraw =
+                    virtualShape.DrawInfo as ChangesetDrawInfo;
+
+                if (changesetDraw == null)
+                    continue;
+
+                BrExChangeset changeset = changesetDraw.Tag as BrExChangeset;
+
+                if (changeset != null && changeset.Id == changesetId)
+                    return child;
+            }
+
+            return null;
         }
 
         internal void SetLayout(BrExLayout layout)

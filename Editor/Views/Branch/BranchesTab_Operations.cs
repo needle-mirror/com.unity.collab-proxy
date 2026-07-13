@@ -16,6 +16,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             bool isCancelled;
             mSaveAssets.UnderWorkspaceWithConfirmation(
                 mWkInfo.ClientPath, mWorkspaceOperationsMonitor,
+                canContinueWithDirtyScenes: false,
                 out isCancelled);
 
             if (isCancelled)

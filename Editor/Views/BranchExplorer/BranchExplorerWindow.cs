@@ -48,16 +48,19 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer
 
         void OnFocus()
         {
-            if (mWkInfo != null)
-                return;
-
             if (mUVCSPlugin == null)
                 return;
 
-            if (!TryFindWorkspace())
-                return;
+            if (mWkInfo == null)
+            {
+                if (!TryFindWorkspace())
+                    return;
 
-            ShowBranchExplorer();
+                ShowBranchExplorer();
+            }
+
+            if (mBranchExplorerView != null)
+                mBranchExplorerView.OnWindowFocused();
         }
 
         bool TryFindWorkspace()

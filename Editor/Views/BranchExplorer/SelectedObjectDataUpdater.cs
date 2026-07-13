@@ -102,12 +102,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer
 
                 MountPointWithPath mountPoint = MountPointWithPath.BuildWorkspaceRootMountPoint(mRepSpec);
 
-                SelectedRepObjectInfoData selectedData = SelectedRepObjectInfoData.Create(
-                    mFocusedRepObject,
-                    mRepSpec,
-                    mountPoint);
-
-                Selection.activeObject = selectedData;
+                SelectedRepObjectInfoData.SetActiveObject(mFocusedRepObject, mRepSpec, mountPoint);
             }
         }
 

@@ -579,11 +579,38 @@ The file is quite big. Finding differences could take a while. Click the button 
 == CalculateDifferencesButton ==
 Find differences
 
-== BigFileContentsMessage ==
-The file is quite big. Showing the content could take a while. Click the button if you really want to show the content for this file.
-
 == ShowContentButton ==
 Show content
+
+== BigFileSizeBadge ==
+Size · {0}
+
+== BigFileLeftSizeBadge ==
+Left · {0}
+
+== BigFileRightSizeBadge ==
+Right · {0}
+
+== BigFileLocalBadge ==
+On disk
+
+== BigFileDownloadRequiredBadge ==
+Download required
+
+== BigFilePerformanceWarning ==
+This file is large and processing it may take a while.
+
+== BigFileLocalStorageMessage ==
+The file content is available on disk.
+
+== BigFileDownloadStorageMessage ==
+The file content needs to be downloaded from the server.
+
+== DownloadAndFindDifferencesButton ==
+Download & find differences
+
+== DownloadAndShowContentButton ==
+Download & show content
 
 == BranchChanges ==
 Branch changes

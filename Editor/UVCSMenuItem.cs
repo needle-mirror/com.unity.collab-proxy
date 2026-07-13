@@ -20,7 +20,7 @@ namespace Unity.PlasticSCM.Editor
         [MenuItem(MENU_ITEM_NAME, true)]
         static bool ValidateMenu()
         {
-            return !VCSBuiltInPlugin.IsAnyProviderEnabled();
+            return VCSBuiltInPlugin.IsEnabled() || !VCSBuiltInPlugin.IsVersionControlProviderEnabled();
         }
 
         const string MENU_ITEM_NAME =

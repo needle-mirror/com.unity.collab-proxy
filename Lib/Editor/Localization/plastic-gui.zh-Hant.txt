@@ -239,7 +239,7 @@ https://www.plasticscm.com/download/releasenotes/
 偏好設定
 
 == MainSidebarAboutItem ==
-關於 Unity DevOps Version Control
+關於 Unity Version Control
 
 == MainSidebarAboutGluonItem ==
 關於 Gluon
@@ -1202,7 +1202,7 @@ GUID
 隱藏已變更
 
 == MainWindowTitle ==
-Unity DevOps Version Control - 工作區:{0} - {1} - {2}:{3}@{4}
+Unity Version Control - 工作區:{0} - {1} - {2}:{3}@{4}
 
 == StatusInfo ==
 您正在瀏覽 {0} {1}@{2}
@@ -2073,7 +2073,7 @@ Gluon 設定
 輸入您的伺服器名稱/ IP 和連接埠:
 
 == PreferencesWindowTitle ==
-Unity DevOps Version Control 偏好設定 - {0}
+Unity Version Control 偏好設定 - {0}
 
 == GeneralPreferences ==
 一般
@@ -4260,7 +4260,7 @@ File Move and Rename Detection
 設定您的憑證
 
 == PlasticConfiguration ==
-Unity DevOps Version Control 設定
+Unity Version Control 設定
 
 == ConfigurationServerInfo ==
 輸入您的 Unity VCS 伺服器名稱 (或 IP 位址) 和連接埠。您可以使用 [掃描網路] 以在您的網路上尋找可用的 Unity VCS 伺服器

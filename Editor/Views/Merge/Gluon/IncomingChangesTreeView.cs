@@ -537,6 +537,7 @@ namespace Unity.PlasticSCM.Editor.Views.IncomingChanges.Gluon
                     icon, null, overlayIcon, label,
                     isSelected, isFocused, isCurrentConflict,
                     wasChecked,
+                    false,
                     DrawTreeViewItem.TextTrimming.Path);
 
                 ((ICheckablePlasticTreeNode)incomingChange).UpdateCheckedState(isChecked);

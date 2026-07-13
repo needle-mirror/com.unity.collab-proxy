@@ -143,6 +143,7 @@ namespace Unity.PlasticSCM.Editor.UI.Avatar
 
             Texture2D result = new Texture2D(
                 OUTPUT_SIZE, OUTPUT_SIZE, TextureFormat.RGBA32, false);
+            result.hideFlags = HideFlags.HideAndDontSave;
             result.filterMode = FilterMode.Bilinear;
             result.SetPixels(targetPixels);
             result.Apply();
@@ -212,11 +213,7 @@ namespace Unity.PlasticSCM.Editor.UI.Avatar
             if (mFont != null)
                 return mFont;
 
-#if UNITY_2022_1_OR_NEWER
             mFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-#else
-            mFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
-#endif
 
             return mFont;
         }

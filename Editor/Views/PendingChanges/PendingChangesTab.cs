@@ -38,7 +38,7 @@ using Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs;
 using Unity.PlasticSCM.Editor.Views.PendingChanges.PendingMergeLinks;
 using Unity.PlasticSCM.Editor.Views.Changesets;
 
-using DiffWindow = Plugins.PlasticSCM.Editor.Diff.DiffWindow;
+using Unity.PlasticSCM.Editor.Diff;
 
 #if !UNITY_6000_3_OR_NEWER
 using SplitterGUILayout = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SplitterGUILayout;
@@ -183,9 +183,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         internal void AutoRefresh()
         {
-            if (mIsAutoRefreshDisabled)
-                return;
-
             if (!PlasticGuiConfig.Get().Configuration.CommitAutoRefresh)
                 return;
 
@@ -274,6 +271,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 mErrorsPanel.OnDisable();
 
             mCommentArea.OnDisable();
+
+            mShownDiffChangePath = null;
+            GetWindowIfOpened.Diff()?.ClearIfShownFrom(DiffSource.PendingChanges);
         }
 
         internal void Update()
@@ -416,16 +416,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             Refresh();
         }
 
-        void PendingChangesOptionsFoldout.IAutoRefreshView.DisableAutoRefresh()
-        {
-            mIsAutoRefreshDisabled = true;
-        }
-
-        void PendingChangesOptionsFoldout.IAutoRefreshView.EnableAutoRefresh()
-        {
-            mIsAutoRefreshDisabled = false;
-        }
-
         void PendingChangesOptionsFoldout.IAutoRefreshView.ForceRefresh()
         {
             ((IRefreshableView)this).Refresh();
@@ -510,23 +500,15 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             ChangeInfo changedForMovedMeta = (changedForMoved == null) ?
                 null : mPendingChangesTreeView.GetMetaChange(changedForMoved);
 
-            if (UseBuiltinDiffWindowPreference.IsEnabled())
-            {
-                DiffWindow diffWindow = ShowWindow.Diff();
+            IUnityDiffWindow diffWindow = ShowWindow.Diff();
 
-                diffWindow.ShowDiffFromChange(
-                    selectedChangeMeta,
-                    changedForMovedMeta);
-                return;
-            }
-
-            DiffOperation.DiffWorkspaceContent(
-                mWkInfo,
+            diffWindow.ShowDiffFromChange(
                 selectedChangeMeta,
                 changedForMovedMeta,
-                mProgressControls,
-                PlasticExeLauncher.BuildForDiffWorkspaceContent(mWkInfo, mIsGluonMode, mShowDownloadPlasticExeWindow),
-                null);
+                showDiffInDesktopApp: () => DiffInDesktopApp(
+                    selectedChangeMeta, changedForMovedMeta));
+
+            mShownDiffChangePath = selectedChangeMeta?.Path;
         }
 
         void PendingChangesViewPendingChangeMenu.IMetaMenuOperations.HistoryMeta()
@@ -582,21 +564,24 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         {
             ChangeInfo selectedChange = PendingChangesSelection
                 .GetSelectedChange(mPendingChangesTreeView);
+            ChangeInfo changedForMoved = mPendingChangesTreeView.GetChangedForMoved(selectedChange);
 
-            if (UseBuiltinDiffWindowPreference.IsEnabled())
-            {
-                DiffWindow diffWindow = ShowWindow.Diff();
-                diffWindow.ShowDiffFromChange(
-                    selectedChange,
-                    mPendingChangesTreeView.GetChangedForMoved(selectedChange));
-                return;
-            }
+            IUnityDiffWindow diffWindow = ShowWindow.Diff();
+            diffWindow.ShowDiffFromChange(
+                selectedChange,
+                changedForMoved,
+                BuildDiffInDesktopAppAction(selectedChange, changedForMoved));
 
+            mShownDiffChangePath = selectedChange?.Path;
+        }
+
+        void DiffInDesktopApp(ChangeInfo change, ChangeInfo changedForMoved)
+        {
             DiffOperation.DiffWorkspaceContent(
                 mWkInfo,
-                selectedChange,
-                mPendingChangesTreeView.GetChangedForMoved(selectedChange),
-                null,
+                change,
+                changedForMoved,
+                mProgressControls,
                 PlasticExeLauncher.BuildForDiffWorkspaceContent(mWkInfo, mIsGluonMode, mShowDownloadPlasticExeWindow),
                 null);
         }
@@ -969,6 +954,9 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
                         UpdateChangesTree(pendingChangesStatus.WorkspaceStatusResult.Changes);
 
+                        ClearDiffWindowIfShownChangeIsGone(
+                            pendingChangesStatus.WorkspaceStatusResult.Changes);
+
                         RestoreData();
 
                         UpdateMergeLinksList();
@@ -1007,6 +995,21 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         {
             Rect result = GUILayoutUtility.GetRect(1, 1, GUILayout.ExpandHeight(true));
             EditorGUI.DrawRect(result, UnityStyles.Colors.BarBorder);
+        }
+
+        void ClearDiffWindowIfShownChangeIsGone(List<ChangeInfo> newChanges)
+        {
+            if (mShownDiffChangePath == null)
+                return;
+
+            foreach (ChangeInfo change in newChanges)
+            {
+                if (change.Path == mShownDiffChangePath)
+                    return;
+            }
+
+            mShownDiffChangePath = null;
+            GetWindowIfOpened.Diff()?.ClearIfShownFrom(DiffSource.PendingChanges);
         }
 
         void UpdateChangesTree(List<ChangeInfo> changes)
@@ -1191,23 +1194,28 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             if (!IsVisible)
                 return;
 
-            if (!UseBuiltinDiffWindowPreference.IsEnabled())
-                return;
-
             if (mPendingChangesTreeView.GetSelection().Count != 1)
-                return;
-
-            if (!PendingChangesSelection.IsApplicableDiffWorkspaceContent(mPendingChangesTreeView))
                 return;
 
             ChangeInfo selectedChange = PendingChangesSelection
                 .GetSelectedChange(mPendingChangesTreeView);
 
-            DiffWindow diffWindow = GetWindowIfOpened.Diff();
+            if (selectedChange == null)
+                return;
 
-            diffWindow?.ShowDiffFromChange(
+            IUnityDiffWindow diffWindow = GetWindowIfOpened.Diff();
+
+            if (diffWindow == null)
+                return;
+
+            ChangeInfo changedForMoved = mPendingChangesTreeView.GetChangedForMoved(selectedChange);
+
+            diffWindow.ShowDiffFromChange(
                 selectedChange,
-                mPendingChangesTreeView.GetChangedForMoved(selectedChange));
+                changedForMoved,
+                BuildDiffInDesktopAppAction(selectedChange, changedForMoved));
+
+            mShownDiffChangePath = selectedChange?.Path;
         }
 
         void OnRowDoubleClickAction()
@@ -1215,33 +1223,19 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             if (mPendingChangesTreeView.GetSelection().Count != 1)
                 return;
 
-            if (PendingChangesSelection.IsApplicableDiffWorkspaceContent(mPendingChangesTreeView))
+            ChangeInfo selectedChange = PendingChangesSelection
+                .GetSelectedChange(mPendingChangesTreeView);
+
+            if (selectedChange != null)
             {
-                if (UseBuiltinDiffWindowPreference.IsEnabled())
-                {
-                    ChangeInfo selectedChange = PendingChangesSelection
-                        .GetSelectedChange(mPendingChangesTreeView);
-
-                    DiffWindow diffWindow = ShowWindow.Diff();
-                    diffWindow.ShowDiffFromChange(
-                        selectedChange,
-                        mPendingChangesTreeView.GetChangedForMoved(selectedChange));
-                    return;
-                }
-
                 ((IPendingChangesMenuOperations)this).Diff();
                 return;
             }
 
             int selectedNode = mPendingChangesTreeView.GetSelection()[0];
 
-            if (mPendingChangesTreeView.IsExpanded(selectedNode))
-            {
-                mPendingChangesTreeView.SetExpanded(selectedNode, expanded: false);
-                return;
-            }
-
-            mPendingChangesTreeView.SetExpanded(selectedNode, expanded: true);
+            mPendingChangesTreeView.SetExpanded(
+                selectedNode, expanded: !mPendingChangesTreeView.IsExpanded(selectedNode));
         }
 
         void UpdateEmptyStateMessage()
@@ -1249,6 +1243,16 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             string searchString = mPendingChangesTreeView.searchString;
             string message = GetEmptyStateMessage(searchString);
             mEmptyStatePanel.UpdateContent(message);
+        }
+
+        Action BuildDiffInDesktopAppAction(
+            ChangeInfo selectedChange,
+            ChangeInfo changedForMoved)
+        {
+            if (!DiffOperation.IsApplicableDiffWorkspaceContent(selectedChange))
+                return null;
+
+            return () => DiffInDesktopApp(selectedChange, changedForMoved);
         }
 
         void BuildComponents(bool isGluonMode, Action repaintAction)
@@ -1290,7 +1294,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         bool mShouldShowEmptyState;
         bool mIsRefreshing;
-        bool mIsAutoRefreshDisabled;
         bool mIsEmptyCheckinCommentWarningNeeded = false;
         bool mNeedsToShowEmptyCheckinCommentDialog = false;
         bool mHasPendingCheckinFromPreviousUpdate = false;
@@ -1301,6 +1304,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
         bool mRestoreData = true;
         bool mIsEnabled = true;
         string mGluonWarningMessage;
+        string mShownDiffChangePath;
         Action mAfterOnGUIAction;
         IDictionary<MountPoint, IList<PendingMergeLink>> mPendingMergeLinks;
 

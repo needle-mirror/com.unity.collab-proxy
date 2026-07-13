@@ -1,142 +1,226 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 using Codice.CM.Common;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.QueryViews.Labels;
-using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.UI.UIElements;
 using Unity.PlasticSCM.Editor.Views.Changesets;
+
+using ImguiProgressControls = Unity.PlasticSCM.Editor.UI.Progress.ProgressControlsForDialogs;
 
 namespace Unity.PlasticSCM.Editor.Views.Labels.Dialogs
 {
-    class CreateLabelDialog : PlasticDialog
+    internal class CreateLabelDialog : EditorWindow
     {
-        protected override Rect DefaultRect
-        {
-            get
-            {
-                var baseRect = base.DefaultRect;
-                return new Rect(baseRect.x, baseRect.y, 710, baseRect.y);
-            }
-        }
-
-        protected override string GetTitle()
-        {
-            return PlasticLocalization.Name.CreateLabelTitle.GetString();
-        }
-
-        protected override string GetExplanation()
-        {
-            if (mShowChangesetExplorer)
-                return PlasticLocalization.Name.SelectChangesetBelow.GetString();
-
-            return PlasticLocalization.Name.CreateLabelExplanation.GetString();
-        }
-
-        protected override void DoComponentsArea()
-        {
-            if (mShowChangesetExplorer)
-            {
-                // HACK: GetTitle is not called once the dialog is shown
-                titleContent.text = PlasticLocalization.Name.AvailableChangesets.GetString();
-                mChangesetExplorerView.OnGUI();
-
-                return;
-            }
-
-            titleContent.text = PlasticLocalization.Name.CreateLabelTitle.GetString();
-            mCreateLabelView.OnGUI();
-        }
+        internal const string CHANGESET_SELECT_BUTTON = "create-label-changeset-select-button";
+        internal const string CHANGESET_BACK_BUTTON = "create-label-changeset-back-button";
 
         internal static LabelCreationData CreateLabel(
             EditorWindow parentWindow,
             WorkspaceInfo wkInfo)
         {
             RepositorySpec repSpec = PlasticGui.Plastic.API.GetRepositorySpec(wkInfo);
-            long currentChangesetId = PlasticGui.Plastic.API.GetCurrentChangesetOnWorkspace(wkInfo);
+            long currentChangesetId =
+                PlasticGui.Plastic.API.GetCurrentChangesetOnWorkspace(wkInfo);
 
-            CreateLabelDialog dialog = Create(wkInfo, repSpec, currentChangesetId);
+            CreateLabelDialog dialog = CreateInstance<CreateLabelDialog>();
+            dialog.mWkInfo = wkInfo;
+            dialog.mRepSpec = repSpec;
+            dialog.mInitialChangesetId = currentChangesetId;
+            dialog.titleContent = new GUIContent(
+                PlasticLocalization.Name.CreateLabelTitle.GetString());
+            dialog.SetFixedSize(FORM_HEIGHT);
+            dialog.CenterOnMainWindow(FORM_HEIGHT);
 
-            ResponseType dialogResult = dialog.RunModal(parentWindow);
-            LabelCreationData result = mCreateLabelView.BuildCreationData();
-            result.Result = dialogResult == ResponseType.Ok;
-            return result;
+            dialog.ShowModalUtility();
+
+            return dialog.mResult ?? new LabelCreationData();
         }
 
-        static CreateLabelDialog Create(
-            WorkspaceInfo wkInfo,
-            RepositorySpec repSpec,
-            long changesetId)
+        internal void OkButtonAction()
         {
-            CreateLabelDialog instance = CreateInstance<CreateLabelDialog>();
-            instance.IsResizable = false;
+            ChangesetInfo changesetInfo =
+                ChangesetsSelection.GetSelectedChangeset(mChangesetExplorerView.Table);
 
-            mCreateLabelView = new CreateLabelView(instance, repSpec);
+            if (changesetInfo == null)
+                return;
 
+            mCreateLabelView.SetChangesetId(changesetInfo.ChangesetId);
+
+            ShowForm();
+        }
+
+        void CreateGUI()
+        {
+            VisualElement root = rootVisualElement;
+            root.style.paddingTop = MARGIN;
+            root.style.paddingBottom = MARGIN;
+            root.style.paddingLeft = MARGIN;
+            root.style.paddingRight = MARGIN;
+
+            mExplanationLabel = new Label(
+                PlasticLocalization.Name.CreateLabelExplanation.GetString());
+            mExplanationLabel.style.marginBottom = MARGIN;
+            mExplanationLabel.style.whiteSpace = WhiteSpace.Normal;
+            root.Add(mExplanationLabel);
+
+            mCreateLabelView = new CreateLabelViewUIToolkit(mRepSpec, mInitialChangesetId);
+            mCreateLabelView.Confirmed += OnFormConfirmed;
+            mCreateLabelView.Cancelled += OnFormCancelled;
+            mCreateLabelView.ChooseChangesetRequested += ShowChangesetExplorer;
+            root.Add(mCreateLabelView);
+
+            mExplorerProgressControls = new ImguiProgressControls();
             mChangesetExplorerView = new ChangesetExplorerView(
-                instance, wkInfo, instance.mProgressControls);
+                this, mWkInfo, mExplorerProgressControls);
 
-            instance.mEnterKeyAction = instance.OkButtonAction;
-            instance.mEscapeKeyAction = instance.CloseButtonAction;
-            instance.mOkButtonText = PlasticLocalization.Name.CreateButton.GetString();
-
-            instance.ToggleChangesetExplorer(false);
-            instance.SetChangesetId(changesetId);
-
-            return instance;
+            mExplorerContainer = BuildExplorerContainer();
+            mExplorerContainer.style.display = DisplayStyle.None;
+            root.Add(mExplorerContainer);
         }
 
-        internal override void OkButtonAction()
+        VisualElement BuildExplorerContainer()
         {
-            if (mShowChangesetExplorer)
+            VisualElement container = new VisualElement();
+            container.style.flexGrow = 1;
+
+            Label explanation = new Label(
+                PlasticLocalization.Name.SelectChangesetBelow.GetString());
+            explanation.style.marginBottom = MARGIN;
+            explanation.style.whiteSpace = WhiteSpace.Normal;
+
+            IMGUIContainer explorer = new IMGUIContainer(OnExplorerGUI);
+            explorer.style.flexGrow = 1;
+
+            VisualElement buttons = new VisualElement();
+            buttons.style.flexDirection = FlexDirection.Row;
+            buttons.style.justifyContent = Justify.FlexEnd;
+            buttons.style.marginTop = ROW_SPACING;
+
+            Button selectButton = ControlBuilder.Button.CreateButton(
+                PlasticLocalization.Name.OkButton.GetString(), OkButtonAction);
+            selectButton.name = CHANGESET_SELECT_BUTTON;
+            selectButton.style.minWidth = BUTTON_WIDTH;
+
+            Button backButton = ControlBuilder.Button.CreateButton(
+                PlasticLocalization.Name.BackButton.GetString(), ShowForm);
+            backButton.name = CHANGESET_BACK_BUTTON;
+            backButton.style.minWidth = BUTTON_WIDTH;
+
+            if (Application.platform == RuntimePlatform.WindowsEditor)
             {
-                ChangesetInfo changesetInfo =
-                    ChangesetsSelection.GetSelectedChangeset(mChangesetExplorerView.Table);
+                buttons.Add(selectButton);
+                buttons.Add(backButton);
+            }
+            else
+            {
+                buttons.Add(backButton);
+                buttons.Add(selectButton);
+            }
 
-                if (changesetInfo == null)
-                    return;
+            container.Add(explanation);
+            container.Add(explorer);
+            container.Add(buttons);
 
-                SetChangesetId(changesetInfo.ChangesetId);
+            container.RegisterCallback<KeyDownEvent>(
+                OnExplorerKeyDown, TrickleDown.TrickleDown);
 
-                ToggleChangesetExplorer(false);
+            return container;
+        }
+
+        void OnExplorerKeyDown(KeyDownEvent e)
+        {
+            if (e.keyCode == KeyCode.Return ||
+                e.keyCode == KeyCode.KeypadEnter)
+            {
+                OkButtonAction();
+                e.StopPropagation();
                 return;
             }
 
-            LabelCreationValidation.AsyncValidation(
-                mCreateLabelView.BuildCreationData(), this, mProgressControls);
-        }
-
-        internal void ToggleChangesetExplorer(bool show)
-        {
-            mShowChangesetExplorer = show;
-
-            mOkButtonText = mShowChangesetExplorer ?
-                PlasticLocalization.Name.OkButton.GetString() :
-                PlasticLocalization.Name.CreateButton.GetString();
-            mCancelButtonText = mShowChangesetExplorer ?
-                PlasticLocalization.Name.BackButton.GetString() :
-                PlasticLocalization.Name.CancelButton.GetString();
-        }
-
-        internal override void CancelButtonAction()
-        {
-            if (mShowChangesetExplorer)
+            if (e.keyCode == KeyCode.Escape)
             {
-                ToggleChangesetExplorer(false);
-                return;
+                ShowForm();
+                e.StopPropagation();
             }
-
-            base.CancelButtonAction();
         }
 
-        internal void SetChangesetId(long changesetId)
+        void OnExplorerGUI()
         {
-            mCreateLabelView.SetChangesetId(changesetId);
+            mChangesetExplorerView.OnGUI();
+            mExplorerProgressControls.UpdateProgress(this);
         }
 
-        static CreateLabelView mCreateLabelView;
-        static ChangesetExplorerView mChangesetExplorerView;
+        void ShowChangesetExplorer()
+        {
+            mExplanationLabel.style.display = DisplayStyle.None;
+            mCreateLabelView.style.display = DisplayStyle.None;
+            mExplorerContainer.style.display = DisplayStyle.Flex;
 
-        static bool mShowChangesetExplorer;
+            SetFixedSize(EXPLORER_HEIGHT);
+
+            titleContent.text = PlasticLocalization.Name.AvailableChangesets.GetString();
+        }
+
+        void SetFixedSize(float height)
+        {
+            Vector2 size = new Vector2(DIALOG_WIDTH, height);
+            minSize = size;
+            maxSize = size;
+        }
+
+        void CenterOnMainWindow(float height)
+        {
+            Rect mainWindow = EditorGUIUtility.GetMainWindowPosition();
+            position = new Rect(
+                mainWindow.x + (mainWindow.width - DIALOG_WIDTH) / 2f,
+                mainWindow.y + (mainWindow.height - height) / 2f,
+                DIALOG_WIDTH,
+                height);
+        }
+
+        void ShowForm()
+        {
+            mExplorerContainer.style.display = DisplayStyle.None;
+            mExplanationLabel.style.display = DisplayStyle.Flex;
+            mCreateLabelView.style.display = DisplayStyle.Flex;
+
+            SetFixedSize(FORM_HEIGHT);
+
+            titleContent.text = PlasticLocalization.Name.CreateLabelTitle.GetString();
+        }
+
+        void OnFormConfirmed()
+        {
+            mResult = mCreateLabelView.BuildCreationData();
+            mResult.Result = true;
+
+            Close();
+        }
+
+        void OnFormCancelled()
+        {
+            Close();
+        }
+
+        CreateLabelViewUIToolkit mCreateLabelView;
+        ChangesetExplorerView mChangesetExplorerView;
+        ImguiProgressControls mExplorerProgressControls;
+        VisualElement mExplorerContainer;
+        Label mExplanationLabel;
+
+        LabelCreationData mResult;
+        WorkspaceInfo mWkInfo;
+        RepositorySpec mRepSpec;
+        long mInitialChangesetId;
+
+        const float DIALOG_WIDTH = 710f;
+        const float FORM_HEIGHT = 340f;
+        const float EXPLORER_HEIGHT = 480f;
+        const float MARGIN = 12f;
+        const float ROW_SPACING = 5f;
+        const float BUTTON_WIDTH = 80f;
     }
 }

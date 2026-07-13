@@ -17,11 +17,18 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
     {
         internal BranchDrawInfo BranchDraw => VirtualShape.DrawInfo as BranchDrawInfo;
 
+        internal static string BuildName(string branchFullName)
+        {
+            return "branch-caption-" + branchFullName;
+        }
+
         internal BranchCaptionShape(
             VirtualShape virtualShape,
             AsyncTaskLoader taskLoader) : base(virtualShape)
         {
             mTaskLoader = taskLoader;
+
+            name = BuildName(BranchDraw.Caption);
 
             mCaptionContainer = new VisualElement();
             mCaptionContainer.style.position = Position.Absolute;
@@ -67,6 +74,8 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
             mCaptionContainer.Add(mCaptionLabel);
             mCaptionContainer.Add(mDescriptionLabel);
             Add(mCaptionContainer);
+
+            RegisterCallback<AttachToPanelEvent>(OnAttachToPanel);
         }
 
         public override bool ContainsPoint(Vector2 localPoint)
@@ -80,6 +89,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
 
             mCaptionLabel.UnregisterCallback<GeometryChangedEvent>(OnLabelGeometryChanged);
             mDescriptionLabel.UnregisterCallback<GeometryChangedEvent>(OnLabelGeometryChanged);
+            UnregisterCallback<AttachToPanelEvent>(OnAttachToPanel);
         }
 
         internal override void Redraw()
@@ -94,6 +104,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
 
         internal override void OnScrollChanged()
         {
+            UpdateVisibilityForZoom();
             UpdateContainerLayout();
         }
 
@@ -123,9 +134,25 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
             return null;
         }
 
+        void OnAttachToPanel(AttachToPanelEvent evt)
+        {
+            UpdateVisibilityForZoom();
+        }
+
         void OnLabelGeometryChanged(GeometryChangedEvent evt)
         {
             UpdateLayout();
+        }
+
+        void UpdateVisibilityForZoom()
+        {
+            visible = IsVisibleForZoomLevel();
+        }
+
+        bool IsVisibleForZoomLevel()
+        {
+            VirtualCanvas canvas = GetFirstAncestorOfType<VirtualCanvas>();
+            return canvas != null && canvas.ZoomLevel >= BrExShape.MinZoomToShowText;
         }
 
         void UpdateLayout()

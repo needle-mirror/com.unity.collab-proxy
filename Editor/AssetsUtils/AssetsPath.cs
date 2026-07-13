@@ -105,7 +105,13 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
 
         internal static string GetRelativePath(string fullPath)
         {
-            return PathHelper.GetRelativePath(mProjectFullPath, fullPath).Substring(1);
+            string relativePath = PathHelper.GetRelativePath(
+                mProjectFullPath, fullPath);
+
+            if (string.IsNullOrEmpty(relativePath) || relativePath.Length <= 1)
+                return null;
+
+            return relativePath.Substring(1);
         }
 
         internal static bool IsPackagesRootElement(string path)

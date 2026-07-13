@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using UnityEngine;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
@@ -21,12 +20,25 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             string errorMessage,
             string title,
             Action<string> organizationJoinedAction)
+            : this(parentWindow, cloudServers, errorMessage, title,
+                organizationJoinedAction, new DefaultExternalUrlOpener())
+        {
+        }
+
+        internal OrganizationPanel(
+            CloudEditionWelcomeWindow parentWindow,
+            List<string> cloudServers,
+            string errorMessage,
+            string title,
+            Action<string> organizationJoinedAction,
+            IExternalUrlOpener urlOpener)
         {
             mParentWindow = parentWindow;
             mPrefetchedCloudServers = cloudServers;
             mPrefetchedErrorMessage = errorMessage;
 
             mOnOrganizationJoined = organizationJoinedAction;
+            mUrlOpener = urlOpener;
 
             InitializeLayoutAndStyles();
 
@@ -121,7 +133,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         void OpenUnityDashboardButton_clicked()
         {
-            Application.OpenURL(UnityUrl.UnityDashboard.Plastic.Get());
+            mUrlOpener.Open(UnityUrl.UnityDashboard.Plastic.Get());
         }
 
         void BuildComponents(string title)
@@ -216,5 +228,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         readonly List<string> mPrefetchedCloudServers;
         readonly string mPrefetchedErrorMessage;
         readonly Action<string> mOnOrganizationJoined;
+        readonly IExternalUrlOpener mUrlOpener;
     }
 }

@@ -4,16 +4,17 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
+using Codice.Client.Common.EventTracking;
 using Codice.Client.Common;
 using Codice.CM.Common;
 using Codice.CM.Common.Mount;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.Update;
+using PlasticGui.WorkspaceWindow.MergeRequest;
 using PlasticGui.WorkspaceWindow.QueryViews;
 using PlasticGui.WorkspaceWindow.QueryViews.Changesets;
 using GluonGui;
-using PlasticGui.WorkspaceWindow.CodeReview;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.Tool;
@@ -23,9 +24,7 @@ using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.UI.Tree;
 using Unity.PlasticSCM.Editor.Views.Changesets.Dialogs;
-using Unity.PlasticSCM.Editor.Views.Diff;
 using Unity.PlasticSCM.Editor.Views.Merge;
-using Unity.PlasticSCM.Editor.Views.Properties;
 
 using GluonIncomingChangesUpdater = PlasticGui.Gluon.WorkspaceWindow.IncomingChangesUpdater;
 using IGluonUpdateReport = PlasticGui.Gluon.IUpdateReport;
@@ -43,9 +42,11 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         ILaunchCodeReviewWindow,
         IGetQueryText,
         IGetFilterText,
-        FillChangesetsView.IShowContentView
+        FillChangesetsView.IShowContentView,
+        FillChangesetsView.IShowHiddenChangesetsButton
     {
         internal DateFilter DateFilterForTesting { set { mDateFilter = value; } }
+        internal bool ShowHiddenChangesetsForTesting { set { mShowHiddenChangesets = value; } }
         internal ChangesetsListView Table { get { return mChangesetsListView; } }
         internal IChangesetMenuOperations Operations { get { return this; } }
         internal string EmptyStateMessage { get { return mEmptyStatePanel.Text; } }
@@ -63,7 +64,6 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             WorkspaceWindow workspaceWindow,
             IViewSwitcher viewSwitcher,
             IMergeViewLauncher mergeViewLauncher,
-            IHistoryViewLauncher historyViewLauncher,
             IUpdateReport updateReport,
             IGluonUpdateReport gluonUpdateReport,
             IShelvedChangesUpdater shelvedChangesUpdater,
@@ -77,7 +77,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             IncomingChangesUpdater developerIncomingChangesUpdater,
             GluonIncomingChangesUpdater gluonIncomingChangesUpdater,
             EditorWindow parentWindow,
-            bool isGluonMode)
+            bool isGluonMode,
+            bool showHiddenChangesets)
         {
             mWkInfo = wkInfo;
             mViewHost = viewHost;
@@ -95,6 +96,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mGluonIncomingChangesUpdater = gluonIncomingChangesUpdater;
             mParentWindow = parentWindow;
             mIsGluonMode = isGluonMode;
+            mShowHiddenChangesets = showHiddenChangesets;
 
             mProgressControls = new ProgressControlsForViews();
             mShelvePendingChangesQuestionerBuilder = new ShelvePendingChangesQuestionerBuilder(parentWindow);
@@ -109,18 +111,10 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 null,
                 this,
                 this,
+                this,
                 this);
 
             BuildComponents(
-                wkInfo,
-                workspaceWindow,
-                workspaceWindow,
-                viewSwitcher,
-                historyViewLauncher,
-                pendingChangesUpdater,
-                developerIncomingChangesUpdater,
-                gluonIncomingChangesUpdater,
-                parentWindow,
                 mFillChangesetsView);
 
             mChangesetOperations = new ChangesetOperations(
@@ -165,6 +159,11 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             mProgressControls.UpdateProgress(mParentWindow);
         }
 
+        internal SerializableChangesetsTabState GetSerializableState()
+        {
+            return new SerializableChangesetsTabState(mShowHiddenChangesets);
+        }
+
         internal void OnGUI()
         {
             EditorGUILayout.BeginVertical();
@@ -172,6 +171,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             DoActionsToolbar(
                 mProgressControls,
                 mDateFilter,
+                ref mShowHiddenChangesets,
                 mSearchField,
                 mChangesetsListView,
                 this);
@@ -240,12 +240,19 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                 null,
                 null,
                 null,
-                changesetsToSelect);
+                changesetsToSelect,
+                mShowHiddenChangesets);
         }
 
         void IRefreshableView.Refresh()
         {
             RefreshAndSelect(null);
+        }
+
+        bool FillChangesetsView.IShowHiddenChangesetsButton.IsChecked
+        {
+            get { return mShowHiddenChangesets; }
+            set { mShowHiddenChangesets = value; }
         }
 
         int IChangesetMenuOperations.GetSelectedChangesetsCount()
@@ -402,7 +409,8 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
 
         string IGetQueryText.Get()
         {
-            return GetChangesetsQuery.For(mDateFilter);
+            return QueryConstants.BuildChangesetsQuery(
+                mDateFilter.GetLayoutFilter(), mShowHiddenChangesets);
         }
 
         string IGetFilterText.Get()
@@ -451,17 +459,13 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             MountPointWithPath mountPoint =
                 MountPointWithPath.BuildWorkspaceRootMountPoint(repSpec);
 
-            SelectedRepObjectInfoData selectedBranchData = SelectedRepObjectInfoData.Create(
-                selectedChangesets[0],
-                repSpec,
-                mountPoint);
-
-            Selection.activeObject = selectedBranchData;
+            SelectedRepObjectInfoData.SetActiveObject(selectedChangesets[0], repSpec, mountPoint);
         }
 
         static void DoActionsToolbar(
             ProgressControlsForViews progressControls,
             DateFilter dateFilter,
+            ref bool showHiddenChangesets,
             SearchField searchField,
             ChangesetsListView changesetsListView,
             IRefreshableView view)
@@ -480,6 +484,11 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             DrawDateFilter(progressControls, dateFilter, view);
 
             GUILayout.FlexibleSpace();
+
+            DrawShowHiddenChangesetsButton(
+                progressControls, ref showHiddenChangesets, changesetsListView, view);
+
+            GUILayout.Space(2);
 
             DrawSearchField.For(
                 searchField,
@@ -516,16 +525,41 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
             GUI.enabled = true;
         }
 
+        static void DrawShowHiddenChangesetsButton(
+            ProgressControlsForViews progressControls,
+            ref bool showHiddenChangesets,
+            ChangesetsListView changesetsListView,
+            IRefreshableView view)
+        {
+            GUI.enabled = !progressControls.IsOperationRunning();
+
+            EditorGUI.BeginChangeCheck();
+
+            showHiddenChangesets = GUILayout.Toggle(
+                showHiddenChangesets,
+                new GUIContent(
+                    showHiddenChangesets ?
+                        Images.GetUnhideIcon() :
+                        Images.GetHideIcon(),
+                    showHiddenChangesets ?
+                        PlasticLocalization.Name.DontShowHiddenBranchChangesetsTooltip.GetString() :
+                        PlasticLocalization.Name.ShowHiddenBranchChangesetsTooltip.GetString()),
+                EditorStyles.toolbarButton,
+                GUILayout.Width(UnityConstants.TOOLBAR_ICON_BUTTON_WIDTH));
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                TrackFeatureUseEvent.For(
+                    ChangesetsSelection.GetSelectedRepository(changesetsListView),
+                    TrackFeatureUseEvent.Features.Changesets.ToggleShowHiddenBranchChangesets);
+
+                view.Refresh();
+            }
+
+            GUI.enabled = true;
+        }
+
         void BuildComponents(
-            WorkspaceInfo wkInfo,
-            IWorkspaceWindow workspaceWindow,
-            IRefreshView refreshView,
-            IViewSwitcher viewSwitcher,
-            IHistoryViewLauncher historyViewLauncher,
-            IPendingChangesUpdater pendingChangesUpdater,
-            IncomingChangesUpdater developerIncomingChangesUpdater,
-            GluonIncomingChangesUpdater gluonIncomingChangesUpdater,
-            EditorWindow parentWindow,
             FillChangesetsView fillChangesetsView)
         {
             mSearchField = new SearchField();
@@ -567,6 +601,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
         DateFilter mDateFilter;
         SearchField mSearchField;
         ChangesetsListView mChangesetsListView;
+        bool mShowHiddenChangesets;
 
         RevertToChangesetOperation.IGetStatusForWorkspace mGetStatusForWorkspace =
             new RevertToChangesetOperation.GetStatusFromWorkspace();

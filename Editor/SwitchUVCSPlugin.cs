@@ -9,11 +9,11 @@ namespace Unity.PlasticSCM.Editor
     {
         internal static UVCSWindow On(UVCSPlugin uvcsPlugin)
         {
+            UVCSPluginIsEnabledPreference.Enable();
+
             uvcsPlugin.Enable();
 
             UVCSWindow window = ShowWindow.UVCS();
-
-            UVCSPluginIsEnabledPreference.Enable();
 
             return window;
         }
@@ -36,6 +36,7 @@ namespace Unity.PlasticSCM.Editor
 
             CloseWindowIfOpened.UVCS();
             CloseWindowIfOpened.BranchExplorer();
+            CloseWindowIfOpened.Diff();
 
             CleanSelectionIfNeeded();
 
@@ -44,14 +45,7 @@ namespace Unity.PlasticSCM.Editor
 
         static void ReloadSettings()
         {
-            UVCSProjectSettingsProvider activeSettingsProvider =
-                UVCSPlugin.Instance.ActiveUVCSSettingsProvider;
-
-            if (activeSettingsProvider == null)
-                return;
-
-            activeSettingsProvider.ReloadSettings();
-            activeSettingsProvider.Repaint();
+            UVCSProjectSettingsProvider.GetIfActive()?.ReloadSettings();
         }
 
         static void CleanSelectionIfNeeded()

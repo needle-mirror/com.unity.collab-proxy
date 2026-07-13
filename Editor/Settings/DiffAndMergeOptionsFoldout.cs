@@ -22,8 +22,8 @@ namespace Unity.PlasticSCM.Editor.Settings
             PlasticGuiConfigData data = PlasticGuiConfig.Get().Configuration;
 
             mComparisonMethodSelectedIndex = ComparisonMethod.GetTypeIndexFromString(data.ComparisonMethod);
-            mDefaultEncodingSelectedIndex = Array.IndexOf(mEncodingValues, data.Encoding);
-            mResultEncodingSelectedIndex = Array.IndexOf(mEncodingValues, data.ResultEncoding);
+            mDefaultEncodingSelectedIndex = GetEncodingIndex(data.Encoding);
+            mResultEncodingSelectedIndex = GetEncodingIndex(data.ResultEncoding);
 
             mManualConflictResolution = data.MergeResolutionType == MergeResolutionType.OnlyOne.ToString();
             mAutomaticConflictResolution = !mManualConflictResolution;
@@ -32,7 +32,7 @@ namespace Unity.PlasticSCM.Editor.Settings
             mMergeWithChanges = ClientConfig.Get().MergeWithPendingChanges();
         }
 
-        internal void OnDeactivate()
+        internal void Save()
         {
             PlasticGuiConfigData guiConfigData = PlasticGuiConfig.Get().Configuration;
 
@@ -106,13 +106,28 @@ namespace Unity.PlasticSCM.Editor.Settings
             mMergeWithChanges = false;
         }
 
+        static int GetEncodingIndex(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return 0;
+
+            int index = Array.IndexOf(mEncodingValues, value);
+
+            return index == -1 ? 0 : index;
+        }
+
         void DoDiffAndMergePreferences()
         {
+            EditorGUI.BeginChangeCheck();
+
             DoComparisonMethodAndEncodingSettings();
 
             DoMergeConflictResolutionSettings();
 
             DoMergeViewBehaviorSettings();
+
+            if (EditorGUI.EndChangeCheck())
+                Save();
         }
 
         void DoComparisonMethodAndEncodingSettings()

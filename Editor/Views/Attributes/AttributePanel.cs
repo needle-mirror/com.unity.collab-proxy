@@ -64,7 +64,8 @@ namespace Unity.PlasticSCM.Editor.Views.Attributes
             float buttonsWidth = editButtonStyle.fixedWidth +
                                  removeButtonStyle.fixedWidth +
                                  editButtonStyle.margin.horizontal +
-                                 removeButtonStyle.margin.horizontal;
+                                 removeButtonStyle.margin.horizontal +
+                                 SEPARATOR_WIDTH + 2 * SEPARATOR_MARGIN;
 
             string cutText = CutText(
                 mPlainText,
@@ -92,14 +93,21 @@ namespace Unity.PlasticSCM.Editor.Views.Attributes
                 editButtonStyle.fixedWidth,
                 editButtonStyle.fixedHeight);
 
+            Rect separatorRect = new Rect(
+                editButtonRect.xMax + SEPARATOR_MARGIN,
+                boxRect.y,
+                SEPARATOR_WIDTH,
+                boxRect.height);
+
             Rect removeButtonRect = new Rect(
-                boxRect.x + textSize.x + editButtonRect.width,
+                separatorRect.xMax + SEPARATOR_MARGIN,
                 boxRect.y + (boxRect.height - removeButtonStyle.fixedHeight) / 2,
                 removeButtonStyle.fixedWidth,
                 removeButtonStyle.fixedHeight);
 
             UnityEditor.EditorGUI.DrawRect(boxRect, mFillColor);
             EditorGUI.DrawOutline(boxRect, 1, mOutlineColor);
+            UnityEditor.EditorGUI.DrawRect(separatorRect, mOutlineColor);
 
             GUI.Label(
                 boxRect,
@@ -121,10 +129,6 @@ namespace Unity.PlasticSCM.Editor.Views.Attributes
             {
                 RemoveButton_Click();
             }
-        }
-
-        void AttributePanelOperations.IAttributePanel.Fill(string[] attValues)
-        {
         }
 
         void AttributePanelOperations.IAttributePanel.DisableEditionMode()
@@ -182,7 +186,8 @@ namespace Unity.PlasticSCM.Editor.Views.Attributes
                     editButtonStyle.fixedWidth +
                     removeButtonStyle.fixedWidth +
                     editButtonStyle.margin.horizontal +
-                    removeButtonStyle.margin.horizontal,
+                    removeButtonStyle.margin.horizontal +
+                    SEPARATOR_WIDTH + 2 * SEPARATOR_MARGIN,
                     labelStyle.margin.vertical);
         }
 
@@ -259,5 +264,7 @@ namespace Unity.PlasticSCM.Editor.Views.Attributes
         readonly EditorWindow mWindow;
 
         const string ELLIPSIS = "...";
+        const float SEPARATOR_WIDTH = 1;
+        const float SEPARATOR_MARGIN = 4;
     }
 }

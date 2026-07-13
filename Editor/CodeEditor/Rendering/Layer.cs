@@ -30,6 +30,7 @@ namespace Unity.CodeEditor.Rendering
         protected readonly TextView TextView;
         protected readonly KnownLayer KnownLayer;
         LayerPosition _Position;
+        readonly IMGUIContainer _backgroundIMGUIContainer;
 
         internal Layer(TextView textView, KnownLayer knownLayer)
         {
@@ -41,13 +42,39 @@ namespace Unity.CodeEditor.Rendering
             style.left = 0;
             style.top = 0;
             style.right = 0;
-            style.bottom = 0;
+            style.bottom = 0; //
+
+            _backgroundIMGUIContainer = new IMGUIContainer(OnBackgroundGUI);
+            _backgroundIMGUIContainer.pickingMode = PickingMode.Ignore;
+            _backgroundIMGUIContainer.focusable = false;
+            _backgroundIMGUIContainer.style.position = Position.Absolute;
+            _backgroundIMGUIContainer.style.left = 0;
+            _backgroundIMGUIContainer.style.top = 0;
+            _backgroundIMGUIContainer.style.right = 0;
+            _backgroundIMGUIContainer.style.bottom = 0;
+            Add(_backgroundIMGUIContainer);
         }
 
         internal LayerPosition LayerPosition
         {
             get { return _Position; }
             set { _Position = value; }
+        }
+
+        internal void InvalidateBackground()
+        {
+            _backgroundIMGUIContainer.MarkDirtyRepaint();
+        }
+
+        void OnBackgroundGUI()
+        {
+            if (Event.current.type != EventType.Repaint)
+                return;
+
+            if (!TextView.VisualLinesValid)
+                return;
+
+            TextView.RenderBackground(KnownLayer, _backgroundIMGUIContainer.contentRect);
         }
     }
 }

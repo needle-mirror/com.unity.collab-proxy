@@ -239,7 +239,7 @@ Cloud に同期
 環境設定
 
 == MainSidebarAboutItem ==
-Unity DevOps Version Control について
+Unity Version Control について
 
 == MainSidebarAboutGluonItem ==
 Gluon について
@@ -1202,7 +1202,7 @@ OK
 非表示の変更済み
 
 == MainWindowTitle ==
-Unity DevOps Version Control - ワークスペース:{0} - {1} - {2}:{3}@{4}
+Unity Version Control - ワークスペース:{0} - {1} - {2}:{3}@{4}
 
 == StatusInfo ==
 {0} {1}@{2} を参照しています
@@ -2073,7 +2073,7 @@ Cloud リポジトリ名を入力してください
 サーバーの名前または IP とポートを入力:
 
 == PreferencesWindowTitle ==
-Unity DevOps Version Control 環境設定 - {0}
+Unity Version Control 環境設定 - {0}
 
 == GeneralPreferences ==
 全般
@@ -4260,7 +4260,7 @@ EOL と空白を無視
 資格情報を設定してください
 
 == PlasticConfiguration ==
-Unity DevOps Version Control の設定
+Unity Version Control の設定
 
 == ConfigurationServerInfo ==
 Unity VCS サーバーの名前 (または IP アドレス) とポートを入力してください。「ネットワークをスキャン」を使用すると、ネットワーク上の利用可能な Unity VCS サーバーを検索できます

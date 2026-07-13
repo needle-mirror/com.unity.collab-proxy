@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
 
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -18,6 +17,8 @@ using Codice.CM.Common;
 using Codice.CM.ConfigureHelper;
 using Codice.CM.WorkspaceServer;
 using Codice.LogWrapper;
+using Codice.Utils;
+using Codice.Utils.Buffers;
 using CodiceApp.EventTracking;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow.Configuration;
@@ -26,6 +27,10 @@ using Unity.PlasticSCM.Editor.CloudDrive;
 using Unity.PlasticSCM.Editor.Configuration;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
+
+// Aliased to avoid name conflicts with Unity.Localization
+using PlasticLocalization = Codice.CM.Common.Localization;
+using PlasticGuiLocalization = PlasticGui.PlasticLocalization;
 
 namespace Unity.PlasticSCM.Editor
 {
@@ -93,14 +98,16 @@ namespace Unity.PlasticSCM.Editor
                     (PlasticWebRestApi)PlasticGui.Plastic.WebRestAPI,
                     ApplicationIdentifier.UnityPackage,
                     IdentifyEventPlatform.Get());
-            }
 
-            PackageInfo.Initialize();
+                PackageInfo.Initialize();
+            }
 
             PlasticMethodExceptionHandling.InitializeAskCredentialsUi(
                 new CredentialsUiImpl());
             ClientEncryptionServiceProvider.SetEncryptionPasswordProvider(
                 new MissingEncryptionPasswordPromptHandler());
+            CryptoServices.RegisterXxHash128HashingAlgorithmFactory(
+                new XxHash128HashingAlgorithmFactory(FlexibleBufferPool.Shared));
         }
 
         internal static void Enable()
@@ -129,6 +136,7 @@ namespace Unity.PlasticSCM.Editor
 
             PlasticMethodExceptionHandling.UninstallAskCredentialsUi();
             ClientEncryptionServiceProvider.UninstallEncryptionPasswordProvider();
+            CryptoServices.ClearXxHash128HashingAlgorithmFactory();
 
             UnRegisterExceptionHandlers();
             UnRegisterApplicationFocusHandlers();
@@ -165,9 +173,7 @@ namespace Unity.PlasticSCM.Editor
 
         static void RegisterExceptionHandlers()
         {
-#pragma warning disable UAC0006
-            AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
-#pragma warning restore UAC0006
+            AppDomainHandler.RegisterExceptionHandlers();
             Application.logMessageReceivedThreaded += HandleLog;
         }
 
@@ -205,10 +211,7 @@ namespace Unity.PlasticSCM.Editor
 
         static void UnRegisterExceptionHandlers()
         {
-#pragma warning disable UAC0006
-            AppDomain.CurrentDomain.UnhandledException -= HandleUnhandledException;
-#pragma warning restore UAC0006
-
+            AppDomainHandler.UnRegisterExceptionHandlers();
             Application.logMessageReceivedThreaded -= HandleLog;
         }
 
@@ -244,25 +247,12 @@ namespace Unity.PlasticSCM.Editor
             EditorApplication.quitting -= OnEditorQuitting;
         }
 
-        static void HandleUnhandledException(object sender, UnhandledExceptionEventArgs args)
-        {
-            Exception ex = (Exception)args.ExceptionObject;
-
-            if (CheckUnityException.IsExitGUIException(ex) ||
-                !IsPlasticStackTrace(ex.StackTrace))
-                throw ex;
-
-            GUIActionRunner.RunGUIAction(delegate {
-                ExceptionsHandler.HandleException("HandleUnhandledException", ex);
-            });
-        }
-
         static void HandleLog(string logString, string stackTrace, LogType type)
         {
             if (type != LogType.Exception)
                 return;
 
-            if (!IsPlasticStackTrace(stackTrace))
+            if (!StackTraceChecker.IsPlasticStackTrace(stackTrace))
                 return;
 
             GUIActionRunner.RunGUIAction(delegate {
@@ -368,24 +358,9 @@ namespace Unity.PlasticSCM.Editor
                 language = string.Empty;
             }
 
-            Localization.Init(language);
-            PlasticLocalization.SetLanguage(language);
+            PlasticLocalization.Init(language);
+            PlasticGuiLocalization.SetLanguage(language);
         }
-
-        static bool IsPlasticStackTrace(string stackTrace)
-        {
-            if (stackTrace == null)
-                return false;
-
-            string[] namespaces = new[] {
-                "Codice.",
-                "GluonGui.",
-                "PlasticGui."
-            };
-
-            return namespaces.Any(stackTrace.Contains);
-        }
-
         static bool mIsInitialized;
         static EventSenderScheduler mEventSenderScheduler;
 

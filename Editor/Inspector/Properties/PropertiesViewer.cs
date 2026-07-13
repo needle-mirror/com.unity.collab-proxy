@@ -1,9 +1,11 @@
 using Codice.CM.Common;
+using Unity.PlasticSCM.Editor.Diff;
 using Unity.PlasticSCM.Editor.Headless;
 using Unity.PlasticSCM.Editor.Inspector.Properties.Branch;
 using Unity.PlasticSCM.Editor.Inspector.Properties.Changeset;
 using Unity.PlasticSCM.Editor.Inspector.Properties.Label;
 using Unity.PlasticSCM.Editor.Tool;
+using Unity.PlasticSCM.Editor.UI;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -38,6 +40,7 @@ namespace Unity.PlasticSCM.Editor.Inspector.Properties
             mRootContainer.Add(imguiContainer);
 
             mRootContainer.RegisterCallback<AttachToPanelEvent>(OnAttatchToPanel);
+            mRootContainer.RegisterCallback<DetachFromPanelEvent>(OnDetachFromPanel);
 
             SetSelectedObject(target as SelectedRepObjectInfoData);
 
@@ -56,6 +59,8 @@ namespace Unity.PlasticSCM.Editor.Inspector.Properties
 
             if (mLabelPropertiesPanel != null)
                 mLabelPropertiesPanel.ResetForTesting();
+
+            DestroyImmediate(this);
         }
 
         void OnAttatchToPanel(AttachToPanelEvent evt)
@@ -67,6 +72,11 @@ namespace Unity.PlasticSCM.Editor.Inspector.Properties
 
             UpdateRootContainerHeight(parentScrollView.contentRect.height);
             parentScrollView.RegisterCallback<GeometryChangedEvent>(OnScrollGeometryChanged);
+        }
+
+        void OnDetachFromPanel(DetachFromPanelEvent evt)
+        {
+            EditorApplication.delayCall += ClearDiffWindowIfNoLivePropertiesViewer;
         }
 
         void OnScrollGeometryChanged(GeometryChangedEvent evt)
@@ -112,6 +122,8 @@ namespace Unity.PlasticSCM.Editor.Inspector.Properties
             GetOrCreateBranchPropertiesPanel().ClearInfo();
             GetOrCreateLabelPropertiesPanel().ClearInfo();
             GetOrCreateChangesetPropertiesPanel().ClearInfo();
+
+            ClearDiffWindow();
         }
 
         void OnDisable()
@@ -130,6 +142,8 @@ namespace Unity.PlasticSCM.Editor.Inspector.Properties
 
         void SetSelectedObject(SelectedRepObjectInfoData selectedRepObjectInfoData)
         {
+            ClearDiffWindowCache();
+
             mSelectedRepObjectInfoData = selectedRepObjectInfoData;
 
             object objectInfo = selectedRepObjectInfoData?.ObjectInfo;
@@ -285,6 +299,36 @@ namespace Unity.PlasticSCM.Editor.Inspector.Properties
             }
 
             return false;
+        }
+
+        static void ClearDiffWindowCache()
+        {
+            IUnityDiffWindow diffWindow = GetWindowIfOpened.Diff();
+            diffWindow?.ClearDiffViewerCache();
+        }
+
+        static void ClearDiffWindow()
+        {
+            IUnityDiffWindow diffWindow = GetWindowIfOpened.Diff();
+            if (diffWindow == null)
+                return;
+
+            diffWindow.ClearDiffViewerCache();
+            diffWindow.ClearIfShownFrom(DiffSource.DiffPanel);
+        }
+
+        static void ClearDiffWindowIfNoLivePropertiesViewer()
+        {
+            PropertiesViewer[] allViewers =
+                Resources.FindObjectsOfTypeAll<PropertiesViewer>();
+
+            foreach (PropertiesViewer viewer in allViewers)
+            {
+                if (viewer.mRootContainer != null && viewer.mRootContainer.panel != null)
+                    return;
+            }
+
+            ClearDiffWindow();
         }
 
         protected override void OnHeaderGUI() { }

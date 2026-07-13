@@ -98,6 +98,14 @@ namespace Unity.PlasticSCM.Editor.UI
             }
         }
 
+        internal static bool HasPendingDispatchActions()
+        {
+            lock (mLock)
+            {
+                return mDispatchQueue.Count > 0;
+            }
+        }
+
         static readonly ILog mLog = PlasticApp.GetLogger("EditorDispatcher");
         static readonly object mLock = new object();
         static SynchronizationContext mMainUnitySyncContext;

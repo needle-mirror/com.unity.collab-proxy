@@ -4,12 +4,12 @@ This package provides an in-editor interface for teams to work with [Unity Versi
 
 _Note that this project is the natural evolution of the old Collaborate package, hence its technical name "collab-proxy"._
 
-[Documentation](https://docs.unity.com/ugs/en-us/manual/devops/manual/vcs-plugins/unityeditor-plugin/unity-version-control-package) - [Changelog](https://docs.unity3d.com/Packages/com.unity.collab-proxy@2.11/changelog/CHANGELOG.html)
+[Documentation](https://docs.unity.com/unity-version-control/get-started-vcs-hub) - [Changelog](https://docs.unity3d.com/Packages/com.unity.collab-proxy@2.12/changelog/CHANGELOG.html)
 
 ## Compatibility
 
-The minimum supported version of the Unity Editor is 2021.3.0f1 LTS.
+The minimum supported version of the Unity Editor is 6000.0.
 
-Windows and macOS are officially supported, not Linux.
+This package officially supports Windows and macOS. Linux is not supported.
 
-The solution is exclusively targeting .NetStandard 2.0, and will not work with the legacy Mono runtime.
+The solution is exclusively targeting .NetStandard 2.1, and will not work with the legacy Mono runtime.

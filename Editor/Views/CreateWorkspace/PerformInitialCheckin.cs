@@ -124,6 +124,7 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
             options.Recurse = true;
             options.SearchForPrivatePaths = true;
             options.SkipIgnored = true;
+            options.HandleMetaFiles = true;
 
             IList checkouts;
             plasticApi.Add(wkInfo, paths, options, out checkouts);

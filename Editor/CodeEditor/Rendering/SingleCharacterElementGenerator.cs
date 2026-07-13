@@ -1,14 +1,14 @@
 // Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -46,6 +46,13 @@ namespace Unity.CodeEditor.Rendering
         /// </summary>
         internal bool ShowTabs { get; set; }
 
+        // precomputed offsets of spaces/tabs for the current line
+        // built once in StartGeneration, then GetFirstInterestedOffset
+        // just walks the cursor — O(1) per call instead of scanning text.
+        private int[] _interestingOffsets;
+        private int _interestingOffsetCount;
+        private int _interestingOffsetCursor;
+
         /// <summary>
         /// Creates a new SingleCharacterElementGenerator instance.
         /// </summary>
@@ -61,23 +68,42 @@ namespace Unity.CodeEditor.Rendering
             ShowTabs = options.ShowTabs;
         }
 
-        internal override int GetFirstInterestedOffset(int startOffset)
+        internal override void StartGeneration(ITextRunConstructionContext context)
         {
-            var endLine = CurrentContext.VisualLine.LastDocumentLine;
-            var relevantText = CurrentContext.GetText(startOffset, endLine.EndOffset - startOffset);
+            base.StartGeneration(context);
 
+            var firstLine = context.VisualLine.FirstDocumentLine;
+            var lineStart = firstLine.Offset;
+            var relevantText = context.GetText(lineStart, firstLine.EndOffset - lineStart);
+
+            // reuse array if large enough, otherwise allocate
+            if (_interestingOffsets == null || _interestingOffsets.Length < relevantText.Count)
+                _interestingOffsets = new int[relevantText.Count];
+
+            _interestingOffsetCount = 0;
             for (var i = 0; i < relevantText.Count; i++)
             {
                 var c = relevantText.Text[relevantText.Offset + i];
-                switch (c)
+                if ((ShowSpaces && c == ' ') || c == '\t')
                 {
-                    case ' ':
-                        if (ShowSpaces)
-                            return startOffset + i;
-                        break;
-                    case '\t':
-                        return startOffset + i;
+                    _interestingOffsets[_interestingOffsetCount++] = lineStart + i;
                 }
+            }
+            _interestingOffsetCursor = 0;
+        }
+
+        internal override int GetFirstInterestedOffset(int startOffset)
+        {
+            // advance cursor past offsets before startOffset
+            while (_interestingOffsetCursor < _interestingOffsetCount
+                   && _interestingOffsets[_interestingOffsetCursor] < startOffset)
+            {
+                _interestingOffsetCursor++;
+            }
+
+            if (_interestingOffsetCursor < _interestingOffsetCount)
+            {
+                return _interestingOffsets[_interestingOffsetCursor];
             }
 
             return -1;
@@ -89,10 +115,20 @@ namespace Unity.CodeEditor.Rendering
 
             if (ShowSpaces && c == ' ')
             {
+                // put consecutive spaces to batch into a single element
+                int spaceCount = 1;
+                var endOffset = CurrentContext.VisualLine.LastDocumentLine.EndOffset;
+                while (offset + spaceCount < endOffset
+                       && CurrentContext.Document.GetCharAt(offset + spaceCount) == ' ')
+                {
+                    spaceCount++;
+                }
+
                 var runProperties = CurrentContext.TextParagraphProperties.Clone();
                 runProperties.SetForegroundColor(CurrentContext.TextView.NonPrintableCharacterColor);
                 return new SpaceTextElement(
                     CurrentContext.TextView.Options.ShowSpacesGlyph,
+                    spaceCount,
                     runProperties);
             }
             else if (c == '\t')
@@ -114,9 +150,20 @@ namespace Unity.CodeEditor.Rendering
             string _spaceString;
             TextParagraphProperties _spaceParagraphProperties;
 
-            internal SpaceTextElement(string spaceString, TextParagraphProperties properties) : base(spaceString.Length, 1)
+            internal SpaceTextElement(string spaceGlyph, int spaceCount, TextParagraphProperties properties)
+                : base(spaceGlyph.Length * spaceCount, spaceCount)
             {
-                _spaceString = spaceString;
+                if (spaceCount == 1)
+                    _spaceString = spaceGlyph;
+                else if (spaceGlyph.Length == 1)
+                    _spaceString = new string(spaceGlyph[0], spaceCount);
+                else
+                {
+                    var sb = new System.Text.StringBuilder(spaceGlyph.Length * spaceCount);
+                    for (int i = 0; i < spaceCount; i++)
+                        sb.Append(spaceGlyph);
+                    _spaceString = sb.ToString();
+                }
                 _spaceParagraphProperties = properties;
             }
 

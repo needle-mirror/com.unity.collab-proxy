@@ -12,6 +12,8 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
 {
     internal class BrExShape : VisualElement
     {
+        internal const float MinZoomToShowText = 0.5f;
+
         internal interface IBrExShapeClickListener
         {
             void OnShapeClicked(VirtualShape shape, bool isMultiSelection);
@@ -247,14 +249,12 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
 
         void OnGenerateVisualContent(MeshGenerationContext ctx)
         {
-#if UNITY_2022_1_OR_NEWER
             GenerateVisualContent(ctx.painter2D);
 
             if (!mIsDrawDebugBoundsEnabled)
                 return;
 
             DrawDebugBounds(ctx.painter2D, this);
-#endif
         }
 
         protected virtual void GenerateVisualContent(Painter2D painter) { }
@@ -343,10 +343,8 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
             painter.Stroke();
         }
 
-#if UNITY_2022_1_OR_NEWER
         // enable to draw the shape geometry bounds
         static readonly bool mIsDrawDebugBoundsEnabled = false;
-#endif
 
         bool mIsLinkNavigationTarget;
         bool mIsSearchResult;

@@ -76,7 +76,7 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
                 PlasticLocalization.GetString(
                     PlasticLocalization.Name.CreatingWorkspaceProgress));
 
-            mParentWindow.Repaint();
+            mParentWindow?.Repaint();
         }
 
         void AutoLogin.IWelcomeView.OnUserClosedConfigurationWindow()
@@ -86,6 +86,11 @@ namespace Unity.PlasticSCM.Editor.Views.Welcome
             ClientConfig.Reset();
             CmConnection.ResetForTesting();
             ClientHandlers.Register();
+        }
+
+        void AutoLogin.IWelcomeView.Repaint()
+        {
+            mParentWindow?.Repaint();
         }
 
         void DoContentViewArea(

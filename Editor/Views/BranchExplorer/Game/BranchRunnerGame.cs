@@ -845,7 +845,6 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Game
             if (float.IsNaN(vw) || float.IsNaN(vh) || vw <= 0 || vh <= 0)
                 return;
 
-#if UNITY_2022_1_OR_NEWER
             Painter2D p = ctx.painter2D;
 
             float shakeX = 0, shakeY = 0;
@@ -865,7 +864,6 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Game
             DrawParticles(p, vw, vh, shakeX, shakeY);
             DrawPlayer(p, vw, vh, shakeX, shakeY);
             DrawFloatingTexts(p, vw, vh, shakeX, shakeY);
-#endif
         }
 
         float SX(float wx, float vw, float shake)

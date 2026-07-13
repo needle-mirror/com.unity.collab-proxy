@@ -1,8 +1,5 @@
-using System;
-
 using UnityEditor;
 
-using Codice.Client.Common.Threading;
 using Unity.PlasticSCM.Editor.UI;
 
 #if !UNITY_6000_3_OR_NEWER
@@ -15,68 +12,29 @@ namespace Unity.PlasticSCM.Editor.Settings
     {
         internal static void ByDefault()
         {
-            UVCSProjectSettingsProvider provider = OpenInUVCSProjectSettings();
-
-            if (provider == null)
-                return;
-
-            provider.OpenAllFoldouts();
+            OpenVersionControlProjectSettings()?.OpenAllFoldouts();
         }
 
         internal static void InDiffAndMergeFoldout()
         {
-            UVCSProjectSettingsProvider provider = OpenInUVCSProjectSettings();
-
-            if (provider == null)
-                return;
-
-            provider.OpenDiffAndMergeFoldout();
+            OpenVersionControlProjectSettings()?.OpenDiffAndMergeFoldout();
         }
 
         internal static void InShelveAndSwitchFoldout()
         {
-            UVCSProjectSettingsProvider provider = OpenInUVCSProjectSettings();
-
-            if (provider == null)
-                return;
-
-            provider.OpenShelveAndSwitchFoldout();
+            OpenVersionControlProjectSettings()?.OpenShelveAndSwitchFoldout();
         }
 
         internal static void InOtherFoldout()
         {
-            UVCSProjectSettingsProvider provider = OpenInUVCSProjectSettings();
-
-            if (provider == null)
-                return;
-
-            provider.OpenOtherFoldout();
+            OpenVersionControlProjectSettings()?.OpenOtherFoldout();
         }
 
-        internal static UVCSProjectSettingsProvider OpenInUVCSProjectSettings()
+        static UVCSProjectSettingsProvider OpenVersionControlProjectSettings()
         {
-            SettingsWindow settingsWindow = OpenProjectSettingsWithUVCSSelected();
-            return GetUVCSProvider(settingsWindow);
-        }
+            SettingsWindow.Show(SettingsScope.Project, UnityConstants.PROJECT_SETTINGS_TAB_PATH);
 
-        internal static SettingsWindow OpenProjectSettingsWithUVCSSelected()
-        {
-            return SettingsWindow.Show(SettingsScope.Project, UnityConstants.PROJECT_SETTINGS_TAB_PATH);
-        }
-
-        internal static UVCSProjectSettingsProvider GetUVCSProvider(
-            SettingsWindow settingsWindow)
-        {
-            try
-            {
-                SettingsProvider provider = settingsWindow.GetCurrentProvider();
-                return provider as UVCSProjectSettingsProvider;
-            }
-            catch (Exception ex)
-            {
-                ExceptionsHandler.LogException("OpenUVCSProjectSettings", ex);
-                return null;
-            }
+            return UVCSProjectSettingsProvider.GetIfActive();
         }
     }
 }

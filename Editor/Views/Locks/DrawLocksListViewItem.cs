@@ -45,6 +45,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
                     isFocused,
                     false,
                     false,
+                    false,
                     DrawTreeViewItem.TextTrimming.Path);
 
                 return;
@@ -105,6 +106,7 @@ namespace Unity.PlasticSCM.Editor.Views.Locks
                 columnText,
                 isSelected,
                 isFocused,
+                false,
                 false,
                 textTrimming);
         }

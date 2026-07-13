@@ -152,16 +152,6 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 false,
                 mOperations.UndoUnchanged);
 
-#if UNITY_2021_3
-            // Workaround for Unity 2021.3.x IMGUI bug on macOS: The popup menu positioning algorithm
-            // incorrectly sets Y coordinate to zero when the menu's bottom edge is positioned near
-            // the Dock in maximized windows, causing the popup to render at the top of the display.
-            // Adding a separator alters the menu height, preventing the positioning algorithm from
-            // triggering this edge case.
-            if (PlatformIdentifier.IsMac())
-                mUndoDropdownMenu.AddSeparator(string.Empty);
-#endif
-
             mUndoDropdownMenu.AddItem(
                 new GUIContent(PlasticLocalization.Name.UndoCheckoutsKeepingChanges.GetString()),
                 false,

@@ -4661,6 +4661,7 @@ Jira 參數 (皆為強制):
 
     cm ^patch <來源_規格> [<來源_規格>] [--^output=<輸出_檔案>]
              [--^tool=<差異比對_的_路徑>]
+             [--^clean] [--^integration]
     產生修補檔案，其中包含分支、變更集的差異，
     或變更集之間的差異。這個檔案也會追蹤
     文字檔和二進位檔案的差異。
@@ -4679,6 +4680,10 @@ Jira 參數 (皆為強制):
 
     --^output        設定修補命令的輸出檔案。
     --^tool          設定要使用的應用程式 (差異比對或修補)。
+    --^clean         不考慮因合併而產生的差異，僅顯示直接簽入
+                     所建立的差異。
+    --^integration   顯示尚未合併至父分支的分支變更。會考慮已從父分支
+                     執行的任何變基或先前合併。
 
 == CMD_HELP_PATCH ==
 限制：
@@ -4710,6 +4715,20 @@ Jira 參數 (皆為強制):
 
     cm ^patch ^cs:2@default ^cs:4@default
     (在主控台上以統一格式列印出 csets 2 和 4 之間的差異。)
+
+    cm ^patch ^br:/main/task001 --^integration
+    (產生僅包含分支自身變更的修補檔案，排除透過合併引入的變更。
+    類似於 GitHub 中更新分支後的 PR 差異。)
+
+    cm ^patch ^br:/main/task001 --^clean
+    (產生排除透過合併引入內容的分支變更修補檔案。僅包含分支上的
+    直接簽入。)
+
+    cm ^patch ^br:/main/task001 --^clean --^integration --^output=review.patch
+    (組合使用兩個標誌：--integration 變更基準，使差異僅涵蓋待合併到
+    父分支的內容；--clean 去除透過合併引入到分支的內容。結果是一個
+    僅包含分支上尚未整合到父分支的直接工作的修補檔案——適用於需要查看
+    準備合併的「純新增工作」的程式碼審查場景。)
 
     cm ^patch --^apply file.patch --^tool=C:\gnu\patch.exe
     (使用 custom exe，將 'file.patch' 中的修補套用到本地工作區。)

@@ -349,11 +349,38 @@ El fichero es bastante grande. Buscar las diferencias podría tardar unos minuto
 == CalculateDifferencesButton ==
 Buscar diferencias
 
-== BigFileContentsMessage ==
-El fichero es bastante grande. Mostrar su contenido podría tardar unos minutos. Pulse el botón si realmente desea mostrar el contenido de este fichero.
-
 == ShowContentButton ==
 Mostrar contenido
+
+== BigFileSizeBadge ==
+Tamaño · {0}
+
+== BigFileLeftSizeBadge ==
+Izda · {0}
+
+== BigFileRightSizeBadge ==
+Dcha · {0}
+
+== BigFileLocalBadge ==
+En disco
+
+== BigFileDownloadRequiredBadge ==
+Descarga necesaria
+
+== BigFilePerformanceWarning ==
+Este archivo es grande y puede tardar un poco en procesarse.
+
+== BigFileLocalStorageMessage ==
+El contenido del archivo está disponible en el disco.
+
+== BigFileDownloadStorageMessage ==
+El contenido del archivo debe descargarse desde el servidor.
+
+== DownloadAndFindDifferencesButton ==
+Descargar & buscar diferencias
+
+== DownloadAndShowContentButton ==
+Descargar y mostrar contenido
 
 == BranchChanges ==
 Cambios rama

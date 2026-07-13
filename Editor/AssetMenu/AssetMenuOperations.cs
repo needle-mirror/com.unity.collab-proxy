@@ -201,7 +201,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         void Checkin();
         void Undo();
         void ShowDiff();
+        void ShowMetaDiff();
         void ShowHistory();
+        void ShowMetaHistory();
     }
 
     internal interface IAssetMenuCopyPathOperation

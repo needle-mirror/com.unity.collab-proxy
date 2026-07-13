@@ -8,7 +8,7 @@ using PlasticGui;
 using PlasticGui.Help;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.BranchExplorer;
-using PlasticGui.WorkspaceWindow.CodeReview;
+using PlasticGui.WorkspaceWindow.MergeRequest;
 using PlasticGui.WorkspaceWindow.QueryViews;
 using PlasticGui.WorkspaceWindow.Topbar;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;

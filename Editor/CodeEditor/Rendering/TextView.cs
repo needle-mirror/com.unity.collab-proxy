@@ -8,6 +8,7 @@ using Unity.CodeEditor.Document;
 using Unity.CodeEditor.Text;
 using Unity.CodeEditor.Utils;
 using Unity.PlasticSCM.Editor.UI;
+using Unity.PlasticSCM.Editor.UI.UIElements;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -314,6 +315,8 @@ namespace Unity.CodeEditor.Rendering
             Services.AddService(this);
 
             TextLayer = new TextLayer(this);
+            Layers = new LayerCollection(this);
+
             _elementGenerators = new ObserveAddRemoveCollection<VisualLineElementGenerator>(ElementGenerator_Added, ElementGenerator_Removed);
             _lineTransformers = new ObserveAddRemoveCollection<IVisualLineTransformer>(LineTransformer_Added, LineTransformer_Removed);
             _backgroundRenderers = new ObserveAddRemoveCollection<IBackgroundRenderer>(BackgroundRenderer_Added, BackgroundRenderer_Removed);
@@ -323,7 +326,10 @@ namespace Unity.CodeEditor.Rendering
 
             Debug.Assert(_singleCharacterElementGenerator != null); // assert that the option change created the builtin element generators
 
-            Layers = new LayerCollection(this);
+            var backgroundLayer = new Layer(this, KnownLayer.Background);
+            backgroundLayer.LayerPosition = new LayerPosition(KnownLayer.Background, LayerInsertionPosition.Replace);
+            Layers.Add(backgroundLayer);
+
             InsertLayer(TextLayer, KnownLayer.Text, LayerInsertionPosition.Replace);
 
             this.SetMouseCursor(MouseCursor.Text);
@@ -716,13 +722,13 @@ namespace Unity.CodeEditor.Rendering
             _isMeasureValid = true;
         }
 
-        internal void RenderBackground(KnownLayer layer)
+        internal void RenderBackground(KnownLayer layer, Rect drawingRect)
         {
             foreach (var bg in _backgroundRenderers)
             {
                 if (bg.Layer == layer)
                 {
-                    bg.Draw(this);
+                    bg.OnGUI(this, drawingRect);
                 }
             }
         }
@@ -776,6 +782,7 @@ namespace Unity.CodeEditor.Rendering
             _document = newValue;
             ClearScrollData();
             ClearVisualLines();
+            _isMeasureValid = false;
             if (newValue != null)
             {
                 TextDocumentWeakEventManager.Changing.AddHandler(newValue, OnChanging);
@@ -1017,6 +1024,13 @@ namespace Unity.CodeEditor.Rendering
                 try
                 {
                     var visualLine = _allVisualLines[i];
+                    if (visualLine.FirstDocumentLine.IsDeleted || visualLine.LastDocumentLine.IsDeleted)
+                    {
+                        _allVisualLines.RemoveAt(i--);
+                        DisposeVisualLine(visualLine);
+                        changedSomethingBeforeOrInLine = true;
+                        continue;
+                    }
                     var lineStart = visualLine.FirstDocumentLine.Offset;
                     var lineEnd = visualLine.LastDocumentLine.Offset + visualLine.LastDocumentLine.TotalLength;
                     if (offset <= lineEnd)
@@ -1053,6 +1067,13 @@ namespace Unity.CodeEditor.Rendering
         internal void InvalidateLayer(KnownLayer knownLayer)
         {
             MarkDirtyRepaint();
+            foreach (var layer in Layers)
+            {
+                if (layer.LayerPosition?.KnownLayer == knownLayer)
+                {
+                    layer.InvalidateBackground();
+                }
+            }
         }
 
         /// <summary>
@@ -1109,6 +1130,8 @@ namespace Unity.CodeEditor.Rendering
             foreach (var visualLine in _allVisualLines)
             {
                 Debug.Assert(visualLine.IsDisposed == false);
+                if (visualLine.FirstDocumentLine.IsDeleted || visualLine.LastDocumentLine.IsDeleted)
+                    continue;
                 var start = visualLine.FirstDocumentLine.LineNumber;
                 var end = visualLine.LastDocumentLine.LineNumber;
                 if (documentLineNumber >= start && documentLineNumber <= end)

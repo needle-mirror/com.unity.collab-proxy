@@ -277,11 +277,13 @@ namespace Unity.PlasticSCM.Editor.Tool
 
             mLog.DebugFormat("Open Code Review {0} for '{1}'", reviewId, repSpec);
 
+            TrackFeatureUseEvent.For(
+                repSpec, TrackFeatureUseEvent.Features.UnityPackage.LaunchCodeReview);
+
             string plasticExePath = PlasticInstallPath.GetPlasticExePath();
 
             bool bShowReviewChangesTab = IsExeVersion.GreaterOrEqual(
-                plasticExePath,
-                CODE_REVIEW_REVIEW_CHANGES_TAB_MIN_VERSION);
+                plasticExePath, CODE_REVIEW_REVIEW_CHANGES_TAB_MIN_VERSION);
 
             string plasticLink = GetCodeReviewPlasticLink.From(
                 repSpec, reviewId, bShowReviewChangesTab);

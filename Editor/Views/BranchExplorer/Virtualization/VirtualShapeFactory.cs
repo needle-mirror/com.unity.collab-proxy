@@ -34,6 +34,8 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Virtualization
                     return CreateLabelShape(shape, colorProvider);
                 case ShapeType.ChangesetComment:
                     return CreateChangesetCommentShape(shape, commentResolver);
+                case ShapeType.ChangesetNumber:
+                    return CreateChangesetNumberShape(shape);
                 case ShapeType.ChangesetParentLink:
                     return CreateChangesetParentLinkShape(
                         shape,
@@ -85,6 +87,11 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Virtualization
             AsyncChangesetCommentResolver commentResolver)
         {
             return new ChangesetCommentShape(shape, commentResolver);
+        }
+
+        static BrExShape CreateChangesetNumberShape(VirtualShape shape)
+        {
+            return new ChangesetNumberShape(shape);
         }
 
         static BrExShape CreateChangesetParentLinkShape(

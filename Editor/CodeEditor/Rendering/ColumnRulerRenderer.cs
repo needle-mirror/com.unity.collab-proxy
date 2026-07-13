@@ -48,9 +48,7 @@ namespace Unity.CodeEditor.Rendering
             UpdateRulerVisuals();
         }
 
-        public void Draw(TextView textView)
-        {
-        }
+        public void OnGUI(TextView textView, Rect drawingRect) { }
 
         private void OnVisualLinesChanged(object sender, EventArgs e)
         {
@@ -87,7 +85,7 @@ namespace Unity.CodeEditor.Rendering
             {
                 var el = _rulerElements[index];
                 float xPos = _textView.WideSpaceWidth * column - _textView.HorizontalOffset;
-                el.transform.position = new Vector3(xPos, 0, 0);
+                el.style.translate = new Translate(xPos, 0, 0);
                 el.style.backgroundColor = _color;
                 el.visible = true;
                 index++;

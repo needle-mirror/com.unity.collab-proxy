@@ -173,7 +173,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes.Colors
             return result;
         }
 
-        Color GetRuleColor(Rule rule)
+        internal Color GetRuleColor(Rule rule)
         {
             if (rule.FormatTarget == Rule.FormattedObject.Branch)
             {

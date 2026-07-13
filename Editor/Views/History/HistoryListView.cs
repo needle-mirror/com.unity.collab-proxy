@@ -255,6 +255,13 @@ namespace Unity.PlasticSCM.Editor.Views.History
             TableViewOperations.SetSelectionAndScroll(this, idsToSelect);
         }
 
+        internal HistoryRevision GetRevisionFromId(long revisionId)
+        {
+            return mRevisionsList.
+                GetRevisions().
+                SingleOrDefault(r => r.Id == revisionId) as HistoryRevision;
+        }
+
         int GetTreeIdForItem(RepObjectInfo currentRepObjectInfo)
         {
             foreach (KeyValuePair<RepObjectInfo, int> item in mListViewItemIds.GetInfoItems())
@@ -377,20 +384,24 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 HistoryListHeaderState.GetColumnName(column));
             string userName = PlasticGui.Plastic.API.GetUserName(repSpec.Server, item.Revision.Owner);
 
-            if (column == HistoryListColumn.Comment)
+            bool isPurged = IsPurged(item);
+            bool isDisabled = isPurged;
+
+             if (column == HistoryListColumn.Comment)
             {
                 DrawTreeViewItem.ForItemCell(
                     rect,
                     rowHeight,
                     -1,
                     GetAvatar.ForEmail(userName, avatarLoadedAction),
-                    userName,
-                    null,
+                    isPurged ? PlasticLocalization.Name.PurgedRevision.GetString() : userName,
+                    isPurged ? Images.GetDeletedLocalOverlayIcon() : null,
                     columnText,
                     isSelected,
                     isFocused,
                     isBoldText,
-                    false);
+                    false,
+                    isDisabled);
                 return;
             }
 
@@ -407,7 +418,8 @@ namespace Unity.PlasticSCM.Editor.Views.History
                     isSelected,
                     isFocused,
                     isBoldText,
-                    false);
+                    false,
+                    isDisabled);
                 return;
             }
 
@@ -420,19 +432,27 @@ namespace Unity.PlasticSCM.Editor.Views.History
                         columnText),
                     isSelected,
                     isFocused,
-                    isBoldText);
+                    isBoldText,
+                    isDisabled);
                 return;
             }
 
             if (column == HistoryListColumn.Branch)
             {
                 DrawTreeViewItem.ForSecondaryLabel(
-                    rect, columnText, isSelected, isFocused, isBoldText);
+                    rect, columnText, isSelected, isFocused, isBoldText, isDisabled);
                 return;
             }
 
             DrawTreeViewItem.ForLabel(
-                rect, columnText, isSelected, isFocused, isBoldText);
+                rect, columnText, isSelected, isFocused, isBoldText, isDisabled);
+        }
+
+        static bool IsPurged(HistoryListViewItem item)
+        {
+            return item.Revision is HistoryRevision &&
+                   ((HistoryRevision)item.Revision).DataStatus ==
+                   HistoryRevision.DataAvailability.Purged;
         }
 
         static string GetRevisionText(RepObjectInfo revision)

@@ -1,0 +1,24 @@
+{
+  "name": "Unity.PlasticSCM.Editor.Assistant",
+  "rootNamespace": "Unity.PlasticSCM.Editor.Assistant",
+  "references": [
+    "Unity.AI.Assistant.Runtime",
+    "Unity.PlasticSCM.Editor"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "versionDefines": [
+    {
+        "name": "com.unity.ai.assistant",
+        "expression": "2.11.0-pre.1",
+        "define": "AIA_PRESENT"
+    }
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "noEngineReferences": false
+}

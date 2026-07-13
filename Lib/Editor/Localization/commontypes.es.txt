@@ -82,6 +82,18 @@ No se puede crear una rama desde un shelve.
 == BranchAlreadyExists ==
 La rama {0} ya existe.
 
+== BranchPromoteConflict ==
+No se puede promocionar la rama porque la rama padre tiene nuevos changesets desde la base. Es necesario hacer un merge.
+
+== BranchPromoteEmpty ==
+No se puede promocionar la rama porque está vacía.
+
+== BranchPromoteHasChildren ==
+No se puede promocionar la rama porque tiene ramas hijas.
+
+== BranchPromoteNoParent ==
+No se puede promocionar la rama porque no tiene rama padre.
+
 == CannotArchiveNotUploadedRevision ==
 La operación de archive no puede continuar ya que los datos solicitados no fueron confirmados en el blob storage aún. Por favor, espere unos segundos e inténtelo de nuevo.
 
@@ -366,6 +378,12 @@ El contexto de invocación del cliente no está disponible. Se aborta la llamada
 == ClientVersionDoesntMatch ==
 La versión del cliente ({0}) no es la misma que la versión del servidor ({1}). Actualice su cliente.
 
+== ClientVersionTooOldForHashAlgorithm ==
+Este repositorio usa un algoritmo de hash que requiere una versión más nueva del cliente. Por favor, actualice su cliente de Unity Version Control para acceder a este repositorio.
+
+== ClientVersionTooOldForHashAlgorithmShelveChanges ==
+Este repositorio usa un algoritmo de hash que requiere una versión más nueva del cliente para hacer check-in. Sin embargo, puede hacer shelve de sus cambios. Por favor, actualice su cliente de Unity Version Control para acceder a este repositorio.
+
 == ClientWillClose ==
 {0}. El cliente de Unity VCS no puede continuar y se cerrará.
 
@@ -517,7 +535,11 @@ Inglés
 No se ha podido crear la base de datos {0}. Compruebe el log del servidor (plastic.server.log). Error: {1}
 
 == ErrorCantImportInvalidPackage ==
-Paquete de replicación incorrecto, no se ha encontrado una cabecera válida
+La versión del paquete de replicación es incompatible.
+Las versiones compatibles son: {0}
+La firma que se encontró es '{1}', que no se identifica con una versión conocida.
+Si el paquete de replica se generó utilizando el cliente, pruebe a generarlo de nuevo utilizando el argumento '--package-version'.
+Utilice 'cm pull --help' para más información.
 
 == ErrorCantReplicateSameRepository ==
 Error, no se puede replicar en un mismo repositorio.
@@ -627,6 +649,18 @@ No se ha podido cargar información de revisiones de {0}.
 == GenericInvalidCredentials ==
 Las credenciales del usuario no son válidas.
 
+== GitConnectionDoesntExist ==
+La conexión con Git no existe.
+
+== GitWorkspaceNoContentToPush ==
+No hay contenido para enviar.
+
+== GitWorkspaceNotProperlyLinked ==
+El workspace de git no está correctamente vinculado.
+
+== GitWorkspacePushFailed ==
+La operación de push falló.
+
 == HideUnhideBranchNotSupported ==
 El servidor {0} no soporta ocultar / desocultar ramas. Por favor, actualice el servidor.
 
@@ -686,6 +720,9 @@ Directorio Activo: Dominio no válido: {0}.
 
 == InvalidEncoding ==
 La codificación especificada no es válida: {0}
+
+== InvalidHashAlgorithmType ==
+Tipo de algoritmo de hash no válido '{0}'.
 
 == InvalidLanguage ==
 Idioma no válido: {0}.
@@ -1349,6 +1386,9 @@ La revisión {0} no está desprotegida.
 == RevisionToReloadNotFound ==
 No fue encontrada la revisión a cargar
 
+== ReviewerGroupMemberStatusUpdateNotSupported ==
+El servidor {0} no soporta cambiar el estado de la revisión para usuarios que no estén en la lista de revisores. Por favor, añádase a la lista de revisores o actualice el servidor.
+
 == RevtreeNoRevsToShow ==
 No se puede mostrar el árbol de revisiones para el ítem {0}.
 
@@ -1477,6 +1517,9 @@ La clave del cifrado '{1}' para el servidor '{0}' no puede leerse. Para más inf
 
 == ServiceNotInitialized ==
 La operación de Plastic SCM no está disponible todavía. El servidor está arrancando o ejecutando actividades de mantenimiento.
+
+== SetRepositoryHashingAlgorithmNotSupportedByServer ==
+El servidor {0} no soporta configurar el algoritmo de hash por repositorio. Esta operación requiere una versión más reciente del servidor de Unity Version Control.
 
 == ShellParserQuoteError ==
 Error en los argumentos del comando. Compruebe las comillas: {0}
@@ -1870,3 +1913,12 @@ No se puede resolver la organización {0}
 
 == MoveChangesetZeroNotAllowed ==
 No se puede mover changeset zero.
+
+== UnknownReplicationPackageVersionString ==
+Versión de paquete de réplica '{0}' desconocido
+
+== UnknownReplicationPackageVersionNumber ==
+ID de versión de paquete de réplica '{0}' desconocido
+
+== CannotUpdateReviewStatus ==
+Sólo los revisores pueden cambiar el estado de la review.

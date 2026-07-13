@@ -1,6 +1,8 @@
+using System;
+
 using UnityEditor;
 
-using Plugins.PlasticSCM.Editor.Diff;
+using Unity.PlasticSCM.Editor.Diff;
 using Unity.PlasticSCM.Editor.CloudDrive;
 using Unity.PlasticSCM.Editor.Views.BranchExplorer;
 using Unity.PlasticSCM.Editor.Views.BranchExplorer.Options;
@@ -14,7 +16,12 @@ namespace Unity.PlasticSCM.Editor.UI
             if (!EditorWindow.HasOpenInstances<UVCSWindow>())
                 return null;
 
-            return EditorWindow.GetWindow<UVCSWindow>(null, false);
+            UVCSWindow window = EditorWindow.GetWindow<UVCSWindow>(null, false);
+
+            if (EditorWindowHost.IsDetached(window))
+                return null;
+
+            return window;
         }
 
         internal static BranchExplorerWindow BranchExplorer()
@@ -41,12 +48,22 @@ namespace Unity.PlasticSCM.Editor.UI
             return EditorWindow.GetWindow<CloudDriveWindow>(null, false);
         }
 
-        internal static DiffWindow Diff()
+        internal static void SetGetDiffWindowForTesting(Func<IUnityDiffWindow> getDiffWindowForTesting)
         {
-            if (!EditorWindow.HasOpenInstances<DiffWindow>())
+            mGetDiffWindowForTesting = getDiffWindowForTesting;
+        }
+
+        internal static IUnityDiffWindow Diff()
+        {
+            if (mGetDiffWindowForTesting != null)
+                return mGetDiffWindowForTesting();
+
+            if (!EditorWindow.HasOpenInstances<UnityDiffWindow>())
                 return null;
 
-            return EditorWindow.GetWindow<DiffWindow>(null, false);
+            return EditorWindow.GetWindow<UnityDiffWindow>(null, false);
         }
+
+        static Func<IUnityDiffWindow> mGetDiffWindowForTesting;
     }
 }

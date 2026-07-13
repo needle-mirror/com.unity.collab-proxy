@@ -20,6 +20,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         {
             State AutoLoginState { get; set; }
             void OnUserClosedConfigurationWindow();
+            void Repaint();
         }
 
         internal enum State : byte
@@ -74,48 +75,52 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             },
             /*afterOperationDelegate*/ delegate
             {
-                mLog.DebugFormat(
-                    "TokenExchange time {0} ms",
-                    Environment.TickCount - ini);
+                mLog.DebugFormat("TokenExchange time {0} ms", Environment.TickCount - ini);
 
                 if (waiter.Exception != null)
                 {
-                    mWelcomeView.AutoLoginState = AutoLogin.State.ErrorTokenException;
-                    ExceptionsHandler.LogException(
-                        "TokenExchangeSetting",
-                        waiter.Exception);
+                    ExceptionsHandler.LogException("TokenExchangeSetting", waiter.Exception);
                     Debug.LogWarning(waiter.Exception.Message);
+
+                    mWelcomeView.AutoLoginState = AutoLogin.State.ErrorTokenException;
+                    mWelcomeView.Repaint();
                     return;
                 }
 
                 if (tokenExchangeResponse == null)
                 {
-                    mWelcomeView.AutoLoginState = AutoLogin.State.ErrorResponseNull;
                     var warning = PlasticLocalization.GetString(PlasticLocalization.Name.TokenExchangeResponseNull);
                     mLog.Warn(warning);
                     Debug.LogWarning(warning);
+
+                    mWelcomeView.AutoLoginState = AutoLogin.State.ErrorResponseNull;
+                    mWelcomeView.Repaint();
                     return;
                 }
 
                 if (tokenExchangeResponse.Error != null)
                 {
-                    mWelcomeView.AutoLoginState = AutoLogin.State.ErrorResponseError;
                     var warning = string.Format(
                         PlasticLocalization.GetString(PlasticLocalization.Name.TokenExchangeResponseError),
                         tokenExchangeResponse.Error.Message, tokenExchangeResponse.Error.ErrorCode);
                     mLog.ErrorFormat(warning);
                     Debug.LogWarning(warning);
+
+                    mWelcomeView.AutoLoginState = AutoLogin.State.ErrorResponseError;
+                    mWelcomeView.Repaint();
                     return;
                 }
 
                 if (string.IsNullOrEmpty(tokenExchangeResponse.AccessToken))
                 {
-                    mWelcomeView.AutoLoginState = AutoLogin.State.ErrorTokenEmpty;
                     var warning = string.Format(
                         PlasticLocalization.GetString(PlasticLocalization.Name.TokenExchangeAccessEmpty),
                         tokenExchangeResponse.User);
                     mLog.InfoFormat(warning);
                     Debug.LogWarning(warning);
+
+                    mWelcomeView.AutoLoginState = AutoLogin.State.ErrorTokenEmpty;
+                    mWelcomeView.Repaint();
                     return;
                 }
 
@@ -134,8 +139,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         bool TryAutoJoinCloudProjectOrganization(Credentials credentials)
         {
-            // CloudProjectSettings.organizationKey is not available in 2021.3
-#if UNITY_2022_1_OR_NEWER
             if (string.IsNullOrEmpty(CloudProjectSettings.organizationKey) ||
                 string.IsNullOrEmpty(CloudProjectSettings.organizationName))
                 return false;
@@ -165,9 +168,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
             mWelcomeView.AutoLoginState = AutoLogin.State.ResponseSuccess;
             mWelcomeView.OnUserClosedConfigurationWindow();
             return true;
-#else
-            return false;
-#endif
         }
 
         void ShowOrganizationsPanel(Credentials credentials)

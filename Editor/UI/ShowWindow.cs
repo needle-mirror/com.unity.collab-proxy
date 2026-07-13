@@ -4,7 +4,7 @@ using UnityEditor;
 
 using Codice.Client.Common.EventTracking;
 
-using Plugins.PlasticSCM.Editor.Diff;
+using Unity.PlasticSCM.Editor.Diff;
 using Unity.PlasticSCM.Editor.CloudDrive;
 using Unity.PlasticSCM.Editor.Views.BranchExplorer;
 
@@ -22,6 +22,8 @@ namespace Unity.PlasticSCM.Editor.UI
 
         internal static UVCSWindow UVCS()
         {
+            EditorWindowHost.DestroyUvcWindowIfDetached();
+
             UVCSWindow window = EditorWindow.GetWindow<UVCSWindow>(
                 UnityConstants.UVCS_WINDOW_TITLE,
                 true,
@@ -64,15 +66,27 @@ namespace Unity.PlasticSCM.Editor.UI
             return window;
         }
 
-        internal static DiffWindow Diff()
+        internal static void SetShowDiffWindowForTesting(Func<IUnityDiffWindow> showDiffWindowForTesting)
         {
-            DiffWindow window = EditorWindow.GetWindow<DiffWindow>(
+            mShowDiffWindowForTesting = showDiffWindowForTesting;
+        }
+
+        internal static IUnityDiffWindow Diff()
+        {
+            if (mShowDiffWindowForTesting != null)
+                return mShowDiffWindowForTesting();
+
+            UnityDiffWindow window = EditorWindow.GetWindow<UnityDiffWindow>(
                 UnityConstants.DIFF_WINDOW_TITLE,
                 true,
                 mGameViewType);
 
+            window.titleContent.image = Images.GetDiffIcon();
+
             return window;
         }
+
+        static Func<IUnityDiffWindow> mShowDiffWindowForTesting;
 
         static Type mConsoleWindowType = typeof(EditorWindow).
             Assembly.GetType("UnityEditor.ConsoleWindow");

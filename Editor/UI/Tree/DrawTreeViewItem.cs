@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+using PlasticGui;
+using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 #if UNITY_6000_2_OR_NEWER
@@ -54,7 +55,8 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             string infoLabel,
             Texture icon,
             bool isSelected,
-            bool isFocused)
+            bool isFocused,
+            bool isDisabled = false)
         {
             float indent = GetIndent(depth);
 
@@ -62,7 +64,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             rowRect.width -= indent;
 
             rowRect = DrawIconLeft(
-                rowRect, rowHeight, icon, null, null);
+                rowRect, rowHeight, icon, null, null, isDisabled);
 
             TreeView.DefaultGUI.Label(rowRect, label, isSelected, isFocused);
 
@@ -121,6 +123,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             bool isFocused,
             bool isBoldText,
             bool isSecondaryLabel,
+            bool isDisabled = false,
             TextTrimming textTrimming = TextTrimming.None)
         {
             float indent = GetIndent(depth);
@@ -129,15 +132,15 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             rect.width -= indent;
 
             rect = DrawIconLeft(
-               rect, rowHeight, icon, iconTooltip, overlayIcon);
+               rect, rowHeight, icon, iconTooltip, overlayIcon, isDisabled);
 
             if (isSecondaryLabel)
             {
-                ForSecondaryLabel(rect, label, isSelected, isFocused, isBoldText, textTrimming);
+                ForSecondaryLabel(rect, label, isSelected, isFocused, isBoldText, isDisabled, textTrimming);
                 return;
             }
 
-            ForLabel(rect, label, isSelected, isFocused, isBoldText, textTrimming);
+            ForLabel(rect, label, isSelected, isFocused, isBoldText, isDisabled, textTrimming);
         }
 
         internal static bool ForCheckableItemCell(
@@ -152,6 +155,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             bool isFocused,
             bool isHighlighted,
             bool wasChecked,
+            bool isDisabled = false,
             DrawTreeViewItem.TextTrimming textTrimming = TextTrimming.None)
         {
             float indent = GetIndent(depth);
@@ -167,7 +171,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             rect.width -= checkRect.width;
 
             rect = DrawIconLeft(
-                rect, rowHeight, icon, iconTooltip, overlayIcon);
+                rect, rowHeight, icon, iconTooltip, overlayIcon, isDisabled);
 
             GUIStyle style = isHighlighted ?
                 UnityStyles.Tree.BoldLabel :
@@ -185,7 +189,8 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                 false,
                 true,
                 isSelected,
-                isFocused);
+                isFocused,
+                isDisabled);
 
             return isChecked;
         }
@@ -195,30 +200,47 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             float rowHeight,
             Texture icon,
             string iconTooltip,
-            Texture overlayIcon)
+            Texture overlayIcon,
+            bool isDisabled = false)
         {
             if (icon == null)
                 return rect;
 
-            float iconWidth = UnityConstants.TREEVIEW_ICON_SIZE * ((float)icon.width / icon.height);;
+            var prevColor = GUI.color;
 
-            Rect iconRect = new Rect(rect.x, rect.y, iconWidth, rowHeight);
-
-            EditorGUI.LabelField(iconRect, new GUIContent(icon, iconTooltip), UnityStyles.Tree.IconStyle);
-
-            if (overlayIcon != null)
+            try
             {
-                Rect overlayIconRect = GetOverlayRect.ForPendingChanges(iconRect);
+                if (isDisabled)
+                    GUI.color = new Color(
+                        prevColor.r,
+                        prevColor.g,
+                        prevColor.b,
+                        UnityStyles.Colors.DisabledColorFactor);
 
-                GUI.DrawTexture(
-                    overlayIconRect, overlayIcon,
-                    ScaleMode.ScaleToFit);
+                float iconWidth = UnityConstants.TREEVIEW_ICON_SIZE * ((float)icon.width / icon.height);
+
+                Rect iconRect = new Rect(rect.x, rect.y, iconWidth, rowHeight);
+
+                EditorGUI.LabelField(iconRect, new GUIContent(icon, iconTooltip), UnityStyles.Tree.IconStyle);
+
+                if (overlayIcon != null)
+                {
+                    Rect overlayIconRect = GetOverlayRect.ForPendingChanges(iconRect);
+
+                    GUI.DrawTexture(
+                        overlayIconRect, overlayIcon,
+                        ScaleMode.ScaleToFit);
+                }
+
+                rect.x += iconRect.width;
+                rect.width -= iconRect.width;
+
+                return rect;
             }
-
-            rect.x += iconRect.width;
-            rect.width -= iconRect.width;
-
-            return rect;
+            finally
+            {
+                GUI.color = prevColor;
+            }
         }
 
         static void DrawInfolabel(
@@ -254,6 +276,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             bool isSelected,
             bool isFocused,
             bool isBoldText,
+            bool isDisabled = false,
             TextTrimming textTrimming = TextTrimming.None)
         {
             if (Event.current.type != EventType.Repaint)
@@ -271,7 +294,8 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                 false,
                 true,
                 isSelected,
-                isFocused);
+                isFocused,
+                isDisabled);
         }
 
         internal static void ForSecondaryLabel(
@@ -280,14 +304,13 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             bool isSelected,
             bool isFocused,
             bool isBoldText,
+            bool isDisabled = false,
             TextTrimming textTrimming = TextTrimming.None)
         {
             if (Event.current.type != EventType.Repaint)
                 return;
 
-            GUIStyle style = isBoldText ?
-                UnityStyles.Tree.SecondaryBoldLabel :
-                UnityStyles.Tree.SecondaryLabel;
+            GUIStyle style = GetSecondaryLabelStyle(isBoldText, isDisabled);
 
             if (isBoldText)
                 style.normal.textColor = Color.red;
@@ -301,7 +324,8 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                 false,
                 true,
                 isSelected,
-                isFocused);
+                isFocused,
+                isDisabled);
         }
 
         internal static void ForLabel(
@@ -309,12 +333,13 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             GUIContent content,
             bool isSelected,
             bool isFocused,
-            bool isBoldText)
+            bool isBoldText,
+            bool isDisabled = false)
         {
             if (Event.current.type != EventType.Repaint)
                 return;
 
-            GUIStyle style = isBoldText ? UnityStyles.Tree.BoldLabel: UnityStyles.Tree.Label;
+            GUIStyle style = GetPrimaryLabelStyle(isBoldText, isDisabled);
 
             DrawLabel(
                 content,
@@ -323,7 +348,8 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                 false,
                 true,
                 isSelected,
-                isFocused);
+                isFocused,
+                isDisabled);
         }
 
         internal static void ForLabel(
@@ -332,6 +358,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             bool isSelected,
             bool isFocused,
             bool isBoldText,
+            bool isDisabled = false,
             TextTrimming textTrimming = TextTrimming.None)
         {
             if (Event.current.type != EventType.Repaint)
@@ -339,7 +366,7 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
 
             label = TruncateLabelIfNeeded(label);
 
-            GUIStyle style = isBoldText ? UnityStyles.Tree.BoldLabel: UnityStyles.Tree.Label;
+            GUIStyle style = GetPrimaryLabelStyle(isBoldText, isDisabled);
             GUIContent content = GetGUIContent(label, style, rect, textTrimming);
 
             DrawLabel(
@@ -349,7 +376,32 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
                 false,
                 true,
                 isSelected,
-                isFocused);
+                isFocused,
+                isDisabled);
+        }
+
+        static GUIStyle GetPrimaryLabelStyle(bool isBoldText, bool isDisabled)
+        {
+            if (isBoldText)
+                return isDisabled ?
+                    UnityStyles.Tree.BoldLabelDisabled :
+                    UnityStyles.Tree.BoldLabel;
+
+            return isDisabled ?
+                UnityStyles.Tree.LabelDisabled :
+                UnityStyles.Tree.Label;
+        }
+
+        static GUIStyle GetSecondaryLabelStyle(bool isBoldText, bool isDisabled)
+        {
+            if (isBoldText)
+                return isDisabled ?
+                    UnityStyles.Tree.BoldLabelDisabled :
+                    UnityStyles.Tree.SecondaryBoldLabel;
+
+            return isDisabled ?
+                UnityStyles.Tree.LabelDisabled :
+                UnityStyles.Tree.SecondaryLabel;
         }
 
         static void DrawLabel(
@@ -359,8 +411,17 @@ namespace Unity.PlasticSCM.Editor.UI.Tree
             bool isHover,
             bool isActive,
             bool isSelected,
-            bool isFocused)
+            bool isFocused,
+            bool isDisabled)
         {
+            if (isDisabled)
+            {
+                // disabled interaction when the label is disabled
+                isSelected = false;
+                isActive = false;
+                isHover = false;
+            }
+
             style.Draw(
                 rect, content, isHover, isActive, isSelected, isFocused);
         }

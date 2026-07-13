@@ -68,6 +68,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
         protected override void SingleClickedItem(int id)
         {
+            IList<int> currentSelection = GetSelection();
+            if (currentSelection.Count == 1 && currentSelection[0] == id)
+                return;
+
             SelectionChanged(new [] { id });
         }
 
@@ -797,6 +801,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                     icon, null, overlayIcon, label,
                     isSelected, isFocused, false,
                     wasChecked,
+                    false,
                     DrawTreeViewItem.TextTrimming.Path);
 
                 ((ICheckablePlasticTreeNode)changeInfo).UpdateCheckedState(isChecked);

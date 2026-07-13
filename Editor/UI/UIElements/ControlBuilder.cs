@@ -1,4 +1,5 @@
 using System;
+using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -18,7 +19,16 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
                 button.focusable = false;
             }
 
+            internal static void ApplyButtonStyle(ToolbarButton button)
+            {
+                button.style.unityTextAlign = TextAnchor.MiddleCenter;
+                button.style.height = TextButtonHeight;
+                button.style.paddingBottom = 1;
+                button.focusable = false;
+            }
+
             static StyleLength ImageButtonWidth = 28;
+            static StyleLength TextButtonHeight = 20;
         }
 
         internal static class Button
@@ -66,6 +76,25 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
                 return searchField;
             }
 
+            public static ToolbarButton CreateButtonLeft(string text, Action onClick)
+            {
+                ToolbarButton button = CreateButton(text, onClick);
+
+                // apply a negative margin to blend with previous button
+                button.style.marginRight = -1;
+                return button;
+            }
+
+            public static ToolbarButton CreateButton(string text, Action onClick)
+            {
+                ToolbarButton button = new ToolbarButton(onClick);
+
+                Styles.Toolbar.ApplyButtonStyle(button);
+
+                button.text = text;
+                return button;
+            }
+
             internal static ToolbarButton CreateImageButtonLeft(
                 Texture image,
                 string tooltip,
@@ -101,6 +130,67 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
                 button.Add(icon);
 
                 return button;
+            }
+
+            internal static ToolbarToggle CreateToggleLeft(
+                string text,
+                string tooltip)
+            {
+                ToolbarToggle toggle = CreateToggle(text, tooltip);
+
+                // apply a negative margin to blend with next button
+                toggle.style.marginRight = -1;
+                return toggle;
+            }
+
+            internal static ToolbarToggle CreateToggle(
+                string text,
+                string tooltip)
+            {
+                ToolbarToggle toggle = new ToolbarToggle();
+                toggle.text = text;
+                toggle.tooltip = tooltip;
+                toggle.style.unityTextAlign = TextAnchor.MiddleCenter;
+                return toggle;
+            }
+
+            internal static MultiSelectDropdown CreateMultiSelectDropdownLeft(
+                string labelPrefix)
+            {
+                MultiSelectDropdown dropdown = CreateMultiSelectDropdown(labelPrefix);
+
+                // apply a negative margin to blend with next button
+                dropdown.style.marginRight = -1;
+                return dropdown;
+            }
+
+            internal static MultiSelectDropdown CreateMultiSelectDropdown(
+                string labelPrefix)
+            {
+                return new MultiSelectDropdown(labelPrefix);
+            }
+
+            internal static ToolbarToggle CreateImageToggleLeft(
+                Texture image,
+                string tooltip)
+            {
+                ToolbarToggle toggle = CreateImageToggle(image, tooltip);
+                toggle.style.marginRight = -1;
+                return toggle;
+            }
+
+            internal static ToolbarToggle CreateImageToggle(
+                Texture image,
+                string tooltip)
+            {
+                ToolbarToggle toggle = new ToolbarToggle();
+                toggle.tooltip = tooltip;
+
+                Image icon = new Image();
+                icon.image = image;
+                toggle.Add(icon);
+
+                return toggle;
             }
         }
 
@@ -181,6 +271,19 @@ namespace Unity.PlasticSCM.Editor.UI.UIElements
                 Styles.ButtonGroup.ApplyBottomButtonStyle(button);
 
                 return button;
+            }
+        }
+
+        internal static class Label
+        {
+            internal static UnityEngine.UIElements.Label CreateSelectableLabel(string text = null)
+            {
+                UnityEngine.UIElements.Label result = new UnityEngine.UIElements.Label();
+                result.selection.isSelectable = true;
+                result.SetMouseCursor(MouseCursor.Text);
+                result.text = text;
+
+                return result;
             }
         }
     }

@@ -589,6 +589,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                         isFocused,
                         isCurrentConflict,
                         false,
+                        false,
                         DrawTreeViewItem.TextTrimming.Path);
 
                     return;
@@ -601,6 +602,7 @@ namespace Unity.PlasticSCM.Editor.Views.Merge.Developer
                     icon, null, overlayIcon, label,
                     isSelected, isFocused, isCurrentConflict,
                     wasChecked,
+                    false,
                     DrawTreeViewItem.TextTrimming.Path);
 
                 ((ICheckablePlasticTreeNode)mergeChange).UpdateCheckedState(isChecked);

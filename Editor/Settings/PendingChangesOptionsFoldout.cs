@@ -9,7 +9,6 @@ using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.Utils;
 using PlasticGui;
-using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.PendingChanges;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.UI;
@@ -18,11 +17,9 @@ namespace Unity.PlasticSCM.Editor.Settings
 {
     class PendingChangesOptionsFoldout
     {
-        internal void OnActivate(WorkspaceInfo wkInfo, PendingChangesUpdater pendingChangesUpdater)
+        internal void OnActivate(WorkspaceInfo wkInfo)
         {
             mWkInfo = wkInfo;
-
-            DisableAutoRefresh(pendingChangesUpdater);
 
             CheckFsWatcher(mWkInfo);
 
@@ -34,27 +31,27 @@ namespace Unity.PlasticSCM.Editor.Settings
             SetPendingChangesOptions(mPendingChangesSavedOptions);
         }
 
-        internal void OnDeactivate(PendingChangesUpdater pendingChangesUpdater)
+        internal void Save()
         {
-            bool arePendingChangesOptionsChanged = false;
+            if (mPendingChangesSavedOptions == null)
+                return;
 
-            try
-            {
-                UVCSAssetPostprocessor.SetAutomaticAddPreference(mIsAutomaticAddEnabled);
+            UVCSAssetPostprocessor.SetAutomaticAddPreference(mIsAutomaticAddEnabled);
 
-                PendingChangesOptions newPendingChangesOptions = GetPendingChangesOptions();
+            PendingChangesOptions newPendingChangesOptions = GetPendingChangesOptions();
 
-                arePendingChangesOptionsChanged = !mPendingChangesSavedOptions.AreSameOptions(newPendingChangesOptions);
+            if (mPendingChangesSavedOptions.AreSameOptions(newPendingChangesOptions))
+                return;
 
-                if (arePendingChangesOptionsChanged)
-                {
-                    newPendingChangesOptions.SavePreferences();
-                }
-            }
-            finally
-            {
-                EnableAutoRefresh(pendingChangesUpdater, arePendingChangesOptionsChanged);
-            }
+            newPendingChangesOptions.SavePreferences();
+            mPendingChangesSavedOptions = newPendingChangesOptions;
+
+            IAutoRefreshView autoRefreshView = GetPendingChangesView();
+
+            if (autoRefreshView == null)
+                return;
+
+            autoRefreshView.ForceRefresh();
         }
 
         internal void OnGUI()
@@ -65,8 +62,25 @@ namespace Unity.PlasticSCM.Editor.Settings
                 DoPendingChangesSettings);
         }
 
+        internal void SetAutoRefreshForTesting(bool isEnabled)
+        {
+            mAutoRefresh = isEnabled;
+        }
+
+        internal void SetShowPrivateFilesForTesting(bool isEnabled)
+        {
+            mShowPrivateFields = isEnabled;
+        }
+
+        internal void SelectSimilarityPercentForTesting(int similarityPercent)
+        {
+            mSimilarityPercent = similarityPercent;
+        }
+
         void DoPendingChangesSettings()
         {
+            EditorGUI.BeginChangeCheck();
+
             DoGeneralSettings();
 
             DoWhatToFindSettings();
@@ -74,6 +88,15 @@ namespace Unity.PlasticSCM.Editor.Settings
             DoWhatToShowSettings();
 
             DoMoveDetectionSettings();
+
+            if (EditorGUI.EndChangeCheck())
+                mHasPendingSave = true;
+
+            if (mHasPendingSave && GUIUtility.hotControl == 0)
+            {
+                mHasPendingSave = false;
+                Save();
+            }
         }
 
         void DoGeneralSettings()
@@ -126,8 +149,13 @@ namespace Unity.PlasticSCM.Editor.Settings
                 Url = SUPPORT_URL
             };
 
+            // Since links are rendered as buttons we skip possible state changes produced by clicking the link
+            bool guiChanged = GUI.changed;
+
             DrawTextBlockWithLink.ForExternalLink(
                 externalLink, formattedExplanation, UnityStyles.ProjectSettings.Paragraph);
+
+            GUI.changed = guiChanged;
         }
 
         void DoWhatToShowSettings()
@@ -263,38 +291,6 @@ namespace Unity.PlasticSCM.Editor.Settings
                 mCheckFileContent);
         }
 
-        static void EnableAutoRefresh(
-            PendingChangesUpdater pendingChangesUpdater, bool arePendingChangesOptionsChanged)
-        {
-            if (pendingChangesUpdater != null)
-                pendingChangesUpdater.EnableAutoUpdate();
-
-            IAutoRefreshView autoRefreshView = GetPendingChangesView();
-
-            if (autoRefreshView == null)
-                return;
-
-            autoRefreshView.EnableAutoRefresh();
-
-            if (!arePendingChangesOptionsChanged)
-                return;
-
-            autoRefreshView.ForceRefresh();
-        }
-
-        static void DisableAutoRefresh(PendingChangesUpdater pendingChangesUpdater)
-        {
-            if (pendingChangesUpdater != null)
-                pendingChangesUpdater.DisableAutoUpdate();
-
-            IAutoRefreshView autoRefreshView = GetPendingChangesView();
-
-            if (autoRefreshView == null)
-                return;
-
-            autoRefreshView.DisableAutoRefresh();
-        }
-
         static void DrawSettingsSection(Action drawSettings)
         {
             float originalLabelWidth = EditorGUIUtility.labelWidth;
@@ -419,8 +415,6 @@ namespace Unity.PlasticSCM.Editor.Settings
 
         internal interface IAutoRefreshView
         {
-            void DisableAutoRefresh();
-            void EnableAutoRefresh();
             void ForceRefresh();
         }
 
@@ -505,6 +499,9 @@ namespace Unity.PlasticSCM.Editor.Settings
         bool mShowCheckouts;
         bool mAutoRefresh;
         bool mFSWatcherEnabled;
+
+        // We need this one to be a member field so it survives while the sliders are being dragged
+        bool mHasPendingSave;
 
         bool mShowChangedFiles;
         bool mCheckFileContent;

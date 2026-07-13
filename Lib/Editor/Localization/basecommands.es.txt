@@ -697,6 +697,12 @@ Especificación del espacio de trabajo no válida
 == CmdErrorIncorrectCodeReviewId ==
 La revisión de código especificada no es válida: {0}
 
+== CmdErrorInvalidPackageVersionUsage ==
+El argumento '--package-version' solo puede usarse cuando se especifica una ruta en disco para el paquete usando el argumento '--package'.
+
+== CmdErrorInvalidPackageVersionValue ==
+Error leyendo el argumento '--package-version'. Se esperaba un número, pero se encontró '{0}' en su lugar.
+
 == CmdErrorLabelIncorrectrevspec ==
 La revisión especificada no es correcta: {0}
 
@@ -2353,6 +2359,21 @@ Requiere cambios
 
 == ReviewStatusUnderReview ==
 En revisión
+
+== MergeRequestStatusNone ==
+Ninguno
+
+== MergeRequestStatusDraft ==
+Borrador
+
+== MergeRequestStatusClosed ==
+Cerrada
+
+== MergeRequestStatusOpen ==
+Abierta
+
+== MergeRequestStatusMerged ==
+Fusionado
 
 == RevisionCheckedout ==
 local

@@ -93,12 +93,6 @@ namespace Unity.PlasticSCM.Editor
             get { return mGluonIncomingChangesUpdater; }
         }
 
-        public UVCSProjectSettingsProvider ActiveUVCSSettingsProvider
-        {
-            get { return mActiveUVCSSettingsProvider; }
-            set { mActiveUVCSSettingsProvider = value; }
-        }
-
         internal static void InitializeIfNeeded()
         {
             if (!FindWorkspace.HasWorkspace(ApplicationDataPath.Get()))
@@ -152,6 +146,8 @@ namespace Unity.PlasticSCM.Editor
 
         internal void Enable()
         {
+            VCSBuiltInPlugin.EnsureProviderAsync();
+
             UVCSToolbar.Controller.Enable();
 
             if (mIsEnabled)
@@ -261,13 +257,12 @@ namespace Unity.PlasticSCM.Editor
 
             EnsureServerConnectionAsync(mWkInfo, mUVCSConnectionMonitor);
 
+            UVCSProjectSettingsProvider.GetIfActive()?.ReloadSettings();
             UVCSToolbar.Controller.SetWorkspace(wkInfo, mIsGluonMode);
         }
 
         internal void Disable()
         {
-            UVCSToolbar.Controller.Disable();
-
             if (!mIsEnabled)
                 return;
 
@@ -362,6 +357,12 @@ namespace Unity.PlasticSCM.Editor
         {
             mLog.Debug("OnEditorWantsToQuit");
 
+            if (IsEnabled())
+            {
+                FlushDirtyAssetsBeforeQuit();
+                WaitForPendingOperations.BeforeEditorQuit();
+            }
+
             if (!HasRunningOperation())
                 return true;
 
@@ -369,6 +370,11 @@ namespace Unity.PlasticSCM.Editor
                 PlasticLocalization.GetString(PlasticLocalization.Name.OperationRunning),
                 PlasticLocalization.GetString(PlasticLocalization.Name.ConfirmClosingRunningOperation),
                 PlasticLocalization.GetString(PlasticLocalization.Name.YesButton));
+        }
+
+        void FlushDirtyAssetsBeforeQuit()
+        {
+            AssetDatabase.SaveAssets();
         }
 
         bool CheckPendingChanges.IPendingChangesView.HasUnsavedChanges(WorkspaceInfo wkInfo)
@@ -557,6 +563,8 @@ namespace Unity.PlasticSCM.Editor
 
             if (wkInfo != null)
                 EnableForWorkspace(wkInfo);
+            else
+                UVCSProjectSettingsProvider.GetIfActive()?.ReloadSettings();
 
             UVCSWindow window = GetWindowIfOpened.UVCS();
 
@@ -826,7 +834,6 @@ namespace Unity.PlasticSCM.Editor
         static UVCSPlugin mInstance;
 
         DelayedActionBySecondsRunner mDelayedAutoRefreshChangesAction;
-        UVCSProjectSettingsProvider mActiveUVCSSettingsProvider;
         WorkspaceOperationsMonitor mWorkspaceOperationsMonitor;
         IAssetStatusCache mAssetStatusCache;
         GluonIncomingChangesUpdater mGluonIncomingChangesUpdater;

@@ -63,6 +63,7 @@ namespace Unity.PlasticSCM.Editor.UI
             IconPendingChangesView,
             IconIncomingChangesView,
             IconMergeView,
+            IconDiff,
             IconChangesets,
             IconBranch,
             IconBranches,
@@ -82,12 +83,25 @@ namespace Unity.PlasticSCM.Editor.UI
             ButtonHome,
             IconZoomIn,
             IconZoomOut,
+            IconZoomToFit,
+            IconOriginalSize,
             ArrowCaretLeft,
             ArrowCaretRight,
             IconAdd,
             IconEdit,
             InclusionRule,
             ExclusionRule,
+            IconNext,
+            IconPrev,
+            IconFirst,
+            IconLast,
+            RGBAAll,
+            RGBARed,
+            RGBAGreen,
+            RGBABlue,
+            RGBAlpha,
+            IconArrowDown,
+            IconCheckMark,
         }
 
         internal static Texture2D GetImage(Name image)
@@ -286,6 +300,11 @@ namespace Unity.PlasticSCM.Editor.UI
             return GetIconFromEditorGUI("CloudConnect@2x");
         }
 
+        internal static Texture GetOptionsIcon()
+        {
+            return GetIconFromEditorGUI("pane options");
+        }
+
         internal static Texture GetCloseIcon()
         {
             if (mCloseIcon == null)
@@ -356,6 +375,14 @@ namespace Unity.PlasticSCM.Editor.UI
                 mMergeViewIcon = GetImage(Name.IconMergeView);
 
             return mMergeViewIcon;
+        }
+
+        internal static Texture2D GetDiffIcon()
+        {
+            if (mDiffIcon == null)
+                mDiffIcon = GetImage(Name.IconDiff);
+
+            return mDiffIcon;
         }
 
         internal static Texture2D GetChangesetsIcon()
@@ -681,6 +708,22 @@ namespace Unity.PlasticSCM.Editor.UI
             return mZoomOutIcon;
         }
 
+        internal static Texture2D GetZoomToFitIcon()
+        {
+            if (mZoomToFitIcon == null)
+                mZoomToFitIcon = GetImage(Name.IconZoomToFit);
+
+            return mZoomToFitIcon;
+        }
+
+        internal static Texture2D GetOriginalSizeIcon()
+        {
+            if (mOriginalSizeIcon == null)
+                mOriginalSizeIcon = GetImage(Name.IconOriginalSize);
+
+            return mOriginalSizeIcon;
+        }
+
         internal static Texture2D GetArrowCaretLeftIcon()
         {
             if (mArrowCaretLeftIcon == null)
@@ -711,6 +754,94 @@ namespace Unity.PlasticSCM.Editor.UI
                 mArrowCaretRightIcon = GetImage(Name.ArrowCaretRight);
 
             return mArrowCaretRightIcon;
+        }
+
+        internal static Texture2D GetNextIcon()
+        {
+            if (mNextIcon == null)
+                mNextIcon = GetImage(Name.IconNext);
+
+            return mNextIcon;
+        }
+
+        internal static Texture2D GetPrevIcon()
+        {
+            if (mPrevIcon == null)
+                mPrevIcon = GetImage(Name.IconPrev);
+
+            return mPrevIcon;
+        }
+
+        internal static Texture2D GetFirstIcon()
+        {
+            if (mFirstIcon == null)
+                mFirstIcon = GetImage(Name.IconFirst);
+
+            return mFirstIcon;
+        }
+
+        internal static Texture2D GetLastIcon()
+        {
+            if (mLastIcon == null)
+                mLastIcon = GetImage(Name.IconLast);
+
+            return mLastIcon;
+        }
+
+        internal static Texture2D GetChannelRGBAAllIcon()
+        {
+            if (mChannelRGBAAllIcon == null)
+                mChannelRGBAAllIcon = GetImage(Name.RGBAAll);
+
+            return mChannelRGBAAllIcon;
+        }
+
+        internal static Texture2D GetChannelRedIcon()
+        {
+            if (mChannelRedIcon == null)
+                mChannelRedIcon = GetImage(Name.RGBARed);
+
+            return mChannelRedIcon;
+        }
+
+        internal static Texture2D GetChannelGreenIcon()
+        {
+            if (mChannelGreenIcon == null)
+                mChannelGreenIcon = GetImage(Name.RGBAGreen);
+
+            return mChannelGreenIcon;
+        }
+
+        internal static Texture2D GetChannelBlueIcon()
+        {
+            if (mChannelBlueIcon == null)
+                mChannelBlueIcon = GetImage(Name.RGBABlue);
+
+            return mChannelBlueIcon;
+        }
+
+        internal static Texture2D GetChannelAlphaIcon()
+        {
+            if (mChannelAlphaIcon == null)
+                mChannelAlphaIcon = GetImage(Name.RGBAlpha);
+
+            return mChannelAlphaIcon;
+        }
+
+        internal static Texture2D GetArrowDownIcon()
+        {
+            if (mArrowDownIcon == null)
+                mArrowDownIcon = GetImage(Name.IconArrowDown);
+
+            return mArrowDownIcon;
+        }
+
+        internal static Texture2D GetCheckMarkIcon()
+        {
+            if (mCheckMarkIcon == null)
+                mCheckMarkIcon = GetImage(Name.IconCheckMark);
+
+            return mCheckMarkIcon;
         }
 
         internal static Texture2D GetTreeviewBackgroundTexture()
@@ -998,6 +1129,7 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mPendingChangesViewIcon;
         static Texture2D mIncomingChangesViewIcon;
         static Texture2D mMergeViewIcon;
+        static Texture2D mDiffIcon;
         static Texture2D mChangesetsIcon;
         static Texture2D mBranchIcon;
         static Texture2D mBranchesIcon;
@@ -1016,10 +1148,16 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mButtonHomeIcon;
         static Texture2D mZoomInIcon;
         static Texture2D mZoomOutIcon;
+        static Texture2D mZoomToFitIcon;
+        static Texture2D mOriginalSizeIcon;
         static Texture2D mAddIcon;
         static Texture2D mEditIcon;
         static Texture2D mArrowCaretLeftIcon;
         static Texture2D mArrowCaretRightIcon;
+        static Texture2D mNextIcon;
+        static Texture2D mPrevIcon;
+        static Texture2D mFirstIcon;
+        static Texture2D mLastIcon;
 
         static Texture2D mPlasticViewIcon;
         static Texture2D mPlasticNotifyIncomingIcon;
@@ -1044,6 +1182,13 @@ namespace Unity.PlasticSCM.Editor.UI
         static Texture2D mIconCloseButton;
         static Texture2D mInclusionRuleIcon;
         static Texture2D mExclusionRuleIcon;
+        static Texture2D mChannelRGBAAllIcon;
+        static Texture2D mChannelRedIcon;
+        static Texture2D mChannelGreenIcon;
+        static Texture2D mChannelBlueIcon;
+        static Texture2D mChannelAlphaIcon;
+        static Texture2D mArrowDownIcon;
+        static Texture2D mCheckMarkIcon;
 
         static readonly HashSet<string> mAudioExtensions = new HashSet<string> {
             ".wav", ".mp3", ".ogg", ".aiff", ".aif" };

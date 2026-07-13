@@ -65,6 +65,9 @@ namespace Unity.PlasticSCM.Editor.Hub.Operations
 
         void CreateWorkspaceOperation(OperationParams parameters)
         {
+            // Consolidate the version control mode for the automatic checkin
+            VCSBuiltInPlugin.SaveModeSetting();
+
             RefreshAsset.BeforeLongAssetOperation();
 
             try

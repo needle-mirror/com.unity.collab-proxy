@@ -329,6 +329,9 @@ Remarks:
         m               Minutes
         s               Seconds
 
+    Use "infinite" for unlimited (no expiration). The server must
+    allow unlimited lifespans for this to work.
+
     The following examples are valid strings:
         1w              1 week
         5d              5 days
@@ -336,6 +339,7 @@ Remarks:
         30m             30 minutes
         35s             35 seconds
         1h30m           1 hour and 30 minutes
+        infinite        Unlimited (no expiration)
 
     Output format parameters (--^format option):
 
@@ -792,6 +796,7 @@ Usage:
 Commands:
 
     - ^readonly
+    - ^hashalgorithm
 
     To get more information about each command run:
     cm ^admin <command> --^usage
@@ -805,6 +810,7 @@ Examples:
 
     cm ^admin ^readonly ^enter
     cm ^admin ^readonly ^status
+    cm ^admin ^hashalgorithm rep@server:8087 ^sha1
 
 == CMD_DESCRIPTION_ADMIN_READONLY ==
 Enables/disables the server readonly mode.
@@ -834,6 +840,41 @@ Examples:
 
     cm ^admin ^readonly ^enter diana:8086
     cm ^admin ^readonly ^leave
+
+== CMD_DESCRIPTION_ADMIN_HASHALGORITHM ==
+Gets or sets the hashing algorithm used by a repository.
+
+== CMD_USAGE_ADMIN_HASHALGORITHM ==
+Usage:
+
+    cm ^admin ^hashalgorithm <repspec> [(^md5 | ^sha1)]
+
+Options:
+
+    repspec    Repository spec (rep@server[:port]). (Use 'cm ^help ^objectspec'
+               to learn more about repository specs.)
+    ^md5       Use MD5 as the repository hashing algorithm.
+    ^sha1      Use SHA1 as the repository hashing algorithm.
+
+== CMD_HELP_ADMIN_HASHALGORITHM ==
+Remarks:
+    When invoked without an algorithm, prints the algorithm currently
+    configured for the repository. When invoked with md5 or sha1, sets it.
+    Only the server administrator can set the repository hashing algorithm.
+    The new algorithm applies to data hashed by the server from this point on.
+    Changing the algorithm on a repository that already contains data is
+    supported, but operators should consider the implications before doing so.
+
+    At the server level, repositoy configuration takes precedence over the
+    FIPSCompliant flag in server.conf.
+    This means that a repository configured using this command to use MD5 will
+    use MD5 (a non-FIPS algorithm) even if the FIPSCompliant flag is set to true.
+
+Examples:
+
+    cm ^admin ^hashalgorithm myrep@diana:8086
+    cm ^admin ^hashalgorithm myrep@diana:8086 ^sha1
+    cm ^admin ^hashalgorithm myrep@diana:8086 ^md5
 
 == CMD_DESCRIPTION_ANNOTATE ==
 Shows the changeset where each line of a file was last modified and its author.
@@ -1749,13 +1790,13 @@ Creates, edits, or deletes code reviews.
 == CMD_USAGE_CODEREVIEW ==
 Usage:
 
-    cm ^codereview <spec> <title> [--^status=<status_name>]
+    cm ^codereview <spec> <title> [--^status=<status_name> | --^codereviewstatus=<status_name>]
                 [--^assignee=<user_name>] [--^format=<str_format>]
                 [--^repository=<rep_spec>]
     (Creates a code review.)
 
-    cm ^codereview -^e <id> [--^status=<status_name>] [--^assignee=<user_name>]
-                [--^repository=<rep_spec>]
+    cm ^codereview -^e <id> [--^status=<status_name> | --^codereviewstatus=<status_name>]
+                [--^assignee=<user_name>] [--^repository=<rep_spec>]
     (Edits a code review.)
 
     cm ^codereview -^d <id> [ ...] [--^repository=<rep_spec>]
@@ -1764,22 +1805,22 @@ Usage:
 
 Options:
 
-    -^e              Edits the parameters of an existing code review.
-    -^d              Deletes one or more existing code reviews. Use a 
-                    whitespace to separate the code reviews IDs.
-    --^status        Sets the new status of a code review. See Remarks for
-                    additional information.
-    --^assignee      Sets the new assignee of a code review.
-    --^format        Retrieves the output message in a specific format. See
-                    Remarks for additional information.
-    --^repository    Sets the repository to be used as default. (Use 
-                    'cm ^help ^objectspec' to learn more about repository specs.)
-    spec           It can be either a changeset spec, a shelve spec or a branch spec. 
-                    It will be the target of the new code review. (Use 'cm ^help 
-                    ^objectspec' to learn more about changeset or branch specs.)
-    title          A text string to be used as title of the new code review.
-    id              The code review identification number. A GUID can be used as
-                   well.
+    -^e                     Edits the parameters of an existing code review.
+    -^d                     Deletes one or more existing code reviews. Use a 
+                            whitespace to separate the code reviews IDs.
+    --^status               Sets the new status of a code review. See Remarks for
+                            additional information.
+    --^codereviewstatus     This is an alias of '--^status'.
+    --^assignee             Sets the new assignee of a code review.
+    --^format               Retrieves the output message in a specific format. See
+                            Remarks for additional information.
+    --^repository           Sets the repository to be used as default. (Use 
+                            'cm ^help ^objectspec' to learn more about repository specs.)
+    spec                    It can be either a changeset spec, a shelve spec or a branch spec. 
+                            It will be the target of the new code review. (Use 'cm ^help 
+                            ^objectspec' to learn more about changeset or branch specs.)
+    title                   A text string to be used as title of the new code review.
+    id                      The code review identification number. A GUID can be used as well.
 
 == CMD_HELP_CODEREVIEW ==
 Remarks:
@@ -1825,6 +1866,177 @@ Examples:
 
     cm ^codereview -^d 1367 --^repository=myremoterepo@myremoteserver:18084
     cm ^codereview 27658884-5dcc-49b7-b0ef-a5760ae740a3 -^d
+
+== CMD_DESCRIPTION_MERGEREQUEST ==
+Allows the user to manage merge requests.
+
+== CMD_USAGE_MERGEREQUEST ==
+Usage:
+
+    cm ^mergerequest | ^mr <command> [options]
+
+Commands:
+
+    - ^create | ^mk
+    - ^edit
+    - ^delete | ^rm
+
+    To get more information about each command run:
+    cm ^mergerequest <command> --^usage
+    cm ^mergerequest <command> --^help
+
+== CMD_HELP_MERGEREQUEST ==
+Examples:
+
+    cm ^mergerequest /main/task001 "Add feature" --^destination=/main
+    cm ^mergerequest ^create /main/task001 "Add feature" --^destination=/main
+    cm ^mergerequest ^edit 1367 --^mergerequeststatus=^Draft
+    cm ^mergerequest ^edit 1367 --^codereviewstatus=^Reviewed
+    cm ^mergerequest ^delete 1367
+
+== CMD_DESCRIPTION_MERGEREQUEST_CREATE ==
+Creates a new merge request.
+
+== CMD_USAGE_MERGEREQUEST_CREATE ==
+Usage:
+
+    cm ^mergerequest | ^mr [^create | ^mk] <brspec> <title> --^destination=<brspec>
+                [--^mergerequeststatus=<mr_status_name>]
+                [--^codereviewstatus=<cr_status_name>]
+                [--^assignee=<user_name>] [--^format=<str_format>]
+                [--^repository=<rep_spec>]
+
+Options:
+
+    --^destination          Merge destination branch. It's mandatory.
+                            (Use 'cm ^help ^objectspec' to learn more about branch specs.)
+    --^mergerequeststatus   Merge request status:
+                            "^Draft", "^Open", "^Closed", "^Merged".
+                            "^Open" is the default value.
+    --^codereviewstatus     Code review status:
+                            "^Under ^review", "^Reviewed", or "^Rework ^required".
+                            "^Under ^review" is the default value.
+    --^assignee             Sets the new assignee for the code review.
+    --^format               Retrieves the output message in a specific format.
+                            See Remarks for additional information.
+    --^repository           Sets the repository to be used as default.
+                            (Use 'cm ^help ^objectspec' to learn more about
+                            repository specs.)
+    brspec                  Branch that is the source of the merge request.
+                            (Use 'cm ^help ^objectspec' to learn more about branch specs.)
+    title                   Title of the new merge request.
+
+
+== CMD_HELP_MERGEREQUEST_CREATE ==
+Remarks:
+
+    To create a new merge request, a branch spec, a title and a merge destination
+    branch are required. The initial merge request status, the initial code review
+    status and assignee can be set, too. An ID (or GUID if requested) will be
+    returned as a result.
+
+    The 'repository' parameter is available to set the default working
+    repository. This is useful when the user wants to manage merge requests on
+    a server different than the one associated to the current workspace, or
+    when there is no current workspace at all.
+
+    Output format parameters (--^format option):
+        This command accepts a format string to show the output.
+        The output parameters of this command are the following:
+        {0}  id
+        {1}  guid
+
+Examples:
+
+    cm ^mergerequest ^create /main/task001 "Add feature" --^destination=/main \
+        --^mergerequeststatus=^Draft --^codereviewstatus=^"Rework required" \
+        --^assignee=newbie --^format="{^id} -> {^guid}"
+
+    cm ^mr ^br:/main/task001@myrepo@myserver:8084 "Add feature" \
+        --^destination=^br:/main@myrepo@myserver:8084
+
+== CMD_DESCRIPTION_MERGEREQUEST_EDIT ==
+Edits an existing merge request.
+
+== CMD_USAGE_MERGEREQUEST_EDIT ==
+Usage:
+
+    cm ^mergerequest | ^mr ^edit <id>
+                [--^destination=<brspec>]
+                [--^mergerequeststatus=<mr_status_name>]
+                [--^mergechangeset=<csetspec>]
+                [--^codereviewstatus=<cr_status_name>] [--^assignee=<user_name>]
+                [--^repository=<rep_spec>]
+
+Options:
+
+    --^destination          Merge destination branch. It's mandatory.
+                            (Use 'cm ^help ^objectspec' to learn more about branch specs.)
+    --^mergerequeststatus   Merge request status:
+                            "^Draft", "^Open", "^Closed", "^Merged".
+                            "^Open" is the default value.
+    --^mergechangeset       Changeset that resulted from the merge. It's optional.
+                            Only allowed together with '--^mergerequeststatus=^Merged'.
+                            Used to link the merge request with its merge changeset
+                            in the timeline comment.
+                            (Use 'cm ^help ^objectspec' to learn more about changeset specs.)
+    --^codereviewstatus     Code review status:
+                            "^Under ^review", "^Reviewed", or "^Rework ^required".
+                            "^Under ^review" is the default value.
+    --^assignee             Sets the new assignee for the code review.
+    --^repository           Sets the repository to be used as default.
+                            (Use 'cm ^help ^objectspec' to learn more about
+                            repository specs.)
+    id                      Merge request ID or GUID.
+
+== CMD_HELP_MERGEREQUEST_EDIT ==
+Remarks:
+
+    To edit an existing merge request, the target merge request ID (or GUID)
+    is required. No messages are displayed if there are no errors.
+
+    The 'repository' parameter is available to set the default working
+    repository. This is useful when the user wants to manage merge requests on
+    a server different than the one associated to the current workspace, or
+    when there is no current workspace at all.
+
+Examples:
+
+    cm ^mergerequest ^edit 1367 --^destination=^/main/release
+    cm ^mr ^edit 1367 --^assignee=new_assignee
+    cm ^mergerequest ^edit 27658884-5dcc-49b7-b0ef-a5760ae740a3 --^mergerequeststatus=^Open
+    cm ^mr ^edit 1367 --^mergerequeststatus=^Merged --^mergechangeset=cs:5678
+    cm ^mr ^edit 27658884-5dcc-49b7-b0ef-a5760ae740a3 --^codereviewstatus=^Reviewed
+
+== CMD_DESCRIPTION_MERGEREQUEST_DELETE ==
+Deletes one or more merge requests.
+
+== CMD_USAGE_MERGEREQUEST_DELETE ==
+Usage:
+
+    cm ^mergerequest | ^mr ^delete | -^rm <id> [<id> ...] [--^repository=<rep_spec>]
+
+Options:
+
+    --^repository   Sets the repository to be used as default.
+                    (Use 'cm ^help ^objectspec' to learn more about repository specs.)
+    id              Merge request ID(s) or GUID(s). Use space to separate multiple IDs.
+
+== CMD_HELP_MERGEREQUEST_DELETE ==
+Remarks:
+
+    To delete an existing merge request, the target merge request ID
+    (or GUID) is required. No messages are displayed if there are no errors.
+
+    The 'repository' parameter is available to set the default working
+    repository. This is useful when the user wants to manage merge requests on
+    a server different than the one associated to the current workspace, or
+    when there is no current workspace at all.
+
+Examples:
+
+    cm ^mergerequest ^delete 1367 1368 1369
+    cm ^mr -^rm 27658884-5dcc-49b7-b0ef-a5760ae740a3
 
 == CMD_DESCRIPTION_CRYPT ==
 Encrypts a password.
@@ -3484,6 +3696,7 @@ Remarks:
     - {^server}
     - {^symlinktarget}
     - {^hash}
+    - {^hashalgorithm} (e.g., MD5, SHA1)
     - {^chmod}
     - {^wkpath} (Path relative to workspace root)
     - {^branch}
@@ -5739,6 +5952,7 @@ Usage:
 
     cm ^patch <source_spec> [<source_spec>] [--^output=<output_file>]
              [--^tool=<path_to_diff>]
+             [--^clean] [--^integration]
     (Generates a patch file that contains the differences of a branch,
     a changeset, or the differences between changesets. It also tracks
     differences of text and binary files.)
@@ -5751,9 +5965,15 @@ Options:
 
     --^output        Sets the output file of the patch command.
     --^tool          Sets the application to use (diff or patch).
-    source_spec     Full spec of a changeset or a branch. (Use 
+    --^clean         Does not take into account the differences generated
+                     because of a merge, but only the differences created by
+                     simple checkins.
+    --^integration   Shows the branch changes that are pending to be merged into
+                     its parent branch. It takes into account any rebase or
+                     prior merge already done from/to its parent branch.
+    source_spec     Full spec of a changeset or a branch. (Use
                     'cm ^help ^objectspec' to learn more about specs.)
-    output_file     File to save the patch content. It no file is specified,
+    output_file     File to save the patch content. If no file is specified,
                     the patch content will be printed on standard output.
     patch_file      Patch file to apply in the current workspace.
 
@@ -5787,6 +6007,22 @@ Examples:
 
     cm ^patch ^cs:2@default ^cs:4@default
     (Prints on console the differences between csets 2 and 4 in unified format.)
+
+    cm ^patch ^br:/main/task001 --^integration
+    (Generates a patch with only the branch's own changes, excluding changes
+    that came from merges. Similar to GitHub's PR diff after updating a branch.)
+
+    cm ^patch ^br:/main/task001 --^clean
+    (Generates a patch with the branch changes excluding any content that
+    arrived via merge. Only direct checkins on the branch are included.)
+
+    cm ^patch ^br:/main/task001 --^clean --^integration --^output=review.patch
+    (Combines both flags: --integration changes the base so the diff only
+    covers what is pending to merge into the parent branch, and --clean
+    strips out any content that arrived via merge into the branch. The result
+    is a patch that contains only the direct work done on the branch that
+    has not yet been integrated into its parent — useful for code-review
+    scenarios where you want to see the "net new" work ready to merge.)
 
     cm ^patch --^apply file.patch --^tool=C:\gnu\patch.exe
     (Applies the patch in 'file.patch' to the local workspace with a custom exe.)
@@ -6688,6 +6924,7 @@ Remarks:
         {12} | {^itemid}            Item Id.
         {13} | {^size}              Size.
         {14} | {^hash}              Hash code.
+        {15} | {^hashalgorithm}     Hash algorithm (e.g., MD5, SHA1).
         {^tab}                     Inserts a tab space.
         {^newline}                 Inserts a new line.
 

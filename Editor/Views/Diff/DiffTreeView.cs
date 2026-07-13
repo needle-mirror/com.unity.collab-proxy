@@ -495,6 +495,7 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
                 isFocused,
                 false,
                 false,
+                false,
                 DrawTreeViewItem.TextTrimming.Path);
         }
 

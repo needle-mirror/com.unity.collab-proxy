@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Threading;
 
 using UnityEditor;
@@ -14,6 +15,7 @@ using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.UI.Progress;
 using Unity.PlasticSCM.Editor.Views.Welcome;
+using VcsTray.CloudDrive;
 
 namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace.Welcome
 {
@@ -116,6 +118,11 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace.Welcome
             ClientHandlers.Register();
         }
 
+        void AutoLogin.IWelcomeView.Repaint()
+        {
+            mParentWindow?.Repaint();
+        }
+
         void DoContentViewArea(
             bool clientNeedsConfiguration,
             bool isCreateWorkspaceButtonClicked)
@@ -212,7 +219,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace.Welcome
                 {
                     ProcessExecutor.Execute(
                         GetProcessName.ForUnityCloudDrive(),
-                        string.Empty,
+                        "--start-cloud-drive",
                         false,
                         false);
                     ((IProgressControls)configureProgress).ShowProgress(
@@ -274,7 +281,7 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace.Welcome
             if (!mIsCloudDriveExeAvailable)
                 return;
 
-            mIsCloudDriveRunning = UnityCloudDriveProcess.IsRunning();
+            mIsCloudDriveRunning = IsUnityCloudDriveProcessRunning();
 
             if (!mIsCloudDriveRunning)
                 return;
@@ -297,6 +304,14 @@ namespace Unity.PlasticSCM.Editor.CloudDrive.CreateWorkspace.Welcome
                 mParentWindow);
 
             return mCreateWorkspaceView;
+        }
+
+        static bool IsUnityCloudDriveProcessRunning()
+        {
+            if (Process.GetProcessesByName(Tool.Plastic.VCS_TRAY_NAME).Length == 0)
+                return false;
+
+            return CloudDriveAutoStart.IsEnabled();
         }
 
         static void DoTitleArea()

@@ -51,10 +51,10 @@ namespace Unity.Cloud.Collaborate
                     return new UnityInternals.UnityEditor.SettingsWindow(settingsWindow);
                 };
 
-            UnityInternals.UnityEditor.SettingsWindow.GetCurrentProviderInternal =
-                (UnityInternals.UnityEditor.SettingsWindow settingsWindow) =>
+            UnityInternals.UnityEditor.SettingsWindow.IsProjectSettingsWindowInternal =
+                (EditorWindow editorWindow) =>
                 {
-                    return ((SettingsWindow)settingsWindow.InternalObject).GetCurrentProvider();
+                    return editorWindow != null && editorWindow is ProjectSettingsWindow;
                 };
 
             UnityInternals.UnityEditor.DockArea.AddTabInternal =
@@ -99,6 +99,12 @@ namespace Unity.Cloud.Collaborate
                 () =>
                 {
                     EditorUtility.Internal_UpdateAllMenus();
+                };
+
+            UnityInternals.UnityEditor.Unsupported.GetFileIDHint =
+                (UnityEngine.Object obj) =>
+                {
+                    return Unsupported.GetFileIDHint(obj);
                 };
 
             UnityInternals.UnityEditor.HostView.GetWindow =

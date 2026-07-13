@@ -27,7 +27,7 @@ namespace Unity.PlasticSCM.Editor.Settings
                                       ClientConfig.Get().GetPendingChangesOnSwitchAction() == UserAction.NotDefined;
         }
 
-        internal void OnDeactivate()
+        internal void Save()
         {
             PlasticGuiConfig plasticGuiConfig = PlasticGuiConfig.Get();
             plasticGuiConfig.Configuration.ShelvingUndoBehavior = GetSelectedShelvingUndoBehavior();
@@ -88,9 +88,14 @@ namespace Unity.PlasticSCM.Editor.Settings
 
         void DoDiffAndMergePreferences()
         {
+            EditorGUI.BeginChangeCheck();
+
             DoUndoAfterShelveBehaviorSettings();
 
             DoSwitchActionSettings();
+
+            if (EditorGUI.EndChangeCheck())
+                Save();
         }
 
         void DoUndoAfterShelveBehaviorSettings()

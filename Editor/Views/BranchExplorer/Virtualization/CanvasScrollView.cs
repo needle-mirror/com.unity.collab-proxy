@@ -58,12 +58,10 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Virtualization
 
             mVerticalScroller = new Scroller(0, 100, OnVerticalScrollChanged);
             mVerticalScroller.viewDataKey = "VerticalScroller";
-            mVerticalScroller.style.width = 15;
             mainContainer.Add(mVerticalScroller);
 
             mBottomContainer = new VisualElement();
             mBottomContainer.style.flexDirection = FlexDirection.Row;
-            mBottomContainer.style.height = 15;
             Add(mBottomContainer);
 
             mHorizontalScroller = new Scroller(0, 100, OnHorizontalScrollChanged, SliderDirection.Horizontal);
@@ -72,9 +70,10 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Virtualization
             mBottomContainer.Add(mHorizontalScroller);
 
             mCorner = new VisualElement();
-            mCorner.style.width = 15;
-            mCorner.style.height = 15;
             mBottomContainer.Add(mCorner);
+
+            mVerticalScroller.RegisterCallback<GeometryChangedEvent>(OnVerticalScrollerGeometryChanged);
+            mHorizontalScroller.RegisterCallback<GeometryChangedEvent>(OnHorizontalScrollerGeometryChanged);
 
             ContentContainer = new VisualElement();
             ContentContainer.name = "content-container";
@@ -87,8 +86,20 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Virtualization
 
         internal void Dispose()
         {
+            mVerticalScroller.UnregisterCallback<GeometryChangedEvent>(OnVerticalScrollerGeometryChanged);
+            mHorizontalScroller.UnregisterCallback<GeometryChangedEvent>(OnHorizontalScrollerGeometryChanged);
             Viewport.UnregisterCallback<WheelEvent>(OnWheelEvent);
             Viewport.UnregisterCallback<GeometryChangedEvent>(OnViewportGeometryChanged);
+        }
+
+        void OnVerticalScrollerGeometryChanged(GeometryChangedEvent evt)
+        {
+            mCorner.style.width = evt.newRect.width;
+        }
+
+        void OnHorizontalScrollerGeometryChanged(GeometryChangedEvent evt)
+        {
+            mCorner.style.height = evt.newRect.height;
         }
 
         void OnViewportGeometryChanged(GeometryChangedEvent evt)

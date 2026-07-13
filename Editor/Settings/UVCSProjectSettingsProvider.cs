@@ -1,8 +1,8 @@
 using System;
 
 using UnityEditor;
+using UnityEditor.VersionControl;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 using Codice.Client.Common.EventTracking;
 using Codice.CM.Common;
@@ -10,114 +10,87 @@ using PlasticGui;
 using Unity.PlasticSCM.Editor.Toolbar;
 using Unity.PlasticSCM.Editor.UI;
 
+using SettingsWindow = Unity.PlasticSCM.Editor.UnityInternals.UnityEditor.SettingsWindow;
+
 namespace Unity.PlasticSCM.Editor.Settings
 {
-    internal class UVCSProjectSettingsProvider : SettingsProvider
+    /// <summary>
+    /// Project Settings UI for Unity Version Control.
+    /// <para>
+    /// Unity associates this object with the
+    /// &quot;Unity Version Control&quot; entry in <b>Version Control</b> mode (see
+    /// <see cref="VersionControlObject"/> and <see cref="VersionControlAttribute"/>).
+    /// When the user picks that mode, Unity shows this provider&apos;s inspector for editing
+    /// version-control-related project settings.
+    /// </para>
+    /// <para>
+    /// <see cref="OnActivate"/> is called when this provider becomes the active Version Control
+    /// mode, after the user selects &quot;Unity Version Control&quot; in the mode dropdown.
+    /// </para>
+    /// <para>
+    /// <see cref="OnDeactivate"/> is called when this provider stops being the active Version Control mode.
+    /// </para>
+    /// </summary>
+    [VersionControl("Unity Version Control")]
+    internal class UVCSProjectSettingsProvider : VersionControlObject, ISettingsInspectorExtension
     {
-        [SettingsProvider]
-        internal static SettingsProvider CreateSettingsProvider()
+        void OnEnable()
         {
             PlasticApp.InitializeIfNeeded();
 
-            return new UVCSProjectSettingsProvider(
-                UnityConstants.PROJECT_SETTINGS_TAB_PATH,
-                SettingsScope.Project,
-                UVCSPlugin.Instance,
-                UVCSToolbar.Controller);
-        }
-
-        UVCSProjectSettingsProvider(
-            string path,
-            SettingsScope scope,
-            UVCSPlugin uvcsPlugin,
-            IUpdateToolbarButtonVisibility updateToolbarButtonVisibility)
-            : base(path, scope)
-        {
-            mUVCSPlugin = uvcsPlugin;
-            mUpdateToolbarButtonVisibility = updateToolbarButtonVisibility;
-
-            label = UnityConstants.PROJECT_SETTINGS_TAB_TITLE;
-
-            OpenAllFoldouts();
-        }
-
-        public override void OnActivate(
-            string searchContext,
-            VisualElement rootElement)
-        {
-            mUVCSPlugin.ActiveUVCSSettingsProvider = this;
+            mUVCSPlugin = UVCSPlugin.Instance;
+            mUpdateToolbarButtonVisibility = UVCSToolbar.Controller;
 
             ReloadSettings();
+        }
 
-            if (mWkInfo == null)
-                return;
+        public override void OnActivate()
+        {
+            EditorWindow currentWindow = EditorWindow.focusedWindow;
 
-            mIsProjectSettingsActivated = true;
+            SwitchUVCSPlugin.OnIfNeeded(mUVCSPlugin);
 
-            mPendingChangesOptionsFoldout.OnActivate(mWkInfo, mUVCSPlugin.PendingChangesUpdater);
-            mDiffAndMergeOptionsFoldout.OnActivate();
-            mShelveAndSwitchOptionsFoldout.OnActivate();
-            mOtherOptionsFoldout.OnActivate();
+            if (SettingsWindow.IsProjectSettingsWindow(currentWindow))
+            {
+                currentWindow.Focus();
+            }
         }
 
         public override void OnDeactivate()
         {
-            mUVCSPlugin.ActiveUVCSSettingsProvider = null;
+            EditorWindow currentWindow = EditorWindow.focusedWindow;
 
-            if (!mIsProjectSettingsActivated)
-                return;
+            SwitchUVCSPlugin.Off(mUVCSPlugin);
 
-            mIsProjectSettingsActivated = false;
-
-            mPendingChangesOptionsFoldout.OnDeactivate(mUVCSPlugin.PendingChangesUpdater);
-            mDiffAndMergeOptionsFoldout.OnDeactivate();
-            mShelveAndSwitchOptionsFoldout.OnDeactivate();
-            mOtherOptionsFoldout.OnDeactivate();
+            if (SettingsWindow.IsProjectSettingsWindow(currentWindow))
+            {
+                currentWindow.Focus();
+            }
         }
 
-        public override void OnGUI(string searchContext)
+        internal static UVCSProjectSettingsProvider GetIfActive()
         {
-            DrawSettingsSection(DoIsEnabledSetting);
-
-            if (!mIsUVCSPluginEnabled)
-                return;
-
-#if !UNITY_6000_3_OR_NEWER
-            DrawSettingsSection(DoShowToolbarButtonSetting);
-#endif
-
-            if (mWkInfo == null)
-                return;
-
-            mIsPendingChangesFoldoutOpen = DrawFoldout(
-                mIsPendingChangesFoldoutOpen,
-                PlasticLocalization.Name.PendingChangesOptionsSectionTitle.GetString(),
-                mPendingChangesOptionsFoldout.OnGUI);
-
-            mIsDiffAndMergeFoldoutOpen = DrawFoldout(
-                mIsDiffAndMergeFoldoutOpen,
-                PlasticLocalization.Name.DiffAndMergeOptionsSectionTitle.GetString(),
-                mDiffAndMergeOptionsFoldout.OnGUI);
-
-            mIsShelveAndSwitchFoldoutOpen = DrawFoldout(
-                mIsShelveAndSwitchFoldoutOpen,
-                PlasticLocalization.Name.ShelveAndSwitchOptionsSectionTitle.GetString(),
-                mShelveAndSwitchOptionsFoldout.OnGUI);
-
-            mIsOtherFoldoutOpen = DrawFoldout(
-                mIsOtherFoldoutOpen,
-                PlasticLocalization.Name.OtherOptionsSectionTitle.GetString(),
-                mOtherOptionsFoldout.OnGUI);
+            return VersionControlManager.activeVersionControlObject as UVCSProjectSettingsProvider;
         }
 
         internal void ReloadSettings()
         {
-            mIsUVCSPluginEnabled = UVCSPluginIsEnabledPreference.IsEnabled();
+            if (mUVCSPlugin == null)
+                return;
 
+            mIsUVCSPluginEnabled = UVCSPluginIsEnabledPreference.IsEnabled();
             mShowToolbarButton = UVCSToolbarButtonIsShownPreference.IsEnabled();
 
             mWkInfo = FindWorkspace.InfoForApplicationPath(
                 ApplicationDataPath.Get(), PlasticGui.Plastic.API);
+
+            if (mWkInfo == null)
+                return;
+
+            OpenAllFoldouts();
+            ActivateFoldouts();
+
+            EditorUtility.SetDirty(this);
         }
 
         internal void OpenAllFoldouts()
@@ -162,14 +135,59 @@ namespace Unity.PlasticSCM.Editor.Settings
             mShowToolbarButton = false;
         }
 
+        void ISettingsInspectorExtension.OnInspectorGUI()
+        {
+            GUILayout.Space(10);
+
+            DrawSettingsSection(DoIsEnabledSetting);
+
+            if (!mIsUVCSPluginEnabled)
+                return;
+
+#if !UNITY_6000_3_OR_NEWER
+            DrawSettingsSection(DoShowToolbarButtonSetting);
+#endif
+
+            if (mWkInfo == null)
+                return;
+
+            mIsPendingChangesFoldoutOpen = DrawFoldout(
+                mIsPendingChangesFoldoutOpen,
+                PlasticLocalization.Name.PendingChangesOptionsSectionTitle.GetString(),
+                mPendingChangesOptionsFoldout.OnGUI);
+
+            mIsDiffAndMergeFoldoutOpen = DrawFoldout(
+                mIsDiffAndMergeFoldoutOpen,
+                PlasticLocalization.Name.DiffAndMergeOptionsSectionTitle.GetString(),
+                mDiffAndMergeOptionsFoldout.OnGUI);
+
+            mIsShelveAndSwitchFoldoutOpen = DrawFoldout(
+                mIsShelveAndSwitchFoldoutOpen,
+                PlasticLocalization.Name.ShelveAndSwitchOptionsSectionTitle.GetString(),
+                mShelveAndSwitchOptionsFoldout.OnGUI);
+
+            mIsOtherFoldoutOpen = DrawFoldout(
+                mIsOtherFoldoutOpen,
+                PlasticLocalization.Name.OtherOptionsSectionTitle.GetString(),
+                mOtherOptionsFoldout.OnGUI);
+        }
+
+        void ActivateFoldouts()
+        {
+            mPendingChangesOptionsFoldout.OnActivate(mWkInfo);
+            mDiffAndMergeOptionsFoldout.OnActivate();
+            mShelveAndSwitchOptionsFoldout.OnActivate();
+            mOtherOptionsFoldout.OnActivate();
+        }
+
         void DoIsEnabledSetting()
         {
             using (new EditorGUILayout.HorizontalScope())
             {
                 string message = PlasticLocalization.GetString(
                     mIsUVCSPluginEnabled ?
-                        PlasticLocalization.Name.UnityVCSIsEnabled :
-                        PlasticLocalization.Name.UnityVCSIsDisabled);
+                        PlasticLocalization.Name.UnityVCSIsActive :
+                        PlasticLocalization.Name.UnityVCSIsPaused);
 
                 GUILayout.Label(
                     message,
@@ -187,9 +205,9 @@ namespace Unity.PlasticSCM.Editor.Settings
         void DoIsEnabledButton()
         {
             if (!GUILayout.Button(PlasticLocalization.GetString(
-                    mIsUVCSPluginEnabled ?
-                        PlasticLocalization.Name.DisableButton :
-                        PlasticLocalization.Name.EnableButton),
+                        mIsUVCSPluginEnabled ?
+                            PlasticLocalization.Name.PauseButton :
+                            PlasticLocalization.Name.ResumeButton),
                     UnityStyles.ProjectSettings.ToggleOn))
             {
                 return;
@@ -255,8 +273,6 @@ namespace Unity.PlasticSCM.Editor.Settings
 
                 using (new EditorGUILayout.HorizontalScope())
                 {
-                    GUILayout.Space(10);
-
                     using (new EditorGUILayout.VerticalScope())
                     {
                         GUILayout.Space(10);
@@ -265,8 +281,6 @@ namespace Unity.PlasticSCM.Editor.Settings
 
                         GUILayout.Space(10);
                     }
-
-                    GUILayout.Space(10);
                 }
             }
             finally
@@ -318,7 +332,6 @@ namespace Unity.PlasticSCM.Editor.Settings
         bool mIsDiffAndMergeFoldoutOpen;
         bool mIsShelveAndSwitchFoldoutOpen;
         bool mIsOtherFoldoutOpen;
-        bool mIsProjectSettingsActivated;
         bool mShowToolbarButton;
         bool mIsUVCSPluginEnabled;
 
@@ -329,7 +342,7 @@ namespace Unity.PlasticSCM.Editor.Settings
         ShelveAndSwitchOptionsFoldout mShelveAndSwitchOptionsFoldout = new ShelveAndSwitchOptionsFoldout();
         OtherOptionsFoldout mOtherOptionsFoldout = new OtherOptionsFoldout();
 
-        readonly IUpdateToolbarButtonVisibility mUpdateToolbarButtonVisibility;
-        readonly UVCSPlugin mUVCSPlugin;
+        IUpdateToolbarButtonVisibility mUpdateToolbarButtonVisibility;
+        UVCSPlugin mUVCSPlugin;
     }
 }

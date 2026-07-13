@@ -168,7 +168,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             bool isCancelled;
             mSaveAssets.ForChangesWithConfirmation(
-                mWkInfo.ClientPath, changesToCheckin, mWorkspaceOperationsMonitor,
+                mWkInfo.ClientPath,
+                changesToCheckin,
+                mWorkspaceOperationsMonitor,
+                canContinueWithDirtyScenes: true,
                 out isCancelled);
 
             if (isCancelled)
@@ -222,7 +225,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             bool isCancelled;
             mSaveAssets.ForChangesWithConfirmation(
-                mWkInfo.ClientPath, changesToCheckin, mWorkspaceOperationsMonitor,
+                mWkInfo.ClientPath,
+                changesToCheckin,
+                mWorkspaceOperationsMonitor,
+                canContinueWithDirtyScenes: true,
                 out isCancelled);
 
             if (isCancelled)
@@ -258,7 +264,10 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             bool isCancelled;
             mSaveAssets.ForChangesWithConfirmation(
-                mWkInfo.ClientPath, changesToShelve, mWorkspaceOperationsMonitor,
+                mWkInfo.ClientPath,
+                changesToShelve,
+                mWorkspaceOperationsMonitor,
+                canContinueWithDirtyScenes: false,
                 out isCancelled);
 
             if (isCancelled)
@@ -285,8 +294,16 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return;
             }
 
+            bool isCancelled;
             mSaveAssets.ForChangesWithoutConfirmation(
-                mWkInfo.ClientPath, changesToUndo, mWorkspaceOperationsMonitor);
+                mWkInfo.ClientPath,
+                changesToUndo,
+                mWorkspaceOperationsMonitor,
+                canContinueWithDirtyScenes: false,
+                out isCancelled);
+
+            if (isCancelled)
+                return;
 
             UndoUIOperation undoOperation = new UndoUIOperation(
                 mWkInfo,
@@ -317,8 +334,16 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return;
             }
 
+            bool isCancelled;
             mSaveAssets.ForChangesWithoutConfirmation(
-                mWkInfo.ClientPath, changesToUndo, mWorkspaceOperationsMonitor);
+                mWkInfo.ClientPath,
+                changesToUndo,
+                mWorkspaceOperationsMonitor,
+                canContinueWithDirtyScenes: false,
+                out isCancelled);
+
+            if (isCancelled)
+                return;
 
             mPendingChangesOperations.Undo(
                 changesToUndo,
@@ -339,8 +364,16 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
                 return;
             }
 
+            bool isCancelled;
             mSaveAssets.ForChangesWithoutConfirmation(
-                mWkInfo.ClientPath, changesToUndo, mWorkspaceOperationsMonitor);
+                mWkInfo.ClientPath,
+                changesToUndo,
+                mWorkspaceOperationsMonitor,
+                canContinueWithDirtyScenes: false,
+                out isCancelled);
+
+            if (isCancelled)
+                return;
 
             mPendingChangesOperations.UndoUnchanged(
                 changesToUndo,

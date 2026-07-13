@@ -516,32 +516,3 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
         const int MAX_SUBDIVISION_DEPTH = 10;
     }
 }
-
-#if !UNITY_2022_1_OR_NEWER
-namespace UnityEngine.UIElements
-{
-    // placeholder for Painter2D in Unity versions prior to 2022.1 to avoid #ifdef mess
-    internal enum ArcDirection { Clockwise, CounterClockwise }
-    internal enum LineJoin { Miter, Bevel, Round }
-    internal enum LineCap { Butt, Round, Square }
-
-    internal class Painter2D
-    {
-        internal Color fillColor;
-        internal Color strokeColor;
-        internal float lineWidth;
-        internal object lineJoin;
-        internal object lineCap;
-
-        internal void BeginPath() { }
-        internal void MoveTo(Vector2 vector) { }
-        internal void LineTo(Vector2 p) { }
-        internal void ClosePath() { }
-        internal void ArcTo(Vector2 p0, Vector2 p1, float radiusX) { }
-        internal void Arc(Vector2 center, float radius, float i, float i1) { }
-        internal  void Stroke() { }
-        internal void Fill() { }
-        internal void BezierCurveTo(Vector2 vector2, Vector2 vector3, Vector2 vector4) { }
-    }
-}
-#endif

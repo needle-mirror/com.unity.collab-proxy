@@ -128,6 +128,14 @@ namespace Unity.CodeEditor.Platform
             {
                 new KeyGesture(KeyCode.Delete, deleteWholeLineModifiers)
             };
+            Find = new List<KeyGesture>
+            {
+                new KeyGesture(KeyCode.F, commandModifiers)
+            };
+            Replace = new List<KeyGesture>
+            {
+                new KeyGesture(KeyCode.H, commandModifiers)
+            };
         }
 
         internal KeyModifiers CommandModifiers { get; set; }
@@ -154,5 +162,7 @@ namespace Unity.CodeEditor.Platform
         internal List<KeyGesture> PageRight { get; set; }
         internal List<KeyGesture> PageLeft { get; set; }
         internal List<KeyGesture> DeleteWholeLine { get; set; }
+        internal List<KeyGesture> Find { get; set; }
+        internal List<KeyGesture> Replace { get; set; }
     }
 }

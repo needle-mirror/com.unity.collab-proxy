@@ -447,6 +447,7 @@ namespace Unity.PlasticSCM.Editor.Views.Changesets
                     isSelected,
                     isFocused,
                     isBoldText,
+                    false,
                     column == ChangesetsListColumn.Branch ?
                         DrawTreeViewItem.TextTrimming.Path :
                         DrawTreeViewItem.TextTrimming.None);

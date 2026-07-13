@@ -126,7 +126,7 @@ namespace Unity.PlasticSCM.Editor
             VersionData versionData,
             PackageManager.PackageInfo packageInfo)
         {
-            versionData.SetLatestVersion(packageInfo.versions.latest);
+            versionData.SetLatestVersion(packageInfo.versions.latestCompatible);
         }
 
         static readonly ILog mLog = PlasticApp.GetLogger("PackageInfo");

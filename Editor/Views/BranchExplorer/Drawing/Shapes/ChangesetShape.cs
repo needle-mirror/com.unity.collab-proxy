@@ -22,6 +22,13 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
 
         internal ChangesetDrawInfo ChangesetDraw { get { return VirtualShape.DrawInfo as ChangesetDrawInfo; } }
 
+        internal Color ResolvedColor { get { return mResolvedColor; } }
+
+        internal static string BuildName(long changesetId)
+        {
+            return "changeset-" + changesetId;
+        }
+
         internal ChangesetShape(
             VirtualShape virtualShape,
             ColorProvider colorProvider,
@@ -30,7 +37,9 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
             mColorProvider = colorProvider;
             mUserNameResolver = userNameResolver;
 
-            if (DisplayOptions.ChangesetColorMode.HasFlag(ChangesetColorMode.ByUser))
+            name = BuildName(GetChangesetId(ChangesetDraw));
+
+            if (DisplayOptions.DisplayUserAvatar)
             {
                 UpdateAvatar();
             }
@@ -80,7 +89,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
             UpdateHomeImageBorder();
             UpdateGlowColor();
 
-            if (!DisplayOptions.ChangesetColorMode.HasFlag(ChangesetColorMode.ByUser))
+            if (!DisplayOptions.DisplayUserAvatar)
             {
                 HideAvatarControls();
                 return;
@@ -121,6 +130,8 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
         {
             Color changesetColor = mColorProvider.GetChangesetColor(
                 this, IsMultiChangesetSelected());
+
+            mResolvedColor = changesetColor;
 
             if (DrawWithOpacity())
             {
@@ -190,6 +201,12 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
             return brExView.Selection.GetSelectedChangesets().Count > 1;
         }
 
+        static long GetChangesetId(ChangesetDrawInfo changesetDraw)
+        {
+            BrExChangeset changeset = changesetDraw.Tag as BrExChangeset;
+            return changeset != null ? changeset.Id : 0;
+        }
+
         bool DrawWithOpacity()
         {
             if (IsSearchResult || IsSelected)
@@ -204,7 +221,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
 
         void OnAttachToPanel(AttachToPanelEvent evt)
         {
-            if (!DisplayOptions.ChangesetColorMode.HasFlag(ChangesetColorMode.ByUser))
+            if (!DisplayOptions.DisplayUserAvatar)
                 return;
 
             UpdateAvatar();
@@ -378,6 +395,10 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
             ChangesetCommentShape commentShape =
                 ChangesetCommentShape.FindForChangeset(canvas, ChangesetDraw);
             commentShape?.Expand();
+
+            ChangesetNumberShape numberShape =
+                ChangesetNumberShape.FindForChangeset(canvas, ChangesetDraw);
+            numberShape?.Expand();
         }
 
         void UpdateGlowColor()
@@ -418,6 +439,10 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
             ChangesetCommentShape commentShape =
                 ChangesetCommentShape.FindForChangeset(canvas, ChangesetDraw);
             commentShape?.ScheduleCollapse();
+
+            ChangesetNumberShape numberShape =
+                ChangesetNumberShape.FindForChangeset(canvas, ChangesetDraw);
+            numberShape?.ScheduleCollapse();
         }
 
         void SetupHoverEffects()
@@ -484,6 +509,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
         }
 
         bool mIsHovered;
+        Color mResolvedColor;
         VisualElement mGlowRing;
         Label mAvatarLabel;
         Image mGravatarImage;

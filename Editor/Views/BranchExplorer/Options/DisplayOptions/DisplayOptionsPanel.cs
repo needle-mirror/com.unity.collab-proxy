@@ -53,9 +53,11 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Options.DisplayOptions
                 mDisplayChangesetCommentsToggle.value =
                     mConfig.DisplayOptions.DisplayChangesetComments;
 
+                mDisplayChangesetNumbersToggle.value =
+                    mConfig.DisplayOptions.DisplayChangesetNumbers;
+
                 mDisplayUserAvatarToggle.value =
-                    (mConfig.DisplayOptions.ChangesetColorMode & ChangesetColorMode.ByUser)
-                    == ChangesetColorMode.ByUser;
+                    mConfig.DisplayOptions.DisplayUserAvatar;
             }
             finally
             {
@@ -79,6 +81,8 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Options.DisplayOptions
                 OnDisplayBranchTaskInfoChanged);
             mDisplayChangesetCommentsToggle.UnregisterValueChangedCallback(
                 OnDisplayChangesetCommentsChanged);
+            mDisplayChangesetNumbersToggle.UnregisterValueChangedCallback(
+                OnDisplayChangesetNumbersChanged);
             mDisplayUserAvatarToggle.UnregisterValueChangedCallback(
                 OnColorChangesetsByUserChanged);
         }
@@ -161,15 +165,23 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Options.DisplayOptions
             mGetBrExView()?.Redraw();
         }
 
+        void OnDisplayChangesetNumbersChanged(ChangeEvent<bool> evt)
+        {
+            if (mIsLoadingConfiguration)
+                return;
+
+            mConfig.DisplayOptions.DisplayChangesetNumbers = evt.newValue;
+            mConfig.Save(mWkInfo);
+
+            mGetBrExView()?.Redraw();
+        }
+
         void OnColorChangesetsByUserChanged(ChangeEvent<bool> evt)
         {
             if (mIsLoadingConfiguration)
                 return;
 
-            if (evt.newValue)
-                mConfig.DisplayOptions.ChangesetColorMode |= ChangesetColorMode.ByUser;
-            else
-                mConfig.DisplayOptions.ChangesetColorMode &= ~ChangesetColorMode.ByUser;
+            mConfig.DisplayOptions.DisplayUserAvatar = evt.newValue;
 
             mConfig.Save(mWkInfo);
 
@@ -221,6 +233,11 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Options.DisplayOptions
             mDisplayChangesetCommentsToggle.RegisterValueChangedCallback(
                 OnDisplayChangesetCommentsChanged);
 
+            mDisplayChangesetNumbersToggle = CreateToggle(
+                PlasticLocalization.Name.BrexDisplayChangesetNumbers);
+            mDisplayChangesetNumbersToggle.RegisterValueChangedCallback(
+                OnDisplayChangesetNumbersChanged);
+
             mDisplayUserAvatarToggle = CreateToggle(
                 PlasticLocalization.Name.BrexDisplayUserAvatar);
             mDisplayUserAvatarToggle.RegisterValueChangedCallback(
@@ -233,6 +250,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Options.DisplayOptions
             scrollView.Add(mDisplayLabelsToggle);
             scrollView.Add(mDisplayBranchTaskInfoToggle);
             scrollView.Add(mDisplayChangesetCommentsToggle);
+            scrollView.Add(mDisplayChangesetNumbersToggle);
             scrollView.Add(mDisplayUserAvatarToggle);
 
             Add(scrollView);
@@ -256,6 +274,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Options.DisplayOptions
         Toggle mDisplayLabelsToggle;
         Toggle mDisplayBranchTaskInfoToggle;
         Toggle mDisplayChangesetCommentsToggle;
+        Toggle mDisplayChangesetNumbersToggle;
         Toggle mDisplayUserAvatarToggle;
 
         WorkspaceUIConfiguration mConfig;

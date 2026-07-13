@@ -18,8 +18,8 @@ using PlasticGui.Help;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.BranchExplorer;
 using PlasticGui.WorkspaceWindow.BranchExplorer.Search;
-using PlasticGui.WorkspaceWindow.CodeReview;
 using PlasticGui.WorkspaceWindow.Configuration;
+using PlasticGui.WorkspaceWindow.MergeRequest;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.Tool;
@@ -43,6 +43,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer
         BranchExplorerSearch.IBrExNavigate
     {
         internal VirtualCanvas VirtualCanvas { get { return mVirtualCanvas; } }
+        internal ColorProvider ColorProvider { get { return mColorProvider; } }
         internal BrExTree ExplorerTree { get { return mExplorerTree; } }
         internal Button OptionsButton { get { return mOptionsButton; } }
         internal Button ZoomInButton { get { return mZoomInButton; } }
@@ -346,6 +347,11 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer
             mVirtualCanvas.Redraw();
         }
 
+        internal void ScrollChangesetIntoView(long changesetId)
+        {
+            mVirtualCanvas.ScrollChangesetIntoView(changesetId);
+        }
+
         void BrExShape.IBrExShapeClickListener.OnShapeDoubleClicked()
         {
             mBranchExplorerViewMenu.ExecuteDefaultAction();
@@ -635,6 +641,8 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer
             buttonsPanel.style.position = Position.Absolute;
             buttonsPanel.style.right = 20;
             buttonsPanel.style.bottom = 20;
+            buttonsPanel.style.flexDirection = FlexDirection.Row;
+            buttonsPanel.style.alignItems = Align.FlexEnd;
 
             float buttonSize = 30;
 
@@ -642,10 +650,10 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer
                 Images.GetSettingsIcon(),
                 PlasticLocalization.Name.BrexOptionsWindowTitle.GetString(),
                 () => { mOnOptionsClicked?.Invoke(); });
-            mOptionsButton.style.marginRight = 0;
             mOptionsButton.style.width = buttonSize;
             mOptionsButton.style.height = buttonSize;
-            buttonsPanel.Add(mOptionsButton);
+            mOptionsButton.style.marginRight = 0;
+            mOptionsButton.style.marginBottom = 0;
 
             mHomeButton = ControlBuilder.Button.CreateImageButton(
                 Images.GetButtonHomeIcon(),
@@ -654,7 +662,6 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer
             mHomeButton.style.marginRight = 0;
             mHomeButton.style.width = buttonSize;
             mHomeButton.style.height = buttonSize;
-            buttonsPanel.Add(mHomeButton);
 
             mZoomInButton = ControlBuilder.ButtonGroup.CreateImageTopButton(
                 Images.GetZoomInIcon(),
@@ -663,7 +670,6 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer
             mZoomInButton.style.marginRight = 0;
             mZoomInButton.style.width = buttonSize;
             mZoomInButton.style.height = buttonSize;
-            buttonsPanel.Add(mZoomInButton);
 
             mZoomOutButton = ControlBuilder.ButtonGroup.CreateImageBottomButton(
                 Images.GetZoomOutIcon(),
@@ -673,7 +679,14 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer
             mZoomOutButton.style.height = buttonSize;
             mZoomOutButton.style.marginRight = 0;
             mZoomOutButton.style.marginBottom = 0;
-            buttonsPanel.Add(mZoomOutButton);
+
+            VisualElement rightColumn = new VisualElement();
+            rightColumn.Add(mHomeButton);
+            rightColumn.Add(mZoomInButton);
+            rightColumn.Add(mZoomOutButton);
+
+            buttonsPanel.Add(mOptionsButton);
+            buttonsPanel.Add(rightColumn);
 
             return buttonsPanel;
         }

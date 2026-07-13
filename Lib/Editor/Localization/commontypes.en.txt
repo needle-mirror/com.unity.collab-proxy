@@ -82,6 +82,18 @@ A branch cannot be created from a shelve.
 == BranchAlreadyExists ==
 The branch {0} already exists.
 
+== BranchPromoteConflict ==
+Can't promote the branch because the parent has new changesets since the branch base. A merge is required.
+
+== BranchPromoteEmpty ==
+Can't promote the branch because it is empty.
+
+== BranchPromoteHasChildren ==
+Can't promote the branch because it has child branches.
+
+== BranchPromoteNoParent ==
+Can't promote the branch because it has no parent branch.
+
 == CannotArchiveNotUploadedRevision ==
 The archive operation cannot continue since the requested data was not committed to the blob storage yet. Please wait some seconds and try again.
 
@@ -366,6 +378,12 @@ The call context is not available. Aborting call.
 == ClientVersionDoesntMatch ==
 The client version ({0}) doesn't match the server version ({1}). Please update your client accordingly.
 
+== ClientVersionTooOldForHashAlgorithm ==
+This repository uses a hashing algorithm that requires a newer client version. Please upgrade your Unity Version Control client to access this repository.
+
+== ClientVersionTooOldForHashAlgorithmShelveChanges ==
+This repository uses a hashing algorithm that requires a newer client version to check-in. Alternatively, you can shelve your changes. Please upgrade your Unity Version Control client to access this repository.
+
 == ClientWillClose ==
 {0} Unity VCS client can't continue and will be closed.
 
@@ -517,7 +535,11 @@ English
 The database {0} can't be created. Check the server log (plastic.server.log). Error: {1}
 
 == ErrorCantImportInvalidPackage ==
-Invalid replication package. Invalid header.
+Incompatible replication package version.
+The compatible versions are: {0}.
+The signature found was '{1}', which doesn't relate to a known version.
+If the replication package was generated using the client, try to generate it again using argument '--package-version'.
+Use 'cm pull --help' for further information.
 
 == ErrorCantReplicateSameRepository ==
 Error, cannot replicate in the same repository.
@@ -627,6 +649,18 @@ Could not get revision information for {0}.
 == GenericInvalidCredentials ==
 Invalid user credentials.
 
+== GitConnectionDoesntExist ==
+Git connection doesn't exist.
+
+== GitWorkspaceNoContentToPush ==
+There is no content to push.
+
+== GitWorkspaceNotProperlyLinked ==
+The git workspace is not properly linked.
+
+== GitWorkspacePushFailed ==
+The push operation failed.
+
 == HideUnhideBranchNotSupported ==
 The server {0} doesn't support hiding / unhiding branches. Please upgrade the server.
 
@@ -686,6 +720,9 @@ Active Directory: Invalid domain: {0}.
 
 == InvalidEncoding ==
 Specified encoding is not valid: {0}
+
+== InvalidHashAlgorithmType ==
+Invalid hash algorithm type '{0}'.
 
 == InvalidLanguage ==
 Invalid language: {0}.
@@ -772,7 +809,7 @@ The item is not in a workspace.
 The item {0} is loaded twice at '{1}' and '{2}'. Please remove one of them.
 
 == ItemLockOutOfDate ==
-Cannot checkout '{0}' because you don't have the latest version. You will need to undo your changes to update to latest and lock. If you really need to preserve your changes, backup them manually. Please remember to lock this file in the future before making changes.
+Cannot checkout '{0}' because you don't have the latest version. You will need to undo your changes to update to latest and lock. If you really need to preserve your changes, back them up manually. Please remember to lock this file in the future before making changes.
 
 == ItemMustBeUndoCheckedout ==
 Cannot undo '{0}' because there is a dependency on '{1}'. Add '{1}' to the command arguments and retry.
@@ -799,10 +836,10 @@ Item path not in workspace: {0}.
 These items are exclusively checked out by: {0}
 
 == ItemSmartLockDifferentBranchOutOfDate ==
-Cannot checkout '{0}' because you don't load the latest version in the branch '{1}'. You will need to undo your changes and merge from '{1}' or re-create your current branch '{2}' from latest changeset in '{1}' and lock. If you really need to preserve your changes, backup them manually.
+Cannot checkout '{0}' because you didn't load the latest version in the branch '{1}'. You will need to undo your changes and merge from '{1}' or re-create your current branch '{2}' from latest changeset in '{1}' and lock. If you really need to preserve your changes, back them up manually.
 
 == ItemSmartLockRetainedOutOfDate ==
-Cannot checkout '{0}' because there is already an existing lock retained in branch '{1}'. You can only checkout the file from that branch or when the lock is released (branch '{1}' is merged in '{2}'). If you really need to preserve your changes, backup them manually.
+Cannot checkout '{0}' because there is already an existing lock retained in branch '{1}'. You can only checkout the file from that branch or when the lock is released (branch '{1}' is merged in '{2}'). If you really need to preserve your changes, back them up manually.
 
 == LabelDoesntexist ==
 The specified label {0} does not exist.
@@ -1349,6 +1386,9 @@ The revision {0} is not checked out.
 == RevisionToReloadNotFound ==
 The revision to reload was not found
 
+== ReviewerGroupMemberStatusUpdateNotSupported ==
+The server {0} doesn't support changing the review status for users who are not in the reviewer list. Please add yourself to the reviewer list, or upgrade the server.
+
 == RevtreeNoRevsToShow ==
 Can't show revision tree for item {0}.
 
@@ -1477,6 +1517,9 @@ The encryption key '{1}' for server '{0}' cannot be read. For more information c
 
 == ServiceNotInitialized ==
 The requested Plastic SCM operation is not yet available. Server is starting up or running upgrade operations.
+
+== SetRepositoryHashingAlgorithmNotSupportedByServer ==
+The server {0} doesn't support setting the hashing algorithm per repository. This operation requires a newer version of the Unity Version Control server.
 
 == ShellParserQuoteError ==
 Command arguments parse error. Check the quotes: {0}
@@ -1870,3 +1913,12 @@ Can't resolve organization {0}
 
 == MoveChangesetZeroNotAllowed ==
 Cannot move changeset zero.
+
+== UnknownReplicationPackageVersionString ==
+Unknown replication package version '{0}'
+
+== UnknownReplicationPackageVersionNumber ==
+Unknown replication package version ID '{0}'
+
+== CannotUpdateReviewStatus ==
+Only the reviewers can change the review status.

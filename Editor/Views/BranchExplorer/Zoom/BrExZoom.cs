@@ -177,9 +177,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Zoom
 
         void ApplyZoom()
         {
-#if UNITY_2022_1_OR_NEWER
             mCanvas.style.scale = new StyleScale(new Vector2(mZoomLevel, mZoomLevel));
-#endif
             mCanvas.OnZoomChanged();
         }
 

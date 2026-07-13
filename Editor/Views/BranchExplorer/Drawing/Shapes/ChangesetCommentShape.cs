@@ -429,7 +429,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
         bool IsVisibleForZoomLevel()
         {
             VirtualCanvas canvas = GetFirstAncestorOfType<VirtualCanvas>();
-            return canvas != null && canvas.ZoomLevel >= MinZoomToShowComments;
+            return canvas != null && canvas.ZoomLevel >= BrExShape.MinZoomToShowText;
         }
 
         IVisualElementScheduledItem mScheduledCollapse;
@@ -453,6 +453,5 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
         const int DefaultFontSize = 10;
         const long CollapseDelayMs = 100;
         const int ColorTransitionMs = 250;
-        const float MinZoomToShowComments = 0.8f;
     }
 }

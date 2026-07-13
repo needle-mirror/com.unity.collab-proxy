@@ -1,4 +1,7 @@
 using UnityEditor;
+using UnityEditor.VersionControl;
+
+using Unity.PlasticSCM.Editor.Settings;
 
 namespace Unity.PlasticSCM.Editor
 {
@@ -6,39 +9,48 @@ namespace Unity.PlasticSCM.Editor
     {
         internal static bool IsEnabled()
         {
-            return GetVersionControlMode() == "PlasticSCM";
+            return VersionControlSettings.mode == UVCS_MODE;
         }
 
-        internal static void Disable()
+        internal static void EnsureProviderAsync()
         {
-            SetVersionControlMode("Visible Meta Files");
+            if (IsEnabled())
+                return;
 
+            if (mIsSetVersionControlProviderScheduled)
+                return;
+
+            mIsSetVersionControlProviderScheduled = true;
+
+            // Defer Version Control provider call to ensure Unity has fully resolved the assemblies,
+            // which is required for VersionControlManager to locate the [VersionControl] attribute
+            // and activate the provider correctly.
+            EditorApplication.delayCall += SetVersionControlProvider;
+        }
+
+        internal static void SaveModeSetting()
+        {
+            VersionControlSettings.mode = UVCS_MODE;
             AssetDatabase.SaveAssets();
         }
 
-        internal static bool IsAnyProviderEnabled()
+        internal static bool IsVersionControlProviderEnabled()
         {
-            return !IsVisibleMetaFilesMode() && !IsHiddenMetaFilesMode();
+            return VersionControlSettings.mode != VISIBLE_META_FILES_MODE &&
+                   VersionControlSettings.mode != HIDDEN_META_FILES_MODE;
         }
 
-        static string GetVersionControlMode()
+        static void SetVersionControlProvider()
         {
-            return VersionControlSettings.mode;
+            mIsSetVersionControlProviderScheduled = false;
+
+            VersionControlManager.SetVersionControl(UVCS_MODE);
         }
 
-        static void SetVersionControlMode(string versionControl)
-        {
-            VersionControlSettings.mode = versionControl;
-        }
+        static bool mIsSetVersionControlProviderScheduled;
 
-        static bool IsVisibleMetaFilesMode()
-        {
-            return GetVersionControlMode() == "Visible Meta Files";
-        }
-
-        static bool IsHiddenMetaFilesMode()
-        {
-            return GetVersionControlMode() == "Hidden Meta Files";
-        }
+        const string UVCS_MODE = "Unity Version Control";
+        const string VISIBLE_META_FILES_MODE = "Visible Meta Files";
+        const string HIDDEN_META_FILES_MODE = "Hidden Meta Files";
     }
 }

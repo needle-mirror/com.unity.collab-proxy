@@ -56,7 +56,7 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             {
                 TrackFeatureUseEvent.For(
                     PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
-                    TrackFeatureUseEvent.Features.EmptyComment.PendingChangesCheckinDialogDoNotShowMessageAgain);
+                    TrackFeatureUseEvent.Features.UnityPackage.EmptyComment.PendingChangesCheckinDialogDoNotShowMessageAgain);
 
                 if (bShelve)
                     PlasticGuiConfig.Get().Configuration.ShowEmptyShelveCommentWarning = false;
@@ -69,13 +69,13 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs
             {
                 TrackFeatureUseEvent.For(
                     PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
-                    TrackFeatureUseEvent.Features.EmptyComment.PendingChangesCheckinDialogCheckinAnyway);
+                    TrackFeatureUseEvent.Features.UnityPackage.EmptyComment.PendingChangesCheckinDialogCheckinAnyway);
                 return true;
             }
 
             TrackFeatureUseEvent.For(
                 PlasticGui.Plastic.API.GetRepositorySpec(wkInfo),
-                TrackFeatureUseEvent.Features.EmptyComment.PendingChangesCheckinDialogCancel);
+                TrackFeatureUseEvent.Features.UnityPackage.EmptyComment.PendingChangesCheckinDialogCancel);
             return false;
         }
     }

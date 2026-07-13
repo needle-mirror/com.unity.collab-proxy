@@ -95,7 +95,7 @@ Moving items...
 Options
 
 == BranchExplorerOptionsToggleTooltip ==
-Hide or show the options panel
+Hide or show the details panel
 
 == GoButton ==
 Go
@@ -381,6 +381,9 @@ Restart & Install new update
 
 == MainSidebarCodeReviewsItem ==
 Code Reviews
+
+== MainSidebarMergeRequestsItem ==
+Merge Requests
 
 == ItemColumn ==
 Item
@@ -1436,7 +1439,7 @@ Cloaked
 Hidden changed
 
 == MainWindowTitle ==
-Unity DevOps Version Control - wk: {0} - {1} - {2}: {3}@{4}
+Unity Version Control - wk: {0} - {1} - {2}: {3}@{4}
 
 == StatusInfo ==
 You are browsing {0} {1}@{2}
@@ -1760,6 +1763,9 @@ Diff entire branch
 
 == DiffChangesetByChangeset ==
 Diff changeset by changeset
+
+== DetailsDifferencesExpanderHeader ==
+Differences
 
 == RetryUpdate ==
 Retry update
@@ -2305,7 +2311,13 @@ Replication src:
 Guid:
 
 == BrexCommentsProperty ==
-Comments:
+Comments
+
+== BrexPropertiesDetailByPrefix ==
+by {0}
+
+== BrexPropertiesDetailOnPrefix ==
+on {0}
 
 == BrexDisplayBranches ==
 Display branches
@@ -2512,7 +2524,7 @@ Save file
 Enter the name/IP and port of your server
 
 == PreferencesWindowTitle ==
-Unity DevOps Version Control Preferences - {0}
+Unity Version Control Preferences - {0}
 
 == GeneralPreferences ==
 General
@@ -4202,6 +4214,9 @@ Open
 == ApplyAttributesButton ==
 Apply attributes...
 
+== AddAttributeButton ==
+Add attribute
+
 == ApplyAttribute ==
 Apply an attribute to the selected object
 
@@ -4656,9 +4671,6 @@ Hidden changed
 == UnsupportedImageFormat ==
 Unsupported image format
 
-== ShowPropertiesButton ==
-Show properties
-
 == PreviewConfigAlreadyExist ==
 Another configuration exists with this name, please choose other name
 
@@ -4931,7 +4943,7 @@ The following username will be used:
 Configure your credentials
 
 == PlasticConfiguration ==
-Unity DevOps Version Control Configuration
+Unity Version Control Configuration
 
 == ConfigurationServerInfo ==
 Enter the name (or IP address) and port of your Unity VCS server. You can use "scan network" to find available Unity VCS servers on your network
@@ -5095,6 +5107,19 @@ The organization {0} was created correctly
 == ContinueButton ==
 Continue
 
+== ContinueWithoutSavingButton ==
+Continue without saving
+
+== DirtyScenesInPlayModeTitle ==
+Unsaved scene changes
+
+== DirtyScenesInPlayModeMessage ==
+The current scene has unsaved changes that cannot be saved during Play Mode.
+You can continue with the operation without these in-memory changes (they will not be included), or cancel and save your scene after exiting Play Mode.
+
+== DirtyScenesInPlayModeBlockingMessage ==
+The current scene has unsaved changes that cannot be saved during Play Mode. This operation requires saving your assets first. Please exit Play Mode, save your scene, and try again.
+
 == RetryButton ==
 Retry
 
@@ -5155,6 +5180,15 @@ Reply...
 
 == CommentButton ==
 Comment
+
+== CloseMergeRequestButton ==
+Close merge request
+
+== ConvertToDraftMenuItem ==
+Convert to draft
+
+== ReadyForReviewMenuItem ==
+Ready for review
 
 == DiscardUnsavedChangesTitle ==
 Discard changes
@@ -5713,11 +5747,17 @@ Deleting code review with title {0} ...
 == BranchMenuCreateANewCodeReview ==
 New code review for this branch...
 
+== BranchMenuCreateANewMergeRequest ==
+New merge request for this branch...
+
 == ChangesetMenuCreateANewCodeReview ==
 New code review for this changeset...
 
 == CreatingCodeReview ==
 Creating code review with title {0} ...
+
+== CreatingMergeRequest ==
+Creating merge request with title {0} ...
 
 == ObtainingCodeReviewInfo ==
 Loading code review with title {0} ...
@@ -6046,6 +6086,9 @@ Copy link to share diffs
 == CodeReviewLinkButtonTooltip ==
 Copy link to share the code review
 
+== MergeRequestSubtitle ==
+{0} wants to merge branch {1} into
+
 == GluonFilePlasticLinkText ==
 Get link - copy a link to this file so you can easily share it with others
 
@@ -6140,7 +6183,7 @@ Hide changes
 Show changes
 
 == ChooseRepositoryTitle ==
-Choose repository
+Choose Repository
 
 == ExploreRepositories ==
 Explore repositories
@@ -6321,8 +6364,14 @@ Undo changes
 == DiffPlasticMenu ==
 Diff with previous revision
 
+== DiffMetaPlasticMenu ==
+Diff .meta file with previous revision
+
 == HistoryPlasticMenu ==
 History
+
+== HistoryMetaPlasticMenu ==
+View .meta file history
 
 == StatusCheckout ==
 Checked out
@@ -6359,6 +6408,9 @@ Error creating workspace for Project: {0}
 
 == OpenInDesktopApp ==
 Open in Desktop App
+
+== OpenDiffInDesktopApp ==
+Open diff in Desktop App
 
 == OpenInGluon ==
 Open in Gluon
@@ -6428,6 +6480,60 @@ _Enter
 
 == UnityEnterShortcutForMacOS ==
 _Enter
+
+== UnityUndoShortcutForWindows ==
+%z
+
+== UnityUndoShortcutForMacOS ==
+%z
+
+== UnityRedoShortcutForWindows ==
+%y
+
+== UnityRedoShortcutForMacOS ==
+#%z
+
+== UnityCopyShortcutForWindows ==
+%c
+
+== UnityCopyShortcutForMacOS ==
+%c
+
+== UnityCutShortcutForWindows ==
+%x
+
+== UnityCutShortcutForMacOS ==
+%x
+
+== UnityPasteShortcutForWindows ==
+%v
+
+== UnityPasteShortcutForMacOS ==
+%v
+
+== UnitySelectAllShortcutForWindows ==
+%a
+
+== UnitySelectAllShortcutForMacOS ==
+%a
+
+== UnityGoToLineShortcutForWindows ==
+%g
+
+== UnityGoToLineShortcutForMacOS ==
+^g
+
+== UnityFindShortcutForWindows ==
+%f
+
+== UnityFindShortcutForMacOS ==
+%f
+
+== UnitySaveShortcutForWindows ==
+%s
+
+== UnitySaveShortcutForMacOS ==
+%s
 
 == CheckinInFilesProgress ==
 Checking in files...
@@ -7289,11 +7395,20 @@ Go to line...
 == SavingComment ==
 Saving comment...
 
+== ClosingMergeRequest ==
+Closing merge request...
+
+== ConvertingMergeRequestToDraft ==
+Converting merge request to draft...
+
+== MarkingMergeRequestAsReadyForReview ==
+Marking merge request as ready for review...
+
 == DeletingComment ==
 Deleting comment...
 
 == AppMenuAbout ==
-About Unity DevOps Version Control
+About Unity Version Control
 
 == AppMenuAboutGluon ==
 About GluonX
@@ -7302,7 +7417,7 @@ About GluonX
 Preferences…
 
 == AppMenuPlasticWebsite ==
-Unity DevOps Version Control Website…
+Unity Version Control Website…
 
 == NoCommentSet ==
 No comment has been set
@@ -7313,7 +7428,7 @@ Cannot get the comment
 == CopiedToClipboard ==
 Copied!
 
-== OpenOrCreateWorkspace ==
+== ViewWorkspaces ==
 View workspaces
 
 == ViewRepositories ==
@@ -7662,7 +7777,7 @@ Remove account
 Edit account
 
 == AddNewPlasticScmAccount ==
-Add a new Unity DevOps Version Control account
+Add a new Unity Version Control account
 
 == BrowseRepositoryDialogExplanation ==
 Select a path
@@ -7760,8 +7875,20 @@ Test connection failed. Please review the entered values. {0}
 == IssueTrackerNotLoaded ==
 Unable to load the issue tracker extension library.
 
+== ChangesetColors ==
+Changeset colors
+
 == SelectUsersDialogDescription ==
 Please select one or more users from the list below:
+
+== ClickToSetAlias ==
+Click to set alias
+
+== ByUser ==
+By user
+
+== ByReplicationSource ==
+By replication source
 
 == UnsavedChanges ==
 There are unsaved changes
@@ -8073,8 +8200,14 @@ Restore default font
 == BrExTooltipDetails ==
 Created by {0} on {1}
 
+== LoadingTooltipDetails ==
+Loading tooltip details...
+
 == ErrorLoadingAnnotations ==
 Error calculating annotations: {0}
+
+== ErrorLoadingTooltipDetails ==
+Error loading tooltip details
 
 == PlasticZoomInShortcut ==
 ctrl++
@@ -8127,17 +8260,23 @@ Zoom
 == ZoomLevelLabel ==
 {0:0}%
 
-== UnityVCSIsEnabled ==
-Unity VCS is enabled
+== UnityVCSIsActive ==
+Unity Version Control is active
 
-== UnityVCSIsDisabled ==
-Unity VCS is disabled
+== UnityVCSIsPaused ==
+Unity Version Control is paused
 
 == DisableButton ==
 Disable
 
 == EnableButton ==
 Enable
+
+== PauseButton ==
+Pause
+
+== ResumeButton ==
+Resume
 
 == DeletedRepositoryHeader ==
 This repository is deleted
@@ -8191,7 +8330,7 @@ Unity VCS
 Unity Version Control support
 
 == UnityDevOpsVersionControl ==
-Unity DevOps Version Control
+Unity Version Control
 
 == FindInFilesButton ==
 Find in files
@@ -8277,6 +8416,9 @@ Signing in...
 == ShowEmbeddedShelveDiffTooltip ==
 Always open shelves in current window
 
+== DiffInNewWindowMenuItem ==
+Diff in a new window
+
 == NoLabelsCreatedYet ==
 There are no labels created yet
 
@@ -8299,6 +8441,9 @@ There are no pending changes found
 Everything is in sync!
 
 There are no pending changes to upload to the remote repository in your workspace.
+
+== NoSerializedAssetDifferencesFound ==
+No differences found
 
 == NoIncomingChangesFound ==
 There are no incoming changes found
@@ -8414,11 +8559,26 @@ Start a conversation...
 == MarkedReviewAs ==
 marked review as
 
-== SelftRequestedReview ==
+== SelfRequestedReview ==
 self-requested a review
 
 == RequestedReviewFrom ==
 requested review from
+
+== SelfReRequestedReview ==
+re-requested a review
+
+== ReRequestedReviewFrom ==
+re-requested review from
+
+== SelfRemovedRequestedReview ==
+removed the self-requested review
+
+== RemovedRequestedReviewFrom ==
+removed the request for review from
+
+== ChangedReviewTitle ==
+changed review title
 
 == HideOneReply ==
 Hide 1 reply
@@ -8522,8 +8682,26 @@ Other
 == StatusFilterButton ==
 Status
 
+== CodeReviewStatusFilterButton ==
+Code review status
+
 == ReviewersStatusFilterButton ==
 Reviewer's status
+
+== MergeRequestStatusFilterButton ==
+Status
+
+== MergeRequestStatusDraft ==
+Draft
+
+== MergeRequestStatusOpen ==
+Open
+
+== MergeRequestStatusClosed ==
+Closed
+
+== MergeRequestStatusMerged ==
+Merged
 
 == RelevantChangesetsText ==
 View relevant changes only
@@ -8581,6 +8759,27 @@ Oops! It looks like there are no shelves matching your filters
 
 == NoDiffsMatchingFilters ==
 Oops! It looks like there are no diffs matching your filters
+
+== DiffGameObjectFilterLabel ==
+GameObject
+
+== DiffTypeFilterLabel ==
+Type
+
+== MultiSelectOverflowFormat ==
+{0} +{1}
+
+== MultiSelectNoneSelected ==
+None
+
+== MultiSelectOnlyAction ==
+only this
+
+== MultiSelectSelectAllAction ==
+select all
+
+== MultiSelectResetButton ==
+Reset
 
 == NoLocksMatchingFilters ==
 Oops! It looks like there are no file locks matching your filters
@@ -8704,6 +8903,9 @@ Apply filter
 
 == ChangingShowHiddenBranchesClearsQueryWarningMessage ==
 You have a custom query set up for this view. Toggling between hidden/unhidden branches will clear it.
+
+== ChangingShowHiddenChangesetsClearsQueryWarningMessage ==
+You have a custom query set up for this view. Toggling between hidden/unhidden changesets will clear it.
 
 == ResumeSyncWhenOpenWorkspaceLinkTitle ==
 Open cloud drive
@@ -9145,6 +9347,9 @@ Copy link (current branch)
 == CopyLinkOnCurrentChangesetMenuItem ==
 Copy link (current changeset)
 
+== CopySpecMenuItem ==
+Copy spec
+
 == CloudOrganizationsSection ==
 Cloud organizations
 
@@ -9215,6 +9420,12 @@ Show hidden branches
 
 == DontShowHiddenBranchesTooltip ==
 Don't show hidden branches
+
+== ShowHiddenBranchChangesetsTooltip ==
+Show changesets from hidden branches
+
+== DontShowHiddenBranchChangesetsTooltip ==
+Hide changesets from hidden branches
 
 == HiddenBranchTooltip ==
 This branch is hidden
@@ -9333,11 +9544,11 @@ Waiting for editor to be ready...
 == WaitingForPendingOperationsToFinish ==
 Waiting for pending operations to finish...
 
-== RenameMetaFiles ==
-Rename .meta files automatically
+== HandleMetaFiles ==
+Handle .meta files automatically
 
-== RenameMetaFilesTooltip ==
-Rename .meta files alongside their associated files to maintain Unity asset references
+== HandleMetaFilesTooltip ==
+Automatically handle .meta files during Rename/Add operations to maintain Unity asset references
 
 == BranchExplorerCheckoutChangesetTitle ==
 Pending changes
@@ -9351,6 +9562,9 @@ Calculate differences
 == BrexDisplayChangesetComments ==
 Display changeset comments
 
+== BrexDisplayChangesetNumbers ==
+Display changeset numbers on hover
+
 == BrexDisplayUserAvatar ==
 Display user avatar in changesets
 
@@ -9359,3 +9573,111 @@ Branch Explorer options
 
 == BranchExplorerNoWorkspaceMessage ==
 No workspace found. Please open a project containing a UVCS workspace, or create a new workspace for this project.
+
+== AssetsModifiedRefreshMessage ==
+Assets have been modified. Refresh to apply changes.
+
+== DismissButton ==
+Dismiss
+
+== SelectItemToSeeDetails ==
+Select an item to see its details
+
+== ImageChannelShowRGB ==
+Show all RGB channels
+
+== ImageChannelShowRed ==
+Show Red channel
+
+== ImageChannelShowGreen ==
+Show Green channel
+
+== ImageChannelShowBlue ==
+Show Blue channel
+
+== ImageChannelShowAlpha ==
+Show Alpha channel
+
+== DetailsButton ==
+Details
+
+== DiffExpandAllButton ==
+Expand all
+
+== DiffCollapseAllButton ==
+Collapse all
+
+== DiffFilterAll ==
+All
+
+== DiffFilterModified ==
+Modified
+
+== DiffFilterAdded ==
+Added
+
+== DiffFilterRemoved ==
+Removed
+
+== DiffFilterAllTooltip ==
+Show all differences
+
+== DiffFilterModifiedTooltip ==
+Show modified differences only
+
+== DiffFilterAddedTooltip ==
+Show added differences only
+
+== DiffFilterRemovedTooltip ==
+Show removed differences only
+
+== DiffMetaFileObject ==
+Meta File
+
+== DiffUnknownObject ==
+Unknown
+
+== DiffSceneRoot ==
+scene root
+
+== DiffMovedToLocation ==
+moved to {0}
+
+== DiffInLocation ==
+in {0}
+
+== DiffMovedUpOnePosition ==
+moved up {0} position
+
+== DiffMovedUpPositions ==
+moved up {0} positions
+
+== DiffMovedDownOnePosition ==
+moved down {0} position
+
+== DiffMovedDownPositions ==
+moved down {0} positions
+
+== DiffDataLossBannerSingular ==
+1 diff isn't displayed due to unresolved references. Show as text diff to see all changes.
+
+== DiffDataLossBannerPlural ==
+{0} diffs aren't displayed due to unresolved references. Show as text diff to see all changes.
+
+== DiffDataLossViewAsTextButton ==
+Show as text diff
+
+== DiffDataLossUnresolvedAnimatorController ==
+This Animator Override Controller's referenced controller could not be resolved, so Unity wiped its clip overrides on load. Clip changes won't appear in this diff — use text diff to see them.
+
+== DiffDataLossUnresolvedMonoScript ==
+The MonoScript attached to this component could not be resolved (script missing, renamed, or in an unloaded assembly). Its serialized fields are not shown in this diff — use text diff to see them.
+
+== DiffDataLossFallbackEditorWindow ==
+The script class that defines this asset could not be loaded — typically because the package or assembly it belongs to is not installed in this project. Unity loaded the asset as a placeholder, so its real fields are not shown in this diff — use text diff to see them.
+
+== ConflictsBadge ==
+Conflicts
+
+== NoConflictsBadge ==
+No conflicts

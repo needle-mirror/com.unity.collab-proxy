@@ -18,9 +18,18 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
 
         internal LabelDrawInfo LabelDraw => VirtualShape.DrawInfo as LabelDrawInfo;
 
+        internal Color ResolvedColor { get { return mResolvedColor; } }
+
+        internal static string BuildName(string labelName)
+        {
+            return "label-" + labelName;
+        }
+
         internal LabelShape(VirtualShape virtualShape, ColorProvider colorProvider) : base(virtualShape)
         {
             mColorProvider = colorProvider;
+
+            name = BuildName(GetFirstLabelName(LabelDraw));
 
             CreateHitTestOverlay();
             CreateSummaryCaptionContainer();
@@ -58,6 +67,8 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
 
             if (mIsHovered)
                 labelColor = BrightenColor(labelColor, HoverBrightenAmount);
+
+            mResolvedColor = labelColor;
 
             painter.strokeColor = labelColor;
             painter.lineWidth = mIsHovered
@@ -465,7 +476,16 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
             return false;
         }
 
+        static string GetFirstLabelName(LabelDrawInfo labelDraw)
+        {
+            if (labelDraw.Labels == null || labelDraw.Labels.Length == 0)
+                return string.Empty;
+
+            return labelDraw.Labels[0].Name;
+        }
+
         bool mIsHovered;
+        Color mResolvedColor;
         VisualElement mGlowRing;
         VisualElement mHitTestOverlay;
         VisualElement mSummaryCaptionContainer;

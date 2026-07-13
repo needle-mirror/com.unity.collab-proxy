@@ -5,6 +5,7 @@ using Codice.Client.BaseCommands.BranchExplorer.Layout;
 using Codice.LogWrapper;
 using PlasticGui.WorkspaceWindow.BranchExplorer;
 using PlasticGui.WorkspaceWindow.Configuration;
+using Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes;
 using Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes.Colors;
 using UnityEngine;
 
@@ -43,6 +44,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Virtualization
             BuildColumnVirtualShapes(canvas, layout.ColumnDraws, config);
             BuildLabelVirtualShapes(canvas, layout.LabelDraws, config, colorProvider);
             BuildChangesetVirtualShapes(canvas, layout.ChangesetDraws, config, colorProvider, userNameResolver);
+            BuildChangesetNumberVirtualShapes(canvas, layout.ChangesetDraws, config);
             BuildChangesetCommentVirtualShapes(canvas, layout.ChangesetDraws, config, commentResolver);
             BuildChangesetParentLinksVirtualShapes(canvas, layout.ChangesetDraws, config);
             BuildBranchParentLinksVirtualShapes(canvas, layout.BranchDraws, config);
@@ -95,6 +97,36 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Virtualization
                     userNameResolver);
                 changesetDraw.Visual = virtualShape;
                 canvas.AddVirtualChild(virtualShape);
+            }
+        }
+
+        static void BuildChangesetNumberVirtualShapes(
+            VirtualCanvas canvas,
+            List<ChangesetDrawInfo> changesetDraws,
+            WorkspaceUIConfiguration config)
+        {
+            foreach (ChangesetDrawInfo changesetDraw in changesetDraws)
+            {
+                string text = ChangesetNumberShape.GetNumberText(changesetDraw);
+                if (string.IsNullOrEmpty(text))
+                    continue;
+
+                Vector2 box = ChangesetNumberShape.MeasureNumberBoxSize(text);
+                if (box.x <= 0f || box.y <= 0f)
+                    continue;
+
+                BrExRectangle csBounds = changesetDraw.Bounds;
+                Rect numberRect = new Rect(
+                    csBounds.X + (csBounds.Width - box.x) / 2f,
+                    csBounds.Y - NumberVerticalMargin - box.y,
+                    box.x,
+                    box.y);
+
+                canvas.AddVirtualChild(new VirtualShape(
+                    changesetDraw,
+                    numberRect,
+                    ShapeType.ChangesetNumber,
+                    config));
             }
         }
 
@@ -352,6 +384,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Virtualization
             }
         }
 
+        const int NumberVerticalMargin = 4;
         const int CommentVerticalMargin = 4;
         const int CommentHeight = 24;
 

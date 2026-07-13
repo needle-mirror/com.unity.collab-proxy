@@ -81,6 +81,11 @@ namespace Unity.PlasticSCM.Editor.Toolbar
             }
         }
 
+        internal void ExecuteSwitchToBranchUI(BranchInfo branchInfo, RepositorySpec repSpec)
+        {
+            CreateControlledPopupOperations().SwitchToBranch(branchInfo, repSpec);
+        }
+
         internal void LoadBranches()
         {
             if (mWkInfo == null)
@@ -132,12 +137,6 @@ namespace Unity.PlasticSCM.Editor.Toolbar
         internal void Enable()
         {
             mDropDownButtonData.IsVisible = UVCSToolbarButtonIsShownPreference.IsEnabled();
-            FireOnToolbarButtonInvalidated();
-        }
-
-        internal void Disable()
-        {
-            mDropDownButtonData.IsVisible = false;
             FireOnToolbarButtonInvalidated();
         }
 
@@ -328,16 +327,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar
 
         void ShowControlledPopup(Vector2 popupPosition)
         {
-            ControlledPopupOperations operations = new ControlledPopupOperations(
-                mWkInfo,
-                mUVCSPlugin,
-                mIsGluonMode,
-                RefreshWorkspaceWorkingInfo,
-                this,
-                SetWorkingBranch,
-                () => mModel == null ? null : mModel.RepSpec,
-                () => GetMainBranch(mWkInfo),
-                () => mWorkingBranch);
+            ControlledPopupOperations operations = CreateControlledPopupOperations();
 
             ControlledPopupWindow window = new ControlledPopupWindow(
                 operations,
@@ -430,6 +420,20 @@ namespace Unity.PlasticSCM.Editor.Toolbar
                 return mMainBranch;
 
             return PlasticGui.Plastic.API.GetMainBranch(wkInfo);
+        }
+
+        ControlledPopupOperations CreateControlledPopupOperations()
+        {
+            return new ControlledPopupOperations(
+                mWkInfo,
+                mUVCSPlugin,
+                mIsGluonMode,
+                RefreshWorkspaceWorkingInfo,
+                this,
+                SetWorkingBranch,
+                () => mModel == null ? null : mModel.RepSpec,
+                () => GetMainBranch(mWkInfo),
+                () => mWorkingBranch);
         }
 
         WorkspaceInfo mWkInfo;

@@ -203,6 +203,7 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
             bool isCancelled;
             mSaveAssets.UnderWorkspaceWithConfirmation(
                 mWkInfo.ClientPath, mWorkspaceOperationsMonitor,
+                canContinueWithDirtyScenes: false,
                 out isCancelled);
 
             if (isCancelled)
@@ -299,12 +300,7 @@ namespace Unity.PlasticSCM.Editor.Views.Shelves
 
             MountPointWithPath mountPoint = MountPointWithPath.BuildWorkspaceRootMountPoint(repSpec);
 
-            SelectedRepObjectInfoData selectedBranchData = SelectedRepObjectInfoData.Create(
-                selectedShelves[0],
-                repSpec,
-                mountPoint);
-
-            Selection.activeObject = selectedBranchData;
+            SelectedRepObjectInfoData.SetActiveObject(selectedShelves[0], repSpec, mountPoint);
         }
 
         static void DoActionsToolbar(

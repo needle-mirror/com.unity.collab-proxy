@@ -6,6 +6,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Threading;
 
+using UnityEngine;
+
 using Codice;
 using Codice.Client.BaseCommands;
 using Codice.Client.Commands;
@@ -113,6 +115,22 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             mLog.Debug("Enabled");
         }
 
+        // True while ProcessOperations runs on the worker thread, or any paths are still queued
+        internal bool HasPendingOperations()
+        {
+            if (mIsProcessingOperations)
+                return true;
+
+            lock (mLock)
+            {
+                return mAssetsProcessorPathsToAdd.Count > 0 ||
+                       mAssetsProcessorPathsToDelete.Count > 0 ||
+                       mAssetsProcessorPathsToCheckout.Count > 0 ||
+                       mAssetsProcessorPathsToMove.Count > 0 ||
+                       mPathsToCheckout.Count > 0;
+            }
+        }
+
         void IWorkspaceOperationsMonitor.AddAssetsProcessorPathsToAdd(
             List<string> paths)
         {
@@ -170,28 +188,38 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
                     bool hasAssetProcessorOpsPending = false;
                     bool hasCheckoutOpsPending = false;
-                    ProcessOperations(
-                        mWkInfo,
-                        mPlasticAPI,
-                        mAssetStatusCache,
-                        FilterManager.Get().GetIgnoredFilter(),
-                        FilterManager.Get().GetHiddenChangesFilter(),
-                        mWorkspaceWindow,
-                        mViewHost,
-                        mPendingChangesUpdater,
-                        mDeveloperIncomingChangesUpdater,
-                        mGluonIncomingChangesUpdater,
-                        mAssetsProcessorPathsToAdd,
-                        mAssetsProcessorPathsToDelete,
-                        mAssetsProcessorPathsToCheckout,
-                        mAssetsProcessorPathsToMove,
-                        mPathsToCheckout,
-                        mCancelToken,
-                        mLock,
-                        mDisableAssetsProcessor,
-                        mIsGluonMode,
-                        out hasAssetProcessorOpsPending,
-                        out hasCheckoutOpsPending);
+
+                    mIsProcessingOperations = true;
+
+                    try
+                    {
+                        ProcessOperations(
+                            mWkInfo,
+                            mPlasticAPI,
+                            mAssetStatusCache,
+                            FilterManager.Get().GetIgnoredFilter(),
+                            FilterManager.Get().GetHiddenChangesFilter(),
+                            mWorkspaceWindow,
+                            mViewHost,
+                            mPendingChangesUpdater,
+                            mDeveloperIncomingChangesUpdater,
+                            mGluonIncomingChangesUpdater,
+                            mAssetsProcessorPathsToAdd,
+                            mAssetsProcessorPathsToDelete,
+                            mAssetsProcessorPathsToCheckout,
+                            mAssetsProcessorPathsToMove,
+                            mPathsToCheckout,
+                            mCancelToken,
+                            mLock,
+                            mDisableAssetsProcessor,
+                            mIsGluonMode,
+                            out hasAssetProcessorOpsPending,
+                            out hasCheckoutOpsPending);
+                    }
+                    finally
+                    {
+                        mIsProcessingOperations = false;
+                    }
 
                     if (mCancelToken.IsCancelled())
                         break;
@@ -282,6 +310,8 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
             mLog.Debug("Starting process operations...");
 
+            List<ItemError> operationErrors = new List<ItemError>();
+
             bool hasAssetProcessorOpsProcessed =
                 ProcessAssetProcessorOperations(
                     wkInfo,
@@ -292,6 +322,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     assetsProcessorPathsToDelete,
                     assetsProcessorPathsToCheckout,
                     assetsProcessorPathsToMove,
+                    operationErrors,
                     cancelToken,
                     lockObj,
                     disableAssetsProcessor);
@@ -304,6 +335,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     wkInfo,
                     plasticApi,
                     pathsToCheckout,
+                    operationErrors,
                     cancelToken,
                     lockObj);
 
@@ -323,23 +355,22 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                 out hasAssetProcessorOpsPending,
                 out hasCheckoutOpsPending);
 
-            bool isAfterAssetProcessorOpNeeded =
-                hasAssetProcessorOpsProcessed &&
-                !hasAssetProcessorOpsPending;
+            bool isAfterAssetProcessorOpNeeded = hasAssetProcessorOpsProcessed && !hasAssetProcessorOpsPending;
+            bool isAfterCheckoutOpNeeded = hasCheckoutOpsProcessed && !hasCheckoutOpsPending;
 
-            bool isAfterCheckoutOpNeeded =
-                hasCheckoutOpsProcessed &&
-                !hasCheckoutOpsPending;
-
-            if (!isAfterAssetProcessorOpNeeded &&
-                !isAfterCheckoutOpNeeded)
-                return;
-
-            if (cancelToken.IsCancelled())
+            if (!isAfterAssetProcessorOpNeeded && !isAfterCheckoutOpNeeded && operationErrors.Count == 0)
                 return;
 
             EditorDispatcher.Dispatch(() =>
             {
+                foreach (ItemError checkoutError in operationErrors)
+                {
+                    Debug.LogError(checkoutError.Error.Message);
+                }
+
+                if (!isAfterAssetProcessorOpNeeded && !isAfterCheckoutOpNeeded)
+                    return;
+
                 AfterProcessOperations(
                     assetStatusCache,
                     workspaceWindow,
@@ -384,6 +415,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             List<string> assetsProcessorPathsToDelete,
             List<string> assetsProcessorPathsToCheckout,
             List<UVCSAssetPostprocessor.PathToMove> assetsProcessorPathsToMove,
+            List<ItemError> operationErrors,
             CancelToken cancelToken,
             object lockObj,
             IDisableAssetsProcessor disableAssetsProcessor)
@@ -429,6 +461,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                         plasticApi,
                         hiddenChangesFilter,
                         ExtractPathsToProcess(assetsProcessorPathsToCheckout, lockObj),
+                        operationErrors,
                         cancelToken);
             }
             catch (Exception ex)
@@ -441,10 +474,11 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
             return hasProcessedPaths;
         }
 
-        static bool ProcessCheckoutOperation(
+        internal static bool ProcessCheckoutOperation(
             WorkspaceInfo wkInfo,
             IPlasticAPI plasticApi,
             List<string> pathsToProcess,
+            List<ItemError> operationErrors,
             CancelToken cancelToken,
             object lockObj)
         {
@@ -473,10 +507,12 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
             if (hasPathsToProcess)
             {
-                plasticApi.Checkout(
+                WkCheckoutResult checkoutResult = plasticApi.Checkout(
                     wkInfo,
                     result.ToArray(),
-                    CheckoutModifiers.ProcessSymlinks);
+                    CheckoutModifiers.ProcessSymlinks | CheckoutModifiers.IgnoreFailed);
+
+                operationErrors.AddRange(checkoutResult.SkippedErrors);
             }
 
             LogProcessedPaths("ProcessCheckoutOperation", result);
@@ -673,19 +709,10 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                     if (cancelToken.IsCancelled())
                         return false;
 
-                    string metaPath = MetaPath.GetMetaPath(path);
-
                     if (plasticApi.GetWorkspaceTreeNode(wkInfo, path) == null &&
                         !ignoredFilter.IsIgnored(path))
                     {
                             result.Add(path);
-                    }
-
-                    if (File.Exists(metaPath) &&
-                        plasticApi.GetWorkspaceTreeNode(wkInfo, metaPath) == null &&
-                        !ignoredFilter.IsIgnored(metaPath))
-                    {
-                        result.Add(metaPath);
                     }
                 }
 
@@ -788,6 +815,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                 IPlasticAPI plasticApi,
                 IHiddenChangesFilter hiddenChangesFilter,
                 List<string> paths,
+                List<ItemError> operationErrors,
                 CancelToken cancelToken)
             {
                 List<string> result = new List<string>();
@@ -826,7 +854,12 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
 
                 if (hasPathsToProcess)
                 {
-                    plasticApi.Checkout(wkInfo, result.ToArray(), CheckoutModifiers.None);
+                    WkCheckoutResult checkoutResult = plasticApi.Checkout(
+                        wkInfo,
+                        result.ToArray(),
+                        CheckoutModifiers.ProcessSymlinks | CheckoutModifiers.IgnoreFailed);
+
+                    operationErrors.AddRange(checkoutResult.SkippedErrors);
                 }
 
                 LogProcessedPaths("CheckoutIfControlledAndChanged", result);
@@ -839,6 +872,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
                 AddOptions options = new AddOptions();
                 options.AddPrivateParents = true;
                 options.NeedCheckPlatformPath = true;
+                options.HandleMetaFiles = true;
                 return options;
             }
         }
@@ -855,6 +889,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils.Processor
         ViewHost mViewHost;
 
         volatile bool mIsEnabled;
+        volatile bool mIsProcessingOperations;
         volatile ManualResetEvent mResetEvent = new ManualResetEvent(false);
         CancelToken mCancelToken = new CancelToken();
 

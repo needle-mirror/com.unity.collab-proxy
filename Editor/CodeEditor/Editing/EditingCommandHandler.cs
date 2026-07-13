@@ -435,7 +435,7 @@ namespace Unity.CodeEditor.Editing
             }
         }
 
-        private static bool CanDelete(TextArea textArea)
+        internal static bool CanDelete(TextArea textArea)
         {
             if (textArea?.Document != null)
             {
@@ -449,7 +449,7 @@ namespace Unity.CodeEditor.Editing
 
         #region Clipboard commands
 
-        private static bool CanCut(TextArea textArea)
+        internal static bool CanCut(TextArea textArea)
         {
             // HasSomethingSelected for copy and cut commands
             if (textArea?.Document != null)
@@ -460,7 +460,7 @@ namespace Unity.CodeEditor.Editing
             return false;
         }
 
-        private static bool CanCopy(TextArea textArea)
+        internal static bool CanCopy(TextArea textArea)
         {
             // HasSomethingSelected for copy and cut commands
             if (textArea?.Document != null)
@@ -471,7 +471,7 @@ namespace Unity.CodeEditor.Editing
             return false;
         }
 
-        private static void OnCopy(TextArea textArea)
+        internal static void OnCopy(TextArea textArea)
         {
             if (textArea?.Document != null)
             {
@@ -487,7 +487,7 @@ namespace Unity.CodeEditor.Editing
             }
         }
 
-        private static void OnCut(TextArea textArea)
+        internal static void OnCut(TextArea textArea)
         {
             if (textArea?.Document != null)
             {
@@ -580,7 +580,7 @@ namespace Unity.CodeEditor.Editing
             return true;
         }
 
-        private static bool CanPaste(TextArea textArea)
+        internal static bool CanPaste(TextArea textArea)
         {
             if (textArea?.Document != null)
             {
@@ -590,7 +590,7 @@ namespace Unity.CodeEditor.Editing
             return false;
         }
 
-        private static void OnPaste(TextArea textArea)
+        internal static void OnPaste(TextArea textArea)
         {
             if (textArea?.Document != null)
             {
@@ -855,7 +855,7 @@ namespace Unity.CodeEditor.Editing
             return document?.UndoStack;
         }
 
-        private void ExecuteUndo()
+        internal void ExecuteUndo()
         {
             var undoStack = GetUndoStack();
             if (undoStack != null)
@@ -868,7 +868,7 @@ namespace Unity.CodeEditor.Editing
             }
         }
 
-        private bool CanExecuteUndo()
+        internal bool CanExecuteUndo()
         {
             var undoStack = GetUndoStack();
             if (undoStack != null)
@@ -879,7 +879,7 @@ namespace Unity.CodeEditor.Editing
             return false;
         }
 
-        private void ExecuteRedo()
+        internal void ExecuteRedo()
         {
             var undoStack = GetUndoStack();
             if (undoStack != null)
@@ -892,7 +892,7 @@ namespace Unity.CodeEditor.Editing
             }
         }
 
-        private bool CanExecuteRedo()
+        internal bool CanExecuteRedo()
         {
             var undoStack = GetUndoStack();
             if (undoStack != null)

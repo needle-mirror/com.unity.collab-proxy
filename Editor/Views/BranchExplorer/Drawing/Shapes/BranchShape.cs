@@ -15,9 +15,18 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
 
         internal BranchDrawInfo BranchDrawInfo { get { return VirtualShape.DrawInfo as BranchDrawInfo; } }
 
+        internal Color ResolvedColor { get { return mResolvedColor; } }
+
+        internal static string BuildName(string branchFullName)
+        {
+            return "branch-" + branchFullName;
+        }
+
         internal BranchShape(VirtualShape virtualShape, ColorProvider colorProvider) : base(virtualShape)
         {
             mColorProvider = colorProvider;
+
+            name = BuildName(BranchDrawInfo.Caption);
 
             RegisterCallback<PointerEnterEvent>(OnPointerEnter);
             RegisterCallback<PointerLeaveEvent>(OnPointerLeave);
@@ -64,6 +73,8 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
                 branchColor = BrightenColor(branchColor, HoverBrightenAmount);
                 borderColor = BrightenColor(borderColor, HoverBrightenAmount);
             }
+
+            mResolvedColor = branchColor;
 
             painter.fillColor = branchColor;
             painter.strokeColor = borderColor;
@@ -166,6 +177,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
         }
 
         bool mIsHovered;
+        Color mResolvedColor;
         List<Vector2> mHitTestPolygon;
         readonly ColorProvider mColorProvider;
 

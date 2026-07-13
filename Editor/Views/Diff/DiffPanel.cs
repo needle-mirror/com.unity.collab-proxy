@@ -18,7 +18,7 @@ using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.BrowseRepository;
 using PlasticGui.WorkspaceWindow.Diff;
 using PlasticGui.WorkspaceWindow.Diff.Type;
-using Plugins.PlasticSCM.Editor.Diff;
+using Unity.PlasticSCM.Editor.Diff;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.Tool;
@@ -245,15 +245,20 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             ClientDiffInfo clientDiffInfo =
                 DiffSelection.GetSelectedDiff(mDiffTreeView);
 
-            if (UseBuiltinDiffWindowPreference.IsEnabled())
-            {
-                DiffWindow diffWindow = ShowWindow.Diff();
-                diffWindow.ShowDiffFromDiff(
-                    clientDiffInfo.DiffWithMount.Mount.Mount,
-                    clientDiffInfo.DiffWithMount.Difference);
-                return;
-            }
+            IUnityDiffWindow diffWindow = ShowWindow.Diff();
+            diffWindow.ShowDiffFromDiff(
+                clientDiffInfo.DiffWithMount.Mount.Mount,
+                clientDiffInfo.DiffWithMount.Difference,
+                showDiffInDesktopApp: () => DiffInDesktopApp(clientDiffInfo));
+        }
 
+        void IDiffTreeViewMenuOperations.DiffInNewWindow()
+        {
+            ((IDiffTreeViewMenuOperations)this).Diff();
+        }
+
+        void DiffInDesktopApp(ClientDiffInfo clientDiffInfo)
+        {
             DiffOperation.DiffClientDiff(
                 mWkInfo,
                 clientDiffInfo.DiffWithMount.Mount.Mount,
@@ -346,21 +351,11 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             ClientDiffInfo clientDiffInfoMeta =
                 mDiffTreeView.GetMetaDiff(clientDiffInfo);
 
-            if (UseBuiltinDiffWindowPreference.IsEnabled())
-            {
-                DiffWindow diffWindow = ShowWindow.Diff();
-                diffWindow.ShowDiffFromDiff(
-                    clientDiffInfoMeta.DiffWithMount.Mount.Mount,
-                    clientDiffInfoMeta.DiffWithMount.Difference);
-                return;
-            }
-
-            DiffOperation.DiffClientDiff(
-                mWkInfo,
+            IUnityDiffWindow diffWindow = ShowWindow.Diff();
+            diffWindow.ShowDiffFromDiff(
                 clientDiffInfoMeta.DiffWithMount.Mount.Mount,
                 clientDiffInfoMeta.DiffWithMount.Difference,
-                PlasticExeLauncher.BuildForDiffRevision(mWkInfo, mIsGluonMode, mShowDownloadPlasticExeWindow),
-                imageDiffLauncher: null);
+                showDiffInDesktopApp: () => DiffInDesktopApp(clientDiffInfoMeta));
         }
 
         GetRestorePathData
@@ -648,23 +643,21 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
 
         void OnDelayedSelectionChanged()
         {
-            if (!UseBuiltinDiffWindowPreference.IsEnabled())
-                return;
-
             if (mDiffTreeView.GetSelection().Count != 1)
-                return;
-
-            if (!DiffSelection.IsApplicableDiffClientDiff(mDiffTreeView))
                 return;
 
             ClientDiffInfo clientDiffInfo =
                 DiffSelection.GetSelectedDiff(mDiffTreeView);
 
-            DiffWindow diffWindow = GetWindowIfOpened.Diff();
+            if (clientDiffInfo == null)
+                return;
+
+            IUnityDiffWindow diffWindow = GetWindowIfOpened.Diff();
 
             diffWindow?.ShowDiffFromDiff(
                 clientDiffInfo.DiffWithMount.Mount.Mount,
-                clientDiffInfo.DiffWithMount.Difference);
+                clientDiffInfo.DiffWithMount.Difference,
+                showDiffInDesktopApp: () => DiffInDesktopApp(clientDiffInfo));
         }
 
         void OnRowDoubleClickAction()
@@ -672,33 +665,16 @@ namespace Unity.PlasticSCM.Editor.Views.Diff
             if (mDiffTreeView.GetSelection().Count != 1)
                 return;
 
-            if (DiffSelection.IsApplicableDiffClientDiff(mDiffTreeView))
+            if (DiffSelection.GetSelectedDiff(mDiffTreeView) != null)
             {
-                if (UseBuiltinDiffWindowPreference.IsEnabled())
-                {
-                    ClientDiffInfo clientDiffInfo =
-                        DiffSelection.GetSelectedDiff(mDiffTreeView);
-
-                    DiffWindow diffWindow = ShowWindow.Diff();
-                    diffWindow.ShowDiffFromDiff(
-                        clientDiffInfo.DiffWithMount.Mount.Mount,
-                        clientDiffInfo.DiffWithMount.Difference);
-                    return;
-                }
-
                 ((IDiffTreeViewMenuOperations)this).Diff();
                 return;
             }
 
             int selectedNode = mDiffTreeView.GetSelection()[0];
 
-            if (mDiffTreeView.IsExpanded(selectedNode))
-            {
-                mDiffTreeView.SetExpanded(selectedNode, expanded: false);
-                return;
-            }
-
-            mDiffTreeView.SetExpanded(selectedNode, expanded: true);
+            mDiffTreeView.SetExpanded(
+                selectedNode, expanded: !mDiffTreeView.IsExpanded(selectedNode));
         }
 
         void UpdateEmptyState()

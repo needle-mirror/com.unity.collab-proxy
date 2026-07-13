@@ -89,6 +89,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
             mSaveAssets.UnderWorkspaceWithConfirmation(
                 mWkInfo.ClientPath,
                 mUVCSPlugin.WorkspaceOperationsMonitor,
+                canContinueWithDirtyScenes: false,
                 out isCancelled);
 
             if (isCancelled)

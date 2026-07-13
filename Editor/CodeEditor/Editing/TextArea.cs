@@ -25,6 +25,8 @@ namespace Unity.CodeEditor.Editing
         private SelectionMouseHandler _selectionMouseHandler;
         private EditingCommandHandler _editingCommandHandler;
         private CaretNavigationCommandHandler _caretNavigationCommandHandler;
+
+        internal EditingCommandHandler EditingCommandHandler => _editingCommandHandler;
         private VisualElement _leftMarginsContainer;
 
         internal bool IsFocused => _isFocused;
@@ -277,7 +279,6 @@ namespace Unity.CodeEditor.Editing
 
         private void OnNavigationMoveEvent(NavigationMoveEvent e)
         {
-#if UNITY_2022_1_OR_NEWER
             if (IsReadOnly)
                 return;
 
@@ -288,13 +289,8 @@ namespace Unity.CodeEditor.Editing
                 e.direction == NavigationMoveEvent.Direction.Previous)
             {
                 e.StopPropagation();
-                #if UNITY_6000_0_OR_NEWER
-                    focusController.IgnoreEvent(e);
-                #else
-                    e.PreventDefault();
-                #endif
+                focusController.IgnoreEvent(e);
             }
-#endif
         }
 
         private void OnFocusIn(FocusInEvent e)

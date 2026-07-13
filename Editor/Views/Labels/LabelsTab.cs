@@ -374,11 +374,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
 
             RepositorySpec repSpec = LabelsSelection.GetSelectedRepository(mLabelsListView);
 
-            SelectedRepObjectInfoData selectedBranchData = SelectedRepObjectInfoData.Create(
-                selectedLabels[0],
-                repSpec);
-
-            Selection.activeObject = selectedBranchData;
+            SelectedRepObjectInfoData.SetActiveObject(selectedLabels[0], repSpec);
         }
 
         static void DoActionsToolbar(

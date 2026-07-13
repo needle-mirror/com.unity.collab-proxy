@@ -566,6 +566,9 @@ Active Directory：无效的域：{0}。
 == InvalidEncoding ==
 指定的编码无效：{0}
 
+== InvalidHashAlgorithmType ==
+无效的哈希算法类型 '{0}'。
+
 == InvalidLanguage ==
 无效的语言：{0}。
 
@@ -1274,6 +1277,9 @@ SelectorHandler：没有工作区与指定 ID 匹配：{0}。
 
 == ServiceNotInitialized ==
 请求的 Plastic SCM 操作尚不可用。服务器正在启动或正在运行升级操作。
+
+== SetRepositoryHashingAlgorithmNotSupportedByServer ==
+服务器 {0} 不支持按仓库设置哈希算法。此操作需要更新版本的 Unity Version Control 服务器。
 
 == ShellParserQuoteError ==
 命令参数解析错误。请检查引号：{0}

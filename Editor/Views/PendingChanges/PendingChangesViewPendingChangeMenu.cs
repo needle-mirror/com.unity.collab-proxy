@@ -215,14 +215,14 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
 
             menu.AddSeparator(string.Empty);
 
-            if (operations.HasFlag(PendingChangesMenuOperations.DiffWorkspaceContent))
+            if (info.SelectedCount == 1)
                 menu.AddItem(mDiffMenuItemContent, false, DiffMenuItem_Click);
             else
                 menu.AddDisabledItem(mDiffMenuItemContent);
 
             if (mMetaMenuOperations.SelectionHasMeta())
             {
-                if (operations.HasFlag(PendingChangesMenuOperations.DiffWorkspaceContent))
+                if (info.SelectedCount == 1)
                     menu.AddItem(mDiffMetaMenuItemContent, false, DiffMetaMenuItem_Click);
                 else
                     menu.AddDisabledItem(mDiffMetaMenuItemContent);
@@ -471,16 +471,25 @@ namespace Unity.PlasticSCM.Editor.Views.PendingChanges
             IPendingChangesMenuOperations pendingChangesMenuOperations,
             SelectedChangesGroupInfo info)
         {
-            PendingChangesMenuOperations operations =
-                    PendingChangesMenuUpdater.GetAvailableMenuOperations(info);
-
-            if (!operations.HasFlag(operationToExecute))
+            if (!IsApplicablePendingChangesMenuOperation(operationToExecute, info))
                 return false;
 
             ProcessPendingChangesMenuOperation(
                 operationToExecute, pendingChangesMenuOperations);
 
             return true;
+        }
+
+        static bool IsApplicablePendingChangesMenuOperation(
+            PendingChangesMenuOperations operationToExecute,
+            SelectedChangesGroupInfo info)
+        {
+            if (operationToExecute == PendingChangesMenuOperations.DiffWorkspaceContent)
+                return info.SelectedCount == 1;
+
+            return PendingChangesMenuUpdater
+                .GetAvailableMenuOperations(info)
+                .HasFlag(operationToExecute);
         }
 
         static bool ProcessKeyActionForOpenMenu(

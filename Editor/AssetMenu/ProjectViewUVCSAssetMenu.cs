@@ -183,12 +183,26 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 GetPlasticMenuItemName(PlasticLocalization.Name.DiffPlasticMenu),
                 GetPlasticShortcut.ForAssetDiff(),
                 DIFF_MENU_ITEM_PRIORITY,
-                Diff, ValidateDiff);
+                Diff,
+                ValidateDiff);
+
+            HandleMenuItem.AddMenuItem(
+                GetPlasticMenuItemName(PlasticLocalization.Name.DiffMetaPlasticMenu),
+                DIFF_META_MENU_ITEM_PRIORITY,
+                DiffMeta,
+                ValidateDiff);
+
             HandleMenuItem.AddMenuItem(
                 GetPlasticMenuItemName(PlasticLocalization.Name.HistoryPlasticMenu),
                 GetPlasticShortcut.ForHistory(),
                 HISTORY_MENU_ITEM_PRIORITY,
                 History, ValidateHistory);
+
+            HandleMenuItem.AddMenuItem(
+                GetPlasticMenuItemName(PlasticLocalization.Name.HistoryMetaPlasticMenu),
+                HISTORY_META_MENU_ITEM_PRIORITY,
+                HistoryMeta,
+                ValidateHistory);
 
             HandleMenuItem.UpdateAllMenus();
         }
@@ -284,6 +298,14 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             mAssetMenuUVCSOperations.ShowDiff();
         }
 
+        static void DiffMeta()
+        {
+            if (mAssetMenuUVCSOperations == null)
+                ShowWindow.UVCS();
+
+            mAssetMenuUVCSOperations.ShowMetaDiff();
+        }
+
         static bool ValidateDiff()
         {
             return ValidateOperation(AssetMenuOperations.Diff);
@@ -294,6 +316,13 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
             ShowWindow.UVCS();
 
             mAssetMenuUVCSOperations.ShowHistory();
+        }
+
+        static void HistoryMeta()
+        {
+            ShowWindow.UVCS();
+
+            mAssetMenuUVCSOperations.ShowMetaHistory();
         }
 
         static bool ValidateHistory()
@@ -325,13 +354,8 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         static IPlasticAPI mPlasticAPI;
         static WorkspaceInfo mWkInfo;
 
-#if UNITY_6000_0_OR_NEWER
-        // Puts Unity Version Control in a new section, as it precedes the Create menu with the old value
+        // Puts Unity Version Control in a new section
         internal const int BASE_MENU_ITEM_PRIORITY = 71;
-#else
-        // Puts Unity Version Control right below the Create menu
-        internal const int BASE_MENU_ITEM_PRIORITY = 19;
-#endif
 
         // incrementing the "order" param by 11 causes the menu system to add a separator
         const int PENDING_CHANGES_MENU_ITEM_PRIORITY = BASE_MENU_ITEM_PRIORITY;
@@ -344,7 +368,9 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
         const int IGNORE_MENU_ITEMS_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 37;
         const int HIDDEN_MENU_ITEMS_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 38;
         const int DIFF_MENU_ITEM_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 49;
-        const int HISTORY_MENU_ITEM_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 50;
+        const int DIFF_META_MENU_ITEM_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 49;
+        const int HISTORY_MENU_ITEM_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 61;
+        const int HISTORY_META_MENU_ITEM_PRIORITY = PENDING_CHANGES_MENU_ITEM_PRIORITY + 61;
 
         static readonly ILog mLog = PlasticApp.GetLogger("ProjectViewAssetMenu");
     }

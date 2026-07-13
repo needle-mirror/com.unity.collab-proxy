@@ -1,8 +1,10 @@
 # About the Version Control package
 
-The Version Control package provides an integration of Unity Version Control (Unity VCS, formerly Plastic SCM) in the Unity Editor.
+The Version Control package integrates Unity Version Control directly into the Unity Editor.
 
-It is installed by default with the Editor, and follows the Unity support schedule. The minimum supported version of the Unity Editor is 2021.3.0f1 LTS.
+It is included by default with the Editor and follows the Unity support schedule. The minimum supported version of the Unity Editor is 6000.0.
+
+This package officially supports Windows and macOS. Linux is not supported.
 
 * [Quick start guide](QuickStartGuide.md)
 * [Get started with Unity Version Control](GetStarted.md)

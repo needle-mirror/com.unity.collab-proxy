@@ -72,6 +72,9 @@ Cannot perform the checkin operation. All merge changes must be checked in toget
 == CannotPerformPartialUndo ==
 Cannot perform the undo operation. All merge changes must be undone together. Please repeat the operation including all or none of its changes.
 
+== CannotSwitchCloudWorkspaceToDifferentRepository ==
+Cloud workspaces cannot switch to a different repository configuration.
+
 == CannotSwitchWithPendingChanges ==
 Cannot perform the switch to branch/label/changeset/shelve since there are pending changes. Please review the pending changes and retry the operation again.
 
@@ -95,6 +98,9 @@ Can't archive revisions from different repositories on a single call
 
 == CantDiffBranchNoParent ==
 Can't diff branch {0} because its parent changeset couldn't be found.
+
+== CantGetBranchHistoryNoParent ==
+Can't show history of branch {0} because its parent changeset couldn't be found.
 
 == CantDiffCsetNoParent ==
 Can't diff cset {0} because it doesn't have a parent.
@@ -280,9 +286,6 @@ Can't retrieve the content of the file '{0}' because the revision (id:{1}) was p
 
 == ErrorCannotRenameDynamicWk ==
 Dynamic workspaces cannot be renamed.
-
-== ErrorCantImportInvalidPackage ==
-Invalid replication package. No valid version signature found
 
 == ErrorClientconfignotfound ==
 Unity VCS client is not correctly configured for the current user: Client config file {0} not found. Please execute 'cm configure' to perform a text mode configuration or '{1} --configure' for graphical mode.
@@ -540,6 +543,9 @@ Merge
 == MergeNeeded ==
 A merge is needed from changeset 'cs:{0}@rep:{2}@repserver:{3}(mount:{4})' to changeset 'cs:{1}@rep:{2}@repserver:{3}(mount:{4})' in order to checkin. The checkin operation cannot continue. Please run 'cm merge "cs:{0}@rep:{2}@repserver:{3}" --merge' at '{5}' to solve the conflicts. Then, you can retry the checkin operation.
 
+== MergeRequestMergeChangesetRequiresMergedStatus ==
+The '--mergechangeset' option is only allowed together with '--mergerequeststatus=Merged'.
+
 == MergeToPendingDirectoryConflicts ==
 There are pending directory conflicts that must be resolved before processing the merge-to.
 
@@ -620,6 +626,9 @@ The specified code review '{0}' could not be found.
 
 == NoSuchCodeReviewStatus ==
 No such code review status: {0}. Available values are: {1}
+
+== NoSuchMergeRequestStatus ==
+No such merge request status: {0}. Available values are: {1}
 
 == NotChange ==
 The {0} is not a change

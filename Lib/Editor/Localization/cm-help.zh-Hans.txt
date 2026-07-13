@@ -4661,6 +4661,7 @@ Jira 参数（全部为必需参数）：
 
     cm ^patch <源规格> [<源规格>] [--^output=<输出文件>]
              [--^tool=<差异比较路径>]
+             [--^clean] [--^integration]
     生成一个补丁文件，该文件包含分支的差异差、
     变更集的差异差或变更集之间的差异。还用于跟踪
     文本文件和二进制文件的差异。
@@ -4679,6 +4680,10 @@ Jira 参数（全部为必需参数）：
 
     --^output        设置 patch 命令的输出文件。
     --^tool          设置要使用的应用程序（差异比较还是修补）。
+    --^clean         不考虑合并产生的差异，只显示直接签入
+                     创建的差异。
+    --^integration   显示尚未合并到父分支的分支更改。考虑已从父分支
+                     执行的任何变基或先前合并。
 
 == CMD_HELP_PATCH ==
 限制：
@@ -4710,6 +4715,20 @@ Jira 参数（全部为必需参数）：
 
     cm ^patch ^cs:2@default ^cs:4@default
     （以统一格式在控制台上打印变更集 2 和 4 之间的差异。）
+
+    cm ^patch ^br:/main/task001 --^integration
+    （生成仅包含分支自身更改的补丁，排除通过合并引入的更改。
+    类似于 GitHub 中更新分支后的 PR 差异。）
+
+    cm ^patch ^br:/main/task001 --^clean
+    （生成排除通过合并引入内容的分支更改补丁。仅包含分支上的
+    直接签入。）
+
+    cm ^patch ^br:/main/task001 --^clean --^integration --^output=review.patch
+    （组合使用两个标志：--integration 更改基准，使差异仅涵盖待合并到
+    父分支的内容；--clean 去除通过合并引入到分支的内容。结果是一个
+    仅包含分支上尚未集成到父分支的直接工作的补丁——适用于需要查看
+    准备合并的"纯新增工作"的代码审查场景。）
 
     cm ^patch --^apply file.patch --^tool=C:\gnu\patch.exe
     （使用自定义执行程序将 'file.patch' 中的补丁应用于本地工作区。）

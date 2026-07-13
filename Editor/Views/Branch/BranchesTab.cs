@@ -6,12 +6,13 @@ using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 using Codice.Client.Common.EventTracking;
+using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using Codice.CM.Common.Mount;
 using GluonGui;
 using PlasticGui;
 using PlasticGui.WorkspaceWindow;
-using PlasticGui.WorkspaceWindow.CodeReview;
+using PlasticGui.WorkspaceWindow.MergeRequest;
 using PlasticGui.WorkspaceWindow.QueryViews;
 using PlasticGui.WorkspaceWindow.QueryViews.Branches;
 using PlasticGui.WorkspaceWindow.Update;
@@ -56,6 +57,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             WorkspaceInfo wkInfo,
             ViewHost viewHost,
             WorkspaceWindow workspaceWindow,
+            BranchInfo branchToSelect,
             IViewSwitcher viewSwitcher,
             IMergeViewLauncher mergeViewLauncher,
             IUpdateReport updateReport,
@@ -126,7 +128,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 shelvedChangesUpdater,
                 mEnableSwitchAndShelveFeatureDialog);
 
-            ((IRefreshableView)this).Refresh();
+            RefreshAndSelect(branchToSelect);
         }
 
         internal void OnEnable()
@@ -152,7 +154,9 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
         internal SerializableBranchesTabState GetSerializableState()
         {
-            return new SerializableBranchesTabState(mShowHiddenBranches);
+            return new SerializableBranchesTabState(
+                BranchesSelection.GetSelectedBranch(mBranchesListView),
+                mShowHiddenBranches);
         }
 
         internal void OnGUI()
@@ -354,7 +358,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
             switch (choice)
             {
                 case NewCodeReviewBehavior.CreateAndOpenInDesktop:
-                    mBranchOperations.CreateCodeReview(repSpec, branchInfo, this);
+                    mBranchOperations.CreateReview(repSpec, branchInfo, this);
                     break;
                 case NewCodeReviewBehavior.RequestFromUnityCloud:
                     OpenRequestReviewPage.ForBranch(repSpec, branchInfo.BranchId);
@@ -379,6 +383,8 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                 reviewInfo.Id,
                 mIsGluonMode);
         }
+
+        void IBranchMenuOperations.CreateMergeRequest() { }
 
         void IBranchMenuOperations.ViewPermissions() { }
 
@@ -436,13 +442,32 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
 
             RepositorySpec repSpec = BranchesSelection.GetSelectedRepository(mBranchesListView);
             MountPointWithPath mountPoint = MountPointWithPath.BuildWorkspaceRootMountPoint(repSpec);
+            RepObjectInfo cachedBranch = selectedBranches[0];
 
-            SelectedRepObjectInfoData selectedBranchData = SelectedRepObjectInfoData.Create(
-                selectedBranches[0],
-                repSpec,
-                mountPoint);
+            BranchInfo resolvedBranch = null;
+            IThreadWaiter waiter = ThreadWaiter.GetWaiter(10);
+            waiter.Execute(
+                threadOperationDelegate: delegate
+                {
+                    resolvedBranch = PlasticGui.Plastic.API.GetBranchInfo(
+                        repSpec, cachedBranch.GUID);
+                },
+                afterOperationDelegate: delegate
+                {
+                    if (waiter.Exception != null)
+                    {
+                        ExceptionsHandler.DisplayException(waiter.Exception);
+                        return;
+                    }
 
-            Selection.activeObject = selectedBranchData;
+                    List<RepObjectInfo> selectedBranches = BranchesSelection.
+                        GetSelectedRepObjectInfos(mBranchesListView);
+
+                    if (selectedBranches.Count != 1 || !selectedBranches[0].Equals(cachedBranch))
+                        return;
+
+                    SelectedRepObjectInfoData.SetActiveObject(resolvedBranch, repSpec, mountPoint);
+                });
         }
 
         static void DoActionsToolbar(

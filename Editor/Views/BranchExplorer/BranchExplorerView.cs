@@ -153,6 +153,20 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer
             }
         }
 
+        internal void OnWindowFocused()
+        {
+            if (mBranchExplorerViewer == null)
+                return;
+
+            ObjectDrawInfo selectedObject =
+                mBranchExplorerViewer.Selection.GetSingleSelectedObject();
+
+            if (selectedObject == null)
+                return;
+
+            mSelectedObjectDataUpdater.UpdateDisplayData(selectedObject);
+        }
+
         void IFocusedObjectObserver.DelayedFocusedObjectChanged(ObjectDrawInfo focusedObject)
         {
             schedule.Execute(() =>
@@ -230,7 +244,6 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer
 
         void BranchExplorerOptionsWindow.IBranchExplorerView.ClearSearchResults()
         {
-            mPreviousSearch = null;
             mBranchExplorerViewer.Search.ClearSearchResults();
         }
 
@@ -524,7 +537,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer
             if (window == null)
                 return;
 
-            window.ShelvedChangesUpdater.Update(DateTime.Now);
+            window.ShelvedChangesUpdater?.Update(DateTime.Now);
         }
 
         void CreateGUI(
@@ -631,17 +644,21 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer
         void ApplySearch()
         {
             mIsPendingToApplySearch = false;
+            ApplyNewSearchIfChanged();
+        }
 
-            if (mSearchField.Text == mPreviousSearch)
-                return;
-
+        bool ApplyNewSearchIfChanged()
+        {
             BranchExplorerSearch search = mBranchExplorerViewer.Search;
-            search.FindItems(mSearchField.Text.Trim());
+
+            if (!search.FindItemsIfChanged(mSearchField.Text.Trim()))
+                return false;
+
             search.FocusFirstSearchResult();
 
             UpdateSearchCounter();
 
-            mPreviousSearch = mSearchField.Text;
+            return true;
         }
 
         void FocusNextSearchResult()
@@ -649,14 +666,11 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer
             if (mIsUpdating)
                 return;
 
-            if (mSearchField.Text == mPreviousSearch)
-            {
-                mBranchExplorerViewer.Search.FocusNextSearchResult();
-                UpdateSearchCounter();
+            if (ApplyNewSearchIfChanged())
                 return;
-            }
 
-            ApplySearch();
+            mBranchExplorerViewer.Search.FocusNextSearchResult();
+            UpdateSearchCounter();
         }
 
         void FocusPreviousSearchResult()
@@ -664,14 +678,11 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer
             if (mIsUpdating)
                 return;
 
-            if (mSearchField.Text == mPreviousSearch)
-            {
-                mBranchExplorerViewer.Search.FocusPreviousSearchResult();
-                UpdateSearchCounter();
+            if (ApplyNewSearchIfChanged())
                 return;
-            }
 
-            ApplySearch();
+            mBranchExplorerViewer.Search.FocusPreviousSearchResult();
+            UpdateSearchCounter();
         }
 
         void RefreshSearchResultsIfNeeded()
@@ -679,12 +690,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer
             if (mIsPendingToApplySearch)
                 return;
 
-            string findPattern = mSearchField.Text;
-
-            if (string.IsNullOrEmpty(findPattern))
-                return;
-
-            mBranchExplorerViewer.Search.FindItems(findPattern.Trim());
+            mBranchExplorerViewer.Search.RefreshCurrentSearch();
             UpdateSearchCounter();
         }
 
@@ -747,7 +753,6 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer
         bool mIsPendingToApplySearch;
         bool mIsFirstLoad = true;
 
-        string mPreviousSearch;
         WorkspaceUIConfiguration mConfig;
         ToolbarButton mRefreshButton;
         FiltersPanel mFiltersPanel;

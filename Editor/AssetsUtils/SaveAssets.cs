@@ -1,4 +1,3 @@
-using System.IO;
 using System.Collections.Generic;
 
 using UnityEditor;
@@ -7,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 using Codice.Client.BaseCommands;
 using Codice.Client.Common;
+using PlasticGui;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 
 namespace Unity.PlasticSCM.Editor.AssetUtils
@@ -16,29 +16,36 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
         void UnderWorkspaceWithConfirmation(
             string wkPath,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            bool canContinueWithDirtyScenes,
             out bool isCancelled);
 
         void ForChangesWithConfirmation(
             string wkPath,
             List<ChangeInfo> changes,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            bool canContinueWithDirtyScenes,
             out bool isCancelled);
 
         void ForPathsWithConfirmation(
             string wkPath,
             List<string> paths,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            bool canContinueWithDirtyScenes,
             out bool isCancelled);
 
         void ForChangesWithoutConfirmation(
             string wkPath,
             List<ChangeInfo> changes,
-            WorkspaceOperationsMonitor workspaceOperationsMonitor);
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            bool canContinueWithDirtyScenes,
+            out bool isCancelled);
 
         void ForPathsWithoutConfirmation(
             string wkPath,
             List<string> paths,
-            WorkspaceOperationsMonitor workspaceOperationsMonitor);
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            bool canContinueWithDirtyScenes,
+            out bool isCancelled);
     }
 
     internal class SaveAssets : ISaveAssets
@@ -46,13 +53,15 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
         void ISaveAssets.UnderWorkspaceWithConfirmation(
             string wkPath,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            bool canContinueWithDirtyScenes,
             out bool isCancelled)
         {
             ForPaths(
                 wkPath,
                 null,
-                true,
                 workspaceOperationsMonitor,
+                askForUserConfirmation: true,
+                canContinueWithDirtyScenes,
                 out isCancelled);
         }
 
@@ -60,13 +69,15 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
             string wkPath,
             List<ChangeInfo> changes,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            bool canContinueWithDirtyScenes,
             out bool isCancelled)
         {
             ForPaths(
                 wkPath,
                 GetPaths(changes),
-                true,
                 workspaceOperationsMonitor,
+                askForUserConfirmation: true,
+                canContinueWithDirtyScenes,
                 out isCancelled);
         }
 
@@ -74,49 +85,56 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
             string wkPath,
             List<string> paths,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            bool canContinueWithDirtyScenes,
             out bool isCancelled)
         {
             ForPaths(
                 wkPath,
                 paths,
-                true,
                 workspaceOperationsMonitor,
+                askForUserConfirmation: true,
+                canContinueWithDirtyScenes,
                 out isCancelled);
         }
 
         void ISaveAssets.ForChangesWithoutConfirmation(
             string wkPath,
             List<ChangeInfo> changes,
-            WorkspaceOperationsMonitor workspaceOperationsMonitor)
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            bool canContinueWithDirtyScenes,
+            out bool isCancelled)
         {
-            bool isCancelled;
             ForPaths(
                 wkPath,
                 GetPaths(changes),
-                false,
                 workspaceOperationsMonitor,
+                askForUserConfirmation: false,
+                canContinueWithDirtyScenes,
                 out isCancelled);
         }
 
         void ISaveAssets.ForPathsWithoutConfirmation(
             string wkPath,
             List<string> paths,
-            WorkspaceOperationsMonitor workspaceOperationsMonitor)
+            WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            bool canContinueWithDirtyScenes,
+            out bool isCancelled)
         {
-            bool isCancelled;
             ForPaths(
                 wkPath,
                 paths,
-                false,
                 workspaceOperationsMonitor,
+                askForUserConfirmation: false,
+                canContinueWithDirtyScenes,
                 out isCancelled);
         }
 
         static void ForPaths(
             string wkPath,
             List<string> paths,
-            bool askForUserConfirmation,
             WorkspaceOperationsMonitor workspaceOperationsMonitor,
+            bool askForUserConfirmation,
+            bool canContinueWithDirtyScenes,
             out bool isCancelled)
         {
             workspaceOperationsMonitor.Disable();
@@ -126,6 +144,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
                     wkPath,
                     paths,
                     askForUserConfirmation,
+                    canContinueWithDirtyScenes,
                     out isCancelled);
 
                 if (isCancelled)
@@ -143,20 +162,62 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
             string wkPath,
             List<string> paths,
             bool askForUserConfirmation,
+            bool canContinueWithDirtyScenes,
+            out bool isCancelled)
+        {
+            List<Scene> scenesToSave = GetScenesToSave(wkPath, paths);
+
+            if (scenesToSave.Count == 0)
+            {
+                isCancelled = false;
+                return;
+            }
+
+            if (EditorApplication.isPlaying)
+            {
+                SaveDirtyScenesInPlayMode(canContinueWithDirtyScenes, out isCancelled);
+                return;
+            }
+
+            SaveDirtyScenesInEditMode(scenesToSave, askForUserConfirmation, out isCancelled);
+        }
+
+        static void SaveDirtyScenesInPlayMode(
+            bool canContinueWithDirtyScenes,
+            out bool isCancelled)
+        {
+            // Saving scenes during PlayMode is currently forbidden by the Editor, so we either inform the users
+            // about the blocker or let the operations continue without saving scenes (if requested)
+
+            if (canContinueWithDirtyScenes)
+            {
+                isCancelled = !EditorUtility.DisplayDialog(
+                    PlasticLocalization.Name.DirtyScenesInPlayModeTitle.GetString(),
+                    PlasticLocalization.Name.DirtyScenesInPlayModeMessage.GetString(),
+                    PlasticLocalization.Name.ContinueWithoutSavingButton.GetString(),
+                    PlasticLocalization.Name.CancelButton.GetString());
+
+                return;
+            }
+
+            EditorUtility.DisplayDialog(
+                PlasticLocalization.Name.DirtyScenesInPlayModeTitle.GetString(),
+                PlasticLocalization.Name.DirtyScenesInPlayModeBlockingMessage.GetString(),
+                PlasticLocalization.Name.OkButton.GetString());
+
+            isCancelled = true;
+        }
+
+        static void SaveDirtyScenesInEditMode(
+            List<Scene> scenesToSave,
+            bool askForUserConfirmation,
             out bool isCancelled)
         {
             isCancelled = false;
 
-            List<Scene> scenesToSave = GetScenesToSave(wkPath, paths);
-
-            if (scenesToSave.Count == 0)
-                return;
-
             if (askForUserConfirmation)
             {
-                isCancelled = !EditorSceneManager.
-                    SaveModifiedScenesIfUserWantsTo(
-                        scenesToSave.ToArray());
+                isCancelled = !EditorSceneManager.SaveModifiedScenesIfUserWantsTo(scenesToSave.ToArray());
 
                 if (!isCancelled)
                     DiscardChangesInActiveSceneIfDirty(scenesToSave);
@@ -164,8 +225,7 @@ namespace Unity.PlasticSCM.Editor.AssetUtils
                 return;
             }
 
-            EditorSceneManager.SaveScenes(
-                scenesToSave.ToArray());
+            EditorSceneManager.SaveScenes(scenesToSave.ToArray());
         }
 
         static void DiscardChangesInActiveSceneIfDirty(List<Scene> scenesToSave)

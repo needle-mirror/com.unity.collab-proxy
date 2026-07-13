@@ -1,21 +1,40 @@
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Plugins.PlasticSCM.Editor.Diff
+namespace Unity.PlasticSCM.Editor.Diff
 {
     internal class DiffMessagePanel : VisualElement
     {
+        internal DiffMessagePanel()
+        {
+            BuildComponents();
+        }
+
         internal void ShowMessage(string message)
         {
-            Clear();
-
-            Label title = new Label("Diff Message Panel");
-            title.style.fontSize = 16;
-            title.style.unityFontStyleAndWeight = FontStyle.Bold;
-            title.style.marginBottom = 8;
-            Add(title);
-
-            Add(new Label($"Message: {message ?? "(null)"}"));
+            mMessageLabel.text = message ?? string.Empty;
         }
+
+        void BuildComponents()
+        {
+            style.flexGrow = 1;
+            style.minWidth = 150;
+            style.alignItems = Align.Center;
+            style.justifyContent = Justify.Center;
+            style.paddingLeft = 16;
+            style.paddingRight = 16;
+
+            mMessageLabel = new Label();
+            mMessageLabel.style.maxWidth = CONTENT_WIDTH;
+            mMessageLabel.style.whiteSpace = WhiteSpace.Normal;
+            mMessageLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+
+            Add(mMessageLabel);
+        }
+
+        Label mMessageLabel;
+
+        const int CONTENT_WIDTH = 420;
     }
 }

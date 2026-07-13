@@ -566,6 +566,9 @@ Active Directory: 無效網域: {0}。
 == InvalidEncoding ==
 指定的編碼無效: {0}
 
+== InvalidHashAlgorithmType ==
+無效的雜湊演算法類型 '{0}'。
+
 == InvalidLanguage ==
 無效的語言: {0}。
 
@@ -1274,6 +1277,9 @@ SelectorHandler: 沒有任何工作區符合指定的 id: {0}。
 
 == ServiceNotInitialized ==
 要求的 Plastic SCM 作業尚無法使用。伺服器正在啟動或執行升級作業。
+
+== SetRepositoryHashingAlgorithmNotSupportedByServer ==
+伺服器 {0} 不支援依儲存庫設定雜湊演算法。此操作需要較新版本的 Unity Version Control 伺服器。
 
 == ShellParserQuoteError ==
 命令引數剖析錯誤。請檢查引號: {0}

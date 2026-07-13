@@ -272,6 +272,9 @@ namespace Unity.PlasticSCM.Editor.Views.CreateWorkspace
                         return;
                     }
 
+                    // Consolidate the version control mode for the automatic checkin
+                    VCSBuiltInPlugin.SaveModeSetting();
+
                     mWkCreationData.Result = true;
                     mWorkspaceOperations.CreateWorkspace(mWkCreationData);
 

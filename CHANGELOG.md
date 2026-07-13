@@ -2,6 +2,47 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.13.3] - 2026-07-13
+
+### Added
+
+- Added a built-in diff viewer for text, images, and serialized Unity assets, available from Pending Changes, History, changesets, and branches.
+- Added Unity AI Assistant integration to manage version control, review changes, and query repository history using natural language.
+- Added support for comparing two selected revisions from the History view.
+- Added a details panel showing move origins/destinations and deleted item information.
+- Added a toggle in the Changesets tab to show or hide changesets from hidden branches.
+
+### Changed
+
+- Raised the minimum supported Editor to Unity 6000.0 (removed support for Unity 2021.3 and 2022.3).
+- Moved the settings button in the Branch Explorer to the bottom of the panel.
+- Visually separate the edit and remove buttons in the attribute panel to avoid unwanted clicks.
+- Improved how version control operations handle unsaved scene changes while in Play Mode.
+
+### Fixed
+
+- Fixed the "Choose Repository" dialog title capitalization. (UUM-143766)
+- Fixed Create Workspace not refreshing the Unity Version Control and Branch Explorer windows. (UUM-142548)
+- Fixed buttons overlapping the tab divider in the Branch Explorer options when resizing tabs. (UUM-142492)
+- Fixed the blank Default and Result encoding dropdowns in the Unity Version Control settings. (UUM-142544)
+- Fixed settings not being applied after you change them.
+- Fixed meta files of parent folders not being included in Add operations.
+- Fixed an "item with the same key has already been added" error.
+- Fixed an inconsistent object error when reloading the Settings panel.
+- Fixed the attributes panel appearing for a checkout changeset.
+- Fixed branch diffs being outdated when opened from the branches view.
+- Fixed an error shown when using Diff with previous revision on an item that has no previous revision.
+- Fixed the Differences window staying open after the plugin was paused in the settings.
+- Fixed the Branch Explorer not updating the Inspector diffs when the window gains focus.
+- Fixed branch diffs being recalculated and losing the current selection when refocusing or resizing the Unity Version Control window.
+- Fixed the Unity Version Control window not opening after reinstalling the package.
+- Fixed the sign-in windows refreshing only when the mouse moved.
+- Fixed being unable to set up Unity Version Control from Project Settings > Version Control.
+- Fixed checked-out files being lost when exiting the Editor.
+- Fixed auto-checkout not reporting an error when it failed because of a lock.
+- Fixed domain-reload exception handling on Unity 6000.5 and newer.
+- Fixed a compilation error caused by a conflict with the Unity.Localization namespace.
+
 ## [2.12.4] - 2026-03-16
 
 ### Added

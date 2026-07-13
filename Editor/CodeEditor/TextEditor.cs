@@ -1,9 +1,13 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Unity.CodeEditor.Document;
 using Unity.CodeEditor.Editing;
+using Unity.CodeEditor.Platform;
+using Unity.CodeEditor.Rendering;
+using Unity.CodeEditor.Search;
 using Unity.CodeEditor.Utils;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -23,6 +27,7 @@ namespace Unity.CodeEditor
         private readonly Scroller _verticalScroller;
         private readonly Scroller _horizontalScroller;
         private readonly VisualElement _contentArea;
+        private SearchPanel _searchPanel;
         private ScrollBarVisibility _verticalScrollBarVisibility = ScrollBarVisibility.Auto;
         private ScrollBarVisibility _horizontalScrollBarVisibility = ScrollBarVisibility.Auto;
         private ScrollBarVisibility _horizontalScrollBarVisibilityBck;
@@ -49,6 +54,9 @@ namespace Unity.CodeEditor
             style.flexDirection = FlexDirection.Column;
 
             _textArea = textArea ?? throw new ArgumentNullException(nameof(textArea));
+
+            _searchPanel = new SearchPanel(this);
+            Add(_searchPanel);
 
             var mainRow = new VisualElement();
             mainRow.style.flexGrow = 1;
@@ -81,6 +89,7 @@ namespace Unity.CodeEditor
             Document = document;
 
             RegisterCallback<FocusInEvent>(OnFocusIn);
+            RegisterCallback<KeyDownEvent>(OnSearchKeyDown);
         }
 
         internal void Dispose()
@@ -88,12 +97,20 @@ namespace Unity.CodeEditor
             _contentArea.UnregisterCallback<GeometryChangedEvent>(OnContentGeometryChanged);
             _contentArea.UnregisterCallback<WheelEvent>(OnWheel);
             UnregisterCallback<FocusInEvent>(OnFocusIn);
+            UnregisterCallback<KeyDownEvent>(OnSearchKeyDown);
 
             _textArea.TextView.ScrollOffsetChanged -= OnTextViewScrollOffsetChanged;
             _textArea.TextView.VisualLinesChanged -= OnVisualLinesChanged;
 
+            _searchPanel.Dispose();
             _textArea.Dispose();
         }
+
+        #endregion
+
+        #region Tag
+
+        internal object Tag { get; set; }
 
         #endregion
 
@@ -216,6 +233,29 @@ namespace Unity.CodeEditor
         private void OnFocusIn(FocusInEvent e)
         {
             _textArea.Focus();
+        }
+
+        #endregion
+
+        #region Search keyboard shortcuts
+
+        private void OnSearchKeyDown(KeyDownEvent e)
+        {
+            var gesture = new KeyGesture(e.keyCode, e.GetKeyModifiers());
+            var keymap = PlatformHotkeyConfiguration.Current;
+
+            if (keymap.Find.Any(g => g == gesture))
+            {
+                e.StopPropagation();
+                _searchPanel.IsReplaceMode = false;
+                _searchPanel.Open();
+            }
+            else if (keymap.Replace.Any(g => g == gesture))
+            {
+                e.StopPropagation();
+                _searchPanel.IsReplaceMode = true;
+                _searchPanel.Open();
+            }
         }
 
         #endregion
@@ -381,12 +421,17 @@ namespace Unity.CodeEditor
         }
         #endregion
 
-        #region TextArea / ScrollViewer properties
+        #region TextArea / SearchPanel properties
 
         /// <summary>
         /// Gets the text area.
         /// </summary>
         internal TextArea TextArea => _textArea;
+
+        /// <summary>
+        /// Gets the search panel.
+        /// </summary>
+        internal SearchPanel SearchPanel => _searchPanel;
 
         internal int FontSize
         {
@@ -468,9 +513,12 @@ namespace Unity.CodeEditor
 
         private void OnIsReadOnlyChanged(bool isReadonly)
         {
-                _textArea.ReadOnlySectionProvider = isReadonly ?
-                    ReadOnlySectionDocument.Instance :
-                    NoReadOnlySections.Instance;
+            _textArea.ReadOnlySectionProvider = isReadonly ?
+                ReadOnlySectionDocument.Instance :
+                NoReadOnlySections.Instance;
+
+            if (isReadonly && _searchPanel != null)
+                _searchPanel.IsReplaceMode = false;
         }
         #endregion
 
@@ -560,6 +608,25 @@ namespace Unity.CodeEditor
                 }
             }
         }
+
+        #endregion
+
+        #region Editing commands
+
+        internal bool CanUndo => _textArea.EditingCommandHandler.CanExecuteUndo();
+        internal bool CanRedo => _textArea.EditingCommandHandler.CanExecuteRedo();
+        internal bool CanCopy => EditingCommandHandler.CanCopy(_textArea);
+        internal bool CanCut => EditingCommandHandler.CanCut(_textArea);
+        internal bool CanPaste => EditingCommandHandler.CanPaste(_textArea);
+        internal bool CanDelete => !_textArea.Selection.IsEmpty && !IsReadOnly;
+
+        internal void Copy() => EditingCommandHandler.OnCopy(_textArea);
+        internal void Cut() => EditingCommandHandler.OnCut(_textArea);
+        internal void Paste() => EditingCommandHandler.OnPaste(_textArea);
+        internal void Delete() => _textArea.RemoveSelectedText();
+        internal void Undo() => _textArea.EditingCommandHandler.ExecuteUndo();
+        internal void Redo() => _textArea.EditingCommandHandler.ExecuteRedo();
+        internal void SelectAll() => Select(0, Document?.TextLength ?? 0);
 
         #endregion
 
@@ -838,6 +905,113 @@ namespace Unity.CodeEditor
                 UpdateScrollerRanges();
             }
         }
+        #endregion
+
+       #region ScrollTo
+
+        /// <summary>
+        /// Scrolls to the specified line.
+        /// This method requires that the TextEditor was already assigned a size (layout engine must have run prior).
+        /// </summary>
+        internal void ScrollToLine(int line)
+        {
+            ScrollTo(line, -1);
+        }
+
+        /// <summary>
+        /// Scrolls to the specified line/column.
+        /// This method requires that the TextEditor was already assigned a size (layout engine must have run prior).
+        /// </summary>
+        internal void ScrollTo(int line, int column)
+        {
+            const double MinimumScrollFraction = 0.3;
+            ScrollTo(line, column, VisualYPosition.LineMiddle,
+                _textArea.TextView.ScrollViewport.y / 2, MinimumScrollFraction);
+        }
+
+        /// <summary>
+        /// Scrolls to the specified line/column.
+        /// This method requires that the TextEditor was already assigned a size (layout engine must have run prior).
+        /// </summary>
+        /// <param name="line">Line to scroll to.</param>
+        /// <param name="column">Column to scroll to (important if wrapping is 'on', and for the horizontal scroll position).</param>
+        /// <param name="yPositionMode">The mode how to reference the Y position of the line.</param>
+        /// <param name="referencedVerticalViewPortOffset">Offset from the top of the viewport to where the referenced line/column should be positioned.</param>
+        /// <param name="minimumScrollFraction">The minimum vertical and/or horizontal scroll offset, expressed as fraction of the height or width of the viewport window, respectively.</param>
+        internal void ScrollTo(int line, int column, VisualYPosition yPositionMode,
+            double referencedVerticalViewPortOffset, double minimumScrollFraction)
+        {
+            TextView textView = _textArea.TextView;
+            TextDocument document = textView.Document;
+            if (document == null)
+                return;
+
+            if (line < 1)
+                line = 1;
+            if (line > document.LineCount)
+                line = document.LineCount;
+
+            if (!textView.CanHorizontallyScroll)
+            {
+                VisualLine vl = textView.GetOrConstructVisualLine(document.GetLineByNumber(line));
+                double remainingHeight = referencedVerticalViewPortOffset;
+
+                while (remainingHeight > 0)
+                {
+                    DocumentLine prevLine = vl.FirstDocumentLine.PreviousLine;
+                    if (prevLine == null)
+                        break;
+                    vl = textView.GetOrConstructVisualLine(prevLine);
+                    remainingHeight -= vl.Height;
+                }
+            }
+
+            VisualLine targetVisualLine = textView.GetOrConstructVisualLine(document.GetLineByNumber(line));
+            int visualColumn = 0;
+            if (column > 0)
+            {
+                int relativeOffset = Math.Min(column - 1, document.GetLineByNumber(line).Length);
+                visualColumn = targetVisualLine.GetVisualColumn(relativeOffset);
+            }
+            Vector2 p = targetVisualLine.GetVisualPosition(visualColumn, yPositionMode);
+
+            double targetX = textView.ScrollOffset.x;
+            double targetY = textView.ScrollOffset.y;
+            double viewportHeight = textView.ScrollViewport.y;
+            double viewportWidth = textView.ScrollViewport.x;
+
+            double verticalPos = p.y - referencedVerticalViewPortOffset;
+            if (Math.Abs(verticalPos - textView.ScrollOffset.y) >
+                minimumScrollFraction * viewportHeight)
+            {
+                targetY = Math.Max(0, verticalPos);
+            }
+
+            if (column > 0)
+            {
+                if (p.x > viewportWidth - Caret.MinimumDistanceToViewBorder * 2)
+                {
+                    double horizontalPos = Math.Max(0, p.x - viewportWidth / 2);
+                    if (Math.Abs(horizontalPos - textView.ScrollOffset.x) >
+                        minimumScrollFraction * viewportWidth)
+                    {
+                        targetX = 0;
+                    }
+                }
+                else
+                {
+                    targetX = 0;
+                }
+            }
+
+            if (targetX != textView.ScrollOffset.x || targetY != textView.ScrollOffset.y)
+            {
+                textView.ScrollOffset = new Vector2((float)targetX, (float)targetY);
+                textView.UpdateVisualLines();
+                UpdateScrollerRanges();
+            }
+        }
+
         #endregion
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
+
 using UnityEngine.UIElements;
 
 using Codice.Client.Common;
@@ -19,9 +19,18 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         internal SignInWithEmailPanel(
             IWelcomeWindowNotify notify,
             IPlasticWebRestApi restApi)
+            : this(notify, restApi, new DefaultExternalUrlOpener())
+        {
+        }
+
+        internal SignInWithEmailPanel(
+            IWelcomeWindowNotify notify,
+            IPlasticWebRestApi restApi,
+            IExternalUrlOpener urlOpener)
         {
             mNotify = notify;
             mRestApi = restApi;
+            mUrlOpener = urlOpener;
 
             InitializeLayoutAndStyles();
 
@@ -123,7 +132,7 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         void SignUpButton_Clicked()
         {
-            Application.OpenURL(UnityUrl.DevOps.GetSignUp());
+            mUrlOpener.Open(UnityUrl.DevOps.GetSignUp());
         }
 
         void BuildComponents()
@@ -180,5 +189,6 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
 
         readonly IWelcomeWindowNotify mNotify;
         readonly IPlasticWebRestApi mRestApi;
+        readonly IExternalUrlOpener mUrlOpener;
     }
 }

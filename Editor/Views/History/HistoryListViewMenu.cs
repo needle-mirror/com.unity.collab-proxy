@@ -87,6 +87,7 @@ namespace Unity.PlasticSCM.Editor.Views.History
         {
             mOperations.DiffChangeset();
         }
+
         void RevertToThisRevisionMenu_Click()
         {
             mOperations.RevertToThisRevision();

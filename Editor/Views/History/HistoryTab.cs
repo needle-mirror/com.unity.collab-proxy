@@ -30,7 +30,7 @@ using GluonRevertOperation = GluonGui.WorkspaceWindow.Views.Details.History.Reve
 using HistoryDescriptor = GluonGui.WorkspaceWindow.Views.Details.History.HistoryDescriptor;
 using OpenRevisionOperation = PlasticGui.WorkspaceWindow.History.OpenRevisionOperation;
 
-using DiffWindow = Plugins.PlasticSCM.Editor.Diff.DiffWindow;
+using Unity.PlasticSCM.Editor.Diff;
 
 namespace Unity.PlasticSCM.Editor.Views.History
 {
@@ -89,6 +89,12 @@ namespace Unity.PlasticSCM.Editor.Views.History
             mPath = path;
             mIsDirectory = isDirectory;
 
+            // IMPORTANT: Clear selection before populating the list, 
+            // so UpdateData's HasSelection() check falls through to
+            // SelectFirstRow, which fires the selection-changed event 
+            //and updates the diff window with the new item's first revision.
+            mHistoryListView.SetSelection(new List<int>());
+
             ((IRefreshableView)this).Refresh();
         }
 
@@ -106,6 +112,8 @@ namespace Unity.PlasticSCM.Editor.Views.History
             TreeHeaderSettings.Save(
                 mHistoryListView.multiColumnHeader.state,
                 UnityConstants.HISTORY_TABLE_SETTINGS_NAME);
+
+            GetWindowIfOpened.Diff()?.ClearIfShownFrom(DiffSource.History);
         }
 
         internal SerializableHistoryTabState GetSerializableState()
@@ -157,18 +165,6 @@ namespace Unity.PlasticSCM.Editor.Views.History
             mHistoryViewLogic.RefreshForItem(mRepSpec, mItemId, new CancelToken());
         }
 
-        List<RepObjectInfo> HistoryViewLogic.IHistoryView.GetSelectedRevisions()
-        {
-            return HistorySelection.GetSelectedRepObjectInfos(mHistoryListView);
-        }
-
-        void HistoryViewLogic.IHistoryView.SelectRevisions(
-            List<RepObjectInfo> revisionsToSelect)
-        {
-            HistorySelection.SelectRevisions(
-                mHistoryListView, revisionsToSelect);
-        }
-
         void HistoryViewLogic.IHistoryView.UpdateData(
             List<ResolvedUser> resolvedUsers,
             ResolvedUser currentUser,
@@ -185,6 +181,9 @@ namespace Unity.PlasticSCM.Editor.Views.History
             mHistoryListView.Sort();
 
             mHistoryListView.Reload();
+
+            if (!mHistoryListView.HasSelection())
+                TableViewOperations.SelectFirstRow(mHistoryListView);
         }
 
         long HistoryListViewMenu.IMenuOperations.GetSelectedChangesetId()
@@ -260,18 +259,35 @@ namespace Unity.PlasticSCM.Editor.Views.History
             HistoryRevision revision = HistorySelection.
                 GetSelectedHistoryRevision(mHistoryListView);
 
-            if (UseBuiltinDiffWindowPreference.IsEnabled())
-            {
-                DiffWindow diffWindow = ShowWindow.Diff();
-                diffWindow.ShowDiffFromHistory(
-                    null,
-                    revision,
-                    mRepSpec,
-                    mPath,
-                    mItemId);
-                return;
-            }
+            IUnityDiffWindow diffWindow = ShowWindow.Diff();
+            diffWindow.ShowDiffFromHistory(
+                mHistoryListView.GetRevisionFromId(revision.ParentRevisionId),
+                revision,
+                mRepSpec,
+                mPath,
+                mItemId,
+                showDiffInDesktopApp: () => DiffWithPreviousInDesktopApp(revision));
+        }
 
+        void IHistoryViewMenuOperations.DiffSelectedRevisions()
+        {
+            HistoryRevision leftRevision;
+            HistoryRevision rightRevision;
+            GetOrderedSelectedRevisions(out leftRevision, out rightRevision);
+
+            IUnityDiffWindow diffWindow = ShowWindow.Diff();
+            diffWindow.ShowDiffFromHistory(
+                leftRevision,
+                rightRevision,
+                mRepSpec,
+                mPath,
+                mItemId,
+                showDiffInDesktopApp: () => DiffSelectedRevisionsInDesktopApp(
+                    leftRevision, rightRevision));
+        }
+
+        void DiffWithPreviousInDesktopApp(HistoryRevision revision)
+        {
             DiffOperation.DiffWithPrevious(
                 mWkInfo,
                 mRepSpec,
@@ -285,28 +301,9 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 null);
         }
 
-        void IHistoryViewMenuOperations.DiffSelectedRevisions()
+        void DiffSelectedRevisionsInDesktopApp(
+            HistoryRevision leftRevision, HistoryRevision rightRevision)
         {
-            List<HistoryRevision> revisions = HistorySelection.
-                GetSelectedHistoryRevisions(mHistoryListView);
-
-            bool areReversed = revisions[0].Id > revisions[1].Id;
-
-            HistoryRevision leftRevision = revisions[(areReversed) ? 1 : 0];
-            HistoryRevision rightRevision = revisions[(areReversed) ? 0 : 1];
-
-            if (UseBuiltinDiffWindowPreference.IsEnabled())
-            {
-                DiffWindow diffWindow = ShowWindow.Diff();
-                diffWindow.ShowDiffFromHistory(
-                    leftRevision,
-                    rightRevision,
-                    mRepSpec,
-                    mPath,
-                    mItemId);
-                return;
-            }
-
             DiffOperation.DiffRevisions(
                 mWkInfo,
                 mRepSpec,
@@ -318,6 +315,19 @@ namespace Unity.PlasticSCM.Editor.Views.History
                 mProgressControls,
                 PlasticExeLauncher.BuildForDiffSelectedRevisions(mRepSpec, mIsGluonMode, mShowDownloadPlasticExeWindow),
                 null);
+        }
+
+        void GetOrderedSelectedRevisions(
+            out HistoryRevision leftRevision,
+            out HistoryRevision rightRevision)
+        {
+            List<HistoryRevision> revisions = HistorySelection.
+                GetSelectedHistoryRevisions(mHistoryListView);
+
+            bool areReversed = revisions[0].Id > revisions[1].Id;
+
+            leftRevision = revisions[(areReversed) ? 1 : 0];
+            rightRevision = revisions[(areReversed) ? 0 : 1];
         }
 
         void IHistoryViewMenuOperations.DiffChangeset()
@@ -445,25 +455,62 @@ namespace Unity.PlasticSCM.Editor.Views.History
 
         void OnDelayedSelectionChanged()
         {
-            if (!UseBuiltinDiffWindowPreference.IsEnabled())
+            List<RepObjectInfo> selection =
+                HistorySelection.GetSelectedRepObjectInfos(mHistoryListView);
+
+            if (selection.Count == 0)
                 return;
 
-            if (mHistoryListView.GetSelection().Count != 1)
+            IUnityDiffWindow diffWindow = GetWindowIfOpened.Diff();
+
+            if (diffWindow == null)
                 return;
 
-            HistoryRevision selectedRevision = HistorySelection.GetSelectedHistoryRevision(mHistoryListView);
+            if (selection.Count == 2 &&
+                selection[0] is HistoryRevision firstRevision &&
+                selection[1] is HistoryRevision secondRevision)
+            {
+                bool areReversed = firstRevision.Id > secondRevision.Id;
+                HistoryRevision leftRevision = areReversed ? secondRevision : firstRevision;
+                HistoryRevision rightRevision = areReversed ? firstRevision : secondRevision;
 
-            if (selectedRevision == null)
+                diffWindow.ShowDiffFromHistory(
+                    leftRevision,
+                    rightRevision,
+                    mRepSpec,
+                    mPath,
+                    mItemId,
+                    showDiffInDesktopApp: () => DiffSelectedRevisionsInDesktopApp(
+                        leftRevision, rightRevision));
                 return;
+            }
 
-            DiffWindow diffWindow = GetWindowIfOpened.Diff();
+            RepObjectInfo lastSelectedObject = selection[0];
 
-            diffWindow?.ShowDiffFromHistory(
-                null,
-                selectedRevision,
-                mRepSpec,
-                mPath,
-                mItemId);
+            if (lastSelectedObject is HistoryRevision historyRevision)
+            {
+                diffWindow.ShowDiffFromHistory(
+                    mHistoryListView.GetRevisionFromId(historyRevision.ParentRevisionId),
+                    historyRevision,
+                    mRepSpec,
+                    mPath,
+                    mItemId,
+                    showDiffInDesktopApp: () => DiffWithPreviousInDesktopApp(historyRevision));
+
+                return;
+            }
+
+            if (lastSelectedObject is MoveRealizationInfo moveRealizationInfo)
+            {
+                diffWindow?.ShowMoveRealizationInfo(moveRealizationInfo);
+                return;
+            }
+
+            if (lastSelectedObject is RemovedRealizationInfo)
+            {
+                diffWindow?.ShowRemovedRealizationInfo();
+                return;
+            }
         }
 
         void OnRowDoubleClickAction()
@@ -471,24 +518,37 @@ namespace Unity.PlasticSCM.Editor.Views.History
             if (mHistoryListView.GetSelection().Count != 1)
                 return;
 
-            HistoryRevision selectedRevision = HistorySelection.GetSelectedHistoryRevision(mHistoryListView);
+            List<RepObjectInfo> selection =
+                HistorySelection.GetSelectedRepObjectInfos(mHistoryListView);
 
-            if (selectedRevision == null)
+            if (selection.Count == 0)
                 return;
 
-            if (UseBuiltinDiffWindowPreference.IsEnabled())
+            RepObjectInfo selectedObject = selection[0];
+
+            if (selectedObject is HistoryRevision selectedRevision)
             {
-                DiffWindow diffWindow = ShowWindow.Diff();
-                diffWindow.ShowDiffFromHistory(
+                ShowWindow.Diff().ShowDiffFromHistory(
                     null,
                     selectedRevision,
                     mRepSpec,
                     mPath,
-                    mItemId);
+                    mItemId,
+                    showDiffInDesktopApp: () => DiffWithPreviousInDesktopApp(selectedRevision));
                 return;
             }
 
-            ((IOpenMenuOperations)this).Open();
+            if (selectedObject is MoveRealizationInfo moveRealizationInfo)
+            {
+                ShowWindow.Diff().ShowMoveRealizationInfo(moveRealizationInfo);
+                return;
+            }
+
+            if (selectedObject is RemovedRealizationInfo)
+            {
+                ShowWindow.Diff().ShowRemovedRealizationInfo();
+                return;
+            }
         }
 
         void OnItemsChangedAction(IEnumerable<RepObjectInfo> items)

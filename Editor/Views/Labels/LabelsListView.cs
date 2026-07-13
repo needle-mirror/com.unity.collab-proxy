@@ -447,6 +447,7 @@ namespace Unity.PlasticSCM.Editor.Views.Labels
                     isSelected,
                     isFocused,
                     false,
+                    false,
                     DrawTreeViewItem.TextTrimming.Path);
                 return;
             }

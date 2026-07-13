@@ -31,7 +31,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Options
                         PlasticLocalization.Name.BrexOptionsWindowTitle));
 
             window.titleContent.image = Images.GetSettingsIcon();
-            window.minSize = new Vector2(545, 320);
+            window.minSize = new Vector2(550, 320);
             window.Show();
         }
 
@@ -109,21 +109,17 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Options
         {
             rootVisualElement.Clear();
 
-            TwoPaneSplitView splitView = new TwoPaneSplitView(
-                0,
-                LEFT_PANE_INITIAL_WIDTH,
-                TwoPaneSplitViewOrientation.Horizontal);
-            splitView.style.flexGrow = 1;
+            VisualElement container = new VisualElement();
+            container.style.flexDirection = FlexDirection.Row;
+            container.style.flexGrow = 1;
 
             VisualElement leftPane = CreateLeftPane();
             VisualElement rightPane = CreateRightPane();
 
-            splitView.Add(leftPane);
-            splitView.Add(rightPane);
+            container.Add(leftPane);
+            container.Add(rightPane);
 
-            SetSplitViewDragLineColor(splitView);
-
-            rootVisualElement.Add(splitView);
+            rootVisualElement.Add(container);
 
             mSectionListView.selectedIndex = DISPLAY_OPTIONS_INDEX;
         }
@@ -132,7 +128,10 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Options
         {
             VisualElement leftPane = new VisualElement();
             leftPane.style.marginTop = 4;
-            leftPane.style.minWidth = 140;
+            leftPane.style.width = LEFT_PANE_WIDTH;
+            leftPane.style.flexShrink = 0;
+            leftPane.style.borderRightWidth = 1;
+            leftPane.style.borderRightColor = UnityStyles.Colors.SplitLineColor;
 
             mSectionNames = new List<string>
             {
@@ -163,6 +162,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Options
         {
             mRightPane = new VisualElement();
             mRightPane.style.flexGrow = 1;
+            mRightPane.style.minWidth = 360;
 
             mSectionHeader = new Label();
             mSectionHeader.style.unityFontStyleAndWeight = FontStyle.Bold;
@@ -236,18 +236,6 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Options
             }
         }
 
-        static void SetSplitViewDragLineColor(TwoPaneSplitView splitView)
-        {
-            VisualElement dragLineAnchor =
-                splitView.Q("unity-dragline-anchor");
-
-            if (dragLineAnchor == null)
-                return;
-
-            dragLineAnchor.style.backgroundColor =
-                UnityStyles.Colors.SplitLineColor;
-        }
-
         IBranchExplorerView GetBranchExplorerView()
         {
             return mBrExWindow.BranchExplorerView;
@@ -269,6 +257,6 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Options
 
         const int DISPLAY_OPTIONS_INDEX = 0;
         const int FILTERS_AND_CONDITIONAL_FORMAT_INDEX = 1;
-        const float LEFT_PANE_INITIAL_WIDTH = 180;
+        const float LEFT_PANE_WIDTH = 180;
     }
 }

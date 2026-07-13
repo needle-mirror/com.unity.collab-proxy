@@ -1,11 +1,14 @@
 {
     "name": "Unity.PlasticSCM.Editor",
-    "references": [],
+    "references": [
+        "Unity.Collections",
+        "Unity.Mathematics"
+    ],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": true,
     "precompiledReferences": [
         "unityplastic.dll",
@@ -15,6 +18,12 @@
     ],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "Unity",
+            "expression": "6000.5.0a9",
+            "define": "LIFECYCLE_APIS_AVAILABLE"
+        }
+    ],
     "noEngineReferences": false
 }

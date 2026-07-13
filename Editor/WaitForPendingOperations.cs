@@ -6,7 +6,7 @@ using UnityEditor;
 using Codice.LogWrapper;
 using Codice.Client.Common;
 using PlasticGui;
-using PlasticPipe.Client;
+using Unity.PlasticSCM.Editor.AssetUtils.Processor;
 using Unity.PlasticSCM.Editor.UI;
 
 namespace Unity.PlasticSCM.Editor
@@ -40,6 +40,18 @@ namespace Unity.PlasticSCM.Editor
                 return;
             }
 
+            WaitUntilOperationsFinish("BeforeAssemblyReload");
+        }
+
+        internal static void BeforeEditorQuit()
+        {
+            mLog.Debug("BeforeEditorQuit started");
+
+            WaitUntilOperationsFinish("BeforeEditorQuit");
+        }
+
+        static void WaitUntilOperationsFinish(string reason)
+        {
             mLastLoggedSecond = -1;
             Stopwatch stopwatch = Stopwatch.StartNew();
             bool progressBarShown = false;
@@ -55,8 +67,8 @@ namespace Unity.PlasticSCM.Editor
                     if (!HasRunningOperations())
                     {
                         mLog.DebugFormat(
-                            "All operations finished after {0}ms",
-                            stopwatch.ElapsedMilliseconds);
+                            "{0}: all operations finished after {1}ms",
+                            reason, stopwatch.ElapsedMilliseconds);
                         break;
                     }
 
@@ -91,8 +103,8 @@ namespace Unity.PlasticSCM.Editor
                 }
 
                 mLog.DebugFormat(
-                    "WaitForPendingOperations completed in {0}ms",
-                    stopwatch.ElapsedMilliseconds);
+                    "{0}: WaitForPendingOperations completed in {1}ms",
+                    reason, stopwatch.ElapsedMilliseconds);
             }
         }
 
@@ -205,13 +217,26 @@ namespace Unity.PlasticSCM.Editor
 
         static bool HasLowLevelRunningOperations()
         {
-            return ThreadWaiterRegistry.HasRunningOperations() ||
-                   CmConnection.HasInUseConnections();
+            return ThreadWaiterRegistry.HasRunningOperations() || CmConnection.HasInUseConnections();
         }
 
+        // Side work that must not be aborted by the timeout:
+        // - workspace window operations
+        // - workspace monitor queued/running tasks (asset processor add/move/delete/checkout)
+        // - EditorDispatcher callbacks that the monitor posts back to the main thread
         static bool HasLongRunningOperations()
         {
-            return UVCSPlugin.Instance.HasRunningOperation();
+            return UVCSPlugin.Instance.HasRunningOperation() || HasWorkspacePipelinePendingWork();
+        }
+
+        static bool HasWorkspacePipelinePendingWork()
+        {
+            if (EditorDispatcher.HasPendingDispatchActions())
+                return true;
+
+            WorkspaceOperationsMonitor monitor = UVCSPlugin.Instance.WorkspaceOperationsMonitor;
+
+            return monitor != null && monitor.HasPendingOperations();
         }
 
         static void DisplayProgressBar()

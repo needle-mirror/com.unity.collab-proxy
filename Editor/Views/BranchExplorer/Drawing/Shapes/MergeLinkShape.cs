@@ -19,6 +19,11 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
 
         internal Rect Destination { get; }
 
+        internal static string BuildName(long sourceChangesetId, long destinationChangesetId)
+        {
+            return "merge-link-" + sourceChangesetId + "-" + destinationChangesetId;
+        }
+
         internal MergeLinkShape(
             VirtualShape virtualShape,
             Rect source,
@@ -26,6 +31,10 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
         {
             Source = source;
             Destination = dst;
+
+            name = BuildName(
+                GetChangesetId(LinkDraw.SourceChangeset),
+                GetChangesetId(LinkDraw.DestinationChangeset));
 
             SetupBounds();
         }
@@ -115,6 +124,15 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
                 rect.y - offset.y,
                 rect.width,
                 rect.height);
+        }
+
+        static long GetChangesetId(ChangesetDrawInfo changesetDraw)
+        {
+            if (changesetDraw == null)
+                return -1;
+
+            BrExChangeset changeset = changesetDraw.Tag as BrExChangeset;
+            return changeset != null ? changeset.Id : -1;
         }
 
         bool TryGetLocalVisibleRect(out Rect localVisibleRect)

@@ -1,4 +1,4 @@
-﻿== Branch ==
+== Branch ==
 브랜치
 
 == Branches ==
@@ -239,7 +239,7 @@ Cloud에 동기화
 기본 설정
 
 == MainSidebarAboutItem ==
-Unity DevOps Version Control 정보
+Unity Version Control 정보
 
 == MainSidebarAboutGluonItem ==
 Gluon 정보
@@ -1202,7 +1202,7 @@ Xlink 편집...
 숨김 변경됨
 
 == MainWindowTitle ==
-Unity DevOps Version Control - 워크스페이스: {0} - {1} - {2}: {3}@{4}
+Unity Version Control - 워크스페이스: {0} - {1} - {2}: {3}@{4}
 
 == StatusInfo ==
 {0} {1}@{2} 탐색 중
@@ -2073,7 +2073,7 @@ Cloud 리포지토리 이름을 입력하십시오
 서버의 이름/IP, 포트 입력:
 
 == PreferencesWindowTitle ==
-Unity DevOps Version Control 기본 설정 - {0}
+Unity Version Control 기본 설정 - {0}
 
 == GeneralPreferences ==
 일반
@@ -4260,7 +4260,7 @@ EOL 및 공백 무시
 자격 증명 구성
 
 == PlasticConfiguration ==
-Unity DevOps Version Control 구성
+Unity Version Control 구성
 
 == ConfigurationServerInfo ==
 Unity VCS 서버의 이름(또는 IP 주소)과 포트를 입력하십시오. "네트워크 스캔"을 사용하여 네트워크에서 이용 가능한 Unity VCS 서버를 찾을 수 있습니다

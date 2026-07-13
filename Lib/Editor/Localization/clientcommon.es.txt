@@ -72,6 +72,9 @@ No es posible realizar la operación de checkin. Todos los cambios del merge deb
 == CannotPerformPartialUndo ==
 No es posible deshacer los cambios. Todos los cambios del merge deben deshacer juntos. Por favor, repita la operación incluyendo todos o ninguno de sus cambios.
 
+== CannotSwitchCloudWorkspaceToDifferentRepository ==
+Los Cloud workspaces no pueden cambiar a una configuración de repositorio diferente.
+
 == CannotSwitchWithPendingChanges ==
 No se puede cambiar de rama/etiqueta/changeset/shelve porque hay cambios pendientes. Por favor, revise dichos cambios e intente de nuevo la operación.
 
@@ -95,6 +98,9 @@ No se pueden archivar revisiones de diferentes repositorios en una única llamad
 
 == CantDiffBranchNoParent ==
 No se pueden calcular las diferencias de la rama {0} porque no se pudo encontrar su changeset padre.
+
+== CantGetBranchHistoryNoParent ==
+No se puede obtener la historia de la rama {0} porque no se pudo encontrar su changeset padre.
 
 == CantDiffCsetNoParent ==
 No se pueden calcular las diferencias del changeset {0} porque no tiene padre.
@@ -282,9 +288,6 @@ No se puede obtener el contenido del fichero '{0}' porque la revisión (id:{1}) 
 
 == ErrorCannotRenameDynamicWk ==
 Los espacios de trabajo dinámicos no pueden ser renombrados.
-
-== ErrorCantImportInvalidPackage ==
-Paquete de replicación incorrecto, no se ha encontrado una cabecera válida
 
 == ErrorClientconfignotfound ==
 El cliente Unity VCS no está configurado correctamente para el usuario actual: No se ha encontrado el fichero de configuración {0}. Ejecute 'cm configure' para realizar una configuración en modo texto o 'plastic --configure' para realizarla en modo gráfico.
@@ -542,6 +545,9 @@ Merge
 == MergeNeeded ==
 Se necesitan combinar los cambios del changeset cs:{0}@rep:{2}@repserver:{3}(mount:{4}) con los cambios realizados sobre el changeset cs:{1}@rep:{2}@repserver:{3}(mount:{4}) (changeset cargado en su workspace) antes de continuar. Por favor ejecute 'cm merge "cs:{0}@rep:{2}@repserver:{3}"  --merge' en '{5}' para resolver los conflictos. Después de eso, reintente la operación de checkin.
 
+== MergeRequestMergeChangesetRequiresMergedStatus ==
+La opción '--mergechangeset' solo está permitida junto con '--mergerequeststatus=Merged'.
+
 == MergeToPendingDirectoryConflicts ==
 Hay conflictos de directorio pendientes que deben ser resueltos antes de procesar el merge-to.
 
@@ -622,6 +628,9 @@ No se pudo encontrar la revisión de código especificada '{0}'.
 
 == NoSuchCodeReviewStatus ==
 La revisión de código no admite el estado: {0}. Los valores posibles son: {1}
+
+== NoSuchMergeRequestStatus ==
+La merge request no admite el estado: {0}. Los valores posibles son: {1}
 
 == NotChange ==
 {0} no es un cambio

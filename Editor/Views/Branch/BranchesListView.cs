@@ -425,6 +425,7 @@ namespace Unity.PlasticSCM.Editor.Views.Branches
                     isFocused,
                     isBoldText,
                     false,
+                    false,
                     DrawTreeViewItem.TextTrimming.Path);
                 return;
             }

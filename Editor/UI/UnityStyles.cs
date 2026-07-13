@@ -42,6 +42,14 @@ namespace Unity.PlasticSCM.Editor.UI
             internal static Color DefaultText = EditorGUIUtility.isProSkin ?
                 new Color(210f / 255, 210f / 255, 210f / 255) :
                 new Color(9f / 255, 9f / 255, 9f / 255);
+
+            internal const float DisabledColorFactor = 0.4f;
+
+            internal static Color DefaultTextDisabled =
+                new Color(DefaultText.r, DefaultText.g, DefaultText.b, DisabledColorFactor);
+            internal static Color RedText = EditorGUIUtility.isProSkin ?
+                new Color(255f / 255, 102f / 255, 102f / 255) :
+                new Color(194f / 255, 51f / 255, 62f / 255);
             internal static Color GreenText = new Color(0f / 255, 100f / 255, 0f / 255);
             internal static Color Red = new Color(194f / 255, 51f / 255, 62f / 255);
             internal static Color Warning = new Color(255f / 255, 255f / 255, 176f / 255);
@@ -60,7 +68,9 @@ namespace Unity.PlasticSCM.Editor.UI
                 new Color(199f / 255, 199f / 255, 199f / 255);
 
             internal static Color TabUnderline = new Color(58f / 255, 121f / 255, 187f / 255);
-            internal static Color Link = new Color(76f / 255, 126f / 255, 255f / 255);
+            internal static Color Link = EditorGUIUtility.isProSkin ?
+                new Color32(129, 180, 255, 255) :
+                new Color32(0, 60, 136, 255);
 
             internal static LazyColor Label = new LazyColor(() => EditorStyles.label.normal.textColor);
 
@@ -118,6 +128,10 @@ namespace Unity.PlasticSCM.Editor.UI
             internal static Color ToggleHoverText = EditorGUIUtility.isProSkin ?
                 new Color(129f / 255, 180f / 255, 255f / 255) :
                 new Color(7f / 255, 68f / 255, 146f / 255);
+
+            internal static Color HoverBackgroundColor = EditorGUIUtility.isProSkin
+                ? new Color(1f, 1f, 1f, 0.06f)
+                : new Color(0f, 0f, 0f, 0.06f);
 
             internal static Color OverlayProgressBackgroundColor = EditorGUIUtility.isProSkin ?
                 new Color(0.133f, 0.133f, 0.133f, 0.4f) :
@@ -217,6 +231,136 @@ namespace Unity.PlasticSCM.Editor.UI
                 internal static Color CaptionBorderColor = EditorGUIUtility.isProSkin ?
                     new Color(0.102f, 0.102f, 0.102f) :
                     new Color(0.855f, 0.855f, 0.855f);
+            }
+
+            internal static class ImageDiff
+            {
+                internal static Color CheckerBoardLightBackgroundColor = EditorGUIUtility.isProSkin ?
+                    new Color32(102, 102, 102, 255) :
+                    new Color32(255, 255, 255, 255);
+
+                internal static Color CheckerBoardDarkBackgroundColor = EditorGUIUtility.isProSkin ?
+                    new Color32(71, 71, 71, 255) :
+                    new Color32(203, 203, 203, 255);
+
+                internal static Color LeftImageBorderColor = EditorGUIUtility.isProSkin ?
+                    new Color32(70, 162, 70, 255) :
+                    new Color32(0, 115, 0, 255);
+
+                internal static Color RightImageBorderColor = EditorGUIUtility.isProSkin ?
+                    new Color32(255, 83, 74, 255) :
+                    new Color32(255, 50, 37, 255);
+
+                internal static Color SwipeHandleBackgroundColor =
+                    new Color32(255, 255, 255, 255);
+
+                internal static Color SwipeHandleBorderColor = EditorGUIUtility.isProSkin ?
+                    new Color32(58, 121, 187, 255) :
+                    new Color32(58, 114, 176, 255);
+            }
+
+            internal static class Diff
+            {
+                internal static Color InfoColor = EditorGUIUtility.isProSkin
+                    ? new Color(36f / 255, 83f / 255, 120f / 255)
+                    : new Color(255f / 255, 249f / 255, 210f / 255);
+
+                internal static Color DiffSplitterBackgroundColor = EditorGUIUtility.isProSkin
+                    ? new Color(54f / 255f, 54f / 255f, 54f / 255f)
+                    : new Color(200f / 255, 200f / 255, 200f / 255);
+
+                internal static class BigFile
+                {
+                    internal static Color YellowBackgroundColor = EditorGUIUtility.isProSkin
+                        ? new Color32(82, 72, 40, 255)
+                        : new Color32(254, 249, 230, 255);
+
+                    internal static Color BlueBackgroundColor = EditorGUIUtility.isProSkin
+                        ? new Color32(43, 68, 85, 255)
+                        : new Color32(232, 243, 255, 255);
+
+                    internal static Color GreenBackgroundColor = EditorGUIUtility.isProSkin
+                        ? new Color32(51, 78, 56, 130)
+                        : new Color32(229, 245, 232, 255);
+                }
+
+                internal static class ActionBar
+                {
+                    internal static Color ButtonNormal = EditorGUIUtility.isProSkin
+                        ? new Color(0.7f, 0.7f, 0.7f, 1f)
+                        : new Color(0.4f, 0.4f, 0.4f, 1f);
+
+                    internal static Color ButtonHovered = EditorGUIUtility.isProSkin
+                        ? new Color(0.2f, 0.6f, 0.9f, 1f)
+                        : new Color(0.1f, 0.45f, 0.78f, 1f);
+
+                    internal static Color ButtonClicked = EditorGUIUtility.isProSkin
+                        ? new Color(0.0f, 0.47f, 0.84f, 1f)
+                        : new Color(0.0f, 0.37f, 0.7f, 1f);
+                }
+
+                internal static class AssetDiff
+                {
+                    internal static Color ObjectHeaderBackground = EditorGUIUtility.isProSkin
+                        ? new Color32(62, 62, 62, 255)
+                        : new Color32(203, 203, 203, 255);
+
+                    internal static Color ObjectHeaderBackgroundHovered = EditorGUIUtility.isProSkin
+                        ? new Color32(71, 71, 71, 255)
+                        : new Color32(214, 214, 214, 255);
+
+                    internal static Color HeaderBorder = EditorGUIUtility.isProSkin
+                        ? new Color32(26, 26, 26, 255)
+                        : new Color32(127, 127, 127, 255);
+
+                    internal static Color HeaderBorderLight = EditorGUIUtility.isProSkin
+                        ? new Color32(48, 48, 48, 255)
+                        : new Color32(186, 186, 186, 255);
+
+                    internal static Color PropertyRowBackground = EditorGUIUtility.isProSkin
+                        ? new Color32(56, 56, 56, 255)
+                        : new Color32(200, 200, 200, 255);
+
+                    internal static Color EmptyPanelBackground = EditorGUIUtility.isProSkin
+                        ? new Color32(52, 52, 52, 255)
+                        : new Color32(194, 194, 194, 255);
+
+                    internal static Color ExpanderColor = EditorGUIUtility.isProSkin
+                        ? new Color32(108, 108, 108, 255)
+                        : new Color32(124, 124, 124, 255);
+
+                    internal static Color ReadonlyFieldBackgroundColor = EditorGUIUtility.isProSkin
+                        ? new Color32(52, 52, 52, 255)
+                        : new Color32(215, 215, 215, 255);
+
+                    internal static Color ReadonlyToggleTintColor = EditorGUIUtility.isProSkin
+                        ? new Color32(255, 255, 255, 185)
+                        : new Color32(228, 228, 228, 255);
+
+                    internal static Color AnnotationText = EditorGUIUtility.isProSkin
+                        ? new Color32(136, 136, 136, 255)
+                        : new Color32(120, 120, 120, 255);
+
+                    internal static Color GutterAdded = EditorGUIUtility.isProSkin
+                        ? new Color32(70, 162, 70, 255)
+                        : new Color32(0, 130, 0, 255);
+
+                    internal static Color GutterRemoved = EditorGUIUtility.isProSkin
+                        ? new Color32(220, 80, 80, 255)
+                        : new Color32(194, 51, 62, 255);
+
+                    internal static Color GutterModified = EditorGUIUtility.isProSkin
+                        ? new Color32(210, 160, 40, 255)
+                        : new Color32(193, 132, 1, 255);
+
+                    internal static Color VectorComponentHighlight = EditorGUIUtility.isProSkin
+                        ? new Color32(230, 140, 25, 255)
+                        : new Color32(193, 100, 1, 255);
+
+                    internal static Color SearchHighlightBackground = EditorGUIUtility.isProSkin
+                        ? new Color32(49, 105, 172, 168)
+                        : new Color32(145, 186, 225, 168);
+                }
             }
         }
 
@@ -436,6 +580,30 @@ namespace Unity.PlasticSCM.Editor.UI
                 return style;
             });
 
+            internal static readonly LazyStyle LabelDisabled = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(TreeView.DefaultStyles.label);
+                style.fontSize = UnityConstants.LABEL_FONT_SIZE;
+                style.normal.textColor = Colors.DefaultTextDisabled;
+                style.active.textColor = Colors.DefaultTextDisabled;
+                style.focused.textColor = Colors.DefaultTextDisabled;
+                style.hover.textColor = Colors.DefaultTextDisabled;
+                style.alignment = TextAnchor.MiddleLeft;
+                return style;
+            });
+
+            internal static readonly LazyStyle BoldLabelDisabled = new LazyStyle(() =>
+            {
+                var style = new GUIStyle(TreeView.DefaultStyles.boldLabel);
+                style.fontSize = UnityConstants.LABEL_FONT_SIZE;
+                style.normal.textColor = Colors.DefaultTextDisabled;
+                style.active.textColor = Colors.DefaultTextDisabled;
+                style.focused.textColor = Colors.DefaultTextDisabled;
+                style.hover.textColor = Colors.DefaultTextDisabled;
+                style.alignment = TextAnchor.MiddleLeft;
+                return style;
+            });
+
             internal static readonly LazyStyle BoldLabelWithMargin = new LazyStyle(() =>
             {
                 var style = new GUIStyle(TreeView.DefaultStyles.boldLabel);
@@ -479,6 +647,14 @@ namespace Unity.PlasticSCM.Editor.UI
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static class Inspector
         {
+            internal static readonly LazyStyle PaneOptions = new LazyStyle(() =>
+            {
+                GUIStyle result = new GUIStyle(EditorStyles.miniButton);
+                result.padding.left = 1;
+                result.padding.right = 1;
+                return result;
+            });
+
             internal static readonly LazyStyle HeaderBackgroundStyle = new LazyStyle(() =>
             {
                 GUIStyle result = new GUIStyle();

@@ -40,6 +40,9 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
                 case ShapeType.ChangesetComment:
                     return CHANGESET_COMMENT_ZINDEX;
 
+                case ShapeType.ChangesetNumber:
+                    return CHANGESET_NUMBER_ZINDEX;
+
                 case ShapeType.Label:
                     return LABEL_ZINDEX;
 
@@ -94,6 +97,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
         const int CHANGESET_ZINDEX = 5;
         internal const int PARENT_LINK_ON_SAME_BRANCH_ZINDEX = 6;
         const int BRANCH_CAPTION_ZINDEX = 7;
-        const int COLUMN_HEADER_ZINDEX = 8;
+        const int CHANGESET_NUMBER_ZINDEX = 8;
+        const int COLUMN_HEADER_ZINDEX = 9;
     }
 }

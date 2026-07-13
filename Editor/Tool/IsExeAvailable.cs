@@ -115,11 +115,11 @@ namespace Unity.PlasticSCM.Editor.Tool
         {
             if (PlatformIdentifier.IsWindows())
                 return FindTool.ObtainToolCommand(
-                    Plastic.CLOUD_DRIVE_WINDOWS,
+                    Plastic.VCS_TRAY_WINDOWS,
                     new List<String>() { GetWindowsClientInstallationFolder() });
 
             if (PlatformIdentifier.IsMac())
-                return GetToolCommand(Plastic.CLOUD_DRIVE_MACOS);
+                return GetToolCommand(Plastic.VCS_TRAY_MACOS);
 
             return null;
         }
@@ -178,23 +178,25 @@ namespace Unity.PlasticSCM.Editor.Tool
         const string PLASTICSCM_SERVER_SUBFOLDER = "server";
 
         static readonly ILog mLog = PlasticApp.GetLogger("PlasticInstallPath");
+    }
 
-        class Plastic
-        {
-            internal const string GUI_WINDOWS = "plastic.exe";
-            internal const string LOCAL_SERVER_WINDOWS = "plasticd.exe";
-            internal const string CLOUD_DRIVE_WINDOWS = "unityclouddrive.exe";
-            internal const string LEGACY_GUI_MACOS = "/Applications/PlasticSCM.app/Contents/MacOS/PlasticSCM";
-            internal const string NEW_GUI_MACOS = "/Applications/PlasticSCM.app/Contents/MacOS/macplasticx";
-            internal const string LOCAL_SERVER_MACOS = "/Applications/PlasticSCMServer.app/Contents/MacOS/plasticd";
-            internal const string CLOUD_DRIVE_MACOS = "/Applications/PlasticSCM.app/Contents/Applications/Unity Cloud Drive.app/Contents/MacOS/unityclouddrive"; // TODO: Check this path
-        }
+    internal static class Plastic
+    {
+        internal const string GUI_WINDOWS = "plastic.exe";
+        internal const string LOCAL_SERVER_WINDOWS = "plasticd.exe";
+        internal const string VCS_TRAY_WINDOWS = "unityvcstray.exe";
+        internal const string LEGACY_GUI_MACOS = "/Applications/PlasticSCM.app/Contents/MacOS/PlasticSCM";
+        internal const string NEW_GUI_MACOS = "/Applications/PlasticSCM.app/Contents/MacOS/macplasticx";
+        internal const string LOCAL_SERVER_MACOS = "/Applications/PlasticSCMServer.app/Contents/MacOS/plasticd";
+        internal const string VCS_TRAY_MACOS = "/Applications/PlasticSCM.app/Contents/Applications/Unity VCS Tray.app/Contents/MacOS/unityvcstray";
 
-        class Gluon
-        {
-            internal const string GUI_WINDOWS = "gluon.exe";
-            internal const string LEGACY_GUI_MACOS = "/Applications/Gluon.app/Contents/MacOS/Gluon";
-            internal const string NEW_GUI_MACOS = "/Applications/Gluon.app/Contents/MacOS/macgluonx";
-        }
+        internal const string VCS_TRAY_NAME = "unityvcstray";
+    }
+
+    internal static class Gluon
+    {
+        internal const string GUI_WINDOWS = "gluon.exe";
+        internal const string LEGACY_GUI_MACOS = "/Applications/Gluon.app/Contents/MacOS/Gluon";
+        internal const string NEW_GUI_MACOS = "/Applications/Gluon.app/Contents/MacOS/macgluonx";
     }
 }

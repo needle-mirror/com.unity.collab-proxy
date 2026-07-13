@@ -190,8 +190,6 @@ namespace Unity.PlasticSCM.Editor
                 // after calling it to ensure it is up-to-date.
                 mRepSpec = PlasticGui.Plastic.API.GetRepositorySpec(mWkInfo);
 
-                DisableVCSBuiltInPluginIfEnabled(mWkInfo.ClientPath);
-
                 mIsGluonMode = PlasticGui.Plastic.API.IsGluonWorkspace(mWkInfo);
 
                 mViewHost = new ViewHost();
@@ -475,6 +473,9 @@ namespace Unity.PlasticSCM.Editor
         void OnDestroy()
         {
             mLog.Debug("OnDestroy");
+
+            if (Application.isBatchMode)
+                return;
 
             if (mException != null)
                 return;
@@ -825,17 +826,6 @@ namespace Unity.PlasticSCM.Editor
             GUILayout.EndVertical();
 
             GUILayout.EndHorizontal();
-        }
-
-        static void DisableVCSBuiltInPluginIfEnabled(string projectPath)
-        {
-            if (!VCSBuiltInPlugin.IsEnabled())
-                return;
-
-            VCSBuiltInPlugin.Disable();
-
-            mLog.DebugFormat("Disabled VCS Built-In Plugin on Project: {0}",
-                projectPath);
         }
 
         static void DisposeShelvedChanges(UVCSWindow window)

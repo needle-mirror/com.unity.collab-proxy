@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Collections.Generic;
 
@@ -20,6 +21,7 @@ using Unity.PlasticSCM.Editor.AssetMenu.Dialogs;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
+using Unity.PlasticSCM.Editor.Diff;
 using Unity.PlasticSCM.Editor.Tool;
 using Unity.PlasticSCM.Editor.UI;
 using Unity.PlasticSCM.Editor.Views.PendingChanges.Dialogs;
@@ -199,8 +201,14 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 mAssetStatusCache,
                 AssetMenuOperations.Undo);
 
+            bool isCancelled;
             mSaveAssets.ForPathsWithoutConfirmation(
-                mWkInfo.ClientPath, selectedPaths, mWorkspaceOperationsMonitor);
+                mWkInfo.ClientPath, selectedPaths, mWorkspaceOperationsMonitor,
+                canContinueWithDirtyScenes: false,
+                out isCancelled);
+
+            if (isCancelled)
+                return;
 
             if (mIsGluonMode)
             {
@@ -233,31 +241,16 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 mWkInfo.ClientPath,
                 mAssetSelection.GetSelectedAssets());
 
-            DiffInfo diffInfo = null;
+            ShowDiffInBuiltinWindow(selectedPath);
+        }
 
-            IThreadWaiter waiter = ThreadWaiter.GetWaiter(10);
-            waiter.Execute(
-                /*threadOperationDelegate*/ delegate
-                {
-                    string symbolicName = GetSymbolicName(mWkInfo, selectedPath);
-                    string extension = Path.GetExtension(selectedPath);
+        void IAssetMenuUVCSOperations.ShowMetaDiff()
+        {
+            string selectedPath = AssetsSelection.GetSelectedPath(
+                mWkInfo.ClientPath,
+                mAssetSelection.GetSelectedAssets());
 
-                    diffInfo = PlasticGui.Plastic.API.BuildDiffInfoForDiffWithPrevious(
-                        selectedPath, symbolicName, selectedPath, extension, mWkInfo);
-                },
-                /*afterOperationDelegate*/ delegate
-                {
-                    if (waiter.Exception != null)
-                    {
-                        ExceptionsHandler.DisplayException(waiter.Exception);
-                        return;
-                    }
-
-                    DiffOperation.DiffWithPrevious(
-                        diffInfo,
-                        PlasticExeLauncher.BuildForShowDiff(mWkInfo, mIsGluonMode, mShowDownloadPlasticExeWindow),
-                        null);
-                });
+            ShowDiffInBuiltinWindow(MetaPath.GetMetaPath(selectedPath));
         }
 
         void IAssetMenuUVCSOperations.ShowHistory()
@@ -268,14 +261,20 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
 
             string selectedPath = AssetsPath.GetFullPath.ForPath(selectedAsset.path);
 
-            WorkspaceTreeNode node = PlasticGui.Plastic.API.
-                GetWorkspaceTreeNode(mWkInfo, selectedPath);
+            ShowHistory(selectedPath, selectedAsset.isFolder);
+        }
 
-            mHistoryViewLauncher.ShowHistoryView(
-                node.RepSpec,
-                node.RevInfo.ItemId,
-                selectedPath,
-                selectedAsset.isFolder);
+        void IAssetMenuUVCSOperations.ShowMetaHistory()
+        {
+            Asset selectedAsset = AssetsSelection.GetSelectedAsset(
+                mWkInfo.ClientPath,
+                mAssetSelection.GetSelectedAssets());
+
+            string selectedPath = AssetsPath.GetFullPath.ForPath(selectedAsset.path);
+
+            ShowHistory(
+                MetaPath.GetMetaPath(selectedPath),
+                isFolder: false);
         }
 
         void IAssetFilesFilterPatternsMenuOperations.AddFilesFilterPatterns(
@@ -304,6 +303,64 @@ namespace Unity.PlasticSCM.Editor.AssetMenu
                 operation,
                 filterRulesConfirmationData,
                 mPendingChangesUpdater);
+        }
+
+        void ShowDiffInBuiltinWindow(string path)
+        {
+            BuildDiffInfoAsync(path, diffInfo =>
+            {
+                IUnityDiffWindow diffWindow = ShowWindow.Diff();
+
+                diffWindow.ShowDiffFromDiffInfo(
+                    diffInfo,
+                    showDiffInDesktopApp: () => DiffInDesktopApp(diffInfo));
+            });
+        }
+
+        void DiffInDesktopApp(DiffInfo diffInfo)
+        {
+            DiffOperation.DiffWithPrevious(
+                diffInfo,
+                PlasticExeLauncher.BuildForShowDiff(mWkInfo, mIsGluonMode, mShowDownloadPlasticExeWindow),
+                null);
+        }
+
+        void BuildDiffInfoAsync(string path, Action<DiffInfo> afterDiffInfoBuilt)
+        {
+            DiffInfo diffInfo = null;
+
+            IThreadWaiter waiter = ThreadWaiter.GetWaiter(10);
+            waiter.Execute(
+                /*threadOperationDelegate*/ delegate
+                {
+                    string symbolicName = GetSymbolicName(mWkInfo, path);
+                    string extension = Path.GetExtension(path);
+
+                    diffInfo = PlasticGui.Plastic.API.BuildDiffInfoForDiffWithPrevious(
+                        path, symbolicName, path, extension, mWkInfo);
+                },
+                /*afterOperationDelegate*/ delegate
+                {
+                    if (waiter.Exception != null)
+                    {
+                        ExceptionsHandler.DisplayException(waiter.Exception);
+                        return;
+                    }
+
+                    afterDiffInfoBuilt(diffInfo);
+                });
+        }
+
+        void ShowHistory(string selectedPath, bool isFolder)
+        {
+            WorkspaceTreeNode node = PlasticGui.Plastic.API.
+                GetWorkspaceTreeNode(mWkInfo, selectedPath);
+
+            mHistoryViewLauncher.ShowHistoryView(
+                node.RepSpec,
+                node.RevInfo.ItemId,
+                selectedPath,
+                isFolder);
         }
 
         static string GetSymbolicName(WorkspaceInfo wkInfo, string selectedPath)

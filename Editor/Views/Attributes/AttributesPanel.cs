@@ -36,6 +36,12 @@ namespace Unity.PlasticSCM.Editor.Views.Attributes
 
         internal void UpdateInfo(long objId)
         {
+            if (objId == -1)
+            {
+                Clear();
+                return;
+            }
+
             if (mObjId == objId)
                 return;
 
@@ -76,6 +82,9 @@ namespace Unity.PlasticSCM.Editor.Views.Attributes
 
         internal void OnGUI()
         {
+            if (mObjId == -1)
+                return;
+
             using (new GUILayout.HorizontalScope())
             {
                 EditorGUILayout.Space(HORIZONTAL_MARGIN, false);
@@ -92,6 +101,11 @@ namespace Unity.PlasticSCM.Editor.Views.Attributes
             }
 
             DrawAddAttributeButton();
+        }
+
+        internal bool IsAvailable()
+        {
+            return mObjId != -1;
         }
 
         void DrawAttributePanels(List<AttributePanel> attributePanels, float availableWidth)
@@ -150,7 +164,8 @@ namespace Unity.PlasticSCM.Editor.Views.Attributes
         void DrawAddAttributeButton()
         {
             if (GUILayout.Button(
-                    new GUIContent("Add attribute", Images.GetAddIcon()),
+                    new GUIContent(
+                        PlasticLocalization.Name.AddAttributeButton.GetString(), Images.GetAddIcon()),
                     UnityStyles.AttributesPanel.AddAttributeButton,
                     GUILayout.ExpandWidth(false)))
             {
@@ -221,7 +236,6 @@ namespace Unity.PlasticSCM.Editor.Views.Attributes
         long mObjId;
         bool mbOpenApplyAttributeDialog;
         bool mIsApplyingAttribute;
-
         readonly IProgressControls mProgressControls;
         readonly List<AttributePanel> mAttributePanels = new List<AttributePanel>();
 

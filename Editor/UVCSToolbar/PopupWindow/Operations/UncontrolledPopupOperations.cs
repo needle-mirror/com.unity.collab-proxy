@@ -20,6 +20,7 @@ namespace Unity.PlasticSCM.Editor.Toolbar.PopupWindow.Operations
 
         internal void ShowUVCSSettings()
         {
+            VCSBuiltInPlugin.EnsureProviderAsync();
             OpenUVCSProjectSettings.ByDefault();
         }
 

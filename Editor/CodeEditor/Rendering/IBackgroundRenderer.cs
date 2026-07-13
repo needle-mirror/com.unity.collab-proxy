@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -16,6 +16,8 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using UnityEngine;
+
 namespace Unity.CodeEditor.Rendering
 {
 	/// <summary>
@@ -31,8 +33,10 @@ namespace Unity.CodeEditor.Rendering
 		KnownLayer Layer { get; }
 		
 		/// <summary>
-		/// Causes the background renderer to draw.
+		/// Called during IMGUI repaint to draw background elements.
 		/// </summary>
-		void Draw(TextView textView); //, DrawingContext drawingContext);
+		/// <param name="textView">The text view this renderer belongs to.</param>
+		/// <param name="drawingRect">The visible area available for drawing, in local coordinates.</param>
+		void OnGUI(TextView textView, Rect drawingRect);
 	}
 }

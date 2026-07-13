@@ -1,16 +1,27 @@
+using System;
 using System.Collections.Generic;
-using Codice.CM.Client.Differences.Graphic;
-using Unity.PlasticSCM.Editor.AssetUtils;
-using UnityEditor;
-using UnityEngine;
 
-namespace Plugins.PlasticSCM.Editor.Diff
+using Codice.Client.BaseCommands.Differences;
+using Codice.CM.Client.Differences.Graphic;
+
+namespace Unity.PlasticSCM.Editor.Diff
 {
     internal static class DiffViewerDataExtensions
     {
-        internal static bool IsImage(this DiffViewerData data)
+        internal static bool IsSupportedImage(string extension)
         {
-            return TEXTURE_EXTENSIONS.Contains(data.Extension);
+            return SupportedImageDiffFormats.IsSupportedExtension(
+                extension, null);
+        }
+
+        internal static bool IsSerializedAsset(string extension)
+        {
+            return SERIALIZED_EXTENSIONS.Contains(extension);
+        }
+
+        internal static bool IsSupportedImage(this DiffViewerData data)
+        {
+            return IsSupportedImage(data.Extension);
         }
 
         internal static bool IsSerializedAsset(this DiffViewerData data)
@@ -18,22 +29,16 @@ namespace Plugins.PlasticSCM.Editor.Diff
             return SERIALIZED_EXTENSIONS.Contains(data.Extension);
         }
 
-        static readonly HashSet<string> TEXTURE_EXTENSIONS = new HashSet<string>
-        {
-            ".png", ".jpg", ".jpeg", ".tga", ".tif", ".tiff",
-            ".bmp", ".gif", ".psd", ".iff", ".pict", ".pct",
-            ".pic", ".hdr", ".exr", ".dds", ".ktx", ".ktx2",
-            ".astc", ".raw"
-        };
-
-        static readonly HashSet<string> SERIALIZED_EXTENSIONS = new HashSet<string>
-        {
-            ".prefab", ".unity", ".asset", ".mat", ".controller",
-            ".overrideController", ".mask", ".preset", ".anim",
-            ".lighting", ".giparams", ".shadervariants", ".guiskin",
-            ".fontsettings", ".physicmaterial", ".physicsmaterial2d",
-            ".cubemap", ".flare", ".mixer", ".renderTexture",
-            ".meta"
-        };
+        internal static readonly HashSet<string> SERIALIZED_EXTENSIONS =
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ".prefab", ".unity", ".asset", ".mat", ".controller", ".anim",
+                ".overrideController", ".mask", ".preset",
+                ".lighting", ".giparams", ".shadervariants", ".guiskin",
+                ".fontsettings", ".physicmaterial", ".physicsmaterial2d",
+                ".cubemap", ".flare", ".mixer", ".renderTexture",
+                ".spriteatlas", ".terrainlayer", ".signal", ".playable",
+                ".scenetemplate", ".meta"
+            };
     }
 }

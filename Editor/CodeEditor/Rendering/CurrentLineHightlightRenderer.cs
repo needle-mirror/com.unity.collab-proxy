@@ -58,7 +58,7 @@ namespace Unity.CodeEditor.Rendering
             _line = 0;
         }
 
-        public void Draw(TextView textView)
+        public void OnGUI(TextView textView, Rect drawingRect)
         {
             if (!_textView.Options.HighlightCurrentLine)
                 return;
@@ -76,6 +76,6 @@ namespace Unity.CodeEditor.Rendering
             if (geometry != null) {
                 drawingContext.DrawGeometry(BackgroundBrush, BorderPen, geometry);
             }*/
+            }
         }
     }
-}

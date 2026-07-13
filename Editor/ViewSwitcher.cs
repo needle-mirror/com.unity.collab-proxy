@@ -3,19 +3,15 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-using Codice.Client.BaseCommands;
-
 using Codice.Client.Common;
 using Codice.Client.Common.EventTracking;
 using Codice.Client.Common.FsNodeReaders;
-using Codice.Client.Common.Threading;
 using Codice.CM.Common;
 using GluonGui;
 using PlasticGui;
 using PlasticGui.Gluon;
 using PlasticGui.WorkspaceWindow;
 using PlasticGui.WorkspaceWindow.Merge;
-using PlasticGui.WorkspaceWindow.QueryViews;
 using Unity.PlasticSCM.Editor.AssetsOverlays.Cache;
 using Unity.PlasticSCM.Editor.AssetUtils;
 using Unity.PlasticSCM.Editor.AssetUtils.Processor;
@@ -48,6 +44,7 @@ namespace Unity.PlasticSCM.Editor
 
         internal SerializableMergeTabState MergeTabState;
         internal SerializableBranchesTabState BranchesTabState;
+        internal SerializableChangesetsTabState ChangesetsTabState;
         internal SerializableHistoryTabState HistoryTabState;
     }
 
@@ -169,6 +166,10 @@ namespace Unity.PlasticSCM.Editor
                 mState.BranchesTabState.IsInitialized)
                 BuildBranchesViewFromState(mState.BranchesTabState);
 
+            if (mState.ChangesetsTabState != null &&
+                mState.ChangesetsTabState.IsInitialized)
+                BuildChangesetsViewFromState(mState.ChangesetsTabState);
+
             ShowInitialView(mState.SelectedTab);
         }
 
@@ -282,6 +283,7 @@ namespace Unity.PlasticSCM.Editor
 
             if (ChangesetsTab != null)
             {
+                mState.ChangesetsTabState = ChangesetsTab.GetSerializableState();
                 ChangesetsTab.OnDisable();
             }
 
@@ -487,28 +489,9 @@ namespace Unity.PlasticSCM.Editor
             {
                 OpenPendingChangesTab();
 
-                ChangesetsTab = new ChangesetsTab(
-                    mWkInfo,
+                ChangesetsTab = BuildChangesetsTab(
                     changesetToSelect,
-                    mViewHost,
-                    mWorkspaceWindow,
-                    this,
-                    this,
-                    this,
-                    mWorkspaceWindow,
-                    mWorkspaceWindow,
-                    mShelvedChangesUpdater,
-                    PendingChangesTab,
-                    mAssetStatusCache,
-                    mSaveAssets,
-                    mShowDownloadPlasticExeWindow,
-                    mProcessExecutor,
-                    mWorkspaceOperationsMonitor,
-                    mPendingChangesUpdater,
-                    mDeveloperIncomingChangesUpdater,
-                    mGluonIncomingChangesUpdater,
-                    mParentWindow,
-                    mIsGluonMode);
+                    false);
 
                 mViewHost.AddRefreshableView(ViewType.ChangesetsView, ChangesetsTab);
             }
@@ -554,7 +537,7 @@ namespace Unity.PlasticSCM.Editor
                 mViewHost.AddRefreshableView(ViewType.ShelvesView, ShelvesTab);
 
                 TrackFeatureUseEvent.For(
-                    mRepSpec, TrackFeatureUseEvent.Features.OpenShelvesView);
+                    mRepSpec, TrackFeatureUseEvent.Features.Shelves.OpenShelvesView);
             }
             else
             {
@@ -565,16 +548,21 @@ namespace Unity.PlasticSCM.Editor
             SetSelectedView(TabType.Shelves);
         }
 
-        internal void ShowBranchesView()
+        internal void ShowBranchesView(BranchInfo branchToSelect = null)
         {
             if (BranchesTab == null)
             {
-                BranchesTab = BuildBranchesTab(false);
+                BranchesTab = BuildBranchesTab(branchToSelect, false);
 
                 mViewHost.AddRefreshableView(ViewType.BranchesView, BranchesTab);
 
                 TrackFeatureUseEvent.For(
                     mRepSpec, TrackFeatureUseEvent.Features.UnityPackage.OpenBranchesView);
+            }
+            else
+            {
+                if (branchToSelect != null)
+                    BranchesTab.RefreshAndSelect(branchToSelect);
             }
 
             SetSelectedView(TabType.Branches);
@@ -625,7 +613,7 @@ namespace Unity.PlasticSCM.Editor
                 mViewHost.AddRefreshableView(ViewType.LocksView, LocksTab);
 
                 TrackFeatureUseEvent.For(
-                    mRepSpec, TrackFeatureUseEvent.Features.OpenLocksView);
+                    mRepSpec, TrackFeatureUseEvent.Features.Locks.OpenLocksView);
             }
 
             SetSelectedView(TabType.Locks);
@@ -833,9 +821,20 @@ namespace Unity.PlasticSCM.Editor
         void BuildBranchesViewFromState(SerializableBranchesTabState state)
         {
             BranchesTab = BuildBranchesTab(
-                state.ShowHiddenBranches);
+                null, state.ShowHiddenBranches);
 
             mViewHost.AddRefreshableView(ViewType.BranchesView, BranchesTab);
+        }
+
+        void BuildChangesetsViewFromState(SerializableChangesetsTabState state)
+        {
+            OpenPendingChangesTab();
+
+            ChangesetsTab = BuildChangesetsTab(
+                null,
+                state.ShowHiddenChangesets);
+
+            mViewHost.AddRefreshableView(ViewType.ChangesetsView, ChangesetsTab);
         }
 
         void BuildHistoryViewFromState(SerializableHistoryTabState state)
@@ -1114,12 +1113,13 @@ namespace Unity.PlasticSCM.Editor
             return result;
         }
 
-        BranchesTab BuildBranchesTab(bool showHiddenBranches)
+        BranchesTab BuildBranchesTab(BranchInfo branchToSelect, bool showHiddenBranches)
         {
             BranchesTab result = new BranchesTab(
                 mWkInfo,
                 mViewHost,
                 mWorkspaceWindow,
+                branchToSelect,
                 this,
                 this,
                 mWorkspaceWindow,
@@ -1136,6 +1136,36 @@ namespace Unity.PlasticSCM.Editor
                 mParentWindow,
                 mIsGluonMode,
                 showHiddenBranches);
+
+            return result;
+        }
+
+        ChangesetsTab BuildChangesetsTab(
+            ChangesetInfo changesetToSelect,
+            bool showHiddenChangesets)
+        {
+            ChangesetsTab result = new ChangesetsTab(
+                mWkInfo,
+                changesetToSelect,
+                mViewHost,
+                mWorkspaceWindow,
+                this,
+                this,
+                mWorkspaceWindow,
+                mWorkspaceWindow,
+                mShelvedChangesUpdater,
+                PendingChangesTab,
+                mAssetStatusCache,
+                mSaveAssets,
+                mShowDownloadPlasticExeWindow,
+                mProcessExecutor,
+                mWorkspaceOperationsMonitor,
+                mPendingChangesUpdater,
+                mDeveloperIncomingChangesUpdater,
+                mGluonIncomingChangesUpdater,
+                mParentWindow,
+                mIsGluonMode,
+                showHiddenChangesets);
 
             return result;
         }

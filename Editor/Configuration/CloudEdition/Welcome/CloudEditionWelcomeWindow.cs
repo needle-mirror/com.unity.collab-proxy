@@ -23,7 +23,8 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
     }
 
     internal class CloudEditionWelcomeWindow :
-        EditorWindow, IWelcomeWindowNotify, OAuthSignIn.INotify, GetCloudOrganizations.INotify
+        EditorWindow, IWelcomeWindowNotify, OAuthSignIn.INotify, GetCloudOrganizations.INotify,
+        SignInPanel.IPanelHost
     {
         internal static void ShowWindow(
             IPlasticWebRestApi restApi,
@@ -61,6 +62,11 @@ namespace Unity.PlasticSCM.Editor.Configuration.CloudEdition.Welcome
         {
             rootVisualElement.Clear();
             rootVisualElement.Add(panel);
+        }
+
+        void SignInPanel.IPanelHost.ReplaceRootPanel(VisualElement panel)
+        {
+            ReplaceRootPanel(panel);
         }
 
         internal SignInPanel GetSignInPanel()

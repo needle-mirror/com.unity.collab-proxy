@@ -18,12 +18,18 @@ namespace Unity.CodeEditor.Rendering
 		public TextDocument Document { get; set; }
 		public TextParagraphProperties TextParagraphProperties { get; set; }
 
+		private int _lastElementIndex;
+
 		public TextRun GetTextRun(int textSourceCharacterIndex)
 		{
 			try {
-				foreach (VisualLineElement element in VisualLine.Elements) {
+				var elements = VisualLine.Elements;
+				// start scanning from the cached position instead of 0
+				for (int i = _lastElementIndex; i < elements.Count; i++) {
+					var element = elements[i];
 					if (textSourceCharacterIndex >= element.VisualColumn
 						&& textSourceCharacterIndex < element.VisualColumn + element.VisualLength) {
+						_lastElementIndex = i;
 						int relativeOffset = textSourceCharacterIndex - element.VisualColumn;
 						TextRun run = element.CreateTextRun(textSourceCharacterIndex, this);
 						if (run == null)

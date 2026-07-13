@@ -19,7 +19,7 @@ namespace Unity.PlasticSCM.Editor.Settings
             mNewCodeReviewAskAlways = data.NewCodeReviewBehavior == NewCodeReviewBehavior.Ask;
         }
 
-        internal void OnDeactivate()
+        internal void Save()
         {
             PlasticGuiConfig plasticGuiConfig = PlasticGuiConfig.Get();
             plasticGuiConfig.Configuration.NewCodeReviewBehavior = GetSelectedNewCodeReviewBehavior();
@@ -53,9 +53,12 @@ namespace Unity.PlasticSCM.Editor.Settings
 
         void DoNewCodeReviewBehaviorSettings()
         {
+            EditorGUI.BeginChangeCheck();
+
             GUILayout.Label(
                 PlasticLocalization.Name.NewCodeReviewDefaultBehavior.GetString(),
                 UnityStyles.ProjectSettings.SectionTitle);
+
             EditorGUILayout.Space(2);
 
             if (EditorGUILayout.Toggle(
@@ -87,6 +90,9 @@ namespace Unity.PlasticSCM.Editor.Settings
                 mNewCodeReviewRequestReviewInUnityCloud = false;
                 mNewCodeReviewAskAlways = true;
             }
+
+            if (EditorGUI.EndChangeCheck())
+                Save();
         }
 
         static void DrawSettingsSection(Action drawSettings)

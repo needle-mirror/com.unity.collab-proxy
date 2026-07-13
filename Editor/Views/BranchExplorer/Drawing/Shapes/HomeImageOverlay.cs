@@ -34,11 +34,7 @@ namespace Unity.PlasticSCM.Editor.Views.BranchExplorer.Drawing.Shapes
 
         void OnGenerateVisualContent(MeshGenerationContext obj)
         {
-#if UNITY_2022_1_OR_NEWER
             Painter2D painter = obj.painter2D;
-#else
-            Painter2D painter = new Painter2D();
-#endif
 
             painter.fillColor = UnityStyles.Colors.ImageForeground;
             float scale = 0.65f;

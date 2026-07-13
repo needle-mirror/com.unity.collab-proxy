@@ -1,4 +1,4 @@
-﻿== CMD_DESCRIPTION_ACCESS_TOKEN ==
+== CMD_DESCRIPTION_ACCESS_TOKEN ==
 Permite al usuario administrar Tókenes Personales de Acceso.
 
 == CMD_USAGE_ACCESS_TOKEN ==
@@ -332,6 +332,9 @@ Notas:
         m                   Minutos
         s                   Segundos
 
+    Use "infinite" para ilimitado (sin caducidad). El servidor debe
+    permitir tiempos de vida ilimitados para que esto funcione.
+
     Los siguientes ejemplos son cadenas válidas:
         1w                  1 semana
         5d                  5 días
@@ -339,6 +342,7 @@ Notas:
         30m                 30 minutos
         35s                 35 segundos
         1h30m               1 hora y 30 minutos
+        infinite            Ilimitado (sin caducidad)
 
     Parámetros de formato de salida (opción --format):
 
@@ -814,7 +818,8 @@ Sintaxis:
 
 Comandos:
 
-    readonly
+    - readonly
+    - hashalgorithm
 
     Para obtener más información de cada uno de los comandos use lo siguiente:
     cm admin <command> --usage
@@ -828,6 +833,7 @@ Ejemplos:
 
     cm admin readonly enter
     cm admin readonly status
+    cm admin hashalgorithm rep@repserver:8087 sha1
 
 == CMD_DESCRIPTION_ADMIN_READONLY ==
 Habilita/deshabilita el modo solo lectura del servidor.
@@ -861,6 +867,48 @@ Ejemplos:
 
     cm admin readonly enter diana:8086
     cm admin readonly leave
+
+== CMD_DESCRIPTION_ADMIN_HASHALGORITHM ==
+Consulta o cambia el algoritmo de hashing utilizado por un repositorio.
+
+== CMD_USAGE_ADMIN_HASHALGORITHM ==
+Sintaxis:
+
+    cm admin hashalgorithm <repspec> [(md5 | sha1)]
+
+Opciones:
+
+    repspec     Repositorio cuyo algoritmo de hashing será consultado o cambiado.
+                (Use 'cm help objectspec' para más información sobre
+                especificaciones de repositorio.)
+    md5         Utiliza MD5 como el algoritmo de hashing del repositorio.
+    sha1        Utiliza SHA1 como el algoritmo de hashing del repositorio.
+
+== CMD_HELP_ADMIN_HASHALGORITHM ==
+Notas:
+    Cuando se ejecuta sin especificar un algoritmo, el comando imprime el
+    algoritmo configurado actualmente para el repositorio.
+    Cuando se ejecuta especificando un algoritmo, el algoritmo se configura
+    para el repositorio.
+    Únicamente el administrador del servidor de repositorios puede configurar
+    el algoritmo de hashing.
+    Cambiar el algoritmo en un repositorio que ya contiene datos está soportado,
+    pero el administrador debería considerar las implicaciones antes de llevar
+    a cabo el cambio.
+
+    A nivel de servidor, la configuración por repositorio tiene precedencia sobre
+    la configuración FIPSCompliant del fichero server.conf.
+    Esto significa que un repositorio configurado a través de este comando para
+    utiliza MD5 (un algoritmo no-FIPS) utilizará MD5 incluso si la configuración
+    FIPSCompliant está habilitada.
+
+Ejemplos:
+
+    cm admin hashalgorithm myrep@diana:8086
+    (Muestra el algoritmo de hashing configurado actualmente en myrep@diana:8086)
+
+    cm admin hashalgorithm myrep@diana:8086 md5
+    (Configura MD5 como el algoritmo de hashing para myrep@diana:8086)
 
 == CMD_DESCRIPTION_ANNOTATE ==
 Muestra el changeset donde se modificó por última vez y por quién cada línea de
@@ -1809,13 +1857,13 @@ Crea, edita o elimina revisiones de código.
 == CMD_USAGE_CODEREVIEW ==
 Sintaxis:
 
-    cm codereview <spec> <title> [--status=<status_name>]
+    cm codereview <spec> <title> [--status=<status_name>| --codereviewstatus=<status_name>]
                 [--assignee=<user_name>] [--format=<str_format>]
                 [--repository=<rep_spec>]
     (Crea una revisión de código.)
 
-    cm codereview -e <id> [--status=<status_name>] [--assignee=<user_name>]
-                [--repository=<rep_spec>]
+    cm codereview -e <id> [--status=<status_name>| --codereviewstatus=<status_name>]
+                [--assignee=<user_name>] [--repository=<rep_spec>]
     (Edita una revisión de código.)
 
     cm codereview -d <id> [ ...] [--repository=<rep_spec>]
@@ -1833,18 +1881,19 @@ Sintaxis:
 
 Opciones:
 
-    -e              Edita los parámetros de una revisión de código.
-    -d              Elimina una o más revisiones de código. Use un espacio en
-                    blanco para separar los identificadores de las revisiones de
-                    código.
-    --status        Aplica el nuevo estado a la revisión de código. Consulte las
-                    Notas para más información.
-    --assignee      Aplica el nuevo usuario asignado a la revisión de código.
-    --format        Muestra el mensaje de salida con el formato indicado.
-                    Consulte las Notas para más información.
-    --repository    Indica el repositorio que se utilizará por defecto. (Use
-                    'cm help objectspec' para más información sobre
-                    especificaciones de repositorio.)
+    -e                  Edita los parámetros de una revisión de código.
+    -d                  Elimina una o más revisiones de código. Use un espacio en
+                        blanco para separar los identificadores de las revisiones de
+                        código.
+    --status            Aplica el nuevo estado a la revisión de código. Consulte las
+                        Notas para más información.
+    --codereviewstatus  Alias para '--status'.
+    --assignee          Aplica el nuevo usuario asignado a la revisión de código.
+    --format            Muestra el mensaje de salida con el formato indicado.
+                        Consulte las Notas para más información.
+    --repository        Indica el repositorio que se utilizará por defecto. (Use
+                        'cm help objectspec' para más información sobre
+                        especificaciones de repositorio.)
 
 == CMD_HELP_CODEREVIEW ==
 Notas:
@@ -1888,6 +1937,187 @@ Ejemplos:
 
     cm codereview -d 1367 --repository=myremoterepo@myremoteserver:18084
     cm codereview 27658884-5dcc-49b7-b0ef-a5760ae740a3 -d
+
+== CMD_DESCRIPTION_MERGEREQUEST ==
+Permite al usuario gestionar merge requests.
+
+== CMD_USAGE_MERGEREQUEST ==
+Sintaxis:
+
+    cm mergerequest | mr <command> [options]
+
+Comandos:
+
+    - create | mk
+    - edit
+    - delete | rm
+
+    Para obtener más información sobre cada comando:
+    cm mergerequest <command> --usage
+    cm mergerequest <command> --help
+
+== CMD_HELP_MERGEREQUEST ==
+Ejemplos:
+
+    cm mergerequest /main/task001 "Add feature" --destination=/main
+    cm mergerequest create /main/task001 "Add feature" --destination=/main
+    cm mergerequest edit 1367 --mergerequeststatus=Draft
+    cm mergerequest edit 1367 --codereviewstatus=Reviewed
+    cm mergerequest delete 1367
+
+== CMD_DESCRIPTION_MERGEREQUEST_CREATE ==
+Crea una merge request.
+
+== CMD_USAGE_MERGEREQUEST_CREATE ==
+Sintaxis:
+
+    cm mergerequest | mr [create | mk] <brspec> <title> --destination=<brspec>
+                [--mergerequeststatus=<mr_status_name>]
+                [--codereviewstatus=<cr_status_name>]
+                [--assignee=<user_name>] [--format=<str_format>]
+                [--repository=<rep_spec>]
+
+Options:
+
+    --destination           Rama destino del merge. Es obligatoria.
+                            (Use 'cm help objectspec' para más información sobre
+                            especificaciones de rama.)
+    --mergerequeststatus    Estado de la merge request:
+                            "Draft", "Open", "Closed", "Merged".
+                            "Open" es el valor por defecto.
+    --codereviewstatus      Estado de la revisión de código:
+                            "Under review", "Reviewed", or "Rework required".
+                            "Under review" es el valor por defecto.
+    --assignee              Aplica el usuario asignado para la revisión de código.
+    --format                Muestra el mensaje de salida con el formato indicado.
+                            Consulte las Notas para más información.
+    --repository            Indica el repositorio que se utilizará por defecto.
+                            (Use 'cm help objectspec' para más información sobre
+                            especificaciones de repositorio.)
+    brspec                  Rama que es el origen de la merge request. (Use
+                            'cm help objectspec' para más información sobre
+                            especificaciones de rama.)
+    title                   Cadena de texto que se usará como título de la
+                            merge request.
+
+== CMD_HELP_MERGEREQUEST_CREATE ==
+Notas:
+
+    Para crear una nueva merge request se requiere una especificación de rama,
+    un título, y la rama destino del merge. También se puede indicar el estado
+    inicial de la merge request, el estado inicial de la revisión de código y
+    el usuario asignado como revisor de los cambios. Como resultado se devolverá
+    el identificador ID (o GUID).
+
+    El parámetro 'repository' sirve para especificar el repositorio por defecto.
+    Esto es útil cuando el usuario quiere gestionar merge requests de un
+    servidor diferente del asociado al espacio de trabajo actual o cuando no
+    existe un espacio de trabajo.
+
+    Parámetros de formato de salida (opción --format):
+        Este comando acepta una cadena de formato para mostrar la salida.
+        Los parámetros de salida de este comando son los siguientes:
+        {0}             id
+        {1}             guid
+
+Ejemplos:
+
+    cm mergerequest create /main/task001 "Add feature" --destination=/main \
+        --mergerequeststatus=Draft --codereviewstatus="Rework required" \
+        --assignee=newbie --format="{id} -> {guid}"
+
+    cm mr br:/main/task001@myrepo@myserver:8084 "Add feature" \
+        --destination=br:/main@myrepo@myserver:8084
+
+== CMD_DESCRIPTION_MERGEREQUEST_EDIT ==
+Edita una merge request existente.
+
+== CMD_USAGE_MERGEREQUEST_EDIT ==
+Sintaxis:
+
+    cm mergerequest | mr edit <id>
+                [--destination=<brspec>]
+                [--mergerequeststatus=<mr_status_name>]
+                [--mergechangeset=<csetspec>]
+                [--codereviewstatus=<cr_status_name>] [--assignee=<user_name>]
+                [--repository=<rep_spec>]
+
+Options:
+
+    --destination           Rama destino del merge. Es obligatoria.
+                            (Use 'cm help objectspec' para más información sobre
+                            especificaciones de rama.)
+    --mergerequeststatus    Estado de la merge request:
+                            "Draft", "Open", "Closed", "Merged".
+                            "Open" es el valor por defecto.
+    --mergechangeset        Changeset resultante del merge. Es opcional.
+                            Solo está permitido junto con '--mergerequeststatus=Merged'.
+                            Sirve para enlazar la merge request con su changeset de merge
+                            en el comentario de la línea de tiempo.
+                            (Use 'cm help objectspec' para más información sobre
+                            especificaciones de changeset.)
+    --codereviewstatus      Estado de la revisión de código:
+                            "Under review", "Reviewed", or "Rework required".
+                            "Under review" es el valor por defecto.
+    --assignee              Aplica el usuario asignado para la revisión de código.
+    --format                Muestra el mensaje de salida con el formato indicado.
+                            Consulte las Notas para más información.
+    --repository            Indica el repositorio que se utilizará por defecto.
+                            (Use 'cm help objectspec' para más información sobre
+                            especificaciones de repositorio.)
+    id                      Número de identificación de la merge request. También
+                            se puede usar un GUID.
+
+== CMD_HELP_MERGEREQUEST_EDIT ==
+Notas:
+
+    Para editar una merge request existente debe indicar el ID
+    (o GUID) de la misma. No se mostrarán mensajes si no ha habido errores.
+
+    El parámetro 'repository' sirve para especificar el repositorio por defecto.
+    Esto es útil cuando el usuario quiere gestionar merge requests de un
+    servidor diferente del asociado al espacio de trabajo actual o cuando no
+    existe un espacio de trabajo.
+
+Ejemplos:
+
+    cm mergerequest edit 1367 --destination=/main/release
+    cm mr edit 1367 --assignee=new_assignee
+    cm mergerequest edit 27658884-5dcc-49b7-b0ef-a5760ae740a3 --mergerequeststatus=Open
+    cm mr edit 1367 --mergerequeststatus=Merged --mergechangeset=cs:5678
+    cm mr edit 27658884-5dcc-49b7-b0ef-a5760ae740a3 --codereviewstatus=Reviewed
+
+== CMD_DESCRIPTION_MERGEREQUEST_DELETE ==
+Borra una o más merge requests.
+
+== CMD_USAGE_MERGEREQUEST_DELETE ==
+Sintaxis:
+
+    cm mergerequest | mr delete | -rm <id> [<id> ...] [--repository=<rep_spec>]
+
+Options:
+
+    --repository            Indica el repositorio que se utilizará por defecto.
+                            (Use 'cm help objectspec' para más información sobre
+                            especificaciones de repositorio.)
+    id                      Número de identificación de la merge request. También
+                            se puede usar un GUID.
+
+== CMD_HELP_MERGEREQUEST_DELETE ==
+Notas:
+
+    Para borrar una merge request existente debe indicar el ID
+    (o GUID) de la misma. No se mostrarán mensajes si no ha habido errores.
+
+    El parámetro 'repository' sirve para especificar el repositorio por defecto.
+    Esto es útil cuando el usuario quiere gestionar merge requests de un
+    servidor diferente del asociado al espacio de trabajo actual o cuando no
+    existe un espacio de trabajo.
+
+Ejemplos:
+
+    cm mergerequest delete 1367 1368 1369
+    cm mr -rm 27658884-5dcc-49b7-b0ef-a5760ae740a3
 
 == CMD_DESCRIPTION_CRYPT ==
 Encripta una contraseña.
@@ -3564,34 +3794,35 @@ Notas:
     Parámetros de formato de salida (opción --format):
         Este comando acepta una cadena de formato para mostrar la salida.
         Los parámetros de salida de este comando son los siguientes:
-        {size}
-        {formattedsize}
-        {date}
-        {type}
+        - {size}
+        - {formattedsize}
+        - {date}
+        - {type}
             dir     directorio,
             txt     fichero de texto,
             File    fichero.
-        {location}      Por ejemplo: br:branch#cset
-        {checkout}
-        {name}
-        {changeset}
-        {path}
-        {repspec}
-        {owner}
-        {revid}
-        {parentrevid}
-        {itemid}
-        {brid}
-        {repid}
-        {server}
-        {symlinktarget}
-        {hash}
-        {chmod}
-        {wkpath}        Ruta relativa a la raíz del espacio de trabajo
-        {branch}
-        {newlocation}   cset@branch
-        {guid}          (El comando tardará más tiempo en resolverse)
-        {itemguid}
+        - {location}      Por ejemplo: br:branch#cset
+        - {checkout}
+        - {name}
+        - {changeset}
+        - {path}
+        - {repspec}
+        - {owner}
+        - {revid}
+        - {parentrevid}
+        - {itemid}
+        - {brid}
+        - {repid}
+        - {server}
+        - {symlinktarget}
+        - {hash}
+        - {hashalgorithm} (Por ejemplo, MD5, SHA1)
+        - {chmod}
+        - {wkpath}        Ruta relativa a la raíz del espacio de trabajo
+        - {branch}
+        - {newlocation}   cset@branch
+        - {guid}          (El comando tardará más tiempo en resolverse)
+        - {itemguid}
 
     You can customize the 'ls' format setting the PLASTIC_LS_FORMAT environment
     variable.
@@ -5810,6 +6041,7 @@ Sintaxis:
 
     cm patch [source_spec] source_spec
                         [--output=output_file] [--tool=/path/to/diff]
+                        [--clean] [--integration]
 
     cm patch --apply patch_file [--tool=/path/to/patch]
 
@@ -5823,6 +6055,13 @@ Opciones:
                         contenidos del parche.
     --tool              Especifica la ruta hacia la herramienta necesaria para
                         ejecutar la operación (diff o patch).
+    --clean             No tiene en cuenta las diferencias generadas por un
+                        merge, solo las diferencias creadas por checkins
+                        directos.
+    --integration       Muestra los cambios de la rama que están pendientes de
+                        ser integrados en su rama padre. Tiene en cuenta
+                        cualquier rebase o merge previo realizado desde/hacia
+                        su rama padre.
 
 == CMD_HELP_PATCH ==
 Notas:
@@ -5864,6 +6103,28 @@ Ejemplos:
     
     cm patch cs:2@default cs:4@default
     (Muestra en pantalla las diferencias entre los changeset 2 y 4.)
+
+    cm patch br:/main/task001 --integration
+    (Genera un patch solo con los cambios propios de la rama, excluyendo los
+    cambios llegados a traves de merges. Similar al diff de un PR en GitHub
+    tras actualizar la rama.)
+
+    cm patch br:/main/task001 --clean
+    (Genera un patch con los cambios de la rama excluyendo cualquier contenido
+    que haya llegado a traves de merge. Solo se incluyen los checkins directos
+    en la rama.)
+
+    cm patch br:/main/task001 --clean --integration --output=review.patch
+    (Combina ambos flags: --integration cambia la base para que el diff solo
+    cubra lo pendiente de mergear en la rama padre, y --clean elimina cualquier
+    contenido que haya llegado via merge a la rama. El resultado es un patch
+    que contiene solo el trabajo directo en la rama que aun no se ha integrado
+    en su padre -- util para escenarios de code review donde se quiere ver
+    solo el trabajo nuevo listo para mergear.)
+
+    cm patch br:/main/task001 --integration
+    (Genera un parche solo con los cambios propios de la rama, excluyendo
+    cambios que llegaron por merges.)
 
     cm patch --apply file.patch --tool=C:\gnu\patch.exe
     (Aplica el parche contenido en file.patch al workspace actual con un
@@ -6945,22 +7206,23 @@ Notas:
     Parámetros de formato de salida (opción --format):
         Este comando acepta una cadena de formato para mostrar la salida.
         Los parámetros de salida de este comando son los siguientes:
-        {0} | {date}              Fecha.
-        {1} | {changesetid}       Número de changeset.
-        {2} | {branch}            Rama.
-        {4} | {comment}           Comentario.
-        {5} | {owner}             Propietario de la revisión.
-        {6} | {id}                Id de revisión.
-        {7} | {repository}        Repositorio.
-        {8} | {server}            Servidor.
-        {9} | {repspec}           Especificación de repositorio.
-        {10}| {datastatus}        Disponibilidad del dato de la revision.
-        {11}| {path}              Ruta o spec pasada como <item_path>.
-        {12}| {itemid}            Id del elemento.
-        {13}| {size}              Tamaño.
-        {14}| {hash}              Código hash.
-        {tab}                     Inserta un tabulador.
-        {newline}                 Inserta una nueva línea.
+        {0}  | {date}              Fecha.
+        {1}  | {changesetid}       Número de changeset.
+        {2}  | {branch}            Rama.
+        {4}  | {comment}           Comentario.
+        {5}  | {owner}             Propietario de la revisión.
+        {6}  | {id}                Id de revisión.
+        {7}  | {repository}        Repositorio.
+        {8}  | {server}            Servidor.
+        {9}  | {repspec}           Especificación de repositorio.
+        {10} | {datastatus}        Disponibilidad del dato de la revision.
+        {11} | {path}              Ruta o spec pasada como <item_path>.
+        {12} | {itemid}            Id del elemento.
+        {13} | {size}              Tamaño.
+        {14} | {hash}              Hash.
+        {15} | {hashalgorithm}     Algoritmo usado para calcular el hash.
+        {tab}                      Inserta un tabulador.
+        {newline}                  Inserta una nueva línea.
 
 Ejemplos
 

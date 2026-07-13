@@ -699,6 +699,12 @@ Incorrect workspace specification
 == CmdErrorIncorrectCodeReviewId ==
 Incorrect code review ID: {0}
 
+== CmdErrorInvalidPackageVersionUsage ==
+Argument '--package-version' can only be used when specifying a package path using argument '--package'.
+
+== CmdErrorInvalidPackageVersionValue ==
+Error parsing argument '--package-version'. Expected a number, got '{0}' instead.
+
 == CmdErrorLabelIncorrectrevspec ==
 Incorrect revision spec: {0}
 
@@ -2348,6 +2354,21 @@ The conflict {0} has been created after the conflict {1} was resolved
 
 == ResolvedRemovedConflict ==
 The conflict {0} has been removed after the conflict {1} was resolved
+
+== MergeRequestStatusNone ==
+None
+
+== MergeRequestStatusDraft ==
+Draft
+
+== MergeRequestStatusClosed ==
+Closed
+
+== MergeRequestStatusOpen ==
+Open
+
+== MergeRequestStatusMerged ==
+Merged
 
 == ReviewStatusReviewed ==
 Reviewed
