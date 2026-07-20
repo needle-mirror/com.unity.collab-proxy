@@ -1,11 +1,11 @@
 {
   "name": "com.unity.collab-proxy",
   "displayName": "Unity Version Control",
-  "version": "2.13.3",
+  "version": "2.13.4",
   "unity": "6000.0",
   "description": "The package gives you the ability to use Unity Version Control in the Unity editor. To use Unity Version Control, a subscription is required. Learn more about how you can get started for free by visiting https://unity.com/solutions/version-control",
   "dependencies": {
-    "com.unity.collections": "2.6.2"
+    "com.unity.collections": "2.6.8"
   },
   "keywords": [
     "backup",
@@ -26,18 +26,18 @@
   ],
   "category": "Editor",
   "relatedPackages": {
-    "com.unity.collab-proxy.tests": "2.13.3"
+    "com.unity.collab-proxy.tests": "2.13.4"
   },
   "_upm": {
     "changelog": "### Added\n\n- Added a built-in diff viewer for text, images, and serialized Unity assets, available from Pending Changes, History, changesets, and branches.\n- Added Unity AI Assistant integration to manage version control, review changes, and query repository history using natural language.\n- Added support for comparing two selected revisions from the History view.\n- Added a details panel showing move origins/destinations and deleted item information.\n- Added a toggle in the Changesets tab to show or hide changesets from hidden branches.\n\n### Changed\n\n- Raised the minimum supported Editor to Unity 6000.0 (removed support for Unity 2021.3 and 2022.3).\n- Moved the settings button in the Branch Explorer to the bottom of the panel.\n- Visually separate the edit and remove buttons in the attribute panel to avoid unwanted clicks.\n- Improved how version control operations handle unsaved scene changes while in Play Mode.\n\n### Fixed\n\n- Fixed the \"Choose Repository\" dialog title capitalization. (UUM-143766)\n- Fixed Create Workspace not refreshing the Unity Version Control and Branch Explorer windows. (UUM-142548)\n- Fixed buttons overlapping the tab divider in the Branch Explorer options when resizing tabs. (UUM-142492)\n- Fixed the blank Default and Result encoding dropdowns in the Unity Version Control settings. (UUM-142544)\n- Fixed settings not being applied after you change them.\n- Fixed meta files of parent folders not being included in Add operations.\n- Fixed an \"item with the same key has already been added\" error.\n- Fixed an inconsistent object error when reloading the Settings panel.\n- Fixed the attributes panel appearing for a checkout changeset.\n- Fixed branch diffs being outdated when opened from the branches view.\n- Fixed an error shown when using Diff with previous revision on an item that has no previous revision.\n- Fixed the Differences window staying open after the plugin was paused in the settings.\n- Fixed the Branch Explorer not updating the Inspector diffs when the window gains focus.\n- Fixed branch diffs being recalculated and losing the current selection when refocusing or resizing the Unity Version Control window.\n- Fixed the Unity Version Control window not opening after reinstalling the package.\n- Fixed the sign-in windows refreshing only when the mouse moved.\n- Fixed being unable to set up Unity Version Control from Project Settings > Version Control.\n- Fixed checked-out files being lost when exiting the Editor.\n- Fixed auto-checkout not reporting an error when it failed because of a lock.\n- Fixed domain-reload exception handling on Unity 6000.5 and newer.\n- Fixed a compilation error caused by a conflict with the Unity.Localization namespace."
   },
   "upmCi": {
-    "footprint": "1f9925b291c73f5cb277cb22644e864b8dfe67d0"
+    "footprint": "55d28cba3ff80e09b0c77019d85cc6adbdd84912"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.collab-proxy@2.13/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/com.unity.cloud.collaborate.git",
     "type": "git",
-    "revision": "633f04523971a6c5bccdfa683e0e897c7c8296f3"
+    "revision": "e8c92a7895efdcb0d58e1bb3efefac509c2de582"
   }
 }
