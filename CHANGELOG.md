@@ -2,7 +2,7 @@
 
 All notable changes to this package will be documented in this file.
 
-## [2.13.4] - 2026-07-20
+## [2.13.5] - 2026-07-22
 
 ### Added
 
@@ -41,7 +41,6 @@ All notable changes to this package will be documented in this file.
 - Fixed checked-out files being lost when exiting the Editor.
 - Fixed auto-checkout not reporting an error when it failed because of a lock.
 - Fixed domain-reload exception handling on Unity 6000.5 and newer.
-- Fixed a compilation error caused by a conflict with the Unity.Localization namespace.
 
 ## [2.12.4] - 2026-03-16
 

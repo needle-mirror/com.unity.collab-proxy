@@ -1293,7 +1293,7 @@ namespace Unity.PlasticSCM.Editor.Diff.Text
 
             internal void Dispose()
             {
-                mTextEditor.TextChanged += TextEditor_TextChanged;
+                mTextEditor.TextChanged -= TextEditor_TextChanged;
             }
 
             void TextEditor_TextChanged(object sender, EventArgs e)
